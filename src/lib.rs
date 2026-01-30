@@ -1,0 +1,190 @@
+pub mod config;
+pub mod cops;
+pub mod offense;
+
+pub use config::Config;
+pub use offense::{Location, Offense, Severity};
+
+use ruby_prism::parse;
+use std::path::Path;
+use thiserror::Error;
+
+#[derive(Error, Debug)]
+pub enum Error {
+    #[error("Failed to read file: {0}")]
+    Io(#[from] std::io::Error),
+}
+
+pub type Result<T> = std::result::Result<T, Error>;
+
+/// Check Ruby source code for offenses using all cops with default config
+pub fn check_source(source: &str, filename: &str) -> Vec<Offense> {
+    let all_cops = cops::all();
+    check_source_with_cops(source, filename, &all_cops)
+}
+
+/// Check Ruby source code for offenses using specific cops
+pub fn check_source_with_cops(
+    source: &str,
+    filename: &str,
+    cops: &[Box<dyn cops::Cop>],
+) -> Vec<Offense> {
+    let result = parse(source.as_bytes());
+    cops::run_cops(cops, &result, source, filename)
+}
+
+/// Check a file for offenses using default cops
+pub fn check_file(path: &Path) -> Result<Vec<Offense>> {
+    let source = std::fs::read_to_string(path)?;
+    let filename = path.to_string_lossy();
+    Ok(check_source(&source, &filename))
+}
+
+/// Check a file for offenses using configuration
+pub fn check_file_with_config(path: &Path, config: &Config) -> Result<Vec<Offense>> {
+    // Check if file is globally excluded
+    if config.is_excluded(path) {
+        return Ok(vec![]);
+    }
+
+    let source = std::fs::read_to_string(path)?;
+    let filename = path.to_string_lossy();
+    let cops = build_cops_from_config(config);
+
+    let result = parse(source.as_bytes());
+    let mut offenses = cops::run_cops(&cops, &result, &source, &filename);
+
+    // Filter out offenses for cops that have this file excluded
+    offenses.retain(|offense| !config.is_excluded_for_cop(path, &offense.cop_name));
+
+    Ok(offenses)
+}
+
+/// Build cops based on configuration
+pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
+    let mut result: Vec<Box<dyn cops::Cop>> = Vec::new();
+
+    // Lint/Debugger
+    if config.is_cop_enabled("Lint/Debugger") {
+        result.push(Box::new(cops::lint::Debugger::new()));
+    }
+
+    // Lint/AssignmentInCondition
+    if config.is_cop_enabled("Lint/AssignmentInCondition") {
+        let allow_safe = config
+            .get_cop_config("Lint/AssignmentInCondition")
+            .and_then(|c| c.allow_safe_assignment)
+            .unwrap_or(true);
+        result.push(Box::new(cops::lint::AssignmentInCondition::new(allow_safe)));
+    }
+
+    // Layout/LineLength
+    if config.is_cop_enabled("Layout/LineLength") {
+        let max = config
+            .get_cop_config("Layout/LineLength")
+            .and_then(|c| c.max)
+            .unwrap_or(120);
+        result.push(Box::new(cops::layout::LineLength::new(max)));
+    }
+
+    // Metrics/BlockLength
+    if config.is_cop_enabled("Metrics/BlockLength") {
+        let max = config
+            .get_cop_config("Metrics/BlockLength")
+            .and_then(|c| c.max)
+            .unwrap_or(25);
+        result.push(Box::new(cops::metrics::BlockLength::new(max)));
+    }
+
+    // Style/AutoResourceCleanup
+    if config.is_cop_enabled("Style/AutoResourceCleanup") {
+        result.push(Box::new(cops::style::AutoResourceCleanup::new()));
+    }
+
+    // Style/FormatStringToken
+    if config.is_cop_enabled("Style/FormatStringToken") {
+        let style = config
+            .get_cop_config("Style/FormatStringToken")
+            .and_then(|c| c.enforced_style.as_ref())
+            .map(|s| match s.as_str() {
+                "template" => cops::style::FormatStringTokenStyle::Template,
+                "unannotated" => cops::style::FormatStringTokenStyle::Unannotated,
+                _ => cops::style::FormatStringTokenStyle::Annotated,
+            })
+            .unwrap_or(cops::style::FormatStringTokenStyle::Annotated);
+        result.push(Box::new(cops::style::FormatStringToken::new(style)));
+    }
+
+    // Style/HashSyntax
+    if config.is_cop_enabled("Style/HashSyntax") {
+        let style = config
+            .get_cop_config("Style/HashSyntax")
+            .and_then(|c| c.enforced_style.as_ref())
+            .map(|s| match s.as_str() {
+                "hash_rockets" => cops::style::HashSyntaxStyle::HashRockets,
+                "no_mixed_keys" => cops::style::HashSyntaxStyle::NoMixedKeys,
+                "ruby19_no_mixed_keys" => cops::style::HashSyntaxStyle::Ruby19NoMixedKeys,
+                _ => cops::style::HashSyntaxStyle::Ruby19,
+            })
+            .unwrap_or(cops::style::HashSyntaxStyle::Ruby19);
+        result.push(Box::new(cops::style::HashSyntax::new(style)));
+    }
+
+    // Style/MethodCalledOnDoEndBlock
+    if config.is_cop_enabled("Style/MethodCalledOnDoEndBlock") {
+        result.push(Box::new(cops::style::MethodCalledOnDoEndBlock::new()));
+    }
+
+    // Style/RaiseArgs
+    if config.is_cop_enabled("Style/RaiseArgs") {
+        let style = config
+            .get_cop_config("Style/RaiseArgs")
+            .and_then(|c| c.enforced_style.as_ref())
+            .map(|s| match s.as_str() {
+                "compact" => cops::style::RaiseArgsStyle::Compact,
+                _ => cops::style::RaiseArgsStyle::Explode,
+            })
+            .unwrap_or(cops::style::RaiseArgsStyle::Explode);
+        result.push(Box::new(cops::style::RaiseArgs::new(style)));
+    }
+
+    // Style/RescueStandardError
+    if config.is_cop_enabled("Style/RescueStandardError") {
+        let style = config
+            .get_cop_config("Style/RescueStandardError")
+            .and_then(|c| c.enforced_style.as_ref())
+            .map(|s| match s.as_str() {
+                "implicit" => cops::style::RescueStandardErrorStyle::Implicit,
+                _ => cops::style::RescueStandardErrorStyle::Explicit,
+            })
+            .unwrap_or(cops::style::RescueStandardErrorStyle::Explicit);
+        result.push(Box::new(cops::style::RescueStandardError::new(style)));
+    }
+
+    // Style/StringMethods
+    if config.is_cop_enabled("Style/StringMethods") {
+        result.push(Box::new(cops::style::StringMethods::new()));
+    }
+
+    result
+}
+
+/// Find unsupported cops in the configuration
+pub fn find_unsupported_cops(config: &Config) -> Vec<String> {
+    let mut unsupported = Vec::new();
+
+    for cop_name in config.cops.keys() {
+        // Skip department-level configs like "Style" or "Lint"
+        if !cop_name.contains('/') {
+            continue;
+        }
+
+        // Check if it's enabled but not supported
+        if config.is_cop_enabled(cop_name) && !config::is_supported_cop(cop_name) {
+            unsupported.push(cop_name.clone());
+        }
+    }
+
+    unsupported.sort();
+    unsupported
+}
