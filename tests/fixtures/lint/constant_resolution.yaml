@@ -1,0 +1,165 @@
+cop: Lint/ConstantResolution
+department: lint
+severity: warning
+implemented: false
+
+tests:
+  - name: rubocop_cop_lint_constantresolution_registers_no_offense_when_qualifying_a_const
+    source: |
+      ::MyConst
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_constantresolution_registers_no_offense_qualifying_a_namespace_const
+    source: |
+      ::MyConst::MY_CONST
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_constantresolution_registers_an_offense_not_qualifying_a_const
+    source: |
+      MyConst
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 7
+        message: Fully qualify this constant to avoid possibly ambiguous resolution.
+
+  - name: rubocop_cop_lint_constantresolution_registers_an_offense_not_qualifying_a_namespace_const
+    source: |
+      MyConst::MY_CONST
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 7
+        message: Fully qualify this constant to avoid possibly ambiguous resolution.
+
+  - name: rubocop_cop_lint_constantresolution_module_class_definitions_does_not_register_offense
+    source: |
+      module Foo; end
+      class Bar; end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_constantresolution_with_only_set_registers_no_offense_when_qualifying_a_const
+    source: |
+      ::MyConst
+    offenses:
+      []
+    config:
+      Only: [MY_CONST]
+
+  - name: rubocop_cop_lint_constantresolution_with_only_set_registers_no_offense_qualifying_a_namespace_const
+    source: |
+      ::MyConst::MY_CONST
+    offenses:
+      []
+    config:
+      Only: [MY_CONST]
+
+  - name: rubocop_cop_lint_constantresolution_with_only_set_registers_no_offense_not_qualifying_another_const
+    source: |
+      MyConst
+    offenses:
+      []
+    config:
+      Only: [MY_CONST]
+
+  - name: rubocop_cop_lint_constantresolution_with_only_set_registers_no_with_a_namespace_const
+    source: |
+      MyConst::MY_CONST
+    offenses:
+      []
+    config:
+      Only: [MY_CONST]
+
+  - name: rubocop_cop_lint_constantresolution_with_only_set_registers_an_offense_with_an_unqualified_const
+    source: |
+      MY_CONST
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 8
+        message: Fully qualify this constant to avoid possibly ambiguous resolution.
+    config:
+      Only: [MY_CONST]
+
+  - name: rubocop_cop_lint_constantresolution_with_only_set_registers_an_offense_when_an_unqualified_namespace_const
+    source: |
+      MY_CONST::B
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 8
+        message: Fully qualify this constant to avoid possibly ambiguous resolution.
+    config:
+      Only: [MY_CONST]
+
+  - name: rubocop_cop_lint_constantresolution_with_ignore_set_registers_no_offense_when_qualifying_a_const
+    source: |
+      ::MyConst
+    offenses:
+      []
+    config:
+      Only: [MY_CONST]
+      Ignore: [MY_CONST]
+
+  - name: rubocop_cop_lint_constantresolution_with_ignore_set_registers_no_offense_qualifying_a_namespace_const
+    source: |
+      ::MyConst::MY_CONST
+    offenses:
+      []
+    config:
+      Only: [MY_CONST]
+      Ignore: [MY_CONST]
+
+  - name: rubocop_cop_lint_constantresolution_with_ignore_set_registers_an_offense_not_qualifying_another_const
+    source: |
+      MyConst
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 7
+        message: Fully qualify this constant to avoid possibly ambiguous resolution.
+    config:
+      Only: [MY_CONST]
+      Ignore: [MY_CONST]
+
+  - name: rubocop_cop_lint_constantresolution_with_ignore_set_registers_an_offense_with_a_namespace_const
+    source: |
+      MyConst::MY_CONST
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 7
+        message: Fully qualify this constant to avoid possibly ambiguous resolution.
+    config:
+      Only: [MY_CONST]
+      Ignore: [MY_CONST]
+
+  - name: rubocop_cop_lint_constantresolution_with_ignore_set_registers_no_offense_with_an_unqualified_const
+    source: |
+      MY_CONST
+    offenses:
+      []
+    config:
+      Only: [MY_CONST]
+      Ignore: [MY_CONST]
+
+  - name: rubocop_cop_lint_constantresolution_with_ignore_set_registers_no_offense_when_an_unqualified_namespace_const
+    source: |
+      MY_CONST::B
+    offenses:
+      []
+    config:
+      Only: [MY_CONST]
+      Ignore: [MY_CONST]
+
+  - name: rubocop_cop_lint_constantresolution_with_ignore_set_registers_no_offense_when_using_encoding
+    source: |
+      __ENCODING__
+    offenses:
+      []
+    config:
+      Only: [MY_CONST]
+      Ignore: [MY_CONST]

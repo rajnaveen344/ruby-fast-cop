@@ -1,0 +1,254 @@
+cop: Style/RedundantInitialize
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_redundantinitialize_does_not_register_an_offense_for_an_empty_method_not_named_initialize
+    source: |
+      def do_something
+      end
+    offenses:
+      []
+    config:
+      AllowComments: true
+
+  - name: rubocop_cop_style_redundantinitialize_does_not_register_an_offense_for_a_method_not_named_initialize_that_only_calls_super
+    source: |
+      def do_something
+        super
+      end
+    offenses:
+      []
+    config:
+      AllowComments: true
+
+  - name: rubocop_cop_style_redundantinitialize_registers_and_corrects_an_offense_for_an_empty_initialize_method
+    source: |
+      def initialize
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 14
+        message: Remove unnecessary empty `initialize` method.
+    corrected: |
+    config:
+      AllowComments: true
+
+  - name: rubocop_cop_style_redundantinitialize_does_not_register_an_offense_for_an_initialize_method_with_only_a_comment
+    source: |
+      def initialize
+        # initializer
+      end
+    offenses:
+      []
+    config:
+      AllowComments: true
+
+  - name: rubocop_cop_style_redundantinitialize_registers_and_corrects_an_offense_for_an_initialize_method_that_only_calls_super
+    source: |
+      def initialize
+        super
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 14
+        message: Remove unnecessary `initialize` method.
+    corrected: |
+    config:
+      AllowComments: true
+
+  - name: rubocop_cop_style_redundantinitialize_registers_and_corrects_an_offense_for_an_initialize_method_with_arguments_that_only_calls_super
+    source: |
+      def initialize(a, b)
+        super
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 20
+        message: Remove unnecessary `initialize` method.
+    corrected: |
+    config:
+      AllowComments: true
+
+  - name: rubocop_cop_style_redundantinitialize_registers_and_corrects_an_offense_for_an_initialize_method_with_arguments_that_only_calls_super_with_explicit_args
+    source: |
+      def initialize(a, b)
+        super(a, b)
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 20
+        message: Remove unnecessary `initialize` method.
+    corrected: |
+    config:
+      AllowComments: true
+
+  - name: rubocop_cop_style_redundantinitialize_does_not_register_an_offense_for_an_initialize_method_that_calls_another_method
+    source: |
+      def initialize(a, b)
+        do_something
+      end
+    offenses:
+      []
+    config:
+      AllowComments: true
+
+  - name: rubocop_cop_style_redundantinitialize_does_not_register_an_offense_for_an_initialize_method_that_calls_another_method_before_super
+    source: |
+      def initialize(a, b)
+        do_something
+        super
+      end
+    offenses:
+      []
+    config:
+      AllowComments: true
+
+  - name: rubocop_cop_style_redundantinitialize_does_not_register_an_offense_for_an_initialize_method_that_calls_another_method_after_super
+    source: |
+      def initialize(a, b)
+        super
+        do_something
+      end
+    offenses:
+      []
+    config:
+      AllowComments: true
+
+  - name: rubocop_cop_style_redundantinitialize_does_not_register_an_offense_for_an_initialize_method_that_calls_super_with_a_different_argument_list
+    source: |
+      def initialize(a, b)
+        super(a)
+      end
+    offenses:
+      []
+    config:
+      AllowComments: true
+
+  - name: rubocop_cop_style_redundantinitialize_does_not_register_an_offense_for_an_initialize_method_that_calls_super_with_no_arguments
+    source: |
+      def initialize(a, b)
+        super()
+      end
+    offenses:
+      []
+    config:
+      AllowComments: true
+
+  - name: rubocop_cop_style_redundantinitialize_registers_and_corrects_an_offense_for_an_initialize_method_with_no_arguments_that_calls_super_with_no_arguments
+    source: |
+      def initialize()
+        super()
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 16
+        message: Remove unnecessary `initialize` method.
+    corrected: |
+    config:
+      AllowComments: true
+
+  - name: rubocop_cop_style_redundantinitialize_does_not_register_an_offense_for_an_initialize_method_with_a_default_argument_that_calls_super
+    source: |
+      def initialize(a, b = 5)
+        super
+      end
+    offenses:
+      []
+    config:
+      AllowComments: true
+
+  - name: rubocop_cop_style_redundantinitialize_does_not_register_an_offense_for_an_initialize_method_with_a_default_keyword_argument_that_calls_super
+    source: |
+      def initialize(a, b: 5)
+        super
+      end
+    offenses:
+      []
+    config:
+      AllowComments: true
+
+  - name: rubocop_cop_style_redundantinitialize_does_not_register_an_offense_for_an_initialize_method_with_a_default_argument_that_does_nothing
+    source: |
+      def initialize(a, b = 5)
+      end
+    offenses:
+      []
+    config:
+      AllowComments: true
+
+  - name: rubocop_cop_style_redundantinitialize_does_not_register_an_offense_for_an_initialize_method_with_a_default_keyword_argument_that_does_nothing
+    source: |
+      def initialize(a, b: 5)
+      end
+    offenses:
+      []
+    config:
+      AllowComments: true
+
+  - name: rubocop_cop_style_redundantinitialize_does_not_register_an_offense_for_an_empty_initialize_method_with_an_argument
+    source: |
+      def initialize(_)
+      end
+    offenses:
+      []
+    config:
+      AllowComments: true
+
+  - name: rubocop_cop_style_redundantinitialize_does_not_register_an_offense_for_an_empty_initialize_method_with_a_splat
+    source: |
+      def initialize(*)
+      end
+    offenses:
+      []
+    config:
+      AllowComments: true
+
+  - name: rubocop_cop_style_redundantinitialize_does_not_register_an_offense_for_an_empty_initialize_method_with_a_splat_and_super
+    source: |
+      def initialize(*args)
+        super(args.first)
+      end
+    offenses:
+      []
+    config:
+      AllowComments: true
+
+  - name: rubocop_cop_style_redundantinitialize_does_not_register_an_offense_for_an_empty_initialize_method_with_a_kwsplat
+    source: |
+      def initialize(**)
+      end
+    offenses:
+      []
+    config:
+      AllowComments: true
+
+  - name: rubocop_cop_style_redundantinitialize_does_not_register_an_offense_for_an_empty_initialize_method_with_an_argument_forwarding
+    source: |
+      def initialize(...)
+      end
+    offenses:
+      []
+    config:
+      AllowComments: true
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_style_redundantinitialize_when_allowcomments_false_registers_and_corrects_an_offense_for_an_initialize_method_with_only_a_comment
+    source: |
+      def initialize
+        # initializer
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 14
+        message: Remove unnecessary empty `initialize` method.
+    corrected: |
+    config:
+      AllowComments: false

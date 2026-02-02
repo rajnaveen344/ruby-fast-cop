@@ -1,0 +1,25 @@
+cop: Lint/ToJson
+department: lint
+severity: warning
+implemented: false
+
+tests:
+  - name: rubocop_cop_lint_tojson_registers_an_offense_and_corrects_using_to_json_without_arguments
+    source: |
+      def to_json
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 11
+        message: "`#to_json` requires an optional argument to be parsable via JSON.generate(obj)."
+    corrected: |
+      def to_json(*_args)
+      end
+
+  - name: rubocop_cop_lint_tojson_does_not_register_an_offense_when_using_to_json_with_arguments
+    source: |
+      def to_json(*_args)
+      end
+    offenses:
+      []

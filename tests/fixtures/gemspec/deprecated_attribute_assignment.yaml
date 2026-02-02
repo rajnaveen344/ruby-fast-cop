@@ -1,0 +1,157 @@
+cop: Gemspec/DeprecatedAttributeAssignment
+department: gemspec
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_gemspec_deprecatedattributeassignment_registers_and_corrects_an_offense_when_using_s_rubygems_version
+    source: |
+      Gem::Specification.new do |s|
+        s.name = 'your_cool_gem_name'
+        s.#{attribute} = #{value}
+        s.bindir = 'exe'
+      end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 27
+        message: "Do not set `#{attribute}` in gemspec."
+    corrected: |
+      Gem::Specification.new do |s|
+        s.name = 'your_cool_gem_name'
+        s.bindir = 'exe'
+      end
+    interpolated: true
+
+  - name: rubocop_cop_gemspec_deprecatedattributeassignment_registers_and_corrects_an_offense_when_using_spec_rubygems_version
+    source: |
+      Gem::Specification.new do |spec|
+        spec.name = 'your_cool_gem_name'
+        spec.#{attribute} = #{value}
+        spec.bindir = 'exe'
+      end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 30
+        message: "Do not set `#{attribute}` in gemspec."
+    corrected: |
+      Gem::Specification.new do |spec|
+        spec.name = 'your_cool_gem_name'
+        spec.bindir = 'exe'
+      end
+    interpolated: true
+
+  - name: rubocop_cop_gemspec_deprecatedattributeassignment_does_not_register_an_offense_when_using_s_rubygems_version_outside_gem_specification_new
+    source: |
+      s.#{attribute} = #{value}
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_gemspec_deprecatedattributeassignment_does_not_register_an_offense_when_using_rubygems_version_and_receiver_is_not_gem_specification_new_block_variable
+    source: |
+      Gem::Specification.new do |spec|
+        s.#{attribute} = #{value}
+      end
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_gemspec_deprecatedattributeassignment_registers_and_corrects_an_offense_when_using_s_rubygems_version
+    source: |
+      Gem::Specification.new do |s|
+        s.name = 'your_cool_gem_name'
+        s.#{attribute} += #{value}
+        s.bindir = 'exe'
+      end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 28
+        message: "Do not set `#{attribute}` in gemspec."
+    corrected: |
+      Gem::Specification.new do |s|
+        s.name = 'your_cool_gem_name'
+        s.bindir = 'exe'
+      end
+    interpolated: true
+
+  - name: rubocop_cop_gemspec_deprecatedattributeassignment_registers_and_corrects_an_offense_when_using_spec_rubygems_version
+    source: |
+      Gem::Specification.new do |spec|
+        spec.name = 'your_cool_gem_name'
+        spec.#{attribute} += #{value}
+        spec.bindir = 'exe'
+      end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 31
+        message: "Do not set `#{attribute}` in gemspec."
+    corrected: |
+      Gem::Specification.new do |spec|
+        spec.name = 'your_cool_gem_name'
+        spec.bindir = 'exe'
+      end
+    interpolated: true
+
+  - name: rubocop_cop_gemspec_deprecatedattributeassignment_deprecated_attributes_date
+    source: |
+      date
+    offenses:
+      []
+
+  - name: rubocop_cop_gemspec_deprecatedattributeassignment_deprecated_attributes_time_now_strftime
+    source: |
+      Time.now.strftime('%Y-%m-%d')
+    offenses:
+      []
+
+  - name: rubocop_cop_gemspec_deprecatedattributeassignment_deprecated_attributes_rubygems_version
+    source: |
+      rubygems_version
+    offenses:
+      []
+
+  - name: rubocop_cop_gemspec_deprecatedattributeassignment_deprecated_attributes_2_5
+    source: |
+      2.5
+    offenses:
+      []
+
+  - name: rubocop_cop_gemspec_deprecatedattributeassignment_deprecated_attributes_specification_versio
+    source: |
+      specification_version
+    offenses:
+      []
+
+  - name: rubocop_cop_gemspec_deprecatedattributeassignment_deprecated_attributes_2_5
+    source: |
+      2.5
+    offenses:
+      []
+
+  - name: rubocop_cop_gemspec_deprecatedattributeassignment_deprecated_attributes_test_files
+    source: |
+      test_files
+    offenses:
+      []
+
+  - name: rubocop_cop_gemspec_deprecatedattributeassignment_deprecated_attributes_dir_glob_test
+    source: |
+      Dir.glob('test/**/*')
+    offenses:
+      []
+
+  - name: rubocop_cop_gemspec_deprecatedattributeassignment_deprecated_attributes_with_addition_test_files
+    source: |
+      test_files
+    offenses:
+      []
+
+  - name: rubocop_cop_gemspec_deprecatedattributeassignment_deprecated_attributes_with_addition_dir_glob_test
+    source: |
+      Dir.glob('test/**/*')
+    offenses:
+      []

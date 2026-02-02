@@ -1,0 +1,182 @@
+cop: Style/InvertibleUnlessCondition
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_invertibleunlesscondition_when_invertible_unless_registers_an_offense_and_corrects_when_using_negation
+    source: |
+      foo unless !x
+      foo unless !!x
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 13
+        message: Prefer `if x` over `unless !x`.
+      - line: 2
+        column_start: 0
+        column_end: 14
+        message: Prefer `if !x` over `unless !!x`.
+    corrected: |
+      foo if x
+      foo if !x
+    config:
+      InverseMethods: "{\n        :!= => :==,\n        :even? => :odd?,\n        :odd? => :even?,\n        :>= => :<,\n        :< => :>=,\n        :zero? => :nonzero?,\n        # non-standard Rails extensions, but so we can test arguments\n        :include? => :exclude?,\n        :exclude? => :include?\n      }"
+
+  - name: rubocop_cop_style_invertibleunlesscondition_when_invertible_unless_registers_an_offense_and_corrects_when_using_simple_operator_condition
+    source: |
+      foo unless x != y
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 17
+        message: Prefer `if x == y` over `unless x != y`.
+    corrected: |
+      foo if x == y
+    config:
+      InverseMethods: "{\n        :!= => :==,\n        :even? => :odd?,\n        :odd? => :even?,\n        :>= => :<,\n        :< => :>=,\n        :zero? => :nonzero?,\n        # non-standard Rails extensions, but so we can test arguments\n        :include? => :exclude?,\n        :exclude? => :include?\n      }"
+
+  - name: rubocop_cop_style_invertibleunlesscondition_when_invertible_unless_registers_an_offense_and_corrects_when_using_simple_method_condition
+    source: |
+      foo unless x.odd?
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 17
+        message: Prefer `if x.even?` over `unless x.odd?`.
+    corrected: |
+      foo if x.even?
+    config:
+      InverseMethods: "{\n        :!= => :==,\n        :even? => :odd?,\n        :odd? => :even?,\n        :>= => :<,\n        :< => :>=,\n        :zero? => :nonzero?,\n        # non-standard Rails extensions, but so we can test arguments\n        :include? => :exclude?,\n        :exclude? => :include?\n      }"
+
+  - name: rubocop_cop_style_invertibleunlesscondition_when_invertible_unless_registers_an_offense_and_corrects_when_using_method_condition_with_arguments
+    source: |
+      foo unless array.include?(value)
+      foo unless array.exclude? value # no parentheses
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 32
+        message: Prefer `if array.exclude?(value)` over `unless array.include?(value)`.
+      - line: 2
+        column_start: 0
+        column_end: 31
+        message: Prefer `if array.include? value` over `unless array.exclude? value`.
+    corrected: |
+      foo if array.exclude?(value)
+      foo if array.include? value # no parentheses
+    config:
+      InverseMethods: "{\n        :!= => :==,\n        :even? => :odd?,\n        :odd? => :even?,\n        :>= => :<,\n        :< => :>=,\n        :zero? => :nonzero?,\n        # non-standard Rails extensions, but so we can test arguments\n        :include? => :exclude?,\n        :exclude? => :include?\n      }"
+
+  - name: rubocop_cop_style_invertibleunlesscondition_when_invertible_unless_registers_an_offense_and_corrects_when_using_simple_bracketed_condition
+    source: |
+      foo unless ((x != y))
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 21
+        message: Prefer `if ((x == y))` over `unless ((x != y))`.
+    corrected: |
+      foo if ((x == y))
+    config:
+      InverseMethods: "{\n        :!= => :==,\n        :even? => :odd?,\n        :odd? => :even?,\n        :>= => :<,\n        :< => :>=,\n        :zero? => :nonzero?,\n        # non-standard Rails extensions, but so we can test arguments\n        :include? => :exclude?,\n        :exclude? => :include?\n      }"
+
+  - name: rubocop_cop_style_invertibleunlesscondition_when_invertible_unless_registers_an_offense_and_corrects_when_using_complex_condition
+    source: |
+      foo unless x != y && (((x.odd?) || (((y >= 5)))) || z.zero?)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 60
+        message: Prefer `if x == y || (((x.even?) && (((y < 5)))) && z.nonzero?)` over `unless x != y && (((x.odd?) || (((y >= 5)))) || z.zero?)`.
+    corrected: |
+      foo if x == y || (((x.even?) && (((y < 5)))) && z.nonzero?)
+    config:
+      InverseMethods: "{\n        :!= => :==,\n        :even? => :odd?,\n        :odd? => :even?,\n        :>= => :<,\n        :< => :>=,\n        :zero? => :nonzero?,\n        # non-standard Rails extensions, but so we can test arguments\n        :include? => :exclude?,\n        :exclude? => :include?\n      }"
+
+  - name: rubocop_cop_style_invertibleunlesscondition_registers_an_offense_and_corrects_methods_without_arguments_called_with_implicit_receivers
+    source: |
+      foo unless odd?
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 15
+        message: Prefer `if even?` over `unless odd?`.
+    corrected: |
+      foo if even?
+    config:
+      InverseMethods: "{\n        :!= => :==,\n        :even? => :odd?,\n        :odd? => :even?,\n        :>= => :<,\n        :< => :>=,\n        :zero? => :nonzero?,\n        # non-standard Rails extensions, but so we can test arguments\n        :include? => :exclude?,\n        :exclude? => :include?\n      }"
+
+  - name: rubocop_cop_style_invertibleunlesscondition_registers_an_offense_and_corrects_parenthesized_methods_with_arguments_called_with_implicit_receivers
+    source: |
+      foo unless include?(value)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 26
+        message: Prefer `if exclude?(value)` over `unless include?(value)`.
+    corrected: |
+      foo if exclude?(value)
+    config:
+      InverseMethods: "{\n        :!= => :==,\n        :even? => :odd?,\n        :odd? => :even?,\n        :>= => :<,\n        :< => :>=,\n        :zero? => :nonzero?,\n        # non-standard Rails extensions, but so we can test arguments\n        :include? => :exclude?,\n        :exclude? => :include?\n      }"
+
+  - name: rubocop_cop_style_invertibleunlesscondition_registers_an_offense_and_corrects_unparenthesized_methods_with_arguments_called_with_implicit_receivers
+    source: |
+      foo unless include? value
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 25
+        message: Prefer `if exclude? value` over `unless include? value`.
+    corrected: |
+      foo if exclude? value
+    config:
+      InverseMethods: "{\n        :!= => :==,\n        :even? => :odd?,\n        :odd? => :even?,\n        :>= => :<,\n        :< => :>=,\n        :zero? => :nonzero?,\n        # non-standard Rails extensions, but so we can test arguments\n        :include? => :exclude?,\n        :exclude? => :include?\n      }"
+
+  - name: rubocop_cop_style_invertibleunlesscondition_does_not_register_an_offense_when_using_explicit_begin_condition
+    source: |
+      foo unless begin x != y end
+    offenses:
+      []
+    config:
+      InverseMethods: "{\n        :!= => :==,\n        :even? => :odd?,\n        :odd? => :even?,\n        :>= => :<,\n        :< => :>=,\n        :zero? => :nonzero?,\n        # non-standard Rails extensions, but so we can test arguments\n        :include? => :exclude?,\n        :exclude? => :include?\n      }"
+
+  - name: rubocop_cop_style_invertibleunlesscondition_does_not_register_an_offense_when_using_non_invertible_unless
+    source: |
+      foo unless x != y || x.awesome?
+    offenses:
+      []
+    config:
+      InverseMethods: "{\n        :!= => :==,\n        :even? => :odd?,\n        :odd? => :even?,\n        :>= => :<,\n        :< => :>=,\n        :zero? => :nonzero?,\n        # non-standard Rails extensions, but so we can test arguments\n        :include? => :exclude?,\n        :exclude? => :include?\n      }"
+
+  - name: rubocop_cop_style_invertibleunlesscondition_does_not_register_an_offense_when_checking_for_inheritance
+    source: |
+      foo unless x < Foo
+    offenses:
+      []
+    config:
+      InverseMethods: "{\n        :!= => :==,\n        :even? => :odd?,\n        :odd? => :even?,\n        :>= => :<,\n        :< => :>=,\n        :zero? => :nonzero?,\n        # non-standard Rails extensions, but so we can test arguments\n        :include? => :exclude?,\n        :exclude? => :include?\n      }"
+
+  - name: rubocop_cop_style_invertibleunlesscondition_does_not_register_an_offense_when_using_invertible_if
+    source: |
+      foo if !condition
+    offenses:
+      []
+    config:
+      InverseMethods: "{\n        :!= => :==,\n        :even? => :odd?,\n        :odd? => :even?,\n        :>= => :<,\n        :< => :>=,\n        :zero? => :nonzero?,\n        # non-standard Rails extensions, but so we can test arguments\n        :include? => :exclude?,\n        :exclude? => :include?\n      }"
+
+  - name: rubocop_cop_style_invertibleunlesscondition_does_not_register_an_offense_when_using_empty_braces_with_unless
+    source: |
+      foo unless ()
+    offenses:
+      []
+    config:
+      InverseMethods: "{\n        :!= => :==,\n        :even? => :odd?,\n        :odd? => :even?,\n        :>= => :<,\n        :< => :>=,\n        :zero? => :nonzero?,\n        # non-standard Rails extensions, but so we can test arguments\n        :include? => :exclude?,\n        :exclude? => :include?\n      }"
+
+  - name: rubocop_cop_style_invertibleunlesscondition_does_not_register_an_offense_when_using_empty_braces_with_inverted_if
+    source: |
+      foo if !()
+    offenses:
+      []
+    config:
+      InverseMethods: "{\n        :!= => :==,\n        :even? => :odd?,\n        :odd? => :even?,\n        :>= => :<,\n        :< => :>=,\n        :zero? => :nonzero?,\n        # non-standard Rails extensions, but so we can test arguments\n        :include? => :exclude?,\n        :exclude? => :include?\n      }"

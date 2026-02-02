@@ -1,0 +1,107 @@
+cop: Migration/DepartmentName
+department: migration
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_migration_departmentname_when_todo_enable_comments_have_cop_names_without_departments_registers_offenses_and_corrects
+    source: |
+      # rubocop:todo Alias, LineLength
+      alias :ala :bala
+      # rubocop:enable Alias, LineLength
+    offenses:
+      - line: 1
+        column_start: 22
+        column_end: 32
+        message: Department name is missing.
+      - line: 1
+        column_start: 15
+        column_end: 20
+        message: Department name is missing.
+      - line: 3
+        column_start: 24
+        column_end: 34
+        message: Department name is missing.
+      - line: 3
+        column_start: 17
+        column_end: 22
+        message: Department name is missing.
+    corrected: |
+      # rubocop:todo Style/Alias, Layout/LineLength
+      alias :ala :bala
+      # rubocop:enable Style/Alias, Layout/LineLength
+
+  - name: rubocop_cop_migration_departmentname_when_todo_enable_comments_have_cop_names_without_departments_registers_offenses_and_corrects_when_there_is_space_around
+    source: |
+      # rubocop : todo Alias, LineLength
+      alias :ala :bala
+      # rubocop : enable Alias, LineLength
+    offenses:
+      - line: 1
+        column_start: 24
+        column_end: 34
+        message: Department name is missing.
+      - line: 1
+        column_start: 17
+        column_end: 22
+        message: Department name is missing.
+      - line: 3
+        column_start: 26
+        column_end: 36
+        message: Department name is missing.
+      - line: 3
+        column_start: 19
+        column_end: 24
+        message: Department name is missing.
+    corrected: |
+      # rubocop : todo Style/Alias, Layout/LineLength
+      alias :ala :bala
+      # rubocop : enable Style/Alias, Layout/LineLength
+
+  - name: rubocop_cop_migration_departmentname_when_todo_enable_comments_have_cop_names_without_departments_registers_offenses_and_corrects_when_using_a_legacy_cop_name
+    source: |
+      # rubocop:disable SingleSpaceBeforeFirstArg, Layout/LineLength
+      name             "apache_kafka"
+    offenses:
+      - line: 1
+        column_start: 18
+        column_end: 43
+        message: Department name is missing.
+    corrected: |
+      # rubocop:disable Style/SingleSpaceBeforeFirstArg, Layout/LineLength
+      name             "apache_kafka"
+
+  - name: rubocop_cop_migration_departmentname_when_a_disable_comment_has_cop_names_with_departments_accepts
+    source: |
+      alias :ala :bala # rubocop:disable all
+      # rubocop:disable Style/Alias
+    offenses:
+      []
+
+  - name: rubocop_cop_migration_departmentname_when_a_disable_comment_contains_a_plain_comment_accepts
+    source: |
+      # rubocop:disable Style/Alias # Plain code comment
+      alias :ala :bala
+    offenses:
+      []
+
+  - name: rubocop_cop_migration_departmentname_when_a_disable_comment_contains_an_unexpected_character_for_department_name_accepts
+    source: |
+      # rubocop:disable Style/Alias -- because something, something, and something
+      alias :ala :bala
+    offenses:
+      []
+
+  - name: rubocop_cop_migration_departmentname_when_an_unexpected_disable_comment_format_does_not_register_an_offense
+    source: |
+      # rubocop:disable Style:Alias
+      alias :ala :bala
+    offenses:
+      []
+
+  - name: rubocop_cop_migration_departmentname_when_only_department_name_has_given_does_not_register_an_offense
+    source: |
+      # rubocop:disable Style
+      alias :ala :bala
+    offenses:
+      []

@@ -1,0 +1,400 @@
+cop: Layout/LeadingCommentSpace
+department: layout
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_layout_leadingcommentspace_registers_an_offense_and_corrects_comment_without_leading_space
+    source: |
+      #missing space
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 14
+        message: "Missing space after `#`."
+    corrected: |
+      # missing space
+
+  - name: rubocop_cop_layout_leadingcommentspace_does_not_register_an_offense_for_followed_by_no_text
+    source: |
+      #
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_leadingcommentspace_does_not_register_an_offense_for_more_than_one_space
+    source: |
+      #   heavily indented
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_leadingcommentspace_does_not_register_an_offense_for_more_than_one
+    source: |
+      ###### heavily indented
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_leadingcommentspace_does_not_register_an_offense_for_only_s
+    source: |
+      ######
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_leadingcommentspace_does_not_register_an_offense_for_on_first_line
+    source: |
+      #!/usr/bin/ruby
+      test
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_leadingcommentspace_does_not_register_an_offense_for_a_multiline_shebang_starting_on_the_first_line
+    source: |
+      #!/usr/bin/env nix-shell
+      #! nix-shell -i ruby --pure
+      #! nix-shell -p ruby gh git
+      test
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_leadingcommentspace_registers_an_offense_and_corrects_after_the_first_line
+    source: |
+      test
+      #!/usr/bin/ruby
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 15
+        message: "Missing space after `#`."
+    corrected: |
+      test
+      # !/usr/bin/ruby
+
+  - name: rubocop_cop_layout_leadingcommentspace_registers_an_offense_and_corrects_for_a_multiline_shebang_starting_after_the_first_line
+    source: |
+      test
+      #!/usr/bin/env nix-shell
+      #! nix-shell -i ruby --pure
+      #! nix-shell -p ruby gh git
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 24
+        message: "Missing space after `#`."
+      - line: 3
+        column_start: 0
+        column_end: 27
+        message: "Missing space after `#`."
+      - line: 4
+        column_start: 0
+        column_end: 27
+        message: "Missing space after `#`."
+    corrected: |
+      test
+      # !/usr/bin/env nix-shell
+      # ! nix-shell -i ruby --pure
+      # ! nix-shell -p ruby gh git
+
+  - name: rubocop_cop_layout_leadingcommentspace_file_named_config_ru_does_not_register_an_offense_for_on_first_line
+    source: |
+      #\ -w -p 8765
+      test
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_leadingcommentspace_file_named_config_ru_registers_an_offense_and_corrects_for_after_the_first_line
+    source: |
+      test
+      #\ -w -p 8765
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 13
+        message: "Missing space after `#`."
+    corrected: |
+      test
+      # \ -w -p 8765
+
+  - name: rubocop_cop_layout_leadingcommentspace_file_not_named_config_ru_registers_an_offense_and_corrects_on_first_line
+    source: |
+      #\ -w -p 8765
+      test
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 13
+        message: "Missing space after `#`."
+    corrected: |
+      # \ -w -p 8765
+      test
+
+  - name: rubocop_cop_layout_leadingcommentspace_file_not_named_config_ru_registers_an_offense_and_corrects_after_the_first_line
+    source: |
+      test
+      #\ -w -p 8765
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 13
+        message: "Missing space after `#`."
+    corrected: |
+      test
+      # \ -w -p 8765
+
+  - name: rubocop_cop_layout_leadingcommentspace_doxygen_style_when_config_option_is_disabled_registers_an_offense_and_corrects_using_doxygen_style
+    source: |
+      #**
+      # Some comment
+      # Another comment on a second line
+      #*
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 3
+        message: "Missing space after `#`."
+      - line: 4
+        column_start: 0
+        column_end: 2
+        message: "Missing space after `#`."
+    corrected: |
+      # **
+      # Some comment
+      # Another comment on a second line
+      # *
+    config:
+      AllowDoxygenCommentStyle: false
+
+  - name: rubocop_cop_layout_leadingcommentspace_doxygen_style_when_config_option_is_enabled_does_not_register_offense_when_using_doxygen_style
+    source: |
+      #**
+      # Some comment
+      # Another comment on a second line
+      #*
+    offenses:
+      []
+    config:
+      AllowDoxygenCommentStyle: true
+
+  - name: rubocop_cop_layout_leadingcommentspace_rdoc_syntax_does_not_register_an_offense_when_using_or
+    source: |
+      #++
+      #--
+    offenses:
+      []
+    config:
+      AllowDoxygenCommentStyle: true
+
+  - name: rubocop_cop_layout_leadingcommentspace_rdoc_syntax_registers_an_offense_when_using_or_as_they_are_not_rdoc_comments
+    source: |
+      #+
+      #-
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 2
+        message: "Missing space after `#`."
+      - line: 2
+        column_start: 0
+        column_end: 2
+        message: "Missing space after `#`."
+    corrected: |
+      # +
+      # -
+    config:
+      AllowDoxygenCommentStyle: true
+
+  - name: rubocop_cop_layout_leadingcommentspace_rdoc_syntax_registers_an_offense_when_starting
+    source: |
+      #:nodoc:
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 8
+        message: "Missing space after `#`."
+    config:
+      AllowDoxygenCommentStyle: true
+
+  - name: rubocop_cop_layout_leadingcommentspace_accepts_sprockets_directives
+    source: |
+      #= require_tree .
+    offenses:
+      []
+    config:
+      AllowDoxygenCommentStyle: true
+
+  - name: rubocop_cop_layout_leadingcommentspace_accepts_begin_end_comments
+    source: |
+      =begin
+      #blahblah
+      =end
+    offenses:
+      []
+    config:
+      AllowDoxygenCommentStyle: true
+
+  - name: rubocop_cop_layout_leadingcommentspace_gemfile_ruby_comment_when_config_option_is_disabled_registers_an_offense_when_using_ruby_config_as_comment
+    source: |
+      # Specific version (comment) will be used by RVM
+      #ruby=2.7.0
+      #ruby-gemset=myproject
+      ruby '~> 2.7.0'
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 11
+        message: "Missing space after `#`."
+      - line: 3
+        column_start: 0
+        column_end: 22
+        message: "Missing space after `#`."
+    config:
+      AllowDoxygenCommentStyle: true
+      AllowGemfileRubyComment: false
+
+  - name: rubocop_cop_layout_leadingcommentspace_gemfile_ruby_comment_when_config_option_is_enabled_file_not_named_gemfile_registers_an_offense_when_using_ruby_config_as_comment
+    source: |
+      # Specific version (comment) will be used by RVM
+      #ruby=2.7.0
+      #ruby-gemset=myproject
+      ruby '~> 2.7.0'
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 11
+        message: "Missing space after `#`."
+      - line: 3
+        column_start: 0
+        column_end: 22
+        message: "Missing space after `#`."
+    config:
+      AllowDoxygenCommentStyle: true
+      AllowGemfileRubyComment: true
+
+  - name: rubocop_cop_layout_leadingcommentspace_gemfile_ruby_comment_when_config_option_is_enabled_file_named_gemfile_does_not_register_an_offense_when_using_ruby_config_as_comment
+    source: |
+      # Specific version (comment) will be used by RVM
+      #ruby=2.7.0
+      #ruby-gemset=myproject
+      ruby '~> 2.7.0'
+    offenses:
+      []
+    config:
+      AllowDoxygenCommentStyle: true
+      AllowGemfileRubyComment: true
+
+  - name: rubocop_cop_layout_leadingcommentspace_rbs_inline_annotation_when_config_option_is_disabled_registers_an_offense_and_corrects_using_rbs_inline_annotation
+    source: |
+      include Enumerable #[Integer]
+      
+      attr_reader :name #: String
+      attr_reader :age  #: Integer?
+      
+      #: (
+      #|   Integer,
+      #|   String
+      #| ) -> void
+      def foo; end
+    offenses:
+      - line: 1
+        column_start: 19
+        column_end: 29
+        message: "Missing space after `#`."
+      - line: 3
+        column_start: 18
+        column_end: 27
+        message: "Missing space after `#`."
+      - line: 4
+        column_start: 18
+        column_end: 29
+        message: "Missing space after `#`."
+      - line: 6
+        column_start: 0
+        column_end: 4
+        message: "Missing space after `#`."
+      - line: 7
+        column_start: 0
+        column_end: 13
+        message: "Missing space after `#`."
+      - line: 8
+        column_start: 0
+        column_end: 11
+        message: "Missing space after `#`."
+      - line: 9
+        column_start: 0
+        column_end: 12
+        message: "Missing space after `#`."
+    corrected: |
+      include Enumerable # [Integer]
+      
+      attr_reader :name # : String
+      attr_reader :age  # : Integer?
+      
+      # : (
+      # |   Integer,
+      # |   String
+      # | ) -> void
+      def foo; end
+    config:
+      AllowRBSInlineAnnotation: false
+      AllowDoxygenCommentStyle: true
+      AllowGemfileRubyComment: true
+
+  - name: rubocop_cop_layout_leadingcommentspace_rbs_inline_annotation_when_config_option_is_enabled_does_not_register_an_offense_when_using_rbs_inline_annotation
+    source: |
+      include Enumerable #[Integer]
+      
+      attr_reader :name #: String
+      attr_reader :age  #: Integer?
+      
+      #: (
+      #|   Integer,
+      #|   String
+      #| ) -> void
+      def foo; end
+    offenses:
+      []
+    config:
+      AllowDoxygenCommentStyle: true
+      AllowRBSInlineAnnotation: true
+      AllowGemfileRubyComment: true
+
+  - name: rubocop_cop_layout_leadingcommentspace_steep_annotation_when_config_option_is_disabled_registers_an_offense_and_corrects_using_steep_annotation
+    source: |
+      [1, 2, 3].each_with_object([]) do |n, list| #$ Array[Integer]
+        list << n
+      end
+      
+      name = 'John'      #: String
+    offenses:
+      - line: 1
+        column_start: 44
+        column_end: 61
+        message: "Missing space after `#`."
+      - line: 5
+        column_start: 19
+        column_end: 28
+        message: "Missing space after `#`."
+    corrected: |
+      [1, 2, 3].each_with_object([]) do |n, list| # $ Array[Integer]
+        list << n
+      end
+      
+      name = 'John'      # : String
+    config:
+      AllowDoxygenCommentStyle: true
+      AllowSteepAnnotation: false
+      AllowRBSInlineAnnotation: true
+      AllowGemfileRubyComment: true
+
+  - name: rubocop_cop_layout_leadingcommentspace_steep_annotation_when_config_option_is_enabled_does_not_register_an_offense_when_using_steep_annotation
+    source: |
+      [1, 2, 3].each_with_object([]) do |n, list| #$ Array[Integer]
+        list << n
+      end
+      
+      name = 'John'      #: String
+    offenses:
+      []
+    config:
+      AllowDoxygenCommentStyle: true
+      AllowSteepAnnotation: true
+      AllowRBSInlineAnnotation: true
+      AllowGemfileRubyComment: true

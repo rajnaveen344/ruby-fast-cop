@@ -1,0 +1,113 @@
+cop: Style/UnlessElse
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_unlesselse_unless_with_else_registers_an_offense
+    source: |
+      unless x # negative 1
+        a = 1 # negative 2
+      else # positive 1
+        a = 0 # positive 2
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 21
+        message: Do not use `unless` with `else`. Rewrite these with the positive case first.
+    corrected: |
+      if x # positive 1
+        a = 0 # positive 2
+      else # negative 1
+        a = 1 # negative 2
+      end
+
+  - name: rubocop_cop_style_unlesselse_unless_with_else_and_nested_unless_with_else_registers_offenses_for_both_but_corrects_only_the_outer_unless_else
+    source: |
+      unless abc
+        a
+      else
+        unless cde
+          b
+        else
+          c
+        end
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 10
+        message: Do not use `unless` with `else`. Rewrite these with the positive case first.
+      - line: 4
+        column_start: 2
+        column_end: 12
+        message: Do not use `unless` with `else`. Rewrite these with the positive case first.
+    corrected: |
+      if abc
+        unless cde
+          b
+        else
+          c
+        end
+      else
+        a
+      end
+
+  - name: rubocop_cop_style_unlesselse_unless_with_nested_if_else_registers_an_offense
+    source: |
+      unless(x)
+        if(y == 0)
+          a = 0
+        elsif(z == 0)
+          a = 1
+        else
+          a = 2
+        end
+      else
+        a = 3
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 9
+        message: Do not use `unless` with `else`. Rewrite these with the positive case first.
+    corrected: |
+      if(x)
+        a = 3
+      else
+        if(y == 0)
+          a = 0
+        elsif(z == 0)
+          a = 1
+        else
+          a = 2
+        end
+      end
+
+  - name: rubocop_cop_style_unlesselse_when_using_unless_with_then_registers_an_offense
+    source: |
+      unless x then
+        a = 1
+      else
+        a = 0
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 13
+        message: Do not use `unless` with `else`. Rewrite these with the positive case first.
+    corrected: |
+      if x then
+        a = 0
+      else
+        a = 1
+      end
+
+  - name: rubocop_cop_style_unlesselse_unless_without_else_does_not_register_an_offense
+    source: |
+      unless x
+        a = 1
+      end
+    offenses:
+      []

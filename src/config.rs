@@ -91,7 +91,11 @@ enum GemConfigPaths {
 #[derive(Debug, Deserialize, Default)]
 #[serde(default)]
 struct RawAllCops {
-    #[serde(rename = "Exclude", default, deserialize_with = "deserialize_string_or_vec")]
+    #[serde(
+        rename = "Exclude",
+        default,
+        deserialize_with = "deserialize_string_or_vec"
+    )]
     exclude: Vec<String>,
     #[serde(rename = "TargetRubyVersion")]
     target_ruby_version: Option<f64>,
@@ -139,8 +143,8 @@ impl Config {
     }
 
     fn parse_with_inheritance(content: &str, base_dir: &Path) -> Result<Self, ConfigError> {
-        let raw: RawConfig = serde_yaml::from_str(content)
-            .map_err(|e| ConfigError::ParseError(e.to_string()))?;
+        let raw: RawConfig =
+            serde_yaml::from_str(content).map_err(|e| ConfigError::ParseError(e.to_string()))?;
 
         let mut config = Config {
             base_dir: base_dir.to_path_buf(),
@@ -387,9 +391,7 @@ impl Config {
                         _ => {}
                     }
                     // Store all raw values for custom processing
-                    config
-                        .raw
-                        .insert(key_str.clone(), val.clone());
+                    config.raw.insert(key_str.clone(), val.clone());
                 }
             }
         }
@@ -479,6 +481,22 @@ impl Config {
     pub fn get_unsupported_cops(&self) -> Vec<&String> {
         self.unsupported_cops.iter().collect()
     }
+
+    /// Create a Config with a single cop's configuration from YAML value
+    /// This is useful for testing where each test case has its own config
+    pub fn from_cop_yaml(cop_name: &str, yaml_value: &serde_yaml::Value) -> Self {
+        let mut config = Config::default();
+
+        if yaml_value.is_null() || yaml_value.as_mapping().map_or(true, |m| m.is_empty()) {
+            return config;
+        }
+
+        if let Ok(cop_config) = Self::parse_cop_config(yaml_value) {
+            config.cops.insert(cop_name.to_string(), cop_config);
+        }
+
+        config
+    }
 }
 
 impl CopConfig {
@@ -530,15 +548,6 @@ impl std::fmt::Display for ConfigError {
 }
 
 impl std::error::Error for ConfigError {}
-
-/// Helper module for finding home directory
-mod dirs {
-    use std::path::PathBuf;
-
-    pub fn home_dir() -> Option<PathBuf> {
-        std::env::var_os("HOME").map(PathBuf::from)
-    }
-}
 
 /// List of all supported cop names
 pub const SUPPORTED_COPS: &[&str] = &[

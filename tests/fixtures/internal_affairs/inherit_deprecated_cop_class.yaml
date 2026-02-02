@@ -1,0 +1,39 @@
+cop: InternalAffairs/InheritDeprecatedCopClass
+department: internal_affairs
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_internalaffairs_inheritdeprecatedcopclass_registers_an_offense_when_using_cop
+    source: |
+      class Foo < Cop
+      end
+    offenses:
+      - line: 1
+        column_start: 12
+        column_end: 15
+        message: Use `Base` instead of `Cop`.
+
+  - name: rubocop_cop_internalaffairs_inheritdeprecatedcopclass_registers_an_offense_when_using_rubocop_cop_cop
+    source: |
+      class Foo < RuboCop::Cop::Cop
+      end
+    offenses:
+      - line: 1
+        column_start: 12
+        column_end: 29
+        message: Use `Base` instead of `Cop`.
+
+  - name: rubocop_cop_internalaffairs_inheritdeprecatedcopclass_does_not_register_an_offense_when_using_base
+    source: |
+      class Foo < Base
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_internalaffairs_inheritdeprecatedcopclass_does_not_register_an_offense_when_not_inherited_super_class
+    source: |
+      class Foo
+      end
+    offenses:
+      []

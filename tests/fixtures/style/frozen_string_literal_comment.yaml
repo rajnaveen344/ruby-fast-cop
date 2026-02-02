@@ -1,0 +1,1414 @@
+cop: Style/FrozenStringLiteralComment
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_accepts_a_source_with_no_tokens
+    source: |
+       
+    offenses:
+      []
+    config:
+      EnforcedStyle: always
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_accepts_a_frozen_string_literal_on_the_top_line
+    source: |
+      # frozen_string_literal: true
+      puts 1
+    offenses:
+      []
+    config:
+      EnforcedStyle: always
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_accepts_a_disabled_frozen_string_literal_on_the_top_line
+    source: |
+      # frozen_string_literal: false
+      puts 1
+    offenses:
+      []
+    config:
+      EnforcedStyle: always
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_registers_an_offense_for_arbitrary_tokens
+    source: |
+      # frozen_string_literal: token
+      puts 1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 1
+        message: Missing frozen string literal comment.
+    config:
+      EnforcedStyle: always
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_registers_an_offense_for_not_having_a_frozen_string_literal_comment_on_the_top_line
+    source: |
+      puts 1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 1
+        message: Missing frozen string literal comment.
+    corrected: |
+      # frozen_string_literal: true
+      puts 1
+    config:
+      EnforcedStyle: always
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_registers_an_offense_for_not_having_a_frozen_string_literal_comment_under_a_shebang
+    source: |
+      #!/usr/bin/env ruby
+      puts 1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 1
+        message: Missing frozen string literal comment.
+    corrected: |
+      #!/usr/bin/env ruby
+      # frozen_string_literal: true
+      puts 1
+    config:
+      EnforcedStyle: always
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always
+    source: |
+      #!/usr/bin/env ruby
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 1
+        message: Missing frozen string literal comment.
+    corrected: |
+      #!/usr/bin/env ruby
+      # frozen_string_literal: true
+    config:
+      EnforcedStyle: always
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_accepts_a_frozen_string_literal_below_a_shebang_comment
+    source: |
+      #!/usr/bin/env ruby
+      # frozen_string_literal: true
+      puts 1
+    offenses:
+      []
+    config:
+      EnforcedStyle: always
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_accepts_a_disabled_frozen_string_literal_below_a_shebang_comment
+    source: |
+      #!/usr/bin/env ruby
+      # frozen_string_literal: false
+      puts 1
+    offenses:
+      []
+    config:
+      EnforcedStyle: always
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always
+    source: |
+      # encoding: utf-8
+      puts 1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 1
+        message: Missing frozen string literal comment.
+    corrected: |
+      # encoding: utf-8
+      # frozen_string_literal: true
+      puts 1
+    config:
+      EnforcedStyle: always
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always
+    source: |
+      # encoding: utf-8
+      
+      puts 1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 1
+        message: Missing frozen string literal comment.
+    corrected: |
+      # encoding: utf-8
+      # frozen_string_literal: true
+      
+      puts 1
+    config:
+      EnforcedStyle: always
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_accepts_a_frozen_string_literal_below_an_encoding_comment
+    source: |
+      # encoding: utf-8
+      # frozen_string_literal: true
+      puts 1
+    offenses:
+      []
+    config:
+      EnforcedStyle: always
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_accepts_a_disabled_frozen_string_literal_below_an_encoding_comment
+    source: |
+      # encoding: utf-8
+      # frozen_string_literal: false
+      puts 1
+    offenses:
+      []
+    config:
+      EnforcedStyle: always
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always
+    source: |
+      #!/usr/bin/env ruby
+      # encoding: utf-8
+      puts 1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 1
+        message: Missing frozen string literal comment.
+    corrected: |
+      #!/usr/bin/env ruby
+      # encoding: utf-8
+      # frozen_string_literal: true
+      puts 1
+    config:
+      EnforcedStyle: always
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_registers_an_offense_with_an_empty_line_between_magic_comments_and_the_code
+    source: |
+      #!/usr/bin/env ruby
+      # encoding: utf-8
+      
+      puts 1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 1
+        message: Missing frozen string literal comment.
+    corrected: |
+      #!/usr/bin/env ruby
+      # encoding: utf-8
+      # frozen_string_literal: true
+      
+      puts 1
+    config:
+      EnforcedStyle: always
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_accepts_a_frozen_string_literal_comment_below_shebang_and_encoding_comments
+    source: |
+      #!/usr/bin/env ruby
+      # encoding: utf-8
+      # frozen_string_literal: true
+      puts 1
+    offenses:
+      []
+    config:
+      EnforcedStyle: always
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_accepts_a_frozen_string_literal_comment_below_newline_separated_magic_comments
+    source: |
+      #!/usr/bin/env ruby
+      
+      # encoding: utf-8
+      
+      # frozen_string_literal: true
+      puts 1
+    offenses:
+      []
+    config:
+      EnforcedStyle: always
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_accepts_a_disabled_frozen_string_literal_comment_below_shebang_and_encoding_comments
+    source: |
+      #!/usr/bin/env ruby
+      # encoding: utf-8
+      # frozen_string_literal: false
+      puts 1
+    offenses:
+      []
+    config:
+      EnforcedStyle: always
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_accepts_a_frozen_string_literal_comment_below_shebang_above_an_encoding_comments
+    source: |
+      #!/usr/bin/env ruby
+      # frozen_string_literal: true
+      # encoding: utf-8
+      puts 1
+    offenses:
+      []
+    config:
+      EnforcedStyle: always
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always
+    source: |
+      #!/usr/bin/env ruby
+      # frozen_string_literal: false
+      # encoding: utf-8
+      puts 1
+    offenses:
+      []
+    config:
+      EnforcedStyle: always
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_accepts_an_emacs_style_combined_magic_comment
+    source: |
+      #!/usr/bin/env ruby
+      # -*- encoding: UTF-8; frozen_string_literal: true -*-
+      # encoding: utf-8
+      puts 1
+    offenses:
+      []
+    config:
+      EnforcedStyle: always
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_accepts_a_frozen_string_literal_comment_after_other_comments
+    source: |
+      #!/usr/bin/env ruby
+      # encoding: utf-8
+      #
+      # These are more comments
+      # frozen_string_literal: false
+      puts 1
+    offenses:
+      []
+    config:
+      EnforcedStyle: always
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_registers_an_offense_for_having_a_frozen_string_literal_comment_under_ruby_code
+    source: |
+      # encoding: utf-8
+      
+      puts 1
+      # frozen_string_literal: true
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 1
+        message: Missing frozen string literal comment.
+    corrected: |
+      # encoding: utf-8
+      # frozen_string_literal: true
+      
+      puts 1
+      # frozen_string_literal: true
+    config:
+      EnforcedStyle: always
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_registers_an_offense_for_an_extra_first_empty_line
+    source: |
+      
+      puts 1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 0
+        message: Missing frozen string literal comment.
+    corrected: |
+      # frozen_string_literal: true
+      
+      puts 1
+    config:
+      EnforcedStyle: always
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always
+    source: |
+      # frozen_string_literal: #{value}
+      puts 1
+    offenses:
+      []
+    config:
+      EnforcedStyle: always
+      Enabled: true
+    interpolated: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_never_accepts_a_source_with_no_tokens
+    source: |
+       
+    offenses:
+      []
+    config:
+      EnforcedStyle: never
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_never_registers_an_offense_for_a_frozen_string_literal_comment_on_the_top_line
+    source: |
+      # frozen_string_literal: true
+      puts 1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 29
+        message: Unnecessary frozen string literal comment.
+    corrected: |
+      puts 1
+    config:
+      EnforcedStyle: never
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_never_registers_an_offense_for_a_disabled_frozen_string_literal_comment_on_the_top_line
+    source: |
+      # frozen_string_literal: false
+      puts 1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 30
+        message: Unnecessary frozen string literal comment.
+    corrected: |
+      puts 1
+    config:
+      EnforcedStyle: never
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_never_accepts_not_having_a_frozen_string_literal_comment_on_the_top_line
+    source: |
+      puts 1
+    offenses:
+      []
+    config:
+      EnforcedStyle: never
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_never_accepts_not_having_not_having_a_frozen_string_literal_comment_under_a_shebang
+    source: |
+      #!/usr/bin/env ruby
+      puts 1
+    offenses:
+      []
+    config:
+      EnforcedStyle: never
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_never_registers_an_offense_for_a_frozen_string_literal_comment_below_a_shebang_comment
+    source: |
+      #!/usr/bin/env ruby
+      # frozen_string_literal: true
+      puts 1
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 29
+        message: Unnecessary frozen string literal comment.
+    corrected: |
+      #!/usr/bin/env ruby
+      puts 1
+    config:
+      EnforcedStyle: never
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_never_registers_an_offense_for_a_disabled_frozen_string_literal_below_a_shebang_comment
+    source: |
+      #!/usr/bin/env ruby
+      # frozen_string_literal: false
+      puts 1
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 30
+        message: Unnecessary frozen string literal comment.
+    corrected: |
+      #!/usr/bin/env ruby
+      puts 1
+    config:
+      EnforcedStyle: never
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_never_allows_not_having_a_frozen_string_literal_comment_under_an_encoding_comment
+    source: |
+      # encoding: utf-8
+      puts 1
+    offenses:
+      []
+    config:
+      EnforcedStyle: never
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_never_registers_an_offense_for_a_frozen_string_literal_comment_below_an_encoding_comment
+    source: |
+      # encoding: utf-8
+      # frozen_string_literal: true
+      puts 1
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 29
+        message: Unnecessary frozen string literal comment.
+    corrected: |
+      # encoding: utf-8
+      puts 1
+    config:
+      EnforcedStyle: never
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_never_registers_an_offense_for_a_disabled_frozen_string_literal_below_an_encoding_comment
+    source: |
+      # encoding: utf-8
+      # frozen_string_literal: false
+      puts 1
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 30
+        message: Unnecessary frozen string literal comment.
+    corrected: |
+      # encoding: utf-8
+      puts 1
+    config:
+      EnforcedStyle: never
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_never
+    source: |
+      #!/usr/bin/env ruby
+      # encoding: utf-8
+      puts 1
+    offenses:
+      []
+    config:
+      EnforcedStyle: never
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_never
+    source: |
+      #!/usr/bin/env ruby
+      # encoding: utf-8
+      # frozen_string_literal: true
+      puts 1
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 29
+        message: Unnecessary frozen string literal comment.
+    corrected: |
+      #!/usr/bin/env ruby
+      # encoding: utf-8
+      puts 1
+    config:
+      EnforcedStyle: never
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_never
+    source: |
+      #!/usr/bin/env ruby
+      # encoding: utf-8
+      # frozen_string_literal: false
+      puts 1
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 30
+        message: Unnecessary frozen string literal comment.
+    corrected: |
+      #!/usr/bin/env ruby
+      # encoding: utf-8
+      puts 1
+    config:
+      EnforcedStyle: never
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_never
+    source: |
+      #!/usr/bin/env ruby
+      # frozen_string_literal: true
+      # encoding: utf-8
+      puts 1
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 29
+        message: Unnecessary frozen string literal comment.
+    corrected: |
+      #!/usr/bin/env ruby
+      # encoding: utf-8
+      puts 1
+    config:
+      EnforcedStyle: never
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_never
+    source: |
+      #!/usr/bin/env ruby
+      # frozen_string_literal: false
+      # encoding: utf-8
+      puts 1
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 30
+        message: Unnecessary frozen string literal comment.
+    corrected: |
+      #!/usr/bin/env ruby
+      # encoding: utf-8
+      puts 1
+    config:
+      EnforcedStyle: never
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_never_registers_an_offense_for_having_a_frozen_string_literal_comment_after_other_comments
+    source: |
+      #!/usr/bin/env ruby
+      # encoding: utf-8
+      #
+      # These are more comments
+      # frozen_string_literal: false
+      puts 1
+    offenses:
+      - line: 5
+        column_start: 0
+        column_end: 30
+        message: Unnecessary frozen string literal comment.
+    corrected: |
+      #!/usr/bin/env ruby
+      # encoding: utf-8
+      #
+      # These are more comments
+      puts 1
+    config:
+      EnforcedStyle: never
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_never_accepts_a_frozen_string_literal_comment_under_ruby_code
+    source: |
+      # encoding: utf-8
+      
+      puts 1
+      # frozen_string_literal: true
+    offenses:
+      []
+    config:
+      EnforcedStyle: never
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_never
+    source: |
+      #{magic_comment}
+      
+      puts 1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 29
+        message: Unnecessary frozen string literal comment.
+    corrected: |
+      puts 1
+    config:
+      EnforcedStyle: never
+      Enabled: true
+    interpolated: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_never_registers_an_offense_for_having_a_frozen_string_literal_comment_with_multiple_spaces_at_beginning
+    source: |
+      #   frozen_string_literal: true
+      
+      puts 1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 31
+        message: Unnecessary frozen string literal comment.
+    corrected: |
+      puts 1
+    config:
+      EnforcedStyle: never
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_never_with_emacs_style_magic_comment_registers_an_offense_when_the_comment_is_the_first_one
+    source: |
+      # -*- frozen_string_literal: true -*-
+      puts 1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 37
+        message: Unnecessary frozen string literal comment.
+    corrected: |
+      puts 1
+    config:
+      EnforcedStyle: never
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_never_with_emacs_style_magic_comment_registers_an_offense_when_the_comment_is_between_other_comments
+    source: |
+      # -*- encoding: utf-8 -*-
+      # -*- frozen_string_literal: true -*-
+      # -*- warn_indent: true -*-
+      puts 1
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 37
+        message: Unnecessary frozen string literal comment.
+    corrected: |
+      # -*- encoding: utf-8 -*-
+      # -*- warn_indent: true -*-
+      puts 1
+    config:
+      EnforcedStyle: never
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_true_accepts_a_source_with_no_tokens
+    source: |
+       
+    offenses:
+      []
+    config:
+      EnforcedStyle: always_true
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_true_accepts_a_frozen_string_literal_on_the_top_line
+    source: |
+      # frozen_string_literal: true
+      puts 1
+    offenses:
+      []
+    config:
+      EnforcedStyle: always_true
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_true_registers_an_offense_for_a_disabled_frozen_string_literal_on_the_top_line
+    source: |
+      # frozen_string_literal: false
+      puts 1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 30
+        message: Frozen string literal comment must be set to `true`.
+    corrected: |
+      # frozen_string_literal: true
+      puts 1
+    config:
+      EnforcedStyle: always_true
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_true_registers_an_offense_for_arbitrary_tokens
+    source: |
+      # frozen_string_literal: token
+      puts 1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 30
+        message: Frozen string literal comment must be set to `true`.
+    corrected: |
+      # frozen_string_literal: true
+      puts 1
+    config:
+      EnforcedStyle: always_true
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_true_registers_an_offense_for_not_having_a_frozen_string_literal_comment_on_the_top_line
+    source: |
+      puts 1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 1
+        message: "Missing magic comment `# frozen_string_literal: true`."
+    corrected: |
+      # frozen_string_literal: true
+      puts 1
+    config:
+      EnforcedStyle: always_true
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_true_registers_an_offense_for_an_extra_first_empty_line
+    source: |
+      
+      puts 1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 0
+        message: "Missing magic comment `# frozen_string_literal: true`."
+    corrected: |
+      # frozen_string_literal: true
+      
+      puts 1
+    config:
+      EnforcedStyle: always_true
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_true_registers_an_offense_for_a_disabled_frozen_string_literal_above_an_empty_line
+    source: |
+      # frozen_string_literal: false
+      
+      puts 1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 30
+        message: Frozen string literal comment must be set to `true`.
+    corrected: |
+      # frozen_string_literal: true
+      
+      puts 1
+    config:
+      EnforcedStyle: always_true
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_true_registers_an_offense_for_arbitrary_tokens_above_an_empty_line
+    source: |
+      # frozen_string_literal: token
+      
+      puts 1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 30
+        message: Frozen string literal comment must be set to `true`.
+    corrected: |
+      # frozen_string_literal: true
+      
+      puts 1
+    config:
+      EnforcedStyle: always_true
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_true_registers_an_offense_for_a_disabled_frozen_string_literal
+    source: |
+      #!/usr/bin/env ruby
+      puts 1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 1
+        message: "Missing magic comment `# frozen_string_literal: true`."
+    corrected: |
+      #!/usr/bin/env ruby
+      # frozen_string_literal: true
+      puts 1
+    config:
+      EnforcedStyle: always_true
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_true_accepts_a_frozen_string_literal_below_a_shebang_comment
+    source: |
+      #!/usr/bin/env ruby
+      # frozen_string_literal: true
+      puts 1
+    offenses:
+      []
+    config:
+      EnforcedStyle: always_true
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_true_registers_an_offense_for_a_disabled_frozen_string_literal_below_a_shebang_comment
+    source: |
+      #!/usr/bin/env ruby
+      # frozen_string_literal: false
+      puts 1
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 30
+        message: Frozen string literal comment must be set to `true`.
+    corrected: |
+      #!/usr/bin/env ruby
+      # frozen_string_literal: true
+      puts 1
+    config:
+      EnforcedStyle: always_true
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_true_registers_an_offense_for_arbitrary_tokens_below_a_shebang_comment
+    source: |
+      #!/usr/bin/env ruby
+      # frozen_string_literal: token
+      puts 1
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 30
+        message: Frozen string literal comment must be set to `true`.
+    corrected: |
+      #!/usr/bin/env ruby
+      # frozen_string_literal: true
+      puts 1
+    config:
+      EnforcedStyle: always_true
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_true
+    source: |
+      # encoding: utf-8
+      puts 1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 1
+        message: "Missing magic comment `# frozen_string_literal: true`."
+    corrected: |
+      # encoding: utf-8
+      # frozen_string_literal: true
+      puts 1
+    config:
+      EnforcedStyle: always_true
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_true_accepts_a_frozen_string_literal_below_an_encoding_comment
+    source: |
+      # encoding: utf-8
+      # frozen_string_literal: true
+      puts 1
+    offenses:
+      []
+    config:
+      EnforcedStyle: always_true
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_true_registers_an_offense_for_a_disabled_frozen_string_literal_below_an_encoding_comment
+    source: |
+      # encoding: utf-8
+      # frozen_string_literal: false
+      puts 1
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 30
+        message: Frozen string literal comment must be set to `true`.
+    corrected: |
+      # encoding: utf-8
+      # frozen_string_literal: true
+      puts 1
+    config:
+      EnforcedStyle: always_true
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_true_registers_an_offense_for_arbitrary_tokens_below_an_encoding_comment
+    source: |
+      # encoding: utf-8
+      # frozen_string_literal: token
+      puts 1
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 30
+        message: Frozen string literal comment must be set to `true`.
+    corrected: |
+      # encoding: utf-8
+      # frozen_string_literal: true
+      puts 1
+    config:
+      EnforcedStyle: always_true
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_true
+    source: |
+      #!/usr/bin/env ruby
+      # encoding: utf-8
+      puts 1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 1
+        message: "Missing magic comment `# frozen_string_literal: true`."
+    corrected: |
+      #!/usr/bin/env ruby
+      # encoding: utf-8
+      # frozen_string_literal: true
+      puts 1
+    config:
+      EnforcedStyle: always_true
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_true_accepts_a_frozen_string_literal_comment_below_shebang_and_encoding_comments
+    source: |
+      #!/usr/bin/env ruby
+      # encoding: utf-8
+      # frozen_string_literal: true
+      puts 1
+    offenses:
+      []
+    config:
+      EnforcedStyle: always_true
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_true
+    source: |
+      #!/usr/bin/env ruby
+      # encoding: utf-8
+      # frozen_string_literal: false
+      puts 1
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 30
+        message: Frozen string literal comment must be set to `true`.
+    corrected: |
+      #!/usr/bin/env ruby
+      # encoding: utf-8
+      # frozen_string_literal: true
+      puts 1
+    config:
+      EnforcedStyle: always_true
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_true_registers_an_offense_for_arbitrary_tokens_below_shebang_and_encoding_comments
+    source: |
+      #!/usr/bin/env ruby
+      # encoding: utf-8
+      # frozen_string_literal: tokens
+      puts 1
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 31
+        message: Frozen string literal comment must be set to `true`.
+    corrected: |
+      #!/usr/bin/env ruby
+      # encoding: utf-8
+      # frozen_string_literal: true
+      puts 1
+    config:
+      EnforcedStyle: always_true
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_true_accepts_a_frozen_string_literal_comment_below_shebang_above_an_encoding_comments
+    source: |
+      #!/usr/bin/env ruby
+      # frozen_string_literal: true
+      # encoding: utf-8
+      puts 1
+    offenses:
+      []
+    config:
+      EnforcedStyle: always_true
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_true
+    source: |
+      #!/usr/bin/env ruby
+      # frozen_string_literal: false
+      # encoding: utf-8
+      puts 1
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 30
+        message: Frozen string literal comment must be set to `true`.
+    corrected: |
+      #!/usr/bin/env ruby
+      # frozen_string_literal: true
+      # encoding: utf-8
+      puts 1
+    config:
+      EnforcedStyle: always_true
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_true_registers_an_offense_for_arbitrary_tokens_below_shebang_above_an_encoding_comments
+    source: |
+      #!/usr/bin/env ruby
+      # frozen_string_literal: tokens
+      # encoding: utf-8
+      puts 1
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 31
+        message: Frozen string literal comment must be set to `true`.
+    corrected: |
+      #!/usr/bin/env ruby
+      # frozen_string_literal: true
+      # encoding: utf-8
+      puts 1
+    config:
+      EnforcedStyle: always_true
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_true_accepts_an_emacs_style_combined_magic_comment
+    source: |
+      #!/usr/bin/env ruby
+      # -*- encoding: UTF-8; frozen_string_literal: true -*-
+      # encoding: utf-8
+      puts 1
+    offenses:
+      []
+    config:
+      EnforcedStyle: always_true
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_true_with_emacs_style_disable_magic_comment_registers_an_offense_when_the_comment_is_the_first_one
+    source: |
+      # -*- frozen_string_literal: false -*-
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 38
+        message: Frozen string literal comment must be set to `true`.
+    corrected: |
+      # -*- frozen_string_literal: true -*-
+    config:
+      EnforcedStyle: always_true
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_true_with_emacs_style_disable_magic_comment_registers_an_offense_when_the_comment_is_between_other_comments
+    source: |
+      # -*- encoding: utf-8 -*-
+      # -*- frozen_string_literal: false -*-
+      # -*- warn_indent: true -*-
+      puts 1
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 38
+        message: Frozen string literal comment must be set to `true`.
+    corrected: |
+      # -*- encoding: utf-8 -*-
+      # -*- frozen_string_literal: true -*-
+      # -*- warn_indent: true -*-
+      puts 1
+    config:
+      EnforcedStyle: always_true
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_true
+    source: |
+      #!/usr/bin/env ruby
+      # encoding: utf-8
+      
+      puts 1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 1
+        message: "Missing magic comment `# frozen_string_literal: true`."
+    corrected: |
+      #!/usr/bin/env ruby
+      # encoding: utf-8
+      # frozen_string_literal: true
+      
+      puts 1
+    config:
+      EnforcedStyle: always_true
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_true
+    source: |
+      #!/usr/bin/env ruby
+      # encoding: utf-8
+      # frozen_string_literal: true
+      
+      puts 1
+    offenses:
+      []
+    config:
+      EnforcedStyle: always_true
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_true
+    source: |
+      #!/usr/bin/env ruby
+      # encoding: utf-8
+      # frozen_string_literal: false
+      
+      puts 1
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 30
+        message: Frozen string literal comment must be set to `true`.
+    corrected: |
+      #!/usr/bin/env ruby
+      # encoding: utf-8
+      # frozen_string_literal: true
+      
+      puts 1
+    config:
+      EnforcedStyle: always_true
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_true
+    source: |
+      #!/usr/bin/env ruby
+      # encoding: utf-8
+      # frozen_string_literal: tokens
+      
+      puts 1
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 31
+        message: Frozen string literal comment must be set to `true`.
+    corrected: |
+      #!/usr/bin/env ruby
+      # encoding: utf-8
+      # frozen_string_literal: true
+      
+      puts 1
+    config:
+      EnforcedStyle: always_true
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_true
+    source: |
+      # encoding: utf-8
+      
+      puts 1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 1
+        message: "Missing magic comment `# frozen_string_literal: true`."
+    corrected: |
+      # encoding: utf-8
+      # frozen_string_literal: true
+      
+      puts 1
+    config:
+      EnforcedStyle: always_true
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_true_accepts_a_frozen_string_literal_comment_below_an_encoding_comment_and_extra_space
+    source: |
+      # encoding: utf-8
+      # frozen_string_literal: true
+      
+      puts 1
+    offenses:
+      []
+    config:
+      EnforcedStyle: always_true
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_true
+    source: |
+      # encoding: utf-8
+      # frozen_string_literal: false
+      
+      puts 1
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 30
+        message: Frozen string literal comment must be set to `true`.
+    corrected: |
+      # encoding: utf-8
+      # frozen_string_literal: true
+      
+      puts 1
+    config:
+      EnforcedStyle: always_true
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_true_registers_an_offense_for_arbitrary_tokens_below_an_encoding_comment_and_extra_space
+    source: |
+      # encoding: utf-8
+      # frozen_string_literal: tokens
+      
+      puts 1
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 31
+        message: Frozen string literal comment must be set to `true`.
+    corrected: |
+      # encoding: utf-8
+      # frozen_string_literal: true
+      
+      puts 1
+    config:
+      EnforcedStyle: always_true
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_true
+    source: |
+      #!/usr/bin/env ruby
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 1
+        message: "Missing magic comment `# frozen_string_literal: true`."
+    corrected: |
+      #!/usr/bin/env ruby
+      # frozen_string_literal: true
+    config:
+      EnforcedStyle: always_true
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_true_accepts_a_frozen_string_literal_comment_under_shebang_with_no_other_code
+    source: |
+      #!/usr/bin/env ruby
+      # frozen_string_literal: true
+    offenses:
+      []
+    config:
+      EnforcedStyle: always_true
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_true_accepts_a_frozen_string_literal_comment_after_other_comments
+    source: |
+      #!/usr/bin/env ruby
+      # encoding: utf-8
+      #
+      # These are more comments
+      # frozen_string_literal: true
+      puts 1
+    offenses:
+      []
+    config:
+      EnforcedStyle: always_true
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_true_registers_an_offense_for_a_disabled_frozen_string_literal_comment_after_other_comments
+    source: |
+      #!/usr/bin/env ruby
+      # encoding: utf-8
+      #
+      # These are more comments
+      # frozen_string_literal: false
+      puts 1
+    offenses:
+      - line: 5
+        column_start: 0
+        column_end: 30
+        message: Frozen string literal comment must be set to `true`.
+    corrected: |
+      #!/usr/bin/env ruby
+      # encoding: utf-8
+      #
+      # These are more comments
+      # frozen_string_literal: true
+      puts 1
+    config:
+      EnforcedStyle: always_true
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_true_registers_an_offense_for_having_a_frozen_string_literal_comment_under_ruby_code
+    source: |
+      # encoding: utf-8
+      
+      puts 1
+      # frozen_string_literal: true
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 1
+        message: "Missing magic comment `# frozen_string_literal: true`."
+    corrected: |
+      # encoding: utf-8
+      # frozen_string_literal: true
+      
+      puts 1
+      # frozen_string_literal: true
+    config:
+      EnforcedStyle: always_true
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_true
+    source: |
+      #!/usr/bin/env ruby
+      # frozen_string_literal: false
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 30
+        message: Frozen string literal comment must be set to `true`.
+    corrected: |
+      #!/usr/bin/env ruby
+      # frozen_string_literal: true
+    config:
+      EnforcedStyle: always_true
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_true_registers_an_offense_for_arbitrary_tokens_under_shebang_with_no_other_code
+    source: |
+      #!/usr/bin/env ruby
+      # frozen_string_literal: tokens
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 31
+        message: Frozen string literal comment must be set to `true`.
+    corrected: |
+      #!/usr/bin/env ruby
+      # frozen_string_literal: true
+    config:
+      EnforcedStyle: always_true
+      Enabled: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_always_true
+    source: |
+      # frozen_string_literal: #{value}
+      puts 1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 30
+        message: Frozen string literal comment must be set to `true`.
+    corrected: |
+      # frozen_string_literal: true
+      puts 1
+    config:
+      EnforcedStyle: always_true
+      Enabled: true
+    interpolated: true
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_target_ruby_version_2_3_accepts_freezing_a_string
+    source: |
+      "x".freeze
+    offenses:
+      []
+    config:
+      EnforcedStyle: always_true
+      Enabled: true
+    ruby_version: ">= 2.2"
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_target_ruby_version_2_3_accepts_calling_on_a_string
+    source: |
+      "x" << "y"
+    offenses:
+      []
+    config:
+      EnforcedStyle: always_true
+      Enabled: true
+    ruby_version: ">= 2.2"
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_target_ruby_version_2_3_accepts_freezing_a_string_with_interpolation
+    source: |
+      "#{foo}bar".freeze
+    offenses:
+      []
+    config:
+      EnforcedStyle: always_true
+      Enabled: true
+    ruby_version: ">= 2.2"
+
+  - name: rubocop_cop_style_frozenstringliteralcomment_target_ruby_version_2_3_accepts_calling_on_a_string_with_interpolation
+    source: |
+      "#{foo}bar" << "baz"
+    offenses:
+      []
+    config:
+      EnforcedStyle: always_true
+      Enabled: true
+    ruby_version: ">= 2.2"

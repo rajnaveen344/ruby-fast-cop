@@ -1,0 +1,556 @@
+cop: Style/FetchEnvVar
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_fetchenvvar_when_it_is_evaluated_with_no_default_values_registers_an_offense
+    source: |
+      ENV['X' + 'Y']
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 14
+        message: "Use `ENV.fetch('X' + 'Y', nil)` instead of `ENV['X' + 'Y']`."
+    corrected: |
+      ENV.fetch('X' + 'Y', nil)
+    config:
+      AllowedVars: []
+
+  - name: rubocop_cop_style_fetchenvvar_with_negation_registers_no_offenses
+    source: |
+      !ENV['X']
+    offenses:
+      []
+    config:
+      AllowedVars: []
+
+  - name: rubocop_cop_style_fetchenvvar_when_it_receives_a_message_registers_no_offenses
+    source: |
+      ENV['X'].some_method
+    offenses:
+      []
+    config:
+      AllowedVars: []
+
+  - name: rubocop_cop_style_fetchenvvar_when_it_receives_a_message_with_safe_navigation_registers_no_offenses
+    source: |
+      ENV['X']&.some_method
+    offenses:
+      []
+    config:
+      AllowedVars: []
+
+  - name: rubocop_cop_style_fetchenvvar_when_it_is_compared_with_other_object_does_not_register_an_offense
+    source: |
+      ENV['X'] == 1
+    offenses:
+      []
+    config:
+      AllowedVars: []
+
+  - name: rubocop_cop_style_fetchenvvar_when_it_is_compared_with_other_object_does_not_register_an_offense
+    source: |
+      ENV['X'] != 1
+    offenses:
+      []
+    config:
+      AllowedVars: []
+
+  - name: rubocop_cop_style_fetchenvvar_when_the_node_is_a_receiver_of_does_not_register_an_offense
+    source: |
+      ENV['X'] ||= y
+      x ||= ENV['X'] ||= y
+    offenses:
+      []
+    config:
+      AllowedVars: []
+
+  - name: rubocop_cop_style_fetchenvvar_when_the_node_is_a_receiver_of_does_not_register_an_offense
+    source: |
+      ENV['X'] &&= y
+      x &&= ENV['X'] ||= y
+    offenses:
+      []
+    config:
+      AllowedVars: []
+
+  - name: rubocop_cop_style_fetchenvvar_when_the_node_is_assigned_by_registers_an_offense
+    source: |
+      y ||= ENV['X']
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 14
+        message: "Use `ENV.fetch('X', nil)` instead of `ENV['X']`."
+    config:
+      AllowedVars: []
+
+  - name: rubocop_cop_style_fetchenvvar_when_the_node_is_assigned_by_registers_an_offense
+    source: |
+      y &&= ENV['X']
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 14
+        message: "Use `ENV.fetch('X', nil)` instead of `ENV['X']`."
+    config:
+      AllowedVars: []
+
+  - name: rubocop_cop_style_fetchenvvar_when_it_is_an_argument_of_a_method_registers_an_offense
+    source: |
+      some_method(
+        ENV['A'].some_method,
+        ENV['B'] || ENV['C'],
+        ENV['X'],
+        ENV['Y']
+      )
+    offenses:
+      - line: 3
+        column_start: 14
+        column_end: 22
+        message: "Use `ENV.fetch('C', nil)` instead of `ENV['C']`."
+      - line: 4
+        column_start: 2
+        column_end: 10
+        message: "Use `ENV.fetch('X', nil)` instead of `ENV['X']`."
+      - line: 5
+        column_start: 2
+        column_end: 10
+        message: "Use `ENV.fetch('Y', nil)` instead of `ENV['Y']`."
+    corrected: |
+      some_method(
+        ENV['A'].some_method,
+        ENV['B'] || ENV.fetch('C', nil),
+        ENV.fetch('X', nil),
+        ENV.fetch('Y', nil)
+      )
+    config:
+      AllowedVars: []
+
+  - name: rubocop_cop_style_fetchenvvar_when_it_is_assigned_to_a_variable_registers_an_offense_when_using_single_assignment
+    source: |
+      x = ENV['X']
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 12
+        message: "Use `ENV.fetch('X', nil)` instead of `ENV['X']`."
+    corrected: |
+      x = ENV.fetch('X', nil)
+    config:
+      AllowedVars: []
+
+  - name: rubocop_cop_style_fetchenvvar_when_it_is_assigned_to_a_variable_registers_an_offense_when_using_multiple_assignment
+    source: |
+      x, y = ENV['X'],
+             ENV['Y']
+    offenses:
+      - line: 1
+        column_start: 7
+        column_end: 15
+        message: "Use `ENV.fetch('X', nil)` instead of `ENV['X']`."
+      - line: 2
+        column_start: 7
+        column_end: 15
+        message: "Use `ENV.fetch('Y', nil)` instead of `ENV['Y']`."
+    corrected: |
+      x, y = ENV.fetch('X', nil),
+             ENV.fetch('Y', nil)
+    config:
+      AllowedVars: []
+
+  - name: rubocop_cop_style_fetchenvvar_when_it_is_an_array_element_registers_an_offense
+    source: |
+      [
+        ENV['X'],
+        ENV['Y']
+      ]
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 10
+        message: "Use `ENV.fetch('X', nil)` instead of `ENV['X']`."
+      - line: 3
+        column_start: 2
+        column_end: 10
+        message: "Use `ENV.fetch('Y', nil)` instead of `ENV['Y']`."
+    corrected: |
+      [
+        ENV.fetch('X', nil),
+        ENV.fetch('Y', nil)
+      ]
+    config:
+      AllowedVars: []
+
+  - name: rubocop_cop_style_fetchenvvar_when_it_is_a_hash_key_registers_an_offense
+    source: |
+      {
+        ENV['X'] => :x,
+        ENV['Y'] => :y
+      }
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 10
+        message: "Use `ENV.fetch('X', nil)` instead of `ENV['X']`."
+      - line: 3
+        column_start: 2
+        column_end: 10
+        message: "Use `ENV.fetch('Y', nil)` instead of `ENV['Y']`."
+    corrected: |
+      {
+        ENV.fetch('X', nil) => :x,
+        ENV.fetch('Y', nil) => :y
+      }
+    config:
+      AllowedVars: []
+
+  - name: rubocop_cop_style_fetchenvvar_when_it_is_a_hash_value_registers_an_offense
+    source: |
+      {
+        x: ENV['X'],
+        y: ENV['Y']
+      }
+    offenses:
+      - line: 2
+        column_start: 5
+        column_end: 13
+        message: "Use `ENV.fetch('X', nil)` instead of `ENV['X']`."
+      - line: 3
+        column_start: 5
+        column_end: 13
+        message: "Use `ENV.fetch('Y', nil)` instead of `ENV['Y']`."
+    corrected: |
+      {
+        x: ENV.fetch('X', nil),
+        y: ENV.fetch('Y', nil)
+      }
+    config:
+      AllowedVars: []
+
+  - name: rubocop_cop_style_fetchenvvar_when_it_is_used_in_an_interpolation_registers_an_offense
+    source: |
+      "#{ENV['X']}"
+    offenses:
+      - line: 1
+        column_start: 3
+        column_end: 11
+        message: "Use `ENV.fetch('X', nil)` instead of `ENV['X']`."
+    corrected: |
+      "#{ENV.fetch('X', nil)}"
+    config:
+      AllowedVars: []
+
+  - name: rubocop_cop_style_fetchenvvar_when_using_fetch_instead_of_registers_no_offenses
+    source: |
+      ENV.fetch('X', default_value)
+    offenses:
+      []
+    config:
+      AllowedVars: []
+
+  - name: rubocop_cop_style_fetchenvvar_when_it_is_used_in_a_conditional_expression_registers_no_offenses_with_if
+    source: |
+      if ENV['X']
+        puts x
+      end
+    offenses:
+      []
+    config:
+      AllowedVars: []
+
+  - name: rubocop_cop_style_fetchenvvar_when_it_is_used_in_a_conditional_expression_registers_no_offenses_with_unless
+    source: |
+      unless ENV['X']
+        puts x
+      end
+    offenses:
+      []
+    config:
+      AllowedVars: []
+
+  - name: rubocop_cop_style_fetchenvvar_when_it_is_used_in_a_conditional_expression_registers_no_offenses_with_ternary_operator
+    source: |
+      ENV['X'] ? x : y
+    offenses:
+      []
+    config:
+      AllowedVars: []
+
+  - name: rubocop_cop_style_fetchenvvar_when_it_is_used_in_a_conditional_expression_registers_an_offense_with_case
+    source: |
+      case ENV['X']
+      when ENV['Y']
+        puts x
+      end
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 13
+        message: "Use `ENV.fetch('X', nil)` instead of `ENV['X']`."
+      - line: 2
+        column_start: 5
+        column_end: 13
+        message: "Use `ENV.fetch('Y', nil)` instead of `ENV['Y']`."
+    corrected: |
+      case ENV.fetch('X', nil)
+      when ENV.fetch('Y', nil)
+        puts x
+      end
+    config:
+      AllowedVars: []
+
+  - name: rubocop_cop_style_fetchenvvar_when_it_is_used_in_a_conditional_expression_registers_no_offenses_when_using_the_same_env_var_as_if_condition_in_the_body
+    source: |
+      if ENV['X']
+        puts ENV['X']
+      end
+    offenses:
+      []
+    config:
+      AllowedVars: []
+
+  - name: rubocop_cop_style_fetchenvvar_when_it_is_used_in_a_conditional_expression_registers_no_offenses_when_using_the_same_env_var_as_if_condition_in_the_body_with_other_conditions
+    source: |
+      if foo? || ENV["X"]
+        puts ENV.fetch("X")
+      end
+      if ENV["Y"] || bar?
+        puts ENV.fetch("Y")
+      end
+      if foo? && ENV["X"]
+        puts ENV.fetch("X")
+      end
+      if ENV["Y"] && bar?
+        puts ENV.fetch("Y")
+      end
+    offenses:
+      []
+    config:
+      AllowedVars: []
+
+  - name: rubocop_cop_style_fetchenvvar_when_it_is_used_in_a_conditional_expression_registers_no_offenses_when_using_the_same_env_var_as_if_condition_in_the_body_with_operator
+    source: |
+      if ENV['X'] == foo
+        puts ENV['X']
+      end
+      if ENV['X'] != foo
+        puts ENV['X']
+      end
+    offenses:
+      []
+    config:
+      AllowedVars: []
+
+  - name: rubocop_cop_style_fetchenvvar_when_it_is_used_in_a_conditional_expression_registers_no_offenses_when_using_the_same_env_var_as_if_condition_in_the_body_with_predicate_method
+    source: |
+      if ENV["X"].present?
+        puts ENV["X"]
+      end
+      if ENV["X"].in?(%w[A B C])
+        puts ENV["X"]
+      end
+      if %w[A B C].include?(ENV["X"])
+        puts ENV["X"]
+      end
+      if ENV.key?("X")
+        puts ENV["X"]
+      end
+    offenses:
+      []
+    config:
+      AllowedVars: []
+
+  - name: rubocop_cop_style_fetchenvvar_when_it_is_used_in_a_conditional_expression_registers_an_offense_when_using_an_env_var_that_is_different_from_if_condition_in_the_body
+    source: |
+      if ENV['X']
+        puts ENV['Y']
+      end
+    offenses:
+      - line: 2
+        column_start: 7
+        column_end: 15
+        message: "Use `ENV.fetch('Y', nil)` instead of `ENV['Y']`."
+    corrected: |
+      if ENV['X']
+        puts ENV.fetch('Y', nil)
+      end
+    config:
+      AllowedVars: []
+
+  - name: rubocop_cop_style_fetchenvvar_when_it_is_used_in_a_conditional_expression_registers_no_offenses_when_using_the_same_env_var_as_if_condition_in_the_body_with_assignment_method
+    source: |
+      if ENV['X'] = x
+        puts ENV['X']
+      end
+    offenses:
+      []
+    config:
+      AllowedVars: []
+
+  - name: rubocop_cop_style_fetchenvvar_when_it_is_used_in_a_conditional_expression_registers_an_offense_with_using_an_env_var_as_if_condition_in_the_body_with_assignment_method
+    source: |
+      if ENV['X'] = x
+        puts ENV['Y']
+      end
+    offenses:
+      - line: 2
+        column_start: 7
+        column_end: 15
+        message: "Use `ENV.fetch('Y', nil)` instead of `ENV['Y']`."
+    corrected: |
+      if ENV['X'] = x
+        puts ENV.fetch('Y', nil)
+      end
+    config:
+      AllowedVars: []
+
+  - name: rubocop_cop_style_fetchenvvar_registers_an_offense_when_using_env_x_that_is_different_from_if_condition_in_the_body
+    source: |
+      if ENV && x
+        ENV[x]
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 8
+        message: Use `ENV.fetch(x, nil)` instead of `ENV[x]`.
+    corrected: |
+      if ENV && x
+        ENV.fetch(x, nil)
+      end
+    config:
+      AllowedVars: []
+
+  - name: rubocop_cop_style_fetchenvvar_registers_an_offense_when_using_env_x_that_is_different_from_if_condition_in_the_body
+    source: |
+      if ENV || x
+        ENV[x]
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 8
+        message: Use `ENV.fetch(x, nil)` instead of `ENV[x]`.
+    corrected: |
+      if ENV || x
+        ENV.fetch(x, nil)
+      end
+    config:
+      AllowedVars: []
+
+  - name: rubocop_cop_style_fetchenvvar_registers_an_offense_when_using_an_env_at_if_condition_in_the_body
+    source: |
+      if a == b
+        ENV['X']
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 10
+        message: "Use `ENV.fetch('X', nil)` instead of `ENV['X']`."
+    corrected: |
+      if a == b
+        ENV.fetch('X', nil)
+      end
+    config:
+      AllowedVars: []
+
+  - name: rubocop_cop_style_fetchenvvar_registers_an_offense_with_using_an_env_at_multiple_if_condition_in_the_body
+    source: |
+      if a || b && c
+        puts ENV['X']
+      end
+    offenses:
+      - line: 2
+        column_start: 7
+        column_end: 15
+        message: "Use `ENV.fetch('X', nil)` instead of `ENV['X']`."
+    corrected: |
+      if a || b && c
+        puts ENV.fetch('X', nil)
+      end
+    config:
+      AllowedVars: []
+
+  - name: rubocop_cop_style_fetchenvvar_when_the_env_val_is_excluded_from_the_inspection_by_the_config_registers_no_offenses
+    source: |
+      ENV['X']
+    offenses:
+      []
+    config:
+      AllowedVars: [X]
+
+  - name: rubocop_cop_style_fetchenvvar_when_env_is_the_right_end_of_chains_registers_an_offense
+    source: |
+      y || ENV['X']
+      
+      y || z || ENV['X']
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 13
+        message: "Use `ENV.fetch('X', nil)` instead of `ENV['X']`."
+      - line: 3
+        column_start: 10
+        column_end: 18
+        message: "Use `ENV.fetch('X', nil)` instead of `ENV['X']`."
+    corrected: |
+      y || ENV.fetch('X', nil)
+      
+      y || z || ENV.fetch('X', nil)
+    config:
+      AllowedVars: [X]
+
+  - name: rubocop_cop_style_fetchenvvar_when_env_is_the_lhs_of_registers_no_offenses
+    source: |
+      ENV['X'] || y
+      
+      z || ENV['X'] || y
+    offenses:
+      []
+    config:
+      AllowedVars: [X]
+
+  - name: rubocop_cop_style_fetchenvvar_when_defaulttonil_is_false_registers_an_offense_and_corrects_to_env_fetch_without_nil
+    source: |
+      ENV['X']
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 8
+        message: "Use `ENV.fetch('X')` instead of `ENV['X']`."
+    corrected: |
+      ENV.fetch('X')
+    config:
+      AllowedVars: [X]
+      DefaultToNil: false
+
+  - name: rubocop_cop_style_fetchenvvar_when_defaulttonil_is_false_registers_an_offense_for_variable_assignment
+    source: |
+      x = ENV['X']
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 12
+        message: "Use `ENV.fetch('X')` instead of `ENV['X']`."
+    corrected: |
+      x = ENV.fetch('X')
+    config:
+      AllowedVars: [X]
+      DefaultToNil: false
+
+  - name: rubocop_cop_style_fetchenvvar_when_defaulttonil_is_false_registers_an_offense_for_method_argument
+    source: |
+      some_method(ENV['X'])
+    offenses:
+      - line: 1
+        column_start: 12
+        column_end: 20
+        message: "Use `ENV.fetch('X')` instead of `ENV['X']`."
+    corrected: |
+      some_method(ENV.fetch('X'))
+    config:
+      AllowedVars: [X]
+      DefaultToNil: false

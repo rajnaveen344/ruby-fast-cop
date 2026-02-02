@@ -1,0 +1,239 @@
+cop: Lint/EmptyWhen
+department: lint
+severity: warning
+implemented: false
+
+tests:
+  - name: rubocop_cop_lint_emptywhen_when_a_when_body_is_missing_registers_an_offense_for_a_missing_when_body
+    source: |
+      case foo
+      when :bar then 1
+      when :baz # nothing
+      end
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 9
+        message: Avoid `when` branches without a body.
+    config:
+      AllowComments: false
+
+  - name: rubocop_cop_lint_emptywhen_when_a_when_body_is_missing_registers_an_offense_for_missing_when_body_followed_by_else
+    source: |
+      case foo
+      when :bar then 1
+      when :baz # nothing
+      else 3
+      end
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 9
+        message: Avoid `when` branches without a body.
+    config:
+      AllowComments: false
+
+  - name: rubocop_cop_lint_emptywhen_when_a_when_body_is_missing_registers_an_offense_for_missing_when_then_body
+    source: |
+      case foo
+      when :bar then 1
+      when :baz then # nothing
+      end
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 9
+        message: Avoid `when` branches without a body.
+    config:
+      AllowComments: false
+
+  - name: rubocop_cop_lint_emptywhen_when_a_when_body_is_missing_registers_an_offense_for_missing_when_then_body_followed_by_else
+    source: |
+      case foo
+      when :bar then 1
+      when :baz then # nothing
+      else 3
+      end
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 9
+        message: Avoid `when` branches without a body.
+    config:
+      AllowComments: false
+
+  - name: rubocop_cop_lint_emptywhen_when_a_when_body_is_missing_registers_an_offense_for_missing_when_body_with_a_comment
+    source: |
+      case foo
+      when :bar
+        1
+      when :baz
+        # nothing
+      end
+    offenses:
+      - line: 4
+        column_start: 0
+        column_end: 9
+        message: Avoid `when` branches without a body.
+    config:
+      AllowComments: false
+
+  - name: rubocop_cop_lint_emptywhen_when_a_when_body_is_missing_registers_an_offense_for_missing_when_body_with_a_comment_followed_by_else
+    source: |
+      case foo
+      when :bar
+        1
+      when :baz
+        # nothing
+      else
+        3
+      end
+    offenses:
+      - line: 4
+        column_start: 0
+        column_end: 9
+        message: Avoid `when` branches without a body.
+    config:
+      AllowComments: false
+
+  - name: rubocop_cop_lint_emptywhen_when_a_when_body_is_missing_registers_an_offense_when_case_line_has_no_expression
+    source: |
+      case
+      when :bar
+        1
+      when :baz
+        # nothing
+      else
+        3
+      end
+    offenses:
+      - line: 4
+        column_start: 0
+        column_end: 9
+        message: Avoid `when` branches without a body.
+    config:
+      AllowComments: false
+
+  - name: rubocop_cop_lint_emptywhen_when_a_when_body_is_present_accepts_case_with_when_then_statements
+    source: |
+      case foo
+      when :bar then 1
+      when :baz then 2
+      end
+    offenses:
+      []
+    config:
+      AllowComments: false
+
+  - name: rubocop_cop_lint_emptywhen_when_a_when_body_is_present_accepts_case_with_when_then_statements_and_else_clause
+    source: |
+      case foo
+      when :bar then 1
+      when :baz then 2
+      else 3
+      end
+    offenses:
+      []
+    config:
+      AllowComments: false
+
+  - name: rubocop_cop_lint_emptywhen_when_a_when_body_is_present_accepts_case_with_when_bodies
+    source: |
+      case foo
+      when :bar
+        1
+      when :baz
+        2
+      end
+    offenses:
+      []
+    config:
+      AllowComments: false
+
+  - name: rubocop_cop_lint_emptywhen_when_a_when_body_is_present_accepts_case_with_when_bodies_and_else_clause
+    source: |
+      case foo
+      when :bar
+        1
+      when :baz
+        2
+      else
+        3
+      end
+    offenses:
+      []
+    config:
+      AllowComments: false
+
+  - name: rubocop_cop_lint_emptywhen_when_a_when_body_is_present_accepts_with_no_case_line_expression
+    source: |
+      case
+      when :bar
+        1
+      when :baz
+        2
+      else
+        3
+      end
+    offenses:
+      []
+    config:
+      AllowComments: false
+
+  - name: rubocop_cop_lint_emptywhen_when_allowcomments_true_accepts_an_empty_when_body_with_a_comment
+    source: |
+      case condition
+      when foo
+        do_something
+      when bar
+        # do nothing
+      end
+    offenses:
+      []
+    config:
+      AllowComments: true
+
+  - name: rubocop_cop_lint_emptywhen_when_allowcomments_true_registers_an_offense_for_missing_when_body_without_a_comment
+    source: |
+      case condition
+      when foo
+        42 # magic number
+      when bar
+      when baz # more comments mixed
+        21 # another magic number
+      end
+    offenses:
+      - line: 4
+        column_start: 0
+        column_end: 8
+        message: Avoid `when` branches without a body.
+    config:
+      AllowComments: true
+
+  - name: rubocop_cop_lint_emptywhen_when_allowcomments_true_accepts_an_empty_when_then_body_with_a_comment
+    source: |
+      case condition
+      when foo
+        do_something
+      when bar then # do nothing
+      end
+    offenses:
+      []
+    config:
+      AllowComments: true
+
+  - name: rubocop_cop_lint_emptywhen_when_allowcomments_false_registers_an_offense_for_empty_when_body_with_a_comment
+    source: |
+      case condition
+      when foo
+        do_something
+      when bar
+        # do nothing
+      end
+    offenses:
+      - line: 4
+        column_start: 0
+        column_end: 8
+        message: Avoid `when` branches without a body.
+    config:
+      AllowComments: false

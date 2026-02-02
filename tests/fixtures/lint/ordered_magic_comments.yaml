@@ -1,0 +1,103 @@
+cop: Lint/OrderedMagicComments
+department: lint
+severity: warning
+implemented: false
+
+tests:
+  - name: rubocop_cop_lint_orderedmagiccomments
+    source: |
+      # frozen_string_literal: true
+      # encoding: ascii
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 17
+        message: The encoding magic comment should precede all other magic comments.
+    corrected: |
+      # encoding: ascii
+      # frozen_string_literal: true
+
+  - name: rubocop_cop_lint_orderedmagiccomments
+    source: |
+      # frozen_string_literal: true
+      # coding: ascii
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 15
+        message: The encoding magic comment should precede all other magic comments.
+    corrected: |
+      # coding: ascii
+      # frozen_string_literal: true
+
+  - name: rubocop_cop_lint_orderedmagiccomments
+    source: |
+      # frozen_string_literal: true
+      # -*- encoding : ascii-8bit -*-
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 31
+        message: The encoding magic comment should precede all other magic comments.
+    corrected: |
+      # -*- encoding : ascii-8bit -*-
+      # frozen_string_literal: true
+
+  - name: rubocop_cop_lint_orderedmagiccomments
+    source: |
+      #!/usr/bin/env ruby
+      # frozen_string_literal: true
+      # encoding: ascii
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 17
+        message: The encoding magic comment should precede all other magic comments.
+    corrected: |
+      #!/usr/bin/env ruby
+      # encoding: ascii
+      # frozen_string_literal: true
+
+  - name: rubocop_cop_lint_orderedmagiccomments_does_not_register_an_offense_when_using_encoding_magic_comment_is_first_line
+    source: |
+      # encoding: ascii
+      # frozen_string_literal: true
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_orderedmagiccomments_does_not_register_an_offense_when_using_encoding_magic_comment_is_next_of_shebang
+    source: |
+      #!/usr/bin/env ruby
+      # encoding: ascii
+      # frozen_string_literal: true
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_orderedmagiccomments_does_not_register_an_offense_when_using_encoding_magic_comment_only
+    source: |
+      # encoding: ascii
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_orderedmagiccomments_does_not_register_an_offense_when_using_frozen_string_literal_magic_comment_only
+    source: |
+      # frozen_string_literal: true
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_orderedmagiccomments
+    source: |
+      # frozen_string_literal: true
+      
+      x = { encoding: Encoding::SJIS }
+      puts x
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_orderedmagiccomments
+    source: |
+      # frozen_string_literal: true
+      
+      # eval('# encoding: ISO-8859-1')
+    offenses:
+      []

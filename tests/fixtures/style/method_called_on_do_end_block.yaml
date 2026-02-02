@@ -1,0 +1,98 @@
+cop: Style/MethodCalledOnDoEndBlock
+department: style
+severity: convention
+implemented: true
+
+tests:
+  - name: rubocop_cop_style_methodcalledondoendblock_with_a_multi_line_do_end_block_registers_an_offense_for_a_chained_call
+    source: |
+      a do
+        b
+      end.c
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 5
+        message: Avoid chaining a method call on a do...end block.
+
+  - name: rubocop_cop_style_methodcalledondoendblock_with_a_multi_line_do_end_block_when_using_safe_navigation_operator_registers_an_offense_for_a_chained_call
+    source: |
+      a do
+        b
+      end&.c
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 6
+        message: Avoid chaining a method call on a do...end block.
+
+  - name: rubocop_cop_style_methodcalledondoendblock_with_a_multi_line_do_end_block_accepts_it_if_there_is_no_chained_call
+    source: |
+      a do
+        b
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_methodcalledondoendblock_with_a_multi_line_do_end_block_accepts_a_chained_block
+    source: |
+      a do
+        b
+      end.c do
+        d
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_methodcalledondoendblock_with_a_single_line_do_end_block_registers_an_offense_for_a_chained_call
+    source: |
+      a do b end.c
+    offenses:
+      - line: 1
+        column_start: 7
+        column_end: 12
+        message: Avoid chaining a method call on a do...end block.
+
+  - name: rubocop_cop_style_methodcalledondoendblock_with_a_single_line_do_end_block_accepts_a_single_line_do_end_block_with_a_chained_block
+    source: |
+      a do b end.c do d end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_methodcalledondoendblock_with_a_block_accepts_a_multi_line_block_with_a_chained_call
+    source: |
+      a {
+        b
+      }.c
+    offenses:
+      []
+
+  - name: rubocop_cop_style_methodcalledondoendblock_with_a_block_accepts_a_single_line_block_with_a_chained_call
+    source: |
+      a { b }.c
+    offenses:
+      []
+
+  - name: rubocop_cop_style_methodcalledondoendblock_ruby_2_7_registers_an_offense_for_a_chained_call
+    source: |
+      a do
+        _1
+      end.c
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 5
+        message: Avoid chaining a method call on a do...end block.
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_style_methodcalledondoendblock_ruby_3_4_registers_an_offense_for_a_chained_call
+    source: |
+      a do
+        it
+      end.c
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 5
+        message: Avoid chaining a method call on a do...end block.
+    ruby_version: ">= 3.4"

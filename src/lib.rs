@@ -169,6 +169,113 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
     result
 }
 
+/// Check Ruby source code for offenses using a specific cop with config
+/// This is mainly for testing purposes
+pub fn check_source_with_cop_config(
+    source: &str,
+    filename: &str,
+    cop_name: &str,
+    config: &Config,
+) -> Vec<Offense> {
+    let cop = build_single_cop(cop_name, config);
+    match cop {
+        Some(c) => check_source_with_cops(source, filename, &[c]),
+        None => vec![],
+    }
+}
+
+/// Build a single cop with the given configuration
+pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops::Cop>> {
+    match cop_name {
+        "Lint/Debugger" => Some(Box::new(cops::lint::Debugger::new())),
+
+        "Lint/AssignmentInCondition" => {
+            let allow_safe = config
+                .get_cop_config("Lint/AssignmentInCondition")
+                .and_then(|c| c.allow_safe_assignment)
+                .unwrap_or(true);
+            Some(Box::new(cops::lint::AssignmentInCondition::new(allow_safe)))
+        }
+
+        "Layout/LineLength" => {
+            let max = config
+                .get_cop_config("Layout/LineLength")
+                .and_then(|c| c.max)
+                .unwrap_or(120);
+            Some(Box::new(cops::layout::LineLength::new(max)))
+        }
+
+        "Metrics/BlockLength" => {
+            let max = config
+                .get_cop_config("Metrics/BlockLength")
+                .and_then(|c| c.max)
+                .unwrap_or(25);
+            Some(Box::new(cops::metrics::BlockLength::new(max)))
+        }
+
+        "Style/AutoResourceCleanup" => Some(Box::new(cops::style::AutoResourceCleanup::new())),
+
+        "Style/FormatStringToken" => {
+            let style = config
+                .get_cop_config("Style/FormatStringToken")
+                .and_then(|c| c.enforced_style.as_ref())
+                .map(|s| match s.as_str() {
+                    "template" => cops::style::FormatStringTokenStyle::Template,
+                    "unannotated" => cops::style::FormatStringTokenStyle::Unannotated,
+                    _ => cops::style::FormatStringTokenStyle::Annotated,
+                })
+                .unwrap_or(cops::style::FormatStringTokenStyle::Annotated);
+            Some(Box::new(cops::style::FormatStringToken::new(style)))
+        }
+
+        "Style/HashSyntax" => {
+            let style = config
+                .get_cop_config("Style/HashSyntax")
+                .and_then(|c| c.enforced_style.as_ref())
+                .map(|s| match s.as_str() {
+                    "hash_rockets" => cops::style::HashSyntaxStyle::HashRockets,
+                    "no_mixed_keys" => cops::style::HashSyntaxStyle::NoMixedKeys,
+                    "ruby19_no_mixed_keys" => cops::style::HashSyntaxStyle::Ruby19NoMixedKeys,
+                    _ => cops::style::HashSyntaxStyle::Ruby19,
+                })
+                .unwrap_or(cops::style::HashSyntaxStyle::Ruby19);
+            Some(Box::new(cops::style::HashSyntax::new(style)))
+        }
+
+        "Style/MethodCalledOnDoEndBlock" => {
+            Some(Box::new(cops::style::MethodCalledOnDoEndBlock::new()))
+        }
+
+        "Style/RaiseArgs" => {
+            let style = config
+                .get_cop_config("Style/RaiseArgs")
+                .and_then(|c| c.enforced_style.as_ref())
+                .map(|s| match s.as_str() {
+                    "compact" => cops::style::RaiseArgsStyle::Compact,
+                    _ => cops::style::RaiseArgsStyle::Explode,
+                })
+                .unwrap_or(cops::style::RaiseArgsStyle::Explode);
+            Some(Box::new(cops::style::RaiseArgs::new(style)))
+        }
+
+        "Style/RescueStandardError" => {
+            let style = config
+                .get_cop_config("Style/RescueStandardError")
+                .and_then(|c| c.enforced_style.as_ref())
+                .map(|s| match s.as_str() {
+                    "implicit" => cops::style::RescueStandardErrorStyle::Implicit,
+                    _ => cops::style::RescueStandardErrorStyle::Explicit,
+                })
+                .unwrap_or(cops::style::RescueStandardErrorStyle::Explicit);
+            Some(Box::new(cops::style::RescueStandardError::new(style)))
+        }
+
+        "Style/StringMethods" => Some(Box::new(cops::style::StringMethods::new())),
+
+        _ => None,
+    }
+}
+
 /// Find unsupported cops in the configuration
 pub fn find_unsupported_cops(config: &Config) -> Vec<String> {
     let mut unsupported = Vec::new();

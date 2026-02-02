@@ -1,0 +1,51 @@
+cop: Layout/SpaceBeforeComment
+department: layout
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_layout_spacebeforecomment_registers_an_offense_and_corrects_missing_space_before_an_eol_comment
+    source: |
+      a += 1# increment
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 17
+        message: Put a space before an end-of-line comment.
+    corrected: |
+      a += 1 # increment
+
+  - name: rubocop_cop_layout_spacebeforecomment_accepts_an_eol_comment_with_a_preceding_space
+    source: |
+      a += 1 # increment
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_spacebeforecomment_accepts_a_comment_that_begins_a_line
+    source: |
+      # comment
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_spacebeforecomment_accepts_a_doc_comment
+    source: |
+      =begin
+      Doc comment
+      =end
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_spacebeforecomment_registers_an_offense_and_corrects_after_a_heredoc
+    source: |
+      <<~STR# my string
+        text
+      STR
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 17
+        message: Put a space before an end-of-line comment.
+    corrected: |
+      <<~STR # my string
+        text
+      STR

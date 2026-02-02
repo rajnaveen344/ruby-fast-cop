@@ -1,0 +1,586 @@
+cop: Lint/UnusedMethodArgument
+department: lint
+severity: warning
+implemented: false
+
+tests:
+  - name: rubocop_cop_lint_unusedmethodargument_inspection_when_a_method_takes_multiple_arguments_and_an_argument_is_unused_registers_an_offense_and_adds_underscore_prefix
+    source: |
+      def some_method(foo, bar)
+        puts bar
+      end
+    offenses:
+      - line: 1
+        column_start: 16
+        column_end: 19
+        message: "#{message}"
+    corrected: |
+      def some_method(_foo, bar)
+        puts bar
+      end
+    config:
+      IgnoreEmptyMethods: false
+      AllowUnusedKeywordArguments: false
+      IgnoreNotImplementedMethods: false
+    interpolated: true
+
+  - name: rubocop_cop_lint_unusedmethodargument_inspection_when_a_method_takes_multiple_arguments_and_an_argument_is_unused_and_there_is_some_whitespace_around_the_unused_argument_registers_an_offense_and_preserves_whitespace
+    source: |
+      def some_method(foo,
+          bar)
+        puts foo
+      end
+    offenses:
+      - line: 2
+        column_start: 4
+        column_end: 7
+        message: "#{message}"
+    corrected: |
+      def some_method(foo,
+          _bar)
+        puts foo
+      end
+    config:
+      IgnoreEmptyMethods: false
+      AllowUnusedKeywordArguments: false
+      IgnoreNotImplementedMethods: false
+    interpolated: true
+
+  - name: rubocop_cop_lint_unusedmethodargument_inspection_when_a_method_takes_multiple_arguments_and_an_argument_is_unused_and_arguments_are_swap_assigned_accepts
+    source: |
+      def foo(a, b)
+        a, b = b, a
+      end
+    offenses:
+      []
+    config:
+      IgnoreEmptyMethods: false
+      AllowUnusedKeywordArguments: false
+      IgnoreNotImplementedMethods: false
+
+  - name: rubocop_cop_lint_unusedmethodargument_inspection_when_a_method_takes_multiple_arguments_and_an_argument_is_unused_and_one_argument_is_assigned_to_another_whilst_other_s_value_is_not_used_registers_an_offense
+    source: |
+      def foo(a, b)
+        a, b = b, 42
+      end
+    offenses:
+      - line: 1
+        column_start: 8
+        column_end: 9
+        message: "#{message}"
+    corrected: |
+      def foo(_a, b)
+        a, b = b, 42
+      end
+    config:
+      IgnoreEmptyMethods: false
+      AllowUnusedKeywordArguments: false
+      IgnoreNotImplementedMethods: false
+    interpolated: true
+
+  - name: rubocop_cop_lint_unusedmethodargument_inspection_when_a_method_takes_multiple_arguments_and_all_the_arguments_are_unused
+    source: |
+      def some_method(foo, bar)
+      end
+    offenses:
+      - line: 1
+        column_start: 21
+        column_end: 24
+        message: "#{bar_message}"
+      - line: 1
+        column_start: 16
+        column_end: 19
+        message: "#{foo_message}"
+    corrected: |
+      def some_method(_foo, _bar)
+      end
+    config:
+      IgnoreEmptyMethods: false
+      AllowUnusedKeywordArguments: false
+      IgnoreNotImplementedMethods: false
+    interpolated: true
+
+  - name: rubocop_cop_lint_unusedmethodargument_inspection_when_a_splat_argument_is_unused_registers_an_offense_and_preserves_the_splat
+    source: |
+      def some_method(foo, *bar)
+        puts foo
+      end
+    offenses:
+      - line: 1
+        column_start: 22
+        column_end: 25
+        message: "#{message}"
+    corrected: |
+      def some_method(foo, *_bar)
+        puts foo
+      end
+    config:
+      IgnoreEmptyMethods: false
+      AllowUnusedKeywordArguments: false
+      IgnoreNotImplementedMethods: false
+    interpolated: true
+
+  - name: rubocop_cop_lint_unusedmethodargument_inspection_when_an_argument_with_a_default_value_is_unused_registers_an_offense_and_preserves_the_default_value
+    source: |
+      def some_method(foo, bar = 1)
+        puts foo
+      end
+    offenses:
+      - line: 1
+        column_start: 21
+        column_end: 24
+        message: "#{message}"
+    corrected: |
+      def some_method(foo, _bar = 1)
+        puts foo
+      end
+    config:
+      IgnoreEmptyMethods: false
+      AllowUnusedKeywordArguments: false
+      IgnoreNotImplementedMethods: false
+    interpolated: true
+
+  - name: rubocop_cop_lint_unusedmethodargument_inspection_when_a_required_keyword_argument_is_unused_when_a_required_keyword_argument_is_unused_registers_an_offense_but_does_not_suggest_underscore_prefix
+    source: |
+      def self.some_method(foo, bar:)
+        puts foo
+      end
+    offenses:
+      - line: 1
+        column_start: 26
+        column_end: 29
+        message: Unused method argument - `bar`.
+    config:
+      IgnoreEmptyMethods: false
+      AllowUnusedKeywordArguments: false
+      IgnoreNotImplementedMethods: false
+
+  - name: rubocop_cop_lint_unusedmethodargument_inspection_when_an_optional_keyword_argument_is_unused_registers_an_offense_but_does_not_suggest_underscore_prefix
+    source: |
+      def self.some_method(foo, bar: 1)
+        puts foo
+      end
+    offenses:
+      - line: 1
+        column_start: 26
+        column_end: 29
+        message: Unused method argument - `bar`.
+    config:
+      IgnoreEmptyMethods: false
+      AllowUnusedKeywordArguments: false
+      IgnoreNotImplementedMethods: false
+
+  - name: rubocop_cop_lint_unusedmethodargument_inspection_when_an_optional_keyword_argument_is_unused_and_allowunusedkeywordarguments_set_does_not_care
+    source: |
+      def self.some_method(foo, bar: 1)
+        puts foo
+      end
+    offenses:
+      []
+    config:
+      IgnoreEmptyMethods: false
+      AllowUnusedKeywordArguments: true
+      IgnoreNotImplementedMethods: false
+
+  - name: rubocop_cop_lint_unusedmethodargument_inspection_when_a_trailing_block_argument_is_unused_registers_an_offense_and_removes_the_unused_block_arg
+    source: |
+      def some_method(foo, bar, &block)
+        foo + bar
+      end
+    offenses:
+      - line: 1
+        column_start: 27
+        column_end: 32
+        message: "#{message}"
+    corrected: |
+      def some_method(foo, bar)
+        foo + bar
+      end
+    config:
+      IgnoreEmptyMethods: false
+      AllowUnusedKeywordArguments: true
+      IgnoreNotImplementedMethods: false
+    interpolated: true
+
+  - name: rubocop_cop_lint_unusedmethodargument_inspection_when_a_singleton_method_argument_is_unused_registers_an_offense
+    source: |
+      def self.some_method(foo)
+      end
+    offenses:
+      - line: 1
+        column_start: 21
+        column_end: 24
+        message: "#{message}"
+    corrected: |
+      def self.some_method(_foo)
+      end
+    config:
+      IgnoreEmptyMethods: false
+      AllowUnusedKeywordArguments: true
+      IgnoreNotImplementedMethods: false
+    interpolated: true
+
+  - name: rubocop_cop_lint_unusedmethodargument_inspection_in_a_method_calling_super_without_arguments_when_a_method_argument_is_not_used_explicitly
+    source: |
+      def some_method(foo)
+        super
+      end
+    offenses:
+      []
+    config:
+      IgnoreEmptyMethods: false
+      AllowUnusedKeywordArguments: true
+      IgnoreNotImplementedMethods: false
+
+  - name: rubocop_cop_lint_unusedmethodargument_inspection_in_a_method_calling_super_with_arguments_when_a_method_argument_is_unused_registers_an_offense
+    source: |
+      def some_method(foo)
+        super(:something)
+      end
+    offenses:
+      - line: 1
+        column_start: 16
+        column_end: 19
+        message: "#{message}"
+    corrected: |
+      def some_method(_foo)
+        super(:something)
+      end
+    config:
+      IgnoreEmptyMethods: false
+      AllowUnusedKeywordArguments: true
+      IgnoreNotImplementedMethods: false
+    interpolated: true
+
+  - name: rubocop_cop_lint_unusedmethodargument_inspection_in_a_method_calling_binding_without_arguments_inside_another_method_definition_registers_offenses
+    source: |
+      def some_method(foo, bar)
+        def other(a)
+          puts something(binding)
+        end
+      end
+    offenses:
+      - line: 1
+        column_start: 21
+        column_end: 24
+        message: "#{bar_message}"
+      - line: 1
+        column_start: 16
+        column_end: 19
+        message: "#{foo_message}"
+    corrected: |
+      def some_method(_foo, _bar)
+        def other(a)
+          puts something(binding)
+        end
+      end
+    config:
+      IgnoreEmptyMethods: false
+      AllowUnusedKeywordArguments: true
+      IgnoreNotImplementedMethods: false
+    interpolated: true
+
+  - name: rubocop_cop_lint_unusedmethodargument_inspection_in_a_method_calling_binding_with_arguments_when_a_method_argument_is_unused_registers_an_offense
+    source: |
+      def some_method(foo)
+        binding(:something)
+      end
+    offenses:
+      - line: 1
+        column_start: 16
+        column_end: 19
+        message: "#{message}"
+    corrected: |
+      def some_method(_foo)
+        binding(:something)
+      end
+    config:
+      IgnoreEmptyMethods: false
+      AllowUnusedKeywordArguments: true
+      IgnoreNotImplementedMethods: false
+    interpolated: true
+
+  - name: rubocop_cop_lint_unusedmethodargument_when_ignoreemptymethods_config_parameter_is_set_accepts_an_empty_method_with_a_single_unused_parameter
+    source: |
+      def method(arg)
+      end
+    offenses:
+      []
+    config:
+      IgnoreEmptyMethods: true
+      AllowUnusedKeywordArguments: true
+      IgnoreNotImplementedMethods: false
+
+  - name: rubocop_cop_lint_unusedmethodargument_when_ignoreemptymethods_config_parameter_is_set_accepts_an_empty_singleton_method_with_a_single_unused_parameter
+    source: |
+      def self.method(unused)
+      end
+    offenses:
+      []
+    config:
+      IgnoreEmptyMethods: true
+      AllowUnusedKeywordArguments: true
+      IgnoreNotImplementedMethods: false
+
+  - name: rubocop_cop_lint_unusedmethodargument_when_ignoreemptymethods_config_parameter_is_set_registers_an_offense_for_a_non_empty_method_with_a_single_unused_parameter
+    source: |
+      def method(arg)
+        1
+      end
+    offenses:
+      - line: 1
+        column_start: 11
+        column_end: 14
+        message: "#{message}"
+    corrected: |
+      def method(_arg)
+        1
+      end
+    config:
+      IgnoreEmptyMethods: true
+      AllowUnusedKeywordArguments: true
+      IgnoreNotImplementedMethods: false
+    interpolated: true
+
+  - name: rubocop_cop_lint_unusedmethodargument_when_ignoreemptymethods_config_parameter_is_set_accepts_an_empty_method_with_multiple_unused_parameters
+    source: |
+      def method(a, b, *others)
+      end
+    offenses:
+      []
+    config:
+      IgnoreEmptyMethods: true
+      AllowUnusedKeywordArguments: true
+      IgnoreNotImplementedMethods: false
+
+  - name: rubocop_cop_lint_unusedmethodargument_when_ignoreemptymethods_config_parameter_is_set_registers_an_offense_for_a_non_empty_method_with_multiple_unused_parameters
+    source: |
+      def method(a, b, *others)
+                    ^ #{b_message}
+        1
+      end
+    offenses:
+      - line: 1
+        column_start: 18
+        column_end: 24
+        message: "#{others_message}"
+      - line: 2
+        column_start: 11
+        column_end: 12
+        message: "#{a_message}"
+    corrected: |
+      def method(_a, _b, *_others)
+        1
+      end
+    config:
+      IgnoreEmptyMethods: true
+      AllowUnusedKeywordArguments: true
+      IgnoreNotImplementedMethods: false
+    interpolated: true
+
+  - name: rubocop_cop_lint_unusedmethodargument_when_ignorenotimplementedmethods_config_parameter_is_set_accepts_a_method_with_a_single_unused_parameter_raises_notimplementederror
+    source: |
+      def method(arg)
+        raise NotImplementedError
+      end
+    offenses:
+      []
+    config:
+      IgnoreEmptyMethods: true
+      AllowUnusedKeywordArguments: true
+      IgnoreNotImplementedMethods: true
+
+  - name: rubocop_cop_lint_unusedmethodargument_when_ignorenotimplementedmethods_config_parameter_is_set_accepts_a_method_with_a_single_unused_parameter_raises_notimplementederror_message
+    source: |
+      def method(arg)
+        raise NotImplementedError, message
+      end
+    offenses:
+      []
+    config:
+      IgnoreEmptyMethods: true
+      AllowUnusedKeywordArguments: true
+      IgnoreNotImplementedMethods: true
+
+  - name: rubocop_cop_lint_unusedmethodargument_when_ignorenotimplementedmethods_config_parameter_is_set_accepts_a_method_with_a_single_unused_parameter_raises_notimplementederror
+    source: |
+      def method(arg)
+        raise ::NotImplementedError
+      end
+    offenses:
+      []
+    config:
+      IgnoreEmptyMethods: true
+      AllowUnusedKeywordArguments: true
+      IgnoreNotImplementedMethods: true
+
+  - name: rubocop_cop_lint_unusedmethodargument_when_ignorenotimplementedmethods_config_parameter_is_set_accepts_a_method_with_a_single_unused_parameter_fails_with_message
+    source: |
+      def method(arg)
+        fail "TODO"
+      end
+    offenses:
+      []
+    config:
+      IgnoreEmptyMethods: true
+      AllowUnusedKeywordArguments: true
+      IgnoreNotImplementedMethods: true
+
+  - name: rubocop_cop_lint_unusedmethodargument_when_ignorenotimplementedmethods_config_parameter_is_set_accepts_a_method_with_a_single_unused_parameter_fails_without_message
+    source: |
+      def method(arg)
+        fail
+      end
+    offenses:
+      []
+    config:
+      IgnoreEmptyMethods: true
+      AllowUnusedKeywordArguments: true
+      IgnoreNotImplementedMethods: true
+
+  - name: rubocop_cop_lint_unusedmethodargument_when_ignorenotimplementedmethods_config_parameter_is_set
+    source: |
+      def self.method(unused)
+        raise NotImplementedError
+      end
+    offenses:
+      []
+    config:
+      IgnoreEmptyMethods: true
+      AllowUnusedKeywordArguments: true
+      IgnoreNotImplementedMethods: true
+
+  - name: rubocop_cop_lint_unusedmethodargument_when_ignorenotimplementedmethods_config_parameter_is_set_registers_an_offense_for_a_non_empty_method_with_a_single_unused_parameter
+    source: |
+      def method(arg)
+        1
+      end
+    offenses:
+      - line: 1
+        column_start: 11
+        column_end: 14
+        message: "#{message}"
+    corrected: |
+      def method(_arg)
+        1
+      end
+    config:
+      IgnoreEmptyMethods: true
+      AllowUnusedKeywordArguments: true
+      IgnoreNotImplementedMethods: true
+    interpolated: true
+
+  - name: rubocop_cop_lint_unusedmethodargument_when_ignorenotimplementedmethods_config_parameter_is_set_accepts_an_empty_method_with_multiple_unused_parameters
+    source: |
+      def method(a, b, *others)
+        raise NotImplementedError
+      end
+    offenses:
+      []
+    config:
+      IgnoreEmptyMethods: true
+      AllowUnusedKeywordArguments: true
+      IgnoreNotImplementedMethods: true
+
+  - name: rubocop_cop_lint_unusedmethodargument_when_ignorenotimplementedmethods_config_parameter_is_set_registers_an_offense_for_a_non_empty_method_with_multiple_unused_parameters
+    source: |
+      def method(a, b, *others)
+                    ^ #{b_message}
+        1
+      end
+    offenses:
+      - line: 1
+        column_start: 18
+        column_end: 24
+        message: "#{others_message}"
+      - line: 2
+        column_start: 11
+        column_end: 12
+        message: "#{a_message}"
+    corrected: |
+      def method(_a, _b, *_others)
+        1
+      end
+    config:
+      IgnoreEmptyMethods: true
+      AllowUnusedKeywordArguments: true
+      IgnoreNotImplementedMethods: true
+    interpolated: true
+
+  - name: rubocop_cop_lint_unusedmethodargument_when_ignorenotimplementedmethods_config_parameter_is_set_when_notimplementedexceptions_is_configured_accepts_a_method_with_a_single_unused_parameter_raises_abstractmethoderror
+    source: |
+      def method(arg)
+        raise AbstractMethodError
+      end
+    offenses:
+      []
+    config:
+      IgnoreEmptyMethods: true
+      AllowUnusedKeywordArguments: true
+      IgnoreNotImplementedMethods: true
+      NotImplementedExceptions: [AbstractMethodError]
+
+  - name: rubocop_cop_lint_unusedmethodargument_when_ignorenotimplementedmethods_config_parameter_is_set_when_notimplementedexceptions_is_configured_accepts_a_method_with_a_single_unused_parameter_raises_abstractmethoderror_message
+    source: |
+      def method(arg)
+        raise AbstractMethodError, message
+      end
+    offenses:
+      []
+    config:
+      IgnoreEmptyMethods: true
+      AllowUnusedKeywordArguments: true
+      IgnoreNotImplementedMethods: true
+      NotImplementedExceptions: [AbstractMethodError]
+
+  - name: rubocop_cop_lint_unusedmethodargument_when_ignorenotimplementedmethods_config_parameter_is_set_when_notimplementedexceptions_is_configured_accepts_a_method_with_a_single_unused_parameter_raises_abstractmethoderror
+    source: |
+      def method(arg)
+        raise ::AbstractMethodError
+      end
+    offenses:
+      []
+    config:
+      IgnoreEmptyMethods: true
+      AllowUnusedKeywordArguments: true
+      IgnoreNotImplementedMethods: true
+      NotImplementedExceptions: [AbstractMethodError]
+
+  - name: rubocop_cop_lint_unusedmethodargument_when_ignorenotimplementedmethods_config_parameter_is_set_when_notimplementedexceptions_is_configured_when_notimplementedexceptions_contains_a_namespaced_exception_class_accepts_a_method_with_a_single_unused_parameter_raises_library_abstractmethoderror
+    source: |
+      def method(arg)
+        raise Library::AbstractMethodError
+      end
+    offenses:
+      []
+    config:
+      IgnoreEmptyMethods: true
+      AllowUnusedKeywordArguments: true
+      IgnoreNotImplementedMethods: true
+      NotImplementedExceptions: ["Library::AbstractMethodError"]
+
+  - name: rubocop_cop_lint_unusedmethodargument_when_ignorenotimplementedmethods_config_parameter_is_set_when_notimplementedexceptions_is_configured_when_notimplementedexceptions_contains_a_namespaced_exception_class_accepts_a_method_with_a_single_unused_parameter_raises_library_abstractmethoderror_message
+    source: |
+      def method(arg)
+        raise Library::AbstractMethodError, message
+      end
+    offenses:
+      []
+    config:
+      IgnoreEmptyMethods: true
+      AllowUnusedKeywordArguments: true
+      IgnoreNotImplementedMethods: true
+      NotImplementedExceptions: ["Library::AbstractMethodError"]
+
+  - name: rubocop_cop_lint_unusedmethodargument_when_ignorenotimplementedmethods_config_parameter_is_set_when_notimplementedexceptions_is_configured_when_notimplementedexceptions_contains_a_namespaced_exception_class_accepts_a_method_with_a_single_unused_parameter_raises_library_abstractmethoderror
+    source: |
+      def method(arg)
+        raise ::Library::AbstractMethodError
+      end
+    offenses:
+      []
+    config:
+      IgnoreEmptyMethods: true
+      AllowUnusedKeywordArguments: true
+      IgnoreNotImplementedMethods: true
+      NotImplementedExceptions: ["Library::AbstractMethodError"]

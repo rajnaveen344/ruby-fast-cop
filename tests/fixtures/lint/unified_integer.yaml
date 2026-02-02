@@ -1,0 +1,99 @@
+cop: Lint/UnifiedInteger
+department: lint
+severity: warning
+implemented: false
+
+tests:
+  - name: rubocop_cop_lint_unifiedinteger_target_ruby_version_2_4_without_any_decorations_registers_an_offense_but_does_not_correct
+    source: |
+      1.is_a?(%{klass})
+    offenses:
+      - line: 1
+        column_start: 8
+        column_end: 17
+        message: "Use `Integer` instead of `#{klass}`."
+    ruby_version: ">= 2.3"
+    interpolated: true
+
+  - name: rubocop_cop_lint_unifiedinteger_target_ruby_version_2_4_when_explicitly_specified_as_toplevel_constant_registers_an_offense
+    source: |
+      1.is_a?(::%{klass})
+    offenses:
+      - line: 1
+        column_start: 8
+        column_end: 19
+        message: "Use `Integer` instead of `#{klass}`."
+    ruby_version: ">= 2.3"
+    interpolated: true
+
+  - name: rubocop_cop_lint_unifiedinteger_target_ruby_version_2_4_with_mynamespace_does_not_register_an_offense
+    source: |
+      1.is_a?(MyNamespace::#{klass})
+    offenses:
+      []
+    ruby_version: ">= 2.3"
+    interpolated: true
+
+  - name: rubocop_cop_lint_unifiedinteger_target_ruby_version_2_4_without_any_decorations_registers_an_offense
+    source: |
+      1.is_a?(#{klass})
+    offenses:
+      - line: 1
+        column_start: 8
+        column_end: 17
+        message: "Use `Integer` instead of `#{klass}`."
+    corrected: |
+      1.is_a?(Integer)
+    ruby_version: ">= 2.4"
+    interpolated: true
+
+  - name: rubocop_cop_lint_unifiedinteger_target_ruby_version_2_4_when_explicitly_specified_as_toplevel_constant_registers_an_offense
+    source: |
+      1.is_a?(::#{klass})
+    offenses:
+      - line: 1
+        column_start: 8
+        column_end: 19
+        message: "Use `Integer` instead of `#{klass}`."
+    corrected: |
+      1.is_a?(::Integer)
+    ruby_version: ">= 2.4"
+    interpolated: true
+
+  - name: rubocop_cop_lint_unifiedinteger_target_ruby_version_2_4_with_mynamespace_does_not_register_an_offense
+    source: |
+      1.is_a?(MyNamespace::#{klass})
+    offenses:
+      []
+    ruby_version: ">= 2.4"
+    interpolated: true
+
+  - name: rubocop_cop_lint_unifiedinteger_registers_an_offense_fixnum
+    source: |
+      Fixnum
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_unifiedinteger_registers_an_offense_bignum
+    source: |
+      Bignum
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_unifiedinteger_when_integer_without_any_decorations_does_not_register_an_offense
+    source: |
+      1.is_a?(Integer)
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_unifiedinteger_when_integer_when_explicitly_specified_as_toplevel_constant_does_not_register_an_offense
+    source: |
+      1.is_a?(::Integer)
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_unifiedinteger_when_integer_with_mynamespace_does_not_register_an_offense
+    source: |
+      1.is_a?(MyNamespace::Integer)
+    offenses:
+      []

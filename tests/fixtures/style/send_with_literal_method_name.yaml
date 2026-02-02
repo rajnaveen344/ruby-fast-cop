@@ -1,0 +1,344 @@
+cop: Style/SendWithLiteralMethodName
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_symbol_literal_argument_registers_an_offense
+    source: |
+      obj.public_send(:foo)
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 21
+        message: Use `foo` method call directly instead.
+    corrected: |
+      obj.foo
+
+  - name: rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_symbol_literal_argument_with_safe_navigation_registers_an_offense
+    source: |
+      obj&.public_send(:foo)
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 22
+        message: Use `foo` method call directly instead.
+    corrected: |
+      obj&.foo
+
+  - name: rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_symbol_literal_argument_and_some_arguments_with_parentheses_registers_an_offense
+    source: |
+      obj.public_send(:foo, bar, 42)
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 30
+        message: Use `foo` method call directly instead.
+    corrected: |
+      obj.foo(bar, 42)
+
+  - name: rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_symbol_literal_argument_and_some_arguments_with_parentheses_with_safe_navigation_registers_an_offense
+    source: |
+      obj&.public_send(:foo, bar, 42)
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 31
+        message: Use `foo` method call directly instead.
+    corrected: |
+      obj&.foo(bar, 42)
+
+  - name: rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_symbol_literal_argument_and_some_arguments_without_parentheses_registers_an_offense
+    source: |
+      obj.public_send :foo, bar, 42
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 29
+        message: Use `foo` method call directly instead.
+    corrected: |
+      obj.foo bar, 42
+
+  - name: rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_symbol_literal_argument_and_some_arguments_without_parentheses_with_safe_navigation_registers_an_offense
+    source: |
+      obj&.public_send :foo, bar, 42
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 30
+        message: Use `foo` method call directly instead.
+    corrected: |
+      obj&.foo bar, 42
+
+  - name: rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_symbol_literal_argument_without_a_receiver_registers_an_offense
+    source: |
+      public_send(:foo)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 17
+        message: Use `foo` method call directly instead.
+    corrected: |
+      foo
+
+  - name: rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_string_literal_argument_registers_an_offense
+    source: |
+      obj.public_send('foo')
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 22
+        message: Use `foo` method call directly instead.
+    corrected: |
+      obj.foo
+
+  - name: rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_string_literal_argument_with_safe_navigation_registers_an_offense
+    source: |
+      obj&.public_send('foo')
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 23
+        message: Use `foo` method call directly instead.
+    corrected: |
+      obj&.foo
+
+  - name: rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_method_name_with_underscore_registers_an_offense
+    source: |
+      obj.public_send("name_with_underscore")
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 39
+        message: Use `name_with_underscore` method call directly instead.
+    corrected: |
+      obj.name_with_underscore
+
+  - name: rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_method_name_with_underscore_with_safe_navigation_registers_an_offense
+    source: |
+      obj&.public_send("name_with_underscore")
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 40
+        message: Use `name_with_underscore` method call directly instead.
+    corrected: |
+      obj&.name_with_underscore
+
+  - name: rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_method_name_with_a_variable_argument_does_not_register_an_offense
+    source: |
+      obj.public_send(variable)
+    offenses:
+      []
+
+  - name: rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_method_name_with_a_variable_argument_with_safe_navigation_does_not_register_an_offense
+    source: |
+      obj&.public_send(variable)
+    offenses:
+      []
+
+  - name: rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_method_name_with_an_interpolated_string_argument_does_not_register_an_offense
+    source: |
+      obj.public_send("#{interpolated}string")
+    offenses:
+      []
+
+  - name: rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_method_name_with_an_interpolated_string_argument_with_safe_navigation_does_not_register_an_offense
+    source: |
+      obj&.public_send("#{interpolated}string")
+    offenses:
+      []
+
+  - name: rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_method_name_with_a_space_does_not_register_an_offense
+    source: |
+      obj.public_send("name with space")
+    offenses:
+      []
+
+  - name: rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_method_name_with_a_space_with_safe_navigation_does_not_register_an_offense
+    source: |
+      obj&.public_send("name with space")
+    offenses:
+      []
+
+  - name: rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_method_name_with_a_hyphen_does_not_register_an_offense
+    source: |
+      obj.public_send("name-with-hyphen")
+    offenses:
+      []
+
+  - name: rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_method_name_with_a_hyphen_with_safe_navigation_does_not_register_an_offense
+    source: |
+      obj&.public_send("name-with-hyphen")
+    offenses:
+      []
+
+  - name: rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_writer_method_name_does_not_register_an_offense
+    source: |
+      obj.public_send("name=")
+    offenses:
+      []
+
+  - name: rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_writer_method_name_with_safe_navigation_does_not_register_an_offense
+    source: |
+      obj&.public_send("name=")
+    offenses:
+      []
+
+  - name: rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_method_name_with_braces_does_not_register_an_offense
+    source: |
+      obj.public_send("{brackets}")
+    offenses:
+      []
+
+  - name: rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_method_name_with_braces_with_safe_navigation_does_not_register_an_offense
+    source: |
+      obj&.public_send("{brackets}")
+    offenses:
+      []
+
+  - name: rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_method_name_with_square_brackets_does_not_register_an_offense
+    source: |
+      obj.public_send("[square_brackets]")
+    offenses:
+      []
+
+  - name: rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_method_name_with_square_brackets_with_safe_navigation_does_not_register_an_offense
+    source: |
+      obj&.public_send("[square_brackets]")
+    offenses:
+      []
+
+  - name: rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_reserved_word_does_not_register_an_offense
+    source: |
+      obj.public_send(:#{reserved_word})
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_reserved_word_with_safe_navigation_does_not_register_an_offense
+    source: |
+      obj&.public_send(:#{reserved_word})
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_integer_literal_argument_does_not_register_an_offense
+    source: |
+      obj.public_send(42)
+    offenses:
+      []
+
+  - name: rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_integer_literal_argument_with_safe_navigation_does_not_register_an_offense
+    source: |
+      obj&.public_send(42)
+    offenses:
+      []
+
+  - name: rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_without_arguments_does_not_register_an_offense
+    source: |
+      obj.public_send
+    offenses:
+      []
+
+  - name: rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_without_arguments_with_safe_navigation_does_not_register_an_offense
+    source: |
+      obj&.public_send
+    offenses:
+      []
+
+  - name: rubocop_cop_style_sendwithliteralmethodname_when_calling_another_method_other_than_public_send_does_not_register_an_offense
+    source: |
+      obj.foo
+    offenses:
+      []
+
+  - name: rubocop_cop_style_sendwithliteralmethodname_when_calling_another_method_other_than_public_send_with_safe_navigation_does_not_register_an_offense
+    source: |
+      obj&.foo
+    offenses:
+      []
+
+  - name: rubocop_cop_style_sendwithliteralmethodname_when_allowsend_true_when_calling_send_with_a_symbol_literal_argument_does_not_register_an_offense
+    source: |
+      obj.send(:foo)
+    offenses:
+      []
+    config:
+      AllowSend: true
+
+  - name: rubocop_cop_style_sendwithliteralmethodname_when_allowsend_true_when_calling_send_with_a_symbol_literal_argument_with_safe_navigation_does_not_register_an_offense
+    source: |
+      obj&.send(:foo)
+    offenses:
+      []
+    config:
+      AllowSend: true
+
+  - name: rubocop_cop_style_sendwithliteralmethodname_when_allowsend_true_when_calling_send_with_a_symbol_literal_argument_does_not_register_an_offense
+    source: |
+      obj.__send__(:foo)
+    offenses:
+      []
+    config:
+      AllowSend: true
+
+  - name: rubocop_cop_style_sendwithliteralmethodname_when_allowsend_true_when_calling_send_with_a_symbol_literal_argument_with_safe_navigation_does_not_register_an_offense
+    source: |
+      obj&.__send__(:foo)
+    offenses:
+      []
+    config:
+      AllowSend: true
+
+  - name: rubocop_cop_style_sendwithliteralmethodname_when_allowsend_false_when_calling_send_with_a_symbol_literal_argument_registers_an_offense
+    source: |
+      obj.send(:foo)
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 14
+        message: Use `foo` method call directly instead.
+    corrected: |
+      obj.foo
+    config:
+      AllowSend: false
+
+  - name: rubocop_cop_style_sendwithliteralmethodname_when_allowsend_false_when_calling_send_with_a_symbol_literal_argument_with_safe_navigation_registers_an_offense
+    source: |
+      obj&.send(:foo)
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 15
+        message: Use `foo` method call directly instead.
+    corrected: |
+      obj&.foo
+    config:
+      AllowSend: false
+
+  - name: rubocop_cop_style_sendwithliteralmethodname_when_allowsend_false_when_calling_send_with_a_symbol_literal_argument_registers_an_offense
+    source: |
+      obj.__send__(:foo)
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 18
+        message: Use `foo` method call directly instead.
+    corrected: |
+      obj.foo
+    config:
+      AllowSend: false
+
+  - name: rubocop_cop_style_sendwithliteralmethodname_when_allowsend_false_when_calling_send_with_a_symbol_literal_argument_with_safe_navigation_registers_an_offense
+    source: |
+      obj&.__send__(:foo)
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 19
+        message: Use `foo` method call directly instead.
+    corrected: |
+      obj&.foo
+    config:
+      AllowSend: false

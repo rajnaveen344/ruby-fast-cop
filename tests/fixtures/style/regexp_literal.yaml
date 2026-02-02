@@ -1,0 +1,652 @@
+cop: Style/RegexpLiteral
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_regexpliteral_when_regex_contains_slashes_in_interpolation_ignores_the_slashes_that_do_not_belong_regex
+    source: |
+      x =~ /\s{#{x[/\s+/].length}}/
+    offenses:
+      []
+    config:
+      EnforcedStyle: slashes
+
+  - name: rubocop_cop_style_regexpliteral_r_regex_with_other_delimiters_than_curly_braces_registers_an_offense
+    source: |
+      %r_ls_
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 6
+        message: Use `//` around regular expression.
+    config:
+      EnforcedStyle: slashes
+
+  - name: rubocop_cop_style_regexpliteral_when_percentliteraldelimiters_is_configured_with_brackets_respects_the_configuration_when_autocorrecting
+    source: |
+      /a/
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 3
+        message: Use `%r` around regular expression.
+    corrected: |
+      %r[a]
+    config:
+      EnforcedStyle: percent_r
+
+  - name: rubocop_cop_style_regexpliteral_when_percentliteraldelimiters_is_configured_with_slashes_respects_the_configuration_when_autocorrecting
+    source: |
+      /\//
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 4
+        message: Use `%r` around regular expression.
+    corrected: |
+      %r/\//
+    config:
+      EnforcedStyle: percent_r
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_is_set_to_slashes_a_single_line_regex_without_slashes_is_accepted
+    source: |
+      foo = /a/
+    offenses:
+      []
+    config:
+      EnforcedStyle: slashes
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_is_set_to_slashes_a_single_line_regex_with_slashes_registers_an_offense
+    source: |
+      foo = /home\//
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 14
+        message: Use `%r` around regular expression.
+    corrected: |
+      foo = %r{home/}
+    config:
+      EnforcedStyle: slashes
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_is_set_to_slashes_a_single_line_regex_with_slashes_when_configured_to_allow_inner_slashes_is_accepted
+    source: |
+      foo = /home\//
+    offenses:
+      []
+    config:
+      EnforcedStyle: slashes
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_is_set_to_slashes_a_single_line_regex_with_slashes_and_interpolation_registers_an_offense
+    source: |
+      foo = /users\/#{user.id}\/forms/
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 32
+        message: Use `%r` around regular expression.
+    corrected: |
+      foo = %r{users/#{user.id}/forms}
+    config:
+      EnforcedStyle: slashes
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_is_set_to_slashes_a_single_line_regex_with_slashes_and_interpolation_when_configured_to_allow_inner_slashes_is_accepted
+    source: |
+      foo = /users\/#{user.id}\/forms/
+    offenses:
+      []
+    config:
+      EnforcedStyle: slashes
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_is_set_to_slashes_a_single_line_r_regex_with_slashes_is_accepted
+    source: |
+      foo = %r/\//
+    offenses:
+      []
+    config:
+      EnforcedStyle: slashes
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_is_set_to_slashes_a_single_line_r_regex_with_slashes_when_configured_to_allow_inner_slashes_preserves_slashes_after_autocorrection
+    source: |
+      foo = %r/\//
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 12
+        message: Use `//` around regular expression.
+    corrected: |
+      foo = /\//
+    config:
+      EnforcedStyle: slashes
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_is_set_to_slashes_a_multi_line_regex_without_slashes_is_accepted
+    source: |
+      foo = /
+        foo
+        bar
+      /x
+    offenses:
+      []
+    config:
+      EnforcedStyle: slashes
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_is_set_to_slashes_a_multi_line_regex_with_slashes_registers_an_offense
+    source: |
+      foo = /
+        https?:\/\/
+        example\.com
+      /x
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 7
+        message: Use `%r` around regular expression.
+    corrected: |
+      foo = %r{
+        https?://
+        example\.com
+      }x
+    config:
+      EnforcedStyle: slashes
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_is_set_to_slashes_a_multi_line_regex_with_slashes_when_configured_to_allow_inner_slashes_is_accepted
+    source: |
+      foo = /
+        https?:\/\/
+        example\.com
+      /x
+    offenses:
+      []
+    config:
+      EnforcedStyle: slashes
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_is_set_to_slashes_a_single_line_r_regex_without_slashes_registers_an_offense
+    source: |
+      foo = %r{a}
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 11
+        message: Use `//` around regular expression.
+    corrected: |
+      foo = /a/
+    config:
+      EnforcedStyle: slashes
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_is_set_to_slashes_a_single_line_r_regex_with_slashes_is_accepted
+    source: |
+      foo = %r{home/}
+    offenses:
+      []
+    config:
+      EnforcedStyle: slashes
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_is_set_to_slashes_a_single_line_r_regex_with_slashes_when_configured_to_allow_inner_slashes_registers_an_offense
+    source: |
+      foo = %r{home/}
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 15
+        message: Use `//` around regular expression.
+    corrected: |
+      foo = /home\//
+    config:
+      EnforcedStyle: slashes
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_is_set_to_slashes_a_multi_line_r_regex_without_slashes_registers_an_offense
+    source: |
+      foo = %r{
+        foo
+        bar
+      }x
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 9
+        message: Use `//` around regular expression.
+    corrected: |
+      foo = /
+        foo
+        bar
+      /x
+    config:
+      EnforcedStyle: slashes
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_is_set_to_slashes_a_multi_line_r_regex_with_slashes_is_accepted
+    source: |
+      foo = %r{
+        https?://
+        example\.com
+      }x
+    offenses:
+      []
+    config:
+      EnforcedStyle: slashes
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_is_set_to_slashes_a_multi_line_r_regex_with_slashes_when_configured_to_allow_inner_slashes_registers_an_offense
+    source: |
+      foo = %r{
+        https?://
+        example\.com
+      }x
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 9
+        message: Use `//` around regular expression.
+    corrected: |
+      foo = /
+        https?:\/\/
+        example\.com
+      /x
+    config:
+      EnforcedStyle: slashes
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_is_set_to_percent_r_a_single_line_regex_without_slashes_registers_an_offense
+    source: |
+      foo = /a/
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 9
+        message: Use `%r` around regular expression.
+    corrected: |
+      foo = %r{a}
+    config:
+      EnforcedStyle: percent_r
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_is_set_to_percent_r_a_single_line_regex_with_slashes_registers_an_offense
+    source: |
+      foo = /home\//
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 14
+        message: Use `%r` around regular expression.
+    corrected: |
+      foo = %r{home/}
+    config:
+      EnforcedStyle: percent_r
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_is_set_to_percent_r_a_multi_line_regex_without_slashes_registers_an_offense
+    source: |
+      foo = /
+        foo
+        bar
+      /x
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 7
+        message: Use `%r` around regular expression.
+    corrected: |
+      foo = %r{
+        foo
+        bar
+      }x
+    config:
+      EnforcedStyle: percent_r
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_is_set_to_percent_r_a_multi_line_regex_with_slashes_registers_an_offense
+    source: |
+      foo = /
+        https?:\/\/
+        example\.com
+      /x
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 7
+        message: Use `%r` around regular expression.
+    corrected: |
+      foo = %r{
+        https?://
+        example\.com
+      }x
+    config:
+      EnforcedStyle: percent_r
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_is_set_to_percent_r_a_single_line_r_regex_without_slashes_is_accepted
+    source: |
+      foo = %r{a}
+    offenses:
+      []
+    config:
+      EnforcedStyle: percent_r
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_is_set_to_percent_r_a_single_line_r_regex_with_slashes_is_accepted
+    source: |
+      foo = %r{home/}
+    offenses:
+      []
+    config:
+      EnforcedStyle: percent_r
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_is_set_to_percent_r_a_multi_line_r_regex_without_slashes_is_accepted
+    source: |
+      foo = %r{
+        foo
+        bar
+      }x
+    offenses:
+      []
+    config:
+      EnforcedStyle: percent_r
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_is_set_to_percent_r_a_multi_line_r_regex_with_slashes_is_accepted
+    source: |
+      foo = %r{
+        https?://
+        example\.com
+      }x
+    offenses:
+      []
+    config:
+      EnforcedStyle: percent_r
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_is_set_to_mixed_a_single_line_regex_without_slashes_is_accepted
+    source: |
+      foo = /a/
+    offenses:
+      []
+    config:
+      EnforcedStyle: mixed
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_is_set_to_mixed_a_single_line_regex_with_slashes_registers_an_offense
+    source: |
+      foo = /home\//
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 14
+        message: Use `%r` around regular expression.
+    corrected: |
+      foo = %r{home/}
+    config:
+      EnforcedStyle: mixed
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_is_set_to_mixed_a_single_line_regex_with_slashes_when_configured_to_allow_inner_slashes_is_accepted
+    source: |
+      foo = /home\//
+    offenses:
+      []
+    config:
+      EnforcedStyle: mixed
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_is_set_to_mixed_a_multi_line_regex_without_slashes_registers_an_offense
+    source: |
+      foo = /
+        foo
+        bar
+      /x
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 7
+        message: Use `%r` around regular expression.
+    corrected: |
+      foo = %r{
+        foo
+        bar
+      }x
+    config:
+      EnforcedStyle: mixed
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_is_set_to_mixed_a_multi_line_regex_with_slashes_registers_an_offense
+    source: |
+      foo = /
+        https?:\/\/
+        example\.com
+      /x
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 7
+        message: Use `%r` around regular expression.
+    corrected: |
+      foo = %r{
+        https?://
+        example\.com
+      }x
+    config:
+      EnforcedStyle: mixed
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_is_set_to_mixed_a_single_line_r_regex_without_slashes_registers_an_offense
+    source: |
+      foo = %r{a}
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 11
+        message: Use `//` around regular expression.
+    corrected: |
+      foo = /a/
+    config:
+      EnforcedStyle: mixed
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_is_set_to_mixed_a_single_line_r_regex_with_slashes_is_accepted
+    source: |
+      foo = %r{home/}
+    offenses:
+      []
+    config:
+      EnforcedStyle: mixed
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_is_set_to_mixed_a_single_line_r_regex_with_slashes_when_configured_to_allow_inner_slashes_registers_an_offense
+    source: |
+      foo = %r{home/}
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 15
+        message: Use `//` around regular expression.
+    corrected: |
+      foo = /home\//
+    config:
+      EnforcedStyle: mixed
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_is_set_to_mixed_a_multi_line_r_regex_without_slashes_is_accepted
+    source: |
+      foo = %r{
+        foo
+        bar
+      }x
+    offenses:
+      []
+    config:
+      EnforcedStyle: mixed
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_is_set_to_mixed_a_multi_line_r_regex_with_slashes_is_accepted
+    source: |
+      foo = %r{
+        https?://
+        example\.com
+      }x
+    offenses:
+      []
+    config:
+      EnforcedStyle: mixed
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_require_parentheses_of_style_methodcallwithargsparentheses_cop_when_using_r_regexp_with_enforcedstyle_slashes_registers_an_offense_when_used_as_a_method_argument
+    source: |
+      do_something %r/regexp/
+    offenses:
+      - line: 1
+        column_start: 13
+        column_end: 23
+        message: Use `//` around regular expression.
+    config:
+      EnforcedStyle: slashes
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_require_parentheses_of_style_methodcallwithargsparentheses_cop_when_using_r_regexp_with_enforcedstyle_slashes_registers_an_offense_when_used_as_a_safe_navigation_method_argument
+    source: |
+      foo&.do_something %r/regexp/
+    offenses:
+      - line: 1
+        column_start: 18
+        column_end: 28
+        message: Use `//` around regular expression.
+    config:
+      EnforcedStyle: slashes
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_require_parentheses_of_style_methodcallwithargsparentheses_cop_when_using_r_regexp_with_enforcedstyle_slashes_registers_an_offense_when_not_used_as_a_method_argument
+    source: |
+      %r/regexp/
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 10
+        message: Use `//` around regular expression.
+    config:
+      EnforcedStyle: slashes
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_require_parentheses_of_style_methodcallwithargsparentheses_cop_when_using_r_regexp_with_enforcedstyle_slashes_does_not_register_an_offense_when_using_a_regexp_starts_with_a_blank_as_a_method_argument
+    source: |
+      do_something %r/ regexp/
+    offenses:
+      []
+    config:
+      EnforcedStyle: slashes
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_require_parentheses_of_style_methodcallwithargsparentheses_cop_when_using_r_regexp_with_enforcedstyle_slashes_does_not_register_an_offense_when_using_a_regexp_starts_with_a_blank_as_a_safe_navigation_method_argument
+    source: |
+      foo&.do_something %r/ regexp/
+    offenses:
+      []
+    config:
+      EnforcedStyle: slashes
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_require_parentheses_of_style_methodcallwithargsparentheses_cop_when_using_r_regexp_with_enforcedstyle_slashes_registers_an_offense_when_using_a_regexp_starts_with_a_blank
+    source: |
+      %r/ regexp/
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 11
+        message: Use `//` around regular expression.
+    config:
+      EnforcedStyle: slashes
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_require_parentheses_of_style_methodcallwithargsparentheses_cop_when_using_r_regexp_with_enforcedstyle_slashes_does_not_register_an_offense_when_using_a_regexp_starts_with_equal_as_a_method_argument
+    source: |
+      do_something %r/=regexp/
+    offenses:
+      []
+    config:
+      EnforcedStyle: slashes
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_require_parentheses_of_style_methodcallwithargsparentheses_cop_when_using_r_regexp_with_enforcedstyle_mixed_registers_an_offense_when_used_as_a_method_argument
+    source: |
+      do_something %r/regexp/
+    offenses:
+      - line: 1
+        column_start: 13
+        column_end: 23
+        message: Use `//` around regular expression.
+    config:
+      EnforcedStyle: mixed
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_require_parentheses_of_style_methodcallwithargsparentheses_cop_when_using_r_regexp_with_enforcedstyle_mixed_registers_an_offense_when_used_as_a_safe_navigation_method_argument
+    source: |
+      foo&.do_something %r/regexp/
+    offenses:
+      - line: 1
+        column_start: 18
+        column_end: 28
+        message: Use `//` around regular expression.
+    config:
+      EnforcedStyle: mixed
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_require_parentheses_of_style_methodcallwithargsparentheses_cop_when_using_r_regexp_with_enforcedstyle_mixed_registers_an_offense_when_not_used_as_a_method_argument
+    source: |
+      %r/regexp/
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 10
+        message: Use `//` around regular expression.
+    config:
+      EnforcedStyle: mixed
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_require_parentheses_of_style_methodcallwithargsparentheses_cop_when_using_r_regexp_with_enforcedstyle_mixed_does_not_register_an_offense_when_using_a_regexp_starts_with_a_blank_as_a_method_argument
+    source: |
+      do_something %r/ regexp/
+    offenses:
+      []
+    config:
+      EnforcedStyle: mixed
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_require_parentheses_of_style_methodcallwithargsparentheses_cop_when_using_r_regexp_with_enforcedstyle_mixed_does_not_register_an_offense_when_using_a_regexp_starts_with_a_blank_as_a_safe_navigation_method_argument
+    source: |
+      foo&.do_something %r/ regexp/
+    offenses:
+      []
+    config:
+      EnforcedStyle: mixed
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_require_parentheses_of_style_methodcallwithargsparentheses_cop_when_using_r_regexp_with_enforcedstyle_mixed_registers_an_offense_when_using_a_regexp_starts_with_a_blank
+    source: |
+      %r/ regexp/
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 11
+        message: Use `//` around regular expression.
+    config:
+      EnforcedStyle: mixed
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_omit_parentheses_of_style_methodcallwithargsparentheses_cop_when_using_r_regexp_with_enforcedstyle_slashes_does_not_register_an_offense_when_used_as_a_method_argument
+    source: |
+      do_something %r/regexp/
+    offenses:
+      []
+    config:
+      EnforcedStyle: slashes
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_omit_parentheses_of_style_methodcallwithargsparentheses_cop_when_using_r_regexp_with_enforcedstyle_slashes_does_not_register_an_offense_when_used_as_a_safe_navigation_method_argument
+    source: |
+      foo&.do_something %r/regexp/
+    offenses:
+      []
+    config:
+      EnforcedStyle: slashes
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_omit_parentheses_of_style_methodcallwithargsparentheses_cop_when_using_r_regexp_with_enforcedstyle_slashes_registers_an_offense_when_not_used_as_a_method_argument
+    source: |
+      %r/regexp/
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 10
+        message: Use `//` around regular expression.
+    config:
+      EnforcedStyle: slashes
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_omit_parentheses_of_style_methodcallwithargsparentheses_cop_when_using_r_regexp_with_enforcedstyle_mixed_does_not_register_an_offense_when_used_as_a_method_argument
+    source: |
+      do_something %r/regexp/
+    offenses:
+      []
+    config:
+      EnforcedStyle: mixed
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_omit_parentheses_of_style_methodcallwithargsparentheses_cop_when_using_r_regexp_with_enforcedstyle_mixed_does_not_register_an_offense_when_used_as_a_safe_navigation_method_argument
+    source: |
+      foo&.do_something %r/regexp/
+    offenses:
+      []
+    config:
+      EnforcedStyle: mixed
+
+  - name: rubocop_cop_style_regexpliteral_when_enforcedstyle_omit_parentheses_of_style_methodcallwithargsparentheses_cop_when_using_r_regexp_with_enforcedstyle_mixed_registers_an_offense_when_not_used_as_a_method_argument
+    source: |
+      %r/regexp/
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 10
+        message: Use `//` around regular expression.
+    config:
+      EnforcedStyle: mixed

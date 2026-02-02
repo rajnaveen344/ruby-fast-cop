@@ -1,0 +1,354 @@
+cop: Lint/NonDeterministicRequireOrder
+department: lint
+severity: warning
+implemented: false
+
+tests:
+  - name: rubocop_cop_lint_nondeterministicrequireorder_when_requiring_files_when_ruby_3_0_or_higher_with_dir_does_not_register_an_offense
+    source: |
+      Dir["./lib/**/*.rb"].each do |file|
+        require file
+      end
+    offenses:
+      []
+    ruby_version: ">= 3.0"
+
+  - name: rubocop_cop_lint_nondeterministicrequireorder_when_requiring_files_when_ruby_3_0_or_higher_with_dir_with_extra_logic_does_not_register_an_offense
+    source: |
+      Dir["./lib/**/*.rb"].each do |file|
+        if file.start_with?('_')
+          puts "Not required."
+        else
+          require file
+        end
+      end
+    offenses:
+      []
+    ruby_version: ">= 3.0"
+
+  - name: rubocop_cop_lint_nondeterministicrequireorder_when_requiring_files_when_ruby_3_0_or_higher_with_dir_with_require_block_passed_as_parameter_does_not_register_an_offense
+    source: |
+      Dir["./lib/**/*.rb"].each(&method(:require))
+    offenses:
+      []
+    ruby_version: ">= 3.0"
+
+  - name: rubocop_cop_lint_nondeterministicrequireorder_when_requiring_files_when_ruby_3_0_or_higher_with_dir_with_top_level_dir_does_not_register_an_offense
+    source: |
+      ::Dir["./lib/**/*.rb"].each do |file|
+        require file
+      end
+    offenses:
+      []
+    ruby_version: ">= 3.0"
+
+  - name: rubocop_cop_lint_nondeterministicrequireorder_when_requiring_files_when_ruby_3_0_or_higher_with_dir_glob_does_not_register_an_offense
+    source: |
+      Dir.glob(Rails.root.join(__dir__, 'test', '*.rb'), File::FNM_DOTMATCH).each do |file|
+        require file
+      end
+    offenses:
+      []
+    ruby_version: ">= 3.0"
+
+  - name: rubocop_cop_lint_nondeterministicrequireorder_when_requiring_files_when_ruby_3_0_or_higher_with_dir_glob_with_require_block_passed_as_parameter_does_not_register_an_offense
+    source: |
+      Dir.glob(Rails.root.join('test', '*.rb')).each(&method(:require))
+    offenses:
+      []
+    ruby_version: ">= 3.0"
+
+  - name: rubocop_cop_lint_nondeterministicrequireorder_when_requiring_files_when_ruby_3_0_or_higher_with_dir_glob_with_top_level_dir_does_not_register_an_offense
+    source: |
+      ::Dir.glob(Rails.root.join(__dir__, 'test', '*.rb'), ::File::FNM_DOTMATCH).each do |file|
+        require file
+      end
+    offenses:
+      []
+    ruby_version: ">= 3.0"
+
+  - name: rubocop_cop_lint_nondeterministicrequireorder_when_requiring_files_when_ruby_3_0_or_higher_with_dir_glob_with_sort_false_keyword_option_does_not_register_an_offense
+    source: |
+      Dir.glob(Rails.root.join('test', '*.rb'), sort: false).each(&method(:require))
+    offenses:
+      []
+    ruby_version: ">= 3.0"
+
+  - name: rubocop_cop_lint_nondeterministicrequireorder_when_requiring_files_when_ruby_3_0_or_higher_with_direct_block_glob_does_not_register_an_offense
+    source: |
+      Dir.glob("./lib/**/*.rb") do |file|
+        require file
+      end
+    offenses:
+      []
+    ruby_version: ">= 3.0"
+
+  - name: rubocop_cop_lint_nondeterministicrequireorder_when_requiring_files_when_ruby_3_0_or_higher_with_direct_block_glob_with_require_block_passed_as_parameter_does_not_register_an_offense
+    source: |
+      Dir.glob(
+        Rails.root.join('./lib/**/*.rb'),
+        File::FNM_DOTMATCH,
+        &method(:require)
+      )
+    offenses:
+      []
+    ruby_version: ">= 3.0"
+
+  - name: rubocop_cop_lint_nondeterministicrequireorder_when_requiring_files_when_ruby_3_0_or_higher_with_direct_block_glob_with_top_level_dir_does_not_register_an_offense
+    source: |
+      ::Dir.glob("./lib/**/*.rb") do |file|
+        require file
+      end
+    offenses:
+      []
+    ruby_version: ">= 3.0"
+
+  - name: rubocop_cop_lint_nondeterministicrequireorder_when_requiring_files_when_ruby_2_7_or_lower_with_unsorted_index_registers_an_offense_and_autocorrects_to_add_sort_when_the_block_has_require
+    source: |
+      Dir["./lib/**/*.rb"].each do |file|
+        require file
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 25
+        message: Sort files before requiring them.
+    corrected: |
+      Dir["./lib/**/*.rb"].sort.each do |file|
+        require file
+      end
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_lint_nondeterministicrequireorder_when_requiring_files_when_ruby_2_7_or_lower_with_unsorted_index_registers_an_offense_and_autocorrects_to_add_sort_when_the_numblock_has_require
+    source: |
+      Dir["./lib/**/*.rb"].each do
+        require _1
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 25
+        message: Sort files before requiring them.
+    corrected: |
+      Dir["./lib/**/*.rb"].sort.each do
+        require _1
+      end
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_lint_nondeterministicrequireorder_when_requiring_files_when_ruby_2_7_or_lower_with_unsorted_index_registers_an_offense_and_autocorrects_to_add_sort_when_the_block_has_require_relative
+    source: |
+      Dir["./lib/**/*.rb"].each do |file|
+        require_relative file
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 25
+        message: Sort files before requiring them.
+    corrected: |
+      Dir["./lib/**/*.rb"].sort.each do |file|
+        require_relative file
+      end
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_lint_nondeterministicrequireorder_when_requiring_files_when_ruby_2_7_or_lower_with_unsorted_index_registers_an_offense_with_extra_logic
+    source: |
+      Dir["./lib/**/*.rb"].each do |file|
+        if file.start_with?('_')
+          puts "Not required."
+        else
+          require file
+        end
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 25
+        message: Sort files before requiring them.
+    corrected: |
+      Dir["./lib/**/*.rb"].sort.each do |file|
+        if file.start_with?('_')
+          puts "Not required."
+        else
+          require file
+        end
+      end
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_lint_nondeterministicrequireorder_when_requiring_files_when_ruby_2_7_or_lower_with_unsorted_index_with_require_block_passed_as_parameter_registers_an_offense_and_autocorrects_to_add_sort
+    source: |
+      Dir["./lib/**/*.rb"].each(&method(:require))
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 44
+        message: Sort files before requiring them.
+    corrected: |
+      Dir["./lib/**/*.rb"].sort.each(&method(:require))
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_lint_nondeterministicrequireorder_when_requiring_files_when_ruby_2_7_or_lower_with_unsorted_index_with_require_relative_block_passed_as_parameter_registers_an_offense_and_autocorrects_to_add_sort
+    source: |
+      Dir["./lib/**/*.rb"].each(&method(:require_relative))
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 53
+        message: Sort files before requiring them.
+    corrected: |
+      Dir["./lib/**/*.rb"].sort.each(&method(:require_relative))
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_lint_nondeterministicrequireorder_when_requiring_files_when_ruby_2_7_or_lower_with_unsorted_index_with_top_level_dir_registers_an_offense_and_corrects_to_add_sort
+    source: |
+      ::Dir["./lib/**/*.rb"].each do |file|
+        require file
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 27
+        message: Sort files before requiring them.
+    corrected: |
+      ::Dir["./lib/**/*.rb"].sort.each do |file|
+        require file
+      end
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_lint_nondeterministicrequireorder_when_requiring_files_when_ruby_2_7_or_lower_with_unsorted_glob_registers_an_offense_and_autocorrects_to_add_sort
+    source: |
+      Dir.glob(Rails.root.join(__dir__, 'test', '*.rb'), File::FNM_DOTMATCH).each do |file|
+        require file
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 75
+        message: Sort files before requiring them.
+    corrected: |
+      Dir.glob(Rails.root.join(__dir__, 'test', '*.rb'), File::FNM_DOTMATCH).sort.each do |file|
+        require file
+      end
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_lint_nondeterministicrequireorder_when_requiring_files_when_ruby_2_7_or_lower_with_unsorted_glob_with_require_block_passed_as_parameter_registers_an_offense_and_autocorrects_to_add_sort
+    source: |
+      Dir.glob(Rails.root.join('test', '*.rb')).each(&method(:require))
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 65
+        message: Sort files before requiring them.
+    corrected: |
+      Dir.glob(Rails.root.join('test', '*.rb')).sort.each(&method(:require))
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_lint_nondeterministicrequireorder_when_requiring_files_when_ruby_2_7_or_lower_with_unsorted_glob_with_top_level_dir_registers_an_offense_and_corrects_to_add_sort
+    source: |
+      ::Dir.glob(Rails.root.join(__dir__, 'test', '*.rb'), ::File::FNM_DOTMATCH).each do |file|
+        require file
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 79
+        message: Sort files before requiring them.
+    corrected: |
+      ::Dir.glob(Rails.root.join(__dir__, 'test', '*.rb'), ::File::FNM_DOTMATCH).sort.each do |file|
+        require file
+      end
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_lint_nondeterministicrequireorder_when_requiring_files_when_ruby_2_7_or_lower_with_direct_block_glob_registers_an_offense_and_autocorrects_to_add_sort_each
+    source: |
+      Dir.glob("./lib/**/*.rb") do |file|
+        require file
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 25
+        message: Sort files before requiring them.
+    corrected: |
+      Dir.glob("./lib/**/*.rb").sort.each do |file|
+        require file
+      end
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_lint_nondeterministicrequireorder_when_requiring_files_when_ruby_2_7_or_lower_with_direct_block_glob_with_require_block_passed_as_parameter_registers_an_offense_and_autocorrects_to_add_sort
+    source: |
+      Dir.glob(
+        Rails.root.join('./lib/**/*.rb'),
+        File::FNM_DOTMATCH,
+        &method(:require)
+      )
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 9
+        message: Sort files before requiring them.
+    corrected: |
+      Dir.glob(
+        Rails.root.join('./lib/**/*.rb'),
+        File::FNM_DOTMATCH
+      ).sort.each(&method(:require))
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_lint_nondeterministicrequireorder_when_requiring_files_when_ruby_2_7_or_lower_with_direct_block_glob_with_require_relative_block_passed_as_parameter_registers_an_offense_and_autocorrects_to_add_sort
+    source: |
+      Dir.glob(
+        Rails.root.join('./lib/**/*.rb'),
+        File::FNM_DOTMATCH,
+        &method(:require_relative)
+      )
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 9
+        message: Sort files before requiring them.
+    corrected: |
+      Dir.glob(
+        Rails.root.join('./lib/**/*.rb'),
+        File::FNM_DOTMATCH
+      ).sort.each(&method(:require_relative))
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_lint_nondeterministicrequireorder_when_requiring_files_when_ruby_2_7_or_lower_with_direct_block_glob_with_top_level_dir_registers_an_offense_and_corrects_to_add_sort_each
+    source: |
+      ::Dir.glob("./lib/**/*.rb") do |file|
+        require file
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 27
+        message: Sort files before requiring them.
+    corrected: |
+      ::Dir.glob("./lib/**/*.rb").sort.each do |file|
+        require file
+      end
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_lint_nondeterministicrequireorder_when_requiring_files_with_sorted_index_does_not_register_an_offense
+    source: |
+      Dir["./lib/**/*.rb"].sort.each do |file|
+        require file
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_nondeterministicrequireorder_when_requiring_files_with_sorted_glob_does_not_register_an_offense
+    source: |
+      Dir.glob(Rails.root.join(__dir__, 'test', '*.rb'), File::FNM_DOTMATCH).sort.each do |file|
+        require file
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_nondeterministicrequireorder_when_not_requiring_files_does_not_register_an_offense
+    source: |
+      Dir["./lib/**/*.rb"].each do |file|
+        puts file
+      end
+    offenses:
+      []

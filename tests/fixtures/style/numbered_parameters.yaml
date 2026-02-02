@@ -1,0 +1,50 @@
+cop: Style/NumberedParameters
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_numberedparameters_ruby_2_7_enforcedstyle_allow_single_line_registers_an_offense_when_using_numbered_parameters_with_multi_line_blocks
+    source: |
+      collection.each do
+        puts _1
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 18
+        message: Avoid using numbered parameters for multi-line blocks.
+    config:
+      EnforcedStyle: allow_single_line
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_style_numberedparameters_ruby_2_7_enforcedstyle_allow_single_line_registers_no_offense_when_using_numbered_parameters_with_multi_line_method_chain
+    source: |
+      collection.each
+                .foo { puts _1 }
+    offenses:
+      []
+    config:
+      EnforcedStyle: allow_single_line
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_style_numberedparameters_ruby_2_7_enforcedstyle_allow_single_line_does_not_register_an_offense_when_using_numbered_parameters_with_single_line_blocks
+    source: |
+      collection.each { puts _1 }
+    offenses:
+      []
+    config:
+      EnforcedStyle: allow_single_line
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_style_numberedparameters_ruby_2_7_enforcedstyle_disallow_does_an_offense_when_using_numbered_parameters_even_with_single_line_blocks
+    source: |
+      collection.each { puts _1 }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 27
+        message: Avoid using numbered parameters.
+    config:
+      EnforcedStyle: disallow
+    ruby_version: ">= 2.7"

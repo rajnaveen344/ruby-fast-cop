@@ -1,0 +1,34 @@
+cop: Style/SuperWithArgsParentheses
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_superwithargsparentheses_registers_an_offense_when_using_super_without_parenthesized_arguments
+    source: |
+      super name, age
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 15
+        message: Use parentheses for `super` with arguments.
+    corrected: |
+      super(name, age)
+
+  - name: rubocop_cop_style_superwithargsparentheses_does_not_register_an_offense_when_using_super_with_parenthesized_arguments
+    source: |
+      super(name, age)
+    offenses:
+      []
+
+  - name: rubocop_cop_style_superwithargsparentheses_does_not_register_an_offense_when_using_super_without_arguments
+    source: |
+      super()
+    offenses:
+      []
+
+  - name: rubocop_cop_style_superwithargsparentheses_does_not_register_an_offense_when_using_zero_arity_super
+    source: |
+      super
+    offenses:
+      []

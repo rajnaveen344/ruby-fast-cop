@@ -1,0 +1,133 @@
+cop: Style/BarePercentLiterals
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_barepercentliterals_accepts_file
+    source: |
+      __FILE__
+    offenses:
+      []
+
+  - name: rubocop_cop_style_barepercentliterals_accepts_regular_expressions
+    source: |
+      /%Q?/
+    offenses:
+      []
+
+  - name: rubocop_cop_style_barepercentliterals_accepts
+    source: |
+      ""
+    offenses:
+      []
+
+  - name: rubocop_cop_style_barepercentliterals_accepts_string_with_interpolation
+    source: |
+      "#{file}hi"
+    offenses:
+      []
+
+  - name: rubocop_cop_style_barepercentliterals_accepts
+    source: |
+      'hi'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_barepercentliterals_accepts_q
+    source: |
+      %q(hi)
+    offenses:
+      []
+
+  - name: rubocop_cop_style_barepercentliterals_accepts_heredoc
+    source: |
+      func <<HEREDOC
+      hi
+      HEREDOC
+    offenses:
+      []
+
+  - name: rubocop_cop_style_barepercentliterals_when_enforcedstyle_is_percent_q_and_strings_are_static_registers_an_offense_for
+    source: |
+      %(hi)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 2
+        message: Use `%Q` instead of `%`.
+    corrected: |
+      %Q(hi)
+    config:
+      EnforcedStyle: percent_q
+
+  - name: rubocop_cop_style_barepercentliterals_when_enforcedstyle_is_percent_q_and_strings_are_static_accepts_q
+    source: |
+      %Q(hi)
+    offenses:
+      []
+    config:
+      EnforcedStyle: percent_q
+
+  - name: rubocop_cop_style_barepercentliterals_when_enforcedstyle_is_percent_q_and_strings_are_dynamic_registers_an_offense_for
+    source: |
+      %(#{x})
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 2
+        message: Use `%Q` instead of `%`.
+    corrected: |
+      %Q(#{x})
+    config:
+      EnforcedStyle: percent_q
+
+  - name: rubocop_cop_style_barepercentliterals_when_enforcedstyle_is_percent_q_and_strings_are_dynamic_accepts_q
+    source: |
+      %Q(#{x})
+    offenses:
+      []
+    config:
+      EnforcedStyle: percent_q
+
+  - name: rubocop_cop_style_barepercentliterals_when_enforcedstyle_is_bare_percent_and_strings_are_static_registers_an_offense_for_q
+    source: |
+      %Q(hi)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 3
+        message: Use `%` instead of `%Q`.
+    corrected: |
+      %(hi)
+    config:
+      EnforcedStyle: bare_percent
+
+  - name: rubocop_cop_style_barepercentliterals_when_enforcedstyle_is_bare_percent_and_strings_are_static_accepts
+    source: |
+      %(hi)
+    offenses:
+      []
+    config:
+      EnforcedStyle: bare_percent
+
+  - name: rubocop_cop_style_barepercentliterals_when_enforcedstyle_is_bare_percent_and_strings_are_dynamic_registers_an_offense_for_q
+    source: |
+      %Q(#{x})
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 3
+        message: Use `%` instead of `%Q`.
+    corrected: |
+      %(#{x})
+    config:
+      EnforcedStyle: bare_percent
+
+  - name: rubocop_cop_style_barepercentliterals_when_enforcedstyle_is_bare_percent_and_strings_are_dynamic_accepts
+    source: |
+      %(#{x})
+    offenses:
+      []
+    config:
+      EnforcedStyle: bare_percent

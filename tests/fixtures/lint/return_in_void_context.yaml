@@ -1,0 +1,228 @@
+cop: Lint/ReturnInVoidContext
+department: lint
+severity: warning
+implemented: false
+
+tests:
+  - name: rubocop_cop_lint_returninvoidcontext_with_an_initialize_method_containing_a_return_with_a_value_registers_an_offense
+    source: |
+      class A
+        def initialize
+          return :qux if bar?
+        end
+      end
+    offenses:
+      - line: 3
+        column_start: 4
+        column_end: 10
+        message: Do not return a value in `initialize`.
+
+  - name: rubocop_cop_lint_returninvoidcontext_with_an_initialize_method_containing_a_return_with_a_value_registers_an_offense_when_the_value_is_returned_in_a_block
+    source: |
+      class A
+        def initialize
+          foo do
+            return :qux
+          end
+        end
+      end
+    offenses:
+      - line: 4
+        column_start: 6
+        column_end: 12
+        message: Do not return a value in `initialize`.
+
+  - name: rubocop_cop_lint_returninvoidcontext_with_an_initialize_method_containing_a_return_with_a_value_registers_an_offense_when_the_value_is_returned_in_a_numblock
+    source: |
+      class A
+        def initialize
+          foo do
+            _1
+            return :qux
+          end
+        end
+      end
+    offenses:
+      - line: 5
+        column_start: 6
+        column_end: 12
+        message: Do not return a value in `initialize`.
+
+  - name: rubocop_cop_lint_returninvoidcontext_with_an_initialize_method_containing_a_return_with_a_value_registers_an_offense_when_the_value_is_returned_in_an_itblock
+    source: |
+      class A
+        def initialize
+          foo do
+            it
+            return :qux
+          end
+        end
+      end
+    offenses:
+      - line: 5
+        column_start: 6
+        column_end: 12
+        message: Do not return a value in `initialize`.
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_lint_returninvoidcontext_with_an_initialize_method_containing_a_return_with_a_value_registers_no_offense_when_return_is_used_in_define_method
+    source: |
+      class A
+        def initialize
+          define_method(:foo) do
+            return bar
+          end
+        end
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_returninvoidcontext_with_an_initialize_method_containing_a_return_with_a_value_registers_no_offense_when_return_is_used_in_define_method_with_receiver
+    source: |
+      class A
+        def initialize
+          self.define_method(:foo) do
+            return bar
+          end
+        end
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_returninvoidcontext_with_an_initialize_method_containing_a_return_with_a_value_registers_no_offense_when_return_is_used_in_define_singleton_method
+    source: |
+      class A
+        def initialize
+          define_singleton_method(:foo) do
+            return bar
+          end
+        end
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_returninvoidcontext_with_an_initialize_method_containing_a_return_with_a_value_registers_no_offense_when_return_is_used_in_nested_method_definition
+    source: |
+      class A
+        def initialize
+          def foo
+            return bar
+          end
+        end
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_returninvoidcontext_with_an_initialize_method_containing_a_return_with_a_value_registers_no_offense_when_return_is_used_in_nested_singleton_method_definition
+    source: |
+      class A
+        def initialize
+          def self.foo
+            return bar
+          end
+        end
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_returninvoidcontext_with_an_initialize_method_containing_a_return_with_a_value_registers_an_offense_when_the_value_is_returned_from_inside_a_proc
+    source: |
+      class A
+        def initialize
+          proc do
+            return :qux
+          end
+        end
+      end
+    offenses:
+      - line: 4
+        column_start: 6
+        column_end: 12
+        message: Do not return a value in `initialize`.
+
+  - name: rubocop_cop_lint_returninvoidcontext_with_an_initialize_method_containing_a_return_with_a_value_registers_no_offense_when_the_value_is_returned_from_inside_a_lamdba
+    source: |
+      class A
+        def initialize
+          lambda do
+            return :qux
+          end
+        end
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_returninvoidcontext_with_an_initialize_method_containing_a_return_without_a_value_accepts
+    source: |
+      class A
+        def initialize
+          return if bar?
+        end
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_returninvoidcontext_with_an_initialize_method_containing_a_return_without_a_value_accepts_when_the_return_is_in_a_block
+    source: |
+      class A
+        def initialize
+          foo do
+            return if bar?
+          end
+        end
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_returninvoidcontext_with_a_setter_method_containing_a_return_with_a_value_registers_an_offense
+    source: |
+      class A
+        def foo=(bar)
+          return 42
+        end
+      end
+    offenses:
+      - line: 3
+        column_start: 4
+        column_end: 10
+        message: Do not return a value in `foo=`.
+
+  - name: rubocop_cop_lint_returninvoidcontext_with_a_setter_method_containing_a_return_without_a_value_accepts
+    source: |
+      class A
+        def foo=(bar)
+          return
+        end
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_returninvoidcontext_with_a_non_initialize_method_containing_a_return_accepts
+    source: |
+      class A
+        def bar
+          foo
+          return :qux if bar?
+          foo
+        end
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_returninvoidcontext_with_a_class_method_called_initialize_containing_a_return_accepts
+    source: |
+      class A
+        def self.initialize
+          foo
+          return :qux if bar?
+          foo
+        end
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_returninvoidcontext_when_return_is_in_top_scope_accepts
+    source: |
+      return if true
+    offenses:
+      []

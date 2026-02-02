@@ -1,0 +1,954 @@
+cop: Layout/FirstArgumentIndentation
+department: layout
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_layout_firstargumentindentation_when_indentationwidth_width_is_2_registers_an_offense_and_corrects_an_over_indented_first_argument
+    source: |
+      run(
+          :foo,
+          bar: 3
+      )
+    offenses:
+      - line: 2
+        column_start: 4
+        column_end: 8
+        message: Indent the first argument one step more than the start of the previous line.
+    corrected: |
+      run(
+        :foo,
+          bar: 3
+      )
+    config:
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_indentationwidth_width_is_2_registers_an_offense_and_corrects_an_over_indented_first_argument_of_super
+    source: |
+      super(
+          :foo,
+          bar: 3
+      )
+    offenses:
+      - line: 2
+        column_start: 4
+        column_end: 8
+        message: Indent the first argument one step more than the start of the previous line.
+    corrected: |
+      super(
+        :foo,
+          bar: 3
+      )
+    config:
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_indentationwidth_width_is_2_registers_an_offense_and_corrects_an_over_indented_first_argument_on_an_alphanumeric_method_name
+    source: |
+      self.run(
+          :foo,
+          bar: 3
+      )
+    offenses:
+      - line: 2
+        column_start: 4
+        column_end: 8
+        message: Indent the first argument one step more than the start of the previous line.
+    corrected: |
+      self.run(
+        :foo,
+          bar: 3
+      )
+    config:
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_indentationwidth_width_is_2_registers_an_offense_and_corrects_an_over_indented_first_argument_on_a_pipe_method_name
+    source: |
+      self.|(
+          :foo,
+          bar: 3
+      )
+    offenses:
+      - line: 2
+        column_start: 4
+        column_end: 8
+        message: Indent the first argument one step more than the start of the previous line.
+    corrected: |
+      self.|(
+        :foo,
+          bar: 3
+      )
+    config:
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_indentationwidth_width_is_2_registers_an_offense_and_corrects_an_over_indented_first_argument_on_a_plus_sign_method_name
+    source: |
+      self.+(
+          :foo,
+          bar: 3
+      )
+    offenses:
+      - line: 2
+        column_start: 4
+        column_end: 8
+        message: Indent the first argument one step more than the start of the previous line.
+    corrected: |
+      self.+(
+        :foo,
+          bar: 3
+      )
+    config:
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_indentationwidth_width_is_2_registers_an_offense_and_corrects_an_under_indented_first_argument
+    source: |
+      run(
+       :foo,
+          bar: 3
+      )
+    offenses:
+      - line: 2
+        column_start: 1
+        column_end: 5
+        message: Indent the first argument one step more than the start of the previous line.
+    corrected: |
+      run(
+        :foo,
+          bar: 3
+      )
+    config:
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_indentationwidth_width_is_2_registers_an_offense_and_corrects_lines_affected_by_another_offense
+    source: |
+      foo(
+       bar(
+        7
+      )
+      )
+    offenses:
+      - line: 2
+        column_start: 1
+        column_end: 5
+        message: Indent the first argument one step more than the start of the previous line.
+      - line: 3
+        column_start: 2
+        column_end: 3
+        message: Bad indentation of the first argument.
+    corrected: |
+      foo(
+        bar(
+         7
+       )
+      )
+    config:
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_indentationwidth_width_is_2_when_using_safe_navigation_operator_registers_an_offense_and_corrects_an_under_indented_1st_argument
+    source: |
+      receiver&.run(
+       :foo,
+          bar: 3
+      )
+    offenses:
+      - line: 2
+        column_start: 1
+        column_end: 5
+        message: Indent the first argument one step more than the start of the previous line.
+    corrected: |
+      receiver&.run(
+        :foo,
+          bar: 3
+      )
+    config:
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_indentationwidth_width_is_2_for_a_setter_call_accepts_an_unindented_value
+    source: |
+      foo.baz =
+      bar
+    offenses:
+      []
+    config:
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_indentationwidth_width_is_2_for_assignment
+    source: |
+      x = run(
+        :foo,
+          bar: 3
+      )
+    offenses:
+      []
+    config:
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_indentationwidth_width_is_2_for_assignment_with_line_break_accepts_a_correctly_indented_first_argument
+    source: |
+      x =
+        run(
+          :foo)
+    offenses:
+      []
+    config:
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_indentationwidth_width_is_2_for_assignment_with_line_break_registers_an_offense_and_corrects_an_under_indented_first_argument
+    source: |
+      @x =
+        run(
+        :foo)
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 6
+        message: Indent the first argument one step more than the start of the previous line.
+    corrected: |
+      @x =
+        run(
+          :foo)
+    config:
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_indentationwidth_width_is_2_accepts_a_first_argument_that_is_not_preceded_by_a_line_break
+    source: |
+      run :foo,
+          bar: 3
+    offenses:
+      []
+    config:
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_indentationwidth_width_is_2_when_the_receiver_contains_a_line_break_accepts_a_correctly_indented_first_argument
+    source: |
+      puts x.
+        merge(
+          b: 2
+        )
+    offenses:
+      []
+    config:
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_indentationwidth_width_is_2_when_the_receiver_contains_a_line_break_registers_an_offense_and_corrects_an_over_indented_first_argument
+    source: |
+      puts x.
+        merge(
+            b: 2
+        )
+    offenses:
+      - line: 3
+        column_start: 6
+        column_end: 10
+        message: Indent the first argument one step more than the start of the previous line.
+    corrected: |
+      puts x.
+        merge(
+          b: 2
+        )
+    config:
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_indentationwidth_width_is_2_when_the_receiver_contains_a_line_break_accepts_a_correctly_indented_first_argument_preceded_by_an_empty_line
+    source: |
+      puts x.
+        merge(
+      
+          b: 2
+        )
+    offenses:
+      []
+    config:
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_indentationwidth_width_is_2_when_the_receiver_contains_a_line_break_when_preceded_by_a_comment_line_accepts_a_correctly_indented_first_argument
+    source: |
+      puts x.
+        merge( # EOL comment
+          # comment
+          b: 2
+        )
+    offenses:
+      []
+    config:
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_indentationwidth_width_is_2_when_the_receiver_contains_a_line_break_when_preceded_by_a_comment_line_registers_an_offense_and_corrects_an_under_indented_first_argument
+    source: |
+      puts x.
+        merge(
+        # comment
+        b: 2
+        )
+    offenses:
+      - line: 4
+        column_start: 2
+        column_end: 6
+        message: Indent the first argument one step more than the start of the previous line (not counting the comment).
+    corrected: |
+      puts x.
+        merge(
+        # comment
+          b: 2
+        )
+    config:
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_indentationwidth_width_is_2_accepts_method_calls_with_no_arguments
+    source: |
+      run()
+      run_again
+    offenses:
+      []
+    config:
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_indentationwidth_width_is_2_accepts_operator_calls
+    source: |
+      params = default_cfg.keys - %w(Description) -
+               cfg.keys
+    offenses:
+      []
+    config:
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_indentationwidth_width_is_2_does_not_view_as_an_outer_method_call
+    source: |
+      @subject_results[subject] = original.update(
+        mutation_results: (dup << mutation_result),
+        tests:            test_result.tests
+      )
+    offenses:
+      []
+    config:
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_indentationwidth_width_is_2_does_not_view_chained_call_as_an_outer_method_call
+    source: |
+      A = Regexp.union(
+        /[A-Za-z_][A-Za-z\d_]*[!?=]?/,
+        *AST::Types::OPERATOR_METHODS.map(&:to_s)
+      ).freeze
+    offenses:
+      []
+    config:
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_indentationwidth_width_is_4_registers_an_offense_and_corrects_an_over_indented_first_argument
+    source: |
+      run(
+              :foo,
+          bar: 3)
+    offenses:
+      - line: 2
+        column_start: 8
+        column_end: 12
+        message: Indent the first argument one step more than the start of the previous line.
+    corrected: |
+      run(
+          :foo,
+          bar: 3)
+    config:
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_indentation_width_is_overridden_for_this_cop_only_accepts_a_correctly_indented_first_argument
+    source: |
+      run(
+          :foo,
+          bar: 3
+      )
+    offenses:
+      []
+    config:
+      IndentationWidth: 4
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_indentation_width_is_overridden_for_this_cop_only_registers_an_offense_and_corrects_an_over_indented_first_argument
+    source: |
+      run(
+              :foo,
+          bar: 3)
+    offenses:
+      - line: 2
+        column_start: 8
+        column_end: 12
+        message: Indent the first argument one step more than the start of the previous line.
+    corrected: |
+      run(
+          :foo,
+          bar: 3)
+    config:
+      IndentationWidth: 4
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_enforcedstyle_is_special_for_inner_method_call_for_method_calls_within_method_calls_with_outer_parentheses_registers_an_offense_and_corrects_an_over_indented_first_argument
+    source: |
+      run(:foo, defaults.merge(
+                              bar: 3))
+    offenses:
+      - line: 2
+        column_start: 24
+        column_end: 30
+        message: Indent the first argument one step more than `defaults.merge(`.
+    corrected: |
+      run(:foo, defaults.merge(
+                  bar: 3))
+    config:
+      IndentationWidth: 4
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_enforcedstyle_is_special_for_inner_method_call_for_method_calls_within_method_calls_without_outer_parentheses_accepts_a_first_argument_with_special_indentation
+    source: |
+      run :foo, defaults.merge(
+                  bar: 3)
+    offenses:
+      []
+    config:
+      IndentationWidth: 4
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_enforcedstyle_is_special_for_inner_method_call_in_parentheses_for_method_calls_within_method_calls_with_outer_parentheses_registers_an_offense_and_corrects_an_over_indented_first_argument
+    source: |
+      run(:foo, defaults.merge(
+                              bar: 3))
+    offenses:
+      - line: 2
+        column_start: 24
+        column_end: 30
+        message: Indent the first argument one step more than `defaults.merge(`.
+    corrected: |
+      run(:foo, defaults.merge(
+                  bar: 3))
+    config:
+      IndentationWidth: 4
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_enforcedstyle_is_special_for_inner_method_call_in_parentheses_for_method_calls_within_method_calls_with_outer_parentheses_registers_an_offense_and_corrects_an_under_indented_first_argument
+    source: |
+      run(:foo, defaults.
+                merge(
+        bar: 3))
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 8
+        message: Indent the first argument one step more than the start of the previous line.
+    corrected: |
+      run(:foo, defaults.
+                merge(
+                  bar: 3))
+    config:
+      IndentationWidth: 4
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_enforcedstyle_is_special_for_inner_method_call_in_parentheses_for_method_calls_within_method_calls_with_outer_parentheses_accepts_a_correctly_indented_first_argument_in_interpolation
+    source: |
+      puts %(
+        <p>
+          #{Array(
+            42
+          )}
+        </p>
+      )
+    offenses:
+      []
+    config:
+      IndentationWidth: 4
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_enforcedstyle_is_special_for_inner_method_call_in_parentheses_for_method_calls_within_method_calls_with_outer_parentheses_accepts_a_correctly_indented_first_argument_with_fullwidth_characters
+    source: |
+      puts('Ｒｕｂｙ', f(
+                         a))
+    offenses:
+      []
+    config:
+      IndentationWidth: 4
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_enforcedstyle_is_special_for_inner_method_call_in_parentheses_for_method_calls_within_method_calls_with_outer_parentheses_corrects_the_entire_method_call_when_closing_parenthesis_is_on_a_separate_line
+    source: |
+      instance_variable_set(
+        "@diagnostics",
+        Diagnostic.where(
+                    'limit >= 10 and limit < 100',
+                  )
+      )
+    offenses:
+      - line: 4
+        column_start: 14
+        column_end: 43
+        message: Indent the first argument one step more than `Diagnostic.where(`.
+    corrected: |
+      instance_variable_set(
+        "@diagnostics",
+        Diagnostic.where(
+          'limit >= 10 and limit < 100',
+        )
+      )
+    config:
+      IndentationWidth: 4
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_enforcedstyle_is_special_for_inner_method_call_in_parentheses_for_method_calls_within_method_calls_with_outer_parentheses_corrects_the_entire_method_call_with_multiple_arguments
+    source: |
+      instance_variable_set(
+        "@diagnostics",
+        Diagnostic.where(
+              'limit >= ? and limit < ?',
+              LIMITS[:lowest_value], LIMITS[:highest_value]
+            )
+      )
+    offenses:
+      - line: 4
+        column_start: 8
+        column_end: 34
+        message: Indent the first argument one step more than `Diagnostic.where(`.
+    corrected: |
+      instance_variable_set(
+        "@diagnostics",
+        Diagnostic.where(
+          'limit >= ? and limit < ?',
+          LIMITS[:lowest_value], LIMITS[:highest_value]
+        )
+      )
+    config:
+      IndentationWidth: 4
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_enforcedstyle_is_special_for_inner_method_call_in_parentheses_for_method_calls_within_method_calls_with_outer_parentheses_corrects_the_entire_method_call_chain
+    source: |
+      instance_variable_set(
+        "@diagnostic_ids",
+        Diagnostic.where(
+              'limit >= ? and limit < ?',
+              LIMITS[:lowest_value], LIMITS[:highest_value]
+            )
+            .where(id: 1)
+            .ids,
+      )
+    offenses:
+      - line: 4
+        column_start: 8
+        column_end: 34
+        message: Indent the first argument one step more than the start of the previous line.
+    corrected: |
+      instance_variable_set(
+        "@diagnostic_ids",
+        Diagnostic.where(
+          'limit >= ? and limit < ?',
+          LIMITS[:lowest_value], LIMITS[:highest_value]
+        )
+        .where(id: 1)
+        .ids,
+      )
+    config:
+      IndentationWidth: 4
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_enforcedstyle_is_special_for_inner_method_call_in_parentheses_for_method_calls_within_method_calls_without_outer_parentheses_accepts_a_first_argument_with_consistent_style_indentation
+    source: |
+      run :foo, defaults.merge(
+        bar: 3)
+    offenses:
+      []
+    config:
+      IndentationWidth: 4
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_enforcedstyle_is_consistent_for_method_calls_within_method_calls_registers_an_offense_and_corrects_an_over_indented_first_argument
+    source: |
+      run(:foo, defaults.merge(
+                  bar: 3))
+    offenses:
+      - line: 2
+        column_start: 12
+        column_end: 18
+        message: Indent the first argument one step more than the start of the previous line.
+    corrected: |
+      run(:foo, defaults.merge(
+        bar: 3))
+    config:
+      IndentationWidth: 4
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_enforcedstyle_is_consistent_for_method_calls_within_method_calls_accepts_first_argument_indented_relative_to_previous_line
+    source: |
+      @diagnostics.process(Diagnostic.new(
+        :error, :token, { :token => name }, location))
+    offenses:
+      []
+    config:
+      IndentationWidth: 4
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_enforcedstyle_is_consistent_relative_to_receiver_when_indentationwidth_width_is_2_registers_an_offense_and_corrects_an_over_indented_first_argument
+    source: |
+      run(
+          :foo,
+          bar: 3
+      )
+    offenses:
+      - line: 2
+        column_start: 4
+        column_end: 8
+        message: Indent the first argument one step more than `run(`.
+    corrected: |
+      run(
+        :foo,
+          bar: 3
+      )
+    config:
+      IndentationWidth: 4
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_enforcedstyle_is_consistent_relative_to_receiver_when_indentationwidth_width_is_2_registers_an_offense_and_corrects_an_under_indented_first_argument
+    source: |
+      run(
+       :foo,
+          bar: 3
+      )
+    offenses:
+      - line: 2
+        column_start: 1
+        column_end: 5
+        message: Indent the first argument one step more than `run(`.
+    corrected: |
+      run(
+        :foo,
+          bar: 3
+      )
+    config:
+      IndentationWidth: 4
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_enforcedstyle_is_consistent_relative_to_receiver_when_indentationwidth_width_is_2_registers_an_offense_and_corrects_lines_affected_by_other_offenses
+    source: |
+      foo(
+       bar(
+        7
+      )
+      )
+    offenses:
+      - line: 2
+        column_start: 1
+        column_end: 5
+        message: Indent the first argument one step more than `foo(`.
+      - line: 3
+        column_start: 2
+        column_end: 3
+        message: Bad indentation of the first argument.
+    corrected: |
+      foo(
+        bar(
+         7
+       )
+      )
+    config:
+      IndentationWidth: 4
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_enforcedstyle_is_consistent_relative_to_receiver_when_indentationwidth_width_is_2_for_assignment
+    source: |
+      x = run(
+        :foo,
+          bar: 3
+      )
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 6
+        message: Indent the first argument one step more than `run(`.
+    corrected: |
+      x = run(
+            :foo,
+          bar: 3
+      )
+    config:
+      IndentationWidth: 4
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_enforcedstyle_is_consistent_relative_to_receiver_when_indentationwidth_width_is_2_for_assignment_with_line_break_accepts_a_correctly_indented_first_argument
+    source: |
+      x =
+        run(
+          :foo)
+    offenses:
+      []
+    config:
+      IndentationWidth: 4
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_enforcedstyle_is_consistent_relative_to_receiver_when_indentationwidth_width_is_2_for_assignment_with_line_break_registers_an_offense_and_corrects_an_under_indented_first_argument
+    source: |
+      @x =
+        run(
+        :foo)
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 6
+        message: Indent the first argument one step more than `run(`.
+    corrected: |
+      @x =
+        run(
+          :foo)
+    config:
+      IndentationWidth: 4
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_enforcedstyle_is_consistent_relative_to_receiver_when_indentationwidth_width_is_2_accepts_a_first_argument_that_is_not_preceded_by_a_line_break
+    source: |
+      run :foo,
+          bar: 3
+    offenses:
+      []
+    config:
+      IndentationWidth: 4
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_enforcedstyle_is_consistent_relative_to_receiver_when_indentationwidth_width_is_2
+    source: |
+      [
+        item,
+        *do_something(
+          arg)
+      ]
+    offenses:
+      []
+    config:
+      IndentationWidth: 4
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_enforcedstyle_is_consistent_relative_to_receiver_when_indentationwidth_width_is_2
+    source: |
+      [
+        item,
+        **do_something(
+          arg)
+      ]
+    offenses:
+      []
+    config:
+      IndentationWidth: 4
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_enforcedstyle_is_consistent_relative_to_receiver_when_indentationwidth_width_is_2_when_the_receiver_contains_a_line_break_accepts_a_correctly_indented_first_argument
+    source: |
+      puts x.
+        merge(
+          b: 2
+        )
+    offenses:
+      []
+    config:
+      IndentationWidth: 4
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_enforcedstyle_is_consistent_relative_to_receiver_when_indentationwidth_width_is_2_when_the_receiver_contains_a_line_break_registers_an_offense_and_corrects_an_over_indented_1st_argument
+    source: |
+      puts x.
+        merge(
+            b: 2
+        )
+    offenses:
+      - line: 3
+        column_start: 6
+        column_end: 10
+        message: Indent the first argument one step more than the start of the previous line.
+    corrected: |
+      puts x.
+        merge(
+          b: 2
+        )
+    config:
+      IndentationWidth: 4
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_enforcedstyle_is_consistent_relative_to_receiver_when_indentationwidth_width_is_2_when_the_receiver_contains_a_line_break_accepts_a_correctly_indented_first_argument_preceded_by_an_empty_line
+    source: |
+      puts x.
+        merge(
+      
+          b: 2
+        )
+    offenses:
+      []
+    config:
+      IndentationWidth: 4
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_enforcedstyle_is_consistent_relative_to_receiver_when_indentationwidth_width_is_2_when_the_receiver_contains_a_line_break_when_preceded_by_a_comment_line_accepts_a_correctly_indented_first_argument
+    source: |
+      puts x.
+        merge( # EOL comment
+          # comment
+          b: 2
+        )
+    offenses:
+      []
+    config:
+      IndentationWidth: 4
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_enforcedstyle_is_consistent_relative_to_receiver_when_indentationwidth_width_is_2_when_the_receiver_contains_a_line_break_when_preceded_by_a_comment_line_registers_an_offense_and_corrects_an_under_indented_first_argument
+    source: |
+      puts x.
+        merge(
+        # comment
+        b: 2
+        )
+    offenses:
+      - line: 4
+        column_start: 2
+        column_end: 6
+        message: Indent the first argument one step more than the start of the previous line (not counting the comment).
+    corrected: |
+      puts x.
+        merge(
+        # comment
+          b: 2
+        )
+    config:
+      IndentationWidth: 4
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_enforcedstyle_is_consistent_relative_to_receiver_when_indentationwidth_width_is_2_accepts_method_calls_with_no_arguments
+    source: |
+      run()
+      run_again
+    offenses:
+      []
+    config:
+      IndentationWidth: 4
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_enforcedstyle_is_consistent_relative_to_receiver_when_indentationwidth_width_is_2_accepts_operator_calls
+    source: |
+      params = default_cfg.keys - %w(Description) -
+               cfg.keys
+    offenses:
+      []
+    config:
+      IndentationWidth: 4
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_enforcedstyle_is_consistent_relative_to_receiver_when_indentationwidth_width_is_2_does_not_view_as_an_outer_method_call
+    source: |
+      @subject_results[subject] = original.update(
+                                    mutation_results: (dup << mutation_result),
+                                    tests:            test_result.tests
+      )
+    offenses:
+      []
+    config:
+      IndentationWidth: 4
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_enforcedstyle_is_consistent_relative_to_receiver_when_indentationwidth_width_is_2_does_not_view_chained_call_as_an_outer_method_call
+    source: |
+      A = Regexp.union(
+            /[A-Za-z_][A-Za-z\d_]*[!?=]?/,
+            *AST::Types::OPERATOR_METHODS.map(&:to_s)
+          ).freeze
+    offenses:
+      []
+    config:
+      IndentationWidth: 4
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_enforcedstyle_is_consistent_relative_to_receiver_when_indentationwidth_width_is_4_registers_an_offense_and_corrects_an_over_indented_first_argument
+    source: |
+      run(
+              :foo,
+          bar: 3)
+    offenses:
+      - line: 2
+        column_start: 8
+        column_end: 12
+        message: Indent the first argument one step more than `run(`.
+    corrected: |
+      run(
+          :foo,
+          bar: 3)
+    config:
+      IndentationWidth: 4
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_enforcedstyle_is_consistent_relative_to_receiver_when_indentation_width_is_overridden_for_this_cop_only_accepts_a_correctly_indented_first_argument
+    source: |
+      run(
+          :foo,
+          bar: 3
+      )
+    offenses:
+      []
+    config:
+      IndentationWidth: 4
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_enforcedstyle_is_consistent_relative_to_receiver_when_indentation_width_is_overridden_for_this_cop_only_registers_an_offense_and_corrects_an_over_indented_first_argument
+    source: |
+      run(
+              :foo,
+          bar: 3)
+    offenses:
+      - line: 2
+        column_start: 8
+        column_end: 12
+        message: Indent the first argument one step more than `run(`.
+    corrected: |
+      run(
+          :foo,
+          bar: 3)
+    config:
+      IndentationWidth: 4
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_enforcedstyle_is_consistent_relative_to_receiver_for_method_calls_within_method_calls_with_outer_parentheses_registers_an_offense_and_corrects_an_over_indented_1st_argument
+    source: |
+      run(:foo, defaults.merge(
+                              bar: 3))
+    offenses:
+      - line: 2
+        column_start: 24
+        column_end: 30
+        message: Indent the first argument one step more than `defaults.merge(`.
+    corrected: |
+      run(:foo, defaults.merge(
+                  bar: 3))
+    config:
+      IndentationWidth: 4
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_enforcedstyle_is_consistent_relative_to_receiver_for_method_calls_within_method_calls_with_outer_parentheses_indents_all_relative_to_the_receiver
+    source: |
+      foo = bar * run(
+                    :foo, defaults.merge(
+                            bar: 3)
+                  )
+    offenses:
+      []
+    config:
+      IndentationWidth: 4
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_enforcedstyle_is_consistent_relative_to_receiver_for_method_calls_within_method_calls_without_outer_parentheses_accepts_a_first_argument_with_special_indentation
+    source: |
+      run :foo, defaults.merge(
+                  bar: 3)
+    offenses:
+      []
+    config:
+      IndentationWidth: 4
+      EnforcedStyle: style
+
+  - name: rubocop_cop_layout_firstargumentindentation_when_enforcedstyle_is_consistent_relative_to_receiver_for_method_calls_within_method_calls_without_outer_parentheses_indents_all_relative_to_the_receiver
+    source: |
+      foo = bar * run(
+                    :foo, defaults.merge(
+                            bar: 3))
+    offenses:
+      []
+    config:
+      IndentationWidth: 4
+      EnforcedStyle: style

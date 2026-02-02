@@ -1,0 +1,200 @@
+cop: Style/EvenOdd
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_evenodd_converts_x_2_0_to_even
+    source: |
+      x % 2 == 0
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 10
+        message: "Replace with `Integer#even?`."
+    corrected: |
+      x.even?
+
+  - name: rubocop_cop_style_evenodd_converts_x_2_0_to_odd
+    source: |
+      x % 2 != 0
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 10
+        message: "Replace with `Integer#odd?`."
+    corrected: |
+      x.odd?
+
+  - name: rubocop_cop_style_evenodd_converts_x_2_0_to_even
+    source: |
+      (x % 2) == 0
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 12
+        message: "Replace with `Integer#even?`."
+    corrected: |
+      x.even?
+
+  - name: rubocop_cop_style_evenodd_converts_x_2_0_to_odd
+    source: |
+      (x % 2) != 0
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 12
+        message: "Replace with `Integer#odd?`."
+    corrected: |
+      x.odd?
+
+  - name: rubocop_cop_style_evenodd_converts_x_2_1_to_odd
+    source: |
+      x % 2 == 1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 10
+        message: "Replace with `Integer#odd?`."
+    corrected: |
+      x.odd?
+
+  - name: rubocop_cop_style_evenodd_converts_x_2_1_to_even
+    source: |
+      x % 2 != 1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 10
+        message: "Replace with `Integer#even?`."
+    corrected: |
+      x.even?
+
+  - name: rubocop_cop_style_evenodd_converts_x_2_1_to_odd
+    source: |
+      (x % 2) == 1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 12
+        message: "Replace with `Integer#odd?`."
+    corrected: |
+      x.odd?
+
+  - name: rubocop_cop_style_evenodd_converts_y_2_1_to_even
+    source: |
+      (y % 2) != 1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 12
+        message: "Replace with `Integer#even?`."
+    corrected: |
+      y.even?
+
+  - name: rubocop_cop_style_evenodd_converts_x_y_2_1_to_even
+    source: |
+      (x.y % 2) != 1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 14
+        message: "Replace with `Integer#even?`."
+    corrected: |
+      x.y.even?
+
+  - name: rubocop_cop_style_evenodd_converts_x_y_2_1_to_even
+    source: |
+      (x(y) % 2) != 1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 15
+        message: "Replace with `Integer#even?`."
+    corrected: |
+      x(y).even?
+
+  - name: rubocop_cop_style_evenodd_accepts_x_2_2
+    source: |
+      x % 2 == 2
+    offenses:
+      []
+
+  - name: rubocop_cop_style_evenodd_accepts_x_3_0
+    source: |
+      x % 3 == 0
+    offenses:
+      []
+
+  - name: rubocop_cop_style_evenodd_accepts_x_3_0
+    source: |
+      x % 3 != 0
+    offenses:
+      []
+
+  - name: rubocop_cop_style_evenodd_converts_x_y_2_1_to_even
+    source: |
+      (x._(y) % 2) != 1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 17
+        message: "Replace with `Integer#even?`."
+    corrected: |
+      x._(y).even?
+
+  - name: rubocop_cop_style_evenodd_converts_x_y_2_1_to_even
+    source: |
+      (x._(y)) % 2 != 1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 17
+        message: "Replace with `Integer#even?`."
+    corrected: |
+      (x._(y)).even?
+
+  - name: rubocop_cop_style_evenodd_converts_x_y_2_1_to_even
+    source: |
+      x._(y) % 2 != 1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 15
+        message: "Replace with `Integer#even?`."
+    corrected: |
+      x._(y).even?
+
+  - name: rubocop_cop_style_evenodd_converts_1_2_1_to_even
+    source: |
+      1 % 2 != 1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 10
+        message: "Replace with `Integer#even?`."
+    corrected: |
+      1.even?
+
+  - name: rubocop_cop_style_evenodd_converts_complex_examples
+    source: |
+      if (y % 2) != 1
+        method == :== ? :even : :odd
+      elsif x % 2 == 1
+        method == :== ? :odd : :even
+      end
+    offenses:
+      - line: 1
+        column_start: 3
+        column_end: 15
+        message: "Replace with `Integer#even?`."
+      - line: 3
+        column_start: 6
+        column_end: 16
+        message: "Replace with `Integer#odd?`."
+    corrected: |
+      if y.even?
+        method == :== ? :even : :odd
+      elsif x.odd?
+        method == :== ? :odd : :even
+      end

@@ -1,0 +1,127 @@
+cop: Style/UnpackFirst
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_unpackfirst_ruby_version_2_4_registers_an_offense_when_using_unpack_with_first
+    source: |
+      x.unpack('h*').first
+    offenses:
+      - line: 1
+        column_start: 2
+        column_end: 20
+        message: "Use `unpack1('h*')` instead of `unpack('h*').first`."
+    corrected: |
+      x.unpack1('h*')
+    ruby_version: ">= 2.4"
+
+  - name: rubocop_cop_style_unpackfirst_ruby_version_2_4_registers_an_offense_when_using_unpack_with_first
+    source: |
+      x&.unpack('h*').first
+    offenses:
+      - line: 1
+        column_start: 3
+        column_end: 21
+        message: "Use `unpack1('h*')` instead of `unpack('h*').first`."
+    corrected: |
+      x&.unpack1('h*')
+    ruby_version: ">= 2.4"
+
+  - name: rubocop_cop_style_unpackfirst_ruby_version_2_4_registers_an_offense_when_using_unpack_with_first
+    source: |
+      x&.unpack('h*')&.first
+    offenses:
+      - line: 1
+        column_start: 3
+        column_end: 22
+        message: "Use `unpack1('h*')` instead of `unpack('h*')&.first`."
+    corrected: |
+      x&.unpack1('h*')
+    ruby_version: ">= 2.4"
+
+  - name: rubocop_cop_style_unpackfirst_ruby_version_2_4_registers_an_offense_when_using_unpack_with_square_brackets
+    source: |
+      ''.unpack(y)[0]
+    offenses:
+      - line: 1
+        column_start: 3
+        column_end: 15
+        message: Use `unpack1(y)` instead of `unpack(y)[0]`.
+    corrected: |
+      ''.unpack1(y)
+    ruby_version: ">= 2.4"
+
+  - name: rubocop_cop_style_unpackfirst_ruby_version_2_4_registers_an_offense_when_using_unpack_with_dot_and_square_brackets
+    source: |
+      ''.unpack(y).[](0)
+    offenses:
+      - line: 1
+        column_start: 3
+        column_end: 18
+        message: Use `unpack1(y)` instead of `unpack(y).[](0)`.
+    corrected: |
+      ''.unpack1(y)
+    ruby_version: ">= 2.4"
+
+  - name: rubocop_cop_style_unpackfirst_ruby_version_2_4_registers_an_offense_when_using_unpack_with_slice
+    source: |
+      ''.unpack(y).slice(0)
+    offenses:
+      - line: 1
+        column_start: 3
+        column_end: 21
+        message: Use `unpack1(y)` instead of `unpack(y).slice(0)`.
+    corrected: |
+      ''.unpack1(y)
+    ruby_version: ">= 2.4"
+
+  - name: rubocop_cop_style_unpackfirst_ruby_version_2_4_registers_an_offense_when_using_unpack_with_slice
+    source: |
+      ''&.unpack(y).slice(0)
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 22
+        message: Use `unpack1(y)` instead of `unpack(y).slice(0)`.
+    corrected: |
+      ''&.unpack1(y)
+    ruby_version: ">= 2.4"
+
+  - name: rubocop_cop_style_unpackfirst_ruby_version_2_4_registers_an_offense_when_using_unpack_with_slice
+    source: |
+      ''&.unpack(y)&.slice(0)
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 23
+        message: Use `unpack1(y)` instead of `unpack(y)&.slice(0)`.
+    corrected: |
+      ''&.unpack1(y)
+    ruby_version: ">= 2.4"
+
+  - name: rubocop_cop_style_unpackfirst_ruby_version_2_4_registers_an_offense_when_using_unpack_with_at
+    source: |
+      ''.unpack(y).at(0)
+    offenses:
+      - line: 1
+        column_start: 3
+        column_end: 18
+        message: Use `unpack1(y)` instead of `unpack(y).at(0)`.
+    corrected: |
+      ''.unpack1(y)
+    ruby_version: ">= 2.4"
+
+  - name: rubocop_cop_style_unpackfirst_ruby_version_2_4_does_not_register_offense_when_using_unpack1
+    source: |
+      x.unpack1(y)
+    offenses:
+      []
+    ruby_version: ">= 2.4"
+
+  - name: rubocop_cop_style_unpackfirst_ruby_version_2_4_does_not_register_offense_when_using_unpack_accessing_second_element
+    source: |
+      ''.unpack('h*')[1]
+    offenses:
+      []
+    ruby_version: ">= 2.4"

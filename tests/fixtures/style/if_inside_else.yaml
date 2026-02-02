@@ -1,0 +1,466 @@
+cop: Style/IfInsideElse
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_ifinsideelse_catches_an_if_node_nested_inside_an_else
+    source: |
+      if a
+        blah
+      else
+        if b
+          foo
+        end
+      end
+    offenses:
+      - line: 4
+        column_start: 2
+        column_end: 4
+        message: Convert `if` nested inside `else` to `elsif`.
+    corrected: |
+      if a
+        blah
+      elsif b
+        foo
+      end
+    config:
+      AllowIfModifier: false
+
+  - name: rubocop_cop_style_ifinsideelse_catches_an_if_else_nested_inside_an_else
+    source: |
+      if a
+        blah
+      else
+        if b
+          foo
+        else # This is expected to be autocorrected by `Layout/IndentationWidth`.
+          bar
+        end
+      end
+    offenses:
+      - line: 4
+        column_start: 2
+        column_end: 4
+        message: Convert `if` nested inside `else` to `elsif`.
+    corrected: |
+      if a
+        blah
+      elsif b
+        foo
+        else # This is expected to be autocorrected by `Layout/IndentationWidth`.
+          bar
+      end
+    config:
+      AllowIfModifier: false
+
+  - name: rubocop_cop_style_ifinsideelse_catches_an_if_else_nested_inside_an_else_and_nested_inside_if_branch_code_is_empty
+    source: |
+      if a
+        foo
+      else
+        if b
+          # TODO: comment.
+        else
+          bar
+        end
+      end
+    offenses:
+      - line: 4
+        column_start: 2
+        column_end: 4
+        message: Convert `if` nested inside `else` to `elsif`.
+    corrected: |
+      if a
+        foo
+      elsif b
+          # TODO: comment.
+        else
+          bar
+      end
+    config:
+      AllowIfModifier: false
+
+  - name: rubocop_cop_style_ifinsideelse_catches_an_if_else_nested_inside_an_else_with_comments_in_both_branches
+    source: |
+      if a
+        foo
+      else
+        if b
+          # this is very important
+          bar # this too
+        else
+          # this three
+          baz # this four
+        end
+      end
+    offenses:
+      - line: 4
+        column_start: 2
+        column_end: 4
+        message: Convert `if` nested inside `else` to `elsif`.
+    corrected: |
+      if a
+        foo
+      elsif b
+        # this is very important
+          bar # this too
+        else
+          # this three
+          baz # this four
+      end
+    config:
+      AllowIfModifier: false
+
+  - name: rubocop_cop_style_ifinsideelse_catches_an_if_elsif_else_nested_inside_an_else
+    source: |
+      if a
+        blah
+      else
+        if b
+          foo
+        elsif c # This is expected to be autocorrected by `Layout/IndentationWidth`.
+            bar
+        elsif d
+          baz
+        else
+          qux
+        end
+      end
+    offenses:
+      - line: 4
+        column_start: 2
+        column_end: 4
+        message: Convert `if` nested inside `else` to `elsif`.
+    corrected: |
+      if a
+        blah
+      elsif b
+        foo
+        elsif c # This is expected to be autocorrected by `Layout/IndentationWidth`.
+            bar
+        elsif d
+          baz
+        else
+          qux
+      end
+    config:
+      AllowIfModifier: false
+
+  - name: rubocop_cop_style_ifinsideelse_catches_a_modifier_if_nested_inside_an_else_after_elsif
+    source: |
+      if a
+        blah
+      elsif b
+        foo
+      else
+        # important info
+        bar if condition # blabla
+      end
+    offenses:
+      - line: 7
+        column_start: 6
+        column_end: 8
+        message: Convert `if` nested inside `else` to `elsif`.
+    corrected: |
+      if a
+        blah
+      elsif b
+        foo
+      elsif condition
+        # important info
+        bar # blabla
+      end
+    config:
+      AllowIfModifier: false
+
+  - name: rubocop_cop_style_ifinsideelse_handles_a_nested_if_then_end
+    source: |
+      if x
+        'x'
+      else
+        if y then 'y' end
+      end
+    offenses:
+      - line: 4
+        column_start: 2
+        column_end: 4
+        message: Convert `if` nested inside `else` to `elsif`.
+    corrected: |
+      if x
+        'x'
+      else
+        if y
+        'y'
+      end
+      end
+    config:
+      AllowIfModifier: false
+
+  - name: rubocop_cop_style_ifinsideelse_handles_a_nested_if_then_else_end
+    source: |
+      if x
+        'x'
+      else
+        if y then 'y' else 'z' end
+      end
+    offenses:
+      - line: 4
+        column_start: 2
+        column_end: 4
+        message: Convert `if` nested inside `else` to `elsif`.
+    corrected: |
+      if x
+        'x'
+      elsif y
+        'y'
+        else
+        'z'
+      end
+    config:
+      AllowIfModifier: false
+
+  - name: rubocop_cop_style_ifinsideelse_handles_a_nested_if_then_elsif_end
+    source: |
+      if x
+        'x'
+      else
+        if y then 'y' elsif z then 'z' end
+      end
+    offenses:
+      - line: 4
+        column_start: 2
+        column_end: 4
+        message: Convert `if` nested inside `else` to `elsif`.
+    corrected: |
+      if x
+        'x'
+      else
+        if y
+        'y'
+        elsif z
+        'z'
+      end
+      end
+    config:
+      AllowIfModifier: false
+
+  - name: rubocop_cop_style_ifinsideelse_handles_a_nested_if_then_elsif_else_end
+    source: |
+      if x
+        'x'
+      else
+        if y then 'y' elsif z then 'z' else 'a' end
+      end
+    offenses:
+      - line: 4
+        column_start: 2
+        column_end: 4
+        message: Convert `if` nested inside `else` to `elsif`.
+    corrected: |
+      if x
+        'x'
+      elsif y
+        'y'
+        elsif z
+        'z'
+        else
+        'a'
+      end
+    config:
+      AllowIfModifier: false
+
+  - name: rubocop_cop_style_ifinsideelse_handles_a_nested_multiline_if_then_elsif_else_end
+    source: |
+      if x
+        'x'
+      else
+        if y then 'y'
+        elsif z then 'z'
+        else 'a' end
+      end
+    offenses:
+      - line: 4
+        column_start: 2
+        column_end: 4
+        message: Convert `if` nested inside `else` to `elsif`.
+    corrected: |
+      if x
+        'x'
+      else
+        if y
+        'y'
+        elsif z
+        'z'
+        else
+        'a'
+        end
+      end
+    config:
+      AllowIfModifier: false
+
+  - name: rubocop_cop_style_ifinsideelse_handles_a_deep_nested_multiline_if_then_elsif_else_end
+    source: |
+      if cond
+      else
+        if nested_one
+        else
+          if c
+            if d
+            else
+              if e
+              end
+            end
+          end
+        end
+      end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 4
+        message: Convert `if` nested inside `else` to `elsif`.
+      - line: 5
+        column_start: 4
+        column_end: 6
+        message: Convert `if` nested inside `else` to `elsif`.
+      - line: 8
+        column_start: 8
+        column_end: 10
+        message: Convert `if` nested inside `else` to `elsif`.
+    corrected: |
+      if cond
+      elsif nested_one
+        else
+          if c
+            if d
+            else
+              if e
+              end
+            end
+          end
+      end
+    config:
+      AllowIfModifier: false
+
+  - name: rubocop_cop_style_ifinsideelse_when_allowifmodifier_is_false_catches_a_modifier_if_nested_inside_an_else
+    source: |
+      if a
+        blah
+      else
+        foo if b
+      end
+    offenses:
+      - line: 4
+        column_start: 6
+        column_end: 8
+        message: Convert `if` nested inside `else` to `elsif`.
+    corrected: |
+      if a
+        blah
+      elsif b
+        foo
+      end
+    config:
+      AllowIfModifier: false
+
+  - name: rubocop_cop_style_ifinsideelse_when_allowifmodifier_is_true_accepts_a_modifier_if_nested_inside_an_else
+    source: |
+      if a
+        blah
+      else
+        foo if b
+      end
+    offenses:
+      []
+    config:
+      AllowIfModifier: true
+
+  - name: rubocop_cop_style_ifinsideelse_isn_t_offended_if_there_is_a_statement_following_the_if_node
+    source: |
+      if a
+        blah
+      else
+        if b
+          foo
+        end
+        bar
+      end
+    offenses:
+      []
+    config:
+      AllowIfModifier: true
+
+  - name: rubocop_cop_style_ifinsideelse_isn_t_offended_if_there_is_a_statement_preceding_the_if_node
+    source: |
+      if a
+        blah
+      else
+        bar
+        if b
+          foo
+        end
+      end
+    offenses:
+      []
+    config:
+      AllowIfModifier: true
+
+  - name: rubocop_cop_style_ifinsideelse_isn_t_offended_by_if_elsif_else
+    source: |
+      if a
+        blah
+      elsif b
+        blah
+      else
+        blah
+      end
+    offenses:
+      []
+    config:
+      AllowIfModifier: true
+
+  - name: rubocop_cop_style_ifinsideelse_ignores_unless_inside_else
+    source: |
+      if a
+        blah
+      else
+        unless b
+          foo
+        end
+      end
+    offenses:
+      []
+    config:
+      AllowIfModifier: true
+
+  - name: rubocop_cop_style_ifinsideelse_ignores_if_inside_unless
+    source: |
+      unless a
+        if b
+          foo
+        end
+      end
+    offenses:
+      []
+    config:
+      AllowIfModifier: true
+
+  - name: rubocop_cop_style_ifinsideelse_ignores_nested_ternary_expressions
+    source: |
+      a ? b : c ? d : e
+    offenses:
+      []
+    config:
+      AllowIfModifier: true
+
+  - name: rubocop_cop_style_ifinsideelse_ignores_ternary_inside_if_else
+    source: |
+      if a
+        blah
+      else
+        a ? b : c
+      end
+    offenses:
+      []
+    config:
+      AllowIfModifier: true

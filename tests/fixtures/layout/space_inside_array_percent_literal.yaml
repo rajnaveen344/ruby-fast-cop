@@ -1,0 +1,83 @@
+cop: Layout/SpaceInsideArrayPercentLiteral
+department: layout
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_layout_spaceinsidearraypercentliteral_registers_an_offense_for_unnecessary_spaces
+    source: |
+      #{code_example('1   2')}
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 7
+        message: Use only a single space inside array percent literal.
+    corrected: |
+      #{code_example('1 2')}
+    interpolated: true
+
+  - name: rubocop_cop_layout_spaceinsidearraypercentliteral_registers_an_offense_for_multiple_spaces_between_items
+    source: |
+      #{code_example('1   2   3')}
+    offenses:
+      - line: 1
+        column_start: 8
+        column_end: 11
+        message: Use only a single space inside array percent literal.
+      - line: 1
+        column_start: 4
+        column_end: 7
+        message: Use only a single space inside array percent literal.
+    corrected: |
+      #{code_example('1 2 3')}
+    interpolated: true
+
+  - name: rubocop_cop_layout_spaceinsidearraypercentliteral_registers_an_offense_when_literals_with_escaped_and_additional_spaces
+    source: |
+      #{code_example('a\   b \ c')}
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 8
+        message: Use only a single space inside array percent literal.
+    corrected: |
+      #{code_example('a\  b \ c')}
+    interpolated: true
+
+  - name: rubocop_cop_layout_spaceinsidearraypercentliteral_accepts_multi_line_literals
+    source: |
+      %#{type}(
+        a
+        b
+        c
+      )
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_layout_spaceinsidearraypercentliteral_accepts_multi_line_literals_within_a_method
+    source: |
+      def foo
+        %#{type}(
+          a
+          b
+          c
+        )
+      end
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_layout_spaceinsidearraypercentliteral_accepts_newlines_and_additional_following_alignment_spaces
+    source: |
+      %#{type}(a b
+         c)
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_layout_spaceinsidearraypercentliteral_accepts_non_array_percent_literals
+    source: |
+      %q( a  b c )
+    offenses:
+      []

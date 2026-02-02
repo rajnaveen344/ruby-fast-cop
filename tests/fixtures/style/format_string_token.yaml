@@ -1,0 +1,939 @@
+cop: Style/FormatStringToken
+department: style
+severity: convention
+implemented: true
+
+tests:
+  - name: rubocop_cop_style_formatstringtoken_when_maxunannotatedplaceholdersallowed_is_1_does_not_register_offenses_for_single_unannotated
+    source: |
+      format('%#{token}', foo)
+    offenses:
+      []
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+    interpolated: true
+
+  - name: rubocop_cop_style_formatstringtoken_when_maxunannotatedplaceholdersallowed_is_1_registers_an_offense_for_dual_unannotated
+    source: |
+      format('%#{token} %s', foo, bar)
+    offenses:
+      - line: 1
+        column_start: 8
+        column_end: 10
+        message: Prefer [...]
+      - line: 1
+        column_start: 11
+        column_end: 13
+        message: Prefer [...]
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+    interpolated: true
+
+  - name: rubocop_cop_style_formatstringtoken_when_maxunannotatedplaceholdersallowed_is_1_does_not_register_offenses_for_dual_unannotated
+    source: |
+      format('%#{token} %s', foo, bar)
+    offenses:
+      []
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+    interpolated: true
+
+  - name: rubocop_cop_style_formatstringtoken_when_maxunannotatedplaceholdersallowed_is_2_does_not_register_offenses_for_single_unannotated
+    source: |
+      format('%#{token}', foo)
+    offenses:
+      []
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+    interpolated: true
+
+  - name: rubocop_cop_style_formatstringtoken_when_maxunannotatedplaceholdersallowed_is_2_does_not_register_offenses_for_dual_unannotated
+    source: |
+      format('%#{token} %s', foo, bar)
+    offenses:
+      []
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+    interpolated: true
+
+  - name: rubocop_cop_style_formatstringtoken_when_enforced_style_is_annotated_registers_offenses_for_template_style
+    source: |
+      <<-HEREDOC
+      foo %{annotated} + bar %{template}
+      HEREDOC
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 34
+        message: Prefer annotated tokens [...]
+    corrected: |
+      <<-HEREDOC
+      foo #{annotated} + bar #{template_to_annotated}
+      HEREDOC
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+    interpolated: true
+
+  - name: rubocop_cop_style_formatstringtoken_when_enforced_style_is_annotated_supports_dynamic_string_with_interpolation
+    source: |
+      "a#{b}%{annotated} c#{d}%{template} e#{f}"
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 42
+        message: Prefer annotated tokens [...]
+    corrected: |
+      "a#{b}#{annotated} c#{d}#{template_to_annotated} e#{f}"
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+    interpolated: true
+
+  - name: rubocop_cop_style_formatstringtoken_when_enforced_style_is_annotated_sets_the_enforced_style_to_annotated_after_inspecting_a_s
+    source: |
+      "%<a>s"
+    offenses:
+      []
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+
+  - name: rubocop_cop_style_formatstringtoken_when_enforced_style_is_annotated_detects_when_the_cop_must_be_disabled_to_avoid_offenses
+    source: |
+      "%{a}"
+    offenses:
+      - line: 1
+        column_start: 1
+        column_end: 5
+        message: Prefer annotated tokens [...]
+    corrected: |
+      "%<a>s"
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+
+  - name: rubocop_cop_style_formatstringtoken_when_enforced_style_is_template_registers_offenses_for_annotated_style
+    source: |
+      <<-HEREDOC
+      foo %{template} + bar %{annotated}
+      HEREDOC
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 34
+        message: Prefer template tokens [...]
+    corrected: |
+      <<-HEREDOC
+      foo #{template} + bar #{annotated_to_template}
+      HEREDOC
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+    interpolated: true
+
+  - name: rubocop_cop_style_formatstringtoken_when_enforced_style_is_template_does_not_register_offenses_for_annotated_style
+    source: |
+      <<-HEREDOC
+      foo %{template} + bar %{annotated}
+      HEREDOC
+    offenses:
+      []
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+
+  - name: rubocop_cop_style_formatstringtoken_when_enforced_style_is_template_supports_dynamic_string_with_interpolation
+    source: |
+      "a#{b}%{template} c#{d}%{annotated} e#{f}"
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 42
+        message: Prefer template tokens [...]
+    corrected: |
+      "a#{b}#{template} c#{d}#{annotated_to_template} e#{f}"
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+    interpolated: true
+
+  - name: rubocop_cop_style_formatstringtoken_when_enforced_style_is_template_detects_when_the_cop_must_be_disabled_to_avoid_offenses
+    source: |
+      "%<a>s"
+    offenses:
+      - line: 1
+        column_start: 1
+        column_end: 6
+        message: Prefer template tokens [...]
+    corrected: |
+      "%{a}"
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+
+  - name: rubocop_cop_style_formatstringtoken_when_enforced_style_is_template_configures_the_enforced_style_to_template_after_inspecting_a
+    source: |
+      "%{a}"
+    offenses:
+      []
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+
+  - name: rubocop_cop_style_formatstringtoken_ignores_percent_escapes
+    source: |
+      format('%<hit_rate>6.2f%%', hit_rate: 12.34)
+    offenses:
+      []
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+
+  - name: rubocop_cop_style_formatstringtoken_ignores_xstr
+    source: |
+      `echo "%s %<annotated>s %{template}"`
+    offenses:
+      []
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+
+  - name: rubocop_cop_style_formatstringtoken_ignores_regexp
+    source: |
+      /foo bar %u/
+    offenses:
+      []
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+
+  - name: rubocop_cop_style_formatstringtoken_ignores_r_regexp
+    source: |
+      %r{foo bar %u}
+    offenses:
+      []
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+
+  - name: rubocop_cop_style_formatstringtoken
+    source: |
+      Time.#{method_name}('2017-12-13', '%Y-%m-%d')
+    offenses:
+      []
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+    interpolated: true
+
+  - name: rubocop_cop_style_formatstringtoken_ignores_time_format_when_it_is_stored_in_a_variable
+    source: |
+      time_format = '%Y-%m-%d'
+      Time.strftime('2017-12-13', time_format)
+    offenses:
+      []
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+
+  - name: rubocop_cop_style_formatstringtoken_ignores_time_format_and_unrelated_format_method_using
+    source: |
+      Time.now.strftime('%Y-%m-%d-%H-%M-%S')
+      format
+    offenses:
+      []
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+
+  - name: rubocop_cop_style_formatstringtoken_handles_dstrs
+    source: |
+      "c#{b}%{template}"
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 17
+        message: Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`).
+    corrected: |
+      "c#{b}%<template>s"
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+
+  - name: rubocop_cop_style_formatstringtoken_ignores_http_links
+    source: |
+      'https://ru.wikipedia.org/wiki/%D0%90_'  '(%D0%BA%D0%B8%D1%80%D0%B8%D0%BB%D0%BB%D0%B8%D1%86%D0%B0)'
+    offenses:
+      []
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+
+  - name: rubocop_cop_style_formatstringtoken_ignores_placeholder_arguments
+    source: |
+      format(
+        '%<day>s %<start>s-%<end>s',
+        day: open_house.starts_at.strftime('%a'),
+        start: open_house.starts_at.strftime('%l'),
+        end: open_house.ends_at.strftime('%l %p').strip
+      )
+    offenses:
+      []
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+
+  - name: rubocop_cop_style_formatstringtoken_works_inside_hashes
+    source: |
+      { bar: format('%{foo}', foo: 'foo') }
+    offenses:
+      - line: 1
+        column_start: 15
+        column_end: 21
+        message: Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`).
+    corrected: |
+      { bar: format('%<foo>s', foo: 'foo') }
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+
+  - name: rubocop_cop_style_formatstringtoken_supports_flags_and_modifiers
+    source: |
+      format('%-20s %-30s', 'foo', 'bar')
+    offenses:
+      - line: 1
+        column_start: 8
+        column_end: 13
+        message: Prefer annotated tokens (like `%<foo>s`) over unannotated tokens (like `%s`).
+      - line: 1
+        column_start: 14
+        column_end: 19
+        message: Prefer annotated tokens (like `%<foo>s`) over unannotated tokens (like `%s`).
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+
+  - name: rubocop_cop_style_formatstringtoken_ignores_file
+    source: |
+      __FILE__
+    offenses:
+      []
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+
+  - name: rubocop_cop_style_formatstringtoken_enforced_styles_for_format_string_tokens_a
+    source: |
+      A
+    offenses:
+      []
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+
+  - name: rubocop_cop_style_formatstringtoken_enforced_styles_for_format_string_tokens_b
+    source: |
+      B
+    offenses:
+      []
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+
+  - name: rubocop_cop_style_formatstringtoken_enforced_styles_for_format_string_tokens_e
+    source: |
+      E
+    offenses:
+      []
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+
+  - name: rubocop_cop_style_formatstringtoken_enforced_styles_for_format_string_tokens_g
+    source: |
+      G
+    offenses:
+      []
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+
+  - name: rubocop_cop_style_formatstringtoken_enforced_styles_for_format_string_tokens_x
+    source: |
+      X
+    offenses:
+      []
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+
+  - name: rubocop_cop_style_formatstringtoken_enforced_styles_for_format_string_tokens_a
+    source: |
+      a
+    offenses:
+      []
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+
+  - name: rubocop_cop_style_formatstringtoken_enforced_styles_for_format_string_tokens_b
+    source: |
+      b
+    offenses:
+      []
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+
+  - name: rubocop_cop_style_formatstringtoken_enforced_styles_for_format_string_tokens_c
+    source: |
+      c
+    offenses:
+      []
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+
+  - name: rubocop_cop_style_formatstringtoken_enforced_styles_for_format_string_tokens_d
+    source: |
+      d
+    offenses:
+      []
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+
+  - name: rubocop_cop_style_formatstringtoken_enforced_styles_for_format_string_tokens_e
+    source: |
+      e
+    offenses:
+      []
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+
+  - name: rubocop_cop_style_formatstringtoken_enforced_styles_for_format_string_tokens_f
+    source: |
+      f
+    offenses:
+      []
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+
+  - name: rubocop_cop_style_formatstringtoken_enforced_styles_for_format_string_tokens_g
+    source: |
+      g
+    offenses:
+      []
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+
+  - name: rubocop_cop_style_formatstringtoken_enforced_styles_for_format_string_tokens_i
+    source: |
+      i
+    offenses:
+      []
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+
+  - name: rubocop_cop_style_formatstringtoken_enforced_styles_for_format_string_tokens_o
+    source: |
+      o
+    offenses:
+      []
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+
+  - name: rubocop_cop_style_formatstringtoken_enforced_styles_for_format_string_tokens_p
+    source: |
+      p
+    offenses:
+      []
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+
+  - name: rubocop_cop_style_formatstringtoken_enforced_styles_for_format_string_tokens_s
+    source: |
+      s
+    offenses:
+      []
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+
+  - name: rubocop_cop_style_formatstringtoken_enforced_styles_for_format_string_tokens_u
+    source: |
+      u
+    offenses:
+      []
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+
+  - name: rubocop_cop_style_formatstringtoken_enforced_styles_for_format_string_tokens_x
+    source: |
+      x
+    offenses:
+      []
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+
+  - name: rubocop_cop_style_formatstringtoken_when_enforced_style_is_annotated_gives_a_helpful_error_message
+    source: |
+      "%{foo}"
+    offenses:
+      - line: 1
+        column_start: 1
+        column_end: 7
+        message: Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`).
+    corrected: |
+      "%<foo>s"
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+
+  - name: rubocop_cop_style_formatstringtoken_when_enforced_style_is_annotated_when_allowedmethods_is_enabled_does_not_register_an_offense
+    source: |
+      redirect("%{foo}")
+    offenses:
+      []
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+
+  - name: rubocop_cop_style_formatstringtoken_when_enforced_style_is_annotated_when_allowedmethods_is_enabled_does_not_register_an_offense_for_value_in_nested_structure
+    source: |
+      redirect("%{foo}", bye: "%{foo}")
+    offenses:
+      []
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+
+  - name: rubocop_cop_style_formatstringtoken_when_enforced_style_is_annotated_when_allowedmethods_is_enabled_registers_an_offense_for_different_method_call_within_ignored_method
+    source: |
+      redirect("%{foo}", bye: foo("%{foo}"))
+    offenses:
+      - line: 1
+        column_start: 29
+        column_end: 35
+        message: Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`).
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+
+  - name: rubocop_cop_style_formatstringtoken_when_enforced_style_is_annotated_when_allowedmethods_is_disabled_registers_an_offense
+    source: |
+      redirect("%{foo}")
+    offenses:
+      - line: 1
+        column_start: 10
+        column_end: 16
+        message: Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`).
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+
+  - name: rubocop_cop_style_formatstringtoken_when_enforced_style_is_annotated_when_allowedpatterns_is_enabled_does_not_register_an_offense
+    source: |
+      redirect("%{foo}")
+    offenses:
+      []
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+
+  - name: rubocop_cop_style_formatstringtoken_when_enforced_style_is_annotated_when_allowedpatterns_is_enabled_does_not_register_an_offense_for_value_in_nested_structure
+    source: |
+      redirect("%{foo}", bye: "%{foo}")
+    offenses:
+      []
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+
+  - name: rubocop_cop_style_formatstringtoken_when_enforced_style_is_annotated_when_allowedpatterns_is_enabled_registers_an_offense_for_different_method_call_within_ignored_method
+    source: |
+      redirect("%{foo}", bye: foo("%{foo}"))
+    offenses:
+      - line: 1
+        column_start: 29
+        column_end: 35
+        message: Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`).
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+
+  - name: rubocop_cop_style_formatstringtoken_when_enforced_style_is_annotated_when_allowedpatterns_is_disabled_registers_an_offense
+    source: |
+      redirect("%{foo}")
+    offenses:
+      - line: 1
+        column_start: 10
+        column_end: 16
+        message: Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`).
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+
+  - name: rubocop_cop_style_formatstringtoken_when_enforced_style_is_template_gives_a_helpful_error_message
+    source: |
+      "%<foo>s"
+    offenses:
+      - line: 1
+        column_start: 1
+        column_end: 8
+        message: Prefer template tokens (like `%{foo}`) over annotated tokens (like `%<foo>s`).
+    corrected: |
+      "%{foo}"
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+
+  - name: rubocop_cop_style_formatstringtoken_when_enforced_style_is_unannotated_gives_a_helpful_error_message
+    source: |
+      "%{foo}"
+    offenses:
+      - line: 1
+        column_start: 1
+        column_end: 7
+        message: Prefer unannotated tokens (like `%s`) over template tokens (like `%{foo}`).
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+
+  - name: rubocop_cop_style_formatstringtoken_with_mode_conservative_with_a_bare_string_does_not_register_an_offense
+    source: |
+      '#{string}'
+    offenses:
+      []
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+    interpolated: true
+
+  - name: rubocop_cop_style_formatstringtoken_with_mode_conservative_registers_an_offense
+    source: |
+      %{method}('%{string}', *vars)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 29
+        message: Prefer [...]
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+
+  - name: rubocop_cop_style_formatstringtoken_with_mode_conservative_as_an_argument_to_registers_an_offense
+    source: |
+      '#{string}' % vars
+    offenses:
+      - line: 1
+        column_start: 1
+        column_end: 18
+        message: Prefer [...]
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+    interpolated: true
+
+  - name: rubocop_cop_style_formatstringtoken_with_mode_conservative_as_an_argument_to_another_method_does_not_register_an_offense
+    source: |
+      foo('#{string}')
+    offenses:
+      []
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+    interpolated: true
+
+  - name: rubocop_cop_style_formatstringtoken_with_mode_conservative_conservative_greetings_s
+    source: |
+      %<greetings>s
+    offenses:
+      []
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+
+  - name: rubocop_cop_style_formatstringtoken_with_mode_conservative_conservative_greetings
+    source: |
+      %{greetings}
+    offenses:
+      []
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods
+
+  - name: rubocop_cop_style_formatstringtoken_with_mode_conservative_conservative_s
+    source: |
+      %s
+    offenses:
+      []
+    config:
+      MaxUnannotatedPlaceholdersAllowed: 0
+      SupportedStyles: [annotated, template, unannotated]
+      AllowedPatterns: allowed_patterns
+      Mode: mode
+      EnforcedStyle: enforced_style
+      AllowedMethods: allowed_methods

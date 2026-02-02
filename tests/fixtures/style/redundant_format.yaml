@@ -1,0 +1,1495 @@
+cop: Style/RedundantFormat
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_redundantformat_does_not_register_an_offense_when_called_with_no_arguments
+    source: |
+      #{method}
+      #{method}()
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_redundantformat_does_not_register_an_offense_when_called_with_additional_arguments
+    source: |
+      #{method}('%s', foo)
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_redundantformat_does_not_register_an_offense_when_called_with_a_splat
+    source: |
+      #{method}('%s', *args)
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_redundantformat_does_not_register_an_offense_when_called_with_a_double_splat
+    source: |
+      #{method}('%s', **args)
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_redundantformat_does_not_register_an_offense_when_called_with_a_double_splat_with_annotations
+    source: |
+      #{method}('%<username>s', **args)
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_redundantformat_does_not_register_an_offense_when_called_on_an_object
+    source: |
+      foo.#{method}('bar')
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_redundantformat_when_only_given_a_single_string_argument_registers_an_offense
+    source: |
+      %{method}('foo')
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 16
+        message: "Use `'foo'` directly instead of `%{method}`."
+    corrected: |
+      'foo'
+
+  - name: rubocop_cop_style_redundantformat_when_only_given_a_single_string_argument_registers_an_offense_when_the_argument_is_an_interpolated_string
+    source: |
+      %{method}("#{foo}")
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 19
+        message: "Use `\"#{foo}\"` directly instead of `%{method}`."
+    corrected: |
+      "#{foo}"
+
+  - name: rubocop_cop_style_redundantformat_when_only_given_a_single_string_argument_registers_an_offense_when_called_with_kernel
+    source: |
+      Kernel.%{method}('foo')
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 23
+        message: "Use `'foo'` directly instead of `%{method}`."
+    corrected: |
+      'foo'
+
+  - name: rubocop_cop_style_redundantformat_when_only_given_a_single_string_argument_registers_an_offense_when_called_with_kernel
+    source: |
+      ::Kernel.%{method}('foo')
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 25
+        message: "Use `'foo'` directly instead of `%{method}`."
+    corrected: |
+      'foo'
+
+  - name: rubocop_cop_style_redundantformat_when_only_given_a_single_string_argument_registers_an_offense_when_the_argument_is_a_control_character
+    source: |
+      %{method}("\n")
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 15
+        message: 'Use `"\n"` directly instead of `%{method}`.'
+    corrected: |
+      "\n"
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_registers_an_offense_and_corrects
+    source: |
+      %{method}(%{start_delim}%{specifier}%{end_delim}, %{value})
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 59
+        message: "Use `#{result}` directly instead of `%{method}`."
+    corrected: |
+      #{result}
+    interpolated: true
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_does_not_register_an_offense
+    source: |
+      #{method}('#{specifier}', #{value})
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_s
+    source: |
+      %s
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_foo
+    source: |
+      'foo'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_foo
+    source: |
+      'foo'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_s
+    source: |
+      %s
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_foo
+    source: |
+      'foo'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_foo
+    source: |
+      %{foo}
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier
+    source: |
+      %{
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier
+    source: |
+      }
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_s
+    source: |
+      %s
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_foo
+    source: |
+      'foo'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_q_foo
+    source: |
+      %q{foo}
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_q
+    source: |
+      %q{
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier
+    source: |
+      }
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_s
+    source: |
+      %s
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_foo
+    source: |
+      'foo'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_q_foo
+    source: |
+      %Q{foo}
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_q
+    source: |
+      %Q{
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier
+    source: |
+      }
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_s
+    source: |
+      %s
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_q_foo
+    source: |
+      %q{foo}
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_foo
+    source: |
+      'foo'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_s
+    source: |
+      %s
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_foo
+    source: |
+      %{foo}
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_foo
+    source: |
+      'foo'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_s
+    source: |
+      %s
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_q_foo
+    source: |
+      %Q{foo}
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_foo
+    source: |
+      'foo'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_s
+    source: |
+      %s
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_foo
+    source: |
+      "#{foo}"
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_foo
+    source: |
+      "#{foo}"
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_s
+    source: |
+      %s
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_foo
+    source: |
+      "#{foo}"
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_foo
+    source: |
+      %{#{foo}}
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier
+    source: |
+      %{
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier
+    source: |
+      }
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_s
+    source: |
+      %s
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_foo
+    source: |
+      "#{foo}"
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_q_foo
+    source: |
+      %Q{#{foo}}
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_q
+    source: |
+      %q{
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier
+    source: |
+      }
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_s
+    source: |
+      %s
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_foo
+    source: |
+      "#{foo}"
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_q_foo
+    source: |
+      %Q{#{foo}}
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_q
+    source: |
+      %Q{
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier
+    source: |
+      }
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_s
+    source: |
+      %s
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_foo
+    source: |
+      :foo
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_foo
+    source: |
+      'foo'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_s
+    source: |
+      %s
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_foo
+    source: |
+      :"#{foo}"
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_foo
+    source: |
+      "#{foo}"
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_s
+    source: |
+      %s
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_1
+    source: |
+      1
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_1
+    source: |
+      '1'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_s
+    source: |
+      %s
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_1_1
+    source: |
+      1.1
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_1_1
+    source: |
+      '1.1'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_s
+    source: |
+      %s
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_1r
+    source: |
+      1r
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_1_1
+    source: |
+      '1/1'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_s
+    source: |
+      %s
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_1i
+    source: |
+      1i
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_0_1i
+    source: |
+      '0+1i'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_s
+    source: |
+      %s
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_true
+    source: |
+      true
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_true
+    source: |
+      'true'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_s
+    source: |
+      %s
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_false
+    source: |
+      false
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_false
+    source: |
+      'false'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_s
+    source: |
+      %s
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_nil
+    source: |
+      nil
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_nil
+    source: |
+      'nil'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_non_offending_format_specifier_s
+    source: |
+      %s
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_non_offending_format_specifier_foo
+    source: |
+      foo
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_non_offending_format_specifier_s
+    source: |
+      %s
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_non_offending_format_specifier
+    source: |
+      []
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_non_offending_format_specifier_s
+    source: |
+      %s
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_non_offending_format_specifier
+    source: |
+      {}
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_5
+    source: |
+      5
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_5
+    source: |
+      '5'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_5_5
+    source: |
+      5.5
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_5
+    source: |
+      '5'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_5r
+    source: |
+      5r
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_5
+    source: |
+      '5'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_3_8r
+    source: |
+      3/8r
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_0
+    source: |
+      '0'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_3_8r
+    source: |
+      (3/8r)
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_0
+    source: |
+      '0'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_5_0i
+    source: |
+      5+0i
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_5
+    source: |
+      '5'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_5_0i
+    source: |
+      (5+0i)
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_5
+    source: |
+      '5'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_5
+    source: |
+      '5'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_5
+    source: |
+      '5'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_5
+    source: |
+      '-5'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_5
+    source: |
+      '-5'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_5
+    source: |
+      '-5'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_5
+    source: |
+      '-5'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_non_offending_format_specifier_5_5
+    source: |
+      '5.5'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_non_offending_format_specifier_abcd
+    source: |
+      "abcd"
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_non_offending_format_specifier_true
+    source: |
+      true
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_non_offending_format_specifier_false
+    source: |
+      false
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_non_offending_format_specifier_nil
+    source: |
+      nil
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_non_offending_format_specifier
+    source: |
+      []
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_non_offending_format_specifier
+    source: |
+      {}
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_f
+    source: |
+      %f
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_5
+    source: |
+      5
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_5_000000
+    source: |
+      '5.000000'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_f
+    source: |
+      %f
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_5_5
+    source: |
+      5.5
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_5_500000
+    source: |
+      '5.500000'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_f
+    source: |
+      %f
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_5r
+    source: |
+      5r
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_5_000000
+    source: |
+      '5.000000'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_f
+    source: |
+      %f
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_3_8r
+    source: |
+      3/8r
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_0_375000
+    source: |
+      '0.375000'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_f
+    source: |
+      %f
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_3_8r
+    source: |
+      (3/8r)
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_0_375000
+    source: |
+      '0.375000'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_f
+    source: |
+      %f
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_5_0i
+    source: |
+      5+0i
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_5_000000
+    source: |
+      '5.000000'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_f
+    source: |
+      %f
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_5_0i
+    source: |
+      (5+0i)
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_5_000000
+    source: |
+      '5.000000'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_f
+    source: |
+      %f
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_5
+    source: |
+      '5'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_5_000000
+    source: |
+      '5.000000'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_f
+    source: |
+      %f
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_5
+    source: |
+      '-5'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_5_000000
+    source: |
+      '-5.000000'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_non_offending_format_specifier_f
+    source: |
+      %f
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_non_offending_format_specifier_abcd
+    source: |
+      "abcd"
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_non_offending_format_specifier_f
+    source: |
+      %f
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_non_offending_format_specifier_true
+    source: |
+      true
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_non_offending_format_specifier_f
+    source: |
+      %f
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_non_offending_format_specifier_false
+    source: |
+      false
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_non_offending_format_specifier_f
+    source: |
+      %f
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_non_offending_format_specifier_nil
+    source: |
+      nil
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_non_offending_format_specifier_f
+    source: |
+      %f
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_non_offending_format_specifier
+    source: |
+      []
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_non_offending_format_specifier_f
+    source: |
+      %f
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_non_offending_format_specifier
+    source: |
+      {}
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_10s
+    source: |
+      %10s
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_foo
+    source: |
+      'foo'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_foo
+    source: |
+      '       foo'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_10s
+    source: |
+      %-10s
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_foo
+    source: |
+      'foo'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_foo
+    source: |
+      'foo       '
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_10d
+    source: |
+      %10d
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_5
+    source: |
+      5
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_5
+    source: |
+      '         5'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_10d
+    source: |
+      %-10d
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_5
+    source: |
+      5
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_5
+    source: |
+      '5         '
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_d
+    source: |
+      % d
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_5
+    source: |
+      5
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_5
+    source: |
+      ' 5'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_d
+    source: |
+      %+d
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_5
+    source: |
+      5
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_5
+    source: |
+      '+5'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_3d
+    source: |
+      %.3d
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_10
+    source: |
+      10
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_010
+    source: |
+      '010'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_d
+    source: |
+      %.d
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_0
+    source: |
+      0
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier
+    source: |
+      ''
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_05d
+    source: |
+      %05d
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_5
+    source: |
+      5
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_00005
+    source: |
+      '00005'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_2f
+    source: |
+      %.2f
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_5
+    source: |
+      5
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_5_00
+    source: |
+      '5.00'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_10_2f
+    source: |
+      %10.2f
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_5
+    source: |
+      5
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_5_00
+    source: |
+      '      5.00'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_10_2f
+    source: |
+      %-10.2f
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_5
+    source: |
+      5
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_offending_format_specifier_5_00
+    source: |
+      '5.00      '
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_non_offending_format_specifier_10s
+    source: |
+      %10s
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_non_offending_format_specifier_foo
+    source: |
+      "#{foo}"
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_non_offending_format_specifier_1s
+    source: |
+      %.1s
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_non_offending_format_specifier_foo
+    source: |
+      "#{foo}"
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_is_able_to_handle_specifiers
+    source: |
+      #{method}('%% %s', foo)
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_does_not_register_an_offense_when_a_splat_is_given_as_arguments
+    source: |
+      #{method}('%d.%d.%d.%d', *@address.unpack('CCCC'))
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_with_numbered_specifiers_registers_an_offense_and_corrects
+    source: |
+      %{method}('%2$s %1$s', 'world', 'hello')
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 40
+        message: "Use `'hello world'` directly instead of `%{method}`."
+    corrected: |
+      'hello world'
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_with_numbered_specifiers_does_not_register_an_offense_when_the_arguments_do_not_match
+    source: |
+      #{method}('%2$s %1$i', 'abcd', '5')
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_with_in_specifier_registers_an_offense_and_corrects
+    source: |
+      %{method}('%*d', 5, 14)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 23
+        message: "Use `'   14'` directly instead of `%{method}`."
+    corrected: |
+      '   14'
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_with_in_specifier_registers_an_offense_and_corrects_with_multiple_s
+    source: |
+      %{method}('$%0*.*f', 5, 2, 0.5)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 31
+        message: "Use `'$00.50'` directly instead of `%{method}`."
+    corrected: |
+      '$00.50'
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_with_in_specifier_registers_an_offense_and_corrects_with_a_negative
+    source: |
+      %{method}('%-*d', 5, 14)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 24
+        message: "Use `'14   '` directly instead of `%{method}`."
+    corrected: |
+      '14   '
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_with_in_specifier_registers_an_offense_and_corrects_with_a_variable_width_and_a_specified_argument
+    source: |
+      %{method}('%1$*2$s', 14, 5)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 27
+        message: "Use `'   14'` directly instead of `%{method}`."
+    corrected: |
+      '   14'
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_with_in_specifier_registers_an_offense_and_corrects_with_a_negative_variable_width_and_a_specified_argument
+    source: |
+      %{method}('%1$-*2$s', 14, 5)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 28
+        message: "Use `'14   '` directly instead of `%{method}`."
+    corrected: |
+      '14   '
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_with_in_specifier_does_not_register_an_offense_when_the_variable_width_argument_is_not_numeric
+    source: |
+      #{method}('%*d', 'a', 'foo')
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_with_in_specifier_does_not_register_an_offense_when_the_star_argument_is_not_literal
+    source: |
+      #{method}('%*s', foo, 'bar')
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_with_in_specifier_does_not_register_an_offense_when_the_star_argument_is_negative_and_not_literal
+    source: |
+      #{method}('%-*s', foo, 'bar')
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_with_in_specifier_does_not_register_an_offense_when_the_format_argument_is_not_literal
+    source: |
+      #{method}('%*d', 5, foo)
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_with_in_specifier_does_not_register_an_offense_with_multiple_s_when_the_argument_is_not_literal
+    source: |
+      #{method}('%*.*d', 5, 2, foo)
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_with_annotated_specifiers_registers_an_offense_and_corrects
+    source: |
+      #{method}('%<foo>s %<bar>s', foo: 'foo', bar: 'bar')
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 52
+        message: "Use `'foo bar'` directly instead of `%{method}`."
+    corrected: |
+      'foo bar'
+    interpolated: true
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_with_annotated_specifiers_registers_an_offense_and_corrects_with_interpolated_strings
+    source: |
+      %{method}('%<foo>s %<bar>s', foo: "#{foo}", bar: 'bar')
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 55
+        message: "Use `\"#{foo} bar\"` directly instead of `%{method}`."
+    corrected: |
+      "#{foo} bar"
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_with_annotated_specifiers_does_not_register_an_offense_when_given_a_non_literal
+    source: |
+      #{method}('%<foo>s', foo: foo)
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_with_annotated_specifiers_does_not_register_an_offense_when_there_are_missing_hash_keys
+    source: |
+      format('(%<foo>?%<bar>s:%<baz>s)', 'foobar')
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_with_template_specifiers_registers_an_offense_and_corrects
+    source: |
+      #{method}('%{foo}s %{bar}s', foo: 'foo', bar: 'bar')
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 52
+        message: "Use `'foos bars'` directly instead of `#{method}`."
+    corrected: |
+      'foos bars'
+    interpolated: true
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_with_template_specifiers_registers_an_offense_and_corrects_with_interpolated_strings
+    source: |
+      %{method}('%{foo}s %{bar}s', foo: "#{foo}", bar: 'bar')
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 55
+        message: "Use `\"#{foo}s bars\"` directly instead of `%{method}`."
+    corrected: |
+      "#{foo}s bars"
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_with_template_specifiers_does_not_register_an_offense_when_given_a_non_literal
+    source: |
+      #{method}('%{foo}', foo: foo)
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_with_template_specifiers_does_not_register_an_offense_when_not_given_keyword_arguments
+    source: |
+      #{method}('%{foo}', foo)
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_with_template_specifiers_does_not_register_an_offense_when_given_numeric_placeholders_in_the_template_argument
+    source: |
+      #{method}('%<placeholder>d, %<placeholder>f', placeholder)
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_with_an_interpolated_format_string_does_not_register_an_offense
+    source: |
+      #{method}("%0#{width}d", 3)
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_when_there_are_multiple_s_fields_and_multiple_string_arguments_registers_an_offense_and_corrects
+    source: |
+      %{method}('%s %s', 'foo', 'bar')
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 32
+        message: "Use `'foo bar'` directly instead of `%{method}`."
+    corrected: |
+      'foo bar'
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_when_there_are_multiple_s_fields_and_not_all_arguments_are_string_literals_does_not_register_an_offense
+    source: |
+      #{method}('%s %s', 'foo', bar)
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_redundantformat_with_literal_arguments_with_invalid_format_arguments_does_not_register_an_offense
+    source: |
+      format('%{y}-%{m}-%{d}', 2015, 1, 1)
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantformat_with_constants_registers_an_offense_when_the_only_argument_is_a_constant
+    source: |
+      %{method}(FORMAT)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 17
+        message: Use `FORMAT` directly instead of `%{method}`.
+    corrected: |
+      FORMAT
+
+  - name: rubocop_cop_style_redundantformat_with_constants_does_not_register_an_offense_when_the_first_argument_is_a_constant
+    source: |
+      #{method}(FORMAT, 'foo', 'bar')
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_redundantformat_with_constants_does_not_register_an_offense_when_only_argument_is_a_splatted_constant
+    source: |
+      #{method}(*FORMAT)
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_redundantformat_when_the_string_contains_control_characters_registers_an_offense_with_the_correct_message
+    source: |
+      %{method}("%s\a\b\t\n\v\f\r\e", 'foo')
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 38
+        message: 'Use `"foo\a\b\t\n\v\f\r\e"` directly instead of `%{method}`.'
+    corrected: |
+      "foo\a\b\t\n\v\f\r\e"

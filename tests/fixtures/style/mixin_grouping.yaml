@@ -1,0 +1,339 @@
+cop: Style/MixinGrouping
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_mixingrouping_when_configured_with_separated_style_when_using_include_registers_an_offense_for_several_mixins_in_one_call
+    source: |
+      class Foo
+        include Bar, Qux
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 18
+        message: Put `include` mixins in separate statements.
+    corrected: |
+      class Foo
+        include Qux
+        include Bar
+      end
+    config:
+      EnforcedStyle: separated
+
+  - name: rubocop_cop_style_mixingrouping_when_configured_with_separated_style_when_using_include_allows_include_call_as_an_argument_to_another_method
+    source: |
+      expect(foo).to include { { bar: baz } }
+    offenses:
+      []
+    config:
+      EnforcedStyle: separated
+
+  - name: rubocop_cop_style_mixingrouping_when_configured_with_separated_style_when_using_include_registers_an_offense_for_several_mixins_in_separate_calls
+    source: |
+      class Foo
+        include Bar, Baz
+        include Qux
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 18
+        message: Put `include` mixins in separate statements.
+    corrected: |
+      class Foo
+        include Baz
+        include Bar
+        include Qux
+      end
+    config:
+      EnforcedStyle: separated
+
+  - name: rubocop_cop_style_mixingrouping_when_configured_with_separated_style_when_using_include_does_not_register_an_offense_when_include_has_no_arguments
+    source: |
+      class Foo
+        include
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: separated
+
+  - name: rubocop_cop_style_mixingrouping_when_configured_with_separated_style_when_using_extend_registers_an_offense_for_several_mixins_in_one_call
+    source: |
+      class Foo
+        extend Bar, Qux
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 17
+        message: Put `extend` mixins in separate statements.
+    corrected: |
+      class Foo
+        extend Qux
+        extend Bar
+      end
+    config:
+      EnforcedStyle: separated
+
+  - name: rubocop_cop_style_mixingrouping_when_configured_with_separated_style_when_using_extend_does_not_register_an_offense_when_extend_has_no_arguments
+    source: |
+      class Foo
+        extend
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: separated
+
+  - name: rubocop_cop_style_mixingrouping_when_configured_with_separated_style_when_using_prepend_registers_an_offense_for_several_mixins_in_one_call
+    source: |
+      class Foo
+        prepend Bar, Qux
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 18
+        message: Put `prepend` mixins in separate statements.
+    corrected: |
+      class Foo
+        prepend Qux
+        prepend Bar
+      end
+    config:
+      EnforcedStyle: separated
+
+  - name: rubocop_cop_style_mixingrouping_when_configured_with_separated_style_when_using_prepend_does_not_register_an_offense_when_prepend_has_no_arguments
+    source: |
+      class Foo
+        prepend
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: separated
+
+  - name: rubocop_cop_style_mixingrouping_when_configured_with_separated_style_when_using_a_mix_of_different_methods_registers_an_offense_for_some_calls_having_several_mixins
+    source: |
+      class Foo
+        include Bar, Baz
+        extend Qux
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 18
+        message: Put `include` mixins in separate statements.
+    corrected: |
+      class Foo
+        include Baz
+        include Bar
+        extend Qux
+      end
+    config:
+      EnforcedStyle: separated
+
+  - name: rubocop_cop_style_mixingrouping_when_configured_with_grouped_style_when_using_include_registers_an_offense_for_single_mixins_in_separate_calls
+    source: |
+      class Foo
+        include Bar
+        include Baz
+        include Qux
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 13
+        message: Put `include` mixins in a single statement.
+      - line: 3
+        column_start: 2
+        column_end: 13
+        message: Put `include` mixins in a single statement.
+      - line: 4
+        column_start: 2
+        column_end: 13
+        message: Put `include` mixins in a single statement.
+    corrected: |
+      class Foo
+        include Qux, Baz, Bar
+      end
+    config:
+      EnforcedStyle: grouped
+
+  - name: rubocop_cop_style_mixingrouping_when_configured_with_grouped_style_when_using_include_allows_include_with_an_explicit_receiver
+    source: |
+      config.include Foo
+      config.include Bar
+    offenses:
+      []
+    config:
+      EnforcedStyle: grouped
+
+  - name: rubocop_cop_style_mixingrouping_when_configured_with_grouped_style_when_using_include_registers_an_offense_for_several_mixins_in_separate_calls
+    source: |
+      class Foo
+        include Bar, Baz
+        include FooBar, FooBaz
+        include Qux, FooBarBaz
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 18
+        message: Put `include` mixins in a single statement.
+      - line: 3
+        column_start: 2
+        column_end: 24
+        message: Put `include` mixins in a single statement.
+      - line: 4
+        column_start: 2
+        column_end: 24
+        message: Put `include` mixins in a single statement.
+    corrected: |
+      class Foo
+        include Qux, FooBarBaz, FooBar, FooBaz, Bar, Baz
+      end
+    config:
+      EnforcedStyle: grouped
+
+  - name: rubocop_cop_style_mixingrouping_when_configured_with_grouped_style_when_using_extend_registers_an_offense_for_single_mixins_in_separate_calls
+    source: |
+      class Foo
+        extend Bar
+        extend Baz
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 12
+        message: Put `extend` mixins in a single statement.
+      - line: 3
+        column_start: 2
+        column_end: 12
+        message: Put `extend` mixins in a single statement.
+    corrected: |
+      class Foo
+        extend Baz, Bar
+      end
+    config:
+      EnforcedStyle: grouped
+
+  - name: rubocop_cop_style_mixingrouping_when_configured_with_grouped_style_when_using_prepend_registers_an_offense_for_single_mixins_in_separate_calls
+    source: |
+      class Foo
+        prepend Bar
+        prepend Baz
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 13
+        message: Put `prepend` mixins in a single statement.
+      - line: 3
+        column_start: 2
+        column_end: 13
+        message: Put `prepend` mixins in a single statement.
+    corrected: |
+      class Foo
+        prepend Baz, Bar
+      end
+    config:
+      EnforcedStyle: grouped
+
+  - name: rubocop_cop_style_mixingrouping_when_configured_with_grouped_style_when_using_prepend_registers_an_offense_for_single_mixins_in_separate_calls_interspersed
+    source: |
+      class Foo
+        prepend Bar
+        prepend Baz
+        do_something_else
+        prepend Qux
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 13
+        message: Put `prepend` mixins in a single statement.
+      - line: 3
+        column_start: 2
+        column_end: 13
+        message: Put `prepend` mixins in a single statement.
+      - line: 5
+        column_start: 2
+        column_end: 13
+        message: Put `prepend` mixins in a single statement.
+    corrected: |
+      class Foo
+        prepend Qux, Baz, Bar
+        do_something_else
+       #{trailing_whitespace}
+      end
+    config:
+      EnforcedStyle: grouped
+    interpolated: true
+
+  - name: rubocop_cop_style_mixingrouping_when_configured_with_grouped_style_when_using_prepend_registers_an_offense_when_other_mixins_have_receivers
+    source: |
+      class Foo
+        prepend Bar
+        Other.prepend Baz
+        do_something_else
+        prepend Qux
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 13
+        message: Put `prepend` mixins in a single statement.
+      - line: 5
+        column_start: 2
+        column_end: 13
+        message: Put `prepend` mixins in a single statement.
+    corrected: |
+      class Foo
+        prepend Qux, Bar
+        Other.prepend Baz
+        do_something_else
+       #{trailing_whitespace}
+      end
+    config:
+      EnforcedStyle: grouped
+    interpolated: true
+
+  - name: rubocop_cop_style_mixingrouping_when_configured_with_grouped_style_when_using_a_mix_of_different_methods_registers_an_offense_with_some_duplicated_mixin_methods
+    source: |
+      class Foo
+        include Bar
+        include Baz
+        extend Baz
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 13
+        message: Put `include` mixins in a single statement.
+      - line: 3
+        column_start: 2
+        column_end: 13
+        message: Put `include` mixins in a single statement.
+    corrected: |
+      class Foo
+        include Baz, Bar
+        extend Baz
+      end
+    config:
+      EnforcedStyle: grouped
+
+  - name: rubocop_cop_style_mixingrouping_when_configured_with_grouped_style_when_using_a_mix_of_different_methods_allows_all_different_mixin_methods
+    source: |
+      class Foo
+        include Bar
+        prepend Baz
+        extend Baz
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: grouped

@@ -1,0 +1,242 @@
+cop: Lint/DeprecatedConstants
+department: lint
+severity: warning
+implemented: false
+
+tests:
+  - name: rubocop_cop_lint_deprecatedconstants_registers_and_corrects_an_offense_when_using_nil
+    source: |
+      NIL
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 3
+        message: Use `nil` instead of `NIL`, deprecated since Ruby 2.4.
+    corrected: |
+      nil
+    config:
+      DeprecatedConstants: "{\n        'NIL' => { 'Alternative' => 'nil', 'DeprecatedVersion' => '2.4' },\n        'TRUE' => { 'Alternative' => 'true', 'DeprecatedVersion' => '2.4' },\n        'FALSE' => { 'Alternative' => 'false', 'DeprecatedVersion' => '2.4' },\n        'Net::HTTPServerException' => {\n          'Alternative' => 'Net::HTTPClientException', 'DeprecatedVersion' => '2.6'\n        },\n        'Random::DEFAULT' => { 'Alternative' => 'Random.new', 'DeprecatedVersion' => '3.0' },\n        'Struct::Group' => { 'Alternative' => 'Etc::Group', 'DeprecatedVersion' => '3.0' },\n        'Struct::Passwd' => { 'Alternative' => 'Etc::Passwd', 'DeprecatedVersion' => '3.0' },\n        'Triple::Nested::Constant' => { 'Alternative' => 'Value', 'DeprecatedVersion' => '2.4' },\n        'Have::No::Alternative' => { 'DeprecatedVersion' => '2.4' },\n        'Have::No::DeprecatedVersion' => { 'Alternative' => 'Value' }\n      }"
+
+  - name: rubocop_cop_lint_deprecatedconstants_registers_and_corrects_an_offense_when_using_true
+    source: |
+      TRUE
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 4
+        message: Use `true` instead of `TRUE`, deprecated since Ruby 2.4.
+    corrected: |
+      true
+    config:
+      DeprecatedConstants: "{\n        'NIL' => { 'Alternative' => 'nil', 'DeprecatedVersion' => '2.4' },\n        'TRUE' => { 'Alternative' => 'true', 'DeprecatedVersion' => '2.4' },\n        'FALSE' => { 'Alternative' => 'false', 'DeprecatedVersion' => '2.4' },\n        'Net::HTTPServerException' => {\n          'Alternative' => 'Net::HTTPClientException', 'DeprecatedVersion' => '2.6'\n        },\n        'Random::DEFAULT' => { 'Alternative' => 'Random.new', 'DeprecatedVersion' => '3.0' },\n        'Struct::Group' => { 'Alternative' => 'Etc::Group', 'DeprecatedVersion' => '3.0' },\n        'Struct::Passwd' => { 'Alternative' => 'Etc::Passwd', 'DeprecatedVersion' => '3.0' },\n        'Triple::Nested::Constant' => { 'Alternative' => 'Value', 'DeprecatedVersion' => '2.4' },\n        'Have::No::Alternative' => { 'DeprecatedVersion' => '2.4' },\n        'Have::No::DeprecatedVersion' => { 'Alternative' => 'Value' }\n      }"
+
+  - name: rubocop_cop_lint_deprecatedconstants_registers_and_corrects_an_offense_when_using_false
+    source: |
+      FALSE
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 5
+        message: Use `false` instead of `FALSE`, deprecated since Ruby 2.4.
+    corrected: |
+      false
+    config:
+      DeprecatedConstants: "{\n        'NIL' => { 'Alternative' => 'nil', 'DeprecatedVersion' => '2.4' },\n        'TRUE' => { 'Alternative' => 'true', 'DeprecatedVersion' => '2.4' },\n        'FALSE' => { 'Alternative' => 'false', 'DeprecatedVersion' => '2.4' },\n        'Net::HTTPServerException' => {\n          'Alternative' => 'Net::HTTPClientException', 'DeprecatedVersion' => '2.6'\n        },\n        'Random::DEFAULT' => { 'Alternative' => 'Random.new', 'DeprecatedVersion' => '3.0' },\n        'Struct::Group' => { 'Alternative' => 'Etc::Group', 'DeprecatedVersion' => '3.0' },\n        'Struct::Passwd' => { 'Alternative' => 'Etc::Passwd', 'DeprecatedVersion' => '3.0' },\n        'Triple::Nested::Constant' => { 'Alternative' => 'Value', 'DeprecatedVersion' => '2.4' },\n        'Have::No::Alternative' => { 'DeprecatedVersion' => '2.4' },\n        'Have::No::DeprecatedVersion' => { 'Alternative' => 'Value' }\n      }"
+
+  - name: rubocop_cop_lint_deprecatedconstants_ruby_2_5_does_not_register_an_offense_when_using_net_httpserverexception
+    source: |
+      Net::HTTPServerException
+    offenses:
+      []
+    config:
+      DeprecatedConstants: "{\n        'NIL' => { 'Alternative' => 'nil', 'DeprecatedVersion' => '2.4' },\n        'TRUE' => { 'Alternative' => 'true', 'DeprecatedVersion' => '2.4' },\n        'FALSE' => { 'Alternative' => 'false', 'DeprecatedVersion' => '2.4' },\n        'Net::HTTPServerException' => {\n          'Alternative' => 'Net::HTTPClientException', 'DeprecatedVersion' => '2.6'\n        },\n        'Random::DEFAULT' => { 'Alternative' => 'Random.new', 'DeprecatedVersion' => '3.0' },\n        'Struct::Group' => { 'Alternative' => 'Etc::Group', 'DeprecatedVersion' => '3.0' },\n        'Struct::Passwd' => { 'Alternative' => 'Etc::Passwd', 'DeprecatedVersion' => '3.0' },\n        'Triple::Nested::Constant' => { 'Alternative' => 'Value', 'DeprecatedVersion' => '2.4' },\n        'Have::No::Alternative' => { 'DeprecatedVersion' => '2.4' },\n        'Have::No::DeprecatedVersion' => { 'Alternative' => 'Value' }\n      }"
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_lint_deprecatedconstants_ruby_2_6_registers_and_corrects_an_offense_when_using_net_httpserverexception
+    source: |
+      Net::HTTPServerException
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 24
+        message: "Use `Net::HTTPClientException` instead of `Net::HTTPServerException`, deprecated since Ruby 2.6."
+    corrected: |
+      Net::HTTPClientException
+    config:
+      DeprecatedConstants: "{\n        'NIL' => { 'Alternative' => 'nil', 'DeprecatedVersion' => '2.4' },\n        'TRUE' => { 'Alternative' => 'true', 'DeprecatedVersion' => '2.4' },\n        'FALSE' => { 'Alternative' => 'false', 'DeprecatedVersion' => '2.4' },\n        'Net::HTTPServerException' => {\n          'Alternative' => 'Net::HTTPClientException', 'DeprecatedVersion' => '2.6'\n        },\n        'Random::DEFAULT' => { 'Alternative' => 'Random.new', 'DeprecatedVersion' => '3.0' },\n        'Struct::Group' => { 'Alternative' => 'Etc::Group', 'DeprecatedVersion' => '3.0' },\n        'Struct::Passwd' => { 'Alternative' => 'Etc::Passwd', 'DeprecatedVersion' => '3.0' },\n        'Triple::Nested::Constant' => { 'Alternative' => 'Value', 'DeprecatedVersion' => '2.4' },\n        'Have::No::Alternative' => { 'DeprecatedVersion' => '2.4' },\n        'Have::No::DeprecatedVersion' => { 'Alternative' => 'Value' }\n      }"
+    ruby_version: ">= 2.6"
+
+  - name: rubocop_cop_lint_deprecatedconstants_ruby_2_7_does_not_register_an_offense_when_using_random_default
+    source: |
+      Random::DEFAULT
+    offenses:
+      []
+    config:
+      DeprecatedConstants: "{\n        'NIL' => { 'Alternative' => 'nil', 'DeprecatedVersion' => '2.4' },\n        'TRUE' => { 'Alternative' => 'true', 'DeprecatedVersion' => '2.4' },\n        'FALSE' => { 'Alternative' => 'false', 'DeprecatedVersion' => '2.4' },\n        'Net::HTTPServerException' => {\n          'Alternative' => 'Net::HTTPClientException', 'DeprecatedVersion' => '2.6'\n        },\n        'Random::DEFAULT' => { 'Alternative' => 'Random.new', 'DeprecatedVersion' => '3.0' },\n        'Struct::Group' => { 'Alternative' => 'Etc::Group', 'DeprecatedVersion' => '3.0' },\n        'Struct::Passwd' => { 'Alternative' => 'Etc::Passwd', 'DeprecatedVersion' => '3.0' },\n        'Triple::Nested::Constant' => { 'Alternative' => 'Value', 'DeprecatedVersion' => '2.4' },\n        'Have::No::Alternative' => { 'DeprecatedVersion' => '2.4' },\n        'Have::No::DeprecatedVersion' => { 'Alternative' => 'Value' }\n      }"
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_lint_deprecatedconstants_ruby_2_7_does_not_register_an_offense_when_using_struct_group
+    source: |
+      Struct::Group
+    offenses:
+      []
+    config:
+      DeprecatedConstants: "{\n        'NIL' => { 'Alternative' => 'nil', 'DeprecatedVersion' => '2.4' },\n        'TRUE' => { 'Alternative' => 'true', 'DeprecatedVersion' => '2.4' },\n        'FALSE' => { 'Alternative' => 'false', 'DeprecatedVersion' => '2.4' },\n        'Net::HTTPServerException' => {\n          'Alternative' => 'Net::HTTPClientException', 'DeprecatedVersion' => '2.6'\n        },\n        'Random::DEFAULT' => { 'Alternative' => 'Random.new', 'DeprecatedVersion' => '3.0' },\n        'Struct::Group' => { 'Alternative' => 'Etc::Group', 'DeprecatedVersion' => '3.0' },\n        'Struct::Passwd' => { 'Alternative' => 'Etc::Passwd', 'DeprecatedVersion' => '3.0' },\n        'Triple::Nested::Constant' => { 'Alternative' => 'Value', 'DeprecatedVersion' => '2.4' },\n        'Have::No::Alternative' => { 'DeprecatedVersion' => '2.4' },\n        'Have::No::DeprecatedVersion' => { 'Alternative' => 'Value' }\n      }"
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_lint_deprecatedconstants_ruby_2_7_does_not_register_an_offense_when_using_struct_passwd
+    source: |
+      Struct::Passwd
+    offenses:
+      []
+    config:
+      DeprecatedConstants: "{\n        'NIL' => { 'Alternative' => 'nil', 'DeprecatedVersion' => '2.4' },\n        'TRUE' => { 'Alternative' => 'true', 'DeprecatedVersion' => '2.4' },\n        'FALSE' => { 'Alternative' => 'false', 'DeprecatedVersion' => '2.4' },\n        'Net::HTTPServerException' => {\n          'Alternative' => 'Net::HTTPClientException', 'DeprecatedVersion' => '2.6'\n        },\n        'Random::DEFAULT' => { 'Alternative' => 'Random.new', 'DeprecatedVersion' => '3.0' },\n        'Struct::Group' => { 'Alternative' => 'Etc::Group', 'DeprecatedVersion' => '3.0' },\n        'Struct::Passwd' => { 'Alternative' => 'Etc::Passwd', 'DeprecatedVersion' => '3.0' },\n        'Triple::Nested::Constant' => { 'Alternative' => 'Value', 'DeprecatedVersion' => '2.4' },\n        'Have::No::Alternative' => { 'DeprecatedVersion' => '2.4' },\n        'Have::No::DeprecatedVersion' => { 'Alternative' => 'Value' }\n      }"
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_lint_deprecatedconstants_ruby_3_0_registers_and_corrects_an_offense_when_using_random_default
+    source: |
+      Random::DEFAULT
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 15
+        message: "Use `Random.new` instead of `Random::DEFAULT`, deprecated since Ruby 3.0."
+    corrected: |
+      Random.new
+    config:
+      DeprecatedConstants: "{\n        'NIL' => { 'Alternative' => 'nil', 'DeprecatedVersion' => '2.4' },\n        'TRUE' => { 'Alternative' => 'true', 'DeprecatedVersion' => '2.4' },\n        'FALSE' => { 'Alternative' => 'false', 'DeprecatedVersion' => '2.4' },\n        'Net::HTTPServerException' => {\n          'Alternative' => 'Net::HTTPClientException', 'DeprecatedVersion' => '2.6'\n        },\n        'Random::DEFAULT' => { 'Alternative' => 'Random.new', 'DeprecatedVersion' => '3.0' },\n        'Struct::Group' => { 'Alternative' => 'Etc::Group', 'DeprecatedVersion' => '3.0' },\n        'Struct::Passwd' => { 'Alternative' => 'Etc::Passwd', 'DeprecatedVersion' => '3.0' },\n        'Triple::Nested::Constant' => { 'Alternative' => 'Value', 'DeprecatedVersion' => '2.4' },\n        'Have::No::Alternative' => { 'DeprecatedVersion' => '2.4' },\n        'Have::No::DeprecatedVersion' => { 'Alternative' => 'Value' }\n      }"
+    ruby_version: ">= 3.0"
+
+  - name: rubocop_cop_lint_deprecatedconstants_ruby_3_0_registers_and_corrects_an_offense_when_using_random_default
+    source: |
+      ::Random::DEFAULT
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 17
+        message: "Use `Random.new` instead of `::Random::DEFAULT`, deprecated since Ruby 3.0."
+    corrected: |
+      Random.new
+    config:
+      DeprecatedConstants: "{\n        'NIL' => { 'Alternative' => 'nil', 'DeprecatedVersion' => '2.4' },\n        'TRUE' => { 'Alternative' => 'true', 'DeprecatedVersion' => '2.4' },\n        'FALSE' => { 'Alternative' => 'false', 'DeprecatedVersion' => '2.4' },\n        'Net::HTTPServerException' => {\n          'Alternative' => 'Net::HTTPClientException', 'DeprecatedVersion' => '2.6'\n        },\n        'Random::DEFAULT' => { 'Alternative' => 'Random.new', 'DeprecatedVersion' => '3.0' },\n        'Struct::Group' => { 'Alternative' => 'Etc::Group', 'DeprecatedVersion' => '3.0' },\n        'Struct::Passwd' => { 'Alternative' => 'Etc::Passwd', 'DeprecatedVersion' => '3.0' },\n        'Triple::Nested::Constant' => { 'Alternative' => 'Value', 'DeprecatedVersion' => '2.4' },\n        'Have::No::Alternative' => { 'DeprecatedVersion' => '2.4' },\n        'Have::No::DeprecatedVersion' => { 'Alternative' => 'Value' }\n      }"
+    ruby_version: ">= 3.0"
+
+  - name: rubocop_cop_lint_deprecatedconstants_ruby_3_0_registers_and_corrects_an_offense_when_using_struct_group
+    source: |
+      Struct::Group
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 13
+        message: "Use `Etc::Group` instead of `Struct::Group`, deprecated since Ruby 3.0."
+    corrected: |
+      Etc::Group
+    config:
+      DeprecatedConstants: "{\n        'NIL' => { 'Alternative' => 'nil', 'DeprecatedVersion' => '2.4' },\n        'TRUE' => { 'Alternative' => 'true', 'DeprecatedVersion' => '2.4' },\n        'FALSE' => { 'Alternative' => 'false', 'DeprecatedVersion' => '2.4' },\n        'Net::HTTPServerException' => {\n          'Alternative' => 'Net::HTTPClientException', 'DeprecatedVersion' => '2.6'\n        },\n        'Random::DEFAULT' => { 'Alternative' => 'Random.new', 'DeprecatedVersion' => '3.0' },\n        'Struct::Group' => { 'Alternative' => 'Etc::Group', 'DeprecatedVersion' => '3.0' },\n        'Struct::Passwd' => { 'Alternative' => 'Etc::Passwd', 'DeprecatedVersion' => '3.0' },\n        'Triple::Nested::Constant' => { 'Alternative' => 'Value', 'DeprecatedVersion' => '2.4' },\n        'Have::No::Alternative' => { 'DeprecatedVersion' => '2.4' },\n        'Have::No::DeprecatedVersion' => { 'Alternative' => 'Value' }\n      }"
+    ruby_version: ">= 3.0"
+
+  - name: rubocop_cop_lint_deprecatedconstants_ruby_3_0_registers_and_corrects_an_offense_when_using_struct_passwd
+    source: |
+      Struct::Passwd
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 14
+        message: "Use `Etc::Passwd` instead of `Struct::Passwd`, deprecated since Ruby 3.0."
+    corrected: |
+      Etc::Passwd
+    config:
+      DeprecatedConstants: "{\n        'NIL' => { 'Alternative' => 'nil', 'DeprecatedVersion' => '2.4' },\n        'TRUE' => { 'Alternative' => 'true', 'DeprecatedVersion' => '2.4' },\n        'FALSE' => { 'Alternative' => 'false', 'DeprecatedVersion' => '2.4' },\n        'Net::HTTPServerException' => {\n          'Alternative' => 'Net::HTTPClientException', 'DeprecatedVersion' => '2.6'\n        },\n        'Random::DEFAULT' => { 'Alternative' => 'Random.new', 'DeprecatedVersion' => '3.0' },\n        'Struct::Group' => { 'Alternative' => 'Etc::Group', 'DeprecatedVersion' => '3.0' },\n        'Struct::Passwd' => { 'Alternative' => 'Etc::Passwd', 'DeprecatedVersion' => '3.0' },\n        'Triple::Nested::Constant' => { 'Alternative' => 'Value', 'DeprecatedVersion' => '2.4' },\n        'Have::No::Alternative' => { 'DeprecatedVersion' => '2.4' },\n        'Have::No::DeprecatedVersion' => { 'Alternative' => 'Value' }\n      }"
+    ruby_version: ">= 3.0"
+
+  - name: rubocop_cop_lint_deprecatedconstants_registers_and_corrects_an_offense_when_using_nil
+    source: |
+      ::NIL
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 5
+        message: "Use `nil` instead of `::NIL`, deprecated since Ruby 2.4."
+    corrected: |
+      nil
+    config:
+      DeprecatedConstants: "{\n        'NIL' => { 'Alternative' => 'nil', 'DeprecatedVersion' => '2.4' },\n        'TRUE' => { 'Alternative' => 'true', 'DeprecatedVersion' => '2.4' },\n        'FALSE' => { 'Alternative' => 'false', 'DeprecatedVersion' => '2.4' },\n        'Net::HTTPServerException' => {\n          'Alternative' => 'Net::HTTPClientException', 'DeprecatedVersion' => '2.6'\n        },\n        'Random::DEFAULT' => { 'Alternative' => 'Random.new', 'DeprecatedVersion' => '3.0' },\n        'Struct::Group' => { 'Alternative' => 'Etc::Group', 'DeprecatedVersion' => '3.0' },\n        'Struct::Passwd' => { 'Alternative' => 'Etc::Passwd', 'DeprecatedVersion' => '3.0' },\n        'Triple::Nested::Constant' => { 'Alternative' => 'Value', 'DeprecatedVersion' => '2.4' },\n        'Have::No::Alternative' => { 'DeprecatedVersion' => '2.4' },\n        'Have::No::DeprecatedVersion' => { 'Alternative' => 'Value' }\n      }"
+
+  - name: rubocop_cop_lint_deprecatedconstants_registers_and_corrects_an_offense_when_using_true
+    source: |
+      ::TRUE
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 6
+        message: "Use `true` instead of `::TRUE`, deprecated since Ruby 2.4."
+    corrected: |
+      true
+    config:
+      DeprecatedConstants: "{\n        'NIL' => { 'Alternative' => 'nil', 'DeprecatedVersion' => '2.4' },\n        'TRUE' => { 'Alternative' => 'true', 'DeprecatedVersion' => '2.4' },\n        'FALSE' => { 'Alternative' => 'false', 'DeprecatedVersion' => '2.4' },\n        'Net::HTTPServerException' => {\n          'Alternative' => 'Net::HTTPClientException', 'DeprecatedVersion' => '2.6'\n        },\n        'Random::DEFAULT' => { 'Alternative' => 'Random.new', 'DeprecatedVersion' => '3.0' },\n        'Struct::Group' => { 'Alternative' => 'Etc::Group', 'DeprecatedVersion' => '3.0' },\n        'Struct::Passwd' => { 'Alternative' => 'Etc::Passwd', 'DeprecatedVersion' => '3.0' },\n        'Triple::Nested::Constant' => { 'Alternative' => 'Value', 'DeprecatedVersion' => '2.4' },\n        'Have::No::Alternative' => { 'DeprecatedVersion' => '2.4' },\n        'Have::No::DeprecatedVersion' => { 'Alternative' => 'Value' }\n      }"
+
+  - name: rubocop_cop_lint_deprecatedconstants_registers_and_corrects_an_offense_when_using_false
+    source: |
+      ::FALSE
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 7
+        message: "Use `false` instead of `::FALSE`, deprecated since Ruby 2.4."
+    corrected: |
+      false
+    config:
+      DeprecatedConstants: "{\n        'NIL' => { 'Alternative' => 'nil', 'DeprecatedVersion' => '2.4' },\n        'TRUE' => { 'Alternative' => 'true', 'DeprecatedVersion' => '2.4' },\n        'FALSE' => { 'Alternative' => 'false', 'DeprecatedVersion' => '2.4' },\n        'Net::HTTPServerException' => {\n          'Alternative' => 'Net::HTTPClientException', 'DeprecatedVersion' => '2.6'\n        },\n        'Random::DEFAULT' => { 'Alternative' => 'Random.new', 'DeprecatedVersion' => '3.0' },\n        'Struct::Group' => { 'Alternative' => 'Etc::Group', 'DeprecatedVersion' => '3.0' },\n        'Struct::Passwd' => { 'Alternative' => 'Etc::Passwd', 'DeprecatedVersion' => '3.0' },\n        'Triple::Nested::Constant' => { 'Alternative' => 'Value', 'DeprecatedVersion' => '2.4' },\n        'Have::No::Alternative' => { 'DeprecatedVersion' => '2.4' },\n        'Have::No::DeprecatedVersion' => { 'Alternative' => 'Value' }\n      }"
+
+  - name: rubocop_cop_lint_deprecatedconstants_registers_and_corrects_an_offense_when_using_triple_nested_constant
+    source: |
+      ::Triple::Nested::Constant
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 26
+        message: "Use `Value` instead of `::Triple::Nested::Constant`, deprecated since Ruby 2.4."
+    corrected: |
+      Value
+    config:
+      DeprecatedConstants: "{\n        'NIL' => { 'Alternative' => 'nil', 'DeprecatedVersion' => '2.4' },\n        'TRUE' => { 'Alternative' => 'true', 'DeprecatedVersion' => '2.4' },\n        'FALSE' => { 'Alternative' => 'false', 'DeprecatedVersion' => '2.4' },\n        'Net::HTTPServerException' => {\n          'Alternative' => 'Net::HTTPClientException', 'DeprecatedVersion' => '2.6'\n        },\n        'Random::DEFAULT' => { 'Alternative' => 'Random.new', 'DeprecatedVersion' => '3.0' },\n        'Struct::Group' => { 'Alternative' => 'Etc::Group', 'DeprecatedVersion' => '3.0' },\n        'Struct::Passwd' => { 'Alternative' => 'Etc::Passwd', 'DeprecatedVersion' => '3.0' },\n        'Triple::Nested::Constant' => { 'Alternative' => 'Value', 'DeprecatedVersion' => '2.4' },\n        'Have::No::Alternative' => { 'DeprecatedVersion' => '2.4' },\n        'Have::No::DeprecatedVersion' => { 'Alternative' => 'Value' }\n      }"
+
+  - name: rubocop_cop_lint_deprecatedconstants_registers_an_offense_when_using_deprecated_methods_that_have_no_alternative
+    source: |
+      Have::No::Alternative
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 21
+        message: "Do not use `Have::No::Alternative`, deprecated since Ruby 2.4."
+    config:
+      DeprecatedConstants: "{\n        'NIL' => { 'Alternative' => 'nil', 'DeprecatedVersion' => '2.4' },\n        'TRUE' => { 'Alternative' => 'true', 'DeprecatedVersion' => '2.4' },\n        'FALSE' => { 'Alternative' => 'false', 'DeprecatedVersion' => '2.4' },\n        'Net::HTTPServerException' => {\n          'Alternative' => 'Net::HTTPClientException', 'DeprecatedVersion' => '2.6'\n        },\n        'Random::DEFAULT' => { 'Alternative' => 'Random.new', 'DeprecatedVersion' => '3.0' },\n        'Struct::Group' => { 'Alternative' => 'Etc::Group', 'DeprecatedVersion' => '3.0' },\n        'Struct::Passwd' => { 'Alternative' => 'Etc::Passwd', 'DeprecatedVersion' => '3.0' },\n        'Triple::Nested::Constant' => { 'Alternative' => 'Value', 'DeprecatedVersion' => '2.4' },\n        'Have::No::Alternative' => { 'DeprecatedVersion' => '2.4' },\n        'Have::No::DeprecatedVersion' => { 'Alternative' => 'Value' }\n      }"
+
+  - name: rubocop_cop_lint_deprecatedconstants_registers_and_corrects_an_offense_when_using_deprecated_methods_that_have_no_deprecated_version
+    source: |
+      Have::No::DeprecatedVersion
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 27
+        message: "Use `Value` instead of `Have::No::DeprecatedVersion`."
+    corrected: |
+      Value
+    config:
+      DeprecatedConstants: "{\n        'NIL' => { 'Alternative' => 'nil', 'DeprecatedVersion' => '2.4' },\n        'TRUE' => { 'Alternative' => 'true', 'DeprecatedVersion' => '2.4' },\n        'FALSE' => { 'Alternative' => 'false', 'DeprecatedVersion' => '2.4' },\n        'Net::HTTPServerException' => {\n          'Alternative' => 'Net::HTTPClientException', 'DeprecatedVersion' => '2.6'\n        },\n        'Random::DEFAULT' => { 'Alternative' => 'Random.new', 'DeprecatedVersion' => '3.0' },\n        'Struct::Group' => { 'Alternative' => 'Etc::Group', 'DeprecatedVersion' => '3.0' },\n        'Struct::Passwd' => { 'Alternative' => 'Etc::Passwd', 'DeprecatedVersion' => '3.0' },\n        'Triple::Nested::Constant' => { 'Alternative' => 'Value', 'DeprecatedVersion' => '2.4' },\n        'Have::No::Alternative' => { 'DeprecatedVersion' => '2.4' },\n        'Have::No::DeprecatedVersion' => { 'Alternative' => 'Value' }\n      }"
+
+  - name: rubocop_cop_lint_deprecatedconstants_does_not_register_an_offense_when_not_using_deprecated_constant
+    source: |
+      Foo::TRUE
+    offenses:
+      []
+    config:
+      DeprecatedConstants: "{\n        'NIL' => { 'Alternative' => 'nil', 'DeprecatedVersion' => '2.4' },\n        'TRUE' => { 'Alternative' => 'true', 'DeprecatedVersion' => '2.4' },\n        'FALSE' => { 'Alternative' => 'false', 'DeprecatedVersion' => '2.4' },\n        'Net::HTTPServerException' => {\n          'Alternative' => 'Net::HTTPClientException', 'DeprecatedVersion' => '2.6'\n        },\n        'Random::DEFAULT' => { 'Alternative' => 'Random.new', 'DeprecatedVersion' => '3.0' },\n        'Struct::Group' => { 'Alternative' => 'Etc::Group', 'DeprecatedVersion' => '3.0' },\n        'Struct::Passwd' => { 'Alternative' => 'Etc::Passwd', 'DeprecatedVersion' => '3.0' },\n        'Triple::Nested::Constant' => { 'Alternative' => 'Value', 'DeprecatedVersion' => '2.4' },\n        'Have::No::Alternative' => { 'DeprecatedVersion' => '2.4' },\n        'Have::No::DeprecatedVersion' => { 'Alternative' => 'Value' }\n      }"
+
+  - name: rubocop_cop_lint_deprecatedconstants_does_not_register_an_offense_when_using_encoding
+    source: |
+      __ENCODING__
+    offenses:
+      []
+    config:
+      DeprecatedConstants: "{\n        'NIL' => { 'Alternative' => 'nil', 'DeprecatedVersion' => '2.4' },\n        'TRUE' => { 'Alternative' => 'true', 'DeprecatedVersion' => '2.4' },\n        'FALSE' => { 'Alternative' => 'false', 'DeprecatedVersion' => '2.4' },\n        'Net::HTTPServerException' => {\n          'Alternative' => 'Net::HTTPClientException', 'DeprecatedVersion' => '2.6'\n        },\n        'Random::DEFAULT' => { 'Alternative' => 'Random.new', 'DeprecatedVersion' => '3.0' },\n        'Struct::Group' => { 'Alternative' => 'Etc::Group', 'DeprecatedVersion' => '3.0' },\n        'Struct::Passwd' => { 'Alternative' => 'Etc::Passwd', 'DeprecatedVersion' => '3.0' },\n        'Triple::Nested::Constant' => { 'Alternative' => 'Value', 'DeprecatedVersion' => '2.4' },\n        'Have::No::Alternative' => { 'DeprecatedVersion' => '2.4' },\n        'Have::No::DeprecatedVersion' => { 'Alternative' => 'Value' }\n      }"

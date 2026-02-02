@@ -1,0 +1,180 @@
+cop: Lint/IncompatibleIoSelectWithFiberScheduler
+department: lint
+severity: warning
+implemented: false
+
+tests:
+  - name: rubocop_cop_lint_incompatibleioselectwithfiberscheduler_registers_and_corrects_an_offense_when_using_io_select_with_single_read_argument
+    source: |
+      IO.select([io], [], [])
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 23
+        message: Use `io.wait_readable` instead of `IO.select([io], [], [])`.
+    corrected: |
+      io.wait_readable
+
+  - name: rubocop_cop_lint_incompatibleioselectwithfiberscheduler_registers_and_corrects_an_offense_when_using_io_select_with_single_read_argument_and_specify_the_first_argument_only
+    source: |
+      IO.select([io])
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 15
+        message: Use `io.wait_readable` instead of `IO.select([io])`.
+    corrected: |
+      io.wait_readable
+
+  - name: rubocop_cop_lint_incompatibleioselectwithfiberscheduler_registers_and_corrects_an_offense_when_using_io_select_with_single_read_and_timeout_arguments
+    source: |
+      IO.select([io], [], [], timeout)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 32
+        message: Use `io.wait_readable(timeout)` instead of `IO.select([io], [], [], timeout)`.
+    corrected: |
+      io.wait_readable(timeout)
+
+  - name: rubocop_cop_lint_incompatibleioselectwithfiberscheduler_registers_and_corrects_an_offense_when_using_io_select_with_single_read_argument
+    source: |
+      ::IO.select([io], [], [])
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 25
+        message: "Use `io.wait_readable` instead of `::IO.select([io], [], [])`."
+    corrected: |
+      io.wait_readable
+
+  - name: rubocop_cop_lint_incompatibleioselectwithfiberscheduler_registers_and_corrects_an_offense_when_using_io_select_with_single_read_and_timeout_arguments
+    source: |
+      ::IO.select([io], [], [], timeout)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 34
+        message: "Use `io.wait_readable(timeout)` instead of `::IO.select([io], [], [], timeout)`."
+    corrected: |
+      io.wait_readable(timeout)
+
+  - name: rubocop_cop_lint_incompatibleioselectwithfiberscheduler_registers_and_corrects_an_offense_when_using_io_select_with_single_read_nil_and_timeout_arguments
+    source: |
+      IO.select([io], nil, nil, timeout)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 34
+        message: Use `io.wait_readable(timeout)` instead of `IO.select([io], nil, nil, timeout)`.
+    corrected: |
+      io.wait_readable(timeout)
+
+  - name: rubocop_cop_lint_incompatibleioselectwithfiberscheduler_registers_and_corrects_an_offense_when_using_io_select_with_single_write_nil_and_timeout_arguments
+    source: |
+      IO.select(nil, [io], nil, timeout)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 34
+        message: Use `io.wait_writable(timeout)` instead of `IO.select(nil, [io], nil, timeout)`.
+    corrected: |
+      io.wait_writable(timeout)
+
+  - name: rubocop_cop_lint_incompatibleioselectwithfiberscheduler_registers_and_corrects_an_offense_when_using_io_select_with_single_write_argument
+    source: |
+      IO.select([], [io], [])
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 23
+        message: Use `io.wait_writable` instead of `IO.select([], [io], [])`.
+    corrected: |
+      io.wait_writable
+
+  - name: rubocop_cop_lint_incompatibleioselectwithfiberscheduler_registers_and_corrects_an_offense_when_using_io_select_with_single_write_and_timeout_arguments
+    source: |
+      IO.select([], [io], [], timeout)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 32
+        message: Use `io.wait_writable(timeout)` instead of `IO.select([], [io], [], timeout)`.
+    corrected: |
+      io.wait_writable(timeout)
+
+  - name: rubocop_cop_lint_incompatibleioselectwithfiberscheduler_registers_and_corrects_an_offense_when_using_io_select_with_single_read_as_self_and_timeout_arguments
+    source: |
+      IO.select([self], nil, nil, timeout)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 36
+        message: Use `self.wait_readable(timeout)` instead of `IO.select([self], nil, nil, timeout)`.
+    corrected: |
+      self.wait_readable(timeout)
+
+  - name: rubocop_cop_lint_incompatibleioselectwithfiberscheduler_registers_and_corrects_an_offense_when_using_io_select_with_single_write_as_self_and_timeout_arguments
+    source: |
+      IO.select(nil, [self], nil, timeout)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 36
+        message: Use `self.wait_writable(timeout)` instead of `IO.select(nil, [self], nil, timeout)`.
+    corrected: |
+      self.wait_writable(timeout)
+
+  - name: rubocop_cop_lint_incompatibleioselectwithfiberscheduler_registers_an_offense_when_using_io_select_with_read_argument_and_using_return_value_but_does_not_autocorrect
+    source: |
+      rs, _ = IO.select([rp], [])
+    offenses:
+      - line: 1
+        column_start: 8
+        column_end: 27
+        message: Use `rp.wait_readable` instead of `IO.select([rp], [])`.
+
+  - name: rubocop_cop_lint_incompatibleioselectwithfiberscheduler_registers_an_offense_when_using_io_select_with_write_argument_and_using_return_value_but_does_not_autocorrect
+    source: |
+      _, ws = IO.select([], [wp])
+    offenses:
+      - line: 1
+        column_start: 8
+        column_end: 27
+        message: Use `wp.wait_writable` instead of `IO.select([], [wp])`.
+
+  - name: rubocop_cop_lint_incompatibleioselectwithfiberscheduler_does_not_register_an_offense_when_using_io_select_with_multiple_read_arguments
+    source: |
+      IO.select([foo, bar], [], [])
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_incompatibleioselectwithfiberscheduler_registers_and_corrects_an_offense_when_using_io_select_with_multiple_read_argument_and_specify_the_first_argument_only
+    source: |
+      IO.select([foo, bar])
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_incompatibleioselectwithfiberscheduler_does_not_register_an_offense_when_using_io_select_with_multiple_write_arguments
+    source: |
+      IO.select([], [foo, bar], [])
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_incompatibleioselectwithfiberscheduler_does_not_register_an_offense_when_using_io_select_with_read_and_write_arguments
+    source: |
+      IO.select([rp], [wp], [])
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_incompatibleioselectwithfiberscheduler_does_not_register_an_offense_when_using_io_select_with_read_and_excepts_arguments
+    source: |
+      IO.select([rp], [], [excepts])
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_incompatibleioselectwithfiberscheduler_does_not_register_an_offense_when_using_enumerable_select
+    source: |
+      collection.select { |item| item.do_something? }
+    offenses:
+      []

@@ -1,0 +1,162 @@
+cop: Layout/EmptyLinesAroundBlockBody
+department: layout
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_layout_emptylinesaroundblockbody_registers_an_offense_for_block_body_starting_with_a_blank
+    source: |
+      some_method #{open}
+      
+      #{beginning_offense_annotation}
+        do_something
+      #{close}
+    offenses:
+      []
+    corrected: |
+      some_method #{open}
+        do_something
+      #{close}
+    config:
+      EnforcedStyle: no_empty_lines
+    interpolated: true
+
+  - name: rubocop_cop_layout_emptylinesaroundblockbody_registers_an_offense_for_block_body_ending_with_a_blank
+    source: |
+      some_method #{open}
+        do_something
+      
+        #{close}
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 0
+        message: Extra empty line detected at block body end.
+    corrected: |
+      some_method #{open}
+        do_something
+        #{close}
+    config:
+      EnforcedStyle: no_empty_lines
+    interpolated: true
+
+  - name: rubocop_cop_layout_emptylinesaroundblockbody_ruby_2_7_registers_an_offense_for_block_body_ending_with_a_blank
+    source: |
+      some_method #{open}
+        _1
+      
+        #{close}
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 0
+        message: Extra empty line detected at block body end.
+    corrected: |
+      some_method #{open}
+        _1
+        #{close}
+    config:
+      EnforcedStyle: no_empty_lines
+    ruby_version: ">= 2.7"
+    interpolated: true
+
+  - name: rubocop_cop_layout_emptylinesaroundblockbody_ruby_3_4_registers_an_offense_for_block_body_ending_with_a_blank
+    source: |
+      some_method #{open}
+        it
+      
+        #{close}
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 0
+        message: Extra empty line detected at block body end.
+    corrected: |
+      some_method #{open}
+        it
+        #{close}
+    config:
+      EnforcedStyle: no_empty_lines
+    ruby_version: ">= 3.4"
+    interpolated: true
+
+  - name: rubocop_cop_layout_emptylinesaroundblockbody_accepts_block_body_starting_with_a_line_with_spaces
+    source: |
+      some_method #{open}
+       #{trailing_whitespace}
+        do_something
+      #{close}
+    offenses:
+      []
+    config:
+      EnforcedStyle: no_empty_lines
+    interpolated: true
+
+  - name: rubocop_cop_layout_emptylinesaroundblockbody
+    source: |
+      some_method arg,
+        another_arg #{open}
+      
+      #{beginning_offense_annotation}
+        do_something
+      #{close}
+    offenses:
+      []
+    config:
+      EnforcedStyle: no_empty_lines
+    interpolated: true
+
+  - name: rubocop_cop_layout_emptylinesaroundblockbody_is_not_fooled_by_single_line_blocks
+    source: |
+      some_method #{open} do_something #{close}
+      
+      something_else
+    offenses:
+      []
+    config:
+      EnforcedStyle: no_empty_lines
+    interpolated: true
+
+  - name: rubocop_cop_layout_emptylinesaroundblockbody_registers_an_offense_for_block_body_not_starting_or_ending_with_a_blank
+    source: |
+      some_method #{open}
+        do_something
+      #{close}
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 1
+        message: Empty line missing at block body beginning.
+      - line: 3
+        column_start: 0
+        column_end: 1
+        message: Empty line missing at block body end.
+    corrected: |
+      some_method #{open}
+      
+        do_something
+      
+      #{close}
+    config:
+      EnforcedStyle: empty_lines
+    interpolated: true
+
+  - name: rubocop_cop_layout_emptylinesaroundblockbody_ignores_block_with_an_empty_body
+    source: |
+      some_method #{open}
+      #{close}
+    offenses:
+      []
+    config:
+      EnforcedStyle: empty_lines
+    interpolated: true
+
+  - name: rubocop_cop_layout_emptylinesaroundblockbody_is_not_fooled_by_single_line_blocks
+    source: |
+      some_method #{open} do_something #{close}
+      something_else
+    offenses:
+      []
+    config:
+      EnforcedStyle: empty_lines
+    interpolated: true

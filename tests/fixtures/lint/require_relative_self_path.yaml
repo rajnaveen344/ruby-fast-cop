@@ -1,0 +1,53 @@
+cop: Lint/RequireRelativeSelfPath
+department: lint
+severity: warning
+implemented: false
+
+tests:
+  - name: rubocop_cop_lint_requirerelativeselfpath_registers_an_offense_when_using_require_relative_with_self_file_path_argument
+    source: |
+      require_relative 'foo'
+      require_relative 'bar'
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 22
+        message: Remove the `require_relative` that requires itself.
+    corrected: |
+      require_relative 'bar'
+
+  - name: rubocop_cop_lint_requirerelativeselfpath_registers_an_offense_when_using_require_relative_with_self_file_path_argument_with_ext
+    source: |
+      require_relative 'foo.rb'
+      require_relative 'bar'
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 25
+        message: Remove the `require_relative` that requires itself.
+    corrected: |
+      require_relative 'bar'
+
+  - name: rubocop_cop_lint_requirerelativeselfpath_does_not_register_an_offense_when_using_require_relative_without_self_file_path_argument
+    source: |
+      require_relative 'bar'
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_requirerelativeselfpath_does_not_register_an_offense_when_using_require_relative_without_argument
+    source: |
+      require_relative
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_requirerelativeselfpath_does_not_register_an_offense_when_the_filename_is_the_same_but_the_extension_does_not_match
+    source: |
+      require_relative 'foo.racc'
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_requirerelativeselfpath_does_not_register_an_offense_when_using_a_variable_as_an_argument_of_require_relative
+    source: |
+      Dir['test/**/test_*.rb'].each { |f| require_relative f }
+    offenses:
+      []

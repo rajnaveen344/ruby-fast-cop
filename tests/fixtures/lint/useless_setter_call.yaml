@@ -1,0 +1,255 @@
+cop: Lint/UselessSetterCall
+department: lint
+severity: warning
+implemented: false
+
+tests:
+  - name: rubocop_cop_lint_uselesssettercall_with_method_ending_with_setter_call_on_local_object_registers_an_offense_and_corrects
+    source: |
+      def test
+        top = Top.new
+        top.attr = 5
+      end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 5
+        message: Useless setter call to local variable `top`.
+    corrected: |
+      def test
+        top = Top.new
+        top.attr = 5
+        top
+      end
+
+  - name: rubocop_cop_lint_uselesssettercall_with_singleton_method_ending_with_setter_call_on_local_object_registers_an_offense_and_corrects
+    source: |
+      def Top.test
+        top = Top.new
+        top.attr = 5
+      end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 5
+        message: Useless setter call to local variable `top`.
+    corrected: |
+      def Top.test
+        top = Top.new
+        top.attr = 5
+        top
+      end
+
+  - name: rubocop_cop_lint_uselesssettercall_with_method_ending_with_square_bracket_setter_on_local_object_registers_an_offense_and_corrects
+    source: |
+      def test
+        top = Top.new
+        top[:attr] = 5
+      end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 5
+        message: Useless setter call to local variable `top`.
+    corrected: |
+      def test
+        top = Top.new
+        top[:attr] = 5
+        top
+      end
+
+  - name: rubocop_cop_lint_uselesssettercall_with_method_ending_with_ivar_assignment_accepts
+    source: |
+      def test
+        something
+        @top = 5
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_uselesssettercall_with_method_ending_with_setter_call_on_ivar_accepts
+    source: |
+      def test
+        something
+        @top.attr = 5
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_uselesssettercall_with_method_ending_with_cvar_assignment_accepts
+    source: |
+      def test
+        something
+        @@top = 5
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_uselesssettercall_with_method_ending_with_setter_call_on_cvar_accepts
+    source: |
+      def test
+        something
+        @@top.attr = 5
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_uselesssettercall_with_method_ending_with_gvar_assignment_accepts
+    source: |
+      def test
+        something
+        $top = 5
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_uselesssettercall_with_method_ending_with_setter_call_on_gvar_accepts
+    source: |
+      def test
+        something
+        $top.attr = 5
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_uselesssettercall_with_method_ending_with_setter_call_on_argument_accepts
+    source: |
+      def test(some_arg)
+        unrelated_local_variable = Top.new
+        some_arg.attr = 5
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_uselesssettercall_when_a_lvar_contains_an_object_passed_as_argument_at_the_end_of_the_method_accepts_the_setter_call_on_the_lvar
+    source: |
+      def test(some_arg)
+        @some_ivar = some_arg
+        @some_ivar.do_something
+        some_lvar = @some_ivar
+        some_lvar.do_something
+        some_lvar.attr = 5
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_uselesssettercall_accepts_the_setter_call_on_the_lvar
+    source: |
+      def test(some_arg)
+        _first, some_lvar, _third  = 1, some_arg, 3
+        some_lvar.attr = 5
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_uselesssettercall_registers_an_offense_and_corrects
+    source: |
+      def test(some_arg)
+        _first, some_lvar, _third  = do_something
+        some_lvar.attr = 5
+      end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 11
+        message: Useless setter call to local variable `some_lvar`.
+    corrected: |
+      def test(some_arg)
+        _first, some_lvar, _third  = do_something
+        some_lvar.attr = 5
+        some_lvar
+      end
+
+  - name: rubocop_cop_lint_uselesssettercall_accepts_the_setter_call_on_the_lvar
+    source: |
+      def test(some_arg)
+        some_lvar = nil
+        some_lvar ||= some_arg
+        some_lvar.attr = 5
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_uselesssettercall_registers_an_offense_and_corrects
+    source: |
+      def test(some_arg)
+        some_lvar = some_arg
+        some_lvar += some_arg
+        some_lvar.attr = 5
+      end
+    offenses:
+      - line: 4
+        column_start: 2
+        column_end: 11
+        message: Useless setter call to local variable `some_lvar`.
+    corrected: |
+      def test(some_arg)
+        some_lvar = some_arg
+        some_lvar += some_arg
+        some_lvar.attr = 5
+        some_lvar
+      end
+
+  - name: rubocop_cop_lint_uselesssettercall_registers_an_offense_and_corrects_for_the_setter_call_on_the_lvar
+    source: |
+      def test(some_arg)
+        some_arg = Top.new
+        some_arg.attr = 5
+      end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 10
+        message: Useless setter call to local variable `some_arg`.
+    corrected: |
+      def test(some_arg)
+        some_arg = Top.new
+        some_arg.attr = 5
+        some_arg
+      end
+
+  - name: rubocop_cop_lint_uselesssettercall_when_a_lvar_contains_a_local_object_instantiated_with_literal_registers_an_offense_and_corrects_for_the_setter_call_on_the_lvar
+    source: |
+      def test
+        some_arg = {}
+        some_arg[:attr] = 1
+      end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 10
+        message: Useless setter call to local variable `some_arg`.
+    corrected: |
+      def test
+        some_arg = {}
+        some_arg[:attr] = 1
+        some_arg
+      end
+
+  - name: rubocop_cop_lint_uselesssettercall_when_a_lvar_contains_a_non_local_object_returned_by_a_method_accepts
+    source: |
+      def test
+        some_lvar = Foo.shared_object
+        some_lvar[:attr] = 1
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_uselesssettercall_is_not_confused_by_operators_ending_with
+    source: |
+      def test
+        top.attr == 5
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_uselesssettercall_accepts_exception_assignments_without_exploding
+    source: |
+      def foo(bar)
+        begin
+        rescue StandardError => _
+        end
+        bar[:baz] = true
+      end
+    offenses:
+      []

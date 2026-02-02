@@ -1,0 +1,56 @@
+cop: Gemspec/RubyVersionGlobalsUsage
+department: gemspec
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_gemspec_rubyversionglobalsusage_registers_an_offense_when_using_ruby_version
+    source: |
+      Gem::Specification.new do |spec|
+        RUBY_VERSION
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 14
+        message: Do not use `RUBY_VERSION` in gemspec file.
+
+  - name: rubocop_cop_gemspec_rubyversionglobalsusage_registers_an_offense_when_using_ruby_version
+    source: |
+      Gem::Specification.new do |spec|
+        ::RUBY_VERSION
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 16
+        message: "Do not use `::RUBY_VERSION` in gemspec file."
+
+  - name: rubocop_cop_gemspec_rubyversionglobalsusage_registers_an_offense_when_using_ruby_version
+    source: |
+      Gem::Specification.new do |spec|
+        Ruby::VERSION
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 15
+        message: "Do not use `Ruby::VERSION` in gemspec file."
+
+  - name: rubocop_cop_gemspec_rubyversionglobalsusage_registers_an_offense_when_using_ruby_version
+    source: |
+      Gem::Specification.new do |spec|
+        ::Ruby::VERSION
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 17
+        message: "Do not use `::Ruby::VERSION` in gemspec file."
+
+  - name: rubocop_cop_gemspec_rubyversionglobalsusage_does_not_register_an_offense_when_no_ruby_version
+    source: |
+      Gem::Specification.new do |spec|
+      end
+    offenses:
+      []

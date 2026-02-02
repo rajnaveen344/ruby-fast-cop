@@ -1,0 +1,375 @@
+cop: Layout/HeredocIndentation
+department: layout
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_layout_heredocindentation_does_not_register_an_offense_when_not_indented_but_with_whitespace_with
+    source: |
+                def foo
+                  <<-#{quote}RUBY2#{quote}
+                  something
+                  RUBY2
+                end
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_layout_heredocindentation_accepts_for_indented_but_with
+    source: |
+      def foo
+        <<-#{quote}RUBY2#{quote}
+          something
+        RUBY2
+      end
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_layout_heredocindentation_accepts_for_not_indented_but_with_whitespace
+    source: |
+      def foo
+        <<#{quote}RUBY2#{quote}
+        something
+      RUBY2
+      end
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_layout_heredocindentation_accepts_for_indented_but_without
+    source: |
+      def foo
+        <<#{quote}RUBY2#{quote}
+          something
+      RUBY2
+      end
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_layout_heredocindentation_accepts_for_an_empty_line
+    source: |
+      <<-#{quote}RUBY2#{quote}
+      
+      RUBY2
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_layout_heredocindentation_when_layout_linelength_is_configured_accepts_for_long_heredoc
+    source: |
+      <<#{quote}RUBY2#{quote}
+      12345678
+      RUBY2
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_layout_heredocindentation_registers_an_offense_for_not_indented
+    source: |
+      <<~#{quote}RUBY2#{quote}
+      something
+      RUBY2
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 9
+        message: Use 2 spaces for indentation in a heredoc.
+    corrected: |
+      <<~#{quote}RUBY2#{quote}
+        something
+      RUBY2
+    interpolated: true
+
+  - name: rubocop_cop_layout_heredocindentation_registers_an_offense_for_minus_level_indented
+    source: |
+      def foo
+        <<~#{quote}RUBY2#{quote}
+      something
+        RUBY2
+      end
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 9
+        message: Use 2 spaces for indentation in a heredoc.
+    corrected: |
+      def foo
+        <<~#{quote}RUBY2#{quote}
+          something
+        RUBY2
+      end
+    interpolated: true
+
+  - name: rubocop_cop_layout_heredocindentation_registers_an_offense_for_too_deep_indented
+    source: |
+      <<~#{quote}RUBY2#{quote}
+          something
+      RUBY2
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 13
+        message: Use 2 spaces for indentation in a heredoc.
+    corrected: |
+      <<~#{quote}RUBY2#{quote}
+        something
+      RUBY2
+    interpolated: true
+
+  - name: rubocop_cop_layout_heredocindentation_registers_an_offense_for_not_indented_without
+    source: |
+      <<#{quote}RUBY2#{quote}
+      foo
+      RUBY2
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 3
+        message: Use 2 spaces for indentation in a heredoc by using `<<~` instead of `<<`.
+    corrected: |
+      <<~#{quote}RUBY2#{quote}
+        foo
+      RUBY2
+    interpolated: true
+
+  - name: rubocop_cop_layout_heredocindentation_registers_an_offense_for_not_indented_with
+    source: |
+      <<~#{quote}RUBY2#{quote}
+      foo
+      RUBY2
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 3
+        message: Use 2 spaces for indentation in a heredoc.
+    corrected: |
+      <<~#{quote}RUBY2#{quote}
+        foo
+      RUBY2
+    interpolated: true
+
+  - name: rubocop_cop_layout_heredocindentation_registers_an_offense_for_first_line_minus_level_indented_with
+    source: |
+              puts <<-#{quote}RUBY2#{quote}
+      def foo
+        bar
+      end
+      RUBY2
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 7
+        message: Use 2 spaces for indentation in a heredoc by using `<<~` instead of `<<-`.
+    corrected: |
+              puts <<~#{quote}RUBY2#{quote}
+                def foo
+                  bar
+                end
+              RUBY2
+    interpolated: true
+
+  - name: rubocop_cop_layout_heredocindentation_accepts_for_indented_with
+    source: |
+      <<~#{quote}RUBY2#{quote}
+        something
+      RUBY2
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_layout_heredocindentation_accepts_for_include_empty_lines
+    source: |
+      <<~#{quote}MSG#{quote}
+      
+        foo
+      
+          bar
+      
+      MSG
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_layout_heredocindentation
+    source: |
+                  def baz
+                    <<~#{quote}MSG#{quote}
+                    foo
+      #{line}
+                      bar
+                    MSG
+                  end
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 17
+        message: Use 2 spaces for indentation in a heredoc.
+    corrected: |
+                  def baz
+                    <<~#{quote}MSG#{quote}
+                      foo
+      #{line}
+                        bar
+                    MSG
+                  end
+    interpolated: true
+
+  - name: rubocop_cop_layout_heredocindentation
+    source: |
+                  <<~#{quote}RUBY2#{quote}
+                        foo
+      #{line}
+                      bar
+                  RUBY2
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 21
+        message: Use 2 spaces for indentation in a heredoc.
+    corrected: |
+                  <<~#{quote}RUBY2#{quote}
+                      foo
+      #{line}
+                    bar
+                  RUBY2
+    interpolated: true
+
+  - name: rubocop_cop_layout_heredocindentation_displays_message_to_use_instead_of
+    source: |
+      <<RUBY2
+      foo
+      RUBY2
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 3
+        message: Use 2 spaces for indentation in a heredoc by using `<<~` instead of `<<`.
+
+  - name: rubocop_cop_layout_heredocindentation_displays_message_to_use_instead_of
+    source: |
+      <<-RUBY2
+      foo
+      RUBY2
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 3
+        message: Use 2 spaces for indentation in a heredoc by using `<<~` instead of `<<-`.
+
+  - name: rubocop_cop_layout_heredocindentation_when_layout_linelength_is_disabled_registers_an_offense
+    source: |
+      <<~#{quote}RUBY2#{quote}
+      something
+      RUBY2
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 9
+        message: Use 2 spaces for indentation in a heredoc.
+    corrected: |
+      <<~#{quote}RUBY2#{quote}
+        something
+      RUBY2
+    interpolated: true
+
+  - name: rubocop_cop_layout_heredocindentation_when_allcops_activesupportextensionsenabled_true_registers_an_offense_for_squish_applied_to_heredoc
+    source: |
+                def foo
+                  <<-#{quote}RUBY2#{quote}.squish
+                  something
+                  RUBY2
+                end
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 21
+        message: Use 2 spaces for indentation in a heredoc by using `<<~` instead of `<<-`.
+    corrected: |
+                def foo
+                  <<~#{quote}RUBY2#{quote}.squish
+                    something
+                  RUBY2
+                end
+    interpolated: true
+
+  - name: rubocop_cop_layout_heredocindentation_when_allcops_activesupportextensionsenabled_true_registers_an_offense_for_squish_applied_to_heredoc_when_indentation_is_already_good
+    source: |
+                def foo
+                  <<-#{quote}RUBY2#{quote}.squish
+                    something
+                  RUBY2
+                end
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 23
+        message: Use 2 spaces for indentation in a heredoc by using `<<~` instead of `<<-`.
+    corrected: |
+                def foo
+                  <<~#{quote}RUBY2#{quote}.squish
+                    something
+                  RUBY2
+                end
+    interpolated: true
+
+  - name: rubocop_cop_layout_heredocindentation_when_allcops_activesupportextensionsenabled_true_registers_an_offense_for_squish_applied_to_heredoc_when_there_s_too_much_indentation
+    source: |
+                def foo
+                  <<-#{quote}RUBY2#{quote}.squish
+                      something
+                  RUBY2
+                end
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 25
+        message: Use 2 spaces for indentation in a heredoc by using `<<~` instead of `<<-`.
+    corrected: |
+                def foo
+                  <<~#{quote}RUBY2#{quote}.squish
+                    something
+                  RUBY2
+                end
+    interpolated: true
+
+  - name: rubocop_cop_layout_heredocindentation_when_allcops_activesupportextensionsenabled_true_registers_an_offense_for_squish_applied_to_heredoc
+    source: |
+                def foo
+                  <<-#{quote}RUBY2#{quote}.squish!
+                  something
+                  RUBY2
+                end
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 21
+        message: Use 2 spaces for indentation in a heredoc by using `<<~` instead of `<<-`.
+    corrected: |
+                def foo
+                  <<~#{quote}RUBY2#{quote}.squish!
+                    something
+                  RUBY2
+                end
+    interpolated: true
+
+  - name: rubocop_cop_layout_heredocindentation_when_allcops_activesupportextensionsenabled_false_does_not_register_an_offense_for_squish_applied_to_heredoc
+    source: |
+      def foo
+        <<-#{quote}RUBY2#{quote}.squish
+        something
+        RUBY2
+      end
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_layout_heredocindentation_when_ruby_2_2_does_not_register_an_offense
+    source: |
+      <<-RUBY2
+      foo
+      RUBY2
+    offenses:
+      []
+    ruby_version: ">= 2.2"

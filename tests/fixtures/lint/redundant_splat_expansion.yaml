@@ -1,0 +1,560 @@
+cop: Lint/RedundantSplatExpansion
+department: lint
+severity: warning
+implemented: false
+
+tests:
+  - name: rubocop_cop_lint_redundantsplatexpansion_allows_assigning_to_a_splat
+    source: |
+      *, rhs = *node
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_allows_assigning_to_a_splat_variable
+    source: |
+      lhs, *args = *node
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_allows_assigning_a_variable_to_a_splat_expansion_of_a_variable
+    source: |
+      a = *b
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_allows_assigning_to_an_expanded_range
+    source: |
+      a = *1..10
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_allows_splat_expansion_inside_of_an_array
+    source: |
+      a = [10, 11, *1..9]
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_accepts_expanding_a_variable_as_a_method_parameter
+    source: |
+      foo = [1, 2, 3]
+      array.push(*foo)
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_redundantsplatexpansion
+    source: |
+      a = *%{literal}
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 15
+        message: Replace splat expansion with comma separated values.
+    corrected: |
+      a = #{as_array}
+    interpolated: true
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_method_parameters_registers_an_offense_and_converts_to_a_list_of_arguments
+    source: |
+      array.push(*%{literal})
+    offenses:
+      - line: 1
+        column_start: 11
+        column_end: 23
+        message: Pass array contents as separate arguments.
+    corrected: |
+      array.push(#{as_args})
+    interpolated: true
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_splat_literal_assignment_removes_the_splat_fr
+    source: |
+      removes the splat from array
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_method_parameters_registers_an_offense_and_converts_to_an_array
+    source: |
+      array.push(*%{literal})
+    offenses:
+      - line: 1
+        column_start: 11
+        column_end: 23
+        message: Replace splat expansion with comma separated values.
+    corrected: |
+      array.push(#{literal})
+    interpolated: true
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_splat_literal_assignment_converts_to_an_array
+    source: |
+      converts to an array
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_array_splat_expansion_1_2_3
+    source: |
+      [1, 2, 3]
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_splat_expansion_a
+    source: |
+      'a'
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_splat_expansion_a
+    source: |
+      "#{a}"
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_splat_expansion_1
+    source: |
+      1
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_splat_expansion_1_1
+    source: |
+      1.1
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_assignment_to_splat_expansion_registers_an_offense_and_corrects_an_array_constructor_in_a_local_variable_assignment
+    source: |
+      a = *Array.new(3) { 42 }
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 24
+        message: Replace splat expansion with comma separated values.
+    corrected: |
+      a = Array.new(3) { 42 }
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_assignment_to_splat_expansion_registers_an_offense_and_corrects_an_array_constructor_in_an_instance_variable_assignment
+    source: |
+      @a = *Array.new(3) { 42 }
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 25
+        message: Replace splat expansion with comma separated values.
+    corrected: |
+      @a = Array.new(3) { 42 }
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_assignment_to_splat_expansion_registers_an_offense_and_corrects_an_array_constructor_in_a_class_variable_assignment
+    source: |
+      @@a = *Array.new(3) { 42 }
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 26
+        message: Replace splat expansion with comma separated values.
+    corrected: |
+      @@a = Array.new(3) { 42 }
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_assignment_to_splat_expansion_registers_an_offense_and_corrects_an_array_constructor_in_a_global_variable_assignment
+    source: |
+      $a = *Array.new(3) { 42 }
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 25
+        message: Replace splat expansion with comma separated values.
+    corrected: |
+      $a = Array.new(3) { 42 }
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_assignment_to_splat_expansion_registers_an_offense_and_corrects_an_array_constructor_in_a_constant_assignment
+    source: |
+      A = *Array.new(3) { 42 }
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 24
+        message: Replace splat expansion with comma separated values.
+    corrected: |
+      A = Array.new(3) { 42 }
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_assignment_to_splat_expansion_registers_and_corrects_an_array_using_top_level_const
+    source: |
+      a = *::Array.new(3) { 42 }
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 26
+        message: Replace splat expansion with comma separated values.
+    corrected: |
+      a = ::Array.new(3) { 42 }
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_expanding_an_array_literal_in_a_when_condition_registers_an_offense_and_corrects_an_array_using
+    source: |
+      case foo
+      when *[first, second]
+        bar
+      end
+    offenses:
+      - line: 2
+        column_start: 5
+        column_end: 21
+        message: Replace splat expansion with comma separated values.
+    corrected: |
+      case foo
+      when first, second
+        bar
+      end
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_expanding_an_array_literal_in_a_when_condition_registers_an_offense_and_corrects_an_array_using_w
+    source: |
+      case foo
+      when *%w(first second)
+        bar
+      end
+    offenses:
+      - line: 2
+        column_start: 5
+        column_end: 22
+        message: Replace splat expansion with comma separated values.
+    corrected: |
+      case foo
+      when 'first', 'second'
+        bar
+      end
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_expanding_an_array_literal_in_a_when_condition_registers_an_offense_and_corrects_an_array_using_w
+    source: |
+      case foo
+      when *%W(#{first} second)
+        bar
+      end
+    offenses:
+      - line: 2
+        column_start: 5
+        column_end: 25
+        message: Replace splat expansion with comma separated values.
+    corrected: |
+      case foo
+      when "#{first}", "second"
+        bar
+      end
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_expanding_an_array_literal_in_a_when_condition_registers_an_offense_and_corrects_i_to_a_list_of_symbols
+    source: |
+      case foo
+      when *%i(first second)
+        baz
+      end
+    offenses:
+      - line: 2
+        column_start: 5
+        column_end: 22
+        message: Replace splat expansion with comma separated values.
+    corrected: |
+      case foo
+      when :first, :second
+        baz
+      end
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_expanding_an_array_literal_in_a_when_condition_registers_an_offense_and_corrects_i_to_a_list_of_symbols
+    source: |
+      case foo
+      when *%I(#{first} second)
+        baz
+      end
+    offenses:
+      - line: 2
+        column_start: 5
+        column_end: 25
+        message: Replace splat expansion with comma separated values.
+    corrected: |
+      case foo
+      when :"#{first}", :"second"
+        baz
+      end
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_expanding_an_array_literal_in_a_when_condition_allows_an_array_that_is_assigned_to_a_variable
+    source: |
+      baz = [1, 2, 3]
+      case foo
+      when *baz
+        bar
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_expanding_an_array_literal_in_a_when_condition_allows_an_array_using_a_constructor
+    source: |
+      case foo
+      when *Array.new(3) { 42 }
+        bar
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_registers_an_offense_and_corrects_an_array_literal_being_expanded_in_a_rescue
+    source: |
+      begin
+        foo
+      rescue *[First, Second]
+        bar
+      end
+    offenses:
+      - line: 3
+        column_start: 7
+        column_end: 23
+        message: Replace splat expansion with comma separated values.
+    corrected: |
+      begin
+        foo
+      rescue First, Second
+        bar
+      end
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_allows_expansions_of_an_array_that_is_assigned_to_a_variable_in_rescue
+    source: |
+      ERRORS = [FirstError, SecondError]
+      begin
+        foo
+      rescue *ERRORS
+        bar
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_allows_an_array_using_a_constructor
+    source: |
+      begin
+        foo
+      rescue *Array.new(3) { 42 }
+        bad_example
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_splat_expansion_inside_of_an_array
+    source: |
+      [1, 2, *[3, 4, 5], 6, 7]
+    offenses:
+      - line: 1
+        column_start: 7
+        column_end: 17
+        message: Pass array contents as separate arguments.
+    corrected: |
+      [1, 2, 3, 4, 5, 6, 7]
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_splat_expansion_inside_of_an_array_registers_an_offense_and_corrects_expansion_of_w_to_a_list_of_words
+    source: |
+      ['a', 'b', *%w(c d e), 'f', 'g']
+    offenses:
+      - line: 1
+        column_start: 11
+        column_end: 21
+        message: Pass array contents as separate arguments.
+    corrected: |
+      ['a', 'b', 'c', 'd', 'e', 'f', 'g']
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_splat_expansion_inside_of_an_array_registers_an_offense_and_corrects_expansion_of_w_to_a_list_of_words
+    source: |
+      ["a", "b", *%W(#{one} two)]
+    offenses:
+      - line: 1
+        column_start: 11
+        column_end: 26
+        message: Pass array contents as separate arguments.
+    corrected: |
+      ["a", "b", "#{one}", "two"]
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_splat_expansion_inside_of_an_array_registers_an_offense_and_corrects_expansion_of_splatted_string_literal
+    source: |
+      ["a", "b", *"c"]
+    offenses:
+      - line: 1
+        column_start: 11
+        column_end: 15
+        message: Replace splat expansion with comma separated values.
+    corrected: |
+      ["a", "b", "c"]
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_allows_expanding_a_method_call_on_an_array_literal
+    source: |
+      [1, 2, *[3, 4, 5].map(&:to_s), 6, 7]
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_expanding_array_new_call_on_array_literal_when_the_array_literal_contains_exactly_one_element_registers_an_offense_and_corrects
+    source: |
+      [*Array.new(foo)]
+    offenses:
+      - line: 1
+        column_start: 1
+        column_end: 16
+        message: Replace splat expansion with comma separated values.
+    corrected: |
+      Array.new(foo)
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_expanding_array_new_call_on_array_literal_when_the_array_literal_contains_more_than_one_element_accepts
+    source: |
+      [1, 2, *Array.new(foo), 6]
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_expanding_array_new_call_on_array_literal_with_array_new_when_the_array_literal_contains_exactly_one_element_registers_an_offense_and_corrects
+    source: |
+      [*::Array.new(foo)]
+    offenses:
+      - line: 1
+        column_start: 1
+        column_end: 18
+        message: Replace splat expansion with comma separated values.
+    corrected: |
+      ::Array.new(foo)
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_expanding_array_new_call_on_method_argument_registers_an_offense_and_corrects
+    source: |
+      send(method, *Array.new(foo))
+    offenses:
+      - line: 1
+        column_start: 13
+        column_end: 28
+        message: Replace splat expansion with comma separated values.
+    corrected: |
+      send(method, Array.new(foo))
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_arrays_being_expanded_with_i_variants_using_splat_expansion_splat_expansion_inside_of_an_array_registers_an_offense_and_corrects_i_to_a_list_of_symbols
+    source: |
+      [:a, :b, *%i(c d), :e]
+    offenses:
+      - line: 1
+        column_start: 9
+        column_end: 17
+        message: Pass array contents as separate arguments.
+    corrected: |
+      [:a, :b, :c, :d, :e]
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_arrays_being_expanded_with_i_variants_using_splat_expansion_splat_expansion_inside_of_an_array_registers_an_offense_and_changes_i_to_a_list_of_symbols
+    source: |
+      [:a, :b, *%I(#{one} two), :e]
+    offenses:
+      - line: 1
+        column_start: 9
+        column_end: 24
+        message: Pass array contents as separate arguments.
+    corrected: |
+      [:a, :b, :"#{one}", :"two", :e]
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_when_allowpercentliteralarrayargument_true_does_not_register_an_offense_when_using_percent_string_literal_array
+    source: |
+      do_something(*%w[foo bar baz])
+    offenses:
+      []
+    config:
+      AllowPercentLiteralArrayArgument: true
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_when_allowpercentliteralarrayargument_true_does_not_register_an_offense_when_using_percent_string_literal_array_in_safe_navigation
+    source: |
+      maybe_nil&.do_something(*%w[foo bar baz])
+    offenses:
+      []
+    config:
+      AllowPercentLiteralArrayArgument: true
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_when_allowpercentliteralarrayargument_true_does_not_register_an_offense_when_using_percent_symbol_literal_array
+    source: |
+      do_something(*%i[foo bar baz])
+    offenses:
+      []
+    config:
+      AllowPercentLiteralArrayArgument: true
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_when_allowpercentliteralarrayargument_false_array_splat_expansion_w_one_two_three
+    source: |
+      %w(one two three)
+    offenses:
+      []
+    config:
+      AllowPercentLiteralArrayArgument: false
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_when_allowpercentliteralarrayargument_false_array_splat_expansion_w_one_two_three
+    source: |
+      %W(one #{two} three)
+    offenses:
+      []
+    config:
+      AllowPercentLiteralArrayArgument: false
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_when_allowpercentliteralarrayargument_false_registers_an_offense_when_using_percent_literal_array
+    source: |
+      do_something(*%w[foo bar baz])
+    offenses:
+      - line: 1
+        column_start: 13
+        column_end: 29
+        message: Pass array contents as separate arguments.
+    corrected: |
+      do_something('foo', 'bar', 'baz')
+    config:
+      AllowPercentLiteralArrayArgument: false
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_when_allowpercentliteralarrayargument_false_registers_an_offense_when_using_percent_literal_array_in_safe_navigation
+    source: |
+      maybe_nil&.do_something(*%w[foo bar baz])
+    offenses:
+      - line: 1
+        column_start: 24
+        column_end: 40
+        message: Pass array contents as separate arguments.
+    corrected: |
+      maybe_nil&.do_something('foo', 'bar', 'baz')
+    config:
+      AllowPercentLiteralArrayArgument: false
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_when_allowpercentliteralarrayargument_false_array_splat_expansion_i_first_second
+    source: |
+      %i(first second)
+    offenses:
+      []
+    config:
+      AllowPercentLiteralArrayArgument: false
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_when_allowpercentliteralarrayargument_false_array_splat_expansion_i_first_second_th
+    source: |
+      %I(first second #{third})
+    offenses:
+      []
+    config:
+      AllowPercentLiteralArrayArgument: false
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_when_allowpercentliteralarrayargument_false_registers_an_offense_when_using_percent_symbol_literal_array
+    source: |
+      do_something(*%i[foo bar baz])
+    offenses:
+      - line: 1
+        column_start: 13
+        column_end: 29
+        message: Pass array contents as separate arguments.
+    config:
+      AllowPercentLiteralArrayArgument: false
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_when_allowpercentliteralarrayargument_false_splat_expansion_of_method_parameters_registers_an_offense_and_corrects_an_array_literal_i
+    source: |
+      array.push(*%i(first second))
+    offenses:
+      - line: 1
+        column_start: 11
+        column_end: 28
+        message: Pass array contents as separate arguments.
+    corrected: |
+      array.push(:first, :second)
+    config:
+      AllowPercentLiteralArrayArgument: false
+
+  - name: rubocop_cop_lint_redundantsplatexpansion_when_allowpercentliteralarrayargument_false_splat_expansion_of_method_parameters_registers_an_offense_and_corrects_an_array_literal_i
+    source: |
+      array.push(*%I(#{first} second))
+    offenses:
+      - line: 1
+        column_start: 11
+        column_end: 31
+        message: Pass array contents as separate arguments.
+    corrected: |
+      array.push(:"#{first}", :"second")
+    config:
+      AllowPercentLiteralArrayArgument: false

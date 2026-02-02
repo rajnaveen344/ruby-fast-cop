@@ -1,0 +1,694 @@
+cop: Layout/EmptyLineAfterGuardClause
+department: layout
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_layout_emptylineafterguardclause_does_not_register_an_offense_when_the_clause_is_not_followed_by_other_code
+    source: |
+      return unless item.positive?
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylineafterguardclause_registers_an_offense_and_corrects_a_guard_clause_not_followed_by_empty_line
+    source: |
+      def foo
+        return if need_return?
+        foobar
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 24
+        message: Add empty line after guard clause.
+    corrected: |
+      def foo
+        return if need_return?
+      
+        foobar
+      end
+
+  - name: rubocop_cop_layout_emptylineafterguardclause_ruby_3_2_registers_an_offense_and_corrects_next_guard_clause_not_followed_by_empty_line
+    source: |
+      def foo
+        next unless need_next? # comment
+        foobar
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 24
+        message: Add empty line after guard clause.
+    corrected: |
+      def foo
+        next unless need_next? # comment
+      
+        foobar
+      end
+    ruby_version: ">= 3.2"
+
+  - name: rubocop_cop_layout_emptylineafterguardclause_registers_an_offense_and_corrects_a_guard_clause_is_before_begin
+    source: |
+      def foo
+        return another_object if something_different?
+        begin
+          bar
+        rescue SomeException
+          baz
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 47
+        message: Add empty line after guard clause.
+    corrected: |
+      def foo
+        return another_object if something_different?
+      
+        begin
+          bar
+        rescue SomeException
+          baz
+        end
+      end
+
+  - name: rubocop_cop_layout_emptylineafterguardclause
+    source: |
+      def foo
+        raise ArgumentError, <<-MSG unless path
+          Must be called with mount point
+        MSG
+        bar
+      end
+    offenses:
+      - line: 4
+        column_start: 0
+        column_end: 5
+        message: Add empty line after guard clause.
+    corrected: |
+      def foo
+        raise ArgumentError, <<-MSG unless path
+          Must be called with mount point
+        MSG
+      
+        bar
+      end
+
+  - name: rubocop_cop_layout_emptylineafterguardclause
+    source: |
+      def foo
+        raise ArgumentError, <<-MSG if path
+          Must be called with mount point
+        MSG
+        bar
+      end
+    offenses:
+      - line: 4
+        column_start: 0
+        column_end: 5
+        message: Add empty line after guard clause.
+    corrected: |
+      def foo
+        raise ArgumentError, <<-MSG if path
+          Must be called with mount point
+        MSG
+      
+        bar
+      end
+
+  - name: rubocop_cop_layout_emptylineafterguardclause
+    source: |
+      raise(<<-FAIL) unless true
+        #{1 + 1}
+      FAIL
+      1
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 4
+        message: Add empty line after guard clause.
+    corrected: |
+      raise(<<-FAIL) unless true
+        #{1 + 1}
+      FAIL
+      
+      1
+
+  - name: rubocop_cop_layout_emptylineafterguardclause
+    source: |
+      def foo
+        raise unless $1 == o
+      
+        bar
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylineafterguardclause
+    source: |
+      def foo
+        raise SerializationError.new("Unsupported argument type: #{argument.class.name}") unless serializer
+        serializer.serialize(argument)
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 101
+        message: Add empty line after guard clause.
+    corrected: |
+      def foo
+        raise SerializationError.new("Unsupported argument type: #{argument.class.name}") unless serializer
+      
+        serializer.serialize(argument)
+      end
+
+  - name: rubocop_cop_layout_emptylineafterguardclause_registers_an_offense_and_corrects_when_using_and_return_before_guard_condition
+    source: |
+      def foo
+        render :foo and return if condition
+        do_something
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 37
+        message: Add empty line after guard clause.
+    corrected: |
+      def foo
+        render :foo and return if condition
+      
+        do_something
+      end
+
+  - name: rubocop_cop_layout_emptylineafterguardclause_registers_an_offense_and_corrects_when_using_or_return_before_guard_condition
+    source: |
+      def foo
+        render :foo or return if condition
+        do_something
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 36
+        message: Add empty line after guard clause.
+    corrected: |
+      def foo
+        render :foo or return if condition
+      
+        do_something
+      end
+
+  - name: rubocop_cop_layout_emptylineafterguardclause_registers_and_corrects_when_using_guard_clause_is_after_rubocop_disable_comment
+    source: |
+      def foo
+        return if condition
+        # rubocop:disable Department/Cop
+        bar
+        # rubocop:enable Department/Cop
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 21
+        message: Add empty line after guard clause.
+    corrected: |
+      def foo
+        return if condition
+      
+        # rubocop:disable Department/Cop
+        bar
+        # rubocop:enable Department/Cop
+      end
+
+  - name: rubocop_cop_layout_emptylineafterguardclause_registers_and_corrects_when_using_guard_clause_is_after_rubocop_enable_comment
+    source: |
+      def foo
+        # rubocop:disable Department/Cop
+        return if condition
+        # rubocop:enable Department/Cop
+        bar
+      end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 21
+        message: Add empty line after guard clause.
+    corrected: |
+      def foo
+        # rubocop:disable Department/Cop
+        return if condition
+        # rubocop:enable Department/Cop
+      
+        bar
+      end
+
+  - name: rubocop_cop_layout_emptylineafterguardclause_accepts_modifier_if
+    source: |
+      def foo
+        foo += 1 if need_add?
+        foobar
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylineafterguardclause_accepts_a_guard_clause_followed_by_empty_line_when_guard_clause_including_heredoc
+    source: |
+      def method
+        if truthy
+          raise <<-MSG
+            This is an error.
+          MSG
+        end
+      
+        value
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylineafterguardclause
+    source: |
+      def method
+        if truthy
+          raise <<-MSG
+            This is an error.
+          MSG
+        end
+        value
+      end
+    offenses:
+      - line: 6
+        column_start: 2
+        column_end: 5
+        message: Add empty line after guard clause.
+    corrected: |
+      def method
+        if truthy
+          raise <<-MSG
+            This is an error.
+          MSG
+        end
+      
+        value
+      end
+
+  - name: rubocop_cop_layout_emptylineafterguardclause_accepts_a_guard_clause_followed_by_end
+    source: |
+      def foo
+        if something?
+          return
+        end
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylineafterguardclause_accepts_using_guard_clause_is_after_raise
+    source: |
+      def foo
+        raise ArgumentError, 'HTTP redirect too deep' if limit.zero?
+      
+        foobar
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylineafterguardclause_accepts_using_guard_clause_is_after_rubocop_enable_comment
+    source: |
+      def foo
+        # rubocop:disable Department/Cop
+        return if condition
+        # rubocop:enable Department/Cop
+      
+        bar
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylineafterguardclause_accepts_using_guard_clause_is_after_nocov_comment
+    source: |
+      def foo
+        # :nocov:
+        return if condition
+        # :nocov:
+      
+        bar
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylineafterguardclause_accepts_a_guard_clause_inside_oneliner_block
+    source: |
+      def foo
+        object.tap { |obj| return another_object if something? }
+        foobar
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylineafterguardclause_registers_a_guard_clause_outside_difference_line_block
+    source: |
+      return if condition
+      foo do
+        bar
+      end
+      baz
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 19
+        message: Add empty line after guard clause.
+    corrected: |
+      return if condition
+      
+      foo do
+        bar
+      end
+      baz
+
+  - name: rubocop_cop_layout_emptylineafterguardclause_accepts_a_guard_clause_outside_oneliner_block
+    source: |
+      return if condition; foo do
+        bar
+      end
+      baz
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylineafterguardclause_accepts_a_guard_clause_outside_oneliner_numbered_block
+    source: |
+      return if condition; foo do
+        bar(_1)
+      end
+      baz
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylineafterguardclause_accepts_multiple_guard_clauses
+    source: |
+      def foo
+        return another_object if something?
+        return another_object if something_else?
+        return another_object if something_different?
+      
+        foobar
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylineafterguardclause_accepts_a_modifier_if_when_the_next_line_is_end
+    source: |
+      def foo
+        return another_object if something_different?
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylineafterguardclause_accepts_a_guard_clause_when_the_next_line_is_rescue
+    source: |
+      def foo
+        begin
+          return another_object if something_different?
+        rescue SomeException
+          bar
+        end
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylineafterguardclause_accepts_a_guard_clause_when_the_next_line_is_ensure
+    source: |
+      def foo
+        begin
+          return another_object if something_different?
+        ensure
+          bar
+        end
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylineafterguardclause_accepts_a_guard_clause_when_the_next_line_is_rescue_else
+    source: |
+      def foo
+        begin
+          bar
+        rescue SomeException
+          return another_object if something_different?
+        else
+          bar
+        end
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylineafterguardclause_accepts_a_guard_clause_when_the_next_line_is_else
+    source: |
+      def foo
+        if cond
+          return another_object if something_different?
+        else
+          bar
+        end
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylineafterguardclause_accepts_a_guard_clause_when_the_next_line_is_elsif
+    source: |
+      def foo
+        if cond
+          return another_object if something_different?
+        elsif
+          bar
+        end
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylineafterguardclause_accepts_a_guard_clause_after_a_single_line_heredoc
+    source: |
+      def foo
+        raise ArgumentError, <<-MSG unless path
+          Must be called with mount point
+        MSG
+      
+        bar
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylineafterguardclause_accepts_a_guard_clause_that_is_after_multiline_heredoc
+    source: |
+      def foo
+        raise ArgumentError, <<-MSG unless path
+          foo
+          bar
+          baz
+        MSG
+      
+        bar
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylineafterguardclause_accepts_a_guard_clause_that_is_after_a_multiline_heredoc_with_chained_calls
+    source: |
+      def foo
+        raise ArgumentError, <<~END.squish.it.good unless guard
+          A multiline message
+          that will be squished.
+        END
+      
+        return_value
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylineafterguardclause_accepts_a_guard_clause_that_is_after_a_multiline_heredoc_nested_argument_call
+    source: |
+      def foo
+        raise ArgumentError, call(<<~END.squish) unless guard
+          A multiline message
+          that will be squished.
+        END
+      
+        return_value
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylineafterguardclause_accepts_a_guard_clause_that_is_after_a_multiline_heredoc_with_parenthesized_method_call
+    source: |
+      def foo
+        raise ArgumentError, (<<~END.squish) unless guard
+          A multiline message
+          that will be squished.
+        END
+      
+        return_value
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylineafterguardclause_does_not_register_an_offense_when_using_return_before_guard_condition_with_heredoc
+    source: |
+      def foo
+        return true if <<~TEXT.length > bar
+          hi
+        TEXT
+      
+        false
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylineafterguardclause_does_not_register_an_offense_when_using_raise_before_guard_condition_with_heredoc
+    source: |
+      def foo
+        raise if <<~TEXT.length > bar
+          hi
+        TEXT
+      
+        baz
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylineafterguardclause_registers_an_offense_and_corrects_a_guard_clause_that_is_a_ternary_operator
+    source: |
+      def foo
+        puts 'some action happens here'
+      rescue => e
+        a_check ? raise(e) : other_thing
+        true
+      end
+    offenses:
+      - line: 4
+        column_start: 2
+        column_end: 34
+        message: Add empty line after guard clause.
+    corrected: |
+      def foo
+        puts 'some action happens here'
+      rescue => e
+        a_check ? raise(e) : other_thing
+      
+        true
+      end
+
+  - name: rubocop_cop_layout_emptylineafterguardclause_registers_an_offense_and_corrects_a_method_starting_with_end
+    source: |
+      def foo
+        return unless need_next?
+        end_this!
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 26
+        message: Add empty line after guard clause.
+    corrected: |
+      def foo
+        return unless need_next?
+      
+        end_this!
+      end
+
+  - name: rubocop_cop_layout_emptylineafterguardclause_registers_an_offense_and_corrects_only_the_last_guard_clause
+    source: |
+      def foo
+        return if foo?
+        return if bar?
+        foobar
+      end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 16
+        message: Add empty line after guard clause.
+    corrected: |
+      def foo
+        return if foo?
+        return if bar?
+      
+        foobar
+      end
+
+  - name: rubocop_cop_layout_emptylineafterguardclause_registers_no_offenses_using_heredoc_with_and_return_before_guard_condition_with_empty_line
+    source: |
+      def foo
+        puts(<<~MSG) and return if bar
+          A multiline
+          message
+        MSG
+      
+        baz
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylineafterguardclause_registers_an_offense_and_corrects_using_heredoc_with_and_return_before_guard_condition
+    source: |
+      def foo
+        puts(<<~MSG) and return if bar
+          A multiline
+          message
+        MSG
+        baz
+      end
+    offenses:
+      - line: 5
+        column_start: 0
+        column_end: 5
+        message: Add empty line after guard clause.
+    corrected: |
+      def foo
+        puts(<<~MSG) and return if bar
+          A multiline
+          message
+        MSG
+      
+        baz
+      end
+
+  - name: rubocop_cop_layout_emptylineafterguardclause_does_not_register_an_offense_when_there_are_multiple_clauses_on_the_same_line
+    source: |
+      def foo(item)
+        return unless item.positive?; item * 2
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylineafterguardclause_registers_an_offense_when_the_clause_ends_with_a_semicolon_but_the_next_clause_is_on_the_next_line
+    source: |
+      def foo(item)
+        return unless item.positive?;
+        item * 2
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 30
+        message: Add empty line after guard clause.
+    corrected: |
+      def foo(item)
+        return unless item.positive?;
+      
+        item * 2
+      end
+
+  - name: rubocop_cop_layout_emptylineafterguardclause_does_not_register_an_offense_when_calling_a_method_on_the_result_of_a_single_line_if_with_return
+    source: |
+      if cond then return end.then { 42 }
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylineafterguardclause_does_not_register_an_offense_when_the_clause_ends_with_a_semicolon_but_is_followed_by_a_newline
+    source: |
+      def foo(item)
+        return unless item.positive?;
+      
+        item * 2
+      end
+    offenses:
+      []

@@ -1,0 +1,83 @@
+cop: Layout/LeadingEmptyLines
+department: layout
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_layout_leadingemptylines_allows_blank_lines_without_any_comments_or_code
+    source: |
+      
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_leadingemptylines_accepts_not_having_a_blank_line_before_a_class
+    source: |
+      class Foo
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_leadingemptylines_accepts_not_having_a_blank_line_before_code
+    source: |
+      puts 1
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_leadingemptylines_accepts_not_having_a_blank_line_before_a_comment
+    source: |
+      # something
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_leadingemptylines_registers_an_offense_and_corrects_a_new_line_before_a_class
+    source: |
+      
+      class Foo
+      end
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 5
+        message: Unnecessary blank line at the beginning of the source.
+    corrected: |
+      class Foo
+      end
+
+  - name: rubocop_cop_layout_leadingemptylines_registers_an_offense_and_corrects_a_new_line_before_code
+    source: |
+      
+      puts 1
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 4
+        message: Unnecessary blank line at the beginning of the source.
+    corrected: |
+      puts 1
+
+  - name: rubocop_cop_layout_leadingemptylines_registers_an_offense_and_corrects_a_new_line_before_a_comment
+    source: |
+      
+      # something
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 11
+        message: Unnecessary blank line at the beginning of the source.
+    corrected: |
+      # something
+
+  - name: rubocop_cop_layout_leadingemptylines_registers_an_offense_and_corrects_multiple_new_lines_before_a_class
+    source: |
+      
+      
+      class Foo
+      end
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 5
+        message: Unnecessary blank line at the beginning of the source.
+    corrected: |
+      class Foo
+      end

@@ -1,0 +1,48 @@
+cop: Gemspec/AddRuntimeDependency
+department: gemspec
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_gemspec_addruntimedependency_registers_an_offense_when_using_add_runtime_dependency
+    source: |
+      Gem::Specification.new do |spec|
+        spec.add_runtime_dependency('rubocop')
+      end
+    offenses:
+      - line: 2
+        column_start: 7
+        column_end: 29
+        message: Use `add_dependency` instead of `add_runtime_dependency`.
+    corrected: |
+      Gem::Specification.new do |spec|
+        spec.add_dependency('rubocop')
+      end
+
+  - name: rubocop_cop_gemspec_addruntimedependency_does_not_register_an_offense_when_using_add_dependency
+    source: |
+      Gem::Specification.new do |spec|
+        spec.add_dependency('rubocop')
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_gemspec_addruntimedependency_does_not_register_an_offense_when_using_add_development_dependency
+    source: |
+      Gem::Specification.new do |spec|
+        spec.add_development_dependency('rubocop')
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_gemspec_addruntimedependency_does_not_register_an_offense_when_using_add_runtime_dependency_without_receiver
+    source: |
+      add_runtime_dependency('rubocop')
+    offenses:
+      []
+
+  - name: rubocop_cop_gemspec_addruntimedependency_does_not_register_an_offense_when_using_add_runtime_dependency_without_arguments
+    source: |
+      spec.add_runtime_dependency
+    offenses:
+      []

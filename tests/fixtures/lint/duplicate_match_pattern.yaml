@@ -1,0 +1,267 @@
+cop: Lint/DuplicateMatchPattern
+department: lint
+severity: warning
+implemented: false
+
+tests:
+  - name: rubocop_cop_lint_duplicatematchpattern_registers_an_offense_for_repeated_in_patterns
+    source: |
+      case x
+      in foo
+        first_method
+      in bar
+        second_method
+      in foo
+        third_method
+      end
+    offenses:
+      - line: 6
+        column_start: 3
+        column_end: 6
+        message: Duplicate `in` pattern detected.
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_lint_duplicatematchpattern_registers_an_offense_for_subsequent_repeated_in_patterns
+    source: |
+      case x
+      in foo
+        first_method
+      in foo
+        second_method
+      end
+    offenses:
+      - line: 4
+        column_start: 3
+        column_end: 6
+        message: Duplicate `in` pattern detected.
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_lint_duplicatematchpattern_registers_multiple_offenses_for_multiple_repeated_in_patterns
+    source: |
+      case x
+      in foo
+        first_method
+      in bar
+        second_method
+      in foo
+        third_method
+      in bar
+        fourth_method
+      end
+    offenses:
+      - line: 6
+        column_start: 3
+        column_end: 6
+        message: Duplicate `in` pattern detected.
+      - line: 8
+        column_start: 3
+        column_end: 6
+        message: Duplicate `in` pattern detected.
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_lint_duplicatematchpattern_registers_multiple_offenses_for_repeated_alternative_patterns
+    source: |
+      case x
+      in 0 | 1
+        first_method
+      in 1 | 0
+        second_method
+      end
+    offenses:
+      - line: 4
+        column_start: 3
+        column_end: 8
+        message: Duplicate `in` pattern detected.
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_lint_duplicatematchpattern_does_not_register_for_not_equivalent_alternative_patterns
+    source: |
+      case x
+      in 0 | 1 | 2
+        first_method
+      in 3 | 4
+        second_method
+      end
+    offenses:
+      []
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_lint_duplicatematchpattern_registers_an_offense_for_repeated_array_patterns_with_elements_in_the_same_order
+    source: |
+      case x
+      in [foo, bar]
+        first_method
+      in [foo, bar]
+        second_method
+      end
+    offenses:
+      - line: 4
+        column_start: 3
+        column_end: 13
+        message: Duplicate `in` pattern detected.
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_lint_duplicatematchpattern_does_not_register_an_offense_for_repeated_array_patterns_with_elements_in_different_order
+    source: |
+      case x
+      in [foo, bar]
+        first_method
+      in [bar, foo]
+        second_method
+      end
+    offenses:
+      []
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_lint_duplicatematchpattern_does_not_register_similar_but_not_equivalent_array_patterns
+    source: |
+      case x
+      in [foo, bar]
+        first_method
+      in [foo, bar, baz]
+        second_method
+      end
+    offenses:
+      []
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_lint_duplicatematchpattern_registers_an_offense_for_repeated_hash_patterns_with_elements_in_the_same_order
+    source: |
+      case x
+      in foo: a, bar: b
+        first_method
+      in foo: a, bar: b
+        second_method
+      end
+    offenses:
+      - line: 4
+        column_start: 3
+        column_end: 17
+        message: Duplicate `in` pattern detected.
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_lint_duplicatematchpattern_registers_an_offense_for_repeated_hash_patterns_with_elements_in_different_order
+    source: |
+      case x
+      in foo: a, bar: b
+        first_method
+      in bar: b, foo: a
+        second_method
+      end
+    offenses:
+      - line: 4
+        column_start: 3
+        column_end: 17
+        message: Duplicate `in` pattern detected.
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_lint_duplicatematchpattern_does_not_register_similar_but_not_equivalent_hash_patterns
+    source: |
+      case x
+      in foo: a, bar: b
+        first_method
+      in foo: a, bar: b, baz: c
+        second_method
+      end
+    offenses:
+      []
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_lint_duplicatematchpattern_does_not_register_trivial_in_patterns
+    source: |
+      case x
+      in false
+        first_method
+      end
+    offenses:
+      []
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_lint_duplicatematchpattern_does_not_register_non_redundant_in_patterns
+    source: |
+      case x
+      in foo
+        first_method
+      in bar
+        second_method
+      end
+    offenses:
+      []
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_lint_duplicatematchpattern_does_not_register_non_redundant_in_patterns_with_an_else_clause
+    source: |
+      case x
+      in foo
+        method_name
+      in bar
+        second_method
+      else
+        third_method
+      end
+    offenses:
+      []
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_lint_duplicatematchpattern_registers_an_offense_for_repeated_in_patterns_and_the_same_if_guard_is_used
+    source: |
+      case x
+      in foo if condition
+        first_method
+      in foo if condition
+        third_method
+      end
+    offenses:
+      - line: 4
+        column_start: 3
+        column_end: 6
+        message: Duplicate `in` pattern detected.
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_lint_duplicatematchpattern_registers_an_offense_for_repeated_in_patterns_and_the_same_unless_guard_is_used
+    source: |
+      case x
+      in foo unless condition
+        first_method
+      in foo unless condition
+        third_method
+      end
+    offenses:
+      - line: 4
+        column_start: 3
+        column_end: 6
+        message: Duplicate `in` pattern detected.
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_lint_duplicatematchpattern_does_not_register_an_offense_for_repeated_in_patterns_but_different_if_guard_is_used
+    source: |
+      case x
+      in foo if condition1
+        first_method
+      in foo if condition2
+        third_method
+      end
+    offenses:
+      []
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_lint_duplicatematchpattern_does_not_register_an_offense_for_repeated_in_patterns_but_different_unless_guard_is_used
+    source: |
+      case x
+      in foo unless condition1
+        first_method
+      in foo unless condition2
+        third_method
+      end
+    offenses:
+      []
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_lint_duplicatematchpattern_does_not_crash_when_using_hash_pattern_with_if_guard
+    source: |
+      case x
+      in { key: value } if condition
+      end
+    offenses:
+      []
+    ruby_version: ">= 2.7"

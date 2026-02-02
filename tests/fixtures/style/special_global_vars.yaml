@@ -1,0 +1,456 @@
+cop: Style/SpecialGlobalVars
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_specialglobalvars_when_style_is_use_english_names_when_add_require_english_is_disabled_registers_an_offense_for
+    source: |
+      puts $:
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 7
+        message: "Prefer `$LOAD_PATH` over `$:`."
+    corrected: |
+      puts $LOAD_PATH
+    config:
+      EnforcedStyle: use_english_names
+      RequireEnglish: false
+
+  - name: rubocop_cop_style_specialglobalvars_when_style_is_use_english_names_when_add_require_english_is_disabled_registers_an_offense_for
+    source: |
+      puts $"
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 7
+        message: "Prefer `$LOADED_FEATURES` over `$\"`."
+    corrected: |
+      puts $LOADED_FEATURES
+    config:
+      EnforcedStyle: use_english_names
+      RequireEnglish: false
+
+  - name: rubocop_cop_style_specialglobalvars_when_style_is_use_english_names_when_add_require_english_is_disabled_registers_an_offense_for_0
+    source: |
+      puts $0
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 7
+        message: Prefer `$PROGRAM_NAME` over `$0`.
+    corrected: |
+      puts $PROGRAM_NAME
+    config:
+      EnforcedStyle: use_english_names
+      RequireEnglish: false
+
+  - name: rubocop_cop_style_specialglobalvars_when_style_is_use_english_names_when_add_require_english_is_disabled_registers_an_offense_for
+    source: |
+      puts $$
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 7
+        message: "Prefer `$PROCESS_ID` or `$PID` from the stdlib 'English' module (don't forget to require it) over `$$`."
+    corrected: |
+      puts $PROCESS_ID
+    config:
+      EnforcedStyle: use_english_names
+      RequireEnglish: false
+
+  - name: rubocop_cop_style_specialglobalvars_when_style_is_use_english_names_when_add_require_english_is_disabled_is_clear_about_variables_from_the_english_library_vs_those_not
+    source: |
+      puts $*
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 7
+        message: "Prefer `$ARGV` from the stdlib 'English' module (don't forget to require it) or `ARGV` over `$*`."
+    corrected: |
+      puts $ARGV
+    config:
+      EnforcedStyle: use_english_names
+      RequireEnglish: false
+
+  - name: rubocop_cop_style_specialglobalvars_when_style_is_use_english_names_when_add_require_english_is_disabled_does_not_register_an_offense_for_backrefs_like_1
+    source: |
+      puts $1
+    offenses:
+      []
+    config:
+      EnforcedStyle: use_english_names
+      RequireEnglish: false
+
+  - name: rubocop_cop_style_specialglobalvars_when_style_is_use_english_names_when_add_require_english_is_disabled_autocorrects_to_input_record_separator
+    source: |
+      $/
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 2
+        message: "Prefer `$INPUT_RECORD_SEPARATOR` or `$RS` from the stdlib 'English' module (don't forget to require it) over `$/`."
+    corrected: |
+      $INPUT_RECORD_SEPARATOR
+    config:
+      EnforcedStyle: use_english_names
+      RequireEnglish: false
+
+  - name: rubocop_cop_style_specialglobalvars_when_style_is_use_english_names_when_add_require_english_is_disabled_autocorrects_to_load_path
+    source: |
+      "#$:"
+    offenses:
+      - line: 1
+        column_start: 2
+        column_end: 4
+        message: "Prefer `$LOAD_PATH` over `$:`."
+    corrected: |
+      "#{$LOAD_PATH}"
+    config:
+      EnforcedStyle: use_english_names
+      RequireEnglish: false
+
+  - name: rubocop_cop_style_specialglobalvars_when_style_is_use_english_names_when_add_require_english_is_disabled_autocorrects_to_error_info
+    source: |
+      "#{$!}"
+    offenses:
+      - line: 1
+        column_start: 3
+        column_end: 5
+        message: "Prefer `$ERROR_INFO` from the stdlib 'English' module (don't forget to require it) over `$!`."
+    corrected: |
+      "#{$ERROR_INFO}"
+    config:
+      EnforcedStyle: use_english_names
+      RequireEnglish: false
+
+  - name: rubocop_cop_style_specialglobalvars_when_style_is_use_english_names_when_add_require_english_is_disabled_generates_correct_auto_config_when_perl_variable_names_are_used
+    source: |
+      $0
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 2
+        message: Prefer `$PROGRAM_NAME` over `$0`.
+    corrected: |
+      $PROGRAM_NAME
+    config:
+      EnforcedStyle: use_english_names
+      RequireEnglish: false
+
+  - name: rubocop_cop_style_specialglobalvars_when_style_is_use_english_names_when_add_require_english_is_disabled_generates_correct_auto_config_when_mixed_styles_are_used
+    source: |
+      $!; $ERROR_INFO
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 2
+        message: "Prefer `$ERROR_INFO` from the stdlib 'English' module (don't forget to require it) over `$!`."
+    corrected: |
+      $ERROR_INFO; $ERROR_INFO
+    config:
+      EnforcedStyle: use_english_names
+      RequireEnglish: false
+
+  - name: rubocop_cop_style_specialglobalvars_when_style_is_use_english_names_when_add_require_english_is_enabled_when_english_has_not_been_required_at_top_level_adds_require_english_for
+    source: |
+      puts $$
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 7
+        message: "Prefer `$PROCESS_ID` or `$PID` from the stdlib 'English' module (don't forget to require it) over `$$`."
+    corrected: |
+      require 'English'
+      puts $PROCESS_ID
+    config:
+      EnforcedStyle: use_english_names
+      RequireEnglish: true
+
+  - name: rubocop_cop_style_specialglobalvars_when_style_is_use_english_names_when_add_require_english_is_enabled_when_english_has_not_been_required_at_top_level_adds_require_english_for_in_nested_code
+    source: |
+      # frozen_string_literal: true
+      
+      x = true
+      if x
+        puts $$
+      end
+    offenses:
+      - line: 5
+        column_start: 7
+        column_end: 9
+        message: "Prefer `$PROCESS_ID` or `$PID` from the stdlib 'English' module (don't forget to require it) over `$$`."
+    corrected: |
+      # frozen_string_literal: true
+      
+      require 'English'
+      x = true
+      if x
+        puts $PROCESS_ID
+      end
+    config:
+      EnforcedStyle: use_english_names
+      RequireEnglish: true
+
+  - name: rubocop_cop_style_specialglobalvars_when_style_is_use_english_names_when_add_require_english_is_enabled_when_english_has_not_been_required_at_top_level_adds_require_english_for_twice_in_nested_code
+    source: |
+      # frozen_string_literal: true
+      
+      puts $*[0]
+      puts $*[1]
+    offenses:
+      - line: 3
+        column_start: 5
+        column_end: 7
+        message: "Prefer `$ARGV` from the stdlib 'English' module (don't forget to require it) or `ARGV` over `$*`."
+      - line: 4
+        column_start: 5
+        column_end: 7
+        message: "Prefer `$ARGV` from the stdlib 'English' module (don't forget to require it) or `ARGV` over `$*`."
+    corrected: |
+      # frozen_string_literal: true
+      
+      require 'English'
+      puts $ARGV[0]
+      puts $ARGV[1]
+    config:
+      EnforcedStyle: use_english_names
+      RequireEnglish: true
+
+  - name: rubocop_cop_style_specialglobalvars_when_style_is_use_english_names_when_add_require_english_is_enabled_when_english_has_not_been_required_at_top_level_does_not_add_for_replacement_outside_of_english_lib
+    source: |
+      puts $0
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 7
+        message: Prefer `$PROGRAM_NAME` over `$0`.
+    corrected: |
+      puts $PROGRAM_NAME
+    config:
+      EnforcedStyle: use_english_names
+      RequireEnglish: true
+
+  - name: rubocop_cop_style_specialglobalvars_when_style_is_use_english_names_when_add_require_english_is_enabled_when_english_is_already_required_at_top_level_leaves_require_english_alone_for
+    source: |
+      require 'English'
+      puts $$
+    offenses:
+      - line: 2
+        column_start: 5
+        column_end: 7
+        message: "Prefer `$PROCESS_ID` or `$PID` from the stdlib 'English' module (don't forget to require it) over `$$`."
+    corrected: |
+      require 'English'
+      puts $PROCESS_ID
+    config:
+      EnforcedStyle: use_english_names
+      RequireEnglish: true
+
+  - name: rubocop_cop_style_specialglobalvars_when_style_is_use_english_names_when_add_require_english_is_enabled_when_english_is_already_required_at_top_level_moves_require_english_above_replacement
+    source: |
+      puts $$
+      require 'English'
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 7
+        message: "Prefer `$PROCESS_ID` or `$PID` from the stdlib 'English' module (don't forget to require it) over `$$`."
+    corrected: |
+      require 'English'
+      puts $PROCESS_ID
+    config:
+      EnforcedStyle: use_english_names
+      RequireEnglish: true
+
+  - name: rubocop_cop_style_specialglobalvars_when_style_is_use_perl_names_registers_an_offense_for_load_path
+    source: |
+      puts $LOAD_PATH
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 15
+        message: "Prefer `$:` over `$LOAD_PATH`."
+    corrected: |
+      puts $:
+    config:
+      EnforcedStyle: use_perl_names
+      RequireEnglish: true
+
+  - name: rubocop_cop_style_specialglobalvars_when_style_is_use_perl_names_registers_an_offense_for_loaded_features
+    source: |
+      puts $LOADED_FEATURES
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 21
+        message: "Prefer `$\"` over `$LOADED_FEATURES`."
+    corrected: |
+      puts $"
+    config:
+      EnforcedStyle: use_perl_names
+      RequireEnglish: true
+
+  - name: rubocop_cop_style_specialglobalvars_when_style_is_use_perl_names_registers_an_offense_for_program_name
+    source: |
+      puts $PROGRAM_NAME
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 18
+        message: Prefer `$0` over `$PROGRAM_NAME`.
+    corrected: |
+      puts $0
+    config:
+      EnforcedStyle: use_perl_names
+      RequireEnglish: true
+
+  - name: rubocop_cop_style_specialglobalvars_when_style_is_use_perl_names_registers_an_offense_for_pid
+    source: |
+      puts $PID
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 9
+        message: Prefer `$$` over `$PID`.
+    corrected: |
+      puts $$
+    config:
+      EnforcedStyle: use_perl_names
+      RequireEnglish: true
+
+  - name: rubocop_cop_style_specialglobalvars_when_style_is_use_perl_names_registers_an_offense_for_process_id
+    source: |
+      puts $PROCESS_ID
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 16
+        message: Prefer `$$` over `$PROCESS_ID`.
+    corrected: |
+      puts $$
+    config:
+      EnforcedStyle: use_perl_names
+      RequireEnglish: true
+
+  - name: rubocop_cop_style_specialglobalvars_when_style_is_use_perl_names_does_not_register_an_offense_for_backrefs_like_1
+    source: |
+      puts $1
+    offenses:
+      []
+    config:
+      EnforcedStyle: use_perl_names
+      RequireEnglish: true
+
+  - name: rubocop_cop_style_specialglobalvars_when_style_is_use_perl_names_autocorrects_input_record_separator_to
+    source: |
+      $INPUT_RECORD_SEPARATOR
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 23
+        message: Prefer `$/` over `$INPUT_RECORD_SEPARATOR`.
+    corrected: |
+      $/
+    config:
+      EnforcedStyle: use_perl_names
+      RequireEnglish: true
+
+  - name: rubocop_cop_style_specialglobalvars_when_style_is_use_perl_names_autocorrects_load_path_to
+    source: |
+      "#{$LOAD_PATH}"
+    offenses:
+      - line: 1
+        column_start: 3
+        column_end: 13
+        message: "Prefer `$:` over `$LOAD_PATH`."
+    corrected: |
+      "#$:"
+    config:
+      EnforcedStyle: use_perl_names
+      RequireEnglish: true
+
+  - name: rubocop_cop_style_specialglobalvars_when_style_is_use_builtin_english_names_does_not_register_an_offense_for_builtin_names
+    source: |
+      puts $LOAD_PATH
+      puts $LOADED_FEATURES
+      puts $PROGRAM_NAME
+    offenses:
+      []
+    config:
+      EnforcedStyle: use_builtin_english_names
+      RequireEnglish: true
+
+  - name: rubocop_cop_style_specialglobalvars_when_style_is_use_builtin_english_names_autocorrects_non_preferred_builtin_names
+    source: |
+      puts $:
+      puts $"
+      puts $0
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 7
+        message: "Prefer `$LOAD_PATH` over `$:`."
+      - line: 2
+        column_start: 5
+        column_end: 7
+        message: "Prefer `$LOADED_FEATURES` over `$\"`."
+      - line: 3
+        column_start: 5
+        column_end: 7
+        message: Prefer `$PROGRAM_NAME` over `$0`.
+    corrected: |
+      puts $LOAD_PATH
+      puts $LOADED_FEATURES
+      puts $PROGRAM_NAME
+    config:
+      EnforcedStyle: use_builtin_english_names
+      RequireEnglish: true
+
+  - name: rubocop_cop_style_specialglobalvars_when_style_is_use_builtin_english_names_does_not_register_an_offense_for_perl_names
+    source: |
+      puts $?
+      puts $*
+    offenses:
+      []
+    config:
+      EnforcedStyle: use_builtin_english_names
+      RequireEnglish: true
+
+  - name: rubocop_cop_style_specialglobalvars_when_style_is_use_builtin_english_names_does_not_register_an_offense_for_backrefs_like_1
+    source: |
+      puts $1
+    offenses:
+      []
+    config:
+      EnforcedStyle: use_builtin_english_names
+      RequireEnglish: true
+
+  - name: rubocop_cop_style_specialglobalvars_when_style_is_use_builtin_english_names_generates_correct_auto_config_when_perl_variable_names_are_used
+    source: |
+      $0
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 2
+        message: Prefer `$PROGRAM_NAME` over `$0`.
+    corrected: |
+      $PROGRAM_NAME
+    config:
+      EnforcedStyle: use_builtin_english_names
+      RequireEnglish: true
+
+  - name: rubocop_cop_style_specialglobalvars_when_style_is_use_builtin_english_names_generates_correct_auto_config_when_mixed_styles_are_used
+    source: |
+      $0; $PROGRAM_NAME
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 2
+        message: Prefer `$PROGRAM_NAME` over `$0`.
+    corrected: |
+      $PROGRAM_NAME; $PROGRAM_NAME
+    config:
+      EnforcedStyle: use_builtin_english_names
+      RequireEnglish: true

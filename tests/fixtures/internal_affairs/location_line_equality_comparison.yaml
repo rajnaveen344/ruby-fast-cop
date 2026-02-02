@@ -1,0 +1,81 @@
+cop: InternalAffairs/LocationLineEqualityComparison
+department: internal_affairs
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_internalaffairs_locationlineequalitycomparison_registers_and_corrects_an_offense_when_comparing_loc_line_with_lhs_and_rhs
+    source: |
+      node.loc.line == node.parent.loc.line
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 37
+        message: Use `same_line?(node, node.parent)`.
+    corrected: |
+      same_line?(node, node.parent)
+
+  - name: rubocop_cop_internalaffairs_locationlineequalitycomparison_registers_and_corrects_an_offense_when_comparing_loc_source_range_with_lhs_and_rhs
+    source: |
+      node.source_range.line == node.parent.source_range.line
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 55
+        message: Use `same_line?(node, node.parent)`.
+    corrected: |
+      same_line?(node, node.parent)
+
+  - name: rubocop_cop_internalaffairs_locationlineequalitycomparison_registers_an_offense_and_corrects_when_using_loc_first_line
+    source: |
+      node.loc.line == node.parent.loc.first_line
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 43
+        message: Use `same_line?(node, node.parent)`.
+    corrected: |
+      same_line?(node, node.parent)
+
+  - name: rubocop_cop_internalaffairs_locationlineequalitycomparison_registers_an_offense_and_corrects_when_using_source_range_first_line
+    source: |
+      node.source_range.line == node.parent.source_range.first_line
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 61
+        message: Use `same_line?(node, node.parent)`.
+    corrected: |
+      same_line?(node, node.parent)
+
+  - name: rubocop_cop_internalaffairs_locationlineequalitycomparison_registers_an_offense_and_corrects_when_using_first_line
+    source: |
+      node.loc.line == node.parent.first_line
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 39
+        message: Use `same_line?(node, node.parent)`.
+    corrected: |
+      same_line?(node, node.parent)
+
+  - name: rubocop_cop_internalaffairs_locationlineequalitycomparison_registers_an_offense_and_corrects_when_using_first_line_inside_block
+    source: |
+      nodes.select do |node|
+        node.first_line == nodes.first.first_line
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 43
+        message: Use `same_line?(node, nodes.first)`.
+    corrected: |
+      nodes.select do |node|
+        same_line?(node, nodes.first)
+      end
+
+  - name: rubocop_cop_internalaffairs_locationlineequalitycomparison_does_not_register_an_offense_when_using_same_line
+    source: |
+      same_line?(node, node.parent)
+    offenses:
+      []

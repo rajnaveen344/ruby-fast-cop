@@ -1,0 +1,226 @@
+cop: Lint/AmbiguousRange
+department: lint
+severity: warning
+implemented: false
+
+tests:
+  - name: rubocop_cop_lint_ambiguousrange_registers_an_offense_and_corrects_when_not_parenthesized
+    source: |
+      x || 1#{operator}2
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 6
+        message: Wrap complex range boundaries with parentheses to avoid ambiguity.
+    corrected: |
+      (x || 1)#{operator}2
+    interpolated: true
+
+  - name: rubocop_cop_lint_ambiguousrange_registers_an_offense_and_corrects_when_boundary_is_an_operator_expression
+    source: |
+      x - 1#{operator}2
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 5
+        message: Wrap complex range boundaries with parentheses to avoid ambiguity.
+    corrected: |
+      (x - 1)#{operator}2
+    interpolated: true
+
+  - name: rubocop_cop_lint_ambiguousrange_registers_an_offense_and_corrects_when_the_entire_range_is_parenthesized_but_contains_complex_boundaries
+    source: |
+      (x || 1#{operator}2)
+    offenses:
+      - line: 1
+        column_start: 1
+        column_end: 7
+        message: Wrap complex range boundaries with parentheses to avoid ambiguity.
+    corrected: |
+      ((x || 1)#{operator}2)
+    interpolated: true
+
+  - name: rubocop_cop_lint_ambiguousrange_registers_an_offense_and_corrects_when_there_are_clauses_on_both_sides
+    source: |
+      x || 1#{operator}y || 2
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 23
+        message: Wrap complex range boundaries with parentheses to avoid ambiguity.
+      - line: 1
+        column_start: 0
+        column_end: 6
+        message: Wrap complex range boundaries with parentheses to avoid ambiguity.
+    corrected: |
+      (x || 1)#{operator}(y || 2)
+    interpolated: true
+
+  - name: rubocop_cop_lint_ambiguousrange_registers_an_offense_and_corrects_when_one_side_is_parenthesized_but_the_other_is_not
+    source: |
+      (x || 1)#{operator}y || 2
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 25
+        message: Wrap complex range boundaries with parentheses to avoid ambiguity.
+    corrected: |
+      (x || 1)#{operator}(y || 2)
+    interpolated: true
+
+  - name: rubocop_cop_lint_ambiguousrange_does_not_register_an_offense_if_the_range_is_parenthesized
+    source: |
+      x || (1#{operator}2)
+      (x || 1)#{operator}2
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_lint_ambiguousrange_does_not_register_an_offense_when_boundary_is_an_element_reference
+    source: |
+      x[1]#{operator}2
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_lint_ambiguousrange_does_not_register_an_offense_if_the_range_is_composed_of_literals
+    source: |
+      1#{operator}2
+      'a'#{operator}'z'
+      "#{foo}-#{bar}"#{operator}'123-4567'
+      `date`#{operator}'foobar'
+      :"#{foo}-#{bar}"#{operator}:baz
+      /a/#{operator}/b/
+      42#{operator}nil
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_lint_ambiguousrange_does_not_register_an_offense_for_a_variable
+    source: |
+      @a#{operator}@b
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_lint_ambiguousrange_does_not_register_an_offense_for_a_constant
+    source: |
+      Foo::MIN#{operator}Foo::MAX
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_lint_ambiguousrange_does_not_register_an_offense_for_self
+    source: |
+      self#{operator}42
+      42#{operator}self
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_lint_ambiguousrange_can_handle_an_endless_range
+    source: |
+      x || 1#{operator}
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 6
+        message: Wrap complex range boundaries with parentheses to avoid ambiguity.
+    corrected: |
+      (x || 1)#{operator}
+    ruby_version: ">= 2.6"
+    interpolated: true
+
+  - name: rubocop_cop_lint_ambiguousrange_can_handle_a_beginningless_range
+    source: |
+      #{operator}y || 1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 17
+        message: Wrap complex range boundaries with parentheses to avoid ambiguity.
+    corrected: |
+      #{operator}(y || 1)
+    ruby_version: ">= 2.7"
+    interpolated: true
+
+  - name: rubocop_cop_lint_ambiguousrange_method_calls_does_not_register_an_offense_for_a_non_chained_method_call
+    source: |
+      a#{operator}b
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_lint_ambiguousrange_method_calls_does_not_register_an_offense_for_a_unary
+    source: |
+      +a#{operator}10
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_lint_ambiguousrange_method_calls_does_not_register_an_offense_for_a_unary
+    source: |
+      -a#{operator}10
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_lint_ambiguousrange_method_calls_does_not_register_an_offense_for_rational_literals
+    source: |
+      1/10r#{operator}1/3r
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_lint_ambiguousrange_method_calls_requires_parens_when_calling_a_method_on_a_basic_literal
+    source: |
+      1#{operator}2.to_a
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 18
+        message: Wrap complex range boundaries with parentheses to avoid ambiguity.
+    corrected: |
+      1#{operator}(2.to_a)
+    interpolated: true
+
+  - name: rubocop_cop_lint_ambiguousrange_method_calls_with_requireparenthesesformethodchains_true_registers_an_offense_for_a_chained_method_call_without_parens
+    source: |
+      foo.bar#{operator}10
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 7
+        message: Wrap complex range boundaries with parentheses to avoid ambiguity.
+    corrected: |
+      (foo.bar)#{operator}10
+    config:
+      RequireParenthesesForMethodChains: true
+    interpolated: true
+
+  - name: rubocop_cop_lint_ambiguousrange_method_calls_with_requireparenthesesformethodchains_true_does_not_register_an_offense_for_a_chained_method_call_with_parens
+    source: |
+      (foo.bar)#{operator}10
+    offenses:
+      []
+    config:
+      RequireParenthesesForMethodChains: true
+    interpolated: true
+
+  - name: rubocop_cop_lint_ambiguousrange_method_calls_with_requireparenthesesformethodchains_false_does_not_register_an_offense_for_a_chained_method_call_without_parens
+    source: |
+      foo.bar#{operator}10
+    offenses:
+      []
+    config:
+      RequireParenthesesForMethodChains: false
+    interpolated: true
+
+  - name: rubocop_cop_lint_ambiguousrange_method_calls_with_requireparenthesesformethodchains_false_does_not_register_an_offense_for_a_chained_method_call_with_parens
+    source: |
+      (foo.bar)#{operator}10
+    offenses:
+      []
+    config:
+      RequireParenthesesForMethodChains: false
+    interpolated: true

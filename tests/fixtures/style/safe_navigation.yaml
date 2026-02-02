@@ -1,0 +1,2305 @@
+cop: Style/SafeNavigation
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_safenavigation_allows_calls_to_methods_not_safeguarded_by_respond_to
+    source: |
+      foo.bar
+    offenses:
+      []
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_allows_calls_using_safe_navigation
+    source: |
+      foo&.bar
+    offenses:
+      []
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_allows_calls_on_nil
+    source: |
+      nil&.bar
+    offenses:
+      []
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_allows_non_object_checks
+    source: |
+      x.foo? && x.bar?
+    offenses:
+      []
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_allows_non_object_checks_with_safe_navigation
+    source: |
+      x&.foo? && x&.bar?
+    offenses:
+      []
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_allows_an_object_check_before_hash_access
+    source: |
+      foo && foo[:bar]
+    offenses:
+      []
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_allows_hash_key_access_and_then_a_different_hash_key_access
+    source: |
+      return if foo[:bar] && foo[:baz].blank?
+    offenses:
+      []
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_allows_an_object_check_before_a_negated_predicate
+    source: |
+      foo && !foo.bar?
+    offenses:
+      []
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_allows_an_object_check_before_a_nil_check_on_a_short_chain
+    source: |
+      user && user.thing.nil?
+    offenses:
+      []
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_allows_an_object_check_before_a_method_chain_longer_than_2_methods
+    source: |
+      user && user.one.two.three
+    offenses:
+      []
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_allows_an_object_check_before_a_long_chain_with_a_block
+    source: |
+      user && user.thing.plus.another { |a| a}.other_thing
+    offenses:
+      []
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_allows_an_object_check_before_a_nil_check_on_a_long_chain
+    source: |
+      user && user.thing.plus.some.other_thing.nil?
+    offenses:
+      []
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_allows_an_object_check_before_a_blank_check
+    source: |
+      user && user.thing.blank?
+    offenses:
+      []
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_allows_an_object_check_before_a_negated_predicate_method_chain
+    source: |
+      foo && !foo.bar.baz?
+    offenses:
+      []
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_allows_method_call_that_is_used_in_a_comparison_safe_guarded_by_an_object_check
+    source: |
+      foo.bar > 2 if foo
+    offenses:
+      []
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_allows_method_call_that_is_used_in_a_regex_comparison_safe_guarded_by_an_object_check
+    source: |
+      foo.bar =~ /baz/ if foo
+    offenses:
+      []
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation
+    source: |
+      foo.bar !~ /baz/ if foo
+    offenses:
+      []
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_allows_method_call_that_is_used_in_a_spaceship_comparison_safe_guarded_by_an_object_check
+    source: |
+      foo.bar <=> baz if foo
+    offenses:
+      []
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_allows_an_object_check_before_a_method_call_that_is_used_in_a_comparison
+    source: |
+      foo && foo.bar > 2
+    offenses:
+      []
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_allows_an_object_check_before_a_method_call_that_is_used_in_a_regex_comparison
+    source: |
+      foo && foo.bar =~ /baz/
+    offenses:
+      []
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_allows_an_object_check_before_a_method_call_that_is_used_in_a_negated_regex_comparison
+    source: |
+      foo && foo.bar !~ /baz/
+    offenses:
+      []
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_allows_an_object_check_before_a_method_call_that_is_used_with_empty
+    source: |
+      foo && foo.empty?
+    offenses:
+      []
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_allows_an_object_check_before_a_method_call_that_is_used_in_a_spaceship_comparison
+    source: |
+      foo && foo.bar <=> baz
+    offenses:
+      []
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_allows_an_object_check_before_a_method_chain_that_is_used_in_a_comparison
+    source: |
+      foo && foo.bar.baz > 2
+    offenses:
+      []
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_allows_a_method_chain_that_is_used_in_a_comparison_safe_guarded_by_an_object_check
+    source: |
+      foo.bar.baz > 2 if foo
+    offenses:
+      []
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_allows_a_method_call_safeguarded_with_a_negative_check_for_the_object_when_using_unless
+    source: |
+      obj.do_something unless obj
+    offenses:
+      []
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_allows_a_method_call_safeguarded_with_a_negative_check_for_the_object_when_using_if
+    source: |
+      obj.do_something if !obj
+    offenses:
+      []
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_allows_method_calls_that_do_not_get_called_using_safe_guarded_by_an_object_check
+    source: |
+      foo + bar if foo
+    offenses:
+      []
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_allows_chained_method_calls_during_arithmetic_operations_safe_guarded_by_an_object_check
+    source: |
+      foo.baz + bar if foo
+    offenses:
+      []
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_allows_chained_method_calls_during_assignment_safe_guarded_by_an_object_check
+    source: |
+      foo.baz = bar if foo
+    offenses:
+      []
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_allows_an_object_check_before_a_negated_method_call_with_a_safe_navigation
+    source: |
+      obj && !obj&.do_something
+    offenses:
+      []
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation
+    source: |
+      if foo
+        something
+      elsif bar
+        bar.baz
+      end
+    offenses:
+      []
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_allows_for_empty_if_blocks_with_comments
+    source: |
+      if foo
+        # a random comment
+        # TODO: Implement this before
+      end
+    offenses:
+      []
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation
+    source: |
+      foo(bar.baz) if bar
+    offenses:
+      []
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_allows_a_method_call_safeguarded_when_using_unless_nil
+    source: |
+      foo unless nil?
+    offenses:
+      []
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_allows_a_negated_and_clause_that_does_not_do_an_object_check
+    source: |
+      foo? && !((x.bar? || y.baz?) && z?)
+    offenses:
+      []
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_allows_an_and_with_a_block_that_contains_an_and
+    source: |
+      x? && y? do |b|
+        b.foo? && b.bar?
+      end
+    offenses:
+      []
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_allows_for_nested_begin_s_on_the_lhs
+    source: |
+      (x? + (y? && z?)) && !w?
+    offenses:
+      []
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_allows_mixed_and_inside_begin_node
+    source: |
+      x? && (y? || z? && w?)
+    offenses:
+      []
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_does_not_move_comments_that_are_inside_an_inner_block
+    source: |
+      # Comment 1
+      if x
+        # Comment 2
+        x.each do
+          # Comment 3
+          # Comment 4
+        end
+        # Comment 5
+      end
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 4
+        message: Use safe navigation (`&.`) instead of checking if an object exists before calling the method.
+    corrected: |
+      # Comment 1
+      # Comment 2
+      # Comment 5
+      x&.each do
+          # Comment 3
+          # Comment 4
+        end
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_modifier_if
+    source: |
+      something.each do
+        #{keyword} #{variable}.bar if #{variable}
+      end
+    offenses:
+      []
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_modifier_if_safe_guarding_logical_break_keywords_break
+    source: |
+      break
+    offenses:
+      []
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_modifier_if_safe_guarding_logical_break_keywords_fail
+    source: |
+      fail
+    offenses:
+      []
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_modifier_if_safe_guarding_logical_break_keywords_next
+    source: |
+      next
+    offenses:
+      []
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_modifier_if_safe_guarding_logical_break_keywords_raise
+    source: |
+      raise
+    offenses:
+      []
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_modifier_if_safe_guarding_logical_break_keywords_return
+    source: |
+      return
+    offenses:
+      []
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_modifier_if_safe_guarding_logical_break_keywords_throw
+    source: |
+      throw
+    offenses:
+      []
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_modifier_if_safe_guarding_logical_break_keywords_yield
+    source: |
+      yield
+    offenses:
+      []
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_modifier_if
+    source: |
+      %{variable}.to_i if %{variable}
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 31
+        message: Use safe navigation (`&.`) instead of checking if an object exists before calling the method.
+    corrected: |
+      #{variable}&.to_i
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_modifier_if_registers_an_offense_when_safe_guard_check_and_safe_navigation_method_call_are_connected_with_condition
+    source: |
+      %{variable} && %{variable}&.do_something
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 40
+        message: Use safe navigation (`&.`) instead of checking if an object exists before calling the method.
+    corrected: |
+      #{variable}&.do_something
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_modifier_if
+    source: |
+      %{variable}[1].bar if %{variable}[1]
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 36
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}[1]&.bar
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_modifier_if_registers_an_offense_for_a_method_call_safeguarded_with_a_check_for_the_object
+    source: |
+      %{variable}.bar if %{variable}
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 30
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_modifier_if
+    source: |
+      %{variable}.bar(baz) if %{variable}
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 35
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar(baz)
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_modifier_if
+    source: |
+      %{variable}.bar { |e| e.qux } if %{variable}
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 44
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar { |e| e.qux }
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_modifier_if
+    source: |
+      %{variable}.bar(baz) { |e| e.qux } if %{variable}
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 49
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar(baz) { |e| e.qux }
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_modifier_if_registers_an_offense_for_a_chained_method_call_safeguarded_with_a_check_for_the_object
+    source: |
+      %{variable}.one.two(baz) { |e| e.qux } if %{variable}
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 53
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.one&.two(baz) { |e| e.qux }
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_modifier_if
+    source: |
+      %{variable}.bar unless !%{variable}
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 35
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_modifier_if
+    source: |
+      %{variable}.bar(baz) unless !%{variable}
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 40
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar(baz)
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_modifier_if
+    source: |
+      %{variable}.bar { |e| e.qux } unless !%{variable}
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 49
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar { |e| e.qux }
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_modifier_if
+    source: |
+      %{variable}.bar(baz) { |e| e.qux } unless !%{variable}
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 54
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar(baz) { |e| e.qux }
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_modifier_if_registers_an_offense_for_a_method_call_safeguarded_with_a_nil_check_for_the_object
+    source: |
+      %{variable}.bar unless %{variable}.nil?
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 39
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_modifier_if
+    source: |
+      %{variable}.bar(baz) unless %{variable}.nil?
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 44
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar(baz)
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_modifier_if
+    source: |
+      %{variable}.bar { |e| e.qux } unless %{variable}.nil?
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 53
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar { |e| e.qux }
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_modifier_if
+    source: |
+      %{variable}.bar(baz) { |e| e.qux } unless %{variable}.nil?
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 58
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar(baz) { |e| e.qux }
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_modifier_if
+    source: |
+      %{variable}.one.two(baz) { |e| e.qux } unless %{variable}.nil?
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 62
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.one&.two(baz) { |e| e.qux }
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_modifier_if
+    source: |
+      %{variable}.bar if !%{variable}.nil?
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 36
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_modifier_if
+    source: |
+      %{variable}.bar(baz) if !%{variable}.nil?
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 41
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar(baz)
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_modifier_if
+    source: |
+      %{variable}.bar { |e| e.qux } if !%{variable}.nil?
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 50
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar { |e| e.qux }
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_modifier_if
+    source: |
+      %{variable}.bar(baz) { |e| e.qux } if !%{variable}.nil?
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 55
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar(baz) { |e| e.qux }
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_modifier_if
+    source: |
+      %{variable}.one.two(baz) { |e| e.qux } if !%{variable}.nil?
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 59
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.one&.two(baz) { |e| e.qux }
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_modifier_if
+    source: |
+      foo if %{variable} && %{variable}.bar # comment
+    offenses:
+      - line: 1
+        column_start: 7
+        column_end: 47
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      foo if #{variable}&.bar # comment
+    config:
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_modifier_if_method_chaining_maxchainlength_1_registers_an_offense_for_an_object_check_followed_by_1_chained_method_calls
+    source: |
+      %{variable}.one if %{variable}
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 30
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.one
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_modifier_if_method_chaining_maxchainlength_1_allows_an_object_check_followed_by_2_chained_method_calls
+    source: |
+      %{variable}.one.two if %{variable}
+    offenses:
+      []
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_if_expression_registers_an_offense_for_a_single_method_call_inside_of_a_check_for_the_object
+    source: |
+      if %{variable}
+        %{variable}.bar
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 14
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_if_expression
+    source: |
+      if %{variable}
+        %{variable}.bar(baz)
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 14
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar(baz)
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_if_expression
+    source: |
+      if %{variable}
+        %{variable}.bar { |e| e.qux }
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 14
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar { |e| e.qux }
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_if_expression
+    source: |
+      if %{variable}
+        %{variable}.bar(baz) { |e| e.qux }
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 14
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar(baz) { |e| e.qux }
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_if_expression_registers_an_offense_for_a_single_method_call_inside_of_a_non_nil_check_for_the_object
+    source: |
+      if !%{variable}.nil?
+        %{variable}.bar
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 20
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_if_expression
+    source: |
+      if !%{variable}.nil?
+        %{variable}.bar(baz)
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 20
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar(baz)
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_if_expression
+    source: |
+      if !%{variable}.nil?
+        %{variable}.bar { |e| e.qux }
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 20
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar { |e| e.qux }
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_if_expression
+    source: |
+      if !%{variable}.nil?
+        %{variable}.bar(baz) { |e| e.qux }
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 20
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar(baz) { |e| e.qux }
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_if_expression
+    source: |
+      unless %{variable}.nil?
+        %{variable}.bar
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 23
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_if_expression
+    source: |
+      unless %{variable}.nil?
+        %{variable}.bar(baz)
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 23
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar(baz)
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_if_expression
+    source: |
+      unless %{variable}.nil?
+        %{variable}.bar { |e| e.qux }
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 23
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar { |e| e.qux }
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_if_expression
+    source: |
+      unless %{variable}.nil?
+        %{variable}.bar(baz) { |e| e.qux }
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 23
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar(baz) { |e| e.qux }
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_if_expression
+    source: |
+      unless !%{variable}
+        %{variable}.bar
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 19
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_if_expression
+    source: |
+      unless !%{variable}
+        %{variable}.bar(baz)
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 19
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar(baz)
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_if_expression
+    source: |
+      unless !%{variable}
+        %{variable}.bar { |e| e.qux }
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 19
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar { |e| e.qux }
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_if_expression
+    source: |
+      unless !%{variable}
+        %{variable}.bar(baz) { |e| e.qux }
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 19
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar(baz) { |e| e.qux }
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_if_expression_does_not_lose_comments_within_if_expression
+    source: |
+      if %{variable} # hello
+        # this is a comment
+        # another comment
+        %{variable}.bar
+      end # bye!
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 22
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      # hello
+      # this is a comment
+      # another comment
+      #{variable}&.bar # bye!
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_if_expression_only_moves_comments_that_fall_within_the_expression
+    source: |
+      # comment one
+      def foobar
+        if %{variable}
+          # comment 2
+          %{variable}.bar
+        end
+      end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 16
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      # comment one
+      def foobar
+        # comment 2
+      #{variable}&.bar
+      end
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_if_expression_allows_a_single_method_call_inside_of_a_check_for_the_object_with_an_else
+    source: |
+      if #{variable}
+        #{variable}.bar
+      else
+        something
+      end
+    offenses:
+      []
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_if_expression_ternary_expression_allows_non_convertible_ternary_expression
+    source: |
+      !#{variable}.nil? ? #{variable}.bar : something
+    offenses:
+      []
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_if_expression_ternary_expression_allows_ternary_expression_with_index_access_call_without_dot
+    source: |
+      #{variable} ? #{variable}[index] : nil
+    offenses:
+      []
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_if_expression_ternary_expression_allows_ternary_expression_with_index_access_call_with_method_chain
+    source: |
+      #{variable} ? #{variable}[index].do_something : nil
+    offenses:
+      []
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_if_expression_ternary_expression_allows_ternary_expression_with_indexed_assignment_call_without_dot
+    source: |
+      #{variable} ? #{variable}[index] = 1 : nil
+    offenses:
+      []
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_if_expression_ternary_expression_allows_ternary_expression_with_index_access_call_chain_without_dot
+    source: |
+      #{variable}.nil? ? nil : #{variable}.foo[index]
+    offenses:
+      []
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_if_expression_ternary_expression_allows_ternary_expression_with_double_colon_method_call
+    source: |
+      #{variable} ? #{variable}::foo : nil
+    offenses:
+      []
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_if_expression_ternary_expression_allows_ternary_expression_with_operator_method_call_without_dot
+    source: |
+      #{variable}.nil? ? nil : #{variable} * 42
+    offenses:
+      []
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_if_expression_ternary_expression_allows_ternary_expression_with_operator_method_call_chain_without_dot
+    source: |
+      %{variable}.nil? ? nil : %{variable}.foo * 42
+    offenses:
+      []
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_if_expression_ternary_expression_registers_an_offense_for_ternary_expressions_in_a_method_argument
+    source: |
+      puts(%{variable} ? %{variable}.bar : nil)
+      
+      results << (%{variable} ? %{variable}.bar : nil)
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 41
+        message: Use safe navigation (`&.`) instead [...]
+      - line: 3
+        column_start: 12
+        column_end: 48
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      puts(#{variable}&.bar)
+      
+      results << (#{variable}&.bar)
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_if_expression_ternary_expression_registers_an_offense_for_ternary_expression_with_index_access_call_with_dot
+    source: |
+      #{variable} ? #{variable}&.[](index) : nil
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 42
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.[](index)
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_if_expression_ternary_expression_registers_an_offense_for_ternary_expression_with_indexed_assignment_with_dot
+    source: |
+      #{variable} ? #{variable}&.[]=(index) : nil
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 43
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.[]=(index)
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_if_expression_ternary_expression_registers_an_offense_for_ternary_expression_with_operator_method_call_with_dot
+    source: |
+      %{variable}.nil? ? nil : %{variable}.*(42)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 42
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.*(42)
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_if_expression_ternary_expression_registers_an_offense_for_ternary_expressions_in_a_collection_assignment
+    source: |
+      results[0] = %{variable} ? %{variable}.bar : nil
+    offenses:
+      - line: 1
+        column_start: 13
+        column_end: 48
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      results[0] = #{variable}&.bar
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_if_expression_ternary_expression_registers_an_offense_for_convertible_ternary_expressions
+    source: |
+      %{variable} ? %{variable}.bar : nil
+      
+      %{variable}.nil? ? nil : %{variable}.bar
+      
+      !%{variable}.nil? ? %{variable}.bar : nil
+      
+      !%{variable} ? nil : %{variable}.bar
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 35
+        message: Use safe navigation (`&.`) instead [...]
+      - line: 3
+        column_start: 0
+        column_end: 40
+        message: Use safe navigation (`&.`) instead [...]
+      - line: 5
+        column_start: 0
+        column_end: 41
+        message: Use safe navigation (`&.`) instead [...]
+      - line: 7
+        column_start: 0
+        column_end: 36
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar
+      
+      #{variable}&.bar
+      
+      #{variable}&.bar
+      
+      #{variable}&.bar
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_if_expression_method_chaining_maxchainlength_1_registers_an_offense_for_an_object_check_followed_by_1_chained_method_calls
+    source: |
+      if %{variable}
+        %{variable}.one
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 14
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.one
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_if_expression_method_chaining_maxchainlength_1_allows_an_object_check_followed_by_2_chained_method_calls
+    source: |
+      if #{variable}
+        #{variable}.one.two
+      end
+    offenses:
+      []
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_convertcodethatcanstarttoreturnnil_true_registers_an_offense_for_a_non_nil_object_check_followed_by_a_method_call
+    source: |
+      !%{variable}.nil? && %{variable}.bar
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 36
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: true
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_convertcodethatcanstarttoreturnnil_true
+    source: |
+      !%{variable}.nil? && %{variable}.bar(baz)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 41
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar(baz)
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: true
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_convertcodethatcanstarttoreturnnil_true
+    source: |
+      !%{variable}.nil? && %{variable}.bar { |e| e.qux }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 50
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar { |e| e.qux }
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: true
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_convertcodethatcanstarttoreturnnil_true
+    source: |
+      !%{variable}.nil? && %{variable}.bar(baz) { |e| e.qux }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 55
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar(baz) { |e| e.qux }
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: true
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_convertcodethatcanstarttoreturnnil_true_registers_an_offense_for_an_object_check_followed_by_a_method_call
+    source: |
+      %{variable} && %{variable}.bar
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 30
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: true
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_convertcodethatcanstarttoreturnnil_true_registers_an_offense_for_an_object_check_followed_by_a_method_call_on_a_chained_receiver
+    source: |
+      %{variable}.bar && %{variable}.bar.baz
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 38
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}.bar&.baz
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: true
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_convertcodethatcanstarttoreturnnil_true_registers_an_offense_for_an_object_check_followed_by_a_method_call_with_params
+    source: |
+      %{variable} && %{variable}.bar(baz)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 35
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar(baz)
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: true
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_convertcodethatcanstarttoreturnnil_true_registers_an_offense_for_an_object_check_followed_by_a_method_call_with_a_block
+    source: |
+      %{variable} && %{variable}.bar { |e| e.qux }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 44
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar { |e| e.qux }
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: true
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_convertcodethatcanstarttoreturnnil_true
+    source: |
+      %{variable} && %{variable}.bar(baz) { |e| e.qux }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 49
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar(baz) { |e| e.qux }
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: true
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_convertcodethatcanstarttoreturnnil_true
+    source: |
+      if %{variable} && %{variable}.bar
+        something
+      end
+    offenses:
+      - line: 1
+        column_start: 3
+        column_end: 33
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      if #{variable}&.bar
+        something
+      end
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: true
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_convertcodethatcanstarttoreturnnil_true_corrects_an_object_check_followed_by_a_method_call_and_another_check
+    source: |
+      %{variable} && %{variable}.bar && something
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 43
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar && something
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: true
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_convertcodethatcanstarttoreturnnil_true_registers_an_offense_if_followed_by_a_different_variable
+    source: |
+      %{variable} && %{variable}.bar && bar
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 37
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar && bar
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: true
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_convertcodethatcanstarttoreturnnil_true_registers_an_offense_if_followed_by_a_different_method
+    source: |
+      %{variable} && %{variable}.bar && bar?
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 38
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar && bar?
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: true
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_convertcodethatcanstarttoreturnnil_true_registers_an_offense_if_preceded_by_a_different_variable
+    source: |
+      bar && %{variable} && %{variable}.bar
+    offenses:
+      - line: 1
+        column_start: 7
+        column_end: 37
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      bar && #{variable}&.bar
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: true
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_convertcodethatcanstarttoreturnnil_true_registers_an_offense_if_preceded_by_a_different_method
+    source: |
+      bar? && %{variable} && %{variable}.bar
+    offenses:
+      - line: 1
+        column_start: 8
+        column_end: 38
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      bar? && #{variable}&.bar
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: true
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_convertcodethatcanstarttoreturnnil_true_method_chaining
+    source: |
+      %{variable} && %{variable}.one { |a| b}.two(baz) { |e| e.qux }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 62
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.one { |a| b}&.two(baz) { |e| e.qux }
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: true
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_convertcodethatcanstarttoreturnnil_true_method_chaining_maxchainlength_1_registers_an_offense_for_an_object_check_followed_by_1_chained_method_calls
+    source: |
+      %{variable} && %{variable}.one
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 30
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.one
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: true
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_convertcodethatcanstarttoreturnnil_true_method_chaining_maxchainlength_1_allows_an_object_check_followed_by_2_chained_method_calls
+    source: |
+      #{variable} && #{variable}.one.two
+    offenses:
+      []
+    config:
+      MaxChainLength: 1
+      ConvertCodeThatCanStartToReturnNil: true
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_convertcodethatcanstarttoreturnnil_true_method_chaining_maxchainlength_3_registers_an_offense_for_an_object_check_followed_by_3_chained_method_calls
+    source: |
+      %{variable} && %{variable}.one.two.three
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 40
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.one&.two&.three
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: true
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_convertcodethatcanstarttoreturnnil_true_method_chaining_maxchainlength_3_allows_an_object_check_followed_by_4_chained_method_calls
+    source: |
+      #{variable} && #{variable}.one.two.three.four
+    offenses:
+      []
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: true
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_convertcodethatcanstarttoreturnnil_true_method_chaining_maxchainlength_3_allows_an_object_check_followed_by_4_chained_method_calls_with_safe_navigation
+    source: |
+      #{variable} && #{variable}.one.two.three&.four
+    offenses:
+      []
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: true
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_convertcodethatcanstarttoreturnnil_true_method_chaining_with_lint_safenavigationchain_disabled_allows_an_object_check_followed_by_chained_method_calls
+    source: |
+      #{variable} && #{variable}.one.two.three(baz) { |e| e.qux }
+    offenses:
+      []
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: true
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_convertcodethatcanstarttoreturnnil_true_method_chaining_with_lint_safenavigationchain_disabled_allows_an_object_check_followed_by_chained_method_calls_with_blocks
+    source: |
+      #{variable} && #{variable}.one { |a| b }.two(baz) { |e| e.qux }
+    offenses:
+      []
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: true
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_convertcodethatcanstarttoreturnnil_false_allows_a_non_nil_object_check_followed_by_a_method_call
+    source: |
+      !#{variable}.nil? && #{variable}.bar
+    offenses:
+      []
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_convertcodethatcanstarttoreturnnil_false_allows_a_non_nil_object_check_followed_by_a_method_call_with_params
+    source: |
+      !#{variable}.nil? && #{variable}.bar(baz)
+    offenses:
+      []
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_convertcodethatcanstarttoreturnnil_false_allows_a_non_nil_object_check_followed_by_a_method_call_with_a_block
+    source: |
+      !#{variable}.nil? && #{variable}.bar { |e| e.qux }
+    offenses:
+      []
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_convertcodethatcanstarttoreturnnil_false_allows_a_non_nil_object_check_followed_by_a_method_call_with_params_and_a_block
+    source: |
+      !#{variable}.nil? && #{variable}.bar(baz) { |e| e.qux }
+    offenses:
+      []
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_convertcodethatcanstarttoreturnnil_false_registers_an_offense_for_an_object_check_followed_by_a_method_calls_that_nil_responds_to
+    source: |
+      %{variable} && %{variable}.to_i
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 31
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.to_i
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_convertcodethatcanstarttoreturnnil_false_registers_an_offense_for_an_object_check_followed_by_a_method_call
+    source: |
+      %{variable} && %{variable}.bar
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 30
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_convertcodethatcanstarttoreturnnil_false_registers_an_offense_for_a_safe_navigation_method_call_followed_by_a_method_call
+    source: |
+      %{variable}&.bar && %{variable}.bar.baz
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 39
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar&.baz
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_convertcodethatcanstarttoreturnnil_false_registers_an_offense_for_multiple_method_calls_with_safe_navigation_on_last_call_followed_by_a_method_call
+    source: |
+      %{variable}.bar&.baz && %{variable}.bar.baz.quux
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 48
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}.bar&.baz&.quux
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_convertcodethatcanstarttoreturnnil_false_registers_offenses_for_an_object_check_followed_by_a_method_call_followed_again_by_another_method_call
+    source: |
+      %{variable} && %{variable}.bar && %{variable}.bar.baz
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 53
+        message: Use safe navigation (`&.`) instead [...]
+      - line: 1
+        column_start: 0
+        column_end: 53
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar&.baz
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_convertcodethatcanstarttoreturnnil_false_registers_an_offense_for_an_object_check_followed_by_a_method_call_with_params
+    source: |
+      %{variable} && %{variable}.bar(baz)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 35
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar(baz)
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_convertcodethatcanstarttoreturnnil_false_registers_an_offense_for_an_object_check_followed_by_a_method_call_with_a_block
+    source: |
+      %{variable} && %{variable}.bar { |e| e.qux }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 44
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar { |e| e.qux }
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_convertcodethatcanstarttoreturnnil_false
+    source: |
+      %{variable} && %{variable}.bar(baz) { |e| e.qux }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 49
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar(baz) { |e| e.qux }
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_convertcodethatcanstarttoreturnnil_false
+    source: |
+      if %{variable} && %{variable}.bar
+        something
+      end
+    offenses:
+      - line: 1
+        column_start: 3
+        column_end: 33
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      if #{variable}&.bar
+        something
+      end
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_convertcodethatcanstarttoreturnnil_false_registers_an_offense_if_followed_by_a_different_variable
+    source: |
+      %{variable} && %{variable}.bar && bar
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 37
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar && bar
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_convertcodethatcanstarttoreturnnil_false_registers_an_offense_if_followed_by_a_different_method
+    source: |
+      %{variable} && %{variable}.bar && bar?
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 38
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar && bar?
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_convertcodethatcanstarttoreturnnil_false_registers_an_offense_if_preceded_by_a_different_variable
+    source: |
+      bar && %{variable} && %{variable}.bar
+    offenses:
+      - line: 1
+        column_start: 7
+        column_end: 37
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      bar && #{variable}&.bar
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_convertcodethatcanstarttoreturnnil_false_registers_an_offense_if_preceded_by_a_different_method
+    source: |
+      bar? && %{variable} && %{variable}.bar
+    offenses:
+      - line: 1
+        column_start: 8
+        column_end: 38
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      bar? && #{variable}&.bar
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_convertcodethatcanstarttoreturnnil_false_method_chaining_corrects_an_object_check_followed_by_a_chained_method_call
+    source: |
+      %{variable} && %{variable}.one.two
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 34
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.one&.two
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_convertcodethatcanstarttoreturnnil_false_method_chaining_corrects_an_object_check_followed_by_a_chained_method_call_with_params
+    source: |
+      %{variable} && %{variable}.one.two(baz)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 39
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.one&.two(baz)
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_convertcodethatcanstarttoreturnnil_false_method_chaining_corrects_an_object_check_followed_by_a_chained_method_call_with_a_symbol_proc
+    source: |
+      %{variable} && %{variable}.one.two(&:baz)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 41
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.one&.two(&:baz)
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_convertcodethatcanstarttoreturnnil_false_method_chaining_corrects_an_object_check_followed_by_a_chained_method_call_with_a_block
+    source: |
+      %{variable} && %{variable}.one.two(baz) { |e| e.qux }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 53
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.one&.two(baz) { |e| e.qux }
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_convertcodethatcanstarttoreturnnil_false_method_chaining_corrects_a_ternary_expression_with_safe_navigation_object_check_followed_by_a_chained_method_call
+    source: |
+      %{variable}&.bar ? %{variable}.bar.baz : nil
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 44
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar&.baz
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_convertcodethatcanstarttoreturnnil_false_method_chaining_corrects_an_object_check_with_safe_navigation_followed_by_a_chained_method_call
+    source: |
+      %{variable}&.bar && %{variable}.bar.baz
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 39
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar&.baz
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_convertcodethatcanstarttoreturnnil_false_method_chaining_corrects_a_check_with_safe_navigation_followed_by_a_chained_method_call
+    source: |
+      if %{variable}&.bar
+        %{variable}.bar.baz
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 19
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      #{variable}&.bar&.baz
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_allows_a_nil_object_check_followed_by_a_method_call
+    source: |
+      #{variable}.nil? || #{variable}.bar
+    offenses:
+      []
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_allows_a_nil_object_check_followed_by_a_method_call_with_params
+    source: |
+      #{variable}.nil? || #{variable}.bar(baz)
+    offenses:
+      []
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_allows_a_nil_object_check_followed_by_a_method_call_with_a_block
+    source: |
+      #{variable}.nil? || #{variable}.bar { |e| e.qux }
+    offenses:
+      []
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_allows_a_nil_object_check_followed_by_a_method_call_with_params_and_a_block
+    source: |
+      #{variable}.nil? || #{variable}.bar(baz) { |e| e.qux }
+    offenses:
+      []
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_allows_a_non_object_check_followed_by_a_method_call
+    source: |
+      !#{variable} || #{variable}.bar
+    offenses:
+      []
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_allows_a_non_object_check_followed_by_a_method_call_with_params
+    source: |
+      !#{variable} || #{variable}.bar(baz)
+    offenses:
+      []
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_allows_a_non_object_check_followed_by_a_method_call_with_a_block
+    source: |
+      !#{variable} || #{variable}.bar { |e| e.qux }
+    offenses:
+      []
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_object_check_before_method_call_allows_a_non_object_check_followed_by_a_method_call_with_params_and_a_block
+    source: |
+      !#{variable} || #{variable}.bar(baz) { |e| e.qux }
+    offenses:
+      []
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+    interpolated: true
+
+  - name: rubocop_cop_style_safenavigation_all_variable_types_foo
+    source: |
+      foo
+    offenses:
+      []
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_all_variable_types_foo
+    source: |
+      FOO
+    offenses:
+      []
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_all_variable_types_foo_bar
+    source: |
+      FOO::BAR
+    offenses:
+      []
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_all_variable_types_foo
+    source: |
+      @foo
+    offenses:
+      []
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_all_variable_types_foo
+    source: |
+      @@foo
+    offenses:
+      []
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_all_variable_types_foo
+    source: |
+      $FOO
+    offenses:
+      []
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_registers_and_corrects_when_and_clauses_contain_begin_nodes
+    source: |
+      foo && (bar && bar.y?)
+    offenses:
+      - line: 1
+        column_start: 8
+        column_end: 21
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      foo && (bar&.y?)
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_registers_and_corrects_when_and_clauses_contain_nested_begin_nodes
+    source: |
+      foo && (bar && (bar.y?))
+    offenses:
+      - line: 1
+        column_start: 8
+        column_end: 23
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      foo && ((bar&.y?))
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_registers_and_corrects_when_there_are_multiple_clauses_that_could_use_safe_navigation
+    source: |
+      foo && foo.x? && bar && bar.y?
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 13
+        message: Use safe navigation (`&.`) instead [...]
+      - line: 1
+        column_start: 17
+        column_end: 30
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      foo&.x? && bar&.y?
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_registers_and_corrects_when_the_and_keyword_is_used
+    source: |
+      foo and foo.bar?
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 16
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      foo&.bar?
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_registers_an_offense_but_does_not_autocorrect_when_the_rhs_of_and_is_an_or_node_containing_an_and
+    source: |
+      foo && (foo.bar? || (foo.baz? && foo.quux?))
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 29
+        message: Use safe navigation (`&.`) instead [...]
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_registers_an_offense_when_the_rhs_of_and_is_a_nested_and_node
+    source: |
+      foo && (foo.bar? && (foo.baz? && foo.quux?))
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 16
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      (foo&.bar? && (foo.baz? && foo.quux?))
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_registers_an_offense_when_the_rhs_of_and_is_an_and_node_containing_or
+    source: |
+      foo && (foo.bar? && (foo.baz? || foo.quux?))
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 16
+        message: Use safe navigation (`&.`) instead [...]
+    corrected: |
+      (foo&.bar? && (foo.baz? || foo.quux?))
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_does_not_register_an_offense_when_the_rhs_of_is_a_complex_expression_composed_of_conditions
+    source: |
+      foo && (
+        (foo >= 1 && foo < 2) ||
+        (foo >= 3 && foo < 4) ||
+        (foo >= 5 && foo < 6)
+      )
+    offenses:
+      []
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_respond_to_allows_method_calls_safeguarded_by_a_respond_to_check
+    source: |
+      foo.bar if foo.respond_to?(:bar)
+    offenses:
+      []
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_respond_to_allows_method_calls_safeguarded_by_a_respond_to_check_to_a_different_method
+    source: |
+      foo.bar if foo.respond_to?(:foobar)
+    offenses:
+      []
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_respond_to
+    source: |
+      foo.bar if baz.respond_to?(:bar)
+    offenses:
+      []
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_respond_to_allows_method_calls_safeguarded_by_a_respond_to_check_on_a_different_variable_and_method
+    source: |
+      foo.bar if baz.respond_to?(:foo)
+    offenses:
+      []
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_respond_to_allows_enumerable_accessor_method_calls_safeguarded_by_a_respond_to_check
+    source: |
+      foo[0] if foo.respond_to?(:[])
+    offenses:
+      []
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+
+  - name: rubocop_cop_style_safenavigation_when_ruby_2_2_does_not_register_an_offense_when_a_method_call_that_nil_responds_to_safe_guarded_by_an_object_check
+    source: |
+      foo.bar if foo
+    offenses:
+      []
+    config:
+      MaxChainLength: 3
+      ConvertCodeThatCanStartToReturnNil: false
+    ruby_version: ">= 2.2"

@@ -1,0 +1,348 @@
+cop: Style/BisectedAttrAccessor
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_bisectedattraccessor_registers_an_offense_and_corrects_when_both_accessors_of_the_name_exists
+    source: |
+      class Foo
+        attr_reader :bar
+        attr_writer :bar
+        other_macro :something
+      end
+    offenses:
+      - line: 2
+        column_start: 14
+        column_end: 18
+        message: "Combine both accessors into `attr_accessor :bar`."
+      - line: 3
+        column_start: 14
+        column_end: 18
+        message: "Combine both accessors into `attr_accessor :bar`."
+    corrected: |
+      class Foo
+        attr_accessor :bar
+        other_macro :something
+      end
+
+  - name: rubocop_cop_style_bisectedattraccessor_registers_an_offense_and_corrects_when_attr_and_attr_writer_exists
+    source: |
+      class Foo
+        attr :bar
+        attr_writer :bar
+        other_macro :something
+      end
+    offenses:
+      - line: 2
+        column_start: 7
+        column_end: 11
+        message: "Combine both accessors into `attr_accessor :bar`."
+      - line: 3
+        column_start: 14
+        column_end: 18
+        message: "Combine both accessors into `attr_accessor :bar`."
+    corrected: |
+      class Foo
+        attr_accessor :bar
+        other_macro :something
+      end
+
+  - name: rubocop_cop_style_bisectedattraccessor_registers_an_offense_and_corrects_when_both_accessors_of_the_splat_exists
+    source: |
+      class Foo
+        ATTRIBUTES = %i[foo bar]
+        attr_reader *ATTRIBUTES
+        attr_writer *ATTRIBUTES
+        other_macro :something
+      end
+    offenses:
+      - line: 3
+        column_start: 14
+        column_end: 25
+        message: Combine both accessors into `attr_accessor *ATTRIBUTES`.
+      - line: 4
+        column_start: 14
+        column_end: 25
+        message: Combine both accessors into `attr_accessor *ATTRIBUTES`.
+    corrected: |
+      class Foo
+        ATTRIBUTES = %i[foo bar]
+        attr_accessor *ATTRIBUTES
+        other_macro :something
+      end
+
+  - name: rubocop_cop_style_bisectedattraccessor_registers_an_offense_and_corrects_when_both_accessors_of_the_name_exists_and_accessor_contains_multiple_names
+    source: |
+      class Foo
+        attr_reader :baz, :bar, :quux
+        attr_writer :bar, :zoo
+        other_macro :something
+      end
+    offenses:
+      - line: 2
+        column_start: 20
+        column_end: 24
+        message: "Combine both accessors into `attr_accessor :bar`."
+      - line: 3
+        column_start: 14
+        column_end: 18
+        message: "Combine both accessors into `attr_accessor :bar`."
+    corrected: |
+      class Foo
+        attr_accessor :bar
+        attr_reader :baz, :quux
+        attr_writer :zoo
+        other_macro :something
+      end
+
+  - name: rubocop_cop_style_bisectedattraccessor_registers_an_offense_and_corrects_properly_when_attr_writer_is_before_attr_reader
+    source: |
+      class Foo
+        attr_writer :foo
+        attr_reader :foo
+        other_macro :something
+      end
+    offenses:
+      - line: 2
+        column_start: 14
+        column_end: 18
+        message: "Combine both accessors into `attr_accessor :foo`."
+      - line: 3
+        column_start: 14
+        column_end: 18
+        message: "Combine both accessors into `attr_accessor :foo`."
+    corrected: |
+      class Foo
+        attr_accessor :foo
+        other_macro :something
+      end
+
+  - name: rubocop_cop_style_bisectedattraccessor_registers_an_offense_and_corrects_when_both_accessors_are_in_the_same_visibility_scope
+    source: |
+      class Foo
+        attr_reader :bar
+        attr_writer :bar
+      
+        private
+      
+        attr_writer :baz
+        attr_reader :baz
+      end
+    offenses:
+      - line: 2
+        column_start: 14
+        column_end: 18
+        message: "Combine both accessors into `attr_accessor :bar`."
+      - line: 3
+        column_start: 14
+        column_end: 18
+        message: "Combine both accessors into `attr_accessor :bar`."
+      - line: 7
+        column_start: 14
+        column_end: 18
+        message: "Combine both accessors into `attr_accessor :baz`."
+      - line: 8
+        column_start: 14
+        column_end: 18
+        message: "Combine both accessors into `attr_accessor :baz`."
+    corrected: |
+      class Foo
+        attr_accessor :bar
+      
+        private
+      
+        attr_accessor :baz
+      end
+
+  - name: rubocop_cop_style_bisectedattraccessor_registers_an_offense_and_corrects_when_within_eigenclass
+    source: |
+      class Foo
+        attr_reader :bar
+      
+        class << self
+          attr_reader :baz
+          attr_writer :baz
+      
+          private
+      
+          attr_reader :quux
+        end
+      end
+    offenses:
+      - line: 5
+        column_start: 16
+        column_end: 20
+        message: "Combine both accessors into `attr_accessor :baz`."
+      - line: 6
+        column_start: 16
+        column_end: 20
+        message: "Combine both accessors into `attr_accessor :baz`."
+    corrected: |
+      class Foo
+        attr_reader :bar
+      
+        class << self
+          attr_accessor :baz
+      
+          private
+      
+          attr_reader :quux
+        end
+      end
+
+  - name: rubocop_cop_style_bisectedattraccessor_multiple_bisected_accessors_when_all_attr_names_are_bisected_registers_and_replaces_with_attr_accessor
+    source: |
+      class Foo
+        attr_reader :foo, :bar, :baz
+                          ^^^^ Combine both accessors into `attr_accessor :bar`.
+        attr_writer :foo, :bar, :baz
+                          ^^^^ Combine both accessors into `attr_accessor :bar`.
+      end
+    offenses:
+      - line: 2
+        column_start: 14
+        column_end: 18
+        message: "Combine both accessors into `attr_accessor :foo`."
+      - line: 3
+        column_start: 26
+        column_end: 30
+        message: "Combine both accessors into `attr_accessor :baz`."
+      - line: 4
+        column_start: 14
+        column_end: 18
+        message: "Combine both accessors into `attr_accessor :foo`."
+      - line: 5
+        column_start: 26
+        column_end: 30
+        message: "Combine both accessors into `attr_accessor :baz`."
+    corrected: |
+      class Foo
+        attr_accessor :foo, :bar, :baz
+      end
+
+  - name: rubocop_cop_style_bisectedattraccessor_multiple_bisected_accessors_when_some_attr_names_are_bisected_registers_and_retains_non_bisected_attrs
+    source: |
+      class Foo
+        attr_reader :foo, :bar, :baz
+        attr_writer :foo, :baz
+      end
+    offenses:
+      - line: 2
+        column_start: 14
+        column_end: 18
+        message: "Combine both accessors into `attr_accessor :foo`."
+      - line: 2
+        column_start: 26
+        column_end: 30
+        message: "Combine both accessors into `attr_accessor :baz`."
+      - line: 3
+        column_start: 14
+        column_end: 18
+        message: "Combine both accessors into `attr_accessor :foo`."
+      - line: 3
+        column_start: 20
+        column_end: 24
+        message: "Combine both accessors into `attr_accessor :baz`."
+    corrected: |
+      class Foo
+        attr_accessor :foo, :baz
+        attr_reader :bar
+      end
+
+  - name: rubocop_cop_style_bisectedattraccessor_does_not_register_an_offense_when_only_one_accessor_of_the_name_exists
+    source: |
+      class Foo
+        attr_reader :bar
+        attr_writer :baz
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_bisectedattraccessor_does_not_register_an_offense_when_accessors_are_within_different_visibility_scopes
+    source: |
+      class Foo
+        attr_reader :bar
+      
+        private
+        attr_writer :bar
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_bisectedattraccessor_registers_an_offense_for_accessors_with_the_same_visibility_in_different_scopes
+    source: |
+      class Foo
+        attr_reader :foo
+      
+        private
+        attr_writer :bar
+      
+        public
+        attr_writer :foo
+      end
+    offenses:
+      - line: 2
+        column_start: 14
+        column_end: 18
+        message: "Combine both accessors into `attr_accessor :foo`."
+      - line: 8
+        column_start: 14
+        column_end: 18
+        message: "Combine both accessors into `attr_accessor :foo`."
+    corrected: |
+      class Foo
+        attr_accessor :foo
+      
+        private
+        attr_writer :bar
+      
+        public
+      end
+
+  - name: rubocop_cop_style_bisectedattraccessor_registers_and_corrects_in_a_module
+    source: |
+      module Foo
+        attr_reader :foo
+        attr_writer :foo, :bar
+      
+        private
+      
+        attr_reader :bar, :baz
+        attr_writer :baz
+      end
+    offenses:
+      - line: 2
+        column_start: 14
+        column_end: 18
+        message: "Combine both accessors into `attr_accessor :foo`."
+      - line: 3
+        column_start: 14
+        column_end: 18
+        message: "Combine both accessors into `attr_accessor :foo`."
+      - line: 7
+        column_start: 20
+        column_end: 24
+        message: "Combine both accessors into `attr_accessor :baz`."
+      - line: 8
+        column_start: 14
+        column_end: 18
+        message: "Combine both accessors into `attr_accessor :baz`."
+    corrected: |
+      module Foo
+        attr_accessor :foo
+        attr_writer :bar
+      
+        private
+      
+        attr_accessor :baz
+        attr_reader :bar
+      end
+
+  - name: rubocop_cop_style_bisectedattraccessor_does_not_register_an_offense_when_using_attr_accessor
+    source: |
+      class Foo
+        attr_accessor :bar
+      end
+    offenses:
+      []

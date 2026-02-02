@@ -1,0 +1,243 @@
+cop: Style/OperatorMethodCall
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_operatormethodcall
+    source: |
+      foo.#{operator_method} bar
+    offenses:
+      - line: 1
+        column_start: 3
+        column_end: 4
+        message: Redundant dot detected.
+    corrected: |
+      foo #{operator_method} bar
+    interpolated: true
+
+  - name: rubocop_cop_style_operatormethodcall
+    source: |
+      foo.#{operator_method}bar
+    offenses:
+      - line: 1
+        column_start: 3
+        column_end: 4
+        message: Redundant dot detected.
+    corrected: |
+      foo #{operator_method} bar
+    interpolated: true
+
+  - name: rubocop_cop_style_operatormethodcall
+    source: |
+      foo #{operator_method} bar
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_operatormethodcall
+    source: |
+      foo.#{operator_method} 42
+    offenses:
+      - line: 1
+        column_start: 3
+        column_end: 4
+        message: Redundant dot detected.
+    corrected: |
+      foo #{operator_method} 42
+    interpolated: true
+
+  - name: rubocop_cop_style_operatormethodcall
+    source: |
+      foo bar.#{operator_method} baz
+    offenses:
+      - line: 1
+        column_start: 7
+        column_end: 8
+        message: Redundant dot detected.
+    corrected: |
+      foo bar #{operator_method} baz
+    interpolated: true
+
+  - name: rubocop_cop_style_operatormethodcall
+    source: |
+      foo.#{operator_method}(bar)
+    offenses:
+      - line: 1
+        column_start: 3
+        column_end: 4
+        message: Redundant dot detected.
+    corrected: |
+      foo #{operator_method}(bar)
+    interpolated: true
+
+  - name: rubocop_cop_style_operatormethodcall
+    source: |
+      foo.bar.#{operator_method}(baz).quux(2)
+    offenses:
+      - line: 1
+        column_start: 7
+        column_end: 8
+        message: Redundant dot detected.
+    corrected: |
+      (foo.bar #{operator_method} baz).quux(2)
+    interpolated: true
+
+  - name: rubocop_cop_style_operatormethodcall_does_not_register_an_offense_when_using_multiple_arguments
+    source: |
+      foo.#{operator_method}(bar, baz)
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_operatormethodcall_registers_an_offense_when_using_foo
+    source: |
+      foo.==({})
+    offenses:
+      - line: 1
+        column_start: 3
+        column_end: 4
+        message: Redundant dot detected.
+    corrected: |
+      foo ==({})
+
+  - name: rubocop_cop_style_operatormethodcall_registers_an_offense_when_using_foo_bar_to_s
+    source: |
+      foo.+ @bar.to_s
+    offenses:
+      - line: 1
+        column_start: 3
+        column_end: 4
+        message: Redundant dot detected.
+    corrected: |
+      foo + @bar.to_s
+
+  - name: rubocop_cop_style_operatormethodcall_registers_an_offense_and_corrects_when_using_foo_bar
+    source: |
+      foo./(bar)
+    offenses:
+      - line: 1
+        column_start: 3
+        column_end: 4
+        message: Redundant dot detected.
+    corrected: |
+      foo / (bar)
+
+  - name: rubocop_cop_style_operatormethodcall_registers_an_offense_and_corrects_when_using_foo_bar
+    source: |
+      foo./ (bar)
+    offenses:
+      - line: 1
+        column_start: 3
+        column_end: 4
+        message: Redundant dot detected.
+    corrected: |
+      foo / (bar)
+
+  - name: rubocop_cop_style_operatormethodcall_does_not_register_an_offense_when_using_foo_bar_to_s
+    source: |
+      foo.+(@bar).to_s
+    offenses:
+      []
+
+  - name: rubocop_cop_style_operatormethodcall_does_not_register_an_offense_when_using_foo_bar
+    source: |
+      foo.+@ bar
+    offenses:
+      []
+
+  - name: rubocop_cop_style_operatormethodcall_does_not_register_an_offense_when_using_foo_bar
+    source: |
+      foo.-@ bar
+    offenses:
+      []
+
+  - name: rubocop_cop_style_operatormethodcall_does_not_register_an_offense_when_using_foo_bar
+    source: |
+      foo.!@ bar
+    offenses:
+      []
+
+  - name: rubocop_cop_style_operatormethodcall_does_not_register_an_offense_when_using_foo_bar
+    source: |
+      foo.~@ bar
+    offenses:
+      []
+
+  - name: rubocop_cop_style_operatormethodcall_does_not_register_an_offense_when_using_foo_bar
+    source: |
+      foo.` bar
+    offenses:
+      []
+
+  - name: rubocop_cop_style_operatormethodcall_does_not_register_an_offense_when_using_foo_bar
+    source: |
+      Foo.+(bar)
+    offenses:
+      []
+
+  - name: rubocop_cop_style_operatormethodcall_does_not_register_an_offense_when_using_obj
+    source: |
+      obj.!
+    offenses:
+      []
+
+  - name: rubocop_cop_style_operatormethodcall_does_not_register_an_offense_when_using_forwarding_method_arguments
+    source: |
+      def foo(...)
+        bar.==(...)
+      end
+    offenses:
+      []
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_style_operatormethodcall_does_not_register_an_offense_when_using_named_block_forwarding
+    source: |
+      def foo(&blk)
+        bar.==(&blk)
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_operatormethodcall_does_not_register_an_offense_when_using_anonymous_block_forwarding
+    source: |
+      def foo(&)
+        bar.==(&)
+      end
+    offenses:
+      []
+    ruby_version: ">= 3.1"
+
+  - name: rubocop_cop_style_operatormethodcall_does_not_register_an_offense_when_using_named_rest_arguments_forwarding
+    source: |
+      def foo(*args)
+        bar.==(*args)
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_operatormethodcall_does_not_register_an_offense_when_using_anonymous_rest_arguments_forwarding
+    source: |
+      def foo(*)
+        bar.==(*)
+      end
+    offenses:
+      []
+    ruby_version: ">= 3.2"
+
+  - name: rubocop_cop_style_operatormethodcall_does_not_register_an_offense_when_named_anonymous_keyword_rest_arguments_forwarding
+    source: |
+      def foo(**kwargs)
+        bar.==(**kwargs)
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_operatormethodcall_does_not_register_an_offense_when_using_anonymous_keyword_rest_arguments_forwarding
+    source: |
+      def foo(**)
+        bar.==(**)
+      end
+    offenses:
+      []
+    ruby_version: ">= 3.2"

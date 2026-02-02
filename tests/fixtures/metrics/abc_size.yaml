@@ -1,0 +1,295 @@
+cop: Metrics/AbcSize
+department: metrics
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_metrics_abcsize_when_max_is_0_accepts_an_empty_method
+    source: |
+      def method_name
+      end
+    offenses:
+      []
+    config:
+      Max: 0
+
+  - name: rubocop_cop_metrics_abcsize_when_max_is_0_accepts_an_empty_define_method
+    source: |
+      define_method :method_name do
+      end
+    offenses:
+      []
+    config:
+      Max: 0
+
+  - name: rubocop_cop_metrics_abcsize_when_max_is_0_registers_an_offense_for_an_if_modifier
+    source: |
+      def method_name
+        call_foo if some_condition # 0 + 2*2 + 1*1
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 15
+        message: Assignment Branch Condition size for `method_name` is too high. [<0, 2, 1> 2.24/0]
+    config:
+      Max: 0
+
+  - name: rubocop_cop_metrics_abcsize_when_max_is_0_registers_an_offense_for_an_assignment_of_a_local_variable
+    source: |
+      def method_name
+        x = 1
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 15
+        message: Assignment Branch Condition size for `method_name` is too high. [<1, 0, 0> 1/0]
+    config:
+      Max: 0
+
+  - name: rubocop_cop_metrics_abcsize_when_max_is_0_registers_an_offense_for_an_assignment_of_an_element
+    source: |
+      def method_name
+        x[0] = 1
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 15
+        message: Assignment Branch Condition size for `method_name` is too high. [<1, 2, 0> 2.24/0]
+    config:
+      Max: 0
+
+  - name: rubocop_cop_metrics_abcsize_when_max_is_0_registers_an_offense_for_complex_content_including_a_b_and_c_scores
+    source: |
+      def method_name
+        my_options = Hash.new if 1 == 1 || 2 == 2 # 1, 1, 4
+        my_options.each do |key, value|           # 2, 1, 1
+          p key                                   # 0, 1, 0
+          p value                                 # 0, 1, 0
+        end
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 15
+        message: Assignment Branch Condition size for `method_name` is too high. [<3, 4, 5> 7.07/0]
+    config:
+      Max: 0
+
+  - name: rubocop_cop_metrics_abcsize_when_max_is_0_registers_an_offense_for_a_define_method
+    source: |
+      define_method :method_name do
+        x = 1
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 29
+        message: Assignment Branch Condition size for `method_name` is too high. [<1, 0, 0> 1/0]
+    config:
+      Max: 0
+
+  - name: rubocop_cop_metrics_abcsize_when_max_is_0_ruby_2_7_registers_an_offense_for_a_define_method_with_numblock
+    source: |
+      define_method :method_name do
+        x = _1
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 29
+        message: Assignment Branch Condition size for `method_name` is too high. [<1, 0, 0> 1/0]
+    config:
+      Max: 0
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_metrics_abcsize_when_max_is_0_ruby_3_4_registers_an_offense_for_a_define_method_with_itblock
+    source: |
+      define_method :method_name do
+        x = it
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 29
+        message: Assignment Branch Condition size for `method_name` is too high. [<1, 0, 0> 1/0]
+    config:
+      Max: 0
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_metrics_abcsize_when_max_is_0_treats_safe_navigation_method_calls_like_regular_method_calls_a_condition
+    source: |
+      def method_name
+        object&.do_something
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 15
+        message: Assignment Branch Condition size for `method_name` is too high. [<0, 2, 1> 2.24/0]
+    config:
+      Max: 0
+
+  - name: rubocop_cop_metrics_abcsize_when_max_is_0_with_lsp_option_registers_an_offense_for_an_assignment_of_a_local_variable
+    source: |
+      def method_name
+        x = 1
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 15
+        message: Assignment Branch Condition size for `method_name` is too high. [<1, 0, 0> 1/0]
+    config:
+      Max: 0
+
+  - name: rubocop_cop_metrics_abcsize_when_max_is_0_when_method_is_in_list_of_allowed_methods_when_allowedmethods_is_enabled_does_not_register_an_offense_when_defining_an_instance_method
+    source: |
+      def foo
+        bar.baz(:qux)
+      end
+    offenses:
+      []
+    config:
+      Max: 0
+      AllowedMethods: [foo]
+
+  - name: rubocop_cop_metrics_abcsize_when_max_is_0_when_method_is_in_list_of_allowed_methods_when_allowedmethods_is_enabled_does_not_register_an_offense_when_defining_a_class_method
+    source: |
+      def self.foo
+        bar.baz(:qux)
+      end
+    offenses:
+      []
+    config:
+      Max: 0
+      AllowedMethods: [foo]
+
+  - name: rubocop_cop_metrics_abcsize_when_max_is_0_when_method_is_in_list_of_allowed_methods_when_allowedmethods_is_enabled_does_not_register_an_offense_when_using_define_method
+    source: |
+      define_method :foo do
+        bar.baz(:qux)
+      end
+    offenses:
+      []
+    config:
+      Max: 0
+      AllowedMethods: [foo]
+
+  - name: rubocop_cop_metrics_abcsize_when_max_is_0_when_method_is_in_list_of_allowed_methods_when_allowedpatterns_is_enabled_does_not_register_an_offense_when_defining_an_instance_method
+    source: |
+      def foo
+        bar.baz(:qux)
+      end
+    offenses:
+      []
+    config:
+      AllowedPatterns: [/foo/]
+      Max: 0
+      AllowedMethods: [foo]
+
+  - name: rubocop_cop_metrics_abcsize_when_max_is_0_when_method_is_in_list_of_allowed_methods_when_allowedpatterns_is_enabled_does_not_register_an_offense_when_defining_a_class_method
+    source: |
+      def self.foo
+        bar.baz(:qux)
+      end
+    offenses:
+      []
+    config:
+      AllowedPatterns: [/foo/]
+      Max: 0
+      AllowedMethods: [foo]
+
+  - name: rubocop_cop_metrics_abcsize_when_max_is_0_when_method_is_in_list_of_allowed_methods_when_allowedpatterns_is_enabled_does_not_register_an_offense_when_using_define_method
+    source: |
+      define_method :foo do
+        bar.baz(:qux)
+      end
+    offenses:
+      []
+    config:
+      AllowedPatterns: [/foo/]
+      Max: 0
+      AllowedMethods: [foo]
+
+  - name: rubocop_cop_metrics_abcsize_when_max_is_0_when_countrepeatedattributes_is_false_does_not_count_repeated_attributes
+    source: |
+      def foo
+        bar
+        self.bar
+        bar
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 7
+        message: Assignment Branch Condition size for `foo` is too high. [<0, 1, 0> 1/0]
+    config:
+      AllowedMethods: [foo]
+      CountRepeatedAttributes: false
+      AllowedPatterns: [/foo/]
+      Max: 0
+
+  - name: rubocop_cop_metrics_abcsize_when_max_is_0_when_countrepeatedattributes_is_true_counts_repeated_attributes
+    source: |
+      def foo
+        bar
+        self.bar
+        bar
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 7
+        message: Assignment Branch Condition size for `foo` is too high. [<0, 3, 0> 3/0]
+    config:
+      AllowedMethods: [foo]
+      CountRepeatedAttributes: true
+      AllowedPatterns: [/foo/]
+      Max: 0
+
+  - name: rubocop_cop_metrics_abcsize_when_max_is_2_accepts_two_assignments
+    source: |
+      def method_name
+        x = 1
+        y = 2
+      end
+    offenses:
+      []
+    config:
+      AllowedMethods: [foo]
+      CountRepeatedAttributes: true
+      AllowedPatterns: [/foo/]
+      Max: 2
+
+  - name: rubocop_cop_metrics_abcsize_when_max_is_2_3_accepts_a_total_score_of_2_24
+    source: |
+      def method_name
+        y = 1 if y == 1
+      end
+    offenses:
+      []
+    config:
+      AllowedMethods: [foo]
+      CountRepeatedAttributes: true
+      AllowedPatterns: [/foo/]
+      Max: "2.3"
+
+  - name: rubocop_cop_metrics_abcsize
+    source: |
+      def method_name
+        #{code.join("\n  ")}
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 15
+        message: "Assignment Branch Condition size for `method_name` is too high. [#{presentation}]"
+    config:
+      AllowedMethods: [foo]
+      CountRepeatedAttributes: true
+      AllowedPatterns: [/foo/]
+      Max: max
+    interpolated: true

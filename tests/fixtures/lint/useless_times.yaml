@@ -1,0 +1,306 @@
+cop: Lint/UselessTimes
+department: lint
+severity: warning
+implemented: false
+
+tests:
+  - name: rubocop_cop_lint_uselesstimes_registers_an_offense_and_corrects_with_0_times
+    source: |
+      0.times { something }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 21
+        message: Useless call to `0.times` detected.
+    corrected: |
+
+  - name: rubocop_cop_lint_uselesstimes_registers_an_offense_and_corrects_with_0_times_with_block_arg
+    source: |
+      0.times { |i| something(i) }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 28
+        message: Useless call to `0.times` detected.
+    corrected: |
+
+  - name: rubocop_cop_lint_uselesstimes_registers_an_offense_and_corrects_with_negative_times
+    source: |
+      -1.times { something }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 22
+        message: Useless call to `-1.times` detected.
+    corrected: |
+
+  - name: rubocop_cop_lint_uselesstimes_registers_an_offense_and_corrects_with_negative_times_with_block_arg
+    source: |
+      -1.times { |i| something(i) }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 29
+        message: Useless call to `-1.times` detected.
+    corrected: |
+
+  - name: rubocop_cop_lint_uselesstimes_registers_an_offense_and_corrects_with_1_times
+    source: |
+      1.times { something }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 21
+        message: Useless call to `1.times` detected.
+    corrected: |
+      something
+
+  - name: rubocop_cop_lint_uselesstimes_registers_an_offense_and_corrects_with_1_times_with_block_arg
+    source: |
+      1.times { |i| something(i) }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 28
+        message: Useless call to `1.times` detected.
+    corrected: |
+      something(0)
+
+  - name: rubocop_cop_lint_uselesstimes_registers_an_offense_but_does_not_correct_with_1_times_with_method_chain
+    source: |
+      1.times.reverse_each do
+        foo
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 7
+        message: Useless call to `1.times` detected.
+
+  - name: rubocop_cop_lint_uselesstimes_registers_an_offense_and_corrects_when_1_times_with_empty_block_argument
+    source: |
+      def foo
+        1.times do
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 12
+        message: Useless call to `1.times` detected.
+    corrected: |
+      def foo
+      end
+
+  - name: rubocop_cop_lint_uselesstimes_registers_an_offense_and_corrects_when_there_is_a_blank_line_in_the_method_definition
+    source: |
+      def foo
+        1.times do
+          bar
+      
+          baz
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 12
+        message: Useless call to `1.times` detected.
+    corrected: |
+      def foo
+        bar
+      
+        baz
+      end
+
+  - name: rubocop_cop_lint_uselesstimes_does_not_register_an_offense_for_an_integer_1
+    source: |
+      2.times { |i| puts i }
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_uselesstimes_short_form_method_registers_an_offense_and_corrects_with_0_times
+    source: |
+      0.times(&:something)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 20
+        message: Useless call to `0.times` detected.
+    corrected: |
+
+  - name: rubocop_cop_lint_uselesstimes_short_form_method_registers_an_offense_and_corrects_with_negative_times
+    source: |
+      -1.times(&:something)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 21
+        message: Useless call to `-1.times` detected.
+    corrected: |
+
+  - name: rubocop_cop_lint_uselesstimes_short_form_method_registers_an_offense_and_corrects_with_1_times
+    source: |
+      1.times(&:something)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 20
+        message: Useless call to `1.times` detected.
+    corrected: |
+      something
+
+  - name: rubocop_cop_lint_uselesstimes_short_form_method_does_not_register_an_offense_for_an_integer_1
+    source: |
+      2.times(&:something)
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_uselesstimes_short_form_method_does_not_adjust_surrounding_space
+    source: |
+      precondition
+      0.times(&:something)
+      postcondition
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 20
+        message: Useless call to `0.times` detected.
+    corrected: |
+      precondition
+      postcondition
+
+  - name: rubocop_cop_lint_uselesstimes_multiline_block_correctly_handles_a_multiline_block_with_1_times
+    source: |
+      1.times do |i|
+        do_something(i)
+        do_something_else(i)
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 14
+        message: Useless call to `1.times` detected.
+    corrected: |
+      do_something(0)
+      do_something_else(0)
+
+  - name: rubocop_cop_lint_uselesstimes_multiline_block_does_not_try_to_correct_a_block_if_the_block_arg_is_changed
+    source: |
+      1.times do |i|
+        do_something(i)
+        i += 1
+        do_something_else(i)
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 14
+        message: Useless call to `1.times` detected.
+
+  - name: rubocop_cop_lint_uselesstimes_multiline_block_does_not_try_to_correct_a_block_if_the_block_arg_is_changed_in_parallel_assignment
+    source: |
+      1.times do |i|
+        do_something(i)
+        i, j = i * 2, i * 3
+        do_something_else(i)
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 14
+        message: Useless call to `1.times` detected.
+
+  - name: rubocop_cop_lint_uselesstimes_multiline_block_corrects_a_block_that_changes_another_lvar
+    source: |
+      1.times do |i|
+        do_something(i)
+        j = 1
+        do_something_else(j)
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 14
+        message: Useless call to `1.times` detected.
+    corrected: |
+      do_something(0)
+      j = 1
+      do_something_else(j)
+
+  - name: rubocop_cop_lint_uselesstimes_within_indentation_corrects_properly_when_removing_single_line
+    source: |
+      def my_method
+        0.times { do_something }
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 26
+        message: Useless call to `0.times` detected.
+    corrected: |
+      def my_method
+      end
+
+  - name: rubocop_cop_lint_uselesstimes_within_indentation_corrects_properly_when_removing_multiline
+    source: |
+      def my_method
+        0.times do
+          do_something
+          do_something_else
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 12
+        message: Useless call to `0.times` detected.
+    corrected: |
+      def my_method
+      end
+
+  - name: rubocop_cop_lint_uselesstimes_within_indentation_corrects_properly_when_replacing
+    source: |
+      def my_method
+        1.times do
+          do_something
+          do_something_else
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 12
+        message: Useless call to `1.times` detected.
+    corrected: |
+      def my_method
+        do_something
+        do_something_else
+      end
+
+  - name: rubocop_cop_lint_uselesstimes_within_indentation_inline_integer_times_calls_does_not_try_to_correct_0_times
+    source: |
+      foo(0.times { do_something })
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 28
+        message: Useless call to `0.times` detected.
+
+  - name: rubocop_cop_lint_uselesstimes_within_indentation_inline_integer_times_calls_does_not_try_to_correct_1_times
+    source: |
+      foo(1.times { do_something })
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 28
+        message: Useless call to `1.times` detected.
+
+  - name: rubocop_cop_lint_uselesstimes_within_indentation_inline_integer_times_calls_registers_an_offense_for_1_times_without_block
+    source: |
+      1.times
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 7
+        message: Useless call to `1.times` detected.

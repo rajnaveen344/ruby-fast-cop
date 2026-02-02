@@ -1,0 +1,1220 @@
+cop: Style/SelectByRegexp
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_match
+    source: |
+      array.#{method} { |x| x.match? /regexp/ }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 41
+        message: "#{message}"
+    corrected: |
+      array.#{correction}(/regexp/)
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_regexp_match
+    source: |
+      array.#{method} { |x| /regexp/.match? x }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 41
+        message: "#{message}"
+    corrected: |
+      array.#{correction}(/regexp/)
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_blockvar_regexp
+    source: |
+      array.#{method} { |x| x =~ /regexp/ }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 37
+        message: "#{message}"
+    corrected: |
+      array.#{correction}(/regexp/)
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_blockvar_lvar
+    source: |
+      lvar = /regexp/
+      array.#{method} { |x| x =~ lvar }
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 33
+        message: "#{message}"
+    corrected: |
+      lvar = /regexp/
+      array.#{correction}(lvar)
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_regexp_blockvar
+    source: |
+      array.#{method} { |x| /regexp/ =~ x }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 37
+        message: "#{message}"
+    corrected: |
+      array.#{correction}(/regexp/)
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_lvar_blockvar
+    source: |
+      lvar = /regexp/
+      array.#{method} { |x| lvar =~ x }
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 33
+        message: "#{message}"
+    corrected: |
+      lvar = /regexp/
+      array.#{correction}(lvar)
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_when_there_is_no_explicit_regexp
+    source: |
+      array.#{method} { |x| x =~ y }
+      array.#{method} { |x| x =~ REGEXP }
+      array.#{method} { |x| x =~ foo.bar.baz(quux) }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 30
+        message: "#{message}"
+      - line: 2
+        column_start: 0
+        column_end: 35
+        message: "#{message}"
+      - line: 3
+        column_start: 0
+        column_end: 46
+        message: "#{message}"
+    corrected: |
+      array.#{correction}(y)
+      array.#{correction}(REGEXP)
+      array.#{correction}(foo.bar.baz(quux))
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_with_a_multiline_block
+    source: |
+      array.#{method} do |x|
+        x.match? /regexp/
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 22
+        message: "#{message}"
+    corrected: |
+      array.#{correction}(/regexp/)
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_does_not_register_an_offense_when_there_is_no_block
+    source: |
+      array.#{method}
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_does_not_register_an_offense_when_given_a_proc
+    source: |
+      array.#{method}(&:even?)
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_does_not_register_an_offense_when_the_block_does_not_match_a_regexp
+    source: |
+      array.#{method} { |x| x.even? }
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_does_not_register_an_offense_when_the_block_has_multiple_expressions
+    source: |
+      array.#{method} do |x|
+        next if x.even?
+        x.match? /regexp/
+      end
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_does_not_register_an_offense_when_the_block_arity_is_not_1
+    source: |
+      obj.#{method} { |x, y| y.match? /regexp/ }
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_does_not_register_an_offense_when_the_block_uses_an_external_variable_in_a_regexp_match
+    source: |
+      array.#{method} { |x| y.match? /regexp/ }
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_does_not_register_an_offense_when_the_block_param_is_a_method_argument
+    source: |
+      array.#{method} { |x| /regexp/.match?(foo(x)) }
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_does_not_register_an_offense_when_the_block_body_is_empty
+    source: |
+      array.#{method} { }
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_without_a_receiver
+    source: |
+      #{method} { |x| x.match?(/regexp/) }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 36
+        message: "#{message}"
+    corrected: |
+      #{correction}(/regexp/)
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_when_the_receiver_is_an_array
+    source: |
+      [].#{method} { |x| x.match?(/regexp/) }
+      foo.to_a.#{method} { |x| x.match?(/regexp/) }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 39
+        message: "#{message}"
+      - line: 2
+        column_start: 0
+        column_end: 45
+        message: "#{message}"
+    corrected: |
+      [].#{correction}(/regexp/)
+      foo.to_a.#{correction}(/regexp/)
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_when_the_receiver_is_a_range
+    source: |
+      ('aaa'...'abc').#{method} { |x| x.match?(/ab/) }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 48
+        message: "#{message}"
+    corrected: |
+      ('aaa'...'abc').#{correction}(/ab/)
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_when_the_receiver_is_a_set
+    source: |
+      Set.new.#{method} { |x| x.match?(/regexp/) }
+      [].to_set.#{method} { |x| x.match?(/regexp/) }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 44
+        message: "#{message}"
+      - line: 2
+        column_start: 0
+        column_end: 46
+        message: "#{message}"
+    corrected: |
+      Set.new.#{correction}(/regexp/)
+      [].to_set.#{correction}(/regexp/)
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_does_not_register_an_offense_when_the_receiver_is_a_hash_literal
+    source: |
+      {}.#{method} { |x| x.match? /regexp/ }
+      { foo: :bar }.#{method} { |x| x.match? /regexp/ }
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_does_not_register_an_offense_when_the_receiver_is_hash_new
+    source: |
+      Hash.new.#{method} { |x| x.match? /regexp/ }
+      Hash.new(:default).#{method} { |x| x.match? /regexp/ }
+      Hash.new { |hash, key| :default }.#{method} { |x| x.match? /regexp/ }
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_does_not_register_an_offense_when_the_receiver_is_hash
+    source: |
+      Hash[h].#{method} { |x| x.match? /regexp/ }
+      Hash[:foo, 0, :bar, 1].#{method} { |x| x.match? /regexp/ }
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_does_not_register_an_offense_when_the_receiver_is_to_h
+    source: |
+      to_h.#{method} { |x| x.match? /regexp/ }
+      foo.to_h.#{method} { |x| x.match? /regexp/ }
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_does_not_register_an_offense_when_the_receiver_is_to_hash
+    source: |
+      to_hash.#{method} { |x| x.match? /regexp/ }
+      foo.to_hash.#{method} { |x| x.match? /regexp/ }
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_registers_an_offense_if_to_h_is_in_the_receiver_chain_but_not_the_actual_receiver
+    source: |
+      foo.to_h.bar.#{method} { |x| x.match? /regexp/ }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 48
+        message: "#{message}"
+    corrected: |
+      foo.to_h.bar.#{correction}(/regexp/)
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_does_not_register_an_offense_when_the_receiver_is_env
+    source: |
+      ENV.#{method} { |x| x.match? /regexp/ }
+      ::ENV.#{method} { |x| x.match? /regexp/ }
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_match
+    source: |
+      array.#{method} { _1.match? /regexp/ }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 38
+        message: "#{message}"
+    corrected: |
+      array.#{correction}(/regexp/)
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_match_with_safe_navigation
+    source: |
+      array&.#{method} { _1.match? /regexp/ }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 39
+        message: "#{message}"
+    corrected: |
+      array&.#{correction}(/regexp/)
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_regexp_match
+    source: |
+      array.#{method} { /regexp/.match?(_1) }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 39
+        message: "#{message}"
+    corrected: |
+      array.#{correction}(/regexp/)
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_blockvar_regexp
+    source: |
+      array.#{method} { _1 =~ /regexp/ }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 34
+        message: "#{message}"
+    corrected: |
+      array.#{correction}(/regexp/)
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_regexp_blockvar
+    source: |
+      array.#{method} { /regexp/ =~ _1 }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 34
+        message: "#{message}"
+    corrected: |
+      array.#{correction}(/regexp/)
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_does_not_register_an_offense_if_there_is_more_than_one_numbered_param
+    source: |
+      array.#{method} { _1 =~ _2 }
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_does_not_register_an_offense_when_the_param_is_a_method_argument
+    source: |
+      array.#{method} { /regexp/.match?(foo(_1)) }
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_does_not_register_an_offense_when_using_match_without_a_receiver
+    source: |
+      array.#{method} { |item| match?(item) }
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_match
+    source: |
+      array.#{method} { it.match? /regexp/ }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 38
+        message: "#{message}"
+    corrected: |
+      array.#{correction}(/regexp/)
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_match_with_safe_navigation
+    source: |
+      array&.#{method} { it.match? /regexp/ }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 39
+        message: "#{message}"
+    corrected: |
+      array&.#{correction}(/regexp/)
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_regexp_match
+    source: |
+      array.#{method} { /regexp/.match?(it) }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 39
+        message: "#{message}"
+    corrected: |
+      array.#{correction}(/regexp/)
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_blockvar_regexp
+    source: |
+      array.#{method} { it =~ /regexp/ }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 34
+        message: "#{message}"
+    corrected: |
+      array.#{correction}(/regexp/)
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_regexp_blockvar
+    source: |
+      array.#{method} { /regexp/ =~ it }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 34
+        message: "#{message}"
+    corrected: |
+      array.#{correction}(/regexp/)
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_does_not_register_an_offense_when_the_param_is_a_method_argument
+    source: |
+      array.#{method} { /regexp/.match?(foo(it)) }
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_does_not_register_an_offense_when_using_match_without_a_receiver
+    source: |
+      array.#{method} { |item| match?(item) }
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_match
+    source: |
+      array&.#{method} { |x| x.match? /regexp/ }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 42
+        message: "#{message}"
+    corrected: |
+      array&.#{correction}(/regexp/)
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_does_not_register_an_offense_when_the_receiver_is_hash_new
+    source: |
+      Hash&.new.#{method} { |x| x.match? /regexp/ }
+      Hash&.new { |hash, key| :default }.#{method} { |x| x.match? /regexp/ }
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_does_not_register_an_offense_when_the_receiver_is_to_h
+    source: |
+      foo&.to_h.#{method} { |x| x.match? /regexp/ }
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_does_not_register_an_offense_when_the_receiver_is_to_hash
+    source: |
+      foo&.to_hash.#{method} { |x| x.match? /regexp/ }
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_blockvar_regexp
+    source: |
+      array.#{method} { |x| x !~ /regexp/ }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 37
+        message: "#{message}"
+    corrected: |
+      array.#{correction}(/regexp/)
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_blockvar_lvar
+    source: |
+      lvar = /regexp/
+      array.#{method} { |x| x !~ lvar }
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 33
+        message: "#{message}"
+    corrected: |
+      lvar = /regexp/
+      array.#{correction}(lvar)
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_regexp_blockvar
+    source: |
+      array.#{method} { |x| /regexp/ !~ x }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 37
+        message: "#{message}"
+    corrected: |
+      array.#{correction}(/regexp/)
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_lvar_blockvar
+    source: |
+      lvar = /regexp/
+      array.#{method} { |x| lvar !~ x }
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 33
+        message: "#{message}"
+    corrected: |
+      lvar = /regexp/
+      array.#{correction}(lvar)
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_when_there_is_no_explicit_regexp
+    source: |
+      array.#{method} { |x| x !~ y }
+      array.#{method} { |x| x !~ REGEXP }
+      array.#{method} { |x| x !~ foo.bar.baz(quux) }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 30
+        message: "#{message}"
+      - line: 2
+        column_start: 0
+        column_end: 35
+        message: "#{message}"
+      - line: 3
+        column_start: 0
+        column_end: 46
+        message: "#{message}"
+    corrected: |
+      array.#{correction}(y)
+      array.#{correction}(REGEXP)
+      array.#{correction}(foo.bar.baz(quux))
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_blockvar_regexp
+    source: |
+      array.#{method} { _1 !~ /regexp/ }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 34
+        message: "#{message}"
+    corrected: |
+      array.#{correction}(/regexp/)
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_regexp_blockvar
+    source: |
+      array.#{method} { /regexp/ !~ _1 }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 34
+        message: "#{message}"
+    corrected: |
+      array.#{correction}(/regexp/)
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_does_not_register_an_offense_if_there_is_more_than_one_numbered_param
+    source: |
+      array.#{method} { _1 !~ _2 }
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_blockvar_regexp
+    source: |
+      array.#{method} { it !~ /regexp/ }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 34
+        message: "#{message}"
+    corrected: |
+      array.#{correction}(/regexp/)
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_regexp_blockvar
+    source: |
+      array.#{method} { /regexp/ !~ it }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 34
+        message: "#{message}"
+    corrected: |
+      array.#{correction}(/regexp/)
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_blockvar_regexp
+    source: |
+      array&.#{method} { |x| x !~ /regexp/ }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 38
+        message: "#{message}"
+    corrected: |
+      array&.#{correction}(/regexp/)
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_blockvar_lvar
+    source: |
+      lvar = /regexp/
+      array&.#{method} { |x| x !~ lvar }
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 34
+        message: "#{message}"
+    corrected: |
+      lvar = /regexp/
+      array&.#{correction}(lvar)
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_regexp_blockvar
+    source: |
+      array&.#{method} { |x| /regexp/ !~ x }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 38
+        message: "#{message}"
+    corrected: |
+      array&.#{correction}(/regexp/)
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_lvar_blockvar
+    source: |
+      lvar = /regexp/
+      array&.#{method} { |x| lvar !~ x }
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 34
+        message: "#{message}"
+    corrected: |
+      lvar = /regexp/
+      array&.#{correction}(lvar)
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_when_there_is_no_explicit_regexp
+    source: |
+      array&.#{method} { |x| x !~ y }
+      array&.#{method} { |x| x !~ REGEXP }
+      array&.#{method} { |x| x !~ foo.bar.baz(quux) }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 31
+        message: "#{message}"
+      - line: 2
+        column_start: 0
+        column_end: 36
+        message: "#{message}"
+      - line: 3
+        column_start: 0
+        column_end: 47
+        message: "#{message}"
+    corrected: |
+      array&.#{correction}(y)
+      array&.#{correction}(REGEXP)
+      array&.#{correction}(foo.bar.baz(quux))
+    interpolated: true
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_3_4_regexp_match_with_itblock_s_select
+    source: |
+      select
+    offenses:
+      []
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_3_4_regexp_match_with_itblock_s_grep
+    source: |
+      grep
+    offenses:
+      []
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_3_4_regexp_match_with_itblock_s_find_all
+    source: |
+      find_all
+    offenses:
+      []
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_3_4_regexp_match_with_itblock_s_grep
+    source: |
+      grep
+    offenses:
+      []
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_3_4_regexp_match_with_itblock_s_filter
+    source: |
+      filter
+    offenses:
+      []
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_3_4_regexp_match_with_itblock_s_grep
+    source: |
+      grep
+    offenses:
+      []
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_3_4_regexp_mismatch_with_itblock_s_reject
+    source: |
+      reject
+    offenses:
+      []
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_3_4_regexp_mismatch_with_itblock_s_grep
+    source: |
+      grep
+    offenses:
+      []
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_3_4_regexp_match_with_itblock_s_reject
+    source: |
+      reject
+    offenses:
+      []
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_3_4_regexp_match_with_itblock_s_grep_v
+    source: |
+      grep_v
+    offenses:
+      []
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_3_4_regexp_mismatch_with_itblock_s_select
+    source: |
+      select
+    offenses:
+      []
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_3_4_regexp_mismatch_with_itblock_s_grep_v
+    source: |
+      grep_v
+    offenses:
+      []
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_3_4_regexp_mismatch_with_itblock_s_find_all
+    source: |
+      find_all
+    offenses:
+      []
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_3_4_regexp_mismatch_with_itblock_s_grep_v
+    source: |
+      grep_v
+    offenses:
+      []
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_3_4_regexp_mismatch_with_itblock_s_filter
+    source: |
+      filter
+    offenses:
+      []
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_3_4_regexp_mismatch_with_itblock_s_grep_v
+    source: |
+      grep_v
+    offenses:
+      []
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_7_regexp_match_with_numblock_s_select
+    source: |
+      select
+    offenses:
+      []
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_7_regexp_match_with_numblock_s_grep
+    source: |
+      grep
+    offenses:
+      []
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_7_regexp_match_with_numblock_s_find_all
+    source: |
+      find_all
+    offenses:
+      []
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_7_regexp_match_with_numblock_s_grep
+    source: |
+      grep
+    offenses:
+      []
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_7_regexp_match_with_numblock_s_filter
+    source: |
+      filter
+    offenses:
+      []
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_7_regexp_match_with_numblock_s_grep
+    source: |
+      grep
+    offenses:
+      []
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_7_regexp_mismatch_with_numblock_s_reject
+    source: |
+      reject
+    offenses:
+      []
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_7_regexp_mismatch_with_numblock_s_grep
+    source: |
+      grep
+    offenses:
+      []
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_7_regexp_match_with_numblock_s_reject
+    source: |
+      reject
+    offenses:
+      []
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_7_regexp_match_with_numblock_s_grep_v
+    source: |
+      grep_v
+    offenses:
+      []
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_7_regexp_mismatch_with_numblock_s_select
+    source: |
+      select
+    offenses:
+      []
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_7_regexp_mismatch_with_numblock_s_grep_v
+    source: |
+      grep_v
+    offenses:
+      []
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_7_regexp_mismatch_with_numblock_s_find_all
+    source: |
+      find_all
+    offenses:
+      []
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_7_regexp_mismatch_with_numblock_s_grep_v
+    source: |
+      grep_v
+    offenses:
+      []
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_7_regexp_mismatch_with_numblock_s_filter
+    source: |
+      filter
+    offenses:
+      []
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_7_regexp_mismatch_with_numblock_s_grep_v
+    source: |
+      grep_v
+    offenses:
+      []
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_6_regexp_match_filter
+    source: |
+      filter
+    offenses:
+      []
+    ruby_version: ">= 2.6"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_6_regexp_match_grep
+    source: |
+      grep
+    offenses:
+      []
+    ruby_version: ">= 2.6"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_6_regexp_match_with_safe_navigation_filter
+    source: |
+      filter
+    offenses:
+      []
+    ruby_version: ">= 2.6"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_6_regexp_match_with_safe_navigation_grep
+    source: |
+      grep
+    offenses:
+      []
+    ruby_version: ">= 2.6"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_6_regexp_mismatch_filter
+    source: |
+      filter
+    offenses:
+      []
+    ruby_version: ">= 2.6"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_6_regexp_mismatch_grep_v
+    source: |
+      grep_v
+    offenses:
+      []
+    ruby_version: ">= 2.6"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_6_regexp_mismatch_with_safe_navigation_filter
+    source: |
+      filter
+    offenses:
+      []
+    ruby_version: ">= 2.6"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_6_regexp_mismatch_with_safe_navigation_grep_v
+    source: |
+      grep_v
+    offenses:
+      []
+    ruby_version: ">= 2.6"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_5_does_not_register_an_offense_when_filter_with_regexp_match
+    source: |
+      array.filter { |x| x =~ /regexp/ }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_5_does_not_register_an_offense_when_filter_with_regexp_mismatch
+    source: |
+      array.filter { |x| x !~ /regexp/ }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_3_regexp_match_select
+    source: |
+      select
+    offenses:
+      []
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_3_regexp_match_grep
+    source: |
+      grep
+    offenses:
+      []
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_3_regexp_match_with_safe_navigation_select
+    source: |
+      select
+    offenses:
+      []
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_3_regexp_match_with_safe_navigation_grep
+    source: |
+      grep
+    offenses:
+      []
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_3_regexp_match_find_all
+    source: |
+      find_all
+    offenses:
+      []
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_3_regexp_match_grep
+    source: |
+      grep
+    offenses:
+      []
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_3_regexp_match_with_safe_navigation_find_all
+    source: |
+      find_all
+    offenses:
+      []
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_3_regexp_match_with_safe_navigation_grep
+    source: |
+      grep
+    offenses:
+      []
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_3_regexp_mismatch_reject
+    source: |
+      reject
+    offenses:
+      []
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_3_regexp_mismatch_grep
+    source: |
+      grep
+    offenses:
+      []
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_3_regexp_mismatch_with_safe_navigation_reject
+    source: |
+      reject
+    offenses:
+      []
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_3_regexp_mismatch_with_safe_navigation_grep
+    source: |
+      grep
+    offenses:
+      []
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_3_regexp_match_reject
+    source: |
+      reject
+    offenses:
+      []
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_3_regexp_match_grep_v
+    source: |
+      grep_v
+    offenses:
+      []
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_3_regexp_match_with_safe_navigation_reject
+    source: |
+      reject
+    offenses:
+      []
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_3_regexp_match_with_safe_navigation_grep_v
+    source: |
+      grep_v
+    offenses:
+      []
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_3_regexp_mismatch_select
+    source: |
+      select
+    offenses:
+      []
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_3_regexp_mismatch_grep_v
+    source: |
+      grep_v
+    offenses:
+      []
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_3_regexp_mismatch_with_safe_navigation_select
+    source: |
+      select
+    offenses:
+      []
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_3_regexp_mismatch_with_safe_navigation_grep_v
+    source: |
+      grep_v
+    offenses:
+      []
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_3_regexp_mismatch_find_all
+    source: |
+      find_all
+    offenses:
+      []
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_3_regexp_mismatch_grep_v
+    source: |
+      grep_v
+    offenses:
+      []
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_3_regexp_mismatch_with_safe_navigation_find_all
+    source: |
+      find_all
+    offenses:
+      []
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_3_regexp_mismatch_with_safe_navigation_grep_v
+    source: |
+      grep_v
+    offenses:
+      []
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_2_regexp_match_select
+    source: |
+      select
+    offenses:
+      []
+    ruby_version: ">= 2.2"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_2_regexp_match_grep
+    source: |
+      grep
+    offenses:
+      []
+    ruby_version: ">= 2.2"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_2_regexp_match_find_all
+    source: |
+      find_all
+    offenses:
+      []
+    ruby_version: ">= 2.2"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_2_regexp_match_grep
+    source: |
+      grep
+    offenses:
+      []
+    ruby_version: ">= 2.2"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_2_regexp_mismatch_reject
+    source: |
+      reject
+    offenses:
+      []
+    ruby_version: ">= 2.2"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_2_regexp_mismatch_grep
+    source: |
+      grep
+    offenses:
+      []
+    ruby_version: ">= 2.2"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_2_does_not_register_an_offense_when_reject_with_regexp_match
+    source: |
+      array.reject { |x| x =~ /regexp/ }
+    offenses:
+      []
+    ruby_version: ">= 2.2"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_2_does_not_register_an_offense_when_select_with_regexp_mismatch
+    source: |
+      array.select { |x| x !~ /regexp/ }
+    offenses:
+      []
+    ruby_version: ">= 2.2"
+
+  - name: rubocop_cop_style_selectbyregexp_when_ruby_2_2_does_not_register_an_offense_when_find_all_with_regexp_mismatch
+    source: |
+      array.find_all { |x| x !~ /regexp/ }
+    offenses:
+      []
+    ruby_version: ">= 2.2"

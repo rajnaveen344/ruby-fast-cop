@@ -53,10 +53,10 @@ impl Location {
     }
 }
 
-/// Convert a byte offset to (line, column) - both 1-indexed
+/// Convert a byte offset to (line, column) - line is 1-indexed, column is 0-indexed (RuboCop convention)
 fn offset_to_line_col(source: &str, offset: usize) -> (u32, u32) {
     let mut line = 1u32;
-    let mut col = 1u32;
+    let mut col = 0u32;
 
     for (i, ch) in source.char_indices() {
         if i >= offset {
@@ -64,7 +64,7 @@ fn offset_to_line_col(source: &str, offset: usize) -> (u32, u32) {
         }
         if ch == '\n' {
             line += 1;
-            col = 1;
+            col = 0;
         } else {
             col += 1;
         }

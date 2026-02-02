@@ -1,0 +1,648 @@
+cop: Metrics/ClassLength
+department: metrics
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_metrics_classlength_rejects_a_class_with_more_than_5_lines
+    source: |
+      class Test
+        a = 1
+        a = 2
+        a = 3
+        a = 4
+        a = 5
+        a = 6
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 10
+        message: Class has too many lines. [6/5]
+    config:
+      CountComments: false
+      Max: 5
+
+  - name: rubocop_cop_metrics_classlength_registers_an_offense_when_a_class_with_a_singleton_class_definition_has_more_than_5_lines
+    source: |
+      class Test
+        class << self
+          a = 1
+          a = 2
+          a = 3
+          a = 4
+          a = 5
+          a = 6
+        end
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 10
+        message: Class has too many lines. [8/5]
+    config:
+      CountComments: false
+      Max: 5
+
+  - name: rubocop_cop_metrics_classlength_reports_the_correct_beginning_and_end_lines
+    source: |
+      class Test
+        a = 1
+        a = 2
+        a = 3
+        a = 4
+        a = 5
+        a = 6
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 10
+        message: Class has too many lines. [6/5]
+    config:
+      CountComments: false
+      Max: 5
+
+  - name: rubocop_cop_metrics_classlength_accepts_a_class_with_5_lines
+    source: |
+      class Test
+        a = 1
+        a = 2
+        a = 3
+        a = 4
+        a = 5
+      end
+    offenses:
+      []
+    config:
+      CountComments: false
+      Max: 5
+
+  - name: rubocop_cop_metrics_classlength_accepts_a_class_with_less_than_5_lines
+    source: |
+      class Test
+        a = 1
+        a = 2
+        a = 3
+        a = 4
+      end
+    offenses:
+      []
+    config:
+      CountComments: false
+      Max: 5
+
+  - name: rubocop_cop_metrics_classlength_does_not_count_blank_lines
+    source: |
+      class Test
+        a = 1
+        a = 2
+        a = 3
+        a = 4
+      
+      
+        a = 7
+      end
+    offenses:
+      []
+    config:
+      CountComments: false
+      Max: 5
+
+  - name: rubocop_cop_metrics_classlength_accepts_empty_classes
+    source: |
+      class Test
+      end
+    offenses:
+      []
+    config:
+      CountComments: false
+      Max: 5
+
+  - name: rubocop_cop_metrics_classlength_when_a_class_has_inner_classes_does_not_count_lines_of_inner_classes
+    source: |
+      class NamespaceClass
+        class TestOne
+          a = 1
+          a = 2
+          a = 3
+          a = 4
+          a = 5
+        end
+        class TestTwo
+          a = 1
+          a = 2
+          a = 3
+          a = 4
+          a = 5
+        end
+        a = 1
+        a = 2
+        a = 3
+        a = 4
+        a = 5
+      end
+    offenses:
+      []
+    config:
+      CountComments: false
+      Max: 5
+
+  - name: rubocop_cop_metrics_classlength_when_a_class_has_inner_classes_rejects_a_class_with_6_lines_that_belong_to_the_class_directly
+    source: |
+      class NamespaceClass
+        class TestOne
+          a = 1
+          a = 2
+          a = 3
+          a = 4
+          a = 5
+        end
+        class TestTwo
+          a = 1
+          a = 2
+          a = 3
+          a = 4
+          a = 5
+        end
+        a = 1
+        a = 2
+        a = 3
+        a = 4
+        a = 5
+        a = 6
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 20
+        message: Class has too many lines. [6/5]
+    config:
+      CountComments: false
+      Max: 5
+
+  - name: rubocop_cop_metrics_classlength_with_lsp_option_reports_the_correct_beginning_and_end_lines
+    source: |
+      class Test
+        a = 1
+        a = 2
+        a = 3
+        a = 4
+        a = 5
+        a = 6
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 10
+        message: Class has too many lines. [6/5]
+    config:
+      CountComments: false
+      Max: 5
+
+  - name: rubocop_cop_metrics_classlength_when_countcomments_is_disabled_accepts_classes_that_only_contain_comments
+    source: |
+      class Test
+        # comment
+        # comment
+        # comment
+        # comment
+        # comment
+        # comment
+      end
+    offenses:
+      []
+    config:
+      CountComments: false
+      Max: 5
+
+  - name: rubocop_cop_metrics_classlength_when_countcomments_is_enabled_also_counts_commented_lines
+    source: |
+      class Test
+        a = 1
+        #a = 2
+        a = 3
+        #a = 4
+        a = 5
+        a = 6
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 10
+        message: Class has too many lines. [6/5]
+    config:
+      CountComments: false
+      Max: 5
+
+  - name: rubocop_cop_metrics_classlength_when_countcomments_is_enabled_registers_an_offense_for_a_class_that_only_contains_comments
+    source: |
+      class Test
+        # comment
+        # comment
+        # comment
+        # comment
+        # comment
+        # comment
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 10
+        message: Class has too many lines. [6/5]
+    config:
+      CountComments: false
+      Max: 5
+
+  - name: rubocop_cop_metrics_classlength_when_countasone_is_not_empty_folds_array_into_one_line
+    source: |
+      class Test
+        a = 1
+        a = [
+          2,
+          3,
+          4,
+          5
+        ]
+      end
+    offenses:
+      []
+    config:
+      CountComments: false
+      Max: 5
+
+  - name: rubocop_cop_metrics_classlength_when_overlapping_constant_assignments_does_not_register_an_offense
+    source: |
+      X = Y = Z = do_something
+    offenses:
+      []
+    config:
+      CountComments: false
+      Max: 5
+
+  - name: rubocop_cop_metrics_classlength_when_singleton_class_rejects_a_class_with_more_than_5_lines
+    source: |
+      class << self
+        a = 1
+        a = 2
+        a = 3
+        a = 4
+        a = 5
+        a = 6
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 13
+        message: Class has too many lines. [6/5]
+    config:
+      CountComments: false
+      Max: 5
+
+  - name: rubocop_cop_metrics_classlength_when_singleton_class_accepts_a_class_with_5_lines
+    source: |
+      class << self
+        a = 1
+        a = 2
+        a = 3
+        a = 4
+        a = 5
+      end
+    offenses:
+      []
+    config:
+      CountComments: false
+      Max: 5
+
+  - name: rubocop_cop_metrics_classlength_when_inspecting_a_class_defined_with_class_new_registers_an_offense
+    source: |
+      Foo = Class.new do
+        a = 1
+        a = 2
+        a = 3
+        a = 4
+        a = 5
+        a = 6
+      end
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 18
+        message: Class has too many lines. [6/5]
+    config:
+      CountComments: false
+      Max: 5
+
+  - name: rubocop_cop_metrics_classlength_when_inspecting_a_class_defined_with_class_new_registers_an_offense
+    source: |
+      Foo = ::Class.new do
+        a = 1
+        a = 2
+        a = 3
+        a = 4
+        a = 5
+        a = 6
+      end
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 20
+        message: Class has too many lines. [6/5]
+    config:
+      CountComments: false
+      Max: 5
+
+  - name: rubocop_cop_metrics_classlength_when_inspecting_a_class_defined_with_class_new_with_chained_assignments_registers_an_offense
+    source: |
+      Foo = Bar = Class.new do
+        a(_1)
+        b(_1)
+        c(_1)
+        d(_1)
+        e(_1)
+        f(_1)
+      end
+    offenses:
+      - line: 1
+        column_start: 12
+        column_end: 24
+        message: Class has too many lines. [6/5]
+    config:
+      CountComments: false
+      Max: 5
+
+  - name: rubocop_cop_metrics_classlength_when_inspecting_a_class_defined_with_class_new_with_chained_assignments_in_class_body_registers_an_offense
+    source: |
+      Foo = Class.new do
+        self.a = self::B = 1
+        b(_1)
+        c(_1)
+        d(_1)
+        e(_1)
+        f(_1)
+      end
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 18
+        message: Class has too many lines. [6/5]
+    config:
+      CountComments: false
+      Max: 5
+
+  - name: rubocop_cop_metrics_classlength_when_inspecting_a_class_defined_with_struct_new_registers_an_offense
+    source: |
+      Foo = Struct.new(:foo, :bar) do
+        a = 1
+        a = 2
+        a = 3
+        a = 4
+        a = 5
+        a = 6
+      end
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 31
+        message: Class has too many lines. [6/5]
+    config:
+      CountComments: false
+      Max: 5
+
+  - name: rubocop_cop_metrics_classlength_when_inspecting_a_class_defined_with_struct_new_registers_an_offense_when_inspecting_or_equals_for_constant
+    source: |
+      Foo ||= Struct.new(:foo, :bar) do
+        a = 1
+        a = 2
+        a = 3
+        a = 4
+        a = 5
+        a = 6
+      end
+    offenses:
+      - line: 1
+        column_start: 8
+        column_end: 33
+        message: Class has too many lines. [6/5]
+    config:
+      CountComments: false
+      Max: 5
+
+  - name: rubocop_cop_metrics_classlength_when_inspecting_a_class_defined_with_struct_new_registers_an_offense_when_multiple_assignments_to_constants
+    source: |
+      Foo, Bar = Struct.new(:foo, :bar) do
+        a = 1
+        a = 2
+        a = 3
+        a = 4
+        a = 5
+        a = 6
+      end
+    offenses:
+      - line: 1
+        column_start: 11
+        column_end: 36
+        message: Class has too many lines. [6/5]
+    config:
+      CountComments: false
+      Max: 5
+
+  - name: rubocop_cop_metrics_classlength_when_using_numbered_parameter_when_inspecting_a_class_defined_with_class_new_registers_an_offense
+    source: |
+      Foo = Class.new do
+        a(_1)
+        b(_1)
+        c(_1)
+        d(_1)
+        e(_1)
+        f(_1)
+      end
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 18
+        message: Class has too many lines. [6/5]
+    config:
+      CountComments: false
+      Max: 5
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_metrics_classlength_when_using_numbered_parameter_when_inspecting_a_class_defined_with_class_new_registers_an_offense
+    source: |
+      Foo = ::Class.new do
+        a(_1)
+        b(_1)
+        c(_1)
+        d(_1)
+        e(_1)
+        f(_1)
+      end
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 20
+        message: Class has too many lines. [6/5]
+    config:
+      CountComments: false
+      Max: 5
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_metrics_classlength_when_using_numbered_parameter_when_inspecting_a_class_defined_with_struct_new_registers_an_offense
+    source: |
+      Foo = Struct.new(:foo, :bar) do
+        a(_1)
+        b(_1)
+        c(_1)
+        d(_1)
+        e(_1)
+        f(_1)
+      end
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 31
+        message: Class has too many lines. [6/5]
+    config:
+      CountComments: false
+      Max: 5
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_metrics_classlength_when_using_numbered_parameter_when_inspecting_a_class_defined_with_struct_new_registers_an_offense_when_inspecting_or_equals_for_constant
+    source: |
+      Foo ||= Struct.new(:foo, :bar) do
+        a(_1)
+        b(_1)
+        c(_1)
+        d(_1)
+        e(_1)
+        f(_1)
+      end
+    offenses:
+      - line: 1
+        column_start: 8
+        column_end: 33
+        message: Class has too many lines. [6/5]
+    config:
+      CountComments: false
+      Max: 5
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_metrics_classlength_when_using_numbered_parameter_when_inspecting_a_class_defined_with_struct_new_registers_an_offense_when_multiple_assignments_to_constants
+    source: |
+      Foo, Bar = Struct.new(:foo, :bar) do
+        a(_1)
+        b(_1)
+        c(_1)
+        d(_1)
+        e(_1)
+        f(_1)
+      end
+    offenses:
+      - line: 1
+        column_start: 11
+        column_end: 36
+        message: Class has too many lines. [6/5]
+    config:
+      CountComments: false
+      Max: 5
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_metrics_classlength_when_using_it_parameter_when_inspecting_a_class_defined_with_class_new_registers_an_offense
+    source: |
+      Foo = Class.new do
+        a(it)
+        b(it)
+        c(it)
+        d(it)
+        e(it)
+        f(it)
+      end
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 18
+        message: Class has too many lines. [6/5]
+    config:
+      CountComments: false
+      Max: 5
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_metrics_classlength_when_using_it_parameter_when_inspecting_a_class_defined_with_class_new_registers_an_offense
+    source: |
+      Foo = ::Class.new do
+        a(it)
+        b(it)
+        c(it)
+        d(it)
+        e(it)
+        f(it)
+      end
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 20
+        message: Class has too many lines. [6/5]
+    config:
+      CountComments: false
+      Max: 5
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_metrics_classlength_when_using_it_parameter_when_inspecting_a_class_defined_with_struct_new_registers_an_offense
+    source: |
+      Foo = Struct.new(:foo, :bar) do
+        a(it)
+        b(it)
+        c(it)
+        d(it)
+        e(it)
+        f(it)
+      end
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 31
+        message: Class has too many lines. [6/5]
+    config:
+      CountComments: false
+      Max: 5
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_metrics_classlength_when_using_it_parameter_when_inspecting_a_class_defined_with_struct_new_registers_an_offense_when_inspecting_or_equals_for_constant
+    source: |
+      Foo ||= Struct.new(:foo, :bar) do
+        a(it)
+        b(it)
+        c(it)
+        d(it)
+        e(it)
+        f(it)
+      end
+    offenses:
+      - line: 1
+        column_start: 8
+        column_end: 33
+        message: Class has too many lines. [6/5]
+    config:
+      CountComments: false
+      Max: 5
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_metrics_classlength_when_using_it_parameter_when_inspecting_a_class_defined_with_struct_new_registers_an_offense_when_multiple_assignments_to_constants
+    source: |
+      Foo, Bar = Struct.new(:foo, :bar) do
+        a(it)
+        b(it)
+        c(it)
+        d(it)
+        e(it)
+        f(it)
+      end
+    offenses:
+      - line: 1
+        column_start: 11
+        column_end: 36
+        message: Class has too many lines. [6/5]
+    config:
+      CountComments: false
+      Max: 5
+    ruby_version: ">= 3.4"

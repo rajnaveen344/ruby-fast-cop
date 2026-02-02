@@ -1,0 +1,107 @@
+cop: Bundler/GemVersion
+department: bundler
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_bundler_gemversion_when_enforcedstyle_is_set_to_required_default_flags_gems_that_do_not_specify_a_version
+    source: |
+      gem 'rubocop'
+      gem 'rubocop', require: false
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 13
+        message: Gem version specification is required.
+      - line: 2
+        column_start: 0
+        column_end: 29
+        message: Gem version specification is required.
+    config:
+      EnforcedStyle: required
+      AllowedGems: [rspec]
+
+  - name: rubocop_cop_bundler_gemversion_when_enforcedstyle_is_set_to_required_default_does_not_flag_gems_with_a_specified_version
+    source: |
+      gem 'rubocop', '>=1.10.0'
+      gem 'rubocop', '~> 1'
+      gem 'rubocop', '~> 1.12', require: false
+      gem 'rubocop', '>= 1.5.0', '< 1.10.0', git: 'https://github.com/rubocop/rubocop'
+      gem 'rubocop', branch: 'feature-branch'
+      gem 'rubocop', ref: 'b3f37bc7f'
+      gem 'rubocop', tag: 'v1'
+    offenses:
+      []
+    config:
+      EnforcedStyle: required
+      AllowedGems: [rspec]
+
+  - name: rubocop_cop_bundler_gemversion_when_enforcedstyle_is_set_to_required_default_does_not_flag_gems_included_in_allowedgems_metadata
+    source: |
+      gem 'rspec'
+    offenses:
+      []
+    config:
+      EnforcedStyle: required
+      AllowedGems: [rspec]
+
+  - name: rubocop_cop_bundler_gemversion_when_enforcedstyle_is_set_to_forbidden_flags_gems_that_specify_a_gem_version
+    source: |
+      gem 'rubocop', '~> 1'
+      gem 'rubocop', '>=1.10.0'
+      gem 'rubocop', '~> 1.12', require: false
+      gem 'rubocop', '>= 1.5.0', '< 1.10.0', git: 'https://github.com/rubocop/rubocop'
+      gem 'rubocop', branch: 'feature-branch'
+      gem 'rubocop', ref: 'b3f37bc7f'
+      gem 'rubocop', tag: 'v1'
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 21
+        message: Gem version specification is forbidden.
+      - line: 2
+        column_start: 0
+        column_end: 25
+        message: Gem version specification is forbidden.
+      - line: 3
+        column_start: 0
+        column_end: 40
+        message: Gem version specification is forbidden.
+      - line: 4
+        column_start: 0
+        column_end: 80
+        message: Gem version specification is forbidden.
+      - line: 5
+        column_start: 0
+        column_end: 39
+        message: Gem version specification is forbidden.
+      - line: 6
+        column_start: 0
+        column_end: 31
+        message: Gem version specification is forbidden.
+      - line: 7
+        column_start: 0
+        column_end: 24
+        message: Gem version specification is forbidden.
+    config:
+      EnforcedStyle: forbidden
+      AllowedGems: [rspec]
+
+  - name: rubocop_cop_bundler_gemversion_when_enforcedstyle_is_set_to_forbidden_does_not_flag_gems_without_a_specified_version
+    source: |
+      gem 'rubocop'
+      gem 'rubocop', require: false
+    offenses:
+      []
+    config:
+      EnforcedStyle: forbidden
+      AllowedGems: [rspec]
+
+  - name: rubocop_cop_bundler_gemversion_when_enforcedstyle_is_set_to_forbidden_does_not_flag_gems_included_in_allowedgems_metadata
+    source: |
+      gem 'rspec', '~> 3.10'
+    offenses:
+      []
+    config:
+      EnforcedStyle: forbidden
+      AllowedGems: [rspec]

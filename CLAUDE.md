@@ -159,9 +159,60 @@ app/models/user.rb:10:5: C: Style/StringLiterals: Prefer double quotes.
 
 ## Testing
 
-- Unit tests for each cop with Ruby code snippets
-- Integration tests comparing output to RuboCop
-- Benchmark tests for performance validation
+### Data-Driven Tests (YAML Fixtures)
+
+Test cases are stored in `tests/fixtures/{department}/{cop_name}.yaml`. These were **extracted via script** from RuboCop's spec files, not hand-written.
+
+**IMPORTANT: Always validate YAML fixtures against the original RuboCop specs when implementing a cop.**
+
+The extraction script may have edge cases or errors. Before trusting a YAML fixture:
+
+1. **Fetch the original RuboCop spec file:**
+   ```bash
+   # The specs are cached in /tmp/rubocop-specs (from extraction script)
+   # Or fetch fresh from GitHub:
+   curl -s "https://raw.githubusercontent.com/rubocop/rubocop/master/spec/rubocop/cop/{department}/{cop_name}_spec.rb"
+
+   # Example for Lint/Debugger:
+   curl -s "https://raw.githubusercontent.com/rubocop/rubocop/master/spec/rubocop/cop/lint/debugger_spec.rb"
+   ```
+
+2. **Compare key test cases:**
+   - Check that offense line/column positions match the `^^^` markers in the original
+   - Verify the `config:` values match `let(:cop_config)` blocks
+   - Ensure `expect_no_offenses` tests have `offenses: []`
+   - Check `corrected:` field matches `expect_correction` blocks
+
+3. **Watch for extraction issues:**
+   - Tests marked `interpolated: true` contain Ruby string interpolation (`#{...}`) - these need manual verification
+   - Shared examples (`it_behaves_like`) may not have captured all context
+   - Deeply nested `context` blocks may have missed config inheritance
+
+4. **Validation workflow when implementing a cop:**
+   ```
+   Before implementing:
+   1. Read the YAML fixture: tests/fixtures/{dept}/{cop}.yaml
+   2. Fetch original spec from RuboCop repo
+   3. Spot-check 3-5 test cases match
+
+   After implementing:
+   1. Run: cargo test --test rubocop_parity
+   2. If tests fail unexpectedly, compare with original spec
+   3. Fix YAML if extraction was wrong, or fix implementation
+   ```
+
+5. **Re-extract if needed:**
+   ```bash
+   # Re-extract a single cop's tests
+   cargo run --bin extract-rubocop-tests -- /tmp/rubocop-specs/spec/rubocop/cop/{dept}/{cop}_spec.rb
+   ```
+
+### Test Types
+
+- **Parity tests** (`tests/rubocop_parity.rs`) - Data-driven tests from YAML fixtures
+- **Unit tests** - Cop-specific edge cases in `src/cops/{dept}/{cop}.rs`
+- **Integration tests** - End-to-end CLI comparison with RuboCop
+- **Benchmark tests** - Performance validation
 
 ## Performance Targets
 
@@ -172,12 +223,23 @@ app/models/user.rb:10:5: C: Style/StringLiterals: Prefer double quotes.
 ## Common Tasks
 
 ### Adding a new cop
-1. Create file in `src/cops/{department}/{cop_name}.rs`
-2. Implement `Cop` trait
-3. Add to department's `mod.rs`
-4. Register in cop registry
-5. Add tests
-6. Update COPS.md
+1. **Validate test fixtures first:**
+   - Read `tests/fixtures/{department}/{cop_name}.yaml`
+   - Fetch original spec: `curl -s "https://raw.githubusercontent.com/rubocop/rubocop/master/spec/rubocop/cop/{department}/{cop_name}_spec.rb"`
+   - Compare 3-5 test cases to verify extraction accuracy
+   - Fix YAML if needed, or note discrepancies
+
+2. Create file in `src/cops/{department}/{cop_name}.rs`
+3. Implement `Cop` trait
+4. Add to department's `mod.rs`
+5. Register in cop registry
+6. Set `implemented: true` in the YAML fixture
+7. Run `cargo test --test rubocop_parity` - verify tests pass
+8. **Post-implementation validation:**
+   - If any test fails unexpectedly, compare with original RuboCop spec
+   - Run actual RuboCop on failing test source to confirm expected behavior
+   - Fix implementation or YAML as needed
+9. Update COPS.md
 
 ### Adding a new formatter
 1. Create file in `src/formatters/{name}.rs`

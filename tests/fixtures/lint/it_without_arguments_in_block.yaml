@@ -1,0 +1,163 @@
+cop: Lint/ItWithoutArgumentsInBlock
+department: lint
+severity: warning
+implemented: false
+
+tests:
+  - name: rubocop_cop_lint_itwithoutargumentsinblock_ruby_3_4_does_not_register_an_offense_when_using_it_without_arguments_in_a_single_line_block
+    source: |
+      0.times { it }
+    offenses:
+      []
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_lint_itwithoutargumentsinblock_ruby_3_4_does_not_register_an_offense_when_using_it_without_arguments_in_a_multiline_block
+    source: |
+      0.times do
+        it
+        it = 1
+        it
+      end
+    offenses:
+      []
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_lint_itwithoutargumentsinblock_registers_an_offense_when_using_it_without_arguments_in_a_single_line_block
+    source: |
+      0.times { it }
+    offenses:
+      - line: 1
+        column_start: 10
+        column_end: 12
+        message: "`it` calls without arguments will refer to the first block param in Ruby 3.4; use `it()` or `self.it`."
+
+  - name: rubocop_cop_lint_itwithoutargumentsinblock_registers_an_offense_when_using_it_without_arguments_in_a_multiline_block
+    source: |
+      0.times do
+        it
+        it = 1
+        it
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 4
+        message: "`it` calls without arguments will refer to the first block param in Ruby 3.4; use `it()` or `self.it`."
+
+  - name: rubocop_cop_lint_itwithoutargumentsinblock_does_not_register_an_offense_when_using_it_with_arguments_in_a_single_line_block
+    source: |
+      0.times { it(42) }
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_itwithoutargumentsinblock_does_not_register_an_offense_when_using_it_with_block_argument_in_a_single_line_block
+    source: |
+      0.times { it { do_something } }
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_itwithoutargumentsinblock_does_not_register_an_offense_when_using_it_in_a_single_line_block
+    source: |
+      0.times { it() }
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_itwithoutargumentsinblock_does_not_register_an_offense_when_using_self_it_in_a_single_line_block
+    source: |
+      0.times { self.it }
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_itwithoutargumentsinblock_does_not_register_an_offense_when_using_it_with_arguments_in_a_multiline_block
+    source: |
+      0.times do
+        it(42)
+        it = 1
+        it
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_itwithoutargumentsinblock_does_not_register_an_offense_when_using_it_with_block_argument_in_a_multiline_block
+    source: |
+      0.times do
+        it { do_something }
+        it = 1
+        it
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_itwithoutargumentsinblock_does_not_register_an_offense_when_using_it_in_a_multiline_block
+    source: |
+      0.times do
+        it()
+        it = 1
+        it
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_itwithoutargumentsinblock_does_not_register_an_offense_when_using_self_it_without_arguments_in_a_multiline_block
+    source: |
+      0.times do
+        self.it
+        it = 1
+        it
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_itwithoutargumentsinblock_does_not_register_an_offense_when_using_it_without_arguments_in_if_body
+    source: |
+      if false
+        it
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_itwithoutargumentsinblock_does_not_register_an_offense_when_using_it_without_arguments_in_def_body
+    source: |
+      def foo
+        it
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_itwithoutargumentsinblock_does_not_register_an_offense_when_using_it_without_arguments_in_a_block_with_empty_block_parameter
+    source: |
+      0.times { ||
+        it
+      }
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_itwithoutargumentsinblock_does_not_register_an_offense_when_using_it_without_arguments_in_a_block_with_useless_block_parameter
+    source: |
+      0.times { |_n|
+        it
+      }
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_itwithoutargumentsinblock_does_not_register_an_offense_when_using_it_inner_local_variable_in_block
+    source: |
+      0.times do
+        it = 1
+        it
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_itwithoutargumentsinblock_does_not_register_an_offense_when_using_it_outer_local_variable_in_block
+    source: |
+      it = 1
+      0.times { it }
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_itwithoutargumentsinblock_does_not_register_an_offense_when_using_empty_block
+    source: |
+      0.times {}
+    offenses:
+      []

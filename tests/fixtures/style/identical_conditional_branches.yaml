@@ -1,0 +1,994 @@
+cop: Style/IdenticalConditionalBranches
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_identicalconditionalbranches_on_if_else_with_identical_bodies_registers_and_corrects_an_offense
+    source: |
+      if something
+        do_x
+      else
+        do_x
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 6
+        message: Move `do_x` out of the conditional.
+      - line: 4
+        column_start: 2
+        column_end: 6
+        message: Move `do_x` out of the conditional.
+    corrected: |
+      if something
+      else
+      end
+      do_x
+
+  - name: rubocop_cop_style_identicalconditionalbranches_on_if_else_with_identical_trailing_lines_registers_and_corrects_an_offense
+    source: |
+      if something
+        method_call_here(1, 2, 3)
+        do_x
+      else
+        1 + 2 + 3
+        do_x
+      end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 6
+        message: Move `do_x` out of the conditional.
+      - line: 6
+        column_start: 2
+        column_end: 6
+        message: Move `do_x` out of the conditional.
+    corrected: |
+      if something
+        method_call_here(1, 2, 3)
+      else
+        1 + 2 + 3
+      end
+      do_x
+
+  - name: rubocop_cop_style_identicalconditionalbranches_on_if_else_with_identical_leading_lines_registers_and_corrects_an_offense
+    source: |
+      if something
+        do_x
+        method_call_here(1, 2, 3)
+      else
+        do_x
+        1 + 2 + 3
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 6
+        message: Move `do_x` out of the conditional.
+      - line: 5
+        column_start: 2
+        column_end: 6
+        message: Move `do_x` out of the conditional.
+    corrected: |
+      do_x
+      if something
+        method_call_here(1, 2, 3)
+      else
+        1 + 2 + 3
+      end
+
+  - name: rubocop_cop_style_identicalconditionalbranches_on_if_else_with_identical_leading_lines_and_using_index_assign_registers_and_corrects_an_offense
+    source: |
+      if condition
+        h[:key] = foo
+        bar
+      else
+        h[:key] = foo
+        baz
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 15
+        message: "Move `h[:key] = foo` out of the conditional."
+      - line: 5
+        column_start: 2
+        column_end: 15
+        message: "Move `h[:key] = foo` out of the conditional."
+    corrected: |
+      h[:key] = foo
+      if condition
+        bar
+      else
+        baz
+      end
+
+  - name: rubocop_cop_style_identicalconditionalbranches_on_if_else_with_identical_leading_lines_and_index_assign_to_condition_value_does_not_register_an_offense
+    source: |
+      if h[:key]
+        h[:key] = foo
+        bar
+      else
+        h[:key] = foo
+        baz
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_identicalconditionalbranches_on_if_else_with_identical_leading_lines_and_assign_to_self_foo_registers_and_corrects_an_offense
+    source: |
+      if something
+        self.foo ||= default
+        do_x
+      else
+        self.foo ||= default
+        do_y
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 22
+        message: Move `self.foo ||= default` out of the conditional.
+      - line: 5
+        column_start: 2
+        column_end: 22
+        message: Move `self.foo ||= default` out of the conditional.
+    corrected: |
+      self.foo ||= default
+      if something
+        do_x
+      else
+        do_y
+      end
+
+  - name: rubocop_cop_style_identicalconditionalbranches_on_if_else_with_identical_leading_lines_and_assign_to_condition_value_of_method_call_receiver_doesn_t_register_an_offense
+    source: |
+      if x.condition
+        x = do_something
+        foo
+      else
+        x = do_something
+        bar
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_identicalconditionalbranches_on_if_else_with_identical_leading_lines_and_assign_to_condition_value_of_safe_navigation_call_receiver_doesn_t_register_an_offense
+    source: |
+      if x&.condition
+        x = do_something
+        foo
+      else
+        x = do_something
+        bar
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_identicalconditionalbranches_on_if_else_with_identical_leading_lines_and_assign_to_condition_value_of_method_call_doesn_t_register_an_offense
+    source: |
+      if x
+        x = do_something
+        foo
+      else
+        x = do_something
+        bar
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_identicalconditionalbranches_on_if_else_with_identical_leading_lines_and_assign_to_condition_local_variable_doesn_t_register_an_offense
+    source: |
+      x = 42
+      
+      if x
+        x = do_something
+        foo
+      else
+        x = do_something
+        bar
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_identicalconditionalbranches_on_if_else_with_identical_leading_lines_and_assign_to_condition_instance_variable_doesn_t_register_an_offense
+    source: |
+      if @x
+        @x = do_something
+        foo
+      else
+        @x = do_something
+        bar
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_identicalconditionalbranches_on_if_else_with_identical_trailing_lines_and_assign_to_condition_value_registers_and_corrects_an_offense
+    source: |
+      if x.condition
+        foo
+        x = do_something
+      else
+        bar
+        x = do_something
+      end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 18
+        message: Move `x = do_something` out of the conditional.
+      - line: 6
+        column_start: 2
+        column_end: 18
+        message: Move `x = do_something` out of the conditional.
+    corrected: |
+      if x.condition
+        foo
+      else
+        bar
+      end
+      x = do_something
+
+  - name: rubocop_cop_style_identicalconditionalbranches_on_if_else_with_identical_leading_lines_single_child_branch_and_last_node_of_the_parent_doesn_t_register_an_offense
+    source: |
+      def foo
+        if something
+          do_x
+        else
+          do_x
+          1 + 2 + 3
+        end
+      end
+      
+      def bar
+        y = if something
+              do_x
+            else
+              do_x
+              1 + 2 + 3
+            end
+        do_something_else
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_identicalconditionalbranches_on_if_elsif_with_no_else_doesn_t_register_an_offense
+    source: |
+      if something
+        do_x
+      elsif something_else
+        do_x
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_identicalconditionalbranches_on_if_else_with_slightly_different_trailing_lines_doesn_t_register_an_offense
+    source: |
+      if something
+        do_x(1)
+      else
+        do_x(2)
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_identicalconditionalbranches_on_if_else_with_identical_bodies_and_assigning_to_a_variable_used_in_if_condition_doesn_t_register_an_offense
+    source: |
+      x = 0
+      if x == 0
+        x += 1
+        foo
+      else
+        x += 1
+        bar
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_identicalconditionalbranches_on_case_with_identical_bodies_registers_an_offense_and_corrects
+    source: |
+      case something
+      when :a
+        do_x
+      when :b
+        do_x
+      else
+        do_x
+      end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 6
+        message: Move `do_x` out of the conditional.
+      - line: 5
+        column_start: 2
+        column_end: 6
+        message: Move `do_x` out of the conditional.
+      - line: 7
+        column_start: 2
+        column_end: 6
+        message: Move `do_x` out of the conditional.
+    corrected: |
+      case something
+      when :a
+      when :b
+      else
+      end
+      do_x
+
+  - name: rubocop_cop_style_identicalconditionalbranches_when_one_of_the_case_branches_is_empty_does_not_register_an_offense
+    source: |
+      case value
+      when cond1
+      else
+        if cond2
+        else
+        end
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_identicalconditionalbranches_on_case_with_identical_trailing_lines_registers_and_corrects_an_offense
+    source: |
+      case something
+      when :a
+        x1
+        do_x
+      when :b
+        x2
+        do_x
+      else
+        x3
+        do_x
+      end
+    offenses:
+      - line: 4
+        column_start: 2
+        column_end: 6
+        message: Move `do_x` out of the conditional.
+      - line: 7
+        column_start: 2
+        column_end: 6
+        message: Move `do_x` out of the conditional.
+      - line: 10
+        column_start: 2
+        column_end: 6
+        message: Move `do_x` out of the conditional.
+    corrected: |
+      case something
+      when :a
+        x1
+      when :b
+        x2
+      else
+        x3
+      end
+      do_x
+
+  - name: rubocop_cop_style_identicalconditionalbranches_on_case_with_identical_leading_lines_registers_and_corrects_an_offense
+    source: |
+      case something
+      when :a
+        do_x
+        x1
+      when :b
+        do_x
+        x2
+      else
+        do_x
+        x3
+      end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 6
+        message: Move `do_x` out of the conditional.
+      - line: 6
+        column_start: 2
+        column_end: 6
+        message: Move `do_x` out of the conditional.
+      - line: 9
+        column_start: 2
+        column_end: 6
+        message: Move `do_x` out of the conditional.
+    corrected: |
+      do_x
+      case something
+      when :a
+        x1
+      when :b
+        x2
+      else
+        x3
+      end
+
+  - name: rubocop_cop_style_identicalconditionalbranches_on_case_with_identical_leading_lines_when_handling_nil_case_branches_registers_and_corrects_an_offense
+    source: |
+      case something
+      when :a
+        nil
+      when :b
+        do_x
+        x1
+      else
+        do_x
+        x2
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_identicalconditionalbranches_on_case_with_identical_leading_lines_when_handling_empty_case_branches_registers_and_corrects_an_offense
+    source: |
+      case something
+      when :a
+        ()
+      when :b
+        do_x
+        x1
+      else
+        do_x
+        x2
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_identicalconditionalbranches_on_case_with_identical_leading_lines_single_child_branch_and_last_node_of_the_parent_doesn_t_register_an_offense
+    source: |
+      def foo
+        case something
+        when :a
+          do_x
+        when :b
+          do_x
+          x2
+        else
+          do_x
+          x3
+        end
+      end
+      
+      def bar
+        x = case something
+            when :a
+              do_x
+            when :b
+              do_x
+              x2
+            else
+              do_x
+              x3
+            end
+        do_something
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_identicalconditionalbranches_on_case_without_else_doesn_t_register_an_offense
+    source: |
+      case something
+      when :a
+        do_x
+      when :b
+        do_x
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_identicalconditionalbranches_on_case_with_empty_when_doesn_t_register_an_offense
+    source: |
+      case something
+      when :a
+        do_x
+        do_y
+      when :b
+      else
+        do_x
+        do_z
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_identicalconditionalbranches_on_case_when_with_identical_bodies_and_assigning_to_a_variable_used_in_case_condition_doesn_t_register_an_offense
+    source: |
+      x = 0
+      case x
+      when 1
+        x += 1
+        foo
+      when 42
+        x += 1
+        bar
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_identicalconditionalbranches_when_using_pattern_matching_on_case_match_with_identical_bodies_registers_an_offense_and_corrects
+    source: |
+      case something
+      in :a
+        do_x
+      in :b
+        do_x
+      else
+        do_x
+      end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 6
+        message: Move `do_x` out of the conditional.
+      - line: 5
+        column_start: 2
+        column_end: 6
+        message: Move `do_x` out of the conditional.
+      - line: 7
+        column_start: 2
+        column_end: 6
+        message: Move `do_x` out of the conditional.
+    corrected: |
+      case something
+      in :a
+      in :b
+      else
+      end
+      do_x
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_style_identicalconditionalbranches_when_using_pattern_matching_on_case_match_with_identical_bodies_on_case_in_with_identical_bodies_and_assigning_to_a_variable_used_in_case_condition_doesn_t_register_an_offense
+    source: |
+      x = 0
+      case x
+      in 1
+        x += 1
+        foo
+      in 42
+        x += 1
+        bar
+      end
+    offenses:
+      []
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_style_identicalconditionalbranches_when_using_pattern_matching_when_one_of_the_case_match_branches_is_empty_does_not_register_an_offense
+    source: |
+      case value
+      in cond1
+      else
+        if cond2
+        else
+        end
+      end
+    offenses:
+      []
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_style_identicalconditionalbranches_when_using_pattern_matching_on_case_match_with_identical_trailing_lines_registers_and_corrects_an_offense
+    source: |
+      case something
+      in :a
+        x1
+        do_x
+      in :b
+        x2
+        do_x
+      else
+        x3
+        do_x
+      end
+    offenses:
+      - line: 4
+        column_start: 2
+        column_end: 6
+        message: Move `do_x` out of the conditional.
+      - line: 7
+        column_start: 2
+        column_end: 6
+        message: Move `do_x` out of the conditional.
+      - line: 10
+        column_start: 2
+        column_end: 6
+        message: Move `do_x` out of the conditional.
+    corrected: |
+      case something
+      in :a
+        x1
+      in :b
+        x2
+      else
+        x3
+      end
+      do_x
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_style_identicalconditionalbranches_when_using_pattern_matching_on_case_match_with_identical_leading_lines_registers_and_corrects_an_offense
+    source: |
+      case something
+      in :a
+        do_x
+        x1
+      in :b
+        do_x
+        x2
+      else
+        do_x
+        x3
+      end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 6
+        message: Move `do_x` out of the conditional.
+      - line: 6
+        column_start: 2
+        column_end: 6
+        message: Move `do_x` out of the conditional.
+      - line: 9
+        column_start: 2
+        column_end: 6
+        message: Move `do_x` out of the conditional.
+    corrected: |
+      do_x
+      case something
+      in :a
+        x1
+      in :b
+        x2
+      else
+        x3
+      end
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_style_identicalconditionalbranches_when_using_pattern_matching_on_case_match_with_identical_leading_lines_single_child_branch_and_last_node_of_the_parent_doesn_t_register_an_offense
+    source: |
+      def foo
+        case something
+        in :a
+          do_x
+        in :b
+          do_x
+          x2
+        else
+          do_x
+          x3
+        end
+      end
+      
+      def bar
+        y = case something
+            in :a
+              do_x
+            in :b
+              do_x
+              x2
+            else
+              do_x
+              x3
+            end
+        do_something
+      end
+    offenses:
+      []
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_style_identicalconditionalbranches_when_using_pattern_matching_on_case_match_without_else_doesn_t_register_an_offense
+    source: |
+      case something
+      in :a
+        do_x
+      in :b
+        do_x
+      end
+    offenses:
+      []
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_style_identicalconditionalbranches_when_using_pattern_matching_on_case_match_with_empty_when_doesn_t_register_an_offense
+    source: |
+      case something
+      in :a
+        do_x
+        do_y
+      in :b
+      else
+        do_x
+        do_z
+      end
+    offenses:
+      []
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_style_identicalconditionalbranches_with_empty_parentheses_does_not_raise_any_error_when_using_empty_brace_in_the_both_parentheses
+    source: |
+      if condition
+        ()
+      else
+        ()
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_identicalconditionalbranches_with_empty_parentheses_does_not_raise_any_error_when_using_empty_parentheses_in_the_if_branch
+    source: |
+      if condition
+        ()
+      else
+        foo
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_identicalconditionalbranches_with_empty_parentheses_does_not_raise_any_error_when_using_empty_parentheses_in_the_else_branch
+    source: |
+      if condition
+        foo
+      else
+        ()
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_identicalconditionalbranches_with_a_ternary_registers_an_offense
+    source: |
+      x ? y : y
+    offenses:
+      - line: 1
+        column_start: 8
+        column_end: 9
+        message: Move `y` out of the conditional.
+      - line: 1
+        column_start: 4
+        column_end: 5
+        message: Move `y` out of the conditional.
+
+  - name: rubocop_cop_style_identicalconditionalbranches_when_the_result_of_the_conditional_is_assigned_with_identical_trailing_lines_with_if_registers_an_offense_and_corrects
+    source: |
+      x = if foo
+        bar
+      else
+        bar
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 5
+        message: Move `bar` out of the conditional.
+      - line: 4
+        column_start: 2
+        column_end: 5
+        message: Move `bar` out of the conditional.
+    corrected: |
+      if foo
+      else
+      end
+      x = bar
+
+  - name: rubocop_cop_style_identicalconditionalbranches_when_the_result_of_the_conditional_is_assigned_with_identical_trailing_lines_with_a_ternary_registers_an_offense_but_does_not_correct
+    source: |
+      x = foo ? bar : bar
+    offenses:
+      - line: 1
+        column_start: 10
+        column_end: 13
+        message: Move `bar` out of the conditional.
+      - line: 1
+        column_start: 16
+        column_end: 19
+        message: Move `bar` out of the conditional.
+
+  - name: rubocop_cop_style_identicalconditionalbranches_when_the_result_of_the_conditional_is_assigned_with_identical_trailing_lines_with_case_registers_an_offense_and_corrects
+    source: |
+      x = case something
+      when :a
+        bar
+      when :b
+        bar
+      else
+        bar
+      end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 5
+        message: Move `bar` out of the conditional.
+      - line: 5
+        column_start: 2
+        column_end: 5
+        message: Move `bar` out of the conditional.
+      - line: 7
+        column_start: 2
+        column_end: 5
+        message: Move `bar` out of the conditional.
+    corrected: |
+      case something
+      when :a
+      when :b
+      else
+      end
+      x = bar
+
+  - name: rubocop_cop_style_identicalconditionalbranches_when_the_result_of_the_conditional_is_assigned_with_identical_trailing_lines_with_pattern_matching_registers_an_offense_and_corrects
+    source: |
+      x = case something
+      in :a
+        bar
+      in :b
+        bar
+      else
+        bar
+      end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 5
+        message: Move `bar` out of the conditional.
+      - line: 5
+        column_start: 2
+        column_end: 5
+        message: Move `bar` out of the conditional.
+      - line: 7
+        column_start: 2
+        column_end: 5
+        message: Move `bar` out of the conditional.
+    corrected: |
+      case something
+      in :a
+      in :b
+      else
+      end
+      x = bar
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_style_identicalconditionalbranches_when_the_result_of_the_conditional_is_assigned_with_identical_leading_lines_with_if_registers_an_offense_and_corrects
+    source: |
+      x = if foo
+        bar
+        do_x(1)
+      else
+        bar
+        do_x(2)
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 5
+        message: Move `bar` out of the conditional.
+      - line: 5
+        column_start: 2
+        column_end: 5
+        message: Move `bar` out of the conditional.
+    corrected: |
+      bar
+      x = if foo
+        do_x(1)
+      else
+        do_x(2)
+      end
+
+  - name: rubocop_cop_style_identicalconditionalbranches_when_the_result_of_the_conditional_is_assigned_with_identical_leading_lines_with_case_registers_an_offense_and_corrects
+    source: |
+      x = case something
+      when :a
+        bar
+        do_x(1)
+      when :b
+        bar
+        do_x(2)
+      else
+        bar
+        do_x(3)
+      end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 5
+        message: Move `bar` out of the conditional.
+      - line: 6
+        column_start: 2
+        column_end: 5
+        message: Move `bar` out of the conditional.
+      - line: 9
+        column_start: 2
+        column_end: 5
+        message: Move `bar` out of the conditional.
+    corrected: |
+      bar
+      x = case something
+      when :a
+        do_x(1)
+      when :b
+        do_x(2)
+      else
+        do_x(3)
+      end
+
+  - name: rubocop_cop_style_identicalconditionalbranches_when_the_result_of_the_conditional_is_assigned_with_identical_leading_lines_with_pattern_matching_registers_an_offense_and_corrects
+    source: |
+      x = case something
+      in :a
+        bar
+        do_x(1)
+      in :b
+        bar
+        do_x(2)
+      else
+        bar
+        do_x(3)
+      end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 5
+        message: Move `bar` out of the conditional.
+      - line: 6
+        column_start: 2
+        column_end: 5
+        message: Move `bar` out of the conditional.
+      - line: 9
+        column_start: 2
+        column_end: 5
+        message: Move `bar` out of the conditional.
+    corrected: |
+      bar
+      x = case something
+      in :a
+        do_x(1)
+      in :b
+        do_x(2)
+      else
+        do_x(3)
+      end
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_style_identicalconditionalbranches_when_the_result_of_the_conditional_is_assigned_with_if_in_non_modifier_form_with_then_when_expression_is_on_the_same_line_as_then_registers_an_offense
+    source: |
+      def fixed_point(value)
+        if value then value
+        else value
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 16
+        column_end: 21
+        message: Move `value` out of the conditional.
+      - line: 3
+        column_start: 7
+        column_end: 12
+        message: Move `value` out of the conditional.
+
+  - name: rubocop_cop_style_identicalconditionalbranches_when_the_result_of_the_conditional_is_assigned_with_if_in_non_modifier_form_with_then_when_expression_is_on_the_same_line_as_then_registers_an_offense_when_else_branch_is_not_inlined
+    source: |
+      def fixed_point(value)
+        if value then value
+        else
+          value
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 16
+        column_end: 21
+        message: Move `value` out of the conditional.
+      - line: 4
+        column_start: 4
+        column_end: 9
+        message: Move `value` out of the conditional.
+
+  - name: rubocop_cop_style_identicalconditionalbranches_when_the_result_of_the_conditional_is_assigned_with_if_in_non_modifier_form_with_then_when_expression_is_on_the_next_line_registers_an_offense
+    source: |
+      def fixed_point(value)
+        if value then
+          value
+        else value
+        end
+      end
+    offenses:
+      - line: 3
+        column_start: 4
+        column_end: 9
+        message: Move `value` out of the conditional.
+      - line: 4
+        column_start: 7
+        column_end: 12
+        message: Move `value` out of the conditional.

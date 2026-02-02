@@ -1,0 +1,176 @@
+cop: Lint/UnreachableCode
+department: lint
+severity: warning
+implemented: false
+
+tests:
+  - name: rubocop_cop_lint_unreachablecode
+    source: |
+      class Dummy
+        def #{t}; end
+      end
+      
+      d = Dummy.new
+      d.instance_eval do
+        #{t}
+        bar
+      end
+      
+      #{t}
+      bar
+    offenses:
+      - line: 12
+        column_start: 0
+        column_end: 3
+        message: Unreachable code detected.
+    interpolated: true
+
+  - name: rubocop_cop_lint_unreachablecode
+    source: |
+      def foo
+        def #{t}; end
+      end
+      
+      #{t}
+      bar
+    offenses:
+      - line: 6
+        column_start: 0
+        column_end: 3
+        message: Unreachable code detected.
+    interpolated: true
+
+  - name: rubocop_cop_lint_unreachablecode
+    source: |
+      def foo
+        def self.#{t}; end
+      end
+      
+      #{t}
+      bar
+    offenses:
+      - line: 6
+        column_start: 0
+        column_end: 3
+        message: Unreachable code detected.
+    interpolated: true
+
+  - name: rubocop_cop_lint_unreachablecode
+    source: |
+      class Dummy
+        def #{t}; end
+      end
+      
+      d = Dummy.new
+      d.instance_eval do
+        #{t}
+        bar
+      end
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_lint_unreachablecode
+    source: |
+      class Dummy
+        def #{t}; end
+      end
+      
+      d = Dummy.new
+      d.instance_eval do
+        #{t}
+        _1
+      end
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_lint_unreachablecode
+    source: |
+      class Dummy
+        def #{t}; end
+      end
+      
+      d = Dummy.new
+      d.instance_eval do
+        #{t}
+        it
+      end
+    offenses:
+      []
+    ruby_version: ">= 3.4"
+    interpolated: true
+
+  - name: rubocop_cop_lint_unreachablecode
+    source: |
+      class Dummy
+        def #{t}; end
+      end
+      
+      d = Dummy.new
+      d.instance_eval do
+        d2 = Dummy.new
+        d2.instance_eval do
+          #{t}
+          bar
+        end
+      end
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_lint_unreachablecode
+    source: |
+      def #{t}; end
+      
+      Kernel.#{t}
+      foo
+    offenses:
+      - line: 4
+        column_start: 0
+        column_end: 3
+        message: Unreachable code detected.
+    interpolated: true
+
+  - name: rubocop_cop_lint_unreachablecode
+    source: |
+      def #{t}; end
+      
+      Dummy.#{t}
+      foo
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_lint_unreachablecode
+    source: |
+      class Dummy
+        def #{t}; end
+      end
+      
+      d = Dummy.new
+      d.instance_eval do
+        Kernel.#{t}
+        foo
+      end
+    offenses:
+      - line: 8
+        column_start: 2
+        column_end: 5
+        message: Unreachable code detected.
+    interpolated: true
+
+  - name: rubocop_cop_lint_unreachablecode
+    source: |
+      class Dummy
+        def #{t}; end
+      end
+      
+      d = Dummy.new
+      d.instance_eval do
+        Dummy.#{t}
+        foo
+      end
+    offenses:
+      []
+    interpolated: true

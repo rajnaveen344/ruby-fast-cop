@@ -1,0 +1,164 @@
+cop: Lint/AmbiguousOperatorPrecedence
+department: lint
+severity: warning
+implemented: false
+
+tests:
+  - name: rubocop_cop_lint_ambiguousoperatorprecedence_does_not_register_an_offense_when_there_is_only_one_operator_in_the_expression
+    source: |
+      a + b
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_ambiguousoperatorprecedence_does_not_register_an_offense_when_all_operators_in_the_expression_have_the_same_precedence
+    source: |
+      a + b + c
+      a * b / c % d
+      a && b && c
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_ambiguousoperatorprecedence_does_not_register_an_offense_when_expressions_are_wrapped_in_parentheses_by_precedence
+    source: |
+      a + (b * c)
+      (a ** b) + c
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_ambiguousoperatorprecedence_does_not_register_an_offense_when_expressions_are_wrapped_in_parentheses_by_reverse_precedence
+    source: |
+      (a + b) * c
+      a ** (b + c)
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_ambiguousoperatorprecedence_does_not_register_an_offense_when_boolean_expressions_are_wrapped_in_parens
+    source: |
+      (a && b) || c
+      a || (b & c)
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_ambiguousoperatorprecedence_registers_an_offense_when_an_expression_with_mixed_precedence_has_no_parens
+    source: |
+      a + b * c
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 9
+        message: Wrap expressions with varying precedence with parentheses to avoid ambiguity.
+    corrected: |
+      a + (b * c)
+
+  - name: rubocop_cop_lint_ambiguousoperatorprecedence_registers_an_offense_when_an_expression_with_mixed_boolean_operators_has_no_parens
+    source: |
+      a && b || c
+      a || b && c
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 6
+        message: Wrap expressions with varying precedence with parentheses to avoid ambiguity.
+      - line: 2
+        column_start: 5
+        column_end: 11
+        message: Wrap expressions with varying precedence with parentheses to avoid ambiguity.
+    corrected: |
+      (a && b) || c
+      a || (b && c)
+
+  - name: rubocop_cop_lint_ambiguousoperatorprecedence_registers_an_offense_for_expressions_containing_booleans_and_operators
+    source: |
+      a && b * c
+      a * b && c
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 10
+        message: Wrap expressions with varying precedence with parentheses to avoid ambiguity.
+      - line: 2
+        column_start: 0
+        column_end: 5
+        message: Wrap expressions with varying precedence with parentheses to avoid ambiguity.
+    corrected: |
+      a && (b * c)
+      (a * b) && c
+
+  - name: rubocop_cop_lint_ambiguousoperatorprecedence_registers_an_offense_when_the_entire_expression_is_wrapped_in_parentheses
+    source: |
+      (a + b * c ** d)
+    offenses:
+      - line: 1
+        column_start: 9
+        column_end: 15
+        message: Wrap expressions with varying precedence with parentheses to avoid ambiguity.
+      - line: 1
+        column_start: 5
+        column_end: 15
+        message: Wrap expressions with varying precedence with parentheses to avoid ambiguity.
+    corrected: |
+      (a + (b * (c ** d)))
+
+  - name: rubocop_cop_lint_ambiguousoperatorprecedence_corrects_a_super_long_expression_in_precedence_order
+    source: |
+      a ** b * c / d % e + f - g << h >> i & j | k ^ l && m || n
+      ^^^^^^^^^^^^^^^^^^ Wrap expressions [...]
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Wrap expressions [...]
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Wrap expressions [...]
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 6
+        message: Wrap expressions [...]
+      - line: 2
+        column_start: 0
+        column_end: 26
+        message: Wrap expressions [...]
+      - line: 3
+        column_start: 0
+        column_end: 40
+        message: Wrap expressions [...]
+      - line: 4
+        column_start: 0
+        column_end: 53
+        message: Wrap expressions [...]
+    corrected: |
+      (((((((a ** b) * c / d % e) + f - g) << h >> i) & j) | k ^ l) && m) || n
+
+  - name: rubocop_cop_lint_ambiguousoperatorprecedence_corrects_a_super_long_expression_in_reverse_precedence_order
+    source: |
+      a || b && c | d ^ e & f << g >> h + i - j * k / l % n ** m
+                                              ^^^^^^^^^^^^^^^^^^ Wrap expressions [...]
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Wrap expressions [...]
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Wrap expressions [...]
+    offenses:
+      - line: 1
+        column_start: 52
+        column_end: 58
+        message: Wrap expressions [...]
+      - line: 2
+        column_start: 32
+        column_end: 58
+        message: Wrap expressions [...]
+      - line: 3
+        column_start: 18
+        column_end: 58
+        message: Wrap expressions [...]
+      - line: 4
+        column_start: 5
+        column_end: 58
+        message: Wrap expressions [...]
+    corrected: |
+      a || (b && (c | d ^ (e & (f << g >> (h + i - (j * k / l % (n ** m)))))))
+
+  - name: rubocop_cop_lint_ambiguousoperatorprecedence_allows_an_operator_with_and
+    source: |
+      array << i and return
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_ambiguousoperatorprecedence_allows_an_operator_with_or
+    source: |
+      array << i or return
+    offenses:
+      []

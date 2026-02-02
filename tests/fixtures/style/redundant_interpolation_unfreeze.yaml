@@ -1,0 +1,165 @@
+cop: Style/RedundantInterpolationUnfreeze
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_redundantinterpolationunfreeze_target_ruby_version_3_0_registers_an_offense_for
+    source: |
+      +"#{foo} bar"
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 1
+        message: "Don't unfreeze interpolated strings as they are already unfrozen."
+    corrected: |
+      "#{foo} bar"
+    ruby_version: ">= 3.0"
+
+  - name: rubocop_cop_style_redundantinterpolationunfreeze_target_ruby_version_3_0_registers_an_offense_for_as_a_normal_method_call
+    source: |
+      "#{foo} bar".+@
+    offenses:
+      - line: 1
+        column_start: 13
+        column_end: 15
+        message: "Don't unfreeze interpolated strings as they are already unfrozen."
+    corrected: |
+      "#{foo} bar"
+    ruby_version: ">= 3.0"
+
+  - name: rubocop_cop_style_redundantinterpolationunfreeze_target_ruby_version_3_0_registers_an_offense_for_dup
+    source: |
+      "#{foo} bar".dup
+    offenses:
+      - line: 1
+        column_start: 13
+        column_end: 16
+        message: "Don't unfreeze interpolated strings as they are already unfrozen."
+    corrected: |
+      "#{foo} bar"
+    ruby_version: ">= 3.0"
+
+  - name: rubocop_cop_style_redundantinterpolationunfreeze_target_ruby_version_3_0_registers_an_offense_for_interpolated_heredoc_with
+    source: |
+      foo(+<<~MSG)
+        foo #{bar}
+        baz
+      MSG
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 5
+        message: "Don't unfreeze interpolated strings as they are already unfrozen."
+    corrected: |
+      foo(<<~MSG)
+        foo #{bar}
+        baz
+      MSG
+    ruby_version: ">= 3.0"
+
+  - name: rubocop_cop_style_redundantinterpolationunfreeze_target_ruby_version_3_0_registers_an_offense_for_interpolated_strings_with_global_variables
+    source: |
+      +"#$var"
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 1
+        message: "Don't unfreeze interpolated strings as they are already unfrozen."
+    corrected: |
+      "#$var"
+    ruby_version: ">= 3.0"
+
+  - name: rubocop_cop_style_redundantinterpolationunfreeze_target_ruby_version_3_0_registers_an_offense_for_strings_with_interpolated_instance_variables
+    source: |
+      +"#@var"
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 1
+        message: "Don't unfreeze interpolated strings as they are already unfrozen."
+    corrected: |
+      "#@var"
+    ruby_version: ">= 3.0"
+
+  - name: rubocop_cop_style_redundantinterpolationunfreeze_target_ruby_version_3_0_registers_an_offense_for_strings_with_interpolated_class_variables
+    source: |
+      +"#@@var"
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 1
+        message: "Don't unfreeze interpolated strings as they are already unfrozen."
+    corrected: |
+      "#@@var"
+    ruby_version: ">= 3.0"
+
+  - name: rubocop_cop_style_redundantinterpolationunfreeze_target_ruby_version_3_0_registers_an_offense_for_interpolated_heredoc_with_dup
+    source: |
+      foo(<<~MSG.dup)
+        foo #{bar}
+        baz
+      MSG
+    offenses:
+      - line: 1
+        column_start: 11
+        column_end: 14
+        message: "Don't unfreeze interpolated strings as they are already unfrozen."
+    corrected: |
+      foo(<<~MSG)
+        foo #{bar}
+        baz
+      MSG
+    ruby_version: ">= 3.0"
+
+  - name: rubocop_cop_style_redundantinterpolationunfreeze_target_ruby_version_3_0_registers_no_offense_for_uninterpolated_heredoc
+    source: |
+      foo(+<<~'MSG')
+        foo #{bar}
+        baz
+      MSG
+    offenses:
+      []
+    ruby_version: ">= 3.0"
+
+  - name: rubocop_cop_style_redundantinterpolationunfreeze_target_ruby_version_3_0_registers_no_offense_for_plain_string_literals
+    source: |
+      "foo".dup
+    offenses:
+      []
+    ruby_version: ">= 3.0"
+
+  - name: rubocop_cop_style_redundantinterpolationunfreeze_target_ruby_version_3_0_registers_no_offense_for_other_types
+    source: |
+      local.dup
+    offenses:
+      []
+    ruby_version: ">= 3.0"
+
+  - name: rubocop_cop_style_redundantinterpolationunfreeze_target_ruby_version_3_0_registers_no_offense_when_the_method_has_arguments
+    source: |
+      "#{foo} bar".dup(baz)
+    offenses:
+      []
+    ruby_version: ">= 3.0"
+
+  - name: rubocop_cop_style_redundantinterpolationunfreeze_target_ruby_version_3_0_registers_no_offense_for_multiline_string_literals
+    source: |
+      +'foo' 'bar'
+    offenses:
+      []
+    ruby_version: ">= 3.0"
+
+  - name: rubocop_cop_style_redundantinterpolationunfreeze_target_ruby_version_3_0_registers_no_offense_when_there_is_no_receiver
+    source: |
+      dup
+    offenses:
+      []
+    ruby_version: ">= 3.0"
+
+  - name: rubocop_cop_style_redundantinterpolationunfreeze_target_ruby_version_3_0_accepts_unfreezing_an_interpolated_string
+    source: |
+      +"#{foo} bar"
+    offenses:
+      []
+    ruby_version: ">= 2.7"

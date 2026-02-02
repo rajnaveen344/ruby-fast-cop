@@ -1,0 +1,462 @@
+cop: Style/MapCompactWithConditionalBlock
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_mapcompactwithconditionalblock_with_multiline_block_registers_an_offense_and_corrects_to_select_with_if_condition
+    source: |
+      foo.map do |item|
+        if item.bar?
+          item
+        else
+          next
+        end
+      end.compact
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 17
+        message: Replace `map { ... }.compact` with `select`.
+    corrected: |
+      foo.select { |item| item.bar? }
+
+  - name: rubocop_cop_style_mapcompactwithconditionalblock_with_multiline_block_registers_an_offense_and_corrects_to_select_with_if_condition_when_using_filter_map
+    source: |
+      foo.filter_map do |item|
+        if item.bar?
+          item
+        else
+          next
+        end
+      end
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 24
+        message: Replace `filter_map { ... }` with `select`.
+    corrected: |
+      foo.select { |item| item.bar? }
+
+  - name: rubocop_cop_style_mapcompactwithconditionalblock_with_multiline_block_registers_an_offense_and_corrects_to_select_with_if_condition_when_using_filter_map_with_redundant_compact
+    source: |
+      foo.filter_map do |item|
+        if item.bar?
+          item
+        else
+          next
+        end
+      end.compact
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 24
+        message: Replace `filter_map { ... }.compact` with `select`.
+    corrected: |
+      foo.select { |item| item.bar? }
+
+  - name: rubocop_cop_style_mapcompactwithconditionalblock_with_multiline_block_registers_an_offense_and_corrects_to_safe_navigation_select_call_with_if_condition
+    source: |
+      foo&.map do |item|
+        if item.bar?
+          item
+        else
+          next
+        end
+      end&.compact
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 18
+        message: Replace `map { ... }.compact` with `select`.
+    corrected: |
+      foo&.select { |item| item.bar? }
+
+  - name: rubocop_cop_style_mapcompactwithconditionalblock_with_multiline_block_registers_an_offense_and_corrects_to_select_with_multi_line_if_condition
+    source: |
+      foo.map do |item|
+        if item.bar? &&
+          bar.baz
+          item
+        else
+          next
+        end
+      end.compact
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 17
+        message: Replace `map { ... }.compact` with `select`.
+    corrected: |
+      foo.select { |item| item.bar? &&
+          bar.baz }
+
+  - name: rubocop_cop_style_mapcompactwithconditionalblock_with_multiline_block_registers_an_offense_and_corrects_to_select_if_next_value_in_if_branch_and_nil_in_else_branch
+    source: |
+      foo.map do |item|
+        if item.bar?
+          next item
+        else
+          nil
+        end
+      end.compact
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 17
+        message: Replace `map { ... }.compact` with `select`.
+    corrected: |
+      foo.select { |item| item.bar? }
+
+  - name: rubocop_cop_style_mapcompactwithconditionalblock_with_multiline_block_registers_an_offense_and_corrects_to_reject_with_if_condition
+    source: |
+      foo.map do |item|
+        if item.bar?
+          next
+        else
+          item
+        end
+      end.compact
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 17
+        message: Replace `map { ... }.compact` with `reject`.
+    corrected: |
+      foo.reject { |item| item.bar? }
+
+  - name: rubocop_cop_style_mapcompactwithconditionalblock_with_multiline_block_registers_an_offense_and_corrects_to_reject_if_next_value_in_else_branch_and_nil_in_if_branch
+    source: |
+      foo.map do |item|
+        if item.bar?
+          nil
+        else
+          next item
+        end
+      end.compact
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 17
+        message: Replace `map { ... }.compact` with `reject`.
+    corrected: |
+      foo.reject { |item| item.bar? }
+
+  - name: rubocop_cop_style_mapcompactwithconditionalblock_with_multiline_block_registers_an_offense_and_corrects_to_select_with_ternary_expression
+    source: |
+      foo.map do |item|
+        item.bar? ? item : next
+      end.compact
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 17
+        message: Replace `map { ... }.compact` with `select`.
+    corrected: |
+      foo.select { |item| item.bar? }
+
+  - name: rubocop_cop_style_mapcompactwithconditionalblock_with_multiline_block_registers_an_offense_and_corrects_to_reject_with_ternary_expression
+    source: |
+      foo.map do |item|
+        item.bar? ? next : item
+      end.compact
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 17
+        message: Replace `map { ... }.compact` with `reject`.
+    corrected: |
+      foo.reject { |item| item.bar? }
+
+  - name: rubocop_cop_style_mapcompactwithconditionalblock_with_multiline_block_registers_an_offense_and_corrects_to_select_with_modifier_form_of_if_condition
+    source: |
+      foo.map do |item|
+        item if item.bar?
+      end.compact
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 17
+        message: Replace `map { ... }.compact` with `select`.
+    corrected: |
+      foo.select { |item| item.bar? }
+
+  - name: rubocop_cop_style_mapcompactwithconditionalblock_with_multiline_block_registers_an_offense_and_corrects_to_reject_with_modifier_form_of_unless_condition
+    source: |
+      foo.map do |item|
+        item unless item.bar?
+      end.compact
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 17
+        message: Replace `map { ... }.compact` with `reject`.
+    corrected: |
+      foo.reject { |item| item.bar? }
+
+  - name: rubocop_cop_style_mapcompactwithconditionalblock_with_multiline_block_registers_an_offense_and_corrects_to_reject_with_guard_clause_of_if
+    source: |
+      foo.map do |item|
+        next if item.bar?
+      
+        item
+      end.compact
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 17
+        message: Replace `map { ... }.compact` with `reject`.
+    corrected: |
+      foo.reject { |item| item.bar? }
+
+  - name: rubocop_cop_style_mapcompactwithconditionalblock_with_multiline_block_registers_an_offense_and_corrects_to_select_with_guard_clause_of_unless
+    source: |
+      foo.map do |item|
+        next unless item.bar?
+      
+        item
+      end.compact
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 17
+        message: Replace `map { ... }.compact` with `select`.
+    corrected: |
+      foo.select { |item| item.bar? }
+
+  - name: rubocop_cop_style_mapcompactwithconditionalblock_with_multiline_block_registers_an_offense_and_corrects_to_select_with_guard_clause_of_if_and_next_has_a_value
+    source: |
+      foo.map do |item|
+        next item if item.bar?
+      end.compact
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 17
+        message: Replace `map { ... }.compact` with `select`.
+    corrected: |
+      foo.select { |item| item.bar? }
+
+  - name: rubocop_cop_style_mapcompactwithconditionalblock_with_multiline_block_registers_an_offense_and_corrects_to_reject_with_guard_clause_of_unless_and_next_has_a_value
+    source: |
+      foo.map do |item|
+        next item unless item.bar?
+      end.compact
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 17
+        message: Replace `map { ... }.compact` with `reject`.
+    corrected: |
+      foo.reject { |item| item.bar? }
+
+  - name: rubocop_cop_style_mapcompactwithconditionalblock_with_multiline_block_registers_an_offense_and_corrects_to_select_with_guard_clause_of_if_and_next_has_a_value_and_return_nil
+    source: |
+      foo.map do |item|
+        next item if item.bar?
+      
+        nil
+      end.compact
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 17
+        message: Replace `map { ... }.compact` with `select`.
+    corrected: |
+      foo.select { |item| item.bar? }
+
+  - name: rubocop_cop_style_mapcompactwithconditionalblock_with_multiline_block_registers_an_offense_and_corrects_to_reject_with_guard_clause_of_unless_and_next_has_a_value_and_return_nil
+    source: |
+      foo.map do |item|
+        next item unless item.bar?
+      
+        nil
+      end.compact
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 17
+        message: Replace `map { ... }.compact` with `reject`.
+    corrected: |
+      foo.reject { |item| item.bar? }
+
+  - name: rubocop_cop_style_mapcompactwithconditionalblock_with_multiline_block_registers_an_offense_and_corrects_to_select_with_guard_clause_of_if_and_next_explicitly_nil
+    source: |
+      foo.map do |item|
+        next nil if item.bar?
+      
+        item
+      end.compact
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 17
+        message: Replace `map { ... }.compact` with `select`.
+    corrected: |
+      foo.select { |item| item.bar? }
+
+  - name: rubocop_cop_style_mapcompactwithconditionalblock_with_multiline_block_registers_an_offense_and_corrects_to_reject_with_guard_clause_of_unless_and_next_explicitly_nil
+    source: |
+      foo.map do |item|
+        next nil unless item.bar?
+      
+        item
+      end.compact
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 17
+        message: Replace `map { ... }.compact` with `reject`.
+    corrected: |
+      foo.reject { |item| item.bar? }
+
+  - name: rubocop_cop_style_mapcompactwithconditionalblock_with_multiline_block_registers_an_offense_and_corrects_to_select_if_condition_has_not_else_branch
+    source: |
+      foo.map do |item|
+        if item.bar?
+          item
+        end
+      end.compact
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 17
+        message: Replace `map { ... }.compact` with `select`.
+    corrected: |
+      foo.select { |item| item.bar? }
+
+  - name: rubocop_cop_style_mapcompactwithconditionalblock_with_multiline_block_registers_an_offense_and_corrects_to_reject_with_unless_condition
+    source: |
+      foo.map do |item|
+        unless item.bar?
+          item
+        end
+      end.compact
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 17
+        message: Replace `map { ... }.compact` with `reject`.
+    corrected: |
+      foo.reject { |item| item.bar? }
+
+  - name: rubocop_cop_style_mapcompactwithconditionalblock_with_multiline_block_does_not_register_offenses_if_compact_is_not_chained_to_map
+    source: |
+      foo.map do |item|
+        if item.bar?
+          item
+        else
+          next
+        end
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_mapcompactwithconditionalblock_with_multiline_block_does_not_register_an_offense_when_map_is_used_with_methods_other_than_compact
+    source: |
+      foo.map do |item|
+        if item.bar?
+          item
+        else
+          next
+        end
+      end.do_something
+    offenses:
+      []
+
+  - name: rubocop_cop_style_mapcompactwithconditionalblock_with_multiline_block_does_not_register_an_offense_when_using_map_with_custom_compact
+    source: |
+      foo.map do |item|
+        if item.bar?
+          item
+        else
+          next
+        end
+      end.compact(arg)
+    offenses:
+      []
+
+  - name: rubocop_cop_style_mapcompactwithconditionalblock_with_multiline_block_does_not_register_offenses_if_return_value_is_not_same_as_block_argument
+    source: |
+      foo.map do |item|
+        if item.bar?
+          1
+        else
+          2
+        end
+      end.compact
+    offenses:
+      []
+
+  - name: rubocop_cop_style_mapcompactwithconditionalblock_with_multiline_block_does_not_register_offenses_if_condition_has_elsif_branch
+    source: |
+      foo.map do |item|
+        if item.bar?
+          item
+        elsif
+          baz
+        else
+          next
+        end
+      end.compact
+    offenses:
+      []
+
+  - name: rubocop_cop_style_mapcompactwithconditionalblock_with_multiline_block_does_not_register_offenses_if_there_are_multiple_guard_clauses
+    source: |
+      return unless item.bar?
+      return unless item.baz?
+      
+      item
+    offenses:
+      []
+
+  - name: rubocop_cop_style_mapcompactwithconditionalblock_with_single_line_block_registers_an_offense_and_corrects_to_select_with_ternary_expression
+    source: |
+      foo.map { |item| item.bar? ? item : next }.compact
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 50
+        message: Replace `map { ... }.compact` with `select`.
+    corrected: |
+      foo.select { |item| item.bar? }
+
+  - name: rubocop_cop_style_mapcompactwithconditionalblock_with_single_line_block_registers_an_offense_and_corrects_to_reject_with_ternary_expression
+    source: |
+      foo.map { |item| item.bar? ? next : item }.compact
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 50
+        message: Replace `map { ... }.compact` with `reject`.
+    corrected: |
+      foo.reject { |item| item.bar? }
+
+  - name: rubocop_cop_style_mapcompactwithconditionalblock_with_single_line_block_registers_an_offense_and_corrects_to_select_with_modifier_form_of_if_condition
+    source: |
+      foo.map { |item| item if item.bar? }.compact
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 44
+        message: Replace `map { ... }.compact` with `select`.
+    corrected: |
+      foo.select { |item| item.bar? }
+
+  - name: rubocop_cop_style_mapcompactwithconditionalblock_with_single_line_block_registers_an_offense_and_corrects_to_reject_with_modifier_form_of_unless_condition
+    source: |
+      foo.map { |item| item unless item.bar? }.compact
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 48
+        message: Replace `map { ... }.compact` with `reject`.
+    corrected: |
+      foo.reject { |item| item.bar? }
+
+  - name: rubocop_cop_style_mapcompactwithconditionalblock_with_single_line_block_does_not_register_offenses_if_compact_is_not_chained_to_map
+    source: |
+      foo.map { |item| item if item.bar }
+    offenses:
+      []

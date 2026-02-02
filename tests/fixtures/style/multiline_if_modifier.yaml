@@ -1,0 +1,99 @@
+cop: Style/MultilineIfModifier
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_multilineifmodifier_if_guard_clause_registers_an_offense
+    source: |
+      {
+        result: run
+      } if cond
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 1
+        message: Favor a normal if-statement over a modifier clause in a multiline statement.
+    corrected: |
+      if cond
+        {
+          result: run
+        }
+      end
+
+  - name: rubocop_cop_style_multilineifmodifier_if_guard_clause_allows_a_one_liner
+    source: |
+      run if cond
+    offenses:
+      []
+
+  - name: rubocop_cop_style_multilineifmodifier_if_guard_clause_allows_a_multiline_condition
+    source: |
+      run if cond &&
+             cond2
+    offenses:
+      []
+
+  - name: rubocop_cop_style_multilineifmodifier_if_guard_clause_registers_an_offense_when_nested_modifier
+    source: |
+      [
+      ] if inner if outer
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 1
+        message: Favor a normal if-statement over a modifier clause in a multiline statement.
+    corrected: |
+      if outer
+        if inner
+          [
+          ]
+        end
+      end
+
+  - name: rubocop_cop_style_multilineifmodifier_unless_guard_clause_registers_an_offense
+    source: |
+      {
+        result: run
+      } unless cond
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 1
+        message: Favor a normal unless-statement over a modifier clause in a multiline statement.
+    corrected: |
+      unless cond
+        {
+          result: run
+        }
+      end
+
+  - name: rubocop_cop_style_multilineifmodifier_unless_guard_clause_allows_a_one_liner
+    source: |
+      run unless cond
+    offenses:
+      []
+
+  - name: rubocop_cop_style_multilineifmodifier_unless_guard_clause_allows_a_multiline_condition
+    source: |
+      run unless cond &&
+                 cond2
+    offenses:
+      []
+
+  - name: rubocop_cop_style_multilineifmodifier_unless_guard_clause_registers_an_offense_when_nested_modifier
+    source: |
+      [
+      ] unless inner unless outer
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 1
+        message: Favor a normal unless-statement over a modifier clause in a multiline statement.
+    corrected: |
+      unless outer
+        unless inner
+          [
+          ]
+        end
+      end

@@ -1,4 +1,4 @@
-use ruby_fast_cop::{check_file_with_config, find_unsupported_cops, Config};
+use ruby_fast_cop::{Config, check_file_with_config, find_unsupported_cops};
 use std::path::PathBuf;
 
 fn main() {

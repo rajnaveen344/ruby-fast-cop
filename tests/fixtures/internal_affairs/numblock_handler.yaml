@@ -1,0 +1,51 @@
+cop: InternalAffairs/NumblockHandler
+department: internal_affairs
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_internalaffairs_numblockhandler_registers_an_offense_for_cops_with_forgotten_numblock_handlers
+    source: |
+      class Cop < Base
+        def on_block(node)
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 20
+        message: Define on_numblock to handle blocks with numbered arguments.
+
+  - name: rubocop_cop_internalaffairs_numblockhandler_does_not_register_an_offense_for_cops_with_on_numblock_alias
+    source: |
+      class Cop < Base
+        def on_block(node)
+        end
+      
+        alias on_numblock on_block
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_internalaffairs_numblockhandler_does_not_register_an_offense_for_cops_with_on_numblock_alias_method
+    source: |
+      class Cop < Base
+        def on_block(node)
+        end
+      
+        alias_method :on_numblock, :on_block
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_internalaffairs_numblockhandler_does_not_register_an_offense_for_cops_with_on_numblock_method
+    source: |
+      class Cop < Base
+        def on_block(node)
+        end
+      
+        def on_numblock(node)
+        end
+      end
+    offenses:
+      []

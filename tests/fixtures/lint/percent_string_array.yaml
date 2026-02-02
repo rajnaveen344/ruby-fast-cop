@@ -1,0 +1,77 @@
+cop: Lint/PercentStringArray
+department: lint
+severity: warning
+implemented: false
+
+tests:
+  - name: rubocop_cop_lint_percentstringarray_detecting_quotes_or_commas_in_a_w_w_string_accepts_tokens_without_quotes_or_commas
+    source: |
+      %#{char}(foo bar baz)
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_lint_percentstringarray_detecting_quotes_or_commas_in_a_w_w_string_adds_an_offense_and_corrects_when_tokens_contain_quotes_and_are_comma_separated
+    source: |
+      %#{char}('foo', 'bar', 'baz')
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 23
+        message: "Within `%w`/`%W`, quotes and ',' are unnecessary and may be unwanted in the resulting strings."
+    corrected: |
+      %#{char}(foo bar baz)
+    interpolated: true
+
+  - name: rubocop_cop_lint_percentstringarray_detecting_quotes_or_commas_in_a_w_w_string_adds_an_offense_and_corrects_when_tokens_contain_both_types_of_quotes
+    source: |
+      %#{char}('foo' "bar" 'baz')
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 21
+        message: "Within `%w`/`%W`, quotes and ',' are unnecessary and may be unwanted in the resulting strings."
+    corrected: |
+      %#{char}(foo bar baz)
+    interpolated: true
+
+  - name: rubocop_cop_lint_percentstringarray_detecting_quotes_or_commas_in_a_w_w_string_adds_an_offense_and_corrects_when_one_token_is_quoted_but_there_are_no_commas
+    source: |
+      %#{char}('foo' bar baz)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 17
+        message: "Within `%w`/`%W`, quotes and ',' are unnecessary and may be unwanted in the resulting strings."
+    corrected: |
+      %#{char}(foo bar baz)
+    interpolated: true
+
+  - name: rubocop_cop_lint_percentstringarray_detecting_quotes_or_commas_in_a_w_w_string_adds_an_offense_and_corrects_when_there_are_no_quotes_but_one_comma
+    source: |
+      %#{char}(foo, bar baz)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 16
+        message: "Within `%w`/`%W`, quotes and ',' are unnecessary and may be unwanted in the resulting strings."
+    corrected: |
+      %#{char}(foo bar baz)
+    interpolated: true
+
+  - name: rubocop_cop_lint_percentstringarray_with_invalid_byte_sequence_in_utf_8_adds_an_offense_and_corrects_when_tokens_contain_quotes
+    source: |
+      %W("a\255\255")
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 15
+        message: "Within `%w`/`%W`, quotes and ',' are unnecessary and may be unwanted in the resulting strings."
+    corrected: |
+      %W(a\255\255)
+
+  - name: rubocop_cop_lint_percentstringarray_with_invalid_byte_sequence_in_utf_8_accepts_if_tokens_contain_invalid_byte_sequence_only
+    source: |
+      %W(\255)
+    offenses:
+      []

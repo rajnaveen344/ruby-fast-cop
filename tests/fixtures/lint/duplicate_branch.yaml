@@ -1,0 +1,1079 @@
+cop: Lint/DuplicateBranch
+department: lint
+severity: warning
+implemented: false
+
+tests:
+  - name: rubocop_cop_lint_duplicatebranch_allows_branches_to_be_duplicated
+    source: |
+      if x
+        #{value}
+      elsif y
+        #{value}
+      else
+        #{value}
+      end
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_lint_duplicatebranch_registers_an_offense
+    source: |
+      if x
+        #{value}
+      elsif y
+        #{value}
+      else
+        #{value}
+      end
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 7
+        message: Duplicate branch body detected.
+      - line: 5
+        column_start: 0
+        column_end: 4
+        message: Duplicate branch body detected.
+    interpolated: true
+
+  - name: rubocop_cop_lint_duplicatebranch_allows_branches_to_be_duplicated
+    source: |
+      case foo
+      when x then #{value}
+      when y then #{value}
+      else #{value}
+      end
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_lint_duplicatebranch_registers_an_offense
+    source: |
+      case foo
+      when x then #{value}
+      when y then #{value}
+      else #{value}
+      end
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 20
+        message: Duplicate branch body detected.
+      - line: 4
+        column_start: 0
+        column_end: 4
+        message: Duplicate branch body detected.
+    interpolated: true
+
+  - name: rubocop_cop_lint_duplicatebranch_allows_branches_to_be_duplicated
+    source: |
+      case foo
+      in x then #{value}
+      in y then #{value}
+      else #{value}
+      end
+    offenses:
+      []
+    ruby_version: ">= 2.7"
+    interpolated: true
+
+  - name: rubocop_cop_lint_duplicatebranch_registers_an_offense
+    source: |
+      case foo
+      in x then #{value}
+      in y then #{value}
+      else #{value}
+      end
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 18
+        message: Duplicate branch body detected.
+      - line: 4
+        column_start: 0
+        column_end: 4
+        message: Duplicate branch body detected.
+    ruby_version: ">= 2.7"
+    interpolated: true
+
+  - name: rubocop_cop_lint_duplicatebranch_allows_branches_to_be_duplicated
+    source: |
+      begin
+        foo
+      rescue FooError
+        #{value}
+      rescue BarError
+        #{value}
+      else
+        #{value}
+      end
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_lint_duplicatebranch_registers_an_offense
+    source: |
+      begin
+        foo
+      rescue FooError
+        #{value}
+      rescue BarError
+        #{value}
+      else
+        #{value}
+      end
+    offenses:
+      - line: 5
+        column_start: 0
+        column_end: 15
+        message: Duplicate branch body detected.
+      - line: 7
+        column_start: 0
+        column_end: 4
+        message: Duplicate branch body detected.
+    interpolated: true
+
+  - name: rubocop_cop_lint_duplicatebranch_registers_an_offense_when_if_has_duplicate_else_branch
+    source: |
+      if foo
+        do_foo
+      else
+        do_foo
+      end
+      
+      if foo
+        do_foo
+        do_something_else
+      else
+        do_foo
+        do_something_else
+      end
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 4
+        message: Duplicate branch body detected.
+      - line: 10
+        column_start: 0
+        column_end: 4
+        message: Duplicate branch body detected.
+
+  - name: rubocop_cop_lint_duplicatebranch_registers_an_offense_when_unless_has_duplicate_else_branch
+    source: |
+      unless foo
+        do_bar
+      else
+        do_bar
+      end
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 4
+        message: Duplicate branch body detected.
+
+  - name: rubocop_cop_lint_duplicatebranch_registers_an_offense_when_if_has_duplicate_elsif_branch
+    source: |
+      if foo
+        do_foo
+      elsif bar
+        do_foo
+      end
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 9
+        message: Duplicate branch body detected.
+
+  - name: rubocop_cop_lint_duplicatebranch_registers_an_offense_when_if_has_multiple_duplicate_branches
+    source: |
+      if foo
+        do_foo
+      elsif bar
+        do_bar
+      elsif baz
+        do_foo
+      elsif quux
+        do_bar
+      end
+    offenses:
+      - line: 5
+        column_start: 0
+        column_end: 9
+        message: Duplicate branch body detected.
+      - line: 7
+        column_start: 0
+        column_end: 10
+        message: Duplicate branch body detected.
+
+  - name: rubocop_cop_lint_duplicatebranch_does_not_register_an_offense_when_if_has_no_duplicate_branches
+    source: |
+      if foo
+        do_foo
+      elsif bar
+        do_bar
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_duplicatebranch_does_not_register_an_offense_when_unless_has_no_duplicate_branches
+    source: |
+      unless foo
+        do_bar
+      else
+        do_foo
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_duplicatebranch_does_not_register_an_offense_for_simple_if_without_other_branches
+    source: |
+      if foo
+        do_foo
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_duplicatebranch_does_not_register_an_offense_for_simple_unless_without_other_branches
+    source: |
+      unless foo
+        do_bar
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_duplicatebranch_does_not_register_an_offense_for_empty_if
+    source: |
+      if foo
+        # Comment.
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_duplicatebranch_does_not_register_an_offense_for_empty_unless
+    source: |
+      unless foo
+        # Comment.
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_duplicatebranch_does_not_register_an_offense_for_modifier_if
+    source: |
+      do_foo if foo
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_duplicatebranch_does_not_register_an_offense_for_modifier_unless
+    source: |
+      do_bar unless foo
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_duplicatebranch_registers_an_offense_when_ternary_has_duplicate_branches
+    source: |
+      res = foo ? do_foo : do_foo
+    offenses:
+      - line: 1
+        column_start: 21
+        column_end: 27
+        message: Duplicate branch body detected.
+
+  - name: rubocop_cop_lint_duplicatebranch_does_not_register_an_offense_when_ternary_has_no_duplicate_branches
+    source: |
+      res = foo ? do_foo : do_bar
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_duplicatebranch_registers_an_offense_when_case_has_duplicate_when_branch
+    source: |
+      case x
+      when foo
+        do_foo
+      when bar
+        do_foo
+      end
+    offenses:
+      - line: 4
+        column_start: 0
+        column_end: 8
+        message: Duplicate branch body detected.
+
+  - name: rubocop_cop_lint_duplicatebranch_registers_an_offense_when_case_has_duplicate_else_branch
+    source: |
+      case x
+      when foo
+        do_foo
+      else
+        do_foo
+      end
+    offenses:
+      - line: 4
+        column_start: 0
+        column_end: 4
+        message: Duplicate branch body detected.
+
+  - name: rubocop_cop_lint_duplicatebranch_registers_an_offense_when_case_has_multiple_duplicate_branches
+    source: |
+      case x
+      when foo
+        do_foo
+      when bar
+        do_bar
+      when baz
+        do_foo
+      when quux
+        do_bar
+      end
+    offenses:
+      - line: 6
+        column_start: 0
+        column_end: 8
+        message: Duplicate branch body detected.
+      - line: 8
+        column_start: 0
+        column_end: 9
+        message: Duplicate branch body detected.
+
+  - name: rubocop_cop_lint_duplicatebranch_does_not_register_an_offense_when_case_has_no_duplicate_branches
+    source: |
+      case x
+      when foo
+        do_foo
+      when bar
+        do_bar
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_duplicatebranch_registers_an_offense_when_rescue_has_duplicate_resbody_branch
+    source: |
+      begin
+        do_something
+      rescue FooError
+        handle_error(x)
+      rescue BarError
+        handle_error(x)
+      end
+    offenses:
+      - line: 5
+        column_start: 0
+        column_end: 15
+        message: Duplicate branch body detected.
+
+  - name: rubocop_cop_lint_duplicatebranch_registers_an_offense_when_rescue_has_duplicate_else_branch
+    source: |
+      begin
+        do_something
+      rescue FooError
+        handle_error(x)
+      else
+        handle_error(x)
+      end
+    offenses:
+      - line: 5
+        column_start: 0
+        column_end: 4
+        message: Duplicate branch body detected.
+
+  - name: rubocop_cop_lint_duplicatebranch_registers_an_offense_when_rescue_has_multiple_duplicate_resbody_branches
+    source: |
+      begin
+        do_something
+      rescue FooError
+        handle_foo_error(x)
+      rescue BarError
+        handle_bar_error(x)
+      rescue BazError
+        handle_foo_error(x)
+      rescue QuuxError
+        handle_bar_error(x)
+      end
+    offenses:
+      - line: 7
+        column_start: 0
+        column_end: 15
+        message: Duplicate branch body detected.
+      - line: 9
+        column_start: 0
+        column_end: 16
+        message: Duplicate branch body detected.
+
+  - name: rubocop_cop_lint_duplicatebranch_does_not_register_an_offense_when_rescue_has_no_duplicate_branches
+    source: |
+      begin
+        do_something
+      rescue FooError
+        handle_foo_error(x)
+      rescue BarError
+        handle_bar_error(x)
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_integer
+    source: |
+      integer
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_5
+    source: |
+      5
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_float
+    source: |
+      float
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_5_0
+    source: |
+      5.0
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_rational
+    source: |
+      rational
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_5r
+    source: |
+      5r
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_complex
+    source: |
+      complex
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_5i
+    source: |
+      5i
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_string
+    source: |
+      string
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_string
+    source: |
+      "string"
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_symbol
+    source: |
+      symbol
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_symbol
+    source: |
+      :symbol
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_true
+    source: |
+      true
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_true
+    source: |
+      true
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_false
+    source: |
+      false
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_false
+    source: |
+      false
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_nil
+    source: |
+      nil
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_nil
+    source: |
+      nil
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_regexp
+    source: |
+      regexp
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_foo
+    source: |
+      /foo/
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_regexp_with_modifier
+    source: |
+      regexp with modifier
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_foo_i
+    source: |
+      /foo/i
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_simple_irange
+    source: |
+      simple irange
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_1_5
+    source: |
+      1..5
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_simple_erange
+    source: |
+      simple erange
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_1_5
+    source: |
+      1...5
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_empty_array
+    source: |
+      empty array
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true
+    source: |
+      []
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_array_of_literals
+    source: |
+      array of literals
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_1_2_3
+    source: |
+      [1, 2, 3]
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_empty_hash
+    source: |
+      empty hash
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true
+    source: |
+      {}
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_hash_of_literals
+    source: |
+      hash of literals
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_foo_1_bar_2
+    source: |
+      { foo: 1, bar: 2 }
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_dstr
+    source: |
+      dstr
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_foo
+    source: |
+      "#{foo}"
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_dsym
+    source: |
+      dsym
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_foo
+    source: |
+      :"#{foo}"
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_xstr
+    source: |
+      xstr
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_foo_bar
+    source: |
+      `foo bar`
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_complex_array
+    source: |
+      complex array
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_foo_bar_baz
+    source: |
+      [foo, bar, baz]
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_complex_hash
+    source: |
+      complex hash
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_foo_foo_bar_bar
+    source: |
+      { foo: foo, bar: bar }
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_complex_irange
+    source: |
+      complex irange
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_1_foo
+    source: |
+      1..foo
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_complex_erange
+    source: |
+      complex erange
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_1_foo
+    source: |
+      1...foo
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_complex_regexp
+    source: |
+      complex regexp
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_foo_i
+    source: |
+      /#{foo}/i
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_variable
+    source: |
+      variable
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_foo
+    source: |
+      foo
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_method_call
+    source: |
+      method call
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_foo_bar
+    source: |
+      foo(bar)
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_and_ignoreconstbranches_true_array_of_constants
+    source: |
+      array of constants
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_and_ignoreconstbranches_true_const1_const2
+    source: |
+      [CONST1, CONST2]
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_and_ignoreconstbranches_true_hash_of_constants
+    source: |
+      hash of constants
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_and_ignoreconstbranches_true_foo_const1_bar
+    source: |
+      { foo: CONST1, bar: CONST2 }
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_and_ignoreconstbranches_false_array_of_constants
+    source: |
+      array of constants
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_and_ignoreconstbranches_false_const1_const2
+    source: |
+      [CONST1, CONST2]
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_and_ignoreconstbranches_false_hash_of_constants
+    source: |
+      hash of constants
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreliteralbranches_true_and_ignoreconstbranches_false_foo_const1_bar
+    source: |
+      { foo: CONST1, bar: CONST2 }
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreconstantbranches_true_constant
+    source: |
+      constant
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+      IgnoreConstantBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreconstantbranches_true_my_const
+    source: |
+      MY_CONST
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+      IgnoreConstantBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreconstantbranches_true_object
+    source: |
+      object
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+      IgnoreConstantBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreconstantbranches_true_object_new
+    source: |
+      Object.new
+    offenses:
+      []
+    config:
+      IgnoreLiteralBranches: true
+      IgnoreConstantBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreduplicateelsebranch_true_allows_duplicate_else_branch_for_if_elsif
+    source: |
+      if x
+        foo
+      elsif y
+        bar
+      else
+        bar
+      end
+    offenses:
+      []
+    config:
+      IgnoreDuplicateElseBranch: true
+      IgnoreLiteralBranches: true
+      IgnoreConstantBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreduplicateelsebranch_true_registers_an_offense_for_duplicate_if_else
+    source: |
+      if x
+        foo
+      else
+        foo
+      end
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 4
+        message: Duplicate branch body detected.
+    config:
+      IgnoreDuplicateElseBranch: true
+      IgnoreLiteralBranches: true
+      IgnoreConstantBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreduplicateelsebranch_true_allows_duplicate_else_branch_for_case_with_multiple_when_branches
+    source: |
+      case x
+      when foo
+        do_foo
+      when bar
+        do_bar
+      else
+        do_bar
+      end
+    offenses:
+      []
+    config:
+      IgnoreDuplicateElseBranch: true
+      IgnoreLiteralBranches: true
+      IgnoreConstantBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreduplicateelsebranch_true_registers_an_offense_for_duplicate_else_branch_for_case_with_single_when_branch
+    source: |
+      case x
+      when foo
+        do_foo
+      else
+        do_foo
+      end
+    offenses:
+      - line: 4
+        column_start: 0
+        column_end: 4
+        message: Duplicate branch body detected.
+    config:
+      IgnoreDuplicateElseBranch: true
+      IgnoreLiteralBranches: true
+      IgnoreConstantBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreduplicateelsebranch_true_allows_duplicate_else_branch_for_case_with_multiple_match_branches
+    source: |
+      case x
+      in foo then do_foo
+      in bar then do_bar
+      else do_bar
+      end
+    offenses:
+      []
+    config:
+      IgnoreDuplicateElseBranch: true
+      IgnoreLiteralBranches: true
+      IgnoreConstantBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreduplicateelsebranch_true_registers_an_offense_for_duplicate_else_branch_for_case_with_single_match_branch
+    source: |
+      case x
+      in foo then do_foo
+      else do_foo
+      end
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 4
+        message: Duplicate branch body detected.
+    config:
+      IgnoreDuplicateElseBranch: true
+      IgnoreLiteralBranches: true
+      IgnoreConstantBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreduplicateelsebranch_true_allows_duplicate_else_branch_for_rescue_with_multiple_resbody_branches
+    source: |
+      begin
+        x
+      rescue FooError
+        foo
+      rescue BarError
+        bar
+      else
+        bar
+      end
+    offenses:
+      []
+    config:
+      IgnoreDuplicateElseBranch: true
+      IgnoreLiteralBranches: true
+      IgnoreConstantBranches: true
+
+  - name: rubocop_cop_lint_duplicatebranch_with_ignoreduplicateelsebranch_true_registers_an_offense_for_duplicate_else_branch_for_rescue_with_single_resbody_branch
+    source: |
+      begin
+        x
+      rescue FooError
+        foo
+      else
+        foo
+      end
+    offenses:
+      - line: 5
+        column_start: 0
+        column_end: 4
+        message: Duplicate branch body detected.
+    config:
+      IgnoreDuplicateElseBranch: true
+      IgnoreLiteralBranches: true
+      IgnoreConstantBranches: true

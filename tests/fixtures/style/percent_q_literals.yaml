@@ -1,0 +1,111 @@
+cop: Style/PercentQLiterals
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_percentqliterals_accepts_single_quotes
+    source: |
+      'hi'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_percentqliterals_accepts_double_quotes
+    source: |
+      "hi"
+    offenses:
+      []
+
+  - name: rubocop_cop_style_percentqliterals_with_special_characters_accepts_q
+    source: |
+      %q(\t)
+    offenses:
+      []
+
+  - name: rubocop_cop_style_percentqliterals_with_special_characters_accepts_q
+    source: |
+      %Q(\t)
+    offenses:
+      []
+
+  - name: rubocop_cop_style_percentqliterals_when_enforcedstyle_is_lower_case_q_without_interpolation_accepts_q
+    source: |
+      %q(hi)
+    offenses:
+      []
+    config:
+      EnforcedStyle: lower_case_q
+
+  - name: rubocop_cop_style_percentqliterals_when_enforcedstyle_is_lower_case_q_without_interpolation_registers_an_offense_for_q
+    source: |
+      %Q(hi)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 3
+        message: Do not use `%Q` unless interpolation is needed. Use `%q`.
+    corrected: |
+      %q(hi)
+    config:
+      EnforcedStyle: lower_case_q
+
+  - name: rubocop_cop_style_percentqliterals_when_enforcedstyle_is_lower_case_q_with_interpolation_accepts_q
+    source: |
+      %Q(#{1 + 2})
+    offenses:
+      []
+    config:
+      EnforcedStyle: lower_case_q
+
+  - name: rubocop_cop_style_percentqliterals_when_enforcedstyle_is_lower_case_q_with_interpolation_accepts_q
+    source: |
+      %q(#{1 + 2})
+    offenses:
+      []
+    config:
+      EnforcedStyle: lower_case_q
+
+  - name: rubocop_cop_style_percentqliterals_when_enforcedstyle_is_upper_case_q_without_interpolation_registers_an_offense_for_q
+    source: |
+      %q(hi)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 3
+        message: Use `%Q` instead of `%q`.
+    corrected: |
+      %Q(hi)
+    config:
+      EnforcedStyle: upper_case_q
+
+  - name: rubocop_cop_style_percentqliterals_when_enforcedstyle_is_upper_case_q_without_interpolation_accepts_q
+    source: |
+      %Q(hi)
+    offenses:
+      []
+    config:
+      EnforcedStyle: upper_case_q
+
+  - name: rubocop_cop_style_percentqliterals_when_enforcedstyle_is_upper_case_q_without_interpolation_does_not_register_an_offense_when_correcting_leads_to_a_parsing_error
+    source: |
+      %q(\u)
+    offenses:
+      []
+    config:
+      EnforcedStyle: upper_case_q
+
+  - name: rubocop_cop_style_percentqliterals_when_enforcedstyle_is_upper_case_q_with_interpolation_accepts_q
+    source: |
+      %Q(#{1 + 2})
+    offenses:
+      []
+    config:
+      EnforcedStyle: upper_case_q
+
+  - name: rubocop_cop_style_percentqliterals_when_enforcedstyle_is_upper_case_q_with_interpolation_accepts_q
+    source: |
+      %q(#{1 + 2})
+    offenses:
+      []
+    config:
+      EnforcedStyle: upper_case_q

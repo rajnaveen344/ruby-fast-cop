@@ -1,0 +1,124 @@
+cop: Style/TrailingBodyOnMethodDefinition
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_trailingbodyonmethoddefinition_registers_an_offense_when_body_trails_after_method_definition
+    source: |
+      def some_method; body
+      end
+      def extra_large; { size: 15 };
+      end
+      def seven_times(stuff) 7.times { do_this(stuff) }
+      end
+    offenses:
+      - line: 1
+        column_start: 17
+        column_end: 21
+        message: "Place the first line of a multi-line method definition's body on its own line."
+      - line: 3
+        column_start: 17
+        column_end: 29
+        message: "Place the first line of a multi-line method definition's body on its own line."
+      - line: 5
+        column_start: 23
+        column_end: 49
+        message: "Place the first line of a multi-line method definition's body on its own line."
+    corrected: |
+      def some_method#{trailing_whitespace}
+        body
+      end
+      def extra_large#{trailing_whitespace}
+        { size: 15 };
+      end
+      def seven_times(stuff)#{trailing_whitespace}
+        7.times { do_this(stuff) }
+      end
+    interpolated: true
+
+  - name: rubocop_cop_style_trailingbodyonmethoddefinition_registers_when_body_starts_on_def_line_continues_one_more_line
+    source: |
+      def some_method; foo = {}
+        more_body(foo)
+      end
+    offenses:
+      - line: 1
+        column_start: 17
+        column_end: 25
+        message: "Place the first line of a multi-line method definition's body on its own line."
+    corrected: |
+      def some_method#{trailing_whitespace}
+        foo = {}
+        more_body(foo)
+      end
+    interpolated: true
+
+  - name: rubocop_cop_style_trailingbodyonmethoddefinition_registers_when_body_starts_on_def_line_continues_many_more_lines
+    source: |
+      def do_stuff(thing) process(thing)
+        8.times { thing + 9 }
+        even_more(thing)
+      end
+    offenses:
+      - line: 1
+        column_start: 20
+        column_end: 34
+        message: "Place the first line of a multi-line method definition's body on its own line."
+    corrected: |
+      def do_stuff(thing)#{trailing_whitespace}
+        process(thing)
+        8.times { thing + 9 }
+        even_more(thing)
+      end
+    interpolated: true
+
+  - name: rubocop_cop_style_trailingbodyonmethoddefinition_registers_an_offense_when_an_expression_precedes_a_method_definition_on_the_same_line_with_a_semicolon
+    source: |
+      foo;def some_method; body
+      end
+    offenses:
+      - line: 1
+        column_start: 21
+        column_end: 25
+        message: "Place the first line of a multi-line method definition's body on its own line."
+    corrected: |
+      foo;def some_method#{trailing_whitespace}
+            body
+      end
+    interpolated: true
+
+  - name: rubocop_cop_style_trailingbodyonmethoddefinition_accepts_a_method_with_one_line_of_body
+    source: |
+      def some_method
+        body
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_trailingbodyonmethoddefinition_accepts_a_method_with_multiple_lines_of_body
+    source: |
+      def stuff_method
+        stuff
+        9.times { process(stuff) }
+        more_stuff
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_trailingbodyonmethoddefinition_does_not_register_offense_with_trailing_body_on_method_end
+    source: |
+      def some_method
+        body
+      foo; end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_trailingbodyonmethoddefinition_ruby_3_0_or_higher_does_not_register_offense_when_endless_method_definition_body_is_after_newline_in_opening_parenthesis
+    source: |
+      def some_method = (
+        body
+      )
+    offenses:
+      []
+    ruby_version: ">= 3.0"

@@ -1,0 +1,81 @@
+cop: Lint/MixedRegexpCaptureTypes
+department: lint
+severity: warning
+implemented: false
+
+tests:
+  - name: rubocop_cop_lint_mixedregexpcapturetypes_registers_an_offense_when_both_of_named_and_numbered_captures_are_used
+    source: |
+      /(?<foo>bar)(baz)/
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 18
+        message: Do not mix named captures and numbered captures in a Regexp literal.
+
+  - name: rubocop_cop_lint_mixedregexpcapturetypes_does_not_register_offense_to_a_regexp_with_named_capture_only
+    source: |
+      /(?<foo>foo?<bar>bar)/
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_mixedregexpcapturetypes_does_not_register_offense_to_a_regexp_with_look_behind
+    source: |
+      /(?<=>)(<br>)(?=><)/
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_mixedregexpcapturetypes_does_not_register_offense_to_a_regexp_with_numbered_capture_only
+    source: |
+      /(foo)(bar)/
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_mixedregexpcapturetypes_does_not_register_offense_to_a_regexp_with_named_capture_and_non_capturing_group
+    source: |
+      /(?<foo>bar)(?:bar)/
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_mixedregexpcapturetypes_does_not_register_offense_when_using_a_regexp_cannot_be_processed_by_regexp_parser_gem
+    source: |
+      /data = ({"words":.+}}}[^}]*})/m
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_mixedregexpcapturetypes_when_containing_a_non_regexp_literal_does_not_register_an_offense_when_containing_a_lvar
+    source: |
+      var = '(\d+)'
+      /(?<foo>#{var}*)/
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_mixedregexpcapturetypes_when_containing_a_non_regexp_literal_does_not_register_an_offense_when_containing_an_ivar
+    source: |
+      /(?<foo>#{@var}*)/
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_mixedregexpcapturetypes_when_containing_a_non_regexp_literal_does_not_register_an_offense_when_containing_a_cvar
+    source: |
+      /(?<foo>#{@@var}*)/
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_mixedregexpcapturetypes_when_containing_a_non_regexp_literal_does_not_register_an_offense_when_containing_a_gvar
+    source: |
+      /(?<foo>#{$var}*)/
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_mixedregexpcapturetypes_when_containing_a_non_regexp_literal_does_not_register_an_offense_when_containing_a_method
+    source: |
+      /(?<foo>#{do_something}*)/
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_mixedregexpcapturetypes_when_containing_a_non_regexp_literal_does_not_register_an_offense_when_containing_a_constant
+    source: |
+      /(?<foo>#{CONST}*)/
+    offenses:
+      []

@@ -1,0 +1,119 @@
+cop: Lint/CopDirectiveSyntax
+department: lint
+severity: warning
+implemented: false
+
+tests:
+  - name: rubocop_cop_lint_copdirectivesyntax_does_not_register_an_offense_for_a_single_cop_name
+    source: |
+      # rubocop:disable Layout/LineLength
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_copdirectivesyntax_does_not_register_an_offense_for_a_single_cop_department
+    source: |
+      # rubocop:disable Layout
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_copdirectivesyntax_does_not_register_an_offense_for_multiple_cops
+    source: |
+      # rubocop:disable Layout/LineLength, Style/Encoding
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_copdirectivesyntax_does_not_register_an_offense_for_all_cops
+    source: |
+      # rubocop:disable all
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_copdirectivesyntax_does_not_register_an_offense_for_enable_directives
+    source: |
+      # rubocop:enable Layout/LineLength
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_copdirectivesyntax_does_not_register_an_offense_for_todo_directives
+    source: |
+      # rubocop:todo Layout/LineLength
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_copdirectivesyntax_registers_an_offense_for_multiple_cops_a_without_comma
+    source: |
+      # rubocop:disable Layout/LineLength Style/Encoding
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 50
+        message: Malformed directive comment detected. Cop names must be separated by commas. Comment in the directive must start with `--`.
+
+  - name: rubocop_cop_lint_copdirectivesyntax_registers_an_offense_for_duplicate_directives
+    source: |
+      # rubocop:disable Layout/LineLength # rubocop:disable Style/Encoding
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 68
+        message: Malformed directive comment detected. Cop names must be separated by commas. Comment in the directive must start with `--`.
+
+  - name: rubocop_cop_lint_copdirectivesyntax_registers_an_offense_for_missing_cop_name
+    source: |
+      # rubocop:disable
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 17
+        message: Malformed directive comment detected. The cop name is missing.
+
+  - name: rubocop_cop_lint_copdirectivesyntax_registers_an_offense_for_incorrect_mode
+    source: |
+      # rubocop:disabled Layout/LineLength
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 36
+        message: Malformed directive comment detected. The mode name must be one of `enable`, `disable`, `todo`, `push`, or `pop`.
+
+  - name: rubocop_cop_lint_copdirectivesyntax_registers_an_offense_if_the_mode_name_is_missing
+    source: |
+      # rubocop:
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 10
+        message: Malformed directive comment detected. The mode name is missing.
+
+  - name: rubocop_cop_lint_copdirectivesyntax_does_not_register_an_offense_when_a_comment_does_not_start_with_rubocop_which_is_not_a_directive_comment
+    source: |
+      # "rubocop:disable Layout/LineLength"
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_copdirectivesyntax_does_not_register_an_offense_for_duplicate_comment_out
+    source: |
+      # # rubocop:disable Layout/LineLength
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_copdirectivesyntax_does_not_register_an_offense_for_an_extra_trailing_comment
+    source: |
+      # rubocop:disable Layout/LineLength -- This is a good comment.
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_copdirectivesyntax_does_not_register_an_offense_for_a_single_line_directive_with_trailing_comment
+    source: |
+      a = 1 # rubocop:disable Layout/LineLength -- This is a good comment.
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_copdirectivesyntax_registers_an_offense_when_trailing_comment_does_not_start_with
+    source: |
+      # rubocop:disable Layout/LineLength == This is a bad comment.
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 61
+        message: Malformed directive comment detected. Cop names must be separated by commas. Comment in the directive must start with `--`.

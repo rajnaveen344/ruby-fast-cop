@@ -1,0 +1,369 @@
+cop: Style/EmptyLiteral
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_emptyliteral_empty_array
+    source: |
+      test = #{initializer}
+    offenses:
+      - line: 1
+        column_start: 7
+        column_end: 21
+        message: "Use array literal `[]` instead of `#{initializer}`."
+    corrected: |
+      test = []
+    interpolated: true
+
+  - name: rubocop_cop_style_emptyliteral_empty_array_does_not_register_an_offense_for_array_new_3
+    source: |
+      test = Array.new(3)
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyliteral_empty_array_autocorrects_array_new_in_block_in_block
+    source: |
+      puts { Array.new }
+    offenses:
+      - line: 1
+        column_start: 7
+        column_end: 16
+        message: Use array literal `[]` instead of `Array.new`.
+    corrected: |
+      puts { [] }
+
+  - name: rubocop_cop_style_emptyliteral_empty_array_does_not_register_an_offense_array_new_with_block
+    source: |
+      test = Array.new { 1 }
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyliteral_empty_array_does_not_register_an_offense_for_array_new_with_block
+    source: |
+      test = ::Array.new { 1 }
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyliteral_empty_array_does_not_register_array_new_with_block_in_other_block
+    source: |
+      puts { Array.new { 1 } }
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyliteral_empty_array_does_not_register_an_offense_for_array_3
+    source: |
+      Array[3]
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyliteral_empty_array_does_not_register_an_offense_for_array_3
+    source: |
+      Array [3]
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyliteral_empty_hash
+    source: |
+      test = #{initializer}
+    offenses:
+      - line: 1
+        column_start: 7
+        column_end: 21
+        message: "Use hash literal `{}` instead of `#{initializer}`."
+    corrected: |
+      test = {}
+    interpolated: true
+
+  - name: rubocop_cop_style_emptyliteral_empty_hash_does_not_register_an_offense_for_hash_3_4
+    source: |
+      Hash[3,4]
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyliteral_empty_hash_does_not_register_an_offense_for_hash_3_4
+    source: |
+      Hash [3,4]
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyliteral_empty_hash_does_not_register_an_offense_for_hash_new_3
+    source: |
+      test = Hash.new(3)
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyliteral_empty_hash_does_not_register_an_offense_for_hash_new_3
+    source: |
+      test = ::Hash.new(3)
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyliteral_empty_hash_does_not_register_an_offense_for_hash_new_block
+    source: |
+      test = Hash.new { block }
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyliteral_empty_hash_does_not_register_an_offense_for_hash_new_block
+    source: |
+      test = ::Hash.new { block }
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyliteral_empty_hash_does_not_register_an_offense_for_hash_new
+    source: |
+      Hash.new([])
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyliteral_empty_hash_ruby_2_7_does_not_register_an_offense_for_hash_new_1_2
+    source: |
+      test = Hash.new { _1[_2] = [] }
+    offenses:
+      []
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_style_emptyliteral_empty_hash_ruby_2_7_does_not_register_an_offense_for_hash_new_1_2
+    source: |
+      test = ::Hash.new { _1[_2] = [] }
+    offenses:
+      []
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_style_emptyliteral_empty_hash_autocorrects_hash_new_in_block
+    source: |
+      puts { Hash.new }
+    offenses:
+      - line: 1
+        column_start: 7
+        column_end: 15
+        message: Use hash literal `{}` instead of `Hash.new`.
+    corrected: |
+      puts { {} }
+
+  - name: rubocop_cop_style_emptyliteral_empty_hash_autocorrects_hash_new_to_in_various_contexts
+    source: |
+      test = Hash.new
+      Hash.new.merge("a" => 3)
+      yadayada.map { a }.reduce(Hash.new, :merge)
+    offenses:
+      - line: 1
+        column_start: 7
+        column_end: 15
+        message: Use hash literal `{}` instead of `Hash.new`.
+      - line: 2
+        column_start: 0
+        column_end: 8
+        message: Use hash literal `{}` instead of `Hash.new`.
+      - line: 3
+        column_start: 26
+        column_end: 34
+        message: Use hash literal `{}` instead of `Hash.new`.
+    corrected: |
+      test = {}
+      {}.merge("a" => 3)
+      yadayada.map { a }.reduce({}, :merge)
+
+  - name: rubocop_cop_style_emptyliteral_empty_hash_autocorrects_hash_new_to_as_the_only_parameter_to_a_method
+    source: |
+      yadayada.map { a }.reduce Hash.new
+    offenses:
+      - line: 1
+        column_start: 26
+        column_end: 34
+        message: Use hash literal `{}` instead of `Hash.new`.
+    corrected: |
+      yadayada.map { a }.reduce({})
+
+  - name: rubocop_cop_style_emptyliteral_empty_hash_autocorrects_hash_new_to_as_the_first_parameter_to_a_method
+    source: |
+      yadayada.map { a }.reduce Hash.new, :merge
+    offenses:
+      - line: 1
+        column_start: 26
+        column_end: 34
+        message: Use hash literal `{}` instead of `Hash.new`.
+    corrected: |
+      yadayada.map { a }.reduce({}, :merge)
+
+  - name: rubocop_cop_style_emptyliteral_empty_hash
+    source: |
+      def foo
+        super Hash.new
+      end
+    offenses:
+      - line: 2
+        column_start: 8
+        column_end: 16
+        message: Use hash literal `{}` instead of `Hash.new`.
+    corrected: |
+      def foo
+        super({})
+      end
+
+  - name: rubocop_cop_style_emptyliteral_empty_hash
+    source: |
+      def foo
+        super Hash.new, something
+      end
+    offenses:
+      - line: 2
+        column_start: 8
+        column_end: 16
+        message: Use hash literal `{}` instead of `Hash.new`.
+    corrected: |
+      def foo
+        super({}, something)
+      end
+
+  - name: rubocop_cop_style_emptyliteral_empty_string_registers_an_offense_for_string_new
+    source: |
+      test = String.new()
+    offenses:
+      - line: 1
+        column_start: 7
+        column_end: 19
+        message: "Use string literal `''` instead of `String.new`."
+    corrected: |
+      test = ''
+
+  - name: rubocop_cop_style_emptyliteral_empty_string_registers_an_offense_for_string_new
+    source: |
+      test = String.new
+    offenses:
+      - line: 1
+        column_start: 7
+        column_end: 17
+        message: "Use string literal `''` instead of `String.new`."
+    corrected: |
+      test = ''
+
+  - name: rubocop_cop_style_emptyliteral_empty_string_registers_an_offense_for_string_new
+    source: |
+      test = ::String.new
+    offenses:
+      - line: 1
+        column_start: 7
+        column_end: 19
+        message: "Use string literal `''` instead of `String.new`."
+    corrected: |
+      test = ''
+
+  - name: rubocop_cop_style_emptyliteral_empty_string_does_not_register_an_offense_for_string_new_top
+    source: |
+      test = String.new("top")
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyliteral_empty_string_does_not_register_an_offense_for_string_new_top
+    source: |
+      test = ::String.new("top")
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyliteral_empty_string_when_double_quoted_string_literals_are_preferred_registers_an_offense_for_string_new
+    source: |
+      test = String.new
+    offenses:
+      - line: 1
+        column_start: 7
+        column_end: 17
+        message: "Use string literal `\"\"` instead of `String.new`."
+    corrected: |
+      test = ""
+
+  - name: rubocop_cop_style_emptyliteral_empty_string_when_double_quoted_string_literals_are_preferred_registers_an_offense_for_string_new
+    source: |
+      test = ::String.new
+    offenses:
+      - line: 1
+        column_start: 7
+        column_end: 19
+        message: "Use string literal `\"\"` instead of `String.new`."
+    corrected: |
+      test = ""
+
+  - name: rubocop_cop_style_emptyliteral_empty_string_when_frozen_string_literals_is_enabled_does_not_register_an_offense_for_string_new
+    source: |
+      # frozen_string_literal: true
+      test = String.new
+    offenses:
+      []
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_style_emptyliteral_empty_string_when_style_frozenstringliteralcomment_is_enabled_and_there_is_no_magic_comment_does_not_register_an_offense
+    source: |
+      test = String.new
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyliteral_empty_string_when_style_frozenstringliteralcomment_is_enabled_and_there_is_a_frozen_string_literal_false_comment_registers_an_offense_and_corrects
+    source: |
+      # frozen_string_literal: false
+      test = String.new
+    offenses:
+      - line: 2
+        column_start: 7
+        column_end: 17
+        message: "Use string literal `''` instead of `String.new`."
+    corrected: |
+      # frozen_string_literal: false
+      test = ''
+
+  - name: rubocop_cop_style_emptyliteral_empty_string_when_allcops_stringliteralsfrozenbydefault_true_when_the_frozen_string_literal_comment_is_missing_registers_no_offense
+    source: |
+      test = String.new
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyliteral_empty_string_when_allcops_stringliteralsfrozenbydefault_true_when_the_frozen_string_literal_comment_is_true_registers_no_offense
+    source: |
+      # frozen_string_literal: true
+        test = String.new
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyliteral_empty_string_when_allcops_stringliteralsfrozenbydefault_true_when_the_frozen_string_literal_comment_is_false_registers_an_offense
+    source: |
+      # frozen_string_literal: false
+      test = String.new
+    offenses:
+      - line: 2
+        column_start: 7
+        column_end: 17
+        message: "Use string literal `''` instead of `String.new`."
+    corrected: |
+      # frozen_string_literal: false
+      test = ''
+
+  - name: rubocop_cop_style_emptyliteral_empty_string_when_allcops_stringliteralsfrozenbydefault_false_when_the_frozen_string_literal_comment_is_missing_registers_an_offense
+    source: |
+      test = String.new
+    offenses:
+      - line: 1
+        column_start: 7
+        column_end: 17
+        message: "Use string literal `''` instead of `String.new`."
+    corrected: |
+      test = ''
+
+  - name: rubocop_cop_style_emptyliteral_empty_string_when_allcops_stringliteralsfrozenbydefault_false_when_the_frozen_string_literal_comment_is_true_registers_no_offense
+    source: |
+      # frozen_string_literal: true
+        test = String.new
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyliteral_empty_string_when_allcops_stringliteralsfrozenbydefault_false_when_the_frozen_string_literal_comment_is_false_registers_an_offense
+    source: |
+      # frozen_string_literal: false
+      test = String.new
+    offenses:
+      - line: 2
+        column_start: 7
+        column_end: 17
+        message: "Use string literal `''` instead of `String.new`."
+    corrected: |
+      # frozen_string_literal: false
+      test = ''

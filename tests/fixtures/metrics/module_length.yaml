@@ -1,0 +1,443 @@
+cop: Metrics/ModuleLength
+department: metrics
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_metrics_modulelength_rejects_a_module_with_more_than_5_lines
+    source: |
+      module Test
+        a = 1
+        a = 2
+        a = 3
+        a = 4
+        a = 5
+        a = 6
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 11
+        message: Module has too many lines. [6/5]
+    config:
+      Max: 5
+      CountComments: false
+
+  - name: rubocop_cop_metrics_modulelength_reports_the_correct_beginning_and_end_lines
+    source: |
+      module Test
+        a = 1
+        a = 2
+        a = 3
+        a = 4
+        a = 5
+        a = 6
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 11
+        message: Module has too many lines. [6/5]
+    config:
+      Max: 5
+      CountComments: false
+
+  - name: rubocop_cop_metrics_modulelength_accepts_a_module_with_5_lines
+    source: |
+      module Test
+        a = 1
+        a = 2
+        a = 3
+        a = 4
+        a = 5
+      end
+    offenses:
+      []
+    config:
+      Max: 5
+      CountComments: false
+
+  - name: rubocop_cop_metrics_modulelength_accepts_a_module_with_less_than_5_lines
+    source: |
+      module Test
+        a = 1
+        a = 2
+        a = 3
+        a = 4
+      end
+    offenses:
+      []
+    config:
+      Max: 5
+      CountComments: false
+
+  - name: rubocop_cop_metrics_modulelength_does_not_count_blank_lines
+    source: |
+      module Test
+        a = 1
+        a = 2
+        a = 3
+        a = 4
+      
+      
+        a = 7
+      end
+    offenses:
+      []
+    config:
+      Max: 5
+      CountComments: false
+
+  - name: rubocop_cop_metrics_modulelength_accepts_empty_modules
+    source: |
+      module Test
+      end
+    offenses:
+      []
+    config:
+      Max: 5
+      CountComments: false
+
+  - name: rubocop_cop_metrics_modulelength_when_a_module_has_inner_modules_does_not_count_lines_of_inner_modules
+    source: |
+      module NamespaceModule
+        module TestOne
+          a = 1
+          a = 2
+          a = 3
+          a = 4
+          a = 5
+        end
+        module TestTwo
+          a = 1
+          a = 2
+          a = 3
+          a = 4
+          a = 5
+        end
+        a = 1
+        a = 2
+        a = 3
+        a = 4
+        a = 5
+      end
+    offenses:
+      []
+    config:
+      Max: 5
+      CountComments: false
+
+  - name: rubocop_cop_metrics_modulelength_when_a_module_has_inner_modules_rejects_a_module_with_6_lines_that_belong_to_the_module_directly
+    source: |
+      module NamespaceModule
+        module TestOne
+          a = 1
+          a = 2
+          a = 3
+          a = 4
+          a = 5
+        end
+        module TestTwo
+          a = 1
+          a = 2
+          a = 3
+          a = 4
+          a = 5
+        end
+        a = 1
+        a = 2
+        a = 3
+        a = 4
+        a = 5
+        a = 6
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 22
+        message: Module has too many lines. [6/5]
+    config:
+      Max: 5
+      CountComments: false
+
+  - name: rubocop_cop_metrics_modulelength_when_a_module_has_inner_classes_does_not_count_lines_of_inner_classes
+    source: |
+      module NamespaceModule
+        class TestOne
+          a = 1
+          a = 2
+          a = 3
+          a = 4
+          a = 5
+        end
+        class TestTwo
+          a = 1
+          a = 2
+          a = 3
+          a = 4
+          a = 5
+        end
+        a = 1
+        a = 2
+        a = 3
+        a = 4
+        a = 5
+      end
+    offenses:
+      []
+    config:
+      Max: 5
+      CountComments: false
+
+  - name: rubocop_cop_metrics_modulelength_when_a_module_has_inner_classes_rejects_a_module_with_more_than_5_lines_including_its_singleton_class
+    source: |
+      module Test
+        class << self
+          a = 1
+          a = 2
+          a = 3
+          a = 4
+          a = 5
+          a = 6
+        end
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 11
+        message: Module has too many lines. [8/5]
+    config:
+      Max: 5
+      CountComments: false
+
+  - name: rubocop_cop_metrics_modulelength_when_a_module_has_inner_classes_rejects_a_module_with_more_than_5_lines_that_belong_to_the_module_directly_and_including_its_singleton_class
+    source: |
+      module NamespaceModule
+        class << self
+          a = 1
+          a = 2
+          a = 3
+          a = 4
+          a = 5
+        end
+        a = 1
+        a = 2
+        a = 3
+        a = 4
+        a = 5
+        a = 6
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 22
+        message: Module has too many lines. [13/5]
+    config:
+      Max: 5
+      CountComments: false
+
+  - name: rubocop_cop_metrics_modulelength_when_a_module_has_inner_classes_rejects_a_module_with_6_lines_that_belong_to_the_module_directly
+    source: |
+      module NamespaceModule
+        class TestOne
+          a = 1
+          a = 2
+          a = 3
+          a = 4
+          a = 5
+        end
+        class TestTwo
+          a = 1
+          a = 2
+          a = 3
+          a = 4
+          a = 5
+        end
+        a = 1
+        a = 2
+        a = 3
+        a = 4
+        a = 5
+        a = 6
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 22
+        message: Module has too many lines. [6/5]
+    config:
+      Max: 5
+      CountComments: false
+
+  - name: rubocop_cop_metrics_modulelength_with_lsp_option_reports_the_correct_beginning_and_end_lines
+    source: |
+      module Test
+        a = 1
+        a = 2
+        a = 3
+        a = 4
+        a = 5
+        a = 6
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 11
+        message: Module has too many lines. [6/5]
+    config:
+      Max: 5
+      CountComments: false
+
+  - name: rubocop_cop_metrics_modulelength_when_countcomments_is_enabled_also_counts_commented_lines
+    source: |
+      module Test
+        a = 1
+        #a = 2
+        a = 3
+        #a = 4
+        a = 5
+        a = 6
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 11
+        message: Module has too many lines. [6/5]
+    config:
+      Max: 5
+      CountComments: false
+
+  - name: rubocop_cop_metrics_modulelength_when_countasone_is_not_empty_folds_array_into_one_line
+    source: |
+      module Test
+        a = 1
+        a = [
+          2,
+          3,
+          4,
+          5
+        ]
+      end
+    offenses:
+      []
+    config:
+      Max: 5
+      CountComments: false
+
+  - name: rubocop_cop_metrics_modulelength_when_inspecting_a_class_defined_with_module_new_registers_an_offense
+    source: |
+      Foo = Module.new do
+        a = 1
+        a = 2
+        a = 3
+        a = 4
+        a = 5
+        a = 6
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 3
+        message: Module has too many lines. [6/5]
+    config:
+      Max: 5
+      CountComments: false
+
+  - name: rubocop_cop_metrics_modulelength_when_inspecting_a_class_defined_with_module_new_registers_an_offense
+    source: |
+      Foo = ::Module.new do
+        a = 1
+        a = 2
+        a = 3
+        a = 4
+        a = 5
+        a = 6
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 3
+        message: Module has too many lines. [6/5]
+    config:
+      Max: 5
+      CountComments: false
+
+  - name: rubocop_cop_metrics_modulelength_when_using_numbered_parameter_when_inspecting_a_class_defined_with_module_new_registers_an_offense
+    source: |
+      Foo = Module.new do
+        a(_1)
+        b(_1)
+        c(_1)
+        d(_1)
+        e(_1)
+        f(_1)
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 3
+        message: Module has too many lines. [6/5]
+    config:
+      Max: 5
+      CountComments: false
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_metrics_modulelength_when_using_numbered_parameter_when_inspecting_a_class_defined_with_module_new_registers_an_offense
+    source: |
+      Foo = ::Module.new do
+        a(_1)
+        b(_1)
+        c(_1)
+        d(_1)
+        e(_1)
+        f(_1)
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 3
+        message: Module has too many lines. [6/5]
+    config:
+      Max: 5
+      CountComments: false
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_metrics_modulelength_when_using_it_parameter_when_inspecting_a_class_defined_with_module_new_registers_an_offense
+    source: |
+      Foo = Module.new do
+        a(it)
+        b(it)
+        c(it)
+        d(it)
+        e(it)
+        f(it)
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 3
+        message: Module has too many lines. [6/5]
+    config:
+      Max: 5
+      CountComments: false
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_metrics_modulelength_when_using_it_parameter_when_inspecting_a_class_defined_with_module_new_registers_an_offense
+    source: |
+      Foo = ::Module.new do
+        a(it)
+        b(it)
+        c(it)
+        d(it)
+        e(it)
+        f(it)
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 3
+        message: Module has too many lines. [6/5]
+    config:
+      Max: 5
+      CountComments: false
+    ruby_version: ">= 3.4"

@@ -1,0 +1,57 @@
+cop: Naming/AsciiIdentifiers
+department: naming
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_naming_asciiidentifiers_registers_an_offense_for_a_variable_name_with_non_ascii_chars
+    source: |
+      älg = 1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 1
+        message: Use only ascii symbols in identifiers.
+
+  - name: rubocop_cop_naming_asciiidentifiers_registers_an_offense_for_a_variable_name_with_mixed_chars
+    source: |
+      foo∂∂bar = baz
+    offenses:
+      - line: 1
+        column_start: 3
+        column_end: 5
+        message: Use only ascii symbols in identifiers.
+
+  - name: rubocop_cop_naming_asciiidentifiers_accepts_identifiers_with_only_ascii_chars
+    source: |
+      x.empty?
+    offenses:
+      []
+
+  - name: rubocop_cop_naming_asciiidentifiers_does_not_get_confused_by_a_byte_order_mark
+    source: |
+      ﻿
+      puts 'foo'
+    offenses:
+      []
+
+  - name: rubocop_cop_naming_asciiidentifiers_when_asciiconstants_is_true_registers_an_offense_for_a_constant_name_with_non_ascii_chars
+    source: |
+      class Foö
+      end
+    offenses:
+      - line: 1
+        column_start: 8
+        column_end: 9
+        message: Use only ascii symbols in constants.
+    config:
+      AsciiConstants: true
+
+  - name: rubocop_cop_naming_asciiidentifiers_when_asciiconstants_is_false_accepts_constants_with_only_ascii_chars
+    source: |
+      class Foo
+      end
+    offenses:
+      []
+    config:
+      AsciiConstants: false

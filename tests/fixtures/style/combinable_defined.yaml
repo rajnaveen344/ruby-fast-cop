@@ -1,0 +1,229 @@
+cop: Style/CombinableDefined
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_combinabledefined_does_not_register_an_offense_for_a_single_defined
+    source: |
+      defined?(Foo)
+    offenses:
+      []
+
+  - name: rubocop_cop_style_combinabledefined_does_not_register_an_offense_for_two_separate_defined_s
+    source: |
+      defined?(Foo) #{operator} defined?(Bar)
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_combinabledefined_does_not_register_an_offense_for_two_identical_defined_s
+    source: |
+      defined?(Foo) #{operator} defined?(Foo)
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_combinabledefined_does_not_register_an_offense_for_the_same_constant_with_different_cbase_s
+    source: |
+      defined?(Foo) #{operator} defined?(::Foo)
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_combinabledefined_registers_an_offense_for_two_defined_s_with_same_nesting
+    source: |
+      defined?(Foo) #{operator} defined?(Foo::Bar)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 44
+        message: Combine nested `defined?` calls.
+    corrected: |
+      defined?(Foo::Bar)
+    interpolated: true
+
+  - name: rubocop_cop_style_combinabledefined_registers_an_offense_for_two_defined_s_with_the_same_nesting_in_reverse_order
+    source: |
+      defined?(Foo::Bar) #{operator} defined?(Foo)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 44
+        message: Combine nested `defined?` calls.
+    corrected: |
+      defined?(Foo::Bar)
+    interpolated: true
+
+  - name: rubocop_cop_style_combinabledefined_registers_an_offense_for_two_defined_s_with_the_same_nesting_and_cbase
+    source: |
+      defined?(::Foo) #{operator} defined?(::Foo::Bar)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 48
+        message: Combine nested `defined?` calls.
+    corrected: |
+      defined?(::Foo::Bar)
+    interpolated: true
+
+  - name: rubocop_cop_style_combinabledefined_registers_an_offense_for_two_defined_s_with_the_same_deep_nesting
+    source: |
+      defined?(Foo::Bar) #{operator} defined?(Foo::Bar::Baz)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 54
+        message: Combine nested `defined?` calls.
+    corrected: |
+      defined?(Foo::Bar::Baz)
+    interpolated: true
+
+  - name: rubocop_cop_style_combinabledefined_registers_an_offense_for_three_defined_s_with_same_nesting
+    source: |
+      defined?(Foo) #{operator} defined?(Foo::Bar) #{operator} defined?(Foo::Bar::Baz)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 80
+        message: Combine nested `defined?` calls.
+      - line: 1
+        column_start: 0
+        column_end: 80
+        message: Combine nested `defined?` calls.
+    corrected: |
+      defined?(Foo::Bar::Baz)
+    interpolated: true
+
+  - name: rubocop_cop_style_combinabledefined_registers_an_offense_for_three_defined_s_with_the_same_module_ancestor
+    source: |
+      defined?(Foo) #{operator} defined?(Foo::Bar) #{operator} defined?(Foo::Baz)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 75
+        message: Combine nested `defined?` calls.
+      - line: 1
+        column_start: 0
+        column_end: 75
+        message: Combine nested `defined?` calls.
+    corrected: |
+      defined?(Foo::Bar) #{operator} defined?(Foo::Baz)
+    interpolated: true
+
+  - name: rubocop_cop_style_combinabledefined_does_not_register_an_offense_for_two_defined_s_with_same_namespace_but_different_nesting
+    source: |
+      defined?(Foo::Bar) #{operator} defined?(Foo::Baz)
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_combinabledefined_does_not_register_an_offense_for_two_defined_s_with_negation
+    source: |
+      defined?(Foo) #{operator} !defined?(Foo::Bar)
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_combinabledefined_does_not_register_an_offense_for_two_defined_with_different_cbase_s
+    source: |
+      defined?(::Foo) #{operator} defined?(Foo::Bar)
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_combinabledefined_does_not_register_an_offense_when_skipping_a_nesting_level
+    source: |
+      defined?(Foo) #{operator} defined?(Foo::Bar::Baz)
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_combinabledefined_registers_an_offense_when_the_namespace_is_not_a_constant
+    source: |
+      defined?(foo) #{operator} defined?(foo::Bar)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 44
+        message: Combine nested `defined?` calls.
+    corrected: |
+      defined?(foo::Bar)
+    interpolated: true
+
+  - name: rubocop_cop_style_combinabledefined_registers_an_offense_for_method_chain_with_dots
+    source: |
+      defined?(foo) #{operator} defined?(foo.bar)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 43
+        message: Combine nested `defined?` calls.
+    corrected: |
+      defined?(foo.bar)
+    interpolated: true
+
+  - name: rubocop_cop_style_combinabledefined_registers_an_offense_for_method_chain_with
+    source: |
+      defined?(foo) #{operator} defined?(foo::bar)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 44
+        message: Combine nested `defined?` calls.
+    corrected: |
+      defined?(foo::bar)
+    interpolated: true
+
+  - name: rubocop_cop_style_combinabledefined_registers_an_offense_for_a_method_chain_followed_by_constant_nesting
+    source: |
+      defined?(foo) #{operator} defined?(foo.bar) #{operator} defined?(foo.bar::BAZ)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 78
+        message: Combine nested `defined?` calls.
+      - line: 1
+        column_start: 0
+        column_end: 78
+        message: Combine nested `defined?` calls.
+    corrected: |
+      defined?(foo.bar::BAZ)
+    interpolated: true
+
+  - name: rubocop_cop_style_combinabledefined_does_not_register_an_offense_when_there_is_another_term_between_defined_s
+    source: |
+      foo #{operator} defined?(Foo) #{operator} bar #{operator} defined?(Foo::Bar)
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_combinabledefined_mixed_operators_registers_an_offense_and_corrects
+    source: |
+      defined?(Foo) && defined?(Foo::Bar) and defined?(Foo::Bar::Baz)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 35
+        message: Combine nested `defined?` calls.
+      - line: 1
+        column_start: 0
+        column_end: 63
+        message: Combine nested `defined?` calls.
+    corrected: |
+      defined?(Foo::Bar::Baz)
+
+  - name: rubocop_cop_style_combinabledefined_mixed_operators_registers_an_offense_and_corrects_when_an_operator_is_retained
+    source: |
+      defined?(Foo) && defined?(Foo::Bar) and defined?(Foo::Baz)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 35
+        message: Combine nested `defined?` calls.
+      - line: 1
+        column_start: 0
+        column_end: 58
+        message: Combine nested `defined?` calls.
+    corrected: |
+      defined?(Foo::Bar) and defined?(Foo::Baz)

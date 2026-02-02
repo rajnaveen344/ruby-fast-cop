@@ -1,0 +1,33 @@
+cop: Style/GlobalVars
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_globalvars_registers_an_offense_for_custom
+    source: |
+      puts $custom
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 12
+        message: Do not introduce global variables.
+
+  - name: rubocop_cop_style_globalvars_allows_user_permitted_variables
+    source: |
+      puts $allowed
+    offenses:
+      []
+
+  - name: rubocop_cop_style_globalvars
+    source: |
+      puts #{var}
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_globalvars_does_not_register_an_offense_for_backrefs_like_1
+    source: |
+      puts $1
+    offenses:
+      []

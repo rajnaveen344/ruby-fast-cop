@@ -1,0 +1,104 @@
+cop: Style/NilComparison
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_nilcomparison_configured_with_predicate_preferred_registers_an_offense_for_nil
+    source: |
+      x == nil
+    offenses:
+      - line: 1
+        column_start: 2
+        column_end: 4
+        message: Prefer the use of the `nil?` predicate.
+    corrected: |
+      x.nil?
+    config:
+      EnforcedStyle: predicate
+
+  - name: rubocop_cop_style_nilcomparison_configured_with_predicate_preferred_registers_an_offense_for_nil
+    source: |
+      x === nil
+    offenses:
+      - line: 1
+        column_start: 2
+        column_end: 5
+        message: Prefer the use of the `nil?` predicate.
+    corrected: |
+      x.nil?
+    config:
+      EnforcedStyle: predicate
+
+  - name: rubocop_cop_style_nilcomparison_configured_with_predicate_preferred_registers_and_corrects_an_offense_when_using_x_nil_as_a_guard_condition
+    source: |
+      bar if x == nil
+    offenses:
+      - line: 1
+        column_start: 9
+        column_end: 11
+        message: Prefer the use of the `nil?` predicate.
+    corrected: |
+      bar if x.nil?
+    config:
+      EnforcedStyle: predicate
+
+  - name: rubocop_cop_style_nilcomparison_configured_with_predicate_preferred_registers_and_corrects_an_offense_when_using_x_nil_syntax
+    source: |
+      x.==(nil)
+    offenses:
+      - line: 1
+        column_start: 2
+        column_end: 4
+        message: Prefer the use of the `nil?` predicate.
+    corrected: |
+      x.nil?
+    config:
+      EnforcedStyle: predicate
+
+  - name: rubocop_cop_style_nilcomparison_configured_with_predicate_preferred_registers_and_corrects_an_offense_when_using_x_nil_syntax
+    source: |
+      x.===(nil)
+    offenses:
+      - line: 1
+        column_start: 2
+        column_end: 5
+        message: Prefer the use of the `nil?` predicate.
+    corrected: |
+      x.nil?
+    config:
+      EnforcedStyle: predicate
+
+  - name: rubocop_cop_style_nilcomparison_configured_with_comparison_preferred_registers_an_offense_for_nil
+    source: |
+      x.nil?
+    offenses:
+      - line: 1
+        column_start: 2
+        column_end: 6
+        message: Prefer the use of the `==` comparison.
+    corrected: |
+      x == nil
+    config:
+      EnforcedStyle: comparison
+
+  - name: rubocop_cop_style_nilcomparison_configured_with_comparison_preferred_registers_and_corrects_an_offense_for_x_nil
+    source: |
+      !x.nil?
+    offenses:
+      - line: 1
+        column_start: 3
+        column_end: 7
+        message: Prefer the use of the `==` comparison.
+    corrected: |
+      !(x == nil)
+    config:
+      EnforcedStyle: comparison
+
+  - name: rubocop_cop_style_nilcomparison_configured_with_comparison_preferred_registers_no_offense_when_there_is_no_receiver
+    source: |
+      nil?
+    offenses:
+      []
+    config:
+      EnforcedStyle: comparison

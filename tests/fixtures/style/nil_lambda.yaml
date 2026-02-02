@@ -1,0 +1,366 @@
+cop: Style/NilLambda
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_nillambda_block_lambda_registers_an_offense_when_returning_nil_implicitly
+    source: |
+      lambda do
+        nil
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 9
+        message: Use an empty lambda instead of always returning nil.
+    corrected: |
+      lambda do
+      end
+
+  - name: rubocop_cop_style_nillambda_block_lambda_registers_an_offense_when_returning_nil_with_return
+    source: |
+      lambda do
+        return nil
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 9
+        message: Use an empty lambda instead of always returning nil.
+    corrected: |
+      lambda do
+      end
+
+  - name: rubocop_cop_style_nillambda_block_lambda_registers_an_offense_when_returning_nil_with_break
+    source: |
+      lambda do
+        break nil
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 9
+        message: Use an empty lambda instead of always returning nil.
+    corrected: |
+      lambda do
+      end
+
+  - name: rubocop_cop_style_nillambda_block_lambda_registers_an_offense_when_returning_nil_with_next
+    source: |
+      lambda do
+        next nil
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 9
+        message: Use an empty lambda instead of always returning nil.
+    corrected: |
+      lambda do
+      end
+
+  - name: rubocop_cop_style_nillambda_block_lambda_does_not_register_an_offense_when_not_returning_nil
+    source: |
+      lambda do
+        6
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_nillambda_block_lambda_does_not_register_an_offense_when_doing_more_than_returning_nil
+    source: |
+      lambda do |x|
+        x ? x.method : nil
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_nillambda_block_lambda_does_not_remove_block_params_or_change_spacing
+    source: |
+      fn = lambda do |x|
+             nil
+           end
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 18
+        message: Use an empty lambda instead of always returning nil.
+    corrected: |
+      fn = lambda do |x|
+           end
+
+  - name: rubocop_cop_style_nillambda_block_lambda_properly_corrects_single_line
+    source: |
+      lambda { nil }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 14
+        message: Use an empty lambda instead of always returning nil.
+    corrected: |
+      lambda {}
+
+  - name: rubocop_cop_style_nillambda_stabby_lambda_registers_an_offense_when_returning_nil_implicitly
+    source: |
+      -> { nil }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 10
+        message: Use an empty lambda instead of always returning nil.
+    corrected: |
+      -> {}
+
+  - name: rubocop_cop_style_nillambda_stabby_lambda_registers_an_offense_when_returning_nil_with_return
+    source: |
+      -> { return nil }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 17
+        message: Use an empty lambda instead of always returning nil.
+    corrected: |
+      -> {}
+
+  - name: rubocop_cop_style_nillambda_stabby_lambda_registers_an_offense_when_returning_nil_with_break
+    source: |
+      -> { break nil }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 16
+        message: Use an empty lambda instead of always returning nil.
+    corrected: |
+      -> {}
+
+  - name: rubocop_cop_style_nillambda_stabby_lambda_registers_an_offense_when_returning_nil_with_next
+    source: |
+      -> { next nil }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 15
+        message: Use an empty lambda instead of always returning nil.
+    corrected: |
+      -> {}
+
+  - name: rubocop_cop_style_nillambda_stabby_lambda_does_not_register_an_offense_when_not_returning_nil
+    source: |
+      -> { 6 }
+    offenses:
+      []
+
+  - name: rubocop_cop_style_nillambda_stabby_lambda_does_not_register_an_offense_when_doing_more_than_returning_nil
+    source: |
+      ->(x) { x ? x.method : nil }
+    offenses:
+      []
+
+  - name: rubocop_cop_style_nillambda_stabby_lambda_properly_corrects_multiline
+    source: |
+      -> do
+        nil
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 5
+        message: Use an empty lambda instead of always returning nil.
+    corrected: |
+      -> do
+      end
+
+  - name: rubocop_cop_style_nillambda_proc_registers_an_offense_when_returning_nil_implicitly
+    source: |
+      proc do
+        nil
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 7
+        message: Use an empty proc instead of always returning nil.
+    corrected: |
+      proc do
+      end
+
+  - name: rubocop_cop_style_nillambda_proc_registers_an_offense_when_returning_nil_with_return
+    source: |
+      proc do
+        return nil
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 7
+        message: Use an empty proc instead of always returning nil.
+    corrected: |
+      proc do
+      end
+
+  - name: rubocop_cop_style_nillambda_proc_registers_an_offense_when_returning_nil_with_break
+    source: |
+      proc do
+        break nil
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 7
+        message: Use an empty proc instead of always returning nil.
+    corrected: |
+      proc do
+      end
+
+  - name: rubocop_cop_style_nillambda_proc_registers_an_offense_when_returning_nil_with_next
+    source: |
+      proc do
+        next nil
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 7
+        message: Use an empty proc instead of always returning nil.
+    corrected: |
+      proc do
+      end
+
+  - name: rubocop_cop_style_nillambda_proc_does_not_register_an_offense_when_not_returning_nil
+    source: |
+      proc do
+        6
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_nillambda_proc_does_not_register_an_offense_when_doing_more_than_returning_nil
+    source: |
+      proc do |x|
+        x ? x.method : nil
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_nillambda_proc_does_not_remove_block_params_or_change_spacing
+    source: |
+      fn = proc do |x|
+             nil
+           end
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 16
+        message: Use an empty proc instead of always returning nil.
+    corrected: |
+      fn = proc do |x|
+           end
+
+  - name: rubocop_cop_style_nillambda_proc_properly_corrects_single_line
+    source: |
+      proc { nil }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 12
+        message: Use an empty proc instead of always returning nil.
+    corrected: |
+      proc {}
+
+  - name: rubocop_cop_style_nillambda_proc_new_registers_an_offense_when_returning_nil_implicitly
+    source: |
+      Proc.new do
+        nil
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 11
+        message: Use an empty proc instead of always returning nil.
+    corrected: |
+      Proc.new do
+      end
+
+  - name: rubocop_cop_style_nillambda_proc_new_registers_an_offense_when_returning_nil_with_return
+    source: |
+      Proc.new do
+        return nil
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 11
+        message: Use an empty proc instead of always returning nil.
+    corrected: |
+      Proc.new do
+      end
+
+  - name: rubocop_cop_style_nillambda_proc_new_registers_an_offense_when_returning_nil_with_break
+    source: |
+      Proc.new do
+        break nil
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 11
+        message: Use an empty proc instead of always returning nil.
+    corrected: |
+      Proc.new do
+      end
+
+  - name: rubocop_cop_style_nillambda_proc_new_registers_an_offense_when_returning_nil_with_next
+    source: |
+      Proc.new do
+        next nil
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 11
+        message: Use an empty proc instead of always returning nil.
+    corrected: |
+      Proc.new do
+      end
+
+  - name: rubocop_cop_style_nillambda_proc_new_does_not_register_an_offense_when_not_returning_nil
+    source: |
+      Proc.new do
+        6
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_nillambda_proc_new_does_not_register_an_offense_when_doing_more_than_returning_nil
+    source: |
+      Proc.new do |x|
+        x ? x.method : nil
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_nillambda_proc_new_does_not_remove_block_params_or_change_spacing
+    source: |
+      fn = Proc.new do |x|
+             nil
+           end
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 20
+        message: Use an empty proc instead of always returning nil.
+    corrected: |
+      fn = Proc.new do |x|
+           end
+
+  - name: rubocop_cop_style_nillambda_proc_new_properly_corrects_single_line
+    source: |
+      Proc.new { nil }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 16
+        message: Use an empty proc instead of always returning nil.
+    corrected: |
+      Proc.new {}

@@ -1,0 +1,53 @@
+cop: Style/ColonMethodDefinition
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_colonmethoddefinition_accepts_a_class_method_defined_using
+    source: |
+      class Foo
+        def self.bar
+          something
+        end
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_colonmethoddefinition_using_self_registers_an_offense_for_a_class_method_defined_using
+    source: |
+      class Foo
+        def self::bar
+          something
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 10
+        column_end: 12
+        message: "Do not use `::` for defining class methods."
+    corrected: |
+      class Foo
+        def self.bar
+          something
+        end
+      end
+
+  - name: rubocop_cop_style_colonmethoddefinition_using_the_class_name_registers_an_offense_for_a_class_method_defined_using
+    source: |
+      class Foo
+        def Foo::bar
+          something
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 9
+        column_end: 11
+        message: "Do not use `::` for defining class methods."
+    corrected: |
+      class Foo
+        def Foo.bar
+          something
+        end
+      end

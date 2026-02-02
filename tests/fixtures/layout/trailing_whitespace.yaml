@@ -1,0 +1,329 @@
+cop: Layout/TrailingWhitespace
+department: layout
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_layout_trailingwhitespace_registers_an_offense_for_a_line_ending_with_space
+    source: |
+      x = 0#{trailing_whitespace}
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 6
+        message: Trailing whitespace detected.
+    config:
+      AllowInHeredoc: false
+    interpolated: true
+
+  - name: rubocop_cop_layout_trailingwhitespace_registers_an_offense_for_a_blank_line_with_space
+    source: |
+      #{trailing_whitespace * 2}
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 2
+        message: Trailing whitespace detected.
+    config:
+      AllowInHeredoc: false
+    interpolated: true
+
+  - name: rubocop_cop_layout_trailingwhitespace_registers_an_offense_for_a_line_ending_with_tab
+    source: |
+      x = 0	
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 6
+        message: Trailing whitespace detected.
+    config:
+      AllowInHeredoc: false
+
+  - name: rubocop_cop_layout_trailingwhitespace_registers_an_offense_for_a_line_ending_with_full_width_space
+    source: |
+      x = :a　
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 7
+        message: Trailing whitespace detected.
+    config:
+      AllowInHeredoc: false
+
+  - name: rubocop_cop_layout_trailingwhitespace_registers_an_offense_for_trailing_whitespace_in_a_heredoc_string
+    source: |
+      x = <<HEREDOC
+        Hi#{trailing_whitespace * 3}
+      HEREDOC
+    offenses:
+      - line: 2
+        column_start: 4
+        column_end: 7
+        message: Trailing whitespace detected.
+    config:
+      AllowInHeredoc: false
+    interpolated: true
+
+  - name: rubocop_cop_layout_trailingwhitespace_registers_an_offense_for_a_tab_in_a_heredoc
+    source: |
+      <<~X
+      	
+      X
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 1
+        message: Trailing whitespace detected.
+    config:
+      AllowInHeredoc: false
+
+  - name: rubocop_cop_layout_trailingwhitespace_registers_an_offense_for_a_full_width_space_in_a_heredoc
+    source: |
+      <<~X
+      　
+      X
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 1
+        message: Trailing whitespace detected.
+    config:
+      AllowInHeredoc: false
+
+  - name: rubocop_cop_layout_trailingwhitespace_registers_offenses_before_end_but_not_after
+    source: |
+      x = 0	
+      #{trailing_whitespace}
+      __END__
+      x = 0	
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 6
+        message: Trailing whitespace detected.
+      - line: 2
+        column_start: 0
+        column_end: 1
+        message: Trailing whitespace detected.
+    config:
+      AllowInHeredoc: false
+    interpolated: true
+
+  - name: rubocop_cop_layout_trailingwhitespace_is_not_fooled_by_end_within_a_documentation_comment
+    source: |
+      x = 0	
+      =begin
+      __END__
+      =end
+      x = 0	
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 6
+        message: Trailing whitespace detected.
+      - line: 5
+        column_start: 5
+        column_end: 6
+        message: Trailing whitespace detected.
+    config:
+      AllowInHeredoc: false
+
+  - name: rubocop_cop_layout_trailingwhitespace_is_not_fooled_by_heredoc_containing_end
+    source: |
+      x1 = <<HEREDOC#{trailing_whitespace}
+      __END__
+      x2 = 0	
+      HEREDOC
+      x3 = 0	
+    offenses:
+      - line: 1
+        column_start: 14
+        column_end: 15
+        message: Trailing whitespace detected.
+      - line: 3
+        column_start: 6
+        column_end: 7
+        message: Trailing whitespace detected.
+      - line: 5
+        column_start: 6
+        column_end: 7
+        message: Trailing whitespace detected.
+    config:
+      AllowInHeredoc: false
+    interpolated: true
+
+  - name: rubocop_cop_layout_trailingwhitespace_is_not_fooled_by_heredoc_containing_end_within_a_doc_comment
+    source: |
+      x1 = <<HEREDOC#{trailing_whitespace}
+      =begin#{trailing_whitespace * 2}
+      __END__
+      =end
+      x2 = 0	
+      HEREDOC
+      x3 = 0	
+    offenses:
+      - line: 1
+        column_start: 14
+        column_end: 15
+        message: Trailing whitespace detected.
+      - line: 2
+        column_start: 6
+        column_end: 8
+        message: Trailing whitespace detected.
+      - line: 5
+        column_start: 6
+        column_end: 7
+        message: Trailing whitespace detected.
+      - line: 7
+        column_start: 6
+        column_end: 7
+        message: Trailing whitespace detected.
+    config:
+      AllowInHeredoc: false
+    interpolated: true
+
+  - name: rubocop_cop_layout_trailingwhitespace_accepts_a_line_without_trailing_whitespace
+    source: |
+      x = 0
+    offenses:
+      []
+    config:
+      AllowInHeredoc: false
+
+  - name: rubocop_cop_layout_trailingwhitespace_autocorrects_unwanted_space
+    source: |
+      x = 0#{trailing_whitespace}
+      x = 0	
+      x = :a　
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 6
+        message: Trailing whitespace detected.
+      - line: 2
+        column_start: 5
+        column_end: 6
+        message: Trailing whitespace detected.
+      - line: 3
+        column_start: 6
+        column_end: 7
+        message: Trailing whitespace detected.
+    corrected: |
+      x = 0
+      x = 0
+      x = :a
+    config:
+      AllowInHeredoc: false
+    interpolated: true
+
+  - name: rubocop_cop_layout_trailingwhitespace_when_allowinheredoc_is_set_to_true_accepts_trailing_whitespace_in_a_heredoc_string
+    source: |
+      x = <<HEREDOC
+        Hi#{trailing_whitespace * 3}
+      HEREDOC
+    offenses:
+      []
+    config:
+      AllowInHeredoc: true
+    interpolated: true
+
+  - name: rubocop_cop_layout_trailingwhitespace_when_allowinheredoc_is_set_to_true_registers_an_offense_for_trailing_whitespace_at_the_heredoc_begin
+    source: |
+      x = <<HEREDOC#{trailing_whitespace}
+        Hi#{trailing_whitespace * 3}
+      HEREDOC
+    offenses:
+      - line: 1
+        column_start: 13
+        column_end: 14
+        message: Trailing whitespace detected.
+    config:
+      AllowInHeredoc: true
+    interpolated: true
+
+  - name: rubocop_cop_layout_trailingwhitespace_when_allowinheredoc_is_set_to_false_corrects_safely_trailing_whitespace_in_a_heredoc_string
+    source: |
+      x = <<~EXAMPLE
+        has trailing   #{trailing_whitespace}
+        no trailing
+      EXAMPLE
+    offenses:
+      - line: 2
+        column_start: 14
+        column_end: 18
+        message: Trailing whitespace detected.
+    corrected: |
+      x = <<~EXAMPLE
+        has trailing#{'    '}
+        no trailing
+      EXAMPLE
+    config:
+      AllowInHeredoc: false
+    interpolated: true
+
+  - name: rubocop_cop_layout_trailingwhitespace_when_allowinheredoc_is_set_to_false_corrects_by_removing_trailing_whitespace_used_for_indentation_in_a_heredoc_string
+    source: |
+      x = <<~EXAMPLE
+        no trailing
+       #{trailing_whitespace}
+        no trailing
+      #{trailing_whitespace}
+        no trailing
+      EXAMPLE
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 2
+        message: Trailing whitespace detected.
+      - line: 5
+        column_start: 0
+        column_end: 1
+        message: Trailing whitespace detected.
+    corrected: |
+      x = <<~EXAMPLE
+        no trailing
+      
+        no trailing
+      
+        no trailing
+      EXAMPLE
+    config:
+      AllowInHeredoc: false
+    interpolated: true
+
+  - name: rubocop_cop_layout_trailingwhitespace_when_allowinheredoc_is_set_to_false_corrects_a_whitespace_line_in_a_heredoc_string_that_is_longer_than_the_indentation
+    source: |
+      x = <<~EXAMPLE
+        no trailing
+        #{trailing_whitespace}
+        no trailing
+      EXAMPLE
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 3
+        message: Trailing whitespace detected.
+    corrected: |
+      x = <<~EXAMPLE
+        no trailing
+        #{' '}
+        no trailing
+      EXAMPLE
+    config:
+      AllowInHeredoc: false
+    interpolated: true
+
+  - name: rubocop_cop_layout_trailingwhitespace_when_allowinheredoc_is_set_to_false_does_not_correct_trailing_whitespace_in_a_static_heredoc_string
+    source: |
+      x = <<~'EXAMPLE'
+        has trailing#{trailing_whitespace}
+        no trailing
+      EXAMPLE
+    offenses:
+      - line: 2
+        column_start: 14
+        column_end: 15
+        message: Trailing whitespace detected.
+    config:
+      AllowInHeredoc: false
+    interpolated: true

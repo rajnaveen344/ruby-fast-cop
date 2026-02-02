@@ -1,0 +1,262 @@
+cop: Style/ObjectThen
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_objectthen_enforcedstyle_then_does_not_register_an_offense_for_method_names_other_than_then
+    source: |
+      obj.map { |x| x.foo }
+    offenses:
+      []
+    config:
+      EnforcedStyle: then
+
+  - name: rubocop_cop_style_objectthen_enforcedstyle_then_ruby_2_5_accepts_yield_self_with_block
+    source: |
+      obj.yield_self { |e| e.test }
+    offenses:
+      []
+    config:
+      EnforcedStyle: then
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_objectthen_enforcedstyle_then_ruby_2_6_registers_an_offense_for_yield_self_with_block
+    source: |
+      obj.yield_self { |e| e.test }
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 14
+        message: Prefer `then` over `yield_self`.
+    corrected: |
+      obj.then { |e| e.test }
+    config:
+      EnforcedStyle: then
+    ruby_version: ">= 2.6"
+
+  - name: rubocop_cop_style_objectthen_enforcedstyle_then_ruby_2_6_registers_an_offense_for_yield_self_with_safe_navigation_and_block
+    source: |
+      obj&.yield_self { |e| e.test }
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 15
+        message: Prefer `then` over `yield_self`.
+    corrected: |
+      obj&.then { |e| e.test }
+    config:
+      EnforcedStyle: then
+    ruby_version: ">= 2.6"
+
+  - name: rubocop_cop_style_objectthen_enforcedstyle_then_ruby_2_7_registers_an_offense_for_yield_self_with_numblock
+    source: |
+      obj.yield_self { _1.test }
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 14
+        message: Prefer `then` over `yield_self`.
+    corrected: |
+      obj.then { _1.test }
+    config:
+      EnforcedStyle: then
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_style_objectthen_enforcedstyle_then_ruby_2_7_registers_an_offense_for_yield_self_with_safe_navigation_and_numblock
+    source: |
+      obj&.yield_self { _1.test }
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 15
+        message: Prefer `then` over `yield_self`.
+    corrected: |
+      obj&.then { _1.test }
+    config:
+      EnforcedStyle: then
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_style_objectthen_enforcedstyle_then_ruby_2_7_registers_an_offense_for_yield_self_without_receiver
+    source: |
+      yield_self { |obj| obj.test }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 10
+        message: Prefer `then` over `yield_self`.
+    corrected: |
+      self.then { |obj| obj.test }
+    config:
+      EnforcedStyle: then
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_style_objectthen_enforcedstyle_then_ruby_3_4_registers_an_offense_for_yield_self_with_itblock
+    source: |
+      obj.yield_self { it.test }
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 14
+        message: Prefer `then` over `yield_self`.
+    corrected: |
+      obj.then { it.test }
+    config:
+      EnforcedStyle: then
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_style_objectthen_enforcedstyle_then_ruby_3_4_registers_an_offense_for_yield_self_with_safe_navigation_and_itblock
+    source: |
+      obj&.yield_self { it.test }
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 15
+        message: Prefer `then` over `yield_self`.
+    corrected: |
+      obj&.then { it.test }
+    config:
+      EnforcedStyle: then
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_style_objectthen_enforcedstyle_then_registers_an_offense_for_yield_self_with_proc_param
+    source: |
+      obj.yield_self(&:test)
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 14
+        message: Prefer `then` over `yield_self`.
+    corrected: |
+      obj.then(&:test)
+    config:
+      EnforcedStyle: then
+
+  - name: rubocop_cop_style_objectthen_enforcedstyle_then_registers_an_offense_for_yield_self_with_safe_navigation_and_proc_param
+    source: |
+      obj&.yield_self(&:test)
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 15
+        message: Prefer `then` over `yield_self`.
+    corrected: |
+      obj&.then(&:test)
+    config:
+      EnforcedStyle: then
+
+  - name: rubocop_cop_style_objectthen_enforcedstyle_then_accepts_yield_self_with_more_than_1_param
+    source: |
+      obj.yield_self(other, &:test)
+    offenses:
+      []
+    config:
+      EnforcedStyle: then
+
+  - name: rubocop_cop_style_objectthen_enforcedstyle_then_accepts_yield_self_with_safe_navigation_and_more_than_1_param
+    source: |
+      obj&.yield_self(other, &:test)
+    offenses:
+      []
+    config:
+      EnforcedStyle: then
+
+  - name: rubocop_cop_style_objectthen_enforcedstyle_then_accepts_yield_self_without_a_block
+    source: |
+      obj.yield_self
+    offenses:
+      []
+    config:
+      EnforcedStyle: then
+
+  - name: rubocop_cop_style_objectthen_enforcedstyle_then_accepts_yield_self_with_safe_navigation_without_a_block
+    source: |
+      obj&.yield_self
+    offenses:
+      []
+    config:
+      EnforcedStyle: then
+
+  - name: rubocop_cop_style_objectthen_enforcedstyle_yield_self_registers_an_offense_for_then_with_block
+    source: |
+      obj.then { |e| e.test }
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 8
+        message: Prefer `yield_self` over `then`.
+    corrected: |
+      obj.yield_self { |e| e.test }
+    config:
+      EnforcedStyle: yield_self
+
+  - name: rubocop_cop_style_objectthen_enforcedstyle_yield_self_registers_an_offense_for_then_with_safe_navigation_with_block
+    source: |
+      obj&.then { |e| e.test }
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 9
+        message: Prefer `yield_self` over `then`.
+    corrected: |
+      obj&.yield_self { |e| e.test }
+    config:
+      EnforcedStyle: yield_self
+
+  - name: rubocop_cop_style_objectthen_enforcedstyle_yield_self_registers_an_offense_for_then_with_proc_param
+    source: |
+      obj.then(&:test)
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 8
+        message: Prefer `yield_self` over `then`.
+    corrected: |
+      obj.yield_self(&:test)
+    config:
+      EnforcedStyle: yield_self
+
+  - name: rubocop_cop_style_objectthen_enforcedstyle_yield_self_registers_an_offense_for_then_with_safe_navigation_and_proc_param
+    source: |
+      obj&.then(&:test)
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 9
+        message: Prefer `yield_self` over `then`.
+    corrected: |
+      obj&.yield_self(&:test)
+    config:
+      EnforcedStyle: yield_self
+
+  - name: rubocop_cop_style_objectthen_enforcedstyle_yield_self_accepts_then_with_more_than_1_param
+    source: |
+      obj.then(other, &:test)
+    offenses:
+      []
+    config:
+      EnforcedStyle: yield_self
+
+  - name: rubocop_cop_style_objectthen_enforcedstyle_yield_self_accepts_then_with_safe_navigation_and_more_than_1_param
+    source: |
+      obj&.then(other, &:test)
+    offenses:
+      []
+    config:
+      EnforcedStyle: yield_self
+
+  - name: rubocop_cop_style_objectthen_enforcedstyle_yield_self_accepts_then_without_a_block
+    source: |
+      obj.then
+    offenses:
+      []
+    config:
+      EnforcedStyle: yield_self
+
+  - name: rubocop_cop_style_objectthen_enforcedstyle_yield_self_accepts_then_with_safe_navigation_without_a_block
+    source: |
+      obj&.then
+    offenses:
+      []
+    config:
+      EnforcedStyle: yield_self

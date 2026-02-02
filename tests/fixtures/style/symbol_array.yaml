@@ -1,0 +1,435 @@
+cop: Style/SymbolArray
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_symbolarray_when_enforcedstyle_is_percent_registers_an_offense_for_arrays_of_symbols
+    source: |
+      [:one, :two, :three]
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 20
+        message: Use `%i` or `%I` for an array of symbols.
+    corrected: |
+      %i(one two three)
+    config:
+      EnforcedStyle: percent
+      MinSize: 0
+
+  - name: rubocop_cop_style_symbolarray_when_enforcedstyle_is_percent_autocorrects_arrays_of_one_symbol
+    source: |
+      [:one]
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 6
+        message: Use `%i` or `%I` for an array of symbols.
+    corrected: |
+      %i(one)
+    config:
+      EnforcedStyle: percent
+      MinSize: 0
+
+  - name: rubocop_cop_style_symbolarray_when_enforcedstyle_is_percent_autocorrects_arrays_of_symbols_with_embedded_newlines_and_tabs
+    source: |
+      [:"%{tab}", :"two
+      ", :three]
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 17
+        message: Use `%i` or `%I` for an array of symbols.
+    corrected: |
+      %I(\t two\n three)
+    config:
+      EnforcedStyle: percent
+      MinSize: 0
+
+  - name: rubocop_cop_style_symbolarray_when_enforcedstyle_is_percent_autocorrects_arrays_of_symbols_with_new_line
+    source: |
+      [:one,
+      :two, :three,
+      :four]
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 6
+        message: Use `%i` or `%I` for an array of symbols.
+    corrected: |
+      %i(one
+      two three
+      four)
+    config:
+      EnforcedStyle: percent
+      MinSize: 0
+
+  - name: rubocop_cop_style_symbolarray_when_enforcedstyle_is_percent_uses_i_when_appropriate
+    source: |
+      [:"\t", :"\n", :three]
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 22
+        message: Use `%i` or `%I` for an array of symbols.
+    corrected: |
+      %I(\t \n three)
+    config:
+      EnforcedStyle: percent
+      MinSize: 0
+
+  - name: rubocop_cop_style_symbolarray_when_enforcedstyle_is_percent_does_not_register_an_offense_for_array_with_non_syms
+    source: |
+      [:one, :two, "three"]
+    offenses:
+      []
+    config:
+      EnforcedStyle: percent
+      MinSize: 0
+
+  - name: rubocop_cop_style_symbolarray_when_enforcedstyle_is_percent_does_not_register_an_offense_for_array_starting_with_i
+    source: |
+      %i(one two three)
+    offenses:
+      []
+    config:
+      EnforcedStyle: percent
+      MinSize: 0
+
+  - name: rubocop_cop_style_symbolarray_when_enforcedstyle_is_percent_does_not_register_an_offense_for_array_containing_delimiters_without_spaces
+    source: |
+      %i[zero (one) [two] three[4] five[six] seven(8) nine(ten) ([]) [] ()]
+    offenses:
+      []
+    config:
+      EnforcedStyle: percent
+      MinSize: 0
+
+  - name: rubocop_cop_style_symbolarray_when_enforcedstyle_is_percent_does_not_register_an_offense_for_a_percent_array_with_interpolations
+    source: |
+      %I[one_#{two} three #{four}_five six#{seven}eight [nine_#{ten}]]
+    offenses:
+      []
+    config:
+      EnforcedStyle: percent
+      MinSize: 0
+
+  - name: rubocop_cop_style_symbolarray_when_enforcedstyle_is_percent_does_not_register_an_offense_if_symbol_contains_whitespace
+    source: |
+      [:one, :two, :"space here"]
+    offenses:
+      []
+    config:
+      EnforcedStyle: percent
+      MinSize: 0
+
+  - name: rubocop_cop_style_symbolarray_when_enforcedstyle_is_percent_does_not_register_an_offense_if_a_symbol_contains_unclosed_delimiters
+    source: |
+      [:one, :")", :two, :"(", :"]"]
+    offenses:
+      []
+    config:
+      EnforcedStyle: percent
+      MinSize: 0
+
+  - name: rubocop_cop_style_symbolarray_when_enforcedstyle_is_percent_does_not_register_an_offense_if_a_symbol_contains_a_delimiter_with_spaces
+    source: |
+      [:one, :two, :"[ ]", :"( )"]
+    offenses:
+      []
+    config:
+      EnforcedStyle: percent
+      MinSize: 0
+
+  - name: rubocop_cop_style_symbolarray_when_enforcedstyle_is_percent_registers_an_offense_in_a_non_ambiguous_block_context
+    source: |
+      foo([:bar, :baz]) { qux }
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 16
+        message: Use `%i` or `%I` for an array of symbols.
+    corrected: |
+      foo(%i(bar baz)) { qux }
+    config:
+      EnforcedStyle: percent
+      MinSize: 0
+
+  - name: rubocop_cop_style_symbolarray_when_enforcedstyle_is_percent_detects_right_value_for_minsize_to_use_for_auto_gen_config
+    source: |
+      [:one, :two, :three]
+      %i(a b c d)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 20
+        message: Use `%i` or `%I` for an array of symbols.
+    config:
+      EnforcedStyle: percent
+      MinSize: 0
+
+  - name: rubocop_cop_style_symbolarray_when_enforcedstyle_is_percent_detects_when_the_cop_must_be_disabled_to_avoid_offenses
+    source: |
+      [:one, :two, :three]
+      %i(a b)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 20
+        message: Use `%i` or `%I` for an array of symbols.
+    config:
+      EnforcedStyle: percent
+      MinSize: 0
+
+  - name: rubocop_cop_style_symbolarray_when_enforcedstyle_is_percent_registers_an_offense_for_a_i_array_containing_escaped
+    source: |
+      %i[one \[ \] two]
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 17
+        message: "Use `[:one, :'[', :']', :two]` for an array of symbols."
+    corrected: |
+      [:one, :'[', :']', :two]
+    config:
+      EnforcedStyle: percent
+      MinSize: 0
+
+  - name: rubocop_cop_style_symbolarray_when_enforcedstyle_is_percent_does_not_register_an_offense_for_a_i_array_containing_unescaped
+    source: |
+      %i(one [ ] two)
+    offenses:
+      []
+    config:
+      EnforcedStyle: percent
+      MinSize: 0
+
+  - name: rubocop_cop_style_symbolarray_when_enforcedstyle_is_percent_registers_an_offense_for_a_i_array_containing_whitespace_between_brackets
+    source: |
+      %i[one two \[three\ four\ five\]]
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 33
+        message: "Use `[:one, :two, :'[three four five]']` for an array of symbols."
+    corrected: |
+      [:one, :two, :'[three four five]']
+    config:
+      EnforcedStyle: percent
+      MinSize: 0
+
+  - name: rubocop_cop_style_symbolarray_when_enforcedstyle_is_percent_registers_an_offense_for_a_i_array_containing_brackets_between_brackets
+    source: |
+      %i[one two \[\[\]]
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 18
+        message: "Use `[:one, :two, :'[[]']` for an array of symbols."
+    corrected: |
+      [:one, :two, :'[[]']
+    config:
+      EnforcedStyle: percent
+      MinSize: 0
+
+  - name: rubocop_cop_style_symbolarray_when_enforcedstyle_is_percent_registers_an_offense_for_a_i_array_containing_escaped
+    source: |
+      %i(one \( \) two)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 17
+        message: "Use `[:one, :'(', :')', :two]` for an array of symbols."
+    corrected: |
+      [:one, :'(', :')', :two]
+    config:
+      EnforcedStyle: percent
+      MinSize: 0
+
+  - name: rubocop_cop_style_symbolarray_when_enforcedstyle_is_percent_does_not_register_an_offense_for_a_i_array_containing_unescaped
+    source: |
+      %i[one ( ) two]
+    offenses:
+      []
+    config:
+      EnforcedStyle: percent
+      MinSize: 0
+
+  - name: rubocop_cop_style_symbolarray_when_enforcedstyle_is_percent_registers_an_offense_for_a_i_array_containing_parentheses_between_parentheses
+    source: |
+      %i(one two \(\(\))
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 18
+        message: "Use `[:one, :two, :'(()']` for an array of symbols."
+    corrected: |
+      [:one, :two, :'(()']
+    config:
+      EnforcedStyle: percent
+      MinSize: 0
+
+  - name: rubocop_cop_style_symbolarray_when_enforcedstyle_is_percent_registers_an_offense_for_a_i_array_containing_whitespace_between_parentheses
+    source: |
+      %i(one two \(three\ four\ five\))
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 33
+        message: "Use `[:one, :two, :'(three four five)']` for an array of symbols."
+    corrected: |
+      [:one, :two, :'(three four five)']
+    config:
+      EnforcedStyle: percent
+      MinSize: 0
+
+  - name: rubocop_cop_style_symbolarray_when_enforcedstyle_is_percent_when_preferreddelimiters_is_specified_autocorrects_an_array_in_multiple_lines
+    source: |
+      [
+      :foo,
+      :bar,
+      :baz
+      ]
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 1
+        message: Use `%i` or `%I` for an array of symbols.
+    corrected: |
+      %i[
+      foo
+      bar
+      baz
+      ]
+    config:
+      EnforcedStyle: percent
+      MinSize: 0
+
+  - name: rubocop_cop_style_symbolarray_when_enforcedstyle_is_percent_when_preferreddelimiters_is_specified_autocorrects_an_array_using_partial_newlines
+    source: |
+      [:foo, :bar, :baz,
+      :boz, :buz,
+      :biz]
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 18
+        message: Use `%i` or `%I` for an array of symbols.
+    corrected: |
+      %i[foo bar baz
+      boz buz
+      biz]
+    config:
+      EnforcedStyle: percent
+      MinSize: 0
+
+  - name: rubocop_cop_style_symbolarray_when_enforcedstyle_is_percent_when_preferreddelimiters_is_specified_autocorrects_balanced_pairs_of_delimiters_without_excessive_escaping
+    source: |
+      [:a, :'b[]', :'c[][]']
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 22
+        message: Use `%i` or `%I` for an array of symbols.
+    corrected: |
+      %i[a b[] c[][]]
+    config:
+      EnforcedStyle: percent
+      MinSize: 0
+
+  - name: rubocop_cop_style_symbolarray_when_enforcedstyle_is_brackets_does_not_register_an_offense_for_arrays_of_symbols
+    source: |
+      [:one, :two, :three]
+    offenses:
+      []
+    config:
+      EnforcedStyle: brackets
+      MinSize: 0
+
+  - name: rubocop_cop_style_symbolarray_when_enforcedstyle_is_brackets_registers_an_offense_for_array_starting_with_i
+    source: |
+      %i(one two three)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 17
+        message: "Use `[:one, :two, :three]` for an array of symbols."
+    corrected: |
+      [:one, :two, :three]
+    config:
+      EnforcedStyle: brackets
+      MinSize: 0
+
+  - name: rubocop_cop_style_symbolarray_when_enforcedstyle_is_brackets_registers_an_offense_for_empty_array_starting_with_i
+    source: |
+      %i()
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 4
+        message: Use `[]` for an array of symbols.
+    corrected: |
+      []
+    config:
+      EnforcedStyle: brackets
+      MinSize: 0
+
+  - name: rubocop_cop_style_symbolarray_when_enforcedstyle_is_brackets_autocorrects_an_array_starting_with_i
+    source: |
+      %i(one @two $three four-five)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 29
+        message: "Use `[:one, :@two, :$three, :'four-five']` for an array of symbols."
+    corrected: |
+      [:one, :@two, :$three, :'four-five']
+    config:
+      EnforcedStyle: brackets
+      MinSize: 0
+
+  - name: rubocop_cop_style_symbolarray_when_enforcedstyle_is_brackets_autocorrects_multiline_i_array
+    source: |
+      %i(
+        one
+        two
+        three
+      )
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 3
+        message: Use an array literal `[...]` for an array of symbols.
+    corrected: |
+      [
+        :one,
+        :two,
+        :three
+      ]
+    config:
+      EnforcedStyle: brackets
+      MinSize: 0
+
+  - name: rubocop_cop_style_symbolarray_when_enforcedstyle_is_brackets_autocorrects_an_array_has_interpolations
+    source: |
+      %I(#{foo} #{foo}bar foo#{bar} foo)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 34
+        message: "Use `[:\"#{foo}\", :\"#{foo}bar\", :\"foo#{bar}\", :foo]` for an array of symbols."
+    corrected: |
+      [:"#{foo}", :"#{foo}bar", :"foo#{bar}", :foo]
+    config:
+      EnforcedStyle: brackets
+      MinSize: 0
+
+  - name: rubocop_cop_style_symbolarray_with_non_default_minsize_does_not_autocorrect_array_of_one_symbol_if_minsize_1
+    source: |
+      [:one]
+    offenses:
+      []
+    config:
+      EnforcedStyle: percent
+      MinSize: 2

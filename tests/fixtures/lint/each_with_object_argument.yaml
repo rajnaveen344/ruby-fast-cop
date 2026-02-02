@@ -1,0 +1,59 @@
+cop: Lint/EachWithObjectArgument
+department: lint
+severity: warning
+implemented: false
+
+tests:
+  - name: rubocop_cop_lint_eachwithobjectargument_registers_an_offense_for_fixnum_argument
+    source: |
+      collection.each_with_object(0) { |e, a| a + e }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 30
+        message: The argument to each_with_object cannot be immutable.
+
+  - name: rubocop_cop_lint_eachwithobjectargument_registers_an_offense_for_float_argument
+    source: |
+      collection.each_with_object(0.1) { |e, a| a + e }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 32
+        message: The argument to each_with_object cannot be immutable.
+
+  - name: rubocop_cop_lint_eachwithobjectargument_registers_an_offense_for_bignum_argument
+    source: |
+      c.each_with_object(100000000000000000000) { |e, o| o + e }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 41
+        message: The argument to each_with_object cannot be immutable.
+
+  - name: rubocop_cop_lint_eachwithobjectargument_accepts_a_variable_argument
+    source: |
+      collection.each_with_object(x) { |e, a| a.add(e) }
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_eachwithobjectargument_accepts_two_arguments
+    source: |
+      collection.each_with_object(1, 2) { |e, a| a.add(e) }
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_eachwithobjectargument_accepts_a_string_argument
+    source: |
+      collection.each_with_object('') { |e, a| a << e.to_s }
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_eachwithobjectargument_when_using_safe_navigation_operator_registers_an_offense_for_fixnum_argument
+    source: |
+      collection&.each_with_object(0) { |e, a| a + e }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 31
+        message: The argument to each_with_object cannot be immutable.

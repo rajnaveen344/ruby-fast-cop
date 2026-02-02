@@ -1,0 +1,598 @@
+cop: Naming/FileName
+department: naming
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_naming_filename_with_camelcase_file_names_ending_in_rb_registers_an_offense
+    source: |
+      print 1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 7
+        message: The name of this source file (`testCase.rb`) should use snake_case.
+    config:
+      ExpectMatchingDefinition: false
+      Regex: null
+      CheckDefinitionPathHierarchy: true
+      CheckDefinitionPathHierarchyRoots: [lib, spec, test, src]
+      IgnoreExecutableScripts: true
+
+  - name: rubocop_cop_naming_filename_with_camelcase_file_names_without_file_extension_registers_an_offense
+    source: |
+      print 1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 7
+        message: The name of this source file (`testCase`) should use snake_case.
+    config:
+      ExpectMatchingDefinition: false
+      Regex: null
+      CheckDefinitionPathHierarchy: true
+      CheckDefinitionPathHierarchyRoots: [lib, spec, test, src]
+      IgnoreExecutableScripts: true
+
+  - name: rubocop_cop_naming_filename_with_snake_case_file_names_ending_in_rb_does_not_register_an_offense
+    source: |
+      print 1
+    offenses:
+      []
+    config:
+      ExpectMatchingDefinition: false
+      Regex: null
+      CheckDefinitionPathHierarchy: true
+      CheckDefinitionPathHierarchyRoots: [lib, spec, test, src]
+      IgnoreExecutableScripts: true
+
+  - name: rubocop_cop_naming_filename_with_snake_case_file_names_without_file_extension_does_not_register_an_offense
+    source: |
+      print 1
+    offenses:
+      []
+    config:
+      ExpectMatchingDefinition: false
+      Regex: null
+      CheckDefinitionPathHierarchy: true
+      CheckDefinitionPathHierarchyRoots: [lib, spec, test, src]
+      IgnoreExecutableScripts: true
+
+  - name: rubocop_cop_naming_filename_with_snake_case_file_names_with_non_rb_extension_does_not_register_an_offense
+    source: |
+      print 1
+    offenses:
+      []
+    config:
+      ExpectMatchingDefinition: false
+      Regex: null
+      CheckDefinitionPathHierarchy: true
+      CheckDefinitionPathHierarchyRoots: [lib, spec, test, src]
+      IgnoreExecutableScripts: true
+
+  - name: rubocop_cop_naming_filename_with_snake_case_file_names_with_multiple_extensions_does_not_register_an_offense
+    source: |
+      print 1
+    offenses:
+      []
+    config:
+      ExpectMatchingDefinition: false
+      Regex: null
+      CheckDefinitionPathHierarchy: true
+      CheckDefinitionPathHierarchyRoots: [lib, spec, test, src]
+      IgnoreExecutableScripts: true
+
+  - name: rubocop_cop_naming_filename_with_snake_case_names_which_use_and_does_not_register_an_offense
+    source: |
+      print 1
+    offenses:
+      []
+    config:
+      ExpectMatchingDefinition: false
+      Regex: null
+      CheckDefinitionPathHierarchy: true
+      CheckDefinitionPathHierarchyRoots: [lib, spec, test, src]
+      IgnoreExecutableScripts: true
+
+  - name: rubocop_cop_naming_filename_with_snake_case_names_which_use_does_not_register_an_offense
+    source: |
+      print 1
+    offenses:
+      []
+    config:
+      ExpectMatchingDefinition: false
+      Regex: null
+      CheckDefinitionPathHierarchy: true
+      CheckDefinitionPathHierarchyRoots: [lib, spec, test, src]
+      IgnoreExecutableScripts: true
+
+  - name: rubocop_cop_naming_filename_with_non_snake_case_file_names_with_a_shebang_does_not_register_an_offense
+    source: |
+      #!/usr/bin/env ruby
+      print 1
+    offenses:
+      []
+    config:
+      ExpectMatchingDefinition: false
+      Regex: null
+      CheckDefinitionPathHierarchy: true
+      CheckDefinitionPathHierarchyRoots: [lib, spec, test, src]
+      IgnoreExecutableScripts: true
+
+  - name: rubocop_cop_naming_filename_with_non_snake_case_file_names_with_a_shebang_when_ignoreexecutablescripts_is_disabled_registers_an_offense
+    source: |
+      #!/usr/bin/env ruby
+      print 1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 19
+        message: The name of this source file (`test-case`) should use snake_case.
+    config:
+      ExpectMatchingDefinition: false
+      Regex: null
+      CheckDefinitionPathHierarchy: true
+      CheckDefinitionPathHierarchyRoots: [lib, spec, test, src]
+      IgnoreExecutableScripts: true
+
+  - name: rubocop_cop_naming_filename_when_the_file_is_specified_in_allcops_include_with_a_non_snake_case_file_name_does_not_register_an_offense
+    source: |
+      print 1
+    offenses:
+      []
+    config:
+      ExpectMatchingDefinition: false
+      Regex: null
+      CheckDefinitionPathHierarchy: true
+      CheckDefinitionPathHierarchyRoots: [lib, spec, test, src]
+      IgnoreExecutableScripts: true
+
+  - name: rubocop_cop_naming_filename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_no_class_or_module_at_all_registers_an_offense
+    source: |
+      print 1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 7
+        message: "`test_case.rb` should define a class or module called `File::TestCase`."
+    config:
+      ExpectMatchingDefinition: false
+      Regex: null
+      CheckDefinitionPathHierarchy: true
+      CheckDefinitionPathHierarchyRoots: [lib, spec, test, src]
+      IgnoreExecutableScripts: true
+
+  - name: rubocop_cop_naming_filename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_no_class_or_module_at_all_under_lib_when_not_added_to_root_registers_an_offense
+    source: |
+      print 1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 7
+        message: "`test_case.rb` should define a class or module called `TestCase`."
+    config:
+      ExpectMatchingDefinition: false
+      Regex: null
+      CheckDefinitionPathHierarchy: true
+      CheckDefinitionPathHierarchyRoots: [lib, spec, test, src]
+      IgnoreExecutableScripts: true
+
+  - name: rubocop_cop_naming_filename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_no_class_or_module_at_all_under_some_other_random_directory_registers_an_offense
+    source: |
+      print 1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 7
+        message: "`test_case.rb` should define a class or module called `TestCase`."
+    config:
+      ExpectMatchingDefinition: false
+      Regex: null
+      CheckDefinitionPathHierarchy: true
+      CheckDefinitionPathHierarchyRoots: [lib, spec, test, src]
+      IgnoreExecutableScripts: true
+
+  - name: rubocop_cop_naming_filename_when_expectmatchingdefinition_is_true_does_not_register_an_offense
+    source: |
+      #{source}
+    offenses:
+      []
+    config:
+      ExpectMatchingDefinition: false
+      Regex: null
+      CheckDefinitionPathHierarchy: true
+      CheckDefinitionPathHierarchyRoots: [lib, spec, test, src]
+      IgnoreExecutableScripts: true
+    interpolated: true
+
+  - name: rubocop_cop_naming_filename_when_expectmatchingdefinition_is_true_registers_an_offense
+    source: |
+      # b.rb
+      #{source}
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 6
+        message: "`b.rb` should define a class or module called `C::B`."
+    config:
+      ExpectMatchingDefinition: false
+      Regex: null
+      CheckDefinitionPathHierarchy: true
+      CheckDefinitionPathHierarchyRoots: [lib, spec, test, src]
+      IgnoreExecutableScripts: true
+    interpolated: true
+
+  - name: rubocop_cop_naming_filename_when_expectmatchingdefinition_is_true_does_not_register_an_offense
+    source: |
+      #{source}
+    offenses:
+      []
+    config:
+      ExpectMatchingDefinition: false
+      Regex: null
+      CheckDefinitionPathHierarchy: true
+      CheckDefinitionPathHierarchyRoots: [lib, spec, test, src]
+      IgnoreExecutableScripts: true
+    interpolated: true
+
+  - name: rubocop_cop_naming_filename_when_expectmatchingdefinition_is_true_in_a_directory_elsewhere_which_only_matches_the_module_name_does_not_register_an_offense
+    source: |
+      #{source}
+    offenses:
+      []
+    config:
+      ExpectMatchingDefinition: false
+      Regex: null
+      CheckDefinitionPathHierarchy: true
+      CheckDefinitionPathHierarchyRoots: [lib, spec, test, src]
+      IgnoreExecutableScripts: true
+    interpolated: true
+
+  - name: rubocop_cop_naming_filename_when_expectmatchingdefinition_is_true_in_a_directory_elsewhere_which_does_not_match_the_module_name_registers_an_offense
+    source: |
+      # start of file
+      #{source}
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 15
+        message: "`e.rb` should define a class or module called `E`."
+    config:
+      ExpectMatchingDefinition: false
+      Regex: null
+      CheckDefinitionPathHierarchy: true
+      CheckDefinitionPathHierarchyRoots: [lib, spec, test, src]
+      IgnoreExecutableScripts: true
+    interpolated: true
+
+  - name: rubocop_cop_naming_filename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_nested_module_matching_module_or_class_module_a
+    source: |
+      module A
+        module B
+        end
+      end
+    offenses:
+      []
+    config:
+      ExpectMatchingDefinition: false
+      Regex: null
+      CheckDefinitionPathHierarchy: true
+      CheckDefinitionPathHierarchyRoots: [lib, spec, test, src]
+      IgnoreExecutableScripts: true
+
+  - name: rubocop_cop_naming_filename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_nested_class_matching_module_or_class_module_a
+    source: |
+      module A
+        class B
+        end
+      end
+    offenses:
+      []
+    config:
+      ExpectMatchingDefinition: false
+      Regex: null
+      CheckDefinitionPathHierarchy: true
+      CheckDefinitionPathHierarchyRoots: [lib, spec, test, src]
+      IgnoreExecutableScripts: true
+
+  - name: rubocop_cop_naming_filename_when_expectmatchingdefinition_is_true_on_a_file_which_uses_name_spaced_module_syntax_matching_module_or_class_begin
+    source: |
+      begin
+        module A::B
+        end
+      end
+    offenses:
+      []
+    config:
+      ExpectMatchingDefinition: false
+      Regex: null
+      CheckDefinitionPathHierarchy: true
+      CheckDefinitionPathHierarchyRoots: [lib, spec, test, src]
+      IgnoreExecutableScripts: true
+
+  - name: rubocop_cop_naming_filename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_multiple_classes_matching_module_or_class_class_x
+    source: |
+      class X
+      end
+      module M
+      end
+      class A
+        class B
+        end
+      end
+    offenses:
+      []
+    config:
+      ExpectMatchingDefinition: false
+      Regex: null
+      CheckDefinitionPathHierarchy: true
+      CheckDefinitionPathHierarchyRoots: [lib, spec, test, src]
+      IgnoreExecutableScripts: true
+
+  - name: rubocop_cop_naming_filename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_struct_without_a_block_matching_module_or_class_module_a
+    source: |
+      module A
+        B = Struct.new(:foo, :bar)
+      end
+    offenses:
+      []
+    config:
+      ExpectMatchingDefinition: false
+      Regex: null
+      CheckDefinitionPathHierarchy: true
+      CheckDefinitionPathHierarchyRoots: [lib, spec, test, src]
+      IgnoreExecutableScripts: true
+
+  - name: rubocop_cop_naming_filename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_struct_with_a_block_matching_module_or_class_module_a
+    source: |
+      module A
+        B = Struct.new(:foo, :bar) do
+        end
+      end
+    offenses:
+      []
+    config:
+      ExpectMatchingDefinition: false
+      Regex: null
+      CheckDefinitionPathHierarchy: true
+      CheckDefinitionPathHierarchyRoots: [lib, spec, test, src]
+      IgnoreExecutableScripts: true
+
+  - name: rubocop_cop_naming_filename_when_checkdefinitionpathhierarchy_is_false_on_a_file_with_a_matching_class_does_not_register_an_offense
+    source: |
+      begin
+        class ImageCollection
+        end
+      end
+    offenses:
+      []
+    config:
+      ExpectMatchingDefinition: false
+      Regex: null
+      CheckDefinitionPathHierarchy: true
+      CheckDefinitionPathHierarchyRoots: [lib, spec, test, src]
+      IgnoreExecutableScripts: true
+
+  - name: rubocop_cop_naming_filename_when_checkdefinitionpathhierarchy_is_false_on_a_file_with_a_non_matching_class_registers_an_offense
+    source: |
+      begin
+        class PictureCollection
+        end
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 5
+        message: "`image_collection.rb` should define a class or module called `ImageCollection`."
+    config:
+      ExpectMatchingDefinition: false
+      Regex: null
+      CheckDefinitionPathHierarchy: true
+      CheckDefinitionPathHierarchyRoots: [lib, spec, test, src]
+      IgnoreExecutableScripts: true
+
+  - name: rubocop_cop_naming_filename_when_checkdefinitionpathhierarchy_is_false_on_a_file_with_a_matching_struct_does_not_register_an_offense
+    source: |
+      ImageCollection = Struct.new
+    offenses:
+      []
+    config:
+      ExpectMatchingDefinition: false
+      Regex: null
+      CheckDefinitionPathHierarchy: true
+      CheckDefinitionPathHierarchyRoots: [lib, spec, test, src]
+      IgnoreExecutableScripts: true
+
+  - name: rubocop_cop_naming_filename_when_checkdefinitionpathhierarchy_is_false_on_a_file_with_a_non_matching_struct_registers_an_offense
+    source: |
+      PictureCollection = Struct.new
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 30
+        message: "`image_collection.rb` should define a class or module called `ImageCollection`."
+    config:
+      ExpectMatchingDefinition: false
+      Regex: null
+      CheckDefinitionPathHierarchy: true
+      CheckDefinitionPathHierarchyRoots: [lib, spec, test, src]
+      IgnoreExecutableScripts: true
+
+  - name: rubocop_cop_naming_filename_when_checkdefinitionpathhierarchy_is_false_in_a_non_matching_directory_but_with_a_matching_class_does_not_register_an_offense
+    source: |
+      begin
+        module Foo
+        end
+      end
+    offenses:
+      []
+    config:
+      ExpectMatchingDefinition: false
+      Regex: null
+      CheckDefinitionPathHierarchy: true
+      CheckDefinitionPathHierarchyRoots: [lib, spec, test, src]
+      IgnoreExecutableScripts: true
+
+  - name: rubocop_cop_naming_filename_when_checkdefinitionpathhierarchy_is_false_with_a_non_matching_module_containing_a_matching_class_does_not_register_an_offense
+    source: |
+      begin
+        module NonMatching
+          class Foo
+          end
+        end
+      end
+    offenses:
+      []
+    config:
+      ExpectMatchingDefinition: false
+      Regex: null
+      CheckDefinitionPathHierarchy: true
+      CheckDefinitionPathHierarchyRoots: [lib, spec, test, src]
+      IgnoreExecutableScripts: true
+
+  - name: rubocop_cop_naming_filename_when_checkdefinitionpathhierarchy_is_false_with_a_matching_module_containing_a_non_matching_class_does_not_register_an_offense
+    source: |
+      begin
+        module Foo
+          class NonMatching
+          end
+        end
+      end
+    offenses:
+      []
+    config:
+      ExpectMatchingDefinition: false
+      Regex: null
+      CheckDefinitionPathHierarchy: true
+      CheckDefinitionPathHierarchyRoots: [lib, spec, test, src]
+      IgnoreExecutableScripts: true
+
+  - name: rubocop_cop_naming_filename_when_checkdefinitionpathhierarchy_is_false_with_a_non_matching_module_containing_a_matching_struct_does_not_register_an_offense
+    source: |
+      begin
+        module NonMatching
+          Foo = Struct.new
+        end
+      end
+    offenses:
+      []
+    config:
+      ExpectMatchingDefinition: false
+      Regex: null
+      CheckDefinitionPathHierarchy: true
+      CheckDefinitionPathHierarchyRoots: [lib, spec, test, src]
+      IgnoreExecutableScripts: true
+
+  - name: rubocop_cop_naming_filename_when_checkdefinitionpathhierarchy_is_false_with_a_matching_module_containing_a_non_matching_struct_does_not_register_an_offense
+    source: |
+      begin
+        module Foo
+          NonMatching = Struct.new
+        end
+      end
+    offenses:
+      []
+    config:
+      ExpectMatchingDefinition: false
+      Regex: null
+      CheckDefinitionPathHierarchy: true
+      CheckDefinitionPathHierarchyRoots: [lib, spec, test, src]
+      IgnoreExecutableScripts: true
+
+  - name: rubocop_cop_naming_filename_when_regex_is_set_with_a_matching_name_does_not_register_an_offense
+    source: |
+      print 1
+    offenses:
+      []
+    config:
+      ExpectMatchingDefinition: false
+      Regex: '/\A[aeiou]\z/i'
+      CheckDefinitionPathHierarchy: true
+      CheckDefinitionPathHierarchyRoots: [lib, spec, test, src]
+      IgnoreExecutableScripts: true
+
+  - name: rubocop_cop_naming_filename_when_regex_is_set_with_a_non_matching_name_registers_an_offense
+    source: |
+      print 1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 7
+        message: '`z.rb` should match `(?i-mx:\A[aeiou]\z)`.'
+    config:
+      ExpectMatchingDefinition: false
+      Regex: '/\A[aeiou]\z/i'
+      CheckDefinitionPathHierarchy: true
+      CheckDefinitionPathHierarchyRoots: [lib, spec, test, src]
+      IgnoreExecutableScripts: true
+
+  - name: rubocop_cop_naming_filename_with_acronym_namespace_does_not_register_an_offense
+    source: |
+      module My
+        module CLI
+          class AdminUser
+          end
+        end
+      end
+    offenses:
+      []
+    config:
+      ExpectMatchingDefinition: false
+      Regex: '/\A[aeiou]\z/i'
+      CheckDefinitionPathHierarchy: true
+      CheckDefinitionPathHierarchyRoots: [lib, spec, test, src]
+      IgnoreExecutableScripts: true
+
+  - name: rubocop_cop_naming_filename_with_acronym_class_name_does_not_register_an_offense
+    source: |
+      module My
+        class CLI
+        end
+      end
+    offenses:
+      []
+    config:
+      ExpectMatchingDefinition: false
+      Regex: '/\A[aeiou]\z/i'
+      CheckDefinitionPathHierarchy: true
+      CheckDefinitionPathHierarchyRoots: [lib, spec, test, src]
+      IgnoreExecutableScripts: true
+
+  - name: rubocop_cop_naming_filename_with_include_acronym_name_does_not_register_an_offense
+    source: |
+      module My
+        class HTTPServer
+        end
+      end
+    offenses:
+      []
+    config:
+      ExpectMatchingDefinition: false
+      Regex: '/\A[aeiou]\z/i'
+      CheckDefinitionPathHierarchy: true
+      CheckDefinitionPathHierarchyRoots: [lib, spec, test, src]
+      IgnoreExecutableScripts: true
+
+  - name: rubocop_cop_naming_filename_with_dotfiles_does_not_register_an_offense
+    source: |
+      print 1
+    offenses:
+      []
+    config:
+      ExpectMatchingDefinition: false
+      Regex: '/\A[aeiou]\z/i'
+      CheckDefinitionPathHierarchy: true
+      CheckDefinitionPathHierarchyRoots: [lib, spec, test, src]
+      IgnoreExecutableScripts: true
+
+  - name: rubocop_cop_naming_filename_with_non_ascii_characters_in_filename_does_not_register_an_offense
+    source: |
+      print 1
+    offenses:
+      []
+    config:
+      ExpectMatchingDefinition: false
+      Regex: '/\A[aeiou]\z/i'
+      CheckDefinitionPathHierarchy: true
+      CheckDefinitionPathHierarchyRoots: [lib, spec, test, src]
+      IgnoreExecutableScripts: true

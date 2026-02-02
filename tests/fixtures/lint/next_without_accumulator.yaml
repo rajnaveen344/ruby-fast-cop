@@ -1,0 +1,100 @@
+cop: Lint/NextWithoutAccumulator
+department: lint
+severity: warning
+implemented: false
+
+tests:
+  - name: rubocop_cop_lint_nextwithoutaccumulator_registers_an_offense_for_a_bare_next
+    source: |
+      (1..4).#{reduce_alias}(0) do |acc, i|
+        next if i.odd?
+        acc + i
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 6
+        message: Use `next` with an accumulator argument in a `reduce`.
+    interpolated: true
+
+  - name: rubocop_cop_lint_nextwithoutaccumulator_registers_an_offense_for_a_bare_next_in_the_block_of_safe_navigation_method_called
+    source: |
+      (1..4)&.#{reduce_alias}(0) do |acc, i|
+        next if i.odd?
+        acc + i
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 6
+        message: Use `next` with an accumulator argument in a `reduce`.
+    interpolated: true
+
+  - name: rubocop_cop_lint_nextwithoutaccumulator_accepts_next_with_a_value
+    source: |
+      (1..4).#{reduce_alias}(0) do |acc, i|
+        next acc if i.odd?
+        acc + i
+      end
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_lint_nextwithoutaccumulator_accepts_next_within_a_nested_block
+    source: |
+      [(1..3), (4..6)].#{reduce_alias}(0) do |acc, elems|
+        elems.each_with_index do |elem, i|
+          next if i == 1
+          acc << elem
+        end
+        acc
+      end
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_lint_nextwithoutaccumulator_ruby_2_7_registers_an_offense_for_a_bare_next
+    source: |
+      (1..4).#{reduce_alias}(0) do
+        next if _2.odd?
+        _1 + i
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 6
+        message: Use `next` with an accumulator argument in a `reduce`.
+    ruby_version: ">= 2.7"
+    interpolated: true
+
+  - name: rubocop_cop_lint_nextwithoutaccumulator_ruby_2_7_registers_an_offense_for_a_bare_next_in_the_block_of_safe_navigation_method_call
+    source: |
+      (1..4)&.#{reduce_alias}(0) do
+        next if _2.odd?
+        _1 + i
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 6
+        message: Use `next` with an accumulator argument in a `reduce`.
+    ruby_version: ">= 2.7"
+    interpolated: true
+
+  - name: rubocop_cop_lint_nextwithoutaccumulator_given_an_unrelated_block_accepts_a_bare_next
+    source: |
+      (1..4).foo(0) do |acc, i|
+        next if i.odd?
+        acc + i
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_nextwithoutaccumulator_given_an_unrelated_block_accepts_next_with_a_value
+    source: |
+      (1..4).foo(0) do |acc, i|
+        next acc if i.odd?
+        acc + i
+      end
+    offenses:
+      []

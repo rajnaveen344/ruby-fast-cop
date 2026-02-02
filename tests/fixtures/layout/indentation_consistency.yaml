@@ -1,0 +1,921 @@
+cop: Layout/IndentationConsistency
+department: layout
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_layout_indentationconsistency_with_top_level_code_accepts_an_empty_expression_string_interpolation
+    source: |
+      "#{}"
+    offenses:
+      []
+    config:
+      EnforcedStyle: normal
+
+  - name: rubocop_cop_layout_indentationconsistency_with_top_level_code_accepts_when_using_access_modifier_at_the_top_level
+    source: |
+      public
+      
+      def foo
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: normal
+
+  - name: rubocop_cop_layout_indentationconsistency_with_top_level_code
+    source: |
+      public
+      
+        def foo
+        end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 9
+        message: Inconsistent indentation detected.
+    corrected: |
+      public
+      
+      def foo
+      end
+    config:
+      EnforcedStyle: normal
+
+  - name: rubocop_cop_layout_indentationconsistency_with_if_statement_registers_an_offense_and_corrects_bad_indentation_in_an_if_body
+    source: |
+      if cond
+       func
+        func
+      end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 6
+        message: Inconsistent indentation detected.
+    corrected: |
+      if cond
+       func
+       func
+      end
+    config:
+      EnforcedStyle: normal
+
+  - name: rubocop_cop_layout_indentationconsistency_with_if_statement_registers_an_offense_and_corrects_bad_indentation_in_an_else_body
+    source: |
+      if cond
+        func1
+      else
+       func2
+        func2
+      end
+    offenses:
+      - line: 5
+        column_start: 2
+        column_end: 7
+        message: Inconsistent indentation detected.
+    corrected: |
+      if cond
+        func1
+      else
+       func2
+       func2
+      end
+    config:
+      EnforcedStyle: normal
+
+  - name: rubocop_cop_layout_indentationconsistency_with_if_statement_registers_an_offense_and_corrects_bad_indentation_in_an_elsif_body
+    source: |
+      if a1
+        b1
+      elsif a2
+       b2
+      b3
+      else
+        c
+      end
+    offenses:
+      - line: 5
+        column_start: 0
+        column_end: 2
+        message: Inconsistent indentation detected.
+    corrected: |
+      if a1
+        b1
+      elsif a2
+       b2
+       b3
+      else
+        c
+      end
+    config:
+      EnforcedStyle: normal
+
+  - name: rubocop_cop_layout_indentationconsistency_with_if_statement_accepts_a_one_line_if_statement
+    source: |
+      if cond then func1 else func2 end
+    offenses:
+      []
+    config:
+      EnforcedStyle: normal
+
+  - name: rubocop_cop_layout_indentationconsistency_with_if_statement_accepts_a_correctly_aligned_if_elsif_else_end
+    source: |
+      if a1
+        b1
+      elsif a2
+        b2
+      else
+        c
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: normal
+
+  - name: rubocop_cop_layout_indentationconsistency_with_if_statement_accepts_if_elsif_else_end_laid_out_as_a_table
+    source: |
+      if    @io == $stdout then str << "$stdout"
+      elsif @io == $stdin  then str << "$stdin"
+      elsif @io == $stderr then str << "$stderr"
+      else                      str << @io.class.to_s
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: normal
+
+  - name: rubocop_cop_layout_indentationconsistency_with_if_statement_accepts_if_then_else_end_laid_out_as_another_table
+    source: |
+      if File.exist?('config.save')
+      then ConfigTable.load
+      else ConfigTable.new
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: normal
+
+  - name: rubocop_cop_layout_indentationconsistency_with_if_statement_accepts_if_elsif_else_end_with_fullwidth_characters
+    source: |
+      p 'Ｒｕｂｙ', if a then b
+                              c
+                    end
+    offenses:
+      []
+    config:
+      EnforcedStyle: normal
+
+  - name: rubocop_cop_layout_indentationconsistency_with_if_statement_accepts_an_empty_if
+    source: |
+      if a
+      else
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: normal
+
+  - name: rubocop_cop_layout_indentationconsistency_with_if_statement_accepts_an_if_in_assignment_with_end_aligned_with_variable
+    source: |
+      var = if a
+        0
+      end
+      @var = if a
+        0
+      end
+      $var = if a
+        0
+      end
+      var ||= if a
+        0
+      end
+      var &&= if a
+        0
+      end
+      var -= if a
+        0
+      end
+      VAR = if a
+        0
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: normal
+
+  - name: rubocop_cop_layout_indentationconsistency_with_if_statement_accepts_an_if_else_in_assignment_with_end_aligned_with_variable
+    source: |
+      var = if a
+        0
+      else
+        1
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: normal
+
+  - name: rubocop_cop_layout_indentationconsistency_with_if_statement
+    source: |
+      var = if a
+        0
+      else
+        1
+      end.abc.join("")
+    offenses:
+      []
+    config:
+      EnforcedStyle: normal
+
+  - name: rubocop_cop_layout_indentationconsistency_with_if_statement
+    source: |
+      var = if a
+        0
+      else
+        1
+      end.abc.tap {}
+    offenses:
+      []
+    config:
+      EnforcedStyle: normal
+
+  - name: rubocop_cop_layout_indentationconsistency_with_if_statement_accepts_an_if_in_assignment_with_end_aligned_with_if
+    source: |
+      var = if a
+              0
+            end
+    offenses:
+      []
+    config:
+      EnforcedStyle: normal
+
+  - name: rubocop_cop_layout_indentationconsistency_with_if_statement_accepts_an_if_else_in_assignment_with_end_aligned_with_if
+    source: |
+      var = if a
+              0
+            else
+              1
+            end
+    offenses:
+      []
+    config:
+      EnforcedStyle: normal
+
+  - name: rubocop_cop_layout_indentationconsistency_with_if_statement_accepts_an_if_else_in_assignment_on_next_line_with_end_aligned_with_if
+    source: |
+      var =
+        if a
+          0
+        else
+          1
+        end
+    offenses:
+      []
+    config:
+      EnforcedStyle: normal
+
+  - name: rubocop_cop_layout_indentationconsistency_with_if_statement_accepts_an_if_else_branches_with_rescue_clauses
+    source: |
+      if a
+        a rescue nil
+      else
+        a rescue nil
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: normal
+
+  - name: rubocop_cop_layout_indentationconsistency_with_unless_registers_an_offense_and_corrects_bad_indentation_in_an_unless_body
+    source: |
+      unless cond
+       func
+        func
+      end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 6
+        message: Inconsistent indentation detected.
+    corrected: |
+      unless cond
+       func
+       func
+      end
+    config:
+      EnforcedStyle: normal
+
+  - name: rubocop_cop_layout_indentationconsistency_with_unless_accepts_an_empty_unless
+    source: |
+      unless a
+      else
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: normal
+
+  - name: rubocop_cop_layout_indentationconsistency_with_case_registers_an_offense_and_corrects_bad_indentation_in_a_case_when_body
+    source: |
+      case a
+      when b
+       c
+          d
+      end
+    offenses:
+      - line: 4
+        column_start: 4
+        column_end: 5
+        message: Inconsistent indentation detected.
+    corrected: |
+      case a
+      when b
+       c
+       d
+      end
+    config:
+      EnforcedStyle: normal
+
+  - name: rubocop_cop_layout_indentationconsistency_with_case_registers_an_offense_and_corrects_bad_indentation_in_a_case_else_body
+    source: |
+      case a
+      when b
+        c
+      when d
+        e
+      else
+         f
+        g
+      end
+    offenses:
+      - line: 8
+        column_start: 2
+        column_end: 3
+        message: Inconsistent indentation detected.
+    corrected: |
+      case a
+      when b
+        c
+      when d
+        e
+      else
+         f
+         g
+      end
+    config:
+      EnforcedStyle: normal
+
+  - name: rubocop_cop_layout_indentationconsistency_with_case_accepts_correctly_indented_case_when_else
+    source: |
+      case a
+      when b
+        c
+        c
+      when d
+      else
+        f
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: normal
+
+  - name: rubocop_cop_layout_indentationconsistency_with_case_accepts_case_when_else_laid_out_as_a_table
+    source: |
+      case sexp.loc.keyword.source
+      when 'if'     then cond, body, _else = *sexp
+      when 'unless' then cond, _else, body = *sexp
+      else               cond, body = *sexp
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: normal
+
+  - name: rubocop_cop_layout_indentationconsistency_with_case_accepts_case_when_else_with_then_beginning_a_line
+    source: |
+      case sexp.loc.keyword.source
+      when 'if'
+      then cond, body, _else = *sexp
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: normal
+
+  - name: rubocop_cop_layout_indentationconsistency_with_case_accepts_indented_when_else_plus_indented_body
+    source: |
+      case code_type
+        when 'ruby', 'sql', 'plain'
+          code_type
+        when 'erb'
+          'ruby; html-script: true'
+        when "html"
+          'xml'
+        else
+          'plain'
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: normal
+
+  - name: rubocop_cop_layout_indentationconsistency_with_while_until_registers_an_offense_and_corrects_bad_indentation_in_a_while_body
+    source: |
+      while cond
+       func
+        func
+      end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 6
+        message: Inconsistent indentation detected.
+    corrected: |
+      while cond
+       func
+       func
+      end
+    config:
+      EnforcedStyle: normal
+
+  - name: rubocop_cop_layout_indentationconsistency_with_while_until_registers_an_offense_and_corrects_bad_indentation_in_begin_end_while
+    source: |
+      something = begin
+       func1
+         func2
+      end while cond
+    offenses:
+      - line: 3
+        column_start: 3
+        column_end: 8
+        message: Inconsistent indentation detected.
+    corrected: |
+      something = begin
+       func1
+       func2
+      end while cond
+    config:
+      EnforcedStyle: normal
+
+  - name: rubocop_cop_layout_indentationconsistency_with_while_until_registers_an_offense_and_corrects_bad_indentation_in_an_until_body
+    source: |
+      until cond
+       func
+        func
+      end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 6
+        message: Inconsistent indentation detected.
+    corrected: |
+      until cond
+       func
+       func
+      end
+    config:
+      EnforcedStyle: normal
+
+  - name: rubocop_cop_layout_indentationconsistency_with_while_until_accepts_an_empty_while
+    source: |
+      while a
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: normal
+
+  - name: rubocop_cop_layout_indentationconsistency_with_for_registers_an_offense_and_corrects_bad_indentation_in_a_for_body
+    source: |
+      for var in 1..10
+       func
+      func
+      end
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 4
+        message: Inconsistent indentation detected.
+    corrected: |
+      for var in 1..10
+       func
+       func
+      end
+    config:
+      EnforcedStyle: normal
+
+  - name: rubocop_cop_layout_indentationconsistency_with_for_accepts_an_empty_for
+    source: |
+      for var in 1..10
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: normal
+
+  - name: rubocop_cop_layout_indentationconsistency_with_def_defs_registers_an_offense_and_corrects_bad_indentation_in_a_def_body
+    source: |
+      def test
+          func1
+           func2
+      end
+    offenses:
+      - line: 3
+        column_start: 5
+        column_end: 10
+        message: Inconsistent indentation detected.
+    corrected: |
+      def test
+          func1
+          func2
+      end
+    config:
+      EnforcedStyle: normal
+
+  - name: rubocop_cop_layout_indentationconsistency_with_def_defs_registers_an_offense_and_corrects_bad_indentation_in_a_defs_body
+    source: |
+      def self.test
+         func
+          func
+      end
+    offenses:
+      - line: 3
+        column_start: 4
+        column_end: 8
+        message: Inconsistent indentation detected.
+    corrected: |
+      def self.test
+         func
+         func
+      end
+    config:
+      EnforcedStyle: normal
+
+  - name: rubocop_cop_layout_indentationconsistency_with_def_defs_accepts_an_empty_def_body
+    source: |
+      def test
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: normal
+
+  - name: rubocop_cop_layout_indentationconsistency_with_def_defs_accepts_an_empty_defs_body
+    source: |
+      def self.test
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: normal
+
+  - name: rubocop_cop_layout_indentationconsistency_with_class_with_indented_internal_methods_style_configured_accepts_different_indentation_in_different_visibility_sections
+    source: |
+      class Cat
+        def meow
+          puts('Meow!')
+        end
+      
+        protected
+      
+          def can_we_be_friends?(another_cat)
+            # some logic
+          end
+      
+          def related_to?(another_cat)
+            # some logic
+          end
+      
+        private
+      
+                    # Here we go back an indentation level again. This is a
+                    # violation of the indented_internal_methods style,
+                    # but it's not for this cop to report.
+                    # Layout/IndentationWidth will handle it.
+        def meow_at_3am?
+          rand < 0.8
+        end
+      
+                    # As long as the indentation of this method is
+                    # consistent with that of the last one, we're fine.
+        def meow_at_4am?
+          rand < 0.8
+        end
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: indented_internal_methods
+
+  - name: rubocop_cop_layout_indentationconsistency_with_class_with_indented_internal_methods_style_configured_accepts_different_indentation_in_different_visibility_sections_when_using_struct_new
+    source: |
+      Foo = Struct.new(:foo) do
+        def meow
+          puts('Meow!')
+        end
+      
+        protected
+      
+          def can_we_be_friends?(another_cat)
+            # some logic
+          end
+      
+          def related_to?(another_cat)
+            # some logic
+          end
+      
+        private
+      
+                    # Here we go back an indentation level again. This is a
+                    # violation of the indented_internal_methods style,
+                    # but it's not for this cop to report.
+                    # Layout/IndentationWidth will handle it.
+        def meow_at_3am?
+          rand < 0.8
+        end
+      
+                    # As long as the indentation of this method is
+                    # consistent with that of the last one, we're fine.
+        def meow_at_4am?
+          rand < 0.8
+        end
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: indented_internal_methods
+
+  - name: rubocop_cop_layout_indentationconsistency_with_class_with_normal_style_configured_registers_an_offense_and_corrects_bad_indentation_in_a_class_body
+    source: |
+      class Test
+          def func1
+          end
+        def func2
+        end
+      end
+    offenses:
+      - line: 4
+        column_start: 2
+        column_end: 11
+        message: Inconsistent indentation detected.
+    corrected: |
+      class Test
+          def func1
+          end
+          def func2
+          end
+      end
+    config:
+      EnforcedStyle: indented_internal_methods
+
+  - name: rubocop_cop_layout_indentationconsistency_with_class_with_normal_style_configured_accepts_an_empty_class_body
+    source: |
+      class Test
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: indented_internal_methods
+
+  - name: rubocop_cop_layout_indentationconsistency_with_class_with_normal_style_configured_accepts_indented_public_protected_and_private
+    source: |
+      class Test
+        public
+      
+        def e
+        end
+      
+        protected
+      
+        def f
+        end
+      
+        private
+      
+        def g
+        end
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: indented_internal_methods
+
+  - name: rubocop_cop_layout_indentationconsistency_with_class_with_normal_style_configured
+    source: |
+      class Test
+      public
+      
+        def e
+        end
+      
+      protected
+      
+        def f
+        end
+      
+      private
+      
+       def g
+       end
+      end
+    offenses:
+      - line: 14
+        column_start: 1
+        column_end: 6
+        message: Inconsistent indentation detected.
+    corrected: |
+      class Test
+      public
+      
+        def e
+        end
+      
+      protected
+      
+        def f
+        end
+      
+      private
+      
+        def g
+        end
+      end
+    config:
+      EnforcedStyle: indented_internal_methods
+
+  - name: rubocop_cop_layout_indentationconsistency_with_module_registers_an_offense_and_corrects_bad_indentation_in_a_module_body
+    source: |
+      module Test
+          def func1
+          end
+           def func2
+           end
+      end
+    offenses:
+      - line: 4
+        column_start: 5
+        column_end: 14
+        message: Inconsistent indentation detected.
+    corrected: |
+      module Test
+          def func1
+          end
+          def func2
+          end
+      end
+    config:
+      EnforcedStyle: indented_internal_methods
+
+  - name: rubocop_cop_layout_indentationconsistency_with_module_accepts_an_empty_module_body
+    source: |
+      module Test
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: indented_internal_methods
+
+  - name: rubocop_cop_layout_indentationconsistency_with_module_registers_an_offense_and_corrects_bad_indentation_of_private_methods
+    source: |
+      module Test
+        def pub
+        end
+        private
+          def priv
+          end
+      end
+    offenses:
+      - line: 5
+        column_start: 4
+        column_end: 12
+        message: Inconsistent indentation detected.
+    corrected: |
+      module Test
+        def pub
+        end
+        private
+        def priv
+        end
+      end
+    config:
+      EnforcedStyle: indented_internal_methods
+
+  - name: rubocop_cop_layout_indentationconsistency_with_module_even_when_there_are_no_public_methods_registers_an_offense_and_corrects_bad_indentation_of_private_methods
+    source: |
+      module Test
+        private
+          def priv
+          end
+      end
+    offenses:
+      - line: 3
+        column_start: 4
+        column_end: 12
+        message: Inconsistent indentation detected.
+    corrected: |
+      module Test
+        private
+        def priv
+        end
+      end
+    config:
+      EnforcedStyle: indented_internal_methods
+
+  - name: rubocop_cop_layout_indentationconsistency_with_block_registers_an_offense_and_correct_bad_indentation_in_a_do_end_body
+    source: |
+      a = func do
+       b
+        c
+      end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 3
+        message: Inconsistent indentation detected.
+    corrected: |
+      a = func do
+       b
+       c
+      end
+    config:
+      EnforcedStyle: indented_internal_methods
+
+  - name: rubocop_cop_layout_indentationconsistency_with_block_registers_an_offense_and_corrects_bad_indentation_in_a_body
+    source: |
+      func {
+         b
+        c
+      }
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 3
+        message: Inconsistent indentation detected.
+    corrected: |
+      func {
+         b
+         c
+      }
+    config:
+      EnforcedStyle: indented_internal_methods
+
+  - name: rubocop_cop_layout_indentationconsistency_with_block_accepts_a_correctly_indented_block_body
+    source: |
+      a = func do
+        b
+        c
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: indented_internal_methods
+
+  - name: rubocop_cop_layout_indentationconsistency_with_block_accepts_an_empty_block_body
+    source: |
+      a = func do
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: indented_internal_methods
+
+  - name: rubocop_cop_layout_indentationconsistency_with_block_does_not_autocorrect_an_offense_within_another_offense
+    source: |
+      require 'spec_helper'
+      describe ArticlesController do
+        render_views
+          describe "GET 'index'" do
+                  it "returns success" do
+                  end
+              describe "admin user" do
+                   before(:each) do
+                  end
+              end
+          end
+      end
+    offenses:
+      - line: 4
+        column_start: 4
+        column_end: 29
+        message: Inconsistent indentation detected.
+      - line: 7
+        column_start: 8
+        column_end: 32
+        message: Inconsistent indentation detected.
+    corrected: |
+      require 'spec_helper'
+      describe ArticlesController do
+        render_views
+        describe "GET 'index'" do
+                it "returns success" do
+                end
+            describe "admin user" do
+                 before(:each) do
+                end
+            end
+        end
+      end
+    config:
+      EnforcedStyle: indented_internal_methods

@@ -1,0 +1,2510 @@
+cop: Layout/IndentationWidth
+department: layout
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_4_for_a_file_with_byte_order_mark_accepts_correctly_indented_method_definition
+    source: |
+      #{bom}class Test
+          def method
+          end
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+    interpolated: true
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_4_with_ignored_patterns_set_accepts_unindented_lines_for_those_keywords
+    source: |
+      module Foo
+      class Test
+          if blah
+              if blah == Apple
+      puts "sweet"
+              elsif blah == Lemon
+      puts "sour"
+              elsif blah == popcorn
+                  puts "salty"
+              end
+          end
+      end
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_4_with_if_statement_registers_an_offense_for_bad_indentation_of_an_if_body
+    source: |
+      if cond
+       func
+      end
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 1
+        message: Use 4 (not 1) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_4_registers_and_corrects_offense_for_bad_indentation
+    source: |
+      if a1
+         b1
+         b1
+      elsif a2
+       b2
+      else
+          c
+      end
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 3
+        message: Use 4 (not 3) spaces for indentation.
+      - line: 5
+        column_start: 0
+        column_end: 1
+        message: Use 4 (not 1) spaces for indentation.
+    corrected: |
+      if a1
+          b1
+         b1
+      elsif a2
+          b2
+      else
+          c
+      end
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_registers_an_offense_for_bad_indentation_of_an_if_body
+    source: |
+      if cond
+       func
+      end
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 1
+        message: Use 2 (not 1) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_registers_an_offense_for_bad_indentation_of_an_else_body
+    source: |
+      if cond
+        func1
+      else
+       func2
+      end
+    offenses:
+      - line: 4
+        column_start: 0
+        column_end: 1
+        message: Use 2 (not 1) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_registers_an_offense_for_bad_indentation_of_an_else_body_when_if_body_contains_no_code
+    source: |
+      if cond
+        # nothing here
+      else
+       func2
+      end
+    offenses:
+      - line: 4
+        column_start: 0
+        column_end: 1
+        message: Use 2 (not 1) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement
+    source: |
+      if cond
+        # nothing here
+      elsif cond2
+        # nothing here either
+      else
+       func2
+      end
+    offenses:
+      - line: 6
+        column_start: 0
+        column_end: 1
+        message: Use 2 (not 1) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_registers_an_offense_for_bad_indentation_of_an_elsif_body
+    source: |
+      if a1
+        b1
+      elsif a2
+       b2
+      else
+        c
+      end
+    offenses:
+      - line: 4
+        column_start: 0
+        column_end: 1
+        message: Use 2 (not 1) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_registers_an_offense_for_bad_indentation_of_ternary_inside_else
+    source: |
+      if a
+        b
+      else
+           x ? y : z
+      end
+    offenses:
+      - line: 4
+        column_start: 0
+        column_end: 5
+        message: Use 2 (not 5) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_registers_an_offense_for_bad_indentation_of_modifier_if_in_else
+    source: |
+      if a
+        b
+      else
+         x if y
+      end
+    offenses:
+      - line: 4
+        column_start: 0
+        column_end: 3
+        message: Use 2 (not 3) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_accepts_indentation_after_if_on_new_line_after_assignment
+    source: |
+      Rails.application.config.ideal_postcodes_key =
+        if Rails.env.production? || Rails.env.staging?
+          "AAAA-AAAA-AAAA-AAAA"
+        end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_accepts_rescue_after_an_empty_body
+    source: |
+      begin
+      rescue
+        handle_error
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_accepts_ensure_after_an_empty_body
+    source: |
+      begin
+      ensure
+        something
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_accepts_rescue_ensure_after_an_empty_body
+    source: |
+      begin
+      rescue
+        handle_error
+      ensure
+        something
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_accepts_rescue_after_an_empty_def
+    source: |
+      def foo
+      rescue
+        handle_error
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_accepts_ensure_after_an_empty_def
+    source: |
+      def foo
+      ensure
+        something
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_accepts_rescue_ensure_after_an_empty_def
+    source: |
+      def foo
+      rescue
+        handle_error
+      ensure
+        something
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_does_not_raise_any_error_with_empty_braces
+    source: |
+      if cond
+        ()
+      else
+        ()
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_registers_and_corrects_on_offense_for_bad_indentation
+    source: |
+      if a1
+         b1
+         b1
+      elsif a2
+       b2
+      else
+          c
+      end
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 3
+        message: Use 2 (not 3) spaces for indentation.
+      - line: 5
+        column_start: 0
+        column_end: 1
+        message: Use 2 (not 1) spaces for indentation.
+      - line: 7
+        column_start: 0
+        column_end: 4
+        message: Use 2 (not 4) spaces for indentation.
+    corrected: |
+      if a1
+        b1
+         b1
+      elsif a2
+        b2
+      else
+        c
+      end
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_does_not_correct_in_scopes_that_contain_block_comments
+    source: |
+      module Foo
+      # The class has a block comment within, so it's not corrected.
+      class Bar
+      =begin
+      This is a nice long
+      comment
+      which spans a few lines
+      =end
+      # The method has no block comment inside,
+      # but it's within a class that has a block
+      # comment, so it's not corrected either.
+      def baz
+      do_something
+      end
+      end
+      end
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 9
+        message: Use 2 (not 0) spaces for indentation.
+      - line: 12
+        column_start: 0
+        column_end: 7
+        message: Use 2 (not 0) spaces for indentation.
+      - line: 13
+        column_start: 0
+        column_end: 12
+        message: Use 2 (not 0) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_does_not_indent_heredoc_strings
+    source: |
+      module Foo
+      module Bar
+        SOMETHING = <<GOO
+      text
+      more text
+      foo
+      GOO
+        def baz
+          do_something("#{x}")
+        end
+      end
+      end
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 10
+        message: Use 2 (not 0) spaces for indentation.
+    corrected: |
+      module Foo
+        module Bar
+          SOMETHING = <<GOO
+      text
+      more text
+      foo
+      GOO
+          def baz
+            do_something("#{x}")
+          end
+        end
+      end
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_indents_parenthesized_expressions
+    source: |
+      var1 = nil
+      array_list = []
+      if var1.attr1 != 0 || array_list.select{ |w|
+                              (w.attr2 == var1.attr2)
+                       }.blank?
+        array_list << var1
+      end
+    offenses:
+      - line: 4
+        column_start: 17
+        column_end: 24
+        message: Use 2 (not 7) spaces for indentation.
+    corrected: |
+      var1 = nil
+      array_list = []
+      if var1.attr1 != 0 || array_list.select{ |w|
+                         (w.attr2 == var1.attr2)
+                       }.blank?
+        array_list << var1
+      end
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_leaves_rescue_end_unchanged
+    source: |
+      if variable
+        begin
+          do_something
+        rescue ; end # consume any exception
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_leaves_block_unchanged_if_block_end_is_not_on_its_own_line
+    source: |
+      a_function {
+        # a comment
+        result = AObject.find_by_attr(attr) if attr
+        result || AObject.make(
+            :attr => attr,
+            :attr2 => Other.get_value(),
+            :attr3 => Another.get_value()) }
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_handles_lines_with_only_whitespace
+    source: |
+      def x
+          y
+      
+      rescue
+      end
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 4
+        message: Use 2 (not 4) spaces for indentation.
+    corrected: |
+      def x
+        y
+      
+      rescue
+      end
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_accepts_a_one_line_if_statement
+    source: |
+      if cond then func1 else func2 end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_accepts_a_correctly_aligned_if_elsif_else_end
+    source: |
+      if a1
+        b1
+      elsif a2
+        b2
+      else
+        c
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_accepts_a_correctly_aligned_if_elsif_else_end_as_a_method_argument
+    source: |
+      foo(
+        if a1
+          b1
+        elsif a2
+          b2
+        else
+          c
+        end
+      )
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_accepts_if_elsif_else_end_laid_out_as_a_table
+    source: |
+      if    @io == $stdout then str << "$stdout"
+      elsif @io == $stdin  then str << "$stdin"
+      elsif @io == $stderr then str << "$stderr"
+      else                      str << @io.class.to_s
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_accepts_if_then_else_end_laid_out_as_another_table
+    source: |
+      if File.exist?('config.save')
+      then ConfigTable.load
+      else ConfigTable.new
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_accepts_an_empty_if
+    source: |
+      if a
+      else
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_with_assignment_and_end_is_aligned_with_variable_accepts_an_if_with_end_aligned_with_setter
+    source: |
+      foo.bar = if baz
+        derp
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_with_assignment_and_end_is_aligned_with_variable_accepts_an_if_with_end_aligned_with_element_assignment
+    source: |
+      foo[bar] = if baz
+        derp
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_with_assignment_and_end_is_aligned_with_variable_accepts_an_if_with_end_aligned_with_variable
+    source: |
+      var = if a
+        0
+      end
+      @var = if a
+        0
+      end
+      $var = if a
+        0
+      end
+      var ||= if a
+        0
+      end
+      var &&= if a
+        0
+      end
+      var -= if a
+        0
+      end
+      VAR = if a
+        0
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_with_assignment_and_end_is_aligned_with_variable_accepts_an_if_else
+    source: |
+      var = if a
+        0
+      else
+        1
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_with_assignment_and_end_is_aligned_with_variable_accepts_an_if_else_with_chaining_after_the_end
+    source: |
+      var = if a
+        0
+      else
+        1
+      end.abc.join("")
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_with_assignment_and_end_is_aligned_with_variable_accepts_an_if_else_with_chaining_with_a_block_after_the_end
+    source: |
+      var = if a
+        0
+      else
+        1
+      end.abc.tap {}
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_with_assignment_and_end_is_aligned_with_keyword_registers_an_offense_for_an_if_with_setter
+    source: |
+      foo.bar = if baz
+                  derp
+                end
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 12
+        message: Use 2 (not 12) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_with_assignment_and_end_is_aligned_with_keyword_registers_an_offense_for_an_if_with_element_assignment
+    source: |
+      foo[bar] = if baz
+                   derp
+                 end
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 13
+        message: Use 2 (not 13) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_with_assignment_and_end_is_aligned_with_keyword_registers_an_offense_for_an_if
+    source: |
+      var = if a
+              0
+            end
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 8
+        message: Use 2 (not 8) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_with_assignment_and_end_is_aligned_with_keyword_accepts_an_if_else_in_assignment_on_next_line
+    source: |
+      var =
+        if a
+          0
+        else
+          1
+        end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_with_assignment_and_end_is_aligned_with_keyword_registers_an_offense_for_a_while
+    source: |
+      var = while a
+              b
+            end
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 8
+        message: Use 2 (not 8) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_with_assignment_and_end_is_aligned_with_keyword_registers_an_offense_for_an_until
+    source: |
+      var = until a
+              b
+            end
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 8
+        message: Use 2 (not 8) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_with_assignment_and_end_is_aligned_randomly_registers_an_offense_for_an_if
+    source: |
+      var = if a
+                0
+            end
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 10
+        message: Use 2 (not 10) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_with_assignment_and_end_is_aligned_randomly_registers_an_offense_for_a_while
+    source: |
+      var = while a
+                b
+            end
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 10
+        message: Use 2 (not 10) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_with_assignment_and_end_is_aligned_randomly_registers_an_offense_for_an_until
+    source: |
+      var = until a
+                b
+            end
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 10
+        message: Use 2 (not 10) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_with_assignment_when_alignment_style_is_keyword_and_end_is_aligned_with_variable_registers_an_offense_for_an_if
+    source: |
+      var = if a
+        0
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 3
+        message: Use 2 (not -4) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_with_assignment_when_alignment_style_is_keyword_and_end_is_aligned_with_variable_registers_an_offense_for_a_while
+    source: |
+      var = while a
+        b
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 3
+        message: Use 2 (not -4) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_with_assignment_when_alignment_style_is_keyword_and_end_is_aligned_with_variable_registers_and_corrects_bad_indentation
+    source: |
+      var = if a
+        b
+      end
+      
+      var = while a
+        b
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 3
+        message: Use 2 (not -4) spaces for indentation.
+      - line: 6
+        column_start: 2
+        column_end: 3
+        message: Use 2 (not -4) spaces for indentation.
+    corrected: |
+      var = if a
+              b
+      end
+      
+      var = while a
+              b
+      end
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_with_assignment_when_alignment_style_is_keyword_and_end_is_aligned_with_keyword_accepts_an_if_in_assignment
+    source: |
+      var = if a
+              0
+            end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_with_assignment_when_alignment_style_is_keyword_and_end_is_aligned_with_keyword_accepts_an_if_else_in_assignment
+    source: |
+      var = if a
+              0
+            else
+              1
+            end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_with_assignment_when_alignment_style_is_keyword_and_end_is_aligned_with_keyword_accepts_an_if_else_in_assignment_on_next_line
+    source: |
+      var =
+        if a
+          0
+        else
+          1
+        end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_with_assignment_when_alignment_style_is_keyword_and_end_is_aligned_with_keyword_accepts_a_while_in_assignment
+    source: |
+      var = while a
+              b
+            end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_with_assignment_when_alignment_style_is_keyword_and_end_is_aligned_with_keyword_accepts_an_until_in_assignment
+    source: |
+      var = until a
+              b
+            end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_if_statement_accepts_an_if_else_branches_with_rescue_clauses
+    source: |
+      if a
+        a rescue nil
+      else
+        a rescue nil
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_unless_registers_an_offense_for_bad_indentation_of_an_unless_body
+    source: |
+      unless cond
+       func
+      end
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 1
+        message: Use 2 (not 1) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_unless_accepts_an_empty_unless
+    source: |
+      unless a
+      else
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_case_registers_an_offense_for_bad_indentation_in_a_case_when_body
+    source: |
+      case a
+      when b
+       c
+      end
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 1
+        message: Use 2 (not 1) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_case_registers_an_offense_for_bad_indentation_in_a_case_else_body
+    source: |
+      case a
+      when b
+        c
+      when d
+        e
+      else
+         f
+      end
+    offenses:
+      - line: 7
+        column_start: 0
+        column_end: 3
+        message: Use 2 (not 3) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_case_accepts_correctly_indented_case_when_else
+    source: |
+      case a
+      when b
+        c
+        c
+      when d
+      else
+        f
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_case_accepts_aligned_values_in_when_clause
+    source: |
+      case superclass
+      when /\A(#{NAMESPACEMATCH})(?:\s|\Z)/,
+           /\A(Struct|OStruct)\.new/,
+           /\ADelegateClass\((.+?)\)\s*\Z/,
+           /\A(#{NAMESPACEMATCH})\(/
+        $1
+      when "self"
+        namespace.path
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_case_accepts_case_when_else_laid_out_as_a_table
+    source: |
+      case sexp.loc.keyword.source
+      when 'if'     then cond, body, _else = *sexp
+      when 'unless' then cond, _else, body = *sexp
+      else               cond, body = *sexp
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_case_accepts_case_when_else_with_then_beginning_a_line
+    source: |
+      case sexp.loc.keyword.source
+      when 'if'
+      then cond, body, _else = *sexp
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_case_accepts_indented_when_else_plus_indented_body
+    source: |
+      case code_type
+        when 'ruby', 'sql', 'plain'
+          code_type
+        when 'erb'
+          'ruby; html-script: true'
+        when "html"
+          'xml'
+        else
+          'plain'
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_case_match_registers_an_offense_for_bad_indentation_in_a_case_in_body
+    source: |
+      case a
+      in b
+       c
+      end
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 1
+        message: Use 2 (not 1) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_case_match_registers_an_offense_for_bad_indentation_in_a_case_else_body
+    source: |
+      case a
+      in b
+        c
+      in d
+        e
+      else
+         f
+      end
+    offenses:
+      - line: 7
+        column_start: 0
+        column_end: 3
+        message: Use 2 (not 3) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_case_match_accepts_correctly_indented_case_in_else
+    source: |
+      case a
+      in b
+        c
+        c
+      in d
+      else
+        f
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_case_match_accepts_aligned_values_in_in_clause
+    source: |
+      case condition
+      in [42]
+        foo
+      in [43]
+        bar
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_case_match_accepts_aligned_value_in_in_clause_and_else_is_empty
+    source: |
+      case x
+      in 42
+        foo
+      else
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_case_match_accepts_case_in_else_laid_out_as_a_table
+    source: |
+      case sexp.loc.keyword.source
+      in 'if'     then cond, body, _else = *sexp
+      in 'unless' then cond, _else, body = *sexp
+      else             cond, body = *sexp
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_case_match_accepts_case_in_else_with_then_beginning_a_line
+    source: |
+      case sexp.loc.keyword.source
+      in 'if'
+      then cond, body, _else = *sexp
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_case_match_accepts_indented_in_else_plus_indented_body
+    source: |
+      case code_type
+        in 'ruby' | 'sql' | 'plain'
+          code_type
+        in 'erb'
+          'ruby; html-script: true'
+        in "html"
+          'xml'
+        else
+          'plain'
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_while_until_registers_an_offense_for_bad_indentation_of_a_while_body
+    source: |
+      while cond
+       func
+      end
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 1
+        message: Use 2 (not 1) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_while_until_registers_an_offense_for_bad_indentation_of_begin_end_while
+    source: |
+      something = begin
+       func1
+         func2
+      end while cond
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 1
+        message: Use 2 (not 1) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_while_until_registers_an_offense_for_bad_indentation_of_an_until_body
+    source: |
+      until cond
+       func
+      end
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 1
+        message: Use 2 (not 1) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_while_until_accepts_an_empty_while
+    source: |
+      while a
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_for_registers_an_offense_for_bad_indentation_of_a_for_body
+    source: |
+      for var in 1..10
+       func
+      end
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 1
+        message: Use 2 (not 1) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_for_accepts_an_empty_for
+    source: |
+      for var in 1..10
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_def_defs_registers_an_offense_for_bad_indentation_of_a_def_body
+    source: |
+      def test
+          func1
+           func2 # No offense registered for this.
+      end
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 4
+        message: Use 2 (not 4) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_def_defs_registers_an_offense_for_bad_indentation_of_a_defs_body
+    source: |
+      def self.test
+         func
+      end
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 3
+        message: Use 2 (not 3) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_def_defs_accepts_an_empty_def_body
+    source: |
+      def test
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_def_defs_accepts_an_empty_defs_body
+    source: |
+      def self.test
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_def_defs_with_an_assignment
+    source: |
+      something = def self.foo
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_def_defs_when_end_is_aligned_with_start_of_line_when_modifier_and_def_are_on_the_same_line_accepts_a_correctly_aligned_body
+    source: |
+      foo def test
+        something
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_def_defs_when_end_is_aligned_with_start_of_line_when_modifier_and_def_are_on_the_same_line_registers_an_offense_for_bad_indentation_of_a_def_body
+    source: |
+      foo def test
+            something
+          end
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 6
+        message: Use 2 (not 6) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_def_defs_when_end_is_aligned_with_start_of_line_when_modifier_and_def_are_on_the_same_line_registers_an_offense_for_bad_indentation_of_a_defs_body
+    source: |
+      foo def self.test
+            something
+          end
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 6
+        message: Use 2 (not 6) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_def_defs_when_end_is_aligned_with_start_of_line_when_multiple_modifiers_and_def_are_on_the_same_line_accepts_a_correctly_aligned_body
+    source: |
+      public foo def test
+        something
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_def_defs_when_end_is_aligned_with_start_of_line_when_multiple_modifiers_and_def_are_on_the_same_line_registers_an_offense_for_bad_indentation_of_a_def_body
+    source: |
+      public foo def test
+            something
+      end
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 6
+        message: Use 2 (not 6) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_def_defs_when_end_is_aligned_with_start_of_line_when_multiple_modifiers_and_def_are_on_the_same_line_registers_an_offense_for_bad_indentation_of_a_defs_body
+    source: |
+      public foo def self.test
+            something
+      end
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 6
+        message: Use 2 (not 6) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_def_defs_when_end_is_aligned_with_start_of_line_when_multiple_modifiers_and_def_are_on_the_same_line_accepts_a_correctly_aligned_body
+    source: |
+      obj = Class.new do
+        private def private_property
+          "That would be great."
+        end
+      end.new
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_def_defs_when_end_is_aligned_with_start_of_line_when_multiple_modifiers_and_def_are_on_the_same_line_registers_an_offense_for_bad_indentation_of_a_def
+    source: |
+      obj = Class.new do
+          private def private_property
+          end
+      end.new
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 4
+        message: Use 2 (not 4) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_def_defs_when_end_is_aligned_with_start_of_line_when_multiple_modifiers_and_def_are_on_the_same_line_registers_an_offense_for_bad_indentation_of_a_def_body
+    source: |
+      obj = Class.new do
+        private def private_property
+            "That would be great."
+        end
+      end.new
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 6
+        message: Use 2 (not 4) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_def_defs_when_end_is_aligned_with_def_when_modifier_and_def_are_on_the_same_line_accepts_a_correctly_aligned_body
+    source: |
+      foo def test
+            something
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_def_defs_when_end_is_aligned_with_def_when_modifier_and_def_are_on_the_same_line_registers_an_offense_for_bad_indentation_of_a_def_body
+    source: |
+      foo def test
+        something
+          end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 4
+        message: Use 2 (not -2) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_def_defs_when_end_is_aligned_with_def_when_modifier_and_def_are_on_the_same_line_registers_an_offense_for_bad_indentation_of_a_defs_body
+    source: |
+      foo def self.test
+        something
+          end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 4
+        message: Use 2 (not -2) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_class_registers_an_offense_for_bad_indentation_of_a_class_body
+    source: |
+      class Test
+          def func
+          end
+      end
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 4
+        message: Use 2 (not 4) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_class_leaves_body_unchanged_if_the_first_body_line_is_on_the_same_line_with_class_keyword
+    source: |
+      class Test foo
+          def func1
+          end
+            def func2
+            end
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_class_accepts_an_empty_class_body
+    source: |
+      class Test
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_class_leaves_body_unchanged_if_the_first_body_line_is_on_the_same_line_with_an_opening_of_singleton_class
+    source: |
+      class << self; foo
+          def func1
+          end
+            def func2
+            end
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_class_with_access_modifier_registers_an_offense_for_bad_indentation_of_sections
+    source: |
+      class Test
+        public
+          def e
+          end
+      
+          def f
+          end
+      end
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 4
+        message: Use 2 (not 4) spaces for indentation.
+      - line: 6
+        column_start: 0
+        column_end: 4
+        message: Use 2 (not 4) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_class_with_access_modifier
+    source: |
+      class Foo
+            private
+      
+        def foo
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 6
+        message: Use 2 (not 6) spaces for indentation.
+    corrected: |
+      class Foo
+        private
+      
+        def foo
+        end
+      end
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_class_when_consistency_style_is_normal_accepts_indented_public_protected_and_private
+    source: |
+      class Test
+        public
+      
+        def e
+        end
+      
+        protected
+      
+        def f
+        end
+      
+        private
+      
+        def g
+        end
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_class_when_consistency_style_is_normal_registers_offenses_for_indented_internal_methods_indentation
+    source: |
+      class Test
+        def e
+        end
+      
+        protected
+      
+          def f
+          end
+      
+        private
+      
+          def g
+          end
+      end
+    offenses:
+      - line: 7
+        column_start: 0
+        column_end: 4
+        message: Use 2 (not 4) spaces for indentation.
+      - line: 12
+        column_start: 0
+        column_end: 4
+        message: Use 2 (not 4) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_class_when_consistency_style_is_outdent_accepts_access_modifier_is_outdent
+    source: |
+      class Test
+      private
+      
+        def foo
+        end
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_class_when_consistency_style_is_indented_internal_methods_registers_an_offense_for_normal_non_indented_internal_methods_indentation
+    source: |
+      class Test
+        public
+      
+        def e
+        end
+      
+        protected
+      
+        def f
+        end
+      
+        private
+      
+        def g
+        end
+      end
+    offenses:
+      - line: 9
+        column_start: 2
+        column_end: 7
+        message: Use 2 (not 0) spaces for indented_internal_methods indentation.
+      - line: 14
+        column_start: 2
+        column_end: 7
+        message: Use 2 (not 0) spaces for indented_internal_methods indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_class_when_consistency_style_is_indented_internal_methods
+    source: |
+      class << self
+        public
+      
+        def e
+        end
+      
+        protected
+      
+        def f
+        end
+      
+        private
+      
+        def g
+        end
+      end
+    offenses:
+      - line: 9
+        column_start: 2
+        column_end: 7
+        message: Use 2 (not 0) spaces for indented_internal_methods indentation.
+      - line: 14
+        column_start: 2
+        column_end: 7
+        message: Use 2 (not 0) spaces for indented_internal_methods indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_module_when_consistency_style_is_normal_registers_an_offense_for_bad_indentation_of_a_module_body
+    source: |
+      module Test
+          def func
+          end
+      end
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 4
+        message: Use 2 (not 4) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_module_when_consistency_style_is_normal_accepts_an_empty_module_body
+    source: |
+      module Test
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_module_leaves_body_unchanged_if_the_first_body_line_is_on_the_same_line_with_module_keyword
+    source: |
+      module Test foo
+          def func1
+          end
+            def func2
+            end
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_module_when_consistency_style_is_indented_internal_methods_registers_an_offense_for_bad_indentation_of_a_module_body
+    source: |
+      module Test
+         def func1
+         end
+        private
+       def func2
+       end
+      end
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 3
+        message: Use 2 (not 3) spaces for indentation.
+      - line: 5
+        column_start: 1
+        column_end: 2
+        message: Use 2 (not -1) spaces for indented_internal_methods indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_module_when_consistency_style_is_indented_internal_methods_accepts_normal_non_indented_internal_methods_of_module_functions
+    source: |
+      module Test
+        module_function
+        def func
+        end
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_begin_rescue_else_ensure_end_registers_an_offense_for_bad_indentation_of_bodies
+    source: |
+      def my_func
+        puts 'do something outside block'
+        begin
+        puts 'do something error prone'
+        rescue SomeException, SomeOther => e
+         puts 'wrongly indented error handling'
+        rescue
+         puts 'wrongly indented error handling'
+        else
+           puts 'wrongly indented normal case handling'
+        ensure
+            puts 'wrongly indented common handling'
+        end
+      end
+    offenses:
+      - line: 4
+        column_start: 2
+        column_end: 33
+        message: Use 2 (not 0) spaces for indentation.
+      - line: 6
+        column_start: 2
+        column_end: 3
+        message: Use 2 (not 1) spaces for indentation.
+      - line: 8
+        column_start: 2
+        column_end: 3
+        message: Use 2 (not 1) spaces for indentation.
+      - line: 10
+        column_start: 2
+        column_end: 5
+        message: Use 2 (not 3) spaces for indentation.
+      - line: 12
+        column_start: 2
+        column_end: 6
+        message: Use 2 (not 4) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_def_rescue_end_registers_an_offense_for_bad_indentation_of_bodies
+    source: |
+      def my_func
+        puts 'do something error prone'
+      rescue SomeException
+       puts 'wrongly indented error handling'
+      rescue
+       puts 'wrongly indented error handling'
+      end
+    offenses:
+      - line: 4
+        column_start: 0
+        column_end: 1
+        message: Use 2 (not 1) spaces for indentation.
+      - line: 6
+        column_start: 0
+        column_end: 1
+        message: Use 2 (not 1) spaces for indentation.
+    corrected: |
+      def my_func
+        puts 'do something error prone'
+      rescue SomeException
+        puts 'wrongly indented error handling'
+      rescue
+        puts 'wrongly indented error handling'
+      end
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_def_rescue_end_registers_an_offense_for_bad_indent_of_defs_bodies_with_a_modifier
+    source: |
+      foo def self.my_func
+        puts 'do something error prone'
+      rescue SomeException
+       puts 'wrongly indented error handling'
+      rescue
+       puts 'wrongly indented error handling'
+      end
+    offenses:
+      - line: 4
+        column_start: 0
+        column_end: 1
+        message: Use 2 (not 1) spaces for indentation.
+      - line: 6
+        column_start: 0
+        column_end: 1
+        message: Use 2 (not 1) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_block_when_consistency_style_is_indented_internal_methods_registers_an_offense_for_bad_indentation_in_a_do_end_body
+    source: |
+      concern :Authenticatable do
+        def foo
+          puts "foo"
+        end
+      
+        private
+      
+        def bar
+          puts "bar"
+        end
+      end
+    offenses:
+      - line: 8
+        column_start: 2
+        column_end: 9
+        message: Use 2 (not 0) spaces for indented_internal_methods indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_block_when_consistency_style_is_indented_internal_methods_does_not_register_an_offense_for_an_empty_block_body
+    source: |
+      some_block do
+        # intentionally left empty
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_block_registers_an_offense_for_bad_indentation_of_a_do_end_body
+    source: |
+      a = func do
+       b
+      end
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 1
+        message: Use 2 (not 1) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_block_registers_an_offense_for_bad_indentation_of_a_body
+    source: |
+      func {
+         b
+      }
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 3
+        message: Use 2 (not 3) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_block_accepts_a_correctly_indented_block_body
+    source: |
+      a = func do
+        b
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_block_accepts_an_empty_block_body
+    source: |
+      a = func do
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_block_does_not_register_an_offense_for_good_indentation_of_do_ensure_end_block
+    source: |
+      do_something do
+        foo
+      ensure
+        handle_error
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_block_registers_an_offense_for_bad_indentation_of_do_ensure_end_block
+    source: |
+      do_something do
+          foo
+      ensure
+        handle_error
+      end
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 4
+        message: Use 2 (not 4) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_block_when_using_safe_navigation_operator_registers_an_offense_for_bad_indentation_of_a_body
+    source: |
+      func {
+         receiver&.b
+      }
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 3
+        message: Use 2 (not 3) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_block_when_using_safe_navigation_operator_registers_an_offense_for_an_if_with_setter
+    source: |
+      foo&.bar = if baz
+                   derp
+                 end
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 13
+        message: Use 2 (not 13) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_block_ruby_2_7_registers_an_offense_for_bad_indentation_of_a_body
+    source: |
+      func {
+         _1&.foo
+      }
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 3
+        message: Use 2 (not 3) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_block_ruby_2_7_registers_an_offense_for_bad_indentation_of_a_do_end_body
+    source: |
+      func do
+         _1&.foo
+      end
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 3
+        message: Use 2 (not 3) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_block_ruby_3_4_registers_an_offense_for_bad_indentation_of_a_body
+    source: |
+      func {
+         it&.foo
+      }
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 3
+        message: Use 2 (not 3) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_block_ruby_3_4_registers_an_offense_for_bad_indentation_of_a_do_end_body
+    source: |
+      func do
+         it&.foo
+      end
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 3
+        message: Use 2 (not 3) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_block_accepts_badly_indented_code_if_block_end_is_not_on_separate_line
+    source: |
+      foo {
+      def baz
+      end }
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_method_chain_blocks_registers_an_offense_for_bad_indentation_in_chained_block
+    source: |
+      foo
+        .bar do |x|
+      x
+      end
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 1
+        message: Use 2 (not -2) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_method_chain_blocks_accepts_correct_indentation_in_chained_block
+    source: |
+      foo
+        .bar do |x|
+          x
+        end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_method_chain_blocks_accepts_block_body_indented_relative_to_dot_when_end_is_at_different_column
+    source: |
+      out
+        .break
+        .sep_with_breaks(inner) { |v|
+          simplified_process(v)
+      }
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_method_chain_blocks_accepts_block_body_indented_relative_to_dot_with_do_end
+    source: |
+      out
+        .break
+        .sep_with_breaks(inner) do |v|
+          simplified_process(v)
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_method_chain_blocks_registers_an_offense_when_the_chain_receiver_is_long_and_body_not_indented_relative_to_dot
+    source: |
+      ::Some::Very::Long::Module::Name.active
+                                      .in_batches do |batch|
+        process(batch)
+      end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 16
+        message: Use 2 (not -30) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_method_chain_blocks_accepts_correct_indentation_when_the_chain_receiver_is_long
+    source: |
+      ::Some::Very::Long::Module::Name.active
+                                      .in_batches do |batch|
+                                        process(batch)
+                                      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_method_chain_blocks_when_enforcedstylealignwith_is_relative_to_receiver_registers_an_offense_for_indentation_relative_to_line_start
+    source: |
+      foo
+        .bar do |x|
+      x
+      end
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 1
+        message: Use 2 (not -2) spaces for indentation.
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_method_chain_blocks_when_enforcedstylealignwith_is_relative_to_receiver_accepts_indentation_relative_to_receiver_position
+    source: |
+      foo
+        .bar do |x|
+          x
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_method_chain_blocks_accepts_correct_indentation_for_block_without_method_chain
+    source: |
+      foo bar do
+        baz
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_method_chain_blocks_accepts_correct_indentation_when_dot_is_on_the_same_line_as_receiver
+    source: |
+      foo.bar do |x|
+        x
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_with_width_set_to_2_with_method_chain_blocks_does_not_raise_error_for_block_without_dot_e_g_super
+    source: |
+      def foo
+        super do |x|
+          x
+        end
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+
+  - name: rubocop_cop_layout_indentationwidth_does_not_register_an_offense_for_blocks_with_a_very_large_offset
+    source: |
+      foo {
+      #{' ' * 100_001}}
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: enforced_style_align_with
+      SupportedStylesAlignWith: [start_of_line, relative_to_receiver]
+      Width: width
+      AllowedPatterns: allowed_patterns
+    interpolated: true

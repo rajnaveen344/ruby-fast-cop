@@ -1,0 +1,209 @@
+cop: InternalAffairs/RedundantSourceRange
+department: internal_affairs
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_internalaffairs_redundantsourcerange_does_not_register_an_offense_when_using_source_range_source
+    source: |
+      source_range.source
+    offenses:
+      []
+
+  - name: rubocop_cop_internalaffairs_redundantsourcerange_registers_an_offense_when_using_node_source_range_source
+    source: |
+      node.source_range.source
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 17
+        message: Remove the redundant `source_range`.
+    corrected: |
+      node.source
+
+  - name: rubocop_cop_internalaffairs_redundantsourcerange_registers_an_offense_when_using_node_source_range_source
+    source: |
+      node&.source_range&.source
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 18
+        message: Remove the redundant `source_range`.
+    corrected: |
+      node&.source
+
+  - name: rubocop_cop_internalaffairs_redundantsourcerange_does_not_register_an_offense_when_using_node_source
+    source: |
+      node.source
+    offenses:
+      []
+
+  - name: rubocop_cop_internalaffairs_redundantsourcerange_does_not_register_an_offense_when_using_node_source
+    source: |
+      node&.source
+    offenses:
+      []
+
+  - name: rubocop_cop_internalaffairs_redundantsourcerange_registers_an_offense_when_using_add_offense_node_source_range
+    source: |
+      add_offense(node.source_range)
+    offenses:
+      - line: 1
+        column_start: 17
+        column_end: 29
+        message: Remove the redundant `source_range`.
+    corrected: |
+      add_offense(node)
+
+  - name: rubocop_cop_internalaffairs_redundantsourcerange_registers_an_offense_when_using_add_offense_node_source_range_message_message
+    source: |
+      add_offense(node.source_range, message: message)
+    offenses:
+      - line: 1
+        column_start: 17
+        column_end: 29
+        message: Remove the redundant `source_range`.
+    corrected: |
+      add_offense(node, message: message)
+
+  - name: rubocop_cop_internalaffairs_redundantsourcerange_does_not_register_an_offense_when_using_add_offense_node
+    source: |
+      add_offense(node)
+    offenses:
+      []
+
+  - name: rubocop_cop_internalaffairs_redundantsourcerange_registers_an_offense_when_using_corrector_replace_node_source_range_content
+    source: |
+      add_offense do |corrector|
+        corrector.replace(node.source_range, content)
+      end
+    offenses:
+      - line: 2
+        column_start: 25
+        column_end: 37
+        message: Remove the redundant `source_range`.
+    corrected: |
+      add_offense do |corrector|
+        corrector.replace(node, content)
+      end
+
+  - name: rubocop_cop_internalaffairs_redundantsourcerange_registers_an_offense_when_using_corrector_remove_node_source_range
+    source: |
+      add_offense do |corrector|
+        corrector.remove(node.source_range)
+      end
+    offenses:
+      - line: 2
+        column_start: 24
+        column_end: 36
+        message: Remove the redundant `source_range`.
+    corrected: |
+      add_offense do |corrector|
+        corrector.remove(node)
+      end
+
+  - name: rubocop_cop_internalaffairs_redundantsourcerange_registers_an_offense_when_using_corrector_insert_before_node_source_range_content
+    source: |
+      add_offense do |corrector|
+        corrector.insert_before(node.source_range, content)
+      end
+    offenses:
+      - line: 2
+        column_start: 31
+        column_end: 43
+        message: Remove the redundant `source_range`.
+    corrected: |
+      add_offense do |corrector|
+        corrector.insert_before(node, content)
+      end
+
+  - name: rubocop_cop_internalaffairs_redundantsourcerange_registers_an_offense_when_using_corrector_insert_before_multi_node_source_range_content
+    source: |
+      add_offense do |corrector|
+        corrector.insert_before_multi(node.source_range, content)
+      end
+    offenses:
+      - line: 2
+        column_start: 37
+        column_end: 49
+        message: Remove the redundant `source_range`.
+    corrected: |
+      add_offense do |corrector|
+        corrector.insert_before_multi(node, content)
+      end
+
+  - name: rubocop_cop_internalaffairs_redundantsourcerange_registers_an_offense_when_using_corrector_insert_after_node_source_range_content
+    source: |
+      add_offense do |corrector|
+        corrector.insert_after(node.source_range, content)
+      end
+    offenses:
+      - line: 2
+        column_start: 30
+        column_end: 42
+        message: Remove the redundant `source_range`.
+    corrected: |
+      add_offense do |corrector|
+        corrector.insert_after(node, content)
+      end
+
+  - name: rubocop_cop_internalaffairs_redundantsourcerange_registers_an_offense_when_using_corrector_insert_after_multi_node_source_range_content
+    source: |
+      add_offense do |corrector|
+        corrector.insert_after_multi(node.source_range, content)
+      end
+    offenses:
+      - line: 2
+        column_start: 36
+        column_end: 48
+        message: Remove the redundant `source_range`.
+    corrected: |
+      add_offense do |corrector|
+        corrector.insert_after_multi(node, content)
+      end
+
+  - name: rubocop_cop_internalaffairs_redundantsourcerange_registers_an_offense_when_using_corrector_swap_node_source_range_before_after
+    source: |
+      add_offense do |corrector|
+        corrector.swap(node.source_range, before, after)
+      end
+    offenses:
+      - line: 2
+        column_start: 22
+        column_end: 34
+        message: Remove the redundant `source_range`.
+    corrected: |
+      add_offense do |corrector|
+        corrector.swap(node, before, after)
+      end
+
+  - name: rubocop_cop_internalaffairs_redundantsourcerange_registers_an_offense_when_using_lvar_source_range
+    source: |
+      def foo(corrector, lvar)
+        corrector.insert_after(lvar.source_range, content)
+      end
+    offenses:
+      - line: 2
+        column_start: 30
+        column_end: 42
+        message: Remove the redundant `source_range`.
+    corrected: |
+      def foo(corrector, lvar)
+        corrector.insert_after(lvar, content)
+      end
+
+  - name: rubocop_cop_internalaffairs_redundantsourcerange_does_not_register_an_offense_when_using_corrector_replace_node_content
+    source: |
+      add_offense do |corrector|
+        corrector.replace(node, content)
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_internalaffairs_redundantsourcerange_does_not_register_an_offense_when_using_processed_source_buffer_source_range
+    source: |
+      add_offense do |corrector|
+        corrector.insert_before(processed_source.buffer.source_range, preceding_comment)
+      end
+    offenses:
+      []

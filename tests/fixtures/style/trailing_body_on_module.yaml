@@ -1,0 +1,139 @@
+cop: Style/TrailingBodyOnModule
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_trailingbodyonmodule_registers_an_offense_when_body_trails_after_module_definition
+    source: |
+      module Foo body
+      end
+      module Bar extend self
+      end
+      module Bar; def bar; end
+      end
+      module Bar def bar; end
+      end
+    offenses:
+      - line: 1
+        column_start: 11
+        column_end: 15
+        message: Place the first line of module body on its own line.
+      - line: 3
+        column_start: 11
+        column_end: 22
+        message: Place the first line of module body on its own line.
+      - line: 5
+        column_start: 12
+        column_end: 24
+        message: Place the first line of module body on its own line.
+      - line: 7
+        column_start: 11
+        column_end: 23
+        message: Place the first line of module body on its own line.
+    corrected: |
+      module Foo#{trailing_whitespace}
+        body
+      end
+      module Bar#{trailing_whitespace}
+        extend self
+      end
+      module Bar#{trailing_whitespace}
+        def bar; end
+      end
+      module Bar#{trailing_whitespace}
+        def bar; end
+      end
+    interpolated: true
+
+  - name: rubocop_cop_style_trailingbodyonmodule_registers_an_offense_with_multi_line_module
+    source: |
+      module Foo body
+        def bar
+          qux
+        end
+      end
+    offenses:
+      - line: 1
+        column_start: 11
+        column_end: 15
+        message: Place the first line of module body on its own line.
+    corrected: |
+      module Foo#{trailing_whitespace}
+        body
+        def bar
+          qux
+        end
+      end
+    interpolated: true
+
+  - name: rubocop_cop_style_trailingbodyonmodule_registers_an_offense_when_module_definition_uses_semicolon
+    source: |
+      module Foo; do_stuff
+      end
+    offenses:
+      - line: 1
+        column_start: 12
+        column_end: 20
+        message: Place the first line of module body on its own line.
+    corrected: |
+      module Foo#{trailing_whitespace}
+        do_stuff
+      end
+    interpolated: true
+
+  - name: rubocop_cop_style_trailingbodyonmodule_accepts_regular_module
+    source: |
+      module Foo
+        def no_op; end
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_trailingbodyonmodule_autocorrects_with_comment_after_body
+    source: |
+      module BarQux; foo # comment
+      end
+    offenses:
+      - line: 1
+        column_start: 15
+        column_end: 18
+        message: Place the first line of module body on its own line.
+    corrected: |
+      # comment
+      module BarQux#{trailing_whitespace}
+        foo#{trailing_whitespace}
+      end
+    interpolated: true
+
+  - name: rubocop_cop_style_trailingbodyonmodule_autocorrects_when_there_are_multiple_semicolons
+    source: |
+      module Bar; def bar; end
+      end
+    offenses:
+      - line: 1
+        column_start: 12
+        column_end: 24
+        message: Place the first line of module body on its own line.
+    corrected: |
+      module Bar#{trailing_whitespace}
+        def bar; end
+      end
+    interpolated: true
+
+  - name: rubocop_cop_style_trailingbodyonmodule_when_module_is_not_on_first_line_of_processed_source_autocorrects_offense
+    source: |
+      
+      module Foo; body#{trailing_whitespace}
+      end
+    offenses:
+      - line: 2
+        column_start: 12
+        column_end: 16
+        message: Place the first line of module body on its own line.
+    corrected: |
+      
+      module Foo#{trailing_whitespace}
+        body#{trailing_whitespace}
+      end
+    interpolated: true

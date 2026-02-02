@@ -1,0 +1,35 @@
+cop: InternalAffairs/ProcessedSourceBufferName
+department: internal_affairs
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_internalaffairs_processedsourcebuffername_registers_an_offense_and_corrects_when_using_processed_source_buffer_name_and_processed_source_is_a_method_call
+    source: |
+      processed_source.buffer.name
+    offenses:
+      - line: 1
+        column_start: 17
+        column_end: 28
+        message: Use `file_path` instead.
+    corrected: |
+      processed_source.file_path
+
+  - name: rubocop_cop_internalaffairs_processedsourcebuffername_registers_an_offense_and_corrects_when_using_processed_source_buffer_name_and_processed_source_is_a_variable
+    source: |
+      processed_source = create_processed_source
+      processed_source.buffer.name
+    offenses:
+      - line: 2
+        column_start: 17
+        column_end: 28
+        message: Use `file_path` instead.
+    corrected: |
+      processed_source = create_processed_source
+      processed_source.file_path
+
+  - name: rubocop_cop_internalaffairs_processedsourcebuffername_does_not_register_an_offense_when_using_processed_source_file_path
+    source: |
+      processed_source.file_path
+    offenses:
+      []

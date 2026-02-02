@@ -1,0 +1,1174 @@
+cop: Style/GuardClause
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_guardclause_reports_an_offense_if_method_body_is_if_unless_without_else
+    source: |
+      def func
+        if something
+          #{body}
+        end
+      end
+      
+      def func
+        unless something
+          #{body}
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 4
+        message: Use a guard clause (`return unless something`) instead of wrapping the code inside a conditional expression.
+      - line: 8
+        column_start: 2
+        column_end: 8
+        message: Use a guard clause (`return if something`) instead of wrapping the code inside a conditional expression.
+    corrected: |
+      def func
+        return unless something
+          #{body}
+       #{trailing_whitespace}
+      end
+      
+      def func
+        return if something
+          #{body}
+       #{trailing_whitespace}
+      end
+    interpolated: true
+
+  - name: rubocop_cop_style_guardclause_reports_an_offense_if_method_body_ends_with_if_unless_without_else
+    source: |
+      def func
+        test
+        if something
+          #{body}
+        end
+      end
+      
+      def func
+        test
+        unless something
+          #{body}
+        end
+      end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 4
+        message: Use a guard clause (`return unless something`) instead of wrapping the code inside a conditional expression.
+      - line: 10
+        column_start: 2
+        column_end: 8
+        message: Use a guard clause (`return if something`) instead of wrapping the code inside a conditional expression.
+    corrected: |
+      def func
+        test
+        return unless something
+          #{body}
+       #{trailing_whitespace}
+      end
+      
+      def func
+        test
+        return if something
+          #{body}
+       #{trailing_whitespace}
+      end
+    interpolated: true
+
+  - name: rubocop_cop_style_guardclause_reports_an_offense_if_define_method_block_body_is_if_unless_without_else
+    source: |
+      define_method(:func) do
+        if _1
+          #{body}
+        end
+      end
+      
+      define_method(:func) do
+        unless _1
+          #{body}
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 4
+        message: Use a guard clause (`return unless _1`) instead of wrapping the code inside a conditional expression.
+      - line: 8
+        column_start: 2
+        column_end: 8
+        message: Use a guard clause (`return if _1`) instead of wrapping the code inside a conditional expression.
+    corrected: |
+      define_method(:func) do
+        return unless _1
+          #{body}
+       #{trailing_whitespace}
+      end
+      
+      define_method(:func) do
+        return if _1
+          #{body}
+       #{trailing_whitespace}
+      end
+    interpolated: true
+
+  - name: rubocop_cop_style_guardclause_reports_an_offense_if_define_method_block_body_is_if_unless_without_else
+    source: |
+      define_method(:func) do
+        if it
+          #{body}
+        end
+      end
+      
+      define_method(:func) do
+        unless it
+          #{body}
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 4
+        message: Use a guard clause (`return unless it`) instead of wrapping the code inside a conditional expression.
+      - line: 8
+        column_start: 2
+        column_end: 8
+        message: Use a guard clause (`return if it`) instead of wrapping the code inside a conditional expression.
+    corrected: |
+      define_method(:func) do
+        return unless it
+          #{body}
+       #{trailing_whitespace}
+      end
+      
+      define_method(:func) do
+        return if it
+          #{body}
+       #{trailing_whitespace}
+      end
+    ruby_version: ">= 3.4"
+    interpolated: true
+
+  - name: rubocop_cop_style_guardclause_reports_an_offense_if_define_singleton_method_block_body_is_if_unless_without_else
+    source: |
+      define_singleton_method(:func) do
+        if _1
+          #{body}
+        end
+      end
+      
+      define_singleton_method(:func) do
+        unless _1
+          #{body}
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 4
+        message: Use a guard clause (`return unless _1`) instead of wrapping the code inside a conditional expression.
+      - line: 8
+        column_start: 2
+        column_end: 8
+        message: Use a guard clause (`return if _1`) instead of wrapping the code inside a conditional expression.
+    corrected: |
+      define_singleton_method(:func) do
+        return unless _1
+          #{body}
+       #{trailing_whitespace}
+      end
+      
+      define_singleton_method(:func) do
+        return if _1
+          #{body}
+       #{trailing_whitespace}
+      end
+    interpolated: true
+
+  - name: rubocop_cop_style_guardclause_reports_an_offense_if_define_method_numblock_body_is_if_unless_without_else
+    source: |
+      define_method(:func) do
+        if something
+          #{body}
+        end
+      end
+      
+      define_method(:func) do
+        unless something
+          #{body}
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 4
+        message: Use a guard clause (`return unless something`) instead of wrapping the code inside a conditional expression.
+      - line: 8
+        column_start: 2
+        column_end: 8
+        message: Use a guard clause (`return if something`) instead of wrapping the code inside a conditional expression.
+    corrected: |
+      define_method(:func) do
+        return unless something
+          #{body}
+       #{trailing_whitespace}
+      end
+      
+      define_method(:func) do
+        return if something
+          #{body}
+       #{trailing_whitespace}
+      end
+    interpolated: true
+
+  - name: rubocop_cop_style_guardclause_accepts_an_offense_if_block_body_ends_with_if_unless_without_else
+    source: |
+      foo do
+        test
+        if something
+          #{body}
+        end
+      end
+      
+      foo do
+        test
+        unless something
+          #{body}
+        end
+      end
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_guardclause_reports_offense_work
+    source: |
+      work
+    offenses:
+      []
+
+  - name: rubocop_cop_style_guardclause_reports_offense_todo
+    source: |
+      # TODO
+    offenses:
+      []
+
+  - name: rubocop_cop_style_guardclause_reports_offense_do_something_foo
+    source: |
+      do_something(foo)
+    offenses:
+      []
+
+  - name: rubocop_cop_style_guardclause_does_not_report_an_offense_if_body_is_if_elsif_end
+    source: |
+      def func
+        if something
+          a
+        elsif something_else
+          b
+        end
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_guardclause_does_not_report_an_offense_if_block_body_is_if_elsif_end
+    source: |
+      define_method(:func) do
+        if something
+          a
+        elsif something_else
+          b
+        end
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_guardclause_doesn_t_report_an_offense_if_condition_has_multiple_lines
+    source: |
+      def func
+        if something &&
+             something_else
+          work
+        end
+      end
+      
+      def func
+        unless something &&
+                 something_else
+          work
+        end
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_guardclause_accepts_a_method_which_body_is_if_unless_with_else
+    source: |
+      def func
+        if something
+          work
+        else
+          test
+        end
+      end
+      
+      def func
+        unless something
+          work
+        else
+          test
+        end
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_guardclause_registers_an_offense_when_using_raise_in_then_branch
+    source: |
+      def func
+        if something
+          work || raise('message')
+        else
+          test
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 4
+        message: "Use a guard clause (`work || raise('message') if something`) instead of wrapping the code inside a conditional expression."
+
+  - name: rubocop_cop_style_guardclause_registers_an_offense_when_using_raise_in_else_branch
+    source: |
+      def func
+        if something
+          work
+        else
+          test || raise('message')
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 4
+        message: "Use a guard clause (`test || raise('message') unless something`) instead of wrapping the code inside a conditional expression."
+
+  - name: rubocop_cop_style_guardclause_registers_an_offense_when_using_raise_in_else_branch_in_a_one_liner_with_then
+    source: |
+      if something then work else raise('message') end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 2
+        message: "Use a guard clause (`raise('message') unless something`) instead of wrapping the code inside a conditional expression."
+    corrected: |
+      raise('message') unless something#{trailing_whitespace}
+       work#{trailing_whitespace * 3}
+    interpolated: true
+
+  - name: rubocop_cop_style_guardclause_registers_an_offense_when_using_and_return_in_then_branch
+    source: |
+      def func
+        if something
+          work and return
+        else
+          test
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 4
+        message: Use a guard clause (`work and return if something`) instead of wrapping the code inside a conditional expression.
+
+  - name: rubocop_cop_style_guardclause_registers_an_offense_when_using_and_return_in_else_branch
+    source: |
+      def func
+        if something
+          work
+        else
+          test and return
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 4
+        message: Use a guard clause (`test and return unless something`) instead of wrapping the code inside a conditional expression.
+
+  - name: rubocop_cop_style_guardclause_accepts_a_method_which_body_does_not_end_with_if_unless
+    source: |
+      def func
+        if something
+          work
+        end
+        test
+      end
+      
+      def func
+        unless something
+          work
+        end
+        test
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_guardclause_accepts_a_method_whose_body_is_a_modifier_if_unless
+    source: |
+      def func
+        work if something
+      end
+      
+      def func
+        work unless something
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_guardclause_accepts_a_method_with_empty_parentheses_as_its_body
+    source: |
+      def func
+        ()
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_guardclause_does_not_register_an_offense_when_assigning_the_result_of_a_guard_condition_with_else
+    source: |
+      def func
+        result = if something
+          work || raise('message')
+        else
+          test
+        end
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_guardclause_does_not_register_an_offense_when_using_a_local_variable_assigned_in_a_conditional_expression_in_a_branch
+    source: |
+      def func
+        if (foo = bar)
+          return foo
+        else
+          baz
+        end
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_guardclause_does_not_register_an_offense_when_using_local_variables_assigned_in_multiple_conditional_expressions_in_a_branch
+    source: |
+      def func
+        if (foo = bar && baz = qux)
+          return [foo, baz]
+        else
+          quux
+        end
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_guardclause_registers_an_offense_when_not_using_a_local_variable_assigned_in_a_conditional_expression_in_a_branch
+    source: |
+      def func
+        if (foo = bar)
+          return baz
+        else
+          qux
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 4
+        message: Use a guard clause (`return baz if (foo = bar)`) instead of wrapping the code inside a conditional expression.
+    corrected: |
+      def func
+        return baz if (foo = bar)
+      #{'    '}
+      #{'  '}
+          qux
+      #{'  '}
+      end
+    interpolated: true
+
+  - name: rubocop_cop_style_guardclause_registers_an_offense_when_using_heredoc_as_an_argument_of_raise_in_then_branch
+    source: |
+      def func
+        if condition
+          foo
+        else
+          raise <<~MESSAGE
+            oops
+          MESSAGE
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 4
+        message: Use a guard clause (`raise <<~MESSAGE unless condition`) instead of wrapping the code inside a conditional expression.
+    corrected: |
+      def func
+        raise <<~MESSAGE unless condition
+            oops
+          MESSAGE
+      foo
+      end
+
+  - name: rubocop_cop_style_guardclause_registers_an_offense_when_using_heredoc_as_an_argument_of_method_call_of_raise_in_else_branch
+    source: |
+      def func
+        if condition
+          foo
+        else
+          raise do_something(<<~MESSAGE)
+            text
+          MESSAGE
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 4
+        message: Use a guard clause (`raise do_something(<<~MESSAGE) unless condition`) instead of wrapping the code inside a conditional expression.
+    corrected: |
+      def func
+        raise do_something(<<~MESSAGE) unless condition
+            text
+          MESSAGE
+      foo
+      end
+
+  - name: rubocop_cop_style_guardclause_registers_an_offense_when_using_heredoc_as_an_argument_of_raise_in_then_branch_in_unless
+    source: |
+      def func
+        unless condition
+          raise <<~MESSAGE
+            oops
+          MESSAGE
+        else
+          foo
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 8
+        message: Use a guard clause (`raise <<~MESSAGE unless condition`) instead of wrapping the code inside a conditional expression.
+    corrected: |
+      def func
+        raise <<~MESSAGE unless condition
+            oops
+          MESSAGE
+      foo
+      end
+
+  - name: rubocop_cop_style_guardclause_registers_an_offense_when_using_heredoc_as_an_argument_of_raise_in_else_branch_and_if_branch_is_empty
+    source: |
+      def func
+        if condition
+        else
+          raise <<~MESSAGE
+            oops
+          MESSAGE
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 4
+        message: Use a guard clause (`raise <<~MESSAGE unless condition`) instead of wrapping the code inside a conditional expression.
+    corrected: |
+      def func
+        raise <<~MESSAGE unless condition
+            oops
+          MESSAGE
+      end
+
+  - name: rubocop_cop_style_guardclause_registers_an_offense_when_using_heredoc_as_an_argument_of_raise_in_then_branch_and_it_does_not_have_else_branch
+    source: |
+      def func
+        if condition
+          raise <<~MESSAGE
+            oops
+          MESSAGE
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 4
+        message: Use a guard clause (`return unless condition`) instead of wrapping the code inside a conditional expression.
+    corrected: |
+      def func
+        return unless condition
+          raise <<~MESSAGE
+            oops
+          MESSAGE
+      end
+
+  - name: rubocop_cop_style_guardclause_registers_an_offense_when_using_xstr_heredoc_as_an_argument_of_raise_in_else_branch
+    source: |
+      def func
+        unless condition
+          raise <<~`MESSAGE`
+            oops
+          MESSAGE
+        else
+          foo
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 8
+        message: Use a guard clause (`raise <<~`MESSAGE` unless condition`) instead of wrapping the code inside a conditional expression.
+    corrected: |
+      def func
+        raise <<~`MESSAGE` unless condition
+            oops
+          MESSAGE
+      foo
+      end
+
+  - name: rubocop_cop_style_guardclause_registers_an_offense_when_using_heredoc_in_else_branch_and_then_branch_has_multiple_expressions
+    source: |
+      def func
+        if condition
+          x = 1
+          do_something(x)
+        else
+          raise <<~MESSAGE
+            oops
+          MESSAGE
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 4
+        message: Use a guard clause (`raise <<~MESSAGE unless condition`) instead of wrapping the code inside a conditional expression.
+    corrected: |
+      def func
+        raise <<~MESSAGE unless condition
+            oops
+          MESSAGE
+      x = 1
+          do_something(x)
+      end
+
+  - name: rubocop_cop_style_guardclause_registers_an_offense_when_using_heredoc_with_safe_navigation_call_in_else_branch
+    source: |
+      def func
+        if condition
+          do_something
+        else
+          raise obj&.do_something(<<~MESSAGE)
+            oops
+          MESSAGE
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 4
+        message: Use a guard clause (`raise obj&.do_something(<<~MESSAGE) unless condition`) instead of wrapping the code inside a conditional expression.
+    corrected: |
+      def func
+        raise obj&.do_something(<<~MESSAGE) unless condition
+            oops
+          MESSAGE
+      do_something
+      end
+
+  - name: rubocop_cop_style_guardclause_registers_an_offense_when_using_lvar_as_an_argument_of_raise_in_else_branch
+    source: |
+      if condition
+        do_something
+      else
+        raise e
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 2
+        message: Use a guard clause (`raise e unless condition`) instead of wrapping the code inside a conditional expression.
+    corrected: |
+      raise e unless condition
+        do_something
+      
+       #{trailing_whitespace}
+    interpolated: true
+
+  - name: rubocop_cop_style_guardclause_minbodylength_1_reports_an_offense_for_if_whose_body_has_1_line
+    source: |
+      def func
+        if something
+          work
+        end
+      end
+      
+      def func
+        unless something
+          work
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 4
+        message: Use a guard clause (`return unless something`) instead of wrapping the code inside a conditional expression.
+      - line: 8
+        column_start: 2
+        column_end: 8
+        message: Use a guard clause (`return if something`) instead of wrapping the code inside a conditional expression.
+    corrected: |
+      def func
+        return unless something
+          work
+       #{trailing_whitespace}
+      end
+      
+      def func
+        return if something
+          work
+       #{trailing_whitespace}
+      end
+    config:
+      MinBodyLength: 1
+    interpolated: true
+
+  - name: rubocop_cop_style_guardclause_minbodylength_4_accepts_a_method_whose_body_has_3_lines
+    source: |
+      def func
+        if something
+          work
+          work
+          work
+        end
+      end
+      
+      def func
+        unless something
+          work
+          work
+          work
+        end
+      end
+    offenses:
+      []
+    config:
+      MinBodyLength: 4
+
+  - name: rubocop_cop_style_guardclause_allowconsecutiveconditionals_false
+    source: |
+      def func
+        if foo?
+          work
+        end
+      
+        if bar?
+          work
+        end
+      end
+    offenses:
+      - line: 6
+        column_start: 2
+        column_end: 4
+        message: Use a guard clause (`return unless bar?`) instead of wrapping the code inside a conditional expression.
+    config:
+      MinBodyLength: -2
+      AllowConsecutiveConditionals: false
+
+  - name: rubocop_cop_style_guardclause_allowconsecutiveconditionals_true
+    source: |
+      def func
+        if foo?
+          work
+        end
+      
+        if bar?
+          work
+        end
+      end
+    offenses:
+      []
+    config:
+      MinBodyLength: -2
+      AllowConsecutiveConditionals: true
+
+  - name: rubocop_cop_style_guardclause_allowconsecutiveconditionals_true
+    source: |
+      def func
+        if foo?
+          work
+        end
+      
+        do_something
+      
+        if bar?
+          work
+        end
+      end
+    offenses:
+      - line: 8
+        column_start: 2
+        column_end: 4
+        message: Use a guard clause (`return unless bar?`) instead of wrapping the code inside a conditional expression.
+    config:
+      MinBodyLength: -2
+      AllowConsecutiveConditionals: true
+
+  - name: rubocop_cop_style_guardclause
+    source: |
+      if something
+        #{kw}
+      else
+        puts "hello"
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 2
+        message: "Use a guard clause (`#{kw} if something`) instead of wrapping the code inside a conditional expression."
+    corrected: |
+      #{kw} if something
+       #{trailing_whitespace}
+      
+        puts "hello"
+    config:
+      MinBodyLength: -2
+      AllowConsecutiveConditionals: true
+    interpolated: true
+
+  - name: rubocop_cop_style_guardclause
+    source: |
+      if something
+       puts "hello"
+      else
+        #{kw}
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 2
+        message: "Use a guard clause (`#{kw} unless something`) instead of wrapping the code inside a conditional expression."
+    corrected: |
+      #{kw} unless something
+       puts "hello"
+      
+       #{trailing_whitespace}
+    config:
+      MinBodyLength: -2
+      AllowConsecutiveConditionals: true
+    interpolated: true
+
+  - name: rubocop_cop_style_guardclause_doesn_t_register_an_offense_if_condition_has_multiple_lines
+    source: |
+      if something &&
+           something_else
+        #{kw}
+      else
+        puts "hello"
+      end
+    offenses:
+      []
+    config:
+      MinBodyLength: -2
+      AllowConsecutiveConditionals: true
+    interpolated: true
+
+  - name: rubocop_cop_style_guardclause
+    source: |
+      if something
+        a
+      elsif something_else
+        #{kw}
+      end
+    offenses:
+      []
+    config:
+      MinBodyLength: -2
+      AllowConsecutiveConditionals: true
+    interpolated: true
+
+  - name: rubocop_cop_style_guardclause
+    source: |
+      if something
+        #{kw}
+      elsif something_else
+        a
+      end
+    offenses:
+      []
+    config:
+      MinBodyLength: -2
+      AllowConsecutiveConditionals: true
+    interpolated: true
+
+  - name: rubocop_cop_style_guardclause
+    source: |
+      if something
+        a
+      elsif something_else
+        b
+      else
+        #{kw}
+      end
+    offenses:
+      []
+    config:
+      MinBodyLength: -2
+      AllowConsecutiveConditionals: true
+    interpolated: true
+
+  - name: rubocop_cop_style_guardclause_doesn_t_register_an_offense_if_control_flow_expr_has_multiple_lines
+    source: |
+      if something
+        #{kw} 'blah blah blah' \
+              'blah blah blah'
+      else
+        puts "hello"
+      end
+    offenses:
+      []
+    config:
+      MinBodyLength: -2
+      AllowConsecutiveConditionals: true
+    interpolated: true
+
+  - name: rubocop_cop_style_guardclause_registers_an_offense_if_non_control_flow_branch_has_multiple_lines
+    source: |
+      if something
+        #{kw}
+      else
+        puts "hello" \
+             "blah blah blah"
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 2
+        message: "Use a guard clause (`#{kw} if something`) instead of wrapping the code inside a conditional expression."
+    corrected: |
+      #{kw} if something
+       #{trailing_whitespace}
+      
+        puts "hello" \
+             "blah blah blah"
+    config:
+      MinBodyLength: -2
+      AllowConsecutiveConditionals: true
+    interpolated: true
+
+  - name: rubocop_cop_style_guardclause_with_metrics_maxlinelength_enabled_when_the_correction_is_too_long_for_a_single_line_with_a_trivial_body_does_not_register_an_offense
+    source: |
+      def test
+        if something && something_that_makes_the_guard_clause_too_long_to_fit_on_one_line
+          work
+        end
+      end
+    offenses:
+      []
+    config:
+      MinBodyLength: -2
+      AllowConsecutiveConditionals: true
+
+  - name: rubocop_cop_style_guardclause_with_metrics_maxlinelength_enabled_when_the_correction_is_too_long_for_a_single_line_with_a_nested_if_node_does_registers_an_offense
+    source: |
+      def test
+        if something && something_that_makes_the_guard_clause_too_long_to_fit_on_one_line
+          if something_else
+            work
+          end
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 4
+        message: Use a guard clause (`unless something && something_that_makes_the_guard_clause_too_long_to_fit_on_one_line; return; end`) instead of wrapping the code inside a conditional expression.
+      - line: 3
+        column_start: 4
+        column_end: 6
+        message: Use a guard clause (`return unless something_else`) instead of wrapping the code inside a conditional expression.
+    corrected: |
+      def test
+        unless something && something_that_makes_the_guard_clause_too_long_to_fit_on_one_line
+        return
+      end
+          return unless something_else
+            work
+         #{trailing_whitespace}
+       #{trailing_whitespace}
+      end
+    config:
+      MinBodyLength: -2
+      AllowConsecutiveConditionals: true
+    interpolated: true
+
+  - name: rubocop_cop_style_guardclause_with_metrics_maxlinelength_enabled_when_the_correction_is_too_long_for_a_single_line_with_a_nested_begin_node_does_registers_an_offense
+    source: |
+      def test
+        if something && something_that_makes_the_guard_clause_too_long_to_fit_on_one_line
+          work
+          more_work
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 4
+        message: Use a guard clause (`unless something && something_that_makes_the_guard_clause_too_long_to_fit_on_one_line; return; end`) instead of wrapping the code inside a conditional expression.
+    corrected: |
+      def test
+        unless something && something_that_makes_the_guard_clause_too_long_to_fit_on_one_line
+        return
+      end
+          work
+          more_work
+       #{trailing_whitespace}
+      end
+    config:
+      MinBodyLength: -2
+      AllowConsecutiveConditionals: true
+    interpolated: true
+
+  - name: rubocop_cop_style_guardclause_with_metrics_maxlinelength_enabled_when_the_correction_is_too_long_for_a_single_line_with_an_empty_if_node_and_raise_in_else_registers_an_offense
+    source: |
+      if foo?
+      else
+        raise 'very long and detailed description of the error that makes it too long to fit on one line'
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 2
+        message: "Use a guard clause (`unless foo?; raise 'very long and detailed description of the error that makes it too long to fit on one line'; end`) instead of wrapping the code inside a conditional expression."
+    corrected: |
+      unless foo?
+        raise 'very long and detailed description of the error that makes it too long to fit on one line'
+      end
+      
+       #{trailing_whitespace}
+    config:
+      MinBodyLength: -2
+      AllowConsecutiveConditionals: true
+    interpolated: true
+
+  - name: rubocop_cop_style_guardclause_with_metrics_maxlinelength_disabled_registers_an_offense_with_modifier_example_code_regardless_of_length
+    source: |
+      def test
+        if something && something_that_makes_the_guard_clause_too_long_to_fit_on_one_line
+          work
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 4
+        message: Use a guard clause (`return unless something && something_that_makes_the_guard_clause_too_long_to_fit_on_one_line`) instead of wrapping the code inside a conditional expression.
+    corrected: |
+      def test
+        return unless something && something_that_makes_the_guard_clause_too_long_to_fit_on_one_line
+          work
+       #{trailing_whitespace}
+      end
+    config:
+      MinBodyLength: -2
+      AllowConsecutiveConditionals: true
+    interpolated: true
+
+  - name: rubocop_cop_style_guardclause_on_if_nodes_which_exit_current_scope_return
+    source: |
+      return
+    offenses:
+      []
+    config:
+      MinBodyLength: -2
+      AllowConsecutiveConditionals: true
+
+  - name: rubocop_cop_style_guardclause_on_if_nodes_which_exit_current_scope_next
+    source: |
+      next
+    offenses:
+      []
+    config:
+      MinBodyLength: -2
+      AllowConsecutiveConditionals: true
+
+  - name: rubocop_cop_style_guardclause_on_if_nodes_which_exit_current_scope_break
+    source: |
+      break
+    offenses:
+      []
+    config:
+      MinBodyLength: -2
+      AllowConsecutiveConditionals: true
+
+  - name: rubocop_cop_style_guardclause_on_if_nodes_which_exit_current_scope_raise_error
+    source: |
+      raise "error"
+    offenses:
+      []
+    config:
+      MinBodyLength: -2
+      AllowConsecutiveConditionals: true
+
+  - name: rubocop_cop_style_guardclause_method_in_module_registers_an_offense_for_instance_method
+    source: |
+      module CopTest
+        def test
+          if something
+            work
+          end
+        end
+      end
+    offenses:
+      - line: 3
+        column_start: 4
+        column_end: 6
+        message: Use a guard clause (`return unless something`) instead of wrapping the code inside a conditional expression.
+    corrected: |
+      module CopTest
+        def test
+          return unless something
+            work
+         #{trailing_whitespace}
+        end
+      end
+    config:
+      MinBodyLength: -2
+      AllowConsecutiveConditionals: true
+    interpolated: true
+
+  - name: rubocop_cop_style_guardclause_method_in_module_registers_an_offense_for_singleton_methods
+    source: |
+      module CopTest
+        def self.test
+          if something && something_else
+            work
+          end
+        end
+      end
+    offenses:
+      - line: 3
+        column_start: 4
+        column_end: 6
+        message: Use a guard clause (`return unless something && something_else`) instead of wrapping the code inside a conditional expression.
+    corrected: |
+      module CopTest
+        def self.test
+          return unless something && something_else
+            work
+         #{trailing_whitespace}
+        end
+      end
+    config:
+      MinBodyLength: -2
+      AllowConsecutiveConditionals: true
+    interpolated: true

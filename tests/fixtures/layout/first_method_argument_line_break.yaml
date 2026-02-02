@@ -1,0 +1,164 @@
+cop: Layout/FirstMethodArgumentLineBreak
+department: layout
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_layout_firstmethodargumentlinebreak_args_listed_on_the_first_line_registers_an_offense_and_corrects
+    source: |
+      foo(bar,
+        baz)
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 7
+        message: Add a line break before the first argument of a multi-line method argument list.
+    corrected: |
+      foo(
+      bar,
+        baz)
+
+  - name: rubocop_cop_layout_firstmethodargumentlinebreak_args_listed_on_the_first_line_registers_an_offense_and_corrects_using_super
+    source: |
+      super(bar,
+        baz)
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 9
+        message: Add a line break before the first argument of a multi-line method argument list.
+    corrected: |
+      super(
+      bar,
+        baz)
+
+  - name: rubocop_cop_layout_firstmethodargumentlinebreak_args_listed_on_the_first_line_registers_an_offense_and_corrects_using_safe_navigation_operator
+    source: |
+      receiver&.foo(bar,
+        baz)
+    offenses:
+      - line: 1
+        column_start: 14
+        column_end: 17
+        message: Add a line break before the first argument of a multi-line method argument list.
+    corrected: |
+      receiver&.foo(
+      bar,
+        baz)
+
+  - name: rubocop_cop_layout_firstmethodargumentlinebreak_registers_an_offense_and_corrects_hash_arg_spanning_multiple_lines
+    source: |
+      something(3, bar: 1,
+      baz: 2)
+    offenses:
+      - line: 1
+        column_start: 10
+        column_end: 11
+        message: Add a line break before the first argument of a multi-line method argument list.
+    corrected: |
+      something(
+      3, bar: 1,
+      baz: 2)
+
+  - name: rubocop_cop_layout_firstmethodargumentlinebreak_registers_an_offense_and_corrects_hash_arg_without_a_line_break_before_the_first_pair
+    source: |
+      something(bar: 1,
+      baz: 2)
+    offenses:
+      - line: 1
+        column_start: 10
+        column_end: 16
+        message: Add a line break before the first argument of a multi-line method argument list.
+    corrected: |
+      something(
+      bar: 1,
+      baz: 2)
+
+  - name: rubocop_cop_layout_firstmethodargumentlinebreak_ignores_arguments_listed_on_a_single_line
+    source: |
+      foo(bar, baz, bing)
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_firstmethodargumentlinebreak_ignores_kwargs_listed_on_a_single_line_when_the_arguments_are_used_in_super
+    source: |
+      super(foo: 1, bar: 2)
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_firstmethodargumentlinebreak_ignores_arguments_without_parens
+    source: |
+      foo bar,
+        baz
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_firstmethodargumentlinebreak_ignores_methods_without_arguments
+    source: |
+      foo
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_firstmethodargumentlinebreak_last_element_can_be_multiline_ignores_last_argument_that_is_a_multiline_hash
+    source: |
+      foo(bar, {
+        a: b
+      })
+    offenses:
+      []
+    config:
+      AllowMultilineFinalElement: true
+
+  - name: rubocop_cop_layout_firstmethodargumentlinebreak_last_element_can_be_multiline_ignores_single_argument_that_is_a_multiline_hash
+    source: |
+      foo({
+        a: b
+      })
+    offenses:
+      []
+    config:
+      AllowMultilineFinalElement: true
+
+  - name: rubocop_cop_layout_firstmethodargumentlinebreak_last_element_can_be_multiline_registers_and_corrects_values_that_are_multiline_hashes_and_not_the_last_value
+    source: |
+      foo(bar, {
+        a: b
+      }, baz)
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 7
+        message: Add a line break before the first argument of a multi-line method argument list.
+    corrected: |
+      foo(
+      bar, {
+        a: b
+      }, baz)
+    config:
+      AllowMultilineFinalElement: true
+
+  - name: rubocop_cop_layout_firstmethodargumentlinebreak_last_element_can_be_multiline_registers_and_corrects_last_argument_that_starts_on_another_line
+    source: |
+      foo(bar,
+      baz)
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 7
+        message: Add a line break before the first argument of a multi-line method argument list.
+    corrected: |
+      foo(
+      bar,
+      baz)
+    config:
+      AllowMultilineFinalElement: true
+
+  - name: rubocop_cop_layout_firstmethodargumentlinebreak_allowedmethods_does_not_register_an_offense_for_an_allowed_method
+    source: |
+      something(3, bar: 1,
+      baz: 2)
+    offenses:
+      []
+    config:
+      AllowMultilineFinalElement: true
+      AllowedMethods: [something]

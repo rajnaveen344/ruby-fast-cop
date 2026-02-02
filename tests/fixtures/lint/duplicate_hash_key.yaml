@@ -1,0 +1,240 @@
+cop: Lint/DuplicateHashKey
+department: lint
+severity: warning
+implemented: false
+
+tests:
+  - name: rubocop_cop_lint_duplicatehashkey_when_there_is_a_duplicated_key_in_the_hash_literal_registers_an_offense
+    source: |
+      hash = { 'otherkey' => 'value', 'key' => 'value', 'key' => 'hi' }
+    offenses:
+      - line: 1
+        column_start: 50
+        column_end: 55
+        message: Duplicated key in hash literal.
+
+  - name: rubocop_cop_lint_duplicatehashkey_when_there_is_a_duplicated_constant_key_in_the_hash_literal_registers_an_offense
+    source: |
+      hash = { 'otherkey' => 'value', KEY => 'value', KEY => 'hi' }
+    offenses:
+      - line: 1
+        column_start: 48
+        column_end: 51
+        message: Duplicated key in hash literal.
+
+  - name: rubocop_cop_lint_duplicatehashkey_when_there_are_two_duplicated_keys_in_a_hash_registers_two_offenses
+    source: |
+      hash = { fruit: 'apple', veg: 'kale', veg: 'cuke', fruit: 'orange' }
+    offenses:
+      - line: 1
+        column_start: 38
+        column_end: 41
+        message: Duplicated key in hash literal.
+      - line: 1
+        column_start: 51
+        column_end: 56
+        message: Duplicated key in hash literal.
+
+  - name: rubocop_cop_lint_duplicatehashkey_when_a_key_is_duplicated_three_times_in_a_hash_literal_registers_two_offenses
+    source: |
+      hash = { 1 => 2, 1 => 3, 1 => 4 }
+    offenses:
+      - line: 1
+        column_start: 17
+        column_end: 18
+        message: Duplicated key in hash literal.
+      - line: 1
+        column_start: 25
+        column_end: 26
+        message: Duplicated key in hash literal.
+
+  - name: rubocop_cop_lint_duplicatehashkey_when_there_is_no_duplicated_key_in_the_hash_does_not_register_an_offense
+    source: |
+      hash = { ['one', 'two'] => ['hello, bye'], ['two'] => ['yes, no'] }
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_duplicatehashkey
+    source: |
+      hash = { %{key} => 1, %{key} => 4}
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 34
+        message: Duplicated key in hash literal.
+
+  - name: rubocop_cop_lint_duplicatehashkey_duplicated_literal_key_true
+    source: |
+      !true
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_duplicatehashkey_duplicated_literal_key_2
+    source: |
+      "#{2}"
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_duplicatehashkey_duplicated_literal_key_1
+    source: |
+      (1)
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_duplicatehashkey_duplicated_literal_key_false_true
+    source: |
+      (false && true)
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_duplicatehashkey_duplicated_literal_key_false_true
+    source: |
+      (false <=> true)
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_duplicatehashkey_duplicated_literal_key_false_or_true
+    source: |
+      (false or true)
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_duplicatehashkey_duplicated_literal_key_1_2_3
+    source: |
+      [1, 2, 3]
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_duplicatehashkey_duplicated_literal_key_a_1_b_2
+    source: |
+      { :a => 1, :b => 2 }
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_duplicatehashkey_duplicated_literal_key_a_1_b_2
+    source: |
+      { a: 1, b: 2 }
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_duplicatehashkey_duplicated_literal_key
+    source: |
+      /./
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_duplicatehashkey_duplicated_literal_key_r_abx_ixo
+    source: |
+      %r{abx}ixo
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_duplicatehashkey_duplicated_literal_key_1_0
+    source: |
+      1.0
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_duplicatehashkey_duplicated_literal_key_1
+    source: |
+      1
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_duplicatehashkey_duplicated_literal_key_false
+    source: |
+      false
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_duplicatehashkey_duplicated_literal_key_nil
+    source: |
+      nil
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_duplicatehashkey_duplicated_literal_key_str
+    source: |
+      'str'
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_duplicatehashkey_target_ruby_version_2_6_duplicated_literal_key_42
+    source: |
+      (42..)
+    offenses:
+      []
+    ruby_version: ">= 2.6"
+
+  - name: rubocop_cop_lint_duplicatehashkey
+    source: |
+      hash = { #{key} => 1, #{key} => 4}
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_lint_duplicatehashkey_duplicated_non_literal_key_some_method_call
+    source: |
+      "#{some_method_call}"
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_duplicatehashkey_duplicated_non_literal_key_x_false
+    source: |
+      (x && false)
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_duplicatehashkey_duplicated_non_literal_key_x_false
+    source: |
+      (x == false)
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_duplicatehashkey_duplicated_non_literal_key_x_or_false
+    source: |
+      (x or false)
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_duplicatehashkey_duplicated_non_literal_key_some_method_call
+    source: |
+      [some_method_call]
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_duplicatehashkey_duplicated_non_literal_key_sym_some_metho
+    source: |
+      { :sym => some_method_call }
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_duplicatehashkey_duplicated_non_literal_key_some_method_call
+    source: |
+      { some_method_call => :sym }
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_duplicatehashkey_duplicated_non_literal_key_some_method_call
+    source: |
+      /.#{some_method_call}/
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_duplicatehashkey_duplicated_non_literal_key_r_abx_foo_ixo
+    source: |
+      %r{abx#{foo}}ixo
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_duplicatehashkey_duplicated_non_literal_key_some_method_call
+    source: |
+      some_method_call
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_duplicatehashkey_duplicated_non_literal_key_some_method_call_x
+    source: |
+      some_method_call(x, y)
+    offenses:
+      []

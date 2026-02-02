@@ -1,0 +1,463 @@
+cop: Style/MultipleComparison
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_multiplecomparison_does_not_register_an_offense_for_comparing_an_lvar
+    source: |
+      a = "a"
+      if a == "a"
+        print a
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_multiplecomparison_registers_an_offense_and_corrects_when_a_is_compared_twice
+    source: |
+      a = "a"
+      if a == "a" || a == "b"
+        print a
+      end
+    offenses:
+      - line: 2
+        column_start: 3
+        column_end: 23
+        message: "Avoid comparing a variable with multiple items in a conditional, use `Array#include?` instead."
+    corrected: |
+      a = "a"
+      if ["a", "b"].include?(a)
+        print a
+      end
+
+  - name: rubocop_cop_style_multiplecomparison_registers_an_offense_and_corrects_when_a_is_compared_three_times
+    source: |
+      a = "a"
+      if a == "a" || a == "b" || a == "c"
+        print a
+      end
+    offenses:
+      - line: 2
+        column_start: 3
+        column_end: 35
+        message: "Avoid comparing a variable with multiple items in a conditional, use `Array#include?` instead."
+    corrected: |
+      a = "a"
+      if ["a", "b", "c"].include?(a)
+        print a
+      end
+
+  - name: rubocop_cop_style_multiplecomparison_registers_an_offense_and_corrects_when_a_is_compared_three_times_on_the_right_hand_side
+    source: |
+      a = "a"
+      if "a" == a || "b" == a || "c" == a
+        print a
+      end
+    offenses:
+      - line: 2
+        column_start: 3
+        column_end: 35
+        message: "Avoid comparing a variable with multiple items in a conditional, use `Array#include?` instead."
+    corrected: |
+      a = "a"
+      if ["a", "b", "c"].include?(a)
+        print a
+      end
+
+  - name: rubocop_cop_style_multiplecomparison
+    source: |
+      a = "a"
+      if a == "a" || "b" == a || a == "c"
+        print a
+      end
+    offenses:
+      - line: 2
+        column_start: 3
+        column_end: 35
+        message: "Avoid comparing a variable with multiple items in a conditional, use `Array#include?` instead."
+    corrected: |
+      a = "a"
+      if ["a", "b", "c"].include?(a)
+        print a
+      end
+
+  - name: rubocop_cop_style_multiplecomparison_registers_an_offense_and_corrects_when_multiple_comparison_is_not_part_of_a_conditional
+    source: |
+      def foo(x)
+        x == 1 || x == 2 || x == 3
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 28
+        message: "Avoid comparing a variable with multiple items in a conditional, use `Array#include?` instead."
+    corrected: |
+      def foo(x)
+        [1, 2, 3].include?(x)
+      end
+
+  - name: rubocop_cop_style_multiplecomparison_registers_an_offense_and_corrects_when_a_is_compared_twice_in_if_and_elsif_conditions
+    source: |
+      def foo(a)
+        if a == 'foo' || a == 'bar'
+        elsif a == 'baz' || a == 'qux'
+        elsif a == 'quux'
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 5
+        column_end: 29
+        message: "Avoid comparing a variable with multiple items in a conditional, use `Array#include?` instead."
+      - line: 3
+        column_start: 8
+        column_end: 32
+        message: "Avoid comparing a variable with multiple items in a conditional, use `Array#include?` instead."
+    corrected: |
+      def foo(a)
+        if ['foo', 'bar'].include?(a)
+        elsif ['baz', 'qux'].include?(a)
+        elsif a == 'quux'
+        end
+      end
+
+  - name: rubocop_cop_style_multiplecomparison_registers_an_offense_and_corrects_when_expression_with_more_comparisons_precedes_an_expression_with_less_comparisons
+    source: |
+      a = 1
+      a == 1 || a == 2 || a == 3
+      a == 1 || a == 2
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 26
+        message: "Avoid comparing a variable with multiple items in a conditional, use `Array#include?` instead."
+      - line: 3
+        column_start: 0
+        column_end: 16
+        message: "Avoid comparing a variable with multiple items in a conditional, use `Array#include?` instead."
+    corrected: |
+      a = 1
+      [1, 2, 3].include?(a)
+      [1, 2].include?(a)
+
+  - name: rubocop_cop_style_multiplecomparison_does_not_register_an_offense_for_comparing_multiple_literal_strings
+    source: |
+      if "a" == "a" || "a" == "c"
+        print "a"
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_multiplecomparison_does_not_register_an_offense_for_comparing_multiple_int_literals
+    source: |
+      if 1 == 1 || 1 == 2
+        print 1
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_multiplecomparison_does_not_register_an_offense_for_comparing_lvars
+    source: |
+      a = "a"
+      b = "b"
+      if a == "a" || b == "b"
+        print a
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_multiplecomparison_does_not_register_an_offense_for_comparing_lvars_when_a_string_is_on_the_lefthand_side
+    source: |
+      a = "a"
+      b = "b"
+      if a == "a" || "b" == b
+        print a
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_multiplecomparison_does_not_register_an_offense_for_a_b_b_a
+    source: |
+      a = "a"
+      b = "b"
+      if a == b || b == a
+        print a
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_multiplecomparison_does_not_register_an_offense_for_a_duplicated_condition
+    source: |
+      a = "a"
+      b = "b"
+      if a == b || a == b
+        print a
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_multiplecomparison_does_not_register_an_offense_for_array_include
+    source: |
+      a = "a"
+      if ["a", "b", "c"].include? a
+        print a
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_multiplecomparison_when_allowmethodcomparison_true_does_not_register_an_offense_when_using_multiple_method_calls
+    source: |
+      col = loc.column
+      if col == before.column || col == after.column
+        do_something
+      end
+    offenses:
+      []
+    config:
+      AllowMethodComparison: true
+
+  - name: rubocop_cop_style_multiplecomparison_when_allowmethodcomparison_true_does_not_register_an_offense_when_using_multiple_safe_navigation_method_calls
+    source: |
+      col = loc.column
+      if col == before&.column || col == after&.column
+        do_something
+      end
+    offenses:
+      []
+    config:
+      AllowMethodComparison: true
+
+  - name: rubocop_cop_style_multiplecomparison_when_allowmethodcomparison_true_registers_an_offense_and_corrects_when_var_is_compared_multiple_times_after_a_method_call
+    source: |
+      var = do_something
+      var == foo || var == 'bar' || var == 'baz'
+    offenses:
+      - line: 2
+        column_start: 14
+        column_end: 42
+        message: "Avoid comparing a variable with multiple items in a conditional, use `Array#include?` instead."
+    corrected: |
+      var = do_something
+      var == foo || ['bar', 'baz'].include?(var)
+    config:
+      AllowMethodComparison: true
+
+  - name: rubocop_cop_style_multiplecomparison_when_allowmethodcomparison_true_registers_an_offense_and_corrects_when_comparing_with_hash_access_on_rhs
+    source: |
+      if a[:key] == 'a' || a[:key] == 'b'
+        print a
+      end
+    offenses:
+      - line: 1
+        column_start: 3
+        column_end: 35
+        message: "Avoid comparing a variable with multiple items in a conditional, use `Array#include?` instead."
+    corrected: |
+      if ['a', 'b'].include?(a[:key])
+        print a
+      end
+    config:
+      AllowMethodComparison: true
+
+  - name: rubocop_cop_style_multiplecomparison_when_allowmethodcomparison_true_registers_an_offense_and_corrects_when_comparing_with_hash_access_on_lhs
+    source: |
+      if 'a' == a[:key] || 'b' == a[:key]
+        print a
+      end
+    offenses:
+      - line: 1
+        column_start: 3
+        column_end: 35
+        message: "Avoid comparing a variable with multiple items in a conditional, use `Array#include?` instead."
+    corrected: |
+      if ['a', 'b'].include?(a[:key])
+        print a
+      end
+    config:
+      AllowMethodComparison: true
+
+  - name: rubocop_cop_style_multiplecomparison_when_allowmethodcomparison_true_registers_an_offense_and_corrects_when_comparing_with_safe_navigation_method_call_on_rhs
+    source: |
+      if a&.do_something == 'a' || a&.do_something == 'b'
+        print a
+      end
+    offenses:
+      - line: 1
+        column_start: 3
+        column_end: 51
+        message: "Avoid comparing a variable with multiple items in a conditional, use `Array#include?` instead."
+    corrected: |
+      if ['a', 'b'].include?(a&.do_something)
+        print a
+      end
+    config:
+      AllowMethodComparison: true
+
+  - name: rubocop_cop_style_multiplecomparison_when_allowmethodcomparison_true_registers_an_offense_and_corrects_when_comparing_with_safe_navigation_method_call_on_lhs
+    source: |
+      if 'a' == a&.do_something || 'b' == a&.do_something
+        print a
+      end
+    offenses:
+      - line: 1
+        column_start: 3
+        column_end: 51
+        message: "Avoid comparing a variable with multiple items in a conditional, use `Array#include?` instead."
+    corrected: |
+      if ['a', 'b'].include?(a&.do_something)
+        print a
+      end
+    config:
+      AllowMethodComparison: true
+
+  - name: rubocop_cop_style_multiplecomparison_does_not_register_an_offense_when_comparing_two_sides_of_the_disjunction_is_unrelated
+    source: |
+      def do_something(foo, bar)
+        bar.do_something == bar || foo == :sym
+      end
+    offenses:
+      []
+    config:
+      AllowMethodComparison: true
+
+  - name: rubocop_cop_style_multiplecomparison_when_allowmethodcomparison_false_registers_an_offense_and_corrects_when_using_multiple_method_calls
+    source: |
+      col = loc.column
+      if col == before.column || col == after.column
+        do_something
+      end
+    offenses:
+      - line: 2
+        column_start: 3
+        column_end: 46
+        message: "Avoid comparing a variable with multiple items in a conditional, use `Array#include?` instead."
+    corrected: |
+      col = loc.column
+      if [before.column, after.column].include?(col)
+        do_something
+      end
+    config:
+      AllowMethodComparison: false
+
+  - name: rubocop_cop_style_multiplecomparison_when_allowmethodcomparison_false_registers_an_offense_and_corrects_when_var_is_compared_multiple_times_after_a_method_call
+    source: |
+      var = do_something
+      var == foo || var == 'bar' || var == 'baz'
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 42
+        message: "Avoid comparing a variable with multiple items in a conditional, use `Array#include?` instead."
+    corrected: |
+      var = do_something
+      [foo, 'bar', 'baz'].include?(var)
+    config:
+      AllowMethodComparison: false
+
+  - name: rubocop_cop_style_multiplecomparison_when_allowmethodcomparison_false_does_not_register_an_offense_when_comparing_with_hash_access_on_rhs
+    source: |
+      if a[:key] == 'a' || a[:key] == 'b'
+        print a
+      end
+    offenses:
+      []
+    config:
+      AllowMethodComparison: false
+
+  - name: rubocop_cop_style_multiplecomparison_when_allowmethodcomparison_false_does_not_register_an_offense_when_comparing_with_hash_access_on_lhs
+    source: |
+      if 'a' == a[:key] || 'b' == a[:key]
+        print a
+      end
+    offenses:
+      []
+    config:
+      AllowMethodComparison: false
+
+  - name: rubocop_cop_style_multiplecomparison_when_allowmethodcomparison_false_does_not_register_an_offense_when_comparing_with_safe_navigation_method_call_on_rhs
+    source: |
+      if a&.do_something == 'a' || a&.do_something == 'b'
+        print a
+      end
+    offenses:
+      []
+    config:
+      AllowMethodComparison: false
+
+  - name: rubocop_cop_style_multiplecomparison_when_allowmethodcomparison_false_does_not_register_an_offense_when_comparing_with_safe_navigation_method_call_on_lhs
+    source: |
+      if 'a' == a&.do_something || 'b' == a&.do_something
+        print a
+      end
+    offenses:
+      []
+    config:
+      AllowMethodComparison: false
+
+  - name: rubocop_cop_style_multiplecomparison_when_comparisonsthreshold_2_registers_an_offense_and_corrects_when_a_is_compared_twice
+    source: |
+      a = "a"
+      foo if a == "a" || a == "b"
+    offenses:
+      - line: 2
+        column_start: 7
+        column_end: 27
+        message: "Avoid comparing a variable with multiple items in a conditional, use `Array#include?` instead."
+    corrected: |
+      a = "a"
+      foo if ["a", "b"].include?(a)
+    config:
+      AllowMethodComparison: false
+      ComparisonsThreshold: 2
+
+  - name: rubocop_cop_style_multiplecomparison_when_comparisonsthreshold_3_registers_an_offense_and_corrects_when_a_is_compared_thrice
+    source: |
+      a = "a"
+      foo if a == "a" || a == "b" || a == "c"
+    offenses:
+      - line: 2
+        column_start: 7
+        column_end: 39
+        message: "Avoid comparing a variable with multiple items in a conditional, use `Array#include?` instead."
+    corrected: |
+      a = "a"
+      foo if ["a", "b", "c"].include?(a)
+    config:
+      AllowMethodComparison: false
+      ComparisonsThreshold: 3
+
+  - name: rubocop_cop_style_multiplecomparison_when_comparisonsthreshold_3_does_not_register_an_offense_when_a_is_compared_twice
+    source: |
+      a = "a"
+      foo if a == "a" || a == "b"
+    offenses:
+      []
+    config:
+      AllowMethodComparison: false
+      ComparisonsThreshold: 3
+
+  - name: rubocop_cop_style_multiplecomparison_when_comparisonsthreshold_3_does_not_register_an_offense_when_a_is_compared_twice_in_multiple_expressions
+    source: |
+      a = "a"
+      foo if a == "a" || a == "b"
+      bar if a == "a" || a == "b"
+    offenses:
+      []
+    config:
+      AllowMethodComparison: false
+      ComparisonsThreshold: 3
+
+  - name: rubocop_cop_style_multiplecomparison_when_comparisonsthreshold_3_does_not_register_an_offense_when_a_is_compared_twice_in_different_contexts_expressions
+    source: |
+      def foo(a)
+        a == "a" || a == "b"
+      end
+      
+      def bar(a)
+        a == "a" || a == "b"
+      end
+    offenses:
+      []
+    config:
+      AllowMethodComparison: false
+      ComparisonsThreshold: 3

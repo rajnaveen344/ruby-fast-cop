@@ -1,0 +1,447 @@
+cop: Lint/UnusedBlockArgument
+department: lint
+severity: warning
+implemented: false
+
+tests:
+  - name: rubocop_cop_lint_unusedblockargument_inspection_when_a_block_takes_multiple_arguments_and_an_argument_is_unused_registers_an_offense
+    source: |
+      hash.each do |key, value|
+        puts key
+      end
+    offenses:
+      - line: 1
+        column_start: 19
+        column_end: 24
+        message: "#{message}"
+    corrected: |
+      hash.each do |key, _value|
+        puts key
+      end
+    config:
+      AllowUnusedKeywordArguments: false
+    interpolated: true
+
+  - name: rubocop_cop_lint_unusedblockargument_inspection_when_a_block_takes_multiple_arguments_and_all_arguments_are_used_accepts
+    source: |
+      obj.method { |foo, bar| stuff(foo, bar) }
+    offenses:
+      []
+    config:
+      AllowUnusedKeywordArguments: false
+
+  - name: rubocop_cop_lint_unusedblockargument_inspection_when_a_block_takes_multiple_arguments_and_arguments_are_swap_assigned_accepts
+    source: |
+      hash.each do |key, value|
+        key, value = value, key
+      end
+    offenses:
+      []
+    config:
+      AllowUnusedKeywordArguments: false
+
+  - name: rubocop_cop_lint_unusedblockargument_inspection_when_a_block_takes_multiple_arguments_and_one_argument_is_assigned_to_another_whilst_other_s_value_is_not_used_registers_an_offense
+    source: |
+      hash.each do |key, value|
+        key, value = value, 42
+      end
+    offenses:
+      - line: 1
+        column_start: 14
+        column_end: 17
+        message: "#{message}"
+    corrected: |
+      hash.each do |_key, value|
+        key, value = value, 42
+      end
+    config:
+      AllowUnusedKeywordArguments: false
+    interpolated: true
+
+  - name: rubocop_cop_lint_unusedblockargument_inspection_when_a_block_takes_multiple_arguments_and_a_splat_argument_is_unused_registers_an_offense_and_preserves_splat
+    source: |
+      obj.method { |foo, *bars, baz| stuff(foo, baz) }
+    offenses:
+      - line: 1
+        column_start: 20
+        column_end: 24
+        message: "#{message}"
+    corrected: |
+      obj.method { |foo, *_bars, baz| stuff(foo, baz) }
+    config:
+      AllowUnusedKeywordArguments: false
+    interpolated: true
+
+  - name: rubocop_cop_lint_unusedblockargument_inspection_when_a_block_takes_multiple_arguments_and_an_argument_with_default_value_is_unused_registers_an_offense_and_preserves_default_value
+    source: |
+      obj.method do |foo, bar = baz|
+        stuff(foo)
+      end
+    offenses:
+      - line: 1
+        column_start: 20
+        column_end: 23
+        message: "#{message}"
+    corrected: |
+      obj.method do |foo, _bar = baz|
+        stuff(foo)
+      end
+    config:
+      AllowUnusedKeywordArguments: false
+    interpolated: true
+
+  - name: rubocop_cop_lint_unusedblockargument_inspection_when_a_block_takes_multiple_arguments_and_all_the_arguments_are_unused_registers_offenses_and_suggests_omitting_them
+    source: |
+      hash = { foo: 'FOO', bar: 'BAR' }
+      hash.each do |key, value|
+        puts :something
+      end
+    offenses:
+      - line: 2
+        column_start: 19
+        column_end: 24
+        message: "#{value_message}"
+      - line: 2
+        column_start: 14
+        column_end: 17
+        message: "#{key_message}"
+    corrected: |
+      hash = { foo: 'FOO', bar: 'BAR' }
+      hash.each do |_key, _value|
+        puts :something
+      end
+    config:
+      AllowUnusedKeywordArguments: false
+    interpolated: true
+
+  - name: rubocop_cop_lint_unusedblockargument_inspection_when_a_block_takes_multiple_arguments_and_all_the_arguments_are_unused_and_unused_arguments_span_multiple_lines_registers_offenses_and_suggests_omitting_them
+    source: |
+      hash.each do |key,
+                    value|
+        puts :something
+      end
+    offenses:
+      - line: 1
+        column_start: 14
+        column_end: 17
+        message: "#{key_message}"
+      - line: 2
+        column_start: 14
+        column_end: 19
+        message: "#{value_message}"
+    corrected: |
+      hash.each do |_key,
+                    _value|
+        puts :something
+      end
+    config:
+      AllowUnusedKeywordArguments: false
+    interpolated: true
+
+  - name: rubocop_cop_lint_unusedblockargument_inspection_when_a_block_takes_single_argument_and_the_argument_is_unused_registers_an_offense_and_suggests_omitting_that
+    source: |
+      1.times do |index|
+        puts :something
+      end
+    offenses:
+      - line: 1
+        column_start: 12
+        column_end: 17
+        message: "#{message}"
+    corrected: |
+      1.times do |_index|
+        puts :something
+      end
+    config:
+      AllowUnusedKeywordArguments: false
+    interpolated: true
+
+  - name: rubocop_cop_lint_unusedblockargument_inspection_when_a_block_takes_single_argument_and_the_method_call_is_define_method_registers_an_offense
+    source: |
+      define_method(:foo) do |bar|
+        puts 'baz'
+      end
+    offenses:
+      - line: 1
+        column_start: 24
+        column_end: 27
+        message: "#{message}"
+    corrected: |
+      define_method(:foo) do |_bar|
+        puts 'baz'
+      end
+    config:
+      AllowUnusedKeywordArguments: false
+    interpolated: true
+
+  - name: rubocop_cop_lint_unusedblockargument_inspection_when_a_block_have_a_block_local_variable_and_the_variable_is_unused_registers_an_offense
+    source: |
+      1.times do |index; block_local_variable|
+        puts index
+      end
+    offenses:
+      - line: 1
+        column_start: 19
+        column_end: 39
+        message: Unused block local variable - `block_local_variable`.
+    corrected: |
+      1.times do |index; _block_local_variable|
+        puts index
+      end
+    config:
+      AllowUnusedKeywordArguments: false
+
+  - name: rubocop_cop_lint_unusedblockargument_inspection_when_a_block_have_a_block_local_variable_and_the_variable_is_used_does_not_register_offense
+    source: |
+      1.times do |index; x|
+        x = 10
+        puts index
+      end
+    offenses:
+      []
+    config:
+      AllowUnusedKeywordArguments: false
+
+  - name: rubocop_cop_lint_unusedblockargument_inspection_when_a_lambda_block_takes_arguments_and_all_the_arguments_are_unused_registers_offenses_and_suggests_using_a_proc
+    source: |
+      -> (foo, bar) { do_something }
+    offenses:
+      - line: 1
+        column_start: 9
+        column_end: 12
+        message: "#{bar_message}"
+      - line: 1
+        column_start: 4
+        column_end: 7
+        message: "#{foo_message}"
+    corrected: |
+      -> (_foo, _bar) { do_something }
+    config:
+      AllowUnusedKeywordArguments: false
+    interpolated: true
+
+  - name: rubocop_cop_lint_unusedblockargument_inspection_when_a_lambda_block_takes_arguments_and_an_argument_is_unused_registers_an_offense
+    source: |
+      -> (foo, bar) { puts bar }
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 7
+        message: "#{message}"
+    corrected: |
+      -> (_foo, bar) { puts bar }
+    config:
+      AllowUnusedKeywordArguments: false
+    interpolated: true
+
+  - name: rubocop_cop_lint_unusedblockargument_inspection_when_an_underscore_prefixed_block_argument_is_not_used_accepts
+    source: |
+      1.times do |_index|
+        puts 'foo'
+      end
+    offenses:
+      []
+    config:
+      AllowUnusedKeywordArguments: false
+
+  - name: rubocop_cop_lint_unusedblockargument_inspection_when_an_optional_keyword_argument_is_unused_when_the_method_call_is_define_method_registers_an_offense
+    source: |
+      define_method(:foo) do |bar: 'default'|
+        puts 'bar'
+      end
+    offenses:
+      - line: 1
+        column_start: 24
+        column_end: 27
+        message: "#{message}"
+    config:
+      AllowUnusedKeywordArguments: false
+    interpolated: true
+
+  - name: rubocop_cop_lint_unusedblockargument_inspection_when_an_optional_keyword_argument_is_unused_when_the_method_call_is_define_method_when_allowunusedkeywordarguments_set_does_not_care
+    source: |
+      define_method(:foo) do |bar: 'default'|
+        puts 'bar'
+      end
+    offenses:
+      []
+    config:
+      AllowUnusedKeywordArguments: true
+
+  - name: rubocop_cop_lint_unusedblockargument_inspection_when_an_optional_keyword_argument_is_unused_when_the_method_call_is_not_define_method_registers_an_offense
+    source: |
+      foo(:foo) do |bar: 'default'|
+        puts 'bar'
+      end
+    offenses:
+      - line: 1
+        column_start: 14
+        column_end: 17
+        message: "#{message}"
+    config:
+      AllowUnusedKeywordArguments: true
+    interpolated: true
+
+  - name: rubocop_cop_lint_unusedblockargument_inspection_when_an_optional_keyword_argument_is_unused_when_the_method_call_is_not_define_method_when_allowunusedkeywordarguments_set_does_not_care
+    source: |
+      foo(:foo) do |bar: 'default'|
+        puts 'bar'
+      end
+    offenses:
+      []
+    config:
+      AllowUnusedKeywordArguments: true
+
+  - name: rubocop_cop_lint_unusedblockargument_inspection_when_a_method_argument_is_not_used_does_not_care
+    source: |
+      def some_method(foo)
+      end
+    offenses:
+      []
+    config:
+      AllowUnusedKeywordArguments: true
+
+  - name: rubocop_cop_lint_unusedblockargument_inspection_when_a_variable_is_not_used_does_not_care
+    source: |
+      1.times do
+        foo = 1
+      end
+    offenses:
+      []
+    config:
+      AllowUnusedKeywordArguments: true
+
+  - name: rubocop_cop_lint_unusedblockargument_inspection_in_a_method_calling_binding_without_arguments_accepts_all_arguments
+    source: |
+      test do |key, value|
+        puts something(binding)
+      end
+    offenses:
+      []
+    config:
+      AllowUnusedKeywordArguments: true
+
+  - name: rubocop_cop_lint_unusedblockargument_inspection_in_a_method_calling_binding_without_arguments_inside_a_method_definition_registers_offenses
+    source: |
+      test do |key, value|
+        def other(a)
+          puts something(binding)
+        end
+      end
+    offenses:
+      - line: 1
+        column_start: 14
+        column_end: 19
+        message: "#{value_message}"
+      - line: 1
+        column_start: 9
+        column_end: 12
+        message: "#{key_message}"
+    corrected: |
+      test do |_key, _value|
+        def other(a)
+          puts something(binding)
+        end
+      end
+    config:
+      AllowUnusedKeywordArguments: true
+    interpolated: true
+
+  - name: rubocop_cop_lint_unusedblockargument_inspection_in_a_method_calling_binding_with_arguments_when_a_method_argument_is_unused_registers_an_offense
+    source: |
+      test do |key, value|
+        puts something(binding(:other))
+      end
+    offenses:
+      - line: 1
+        column_start: 14
+        column_end: 19
+        message: "#{value_message}"
+      - line: 1
+        column_start: 9
+        column_end: 12
+        message: "#{key_message}"
+    corrected: |
+      test do |_key, _value|
+        puts something(binding(:other))
+      end
+    config:
+      AllowUnusedKeywordArguments: true
+    interpolated: true
+
+  - name: rubocop_cop_lint_unusedblockargument_inspection_with_an_empty_block_when_not_configured_to_ignore_empty_blocks_registers_an_offense
+    source: |
+      super { |bar| }
+    offenses:
+      - line: 1
+        column_start: 9
+        column_end: 12
+        message: "#{message}"
+    corrected: |
+      super { |_bar| }
+    config:
+      IgnoreEmptyBlocks: false
+      AllowUnusedKeywordArguments: true
+    interpolated: true
+
+  - name: rubocop_cop_lint_unusedblockargument_inspection_with_an_empty_block_when_configured_to_ignore_empty_blocks_does_not_register_an_offense
+    source: |
+      super { |bar| }
+    offenses:
+      []
+    config:
+      IgnoreEmptyBlocks: true
+      AllowUnusedKeywordArguments: true
+
+  - name: rubocop_cop_lint_unusedblockargument_when_ignoreemptyblocks_config_parameter_is_set_accepts_an_empty_block_with_a_single_unused_parameter
+    source: |
+      ->(arg) { }
+    offenses:
+      []
+    config:
+      IgnoreEmptyBlocks: true
+      AllowUnusedKeywordArguments: true
+
+  - name: rubocop_cop_lint_unusedblockargument_when_ignoreemptyblocks_config_parameter_is_set_registers_an_offense_for_a_non_empty_block_with_an_unused_parameter
+    source: |
+      ->(arg) { 1 }
+    offenses:
+      - line: 1
+        column_start: 3
+        column_end: 6
+        message: "#{message}"
+    corrected: |
+      ->(_arg) { 1 }
+    config:
+      IgnoreEmptyBlocks: true
+      AllowUnusedKeywordArguments: true
+    interpolated: true
+
+  - name: rubocop_cop_lint_unusedblockargument_when_ignoreemptyblocks_config_parameter_is_set_accepts_an_empty_block_with_multiple_unused_parameters
+    source: |
+      ->(arg1, arg2, *others) { }
+    offenses:
+      []
+    config:
+      IgnoreEmptyBlocks: true
+      AllowUnusedKeywordArguments: true
+
+  - name: rubocop_cop_lint_unusedblockargument_when_ignoreemptyblocks_config_parameter_is_set_registers_an_offense_for_a_non_empty_block_with_multiple_unused_args
+    source: |
+      ->(arg1, arg2, *others) { 1 }
+               ^^^^ #{arg2_msg}
+    offenses:
+      - line: 1
+        column_start: 16
+        column_end: 22
+        message: "#{others_msg}"
+      - line: 2
+        column_start: 3
+        column_end: 7
+        message: "#{arg1_msg}"
+    corrected: |
+      ->(_arg1, _arg2, *_others) { 1 }
+    config:
+      IgnoreEmptyBlocks: true
+      AllowUnusedKeywordArguments: true
+    interpolated: true

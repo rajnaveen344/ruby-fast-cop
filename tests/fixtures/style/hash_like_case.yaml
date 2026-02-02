@@ -1,0 +1,117 @@
+cop: Style/HashLikeCase
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_hashlikecase_minbranchescount_2_registers_an_offense_when_using_case_when_with_string_conditions_and_literal_bodies_of_the_same_type
+    source: |
+      case x
+      when 'foo'
+        'FOO'
+      when 'bar'
+        'BAR'
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 6
+        message: Consider replacing `case-when` with a hash lookup.
+    config:
+      MinBranchesCount: 2
+
+  - name: rubocop_cop_style_hashlikecase_minbranchescount_2_registers_an_offense_when_using_case_when_with_symbol_conditions_and_literal_bodies_of_the_same_type
+    source: |
+      case x
+      when :foo
+        'FOO'
+      when :bar
+        'BAR'
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 6
+        message: Consider replacing `case-when` with a hash lookup.
+    config:
+      MinBranchesCount: 2
+
+  - name: rubocop_cop_style_hashlikecase_minbranchescount_2_does_not_register_an_offense_when_using_case_when_with_literals_of_different_types_as_conditions
+    source: |
+      case x
+      when 'foo'
+        'FOO'
+      when :bar
+        'BAR'
+      end
+    offenses:
+      []
+    config:
+      MinBranchesCount: 2
+
+  - name: rubocop_cop_style_hashlikecase_minbranchescount_2_does_not_register_an_offense_when_using_case_when_with_non_literals_in_conditions
+    source: |
+      case x
+      when y
+        'FOO'
+      when z
+        'BAR'
+      end
+    offenses:
+      []
+    config:
+      MinBranchesCount: 2
+
+  - name: rubocop_cop_style_hashlikecase_minbranchescount_2_does_not_register_an_offense_when_using_case_when_with_literal_bodies_of_different_types
+    source: |
+      case x
+      when 'foo'
+        'FOO'
+      when 'bar'
+        2
+      end
+    offenses:
+      []
+    config:
+      MinBranchesCount: 2
+
+  - name: rubocop_cop_style_hashlikecase_minbranchescount_2_does_not_register_an_offense_when_using_case_when_with_non_literal_bodies
+    source: |
+      case x
+      when 'foo'
+        y
+      when 'bar'
+        z
+      end
+    offenses:
+      []
+    config:
+      MinBranchesCount: 2
+
+  - name: rubocop_cop_style_hashlikecase_minbranchescount_2_does_not_register_an_offense_when_case_has_an_else_branch
+    source: |
+      case x
+      when 'foo'
+        'FOO'
+      when 'bar'
+        'BAR'
+      else
+        'BAZ'
+      end
+    offenses:
+      []
+    config:
+      MinBranchesCount: 2
+
+  - name: rubocop_cop_style_hashlikecase_minbranchescount_3_does_not_register_an_offense_when_branches_count_is_less_than_required
+    source: |
+      case x
+      when 'foo'
+        'FOO'
+      when 'bar'
+        'BAR'
+      end
+    offenses:
+      []
+    config:
+      MinBranchesCount: 3

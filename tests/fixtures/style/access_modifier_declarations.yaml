@@ -1,0 +1,1098 @@
+cop: Style/AccessModifierDeclarations
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_accessmodifierdeclarations
+    source: |
+      class Foo
+        foo
+        bar(key: #{access_modifier})
+      end
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_allow_access_modifiers_on_symbols
+    source: |
+      class Foo
+        foo
+        #{access_modifier} :bar
+      end
+    offenses:
+      []
+    config:
+      AllowModifiersOnSymbols: true
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_allow_access_modifiers_on_symbols
+    source: |
+      class Foo
+        foo
+        #{access_modifier} :bar, :baz
+      end
+    offenses:
+      []
+    config:
+      AllowModifiersOnSymbols: true
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_allow_access_modifiers_on_symbols
+    source: |
+      class Foo
+        foo
+        #{access_modifier} *%i[bar baz]
+      end
+    offenses:
+      []
+    config:
+      AllowModifiersOnSymbols: true
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_allow_access_modifiers_on_symbols
+    source: |
+      class Foo
+        foo
+        #{access_modifier} *METHOD_NAMES
+      end
+    offenses:
+      []
+    config:
+      AllowModifiersOnSymbols: true
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_allow_access_modifiers_on_symbols
+    source: |
+      class Foo
+        foo
+        #{access_modifier} *bar
+      end
+    offenses:
+      []
+    config:
+      AllowModifiersOnSymbols: true
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_do_not_allow_access_modifiers_on_symbols
+    source: |
+      #{access_modifier} :foo
+    offenses:
+      []
+    config:
+      AllowModifiersOnSymbols: false
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_do_not_allow_access_modifiers_on_symbols
+    source: |
+      class Foo
+        foo
+        %{access_modifier} :bar
+      end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 25
+        message: "`#{access_modifier}` should not be inlined in method definitions."
+    config:
+      AllowModifiersOnSymbols: false
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_do_not_allow_access_modifiers_on_symbols_registers_an_offense_and_does_not_autocorrect_when_methods_are_not_defined
+    source: |
+      class Foo
+        foo
+        %{access_modifier} :bar, :baz
+      end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 31
+        message: "`#{access_modifier}` should not be inlined in method definitions."
+    config:
+      AllowModifiersOnSymbols: false
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_do_not_allow_access_modifiers_on_symbols_registers_an_offense_and_autocorrects_when_methods_are_all_defined_in_class
+    source: |
+      module Foo
+        def bar; end
+        def baz; end
+      
+        %{access_modifier} :bar, :baz
+      end
+    offenses:
+      - line: 5
+        column_start: 2
+        column_end: 31
+        message: "`#{access_modifier}` should not be inlined in method definitions."
+    corrected: |
+      module Foo
+      
+      #{access_modifier}
+      
+      def bar; end
+      def baz; end
+      end
+    config:
+      AllowModifiersOnSymbols: false
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_do_not_allow_access_modifiers_on_symbols_registers_an_offense_and_autocorrects_when_methods_are_all_defined_in_class_and_there_is_a_comment
+    source: |
+      module Foo
+        def bar; end
+        def baz; end
+      
+        # comment
+        %{access_modifier} :bar, :baz
+      end
+    offenses:
+      - line: 6
+        column_start: 2
+        column_end: 31
+        message: "`#{access_modifier}` should not be inlined in method definitions."
+    corrected: |
+      module Foo
+      
+      #{access_modifier}
+      
+      # comment
+      def bar; end
+      def baz; end
+      end
+    config:
+      AllowModifiersOnSymbols: false
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_do_not_allow_access_modifiers_on_symbols_registers_an_offense_and_autocorrects_when_methods_are_all_defined_in_class_and_there_is_already_a_bare_access_modifier
+    source: |
+      module Foo
+        def bar; end
+        def baz; end
+      
+        %{access_modifier} :bar, :baz
+      
+        %{access_modifier}
+        def quux; end
+      end
+    offenses:
+      - line: 5
+        column_start: 2
+        column_end: 31
+        message: "`#{access_modifier}` should not be inlined in method definitions."
+    corrected: |
+      module Foo
+      
+      
+        #{access_modifier}
+      
+      def bar; end
+      def baz; end
+        def quux; end
+      end
+    config:
+      AllowModifiersOnSymbols: false
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_do_not_allow_access_modifiers_on_symbols_registers_an_offense_but_does_not_correct_when_not_all_methods_are_defined_in_class
+    source: |
+      module Foo
+        def bar; end
+      
+        %{access_modifier} :bar, :baz
+      end
+    offenses:
+      - line: 4
+        column_start: 2
+        column_end: 31
+        message: "`#{access_modifier}` should not be inlined in method definitions."
+    config:
+      AllowModifiersOnSymbols: false
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_do_not_allow_access_modifiers_on_symbols_registers_an_offense_and_autocorrects_when_methods_are_all_defined_in_self_class
+    source: |
+      class << self
+        def bar; end
+        def baz; end
+      
+        %{access_modifier} :bar, :baz
+      end
+    offenses:
+      - line: 5
+        column_start: 2
+        column_end: 31
+        message: "`#{access_modifier}` should not be inlined in method definitions."
+    corrected: |
+      class << self
+      
+      #{access_modifier}
+      
+      def bar; end
+      def baz; end
+      end
+    config:
+      AllowModifiersOnSymbols: false
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_do_not_allow_access_modifiers_on_symbols_registers_an_offense_and_autocorrects_when_methods_are_all_defined_in_self_class_and_there_is_a_comment
+    source: |
+      class << self
+        def bar; end
+        def baz; end
+      
+        # comment
+        %{access_modifier} :bar, :baz
+      end
+    offenses:
+      - line: 6
+        column_start: 2
+        column_end: 31
+        message: "`#{access_modifier}` should not be inlined in method definitions."
+    corrected: |
+      class << self
+      
+      #{access_modifier}
+      
+      # comment
+      def bar; end
+      def baz; end
+      end
+    config:
+      AllowModifiersOnSymbols: false
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_do_not_allow_access_modifiers_on_symbols_registers_an_offense_and_autocorrects_when_methods_are_all_defined_in_self_class_and_there_is_already_a_bare_access_modifier
+    source: |
+      class << self
+        def bar; end
+        def baz; end
+      
+        %{access_modifier} :bar, :baz
+      
+        %{access_modifier}
+        def quux; end
+      end
+    offenses:
+      - line: 5
+        column_start: 2
+        column_end: 31
+        message: "`#{access_modifier}` should not be inlined in method definitions."
+    corrected: |
+      class << self
+      
+      
+        #{access_modifier}
+      
+      def bar; end
+      def baz; end
+        def quux; end
+      end
+    config:
+      AllowModifiersOnSymbols: false
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_do_not_allow_access_modifiers_on_symbols_registers_an_offense_but_does_not_correct_when_not_all_methods_are_defined_in_self_class
+    source: |
+      class << self
+        def bar; end
+      
+        %{access_modifier} :bar, :baz
+      end
+    offenses:
+      - line: 4
+        column_start: 2
+        column_end: 31
+        message: "`#{access_modifier}` should not be inlined in method definitions."
+    config:
+      AllowModifiersOnSymbols: false
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_do_not_allow_access_modifiers_on_symbols
+    source: |
+      class Foo
+        foo
+        %{access_modifier} *%i[bar baz]
+      end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 33
+        message: "`#{access_modifier}` should not be inlined in method definitions."
+    config:
+      AllowModifiersOnSymbols: false
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_do_not_allow_access_modifiers_on_symbols
+    source: |
+      class Foo
+        foo
+        %{access_modifier} *METHOD_NAMES
+      end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 34
+        message: "`#{access_modifier}` should not be inlined in method definitions."
+    config:
+      AllowModifiersOnSymbols: false
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_allow_access_modifiers_on_attrs
+    source: |
+      class Foo
+        #{access_modifier} attr_reader :foo
+        #{access_modifier} attr_writer :bar
+        #{access_modifier} attr_accessor :baz
+        #{access_modifier} attr :qux
+      end
+    offenses:
+      []
+    config:
+      AllowModifiersOnSymbols: false
+      AllowModifiersOnAttrs: true
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_allow_access_modifiers_on_attrs_accepts_multiple_arguments_on_attrs
+    source: |
+      class Foo
+        #{access_modifier} attr_reader :reader1, :reader2
+        #{access_modifier} attr_writer :writer1, :writer2
+        #{access_modifier} attr_accessor :accessor1, :accessor2
+        #{access_modifier} attr :attr1, :attr2
+      end
+    offenses:
+      []
+    config:
+      AllowModifiersOnSymbols: false
+      AllowModifiersOnAttrs: true
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_do_not_allow_access_modifiers_on_attrs_registers_an_offense_for_a_single_symbol
+    source: |
+      class Foo
+        foo
+        %{access_modifier} #{attr_method} :bar
+      end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 40
+        message: "`#{access_modifier}` should not be inlined in method definitions."
+    corrected: |
+      class Foo
+        foo
+      #{access_modifier}
+      
+      #{attr_method} :bar
+      end
+    config:
+      AllowModifiersOnSymbols: false
+      AllowModifiersOnAttrs: false
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_do_not_allow_access_modifiers_on_attrs_registers_an_offense_for_multiple_symbols
+    source: |
+      class Foo
+        foo
+        %{access_modifier} #{attr_method} :bar, :baz
+      end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 46
+        message: "`#{access_modifier}` should not be inlined in method definitions."
+    corrected: |
+      class Foo
+        foo
+      #{access_modifier}
+      
+      #{attr_method} :bar, :baz
+      end
+    config:
+      AllowModifiersOnSymbols: false
+      AllowModifiersOnAttrs: false
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_allow_access_modifiers_on_alias_method
+    source: |
+      class Foo
+        #{access_modifier} alias_method :bar, :foo
+      end
+    offenses:
+      []
+    config:
+      AllowModifiersOnSymbols: false
+      AllowModifiersOnAttrs: false
+      AllowModifiersOnAliasMethod: true
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_do_not_allow_access_modifiers_on_alias_method
+    source: |
+      class Foo
+        #{access_modifier} alias_method :bar, :foo
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 44
+        message: "`#{access_modifier}` should not be inlined in method definitions."
+    corrected: |
+      class Foo
+      #{access_modifier}
+      
+      alias_method :bar, :foo
+      end
+    config:
+      AllowModifiersOnAliasMethod: false
+      AllowModifiersOnSymbols: false
+      AllowModifiersOnAttrs: false
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_when_group_is_configured
+    source: |
+      class Test
+        %{access_modifier} def foo; end
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 33
+        message: "`#{access_modifier}` should not be inlined in method definitions."
+    corrected: |
+      class Test
+      #{access_modifier}
+      
+      def foo; end
+      end
+    config:
+      EnforcedStyle: group
+      AllowModifiersOnAliasMethod: false
+      AllowModifiersOnSymbols: false
+      AllowModifiersOnAttrs: false
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_when_group_is_configured
+    source: |
+      %{access_modifier} def foo; end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 31
+        message: "`#{access_modifier}` should not be inlined in method definitions."
+    corrected: |
+      #{access_modifier}
+      
+      def foo; end
+    config:
+      EnforcedStyle: group
+      AllowModifiersOnAliasMethod: false
+      AllowModifiersOnSymbols: false
+      AllowModifiersOnAttrs: false
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_when_group_is_configured
+    source: |
+      class Test
+        #{access_modifier}
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: group
+      AllowModifiersOnAliasMethod: false
+      AllowModifiersOnSymbols: false
+      AllowModifiersOnAttrs: false
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_when_group_is_configured
+    source: |
+      #{access_modifier}
+    offenses:
+      []
+    config:
+      EnforcedStyle: group
+      AllowModifiersOnAliasMethod: false
+      AllowModifiersOnSymbols: false
+      AllowModifiersOnAttrs: false
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_when_group_is_configured
+    source: |
+      class Test
+        #{access_modifier} # hey
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: group
+      AllowModifiersOnAliasMethod: false
+      AllowModifiersOnSymbols: false
+      AllowModifiersOnAttrs: false
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_when_group_is_configured
+    source: |
+      class TestOne
+        #{access_modifier}
+      end
+      
+      class TestTwo
+        #{access_modifier} def foo; end
+      end
+      
+      class TestThree
+        #{access_modifier} def foo; end
+      end
+    offenses:
+      - line: 6
+        column_start: 2
+        column_end: 33
+        message: "`#{access_modifier}` should not be inlined in method definitions."
+      - line: 10
+        column_start: 2
+        column_end: 33
+        message: "`#{access_modifier}` should not be inlined in method definitions."
+    corrected: |
+      class TestOne
+        #{access_modifier}
+      end
+      
+      class TestTwo
+      #{access_modifier}
+      
+      def foo; end
+      end
+      
+      class TestThree
+      #{access_modifier}
+      
+      def foo; end
+      end
+    config:
+      EnforcedStyle: group
+      AllowModifiersOnAliasMethod: false
+      AllowModifiersOnSymbols: false
+      AllowModifiersOnAttrs: false
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_when_group_is_configured_when_method_is_modified_by_inline_modifier_registers_and_autocorrects_an_offense
+    source: |
+      class Test
+        #{access_modifier} def foo; end
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 33
+        message: "`#{access_modifier}` should not be inlined in method definitions."
+    corrected: |
+      class Test
+      #{access_modifier}
+      
+      def foo; end
+      end
+    config:
+      EnforcedStyle: group
+      AllowModifiersOnAliasMethod: false
+      AllowModifiersOnSymbols: false
+      AllowModifiersOnAttrs: false
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_when_group_is_configured
+    source: |
+      module MyModule
+        singleton_methods.each { |method| #{access_modifier}(method) }
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: group
+      AllowModifiersOnAliasMethod: false
+      AllowModifiersOnSymbols: false
+      AllowModifiersOnAttrs: false
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_when_group_is_configured
+    source: |
+      module MyModule
+        singleton_methods.each { #{access_modifier}(_1) }
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: group
+      AllowModifiersOnAliasMethod: false
+      AllowModifiersOnSymbols: false
+      AllowModifiersOnAttrs: false
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_when_group_is_configured_when_method_is_modified_by_inline_modifier_with_disallowed_symbol_registers_and_autocorrects_an_offense
+    source: |
+      class Test
+        def foo; end
+        #{access_modifier} :foo
+      end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 25
+        message: "`#{access_modifier}` should not be inlined in method definitions."
+    corrected: |
+      class Test
+      #{access_modifier}
+      
+      def foo; end
+      end
+    config:
+      EnforcedStyle: group
+      AllowModifiersOnAliasMethod: false
+      AllowModifiersOnSymbols: false
+      AllowModifiersOnAttrs: false
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_when_group_is_configured_when_non_existent_method_is_modified_by_inline_modifier_with_disallowed_symbol_registers_an_offense_but_does_not_autocorrect_it
+    source: |
+      class Test
+        #{access_modifier} :foo
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 25
+        message: "`#{access_modifier}` should not be inlined in method definitions."
+    config:
+      EnforcedStyle: group
+      AllowModifiersOnAliasMethod: false
+      AllowModifiersOnSymbols: false
+      AllowModifiersOnAttrs: false
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_when_group_is_configured_registers_and_autocorrects_an_offense
+    source: |
+      class Test
+        #{access_modifier} #{attr_method} :foo
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 40
+        message: "`#{access_modifier}` should not be inlined in method definitions."
+    corrected: |
+      class Test
+      #{access_modifier}
+      
+      #{attr_method} :foo
+      end
+    config:
+      EnforcedStyle: group
+      AllowModifiersOnAliasMethod: false
+      AllowModifiersOnSymbols: false
+      AllowModifiersOnAttrs: false
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_when_group_is_configured_when_method_is_modified_by_inline_modifier_where_group_modifier_already_exists_registers_and_autocorrects_an_offense
+    source: |
+      class Test
+        #{access_modifier} def foo; end
+      
+        #{access_modifier}
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 33
+        message: "`#{access_modifier}` should not be inlined in method definitions."
+    corrected: |
+      class Test
+      
+        #{access_modifier}
+      
+      def foo; end
+      end
+    config:
+      EnforcedStyle: group
+      AllowModifiersOnAliasMethod: false
+      AllowModifiersOnSymbols: false
+      AllowModifiersOnAttrs: false
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_when_group_is_configured_when_method_has_comments_registers_and_autocorrects_an_offense
+    source: |
+      class Test
+        # comment
+        #{access_modifier} def foo
+          # comment
+        end
+      end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 28
+        message: "`#{access_modifier}` should not be inlined in method definitions."
+    corrected: |
+      class Test
+      #{access_modifier}
+      
+      # comment
+      def foo
+          # comment
+        end
+      end
+    config:
+      EnforcedStyle: group
+      AllowModifiersOnAliasMethod: false
+      AllowModifiersOnSymbols: false
+      AllowModifiersOnAttrs: false
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_when_group_is_configured
+    source: |
+      class Test
+        #{access_modifier} :inspect if METHODS.include?(:inspect)
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: group
+      AllowModifiersOnAliasMethod: false
+      AllowModifiersOnSymbols: false
+      AllowModifiersOnAttrs: false
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_when_group_is_configured_registers_and_autocorrects_offense_if_conditional_modifier_is_followed_by_a_normal_one
+    source: |
+      class Test
+        #{access_modifier} get_method_name if get_method_name =~ /a/
+        #{access_modifier} def bar; end
+      end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 33
+        message: "`#{access_modifier}` should not be inlined in method definitions."
+    corrected: |
+      class Test
+        #{access_modifier} get_method_name if get_method_name =~ /a/
+      #{access_modifier}
+      
+      def bar; end
+      end
+    config:
+      EnforcedStyle: group
+      AllowModifiersOnAliasMethod: false
+      AllowModifiersOnSymbols: false
+      AllowModifiersOnAttrs: false
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_when_group_is_configured_registers_and_autocorrects_offense_if_conditional_modifiers_wrap_a_normal_one
+    source: |
+      class Test
+        #{access_modifier} get_method_name_1 if get_method_name_1 =~ /a/
+        #{access_modifier} def bar; end
+        #{access_modifier} get_method_name_2 if get_method_name_2 =~ /b/
+      end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 33
+        message: "`#{access_modifier}` should not be inlined in method definitions."
+    corrected: |
+      class Test
+        #{access_modifier} get_method_name_1 if get_method_name_1 =~ /a/
+        #{access_modifier} get_method_name_2 if get_method_name_2 =~ /b/
+      #{access_modifier}
+      
+      def bar; end
+      end
+    config:
+      EnforcedStyle: group
+      AllowModifiersOnAliasMethod: false
+      AllowModifiersOnSymbols: false
+      AllowModifiersOnAttrs: false
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_when_group_is_configured_offends_when_multiple_groupable_access_modifiers_are_defined
+    source: |
+      class Test
+        private def foo; end
+        private def bar; end
+        def baz; end
+        QUX = ['qux']
+      end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 9
+        message: "`private` should not be inlined in method definitions."
+    corrected: |
+      class Test
+        def baz; end
+        QUX = ['qux']
+      private
+      
+      def foo; end
+      
+      def bar; end
+      end
+    config:
+      EnforcedStyle: group
+      AllowModifiersOnAliasMethod: false
+      AllowModifiersOnSymbols: false
+      AllowModifiersOnAttrs: false
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_when_inline_is_configured
+    source: |
+      class Test
+        %{access_modifier}
+        def foo; end
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 20
+        message: "`#{access_modifier}` should be inlined in method definitions."
+    corrected: |
+      class Test
+        #{access_modifier} def foo; end
+      end
+    config:
+      EnforcedStyle: inline
+      AllowModifiersOnAliasMethod: false
+      AllowModifiersOnSymbols: false
+      AllowModifiersOnAttrs: false
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_when_inline_is_configured
+    source: |
+      class Test
+        %{access_modifier} # hey
+        def foo; end
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 26
+        message: "`#{access_modifier}` should be inlined in method definitions."
+    corrected: |
+      class Test
+        #{access_modifier} def foo; end
+      end
+    config:
+      EnforcedStyle: inline
+      AllowModifiersOnAliasMethod: false
+      AllowModifiersOnSymbols: false
+      AllowModifiersOnAttrs: false
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_when_inline_is_configured
+    source: |
+      class Test
+        #{access_modifier} def foo; end
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: inline
+      AllowModifiersOnAliasMethod: false
+      AllowModifiersOnSymbols: false
+      AllowModifiersOnAttrs: false
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_when_inline_is_configured
+    source: |
+      class Test
+        #{access_modifier} :foo
+      
+        def foo; end
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: inline
+      AllowModifiersOnAliasMethod: false
+      AllowModifiersOnSymbols: false
+      AllowModifiersOnAttrs: false
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_when_inline_is_configured
+    source: |
+      class TestOne
+        #{access_modifier} def foo; end
+      end
+      
+      class TestTwo
+        #{access_modifier}
+        def foo; end
+      end
+    offenses:
+      - line: 6
+        column_start: 2
+        column_end: 20
+        message: "`#{access_modifier}` should be inlined in method definitions."
+    corrected: |
+      class TestOne
+        #{access_modifier} def foo; end
+      end
+      
+      class TestTwo
+        #{access_modifier} def foo; end
+      end
+    config:
+      EnforcedStyle: inline
+      AllowModifiersOnAliasMethod: false
+      AllowModifiersOnSymbols: false
+      AllowModifiersOnAttrs: false
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_when_inline_is_configured
+    source: |
+      #{access_modifier}
+    offenses:
+      []
+    config:
+      EnforcedStyle: inline
+      AllowModifiersOnAliasMethod: false
+      AllowModifiersOnSymbols: false
+      AllowModifiersOnAttrs: false
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_when_inline_is_configured_when_methods_are_modified_by_group_modifier_registers_and_autocorrects_an_offense
+    source: |
+      class Test
+        #{access_modifier}
+      
+        def foo; end
+      
+        def bar; end
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 20
+        message: "`#{access_modifier}` should be inlined in method definitions."
+    corrected: |
+      class Test
+        #{access_modifier} def foo; end
+      
+        #{access_modifier} def bar; end
+      end
+    config:
+      EnforcedStyle: inline
+      AllowModifiersOnAliasMethod: false
+      AllowModifiersOnSymbols: false
+      AllowModifiersOnAttrs: false
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_when_inline_is_configured_when_methods_are_modified_by_group_modifier_registers_an_offense_when_using_a_grouped_access_modifier_declaration
+    source: |
+      class Test
+        def something_else; end
+      
+        def a_method_that_is_public; end
+      
+        #{access_modifier}
+      
+        def my_other_private_method; end
+      
+        def bar; end
+      end
+    offenses:
+      - line: 6
+        column_start: 2
+        column_end: 20
+        message: "`#{access_modifier}` should be inlined in method definitions."
+    corrected: |
+      class Test
+        def something_else; end
+      
+        def a_method_that_is_public; end
+      
+        #{access_modifier} def my_other_private_method; end
+      
+        #{access_modifier} def bar; end
+      end
+    config:
+      EnforcedStyle: inline
+      AllowModifiersOnAliasMethod: false
+      AllowModifiersOnSymbols: false
+      AllowModifiersOnAttrs: false
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_when_inline_is_configured_with_begin_parent_node_registers_an_offense_when_modifier_and_method_definition_are_on_different_lines
+    source: |
+      %{access_modifier};
+      def foo
+      end
+      
+      def bar
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 19
+        message: "`#{access_modifier}` should be inlined in method definitions."
+    corrected: |
+      #{access_modifier} def foo
+      end
+      
+      #{access_modifier} def bar
+      end
+    config:
+      EnforcedStyle: inline
+      AllowModifiersOnAliasMethod: false
+      AllowModifiersOnSymbols: false
+      AllowModifiersOnAttrs: false
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_when_inline_is_configured_with_begin_parent_node_registers_an_offense_when_modifier_and_method_definition_are_on_the_same_line
+    source: |
+      %{access_modifier}; def foo; end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 32
+        message: "`#{access_modifier}` should be inlined in method definitions."
+    corrected: |
+      #{access_modifier} def foo; end
+    config:
+      EnforcedStyle: inline
+      AllowModifiersOnAliasMethod: false
+      AllowModifiersOnSymbols: false
+      AllowModifiersOnAttrs: false
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_when_inline_is_configured_with_begin_parent_node_registers_an_offense_when_modifier_and_method_definitions_are_on_the_same_line
+    source: |
+      %{access_modifier}; def foo; end; def bar; end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 46
+        message: "`#{access_modifier}` should be inlined in method definitions."
+    corrected: |
+      #{access_modifier} def foo; end; #{access_modifier} def bar; end
+    config:
+      EnforcedStyle: inline
+      AllowModifiersOnAliasMethod: false
+      AllowModifiersOnSymbols: false
+      AllowModifiersOnAttrs: false
+    interpolated: true
+
+  - name: rubocop_cop_style_accessmodifierdeclarations_when_inline_is_configured_with_begin_parent_node_registers_an_offense_when_modifier_and_method_definitions_and_some_other_node_are_on_the_same_line
+    source: |
+      %{access_modifier}; def foo; end; some_method; def bar; end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 59
+        message: "`#{access_modifier}` should be inlined in method definitions."
+    corrected: |
+      #{access_modifier} def foo; end; some_method; #{access_modifier} def bar; end
+    config:
+      EnforcedStyle: inline
+      AllowModifiersOnAliasMethod: false
+      AllowModifiersOnSymbols: false
+      AllowModifiersOnAttrs: false
+    interpolated: true

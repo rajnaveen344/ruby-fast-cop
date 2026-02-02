@@ -1,0 +1,156 @@
+cop: Lint/DuplicateRegexpCharacterClassElement
+department: lint
+severity: warning
+implemented: false
+
+tests:
+  - name: rubocop_cop_lint_duplicateregexpcharacterclasselement_with_a_repeated_character_class_element_registers_an_offense_and_corrects
+    source: |
+      foo = /[xyx]/
+    offenses:
+      - line: 1
+        column_start: 10
+        column_end: 11
+        message: Duplicate element inside regexp character class
+    corrected: |
+      foo = /[xy]/
+
+  - name: rubocop_cop_lint_duplicateregexpcharacterclasselement_with_a_repeated_character_class_element_with_quantifier_registers_an_offense_and_corrects
+    source: |
+      foo = /[xyx]+/
+    offenses:
+      - line: 1
+        column_start: 10
+        column_end: 11
+        message: Duplicate element inside regexp character class
+    corrected: |
+      foo = /[xy]+/
+
+  - name: rubocop_cop_lint_duplicateregexpcharacterclasselement_with_no_repeated_character_class_elements_does_not_register_an_offense
+    source: |
+      foo = /[xyz]/
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_duplicateregexpcharacterclasselement_with_repeated_elements_in_different_character_classes_does_not_register_an_offense
+    source: |
+      foo = /[xyz][xyz]/
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_duplicateregexpcharacterclasselement_with_no_repeated_character_class_elements_when_0_07_means_u0000_a_does_not_register_an_offense
+    source: |
+      /[\0\07]/
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_duplicateregexpcharacterclasselement_with_repeated_character_class_elements_when_0_08_means_u0000_u00008_registers_an_offense
+    source: |
+      /[\0\08]/
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 6
+        message: Duplicate element inside regexp character class
+    corrected: |
+      /[\08]/
+
+  - name: rubocop_cop_lint_duplicateregexpcharacterclasselement_with_repeated_character_class_elements_when_07_01_078_means_u0007_u0001_u00078_registers_an_offense
+    source: |
+      /[\07\01\078]/
+    offenses:
+      - line: 1
+        column_start: 8
+        column_end: 11
+        message: Duplicate element inside regexp character class
+    corrected: |
+      /[\07\018]/
+
+  - name: rubocop_cop_lint_duplicateregexpcharacterclasselement_with_repeated_character_class_elements_when_177_01_1778_means_u007f_u0001_u007f8_registers_an_offense
+    source: |
+      /[\177\01\1778]/
+    offenses:
+      - line: 1
+        column_start: 9
+        column_end: 13
+        message: Duplicate element inside regexp character class
+    corrected: |
+      /[\177\018]/
+
+  - name: rubocop_cop_lint_duplicateregexpcharacterclasselement_with_a_repeated_character_class_element_and_r_literal_registers_an_offense_and_corrects
+    source: |
+      foo = %r{[xyx]}
+    offenses:
+      - line: 1
+        column_start: 12
+        column_end: 13
+        message: Duplicate element inside regexp character class
+    corrected: |
+      foo = %r{[xy]}
+
+  - name: rubocop_cop_lint_duplicateregexpcharacterclasselement_with_a_repeated_character_class_element_inside_a_group_registers_an_offense_and_corrects
+    source: |
+      foo = /([xyx])/
+    offenses:
+      - line: 1
+        column_start: 11
+        column_end: 12
+        message: Duplicate element inside regexp character class
+    corrected: |
+      foo = /([xy])/
+
+  - name: rubocop_cop_lint_duplicateregexpcharacterclasselement_with_a_repeated_character_posix_character_class_inside_a_group_registers_an_offense_and_corrects
+    source: |
+      foo = /([[:alnum:]y[:alnum:]])/
+    offenses:
+      - line: 1
+        column_start: 19
+        column_end: 28
+        message: Duplicate element inside regexp character class
+    corrected: |
+      foo = /([[:alnum:]y])/
+
+  - name: rubocop_cop_lint_duplicateregexpcharacterclasselement_with_a_repeated_character_class_element_with_interpolation_registers_an_offense_and_corrects
+    source: |
+      foo = /([a#{foo}a#{bar}a])/
+    offenses:
+      - line: 1
+        column_start: 16
+        column_end: 17
+        message: Duplicate element inside regexp character class
+      - line: 1
+        column_start: 23
+        column_end: 24
+        message: Duplicate element inside regexp character class
+    corrected: |
+      foo = /([a#{foo}#{bar}])/
+
+  - name: rubocop_cop_lint_duplicateregexpcharacterclasselement_with_a_repeated_range_element_registers_an_offense_and_corrects
+    source: |
+      foo = /[0-9x0-9]/
+    offenses:
+      - line: 1
+        column_start: 12
+        column_end: 15
+        message: Duplicate element inside regexp character class
+    corrected: |
+      foo = /[0-9x]/
+
+  - name: rubocop_cop_lint_duplicateregexpcharacterclasselement_with_a_repeated_intersection_character_class_does_not_register_an_offense
+    source: |
+      foo = /[ab&&ab]/
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_duplicateregexpcharacterclasselement_with_a_range_that_covers_a_repeated_element_character_class_does_not_register_an_offense
+    source: |
+      foo = /[a-cb]/
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_duplicateregexpcharacterclasselement_with_multiple_regexps_with_the_same_interpolation_does_not_register_an_offense
+    source: |
+      a_field.gsub!(/[#{bad_chars}]/, '')
+      some_other_field.gsub!(/[#{bad_chars}]/, '')
+    offenses:
+      []

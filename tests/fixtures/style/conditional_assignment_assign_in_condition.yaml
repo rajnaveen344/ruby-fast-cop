@@ -1,0 +1,1844 @@
+cop: Style/ConditionalAssignmentAssignInCondition
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_conditionalassignment_registers_an_offense_assigning_any_variable_type_to_ternary
+    source: |
+      %{variable} = foo? ? 1 : 2
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 26
+        message: Assign variables inside of conditionals.
+    corrected: |
+      foo? ? #{variable} = 1 : #{variable} = 2
+    interpolated: true
+
+  - name: rubocop_cop_style_conditionalassignment_registers_an_offense_assigning_any_variable_type_to_if_else
+    source: |
+      %{variable} = if foo
+                      1
+                    else
+                      2
+                    end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 20
+        message: Assign variables inside of conditionals.
+    corrected: |
+      if foo
+        #{variable} = 1
+      else
+        #{variable} = 2
+      end
+    interpolated: true
+
+  - name: rubocop_cop_style_conditionalassignment_registers_an_offense_assigning_any_variable_type_to_if_elsif_else
+    source: |
+      %{variable} = if foo
+                      1
+                    elsif baz
+                      2
+                    else
+                      3
+                    end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 20
+        message: Assign variables inside of conditionals.
+    corrected: |
+      if foo
+        #{variable} = 1
+      elsif baz
+        #{variable} = 2
+      else
+        #{variable} = 3
+      end
+    interpolated: true
+
+  - name: rubocop_cop_style_conditionalassignment_registers_an_offense_assigning_any_variable_type_to_if_else_with_multiple_assignment
+    source: |
+      %{variable}, %{variable} = if foo
+                      something
+                    else
+                      something_else
+                    end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 33
+        message: Assign variables inside of conditionals.
+    corrected: |
+      if foo
+        #{variable}, #{variable} = something
+      else
+        #{variable}, #{variable} = something_else
+      end
+    interpolated: true
+
+  - name: rubocop_cop_style_conditionalassignment_allows_assignment_to_if_without_else
+    source: |
+      #{variable} = if foo
+                      1
+                    end
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_conditionalassignment_registers_an_offense_assigning_any_variable_type_to_unless_else
+    source: |
+      %{variable} = unless foo
+                      1
+                    else
+                      2
+                    end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 24
+        message: Assign variables inside of conditionals.
+    corrected: |
+      unless foo
+        #{variable} = 1
+      else
+        #{variable} = 2
+      end
+    interpolated: true
+
+  - name: rubocop_cop_style_conditionalassignment_registers_an_offense_for_assigning_any_variable_type_to_case_when
+    source: |
+      %{variable} = case foo
+                    when "a"
+                      1
+                    when "b"
+                      2
+                    else
+                      3
+                    end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 22
+        message: Assign variables inside of conditionals.
+    corrected: |
+      case foo
+      when "a"
+        #{variable} = 1
+      when "b"
+        #{variable} = 2
+      else
+        #{variable} = 3
+      end
+    interpolated: true
+
+  - name: rubocop_cop_style_conditionalassignment_ruby_2_7_registers_an_offense_for_assigning_any_variable_type_to_case_in
+    source: |
+      %{variable} = case foo
+                    in "a"
+                      1
+                    in "b"
+                      2
+                    else
+                      3
+                    end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 22
+        message: Assign variables inside of conditionals.
+    corrected: |
+      case foo
+      in "a"
+        #{variable} = 1
+      in "b"
+        #{variable} = 2
+      else
+        #{variable} = 3
+      end
+    ruby_version: ">= 2.7"
+    interpolated: true
+
+  - name: rubocop_cop_style_conditionalassignment_does_not_crash_for_rescue_assignment
+    source: |
+      begin
+        foo
+      rescue => #{variable}
+        bar
+      end
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_conditionalassignment_registers_an_offense_for_any_assignment_to_ternary
+    source: |
+      bar %{assignment} (foo? ? 1 : 2)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 32
+        message: Assign variables inside of conditionals.
+    corrected: |
+      foo? ? bar #{assignment} 1 : bar #{assignment} 2
+    interpolated: true
+
+  - name: rubocop_cop_style_conditionalassignment_registers_an_offense_any_assignment_to_if_else
+    source: |
+      bar %{assignment} if foo
+                      1
+                    else
+                      2
+                    end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 24
+        message: Assign variables inside of conditionals.
+    corrected: |
+      if foo
+        bar #{assignment} 1
+      else
+        bar #{assignment} 2
+      end
+    interpolated: true
+
+  - name: rubocop_cop_style_conditionalassignment_allows_any_assignment_to_if_without_else
+    source: |
+      bar #{assignment} if foo
+                      1
+                    end
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_conditionalassignment_registers_an_offense_for_any_assignment_to_unless_else
+    source: |
+      bar %{assignment} unless foo
+                      1
+                    else
+                      2
+                    end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 28
+        message: Assign variables inside of conditionals.
+    corrected: |
+      unless foo
+        bar #{assignment} 1
+      else
+        bar #{assignment} 2
+      end
+    interpolated: true
+
+  - name: rubocop_cop_style_conditionalassignment_registers_an_offense_any_assignment_to_case_when
+    source: |
+      bar %{assignment} case foo
+                    when "a"
+                      1
+                    else
+                      2
+                    end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 26
+        message: Assign variables inside of conditionals.
+    corrected: |
+      case foo
+      when "a"
+        bar #{assignment} 1
+      else
+        bar #{assignment} 2
+      end
+    interpolated: true
+
+  - name: rubocop_cop_style_conditionalassignment_does_not_crash_when_used_inside_rescue
+    source: |
+      begin
+        bar #{assignment} 2
+      rescue
+        bar #{assignment} 1
+      end
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_conditionalassignment_assigning_any_variable_type_to_a_multiline_if_else
+    source: |
+      %{variable} = if foo
+                      something
+                      1
+                    else
+                      something_else
+                      2
+                    end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 20
+        message: Assign variables inside of conditionals.
+    corrected: |
+      if foo
+        something
+        #{variable} = 1
+      else
+        something_else
+        #{variable} = 2
+      end
+    interpolated: true
+
+  - name: rubocop_cop_style_conditionalassignment_assigning_any_variable_type_to_an_if_else_with_multiline_in_one_branch
+    source: |
+      %{variable} = if foo
+                      1
+                    else
+                      something_else
+                      2
+                    end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 20
+        message: Assign variables inside of conditionals.
+    corrected: |
+      if foo
+        #{variable} = 1
+      else
+        something_else
+        #{variable} = 2
+      end
+    interpolated: true
+
+  - name: rubocop_cop_style_conditionalassignment_assigning_any_variable_type_to_a_multiline_if_elsif_else
+    source: |
+      %{variable} = if foo
+                      something
+                      1
+                    elsif bar
+                      something_other
+                      2
+                    elsif baz
+                      something_other_again
+                      3
+                    else
+                      something_else
+                      4
+                    end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 20
+        message: Assign variables inside of conditionals.
+    corrected: |
+      if foo
+        something
+        #{variable} = 1
+      elsif bar
+        something_other
+        #{variable} = 2
+      elsif baz
+        something_other_again
+        #{variable} = 3
+      else
+        something_else
+        #{variable} = 4
+      end
+    interpolated: true
+
+  - name: rubocop_cop_style_conditionalassignment_assigning_any_variable_type_to_a_multiline_unless_else
+    source: |
+      %{variable} = unless foo
+                      something
+                      1
+                    else
+                      something_else
+                      2
+                    end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 24
+        message: Assign variables inside of conditionals.
+    corrected: |
+      unless foo
+        something
+        #{variable} = 1
+      else
+        something_else
+        #{variable} = 2
+      end
+    interpolated: true
+
+  - name: rubocop_cop_style_conditionalassignment_assigning_any_variable_type_to_a_multiline_case_when
+    source: |
+      %{variable} = case foo
+                    when "a"
+                      something
+                      1
+                    else
+                      something_else
+                      2
+                    end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 22
+        message: Assign variables inside of conditionals.
+    corrected: |
+      case foo
+      when "a"
+        something
+        #{variable} = 1
+      else
+        something_else
+        #{variable} = 2
+      end
+    interpolated: true
+
+  - name: rubocop_cop_style_conditionalassignment_assigning_any_variable_type_to_a_multiline_if_else
+    source: |
+      #{variable} = if foo
+                      something
+                      1
+                    else
+                      something_else
+                      2
+                    end
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_conditionalassignment_assigning_any_variable_type_to_an_if_else_with_multiline_in_one_branch
+    source: |
+      #{variable} = if foo
+                      1
+                    else
+                      something_else
+                      2
+                    end
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_conditionalassignment_assigning_any_variable_type_to_a_multiline_if_elsif_else
+    source: |
+      #{variable} = if foo
+                      something
+                      1
+                    elsif
+                      something_other
+                      2
+                    elsif
+                      something_other_again
+                      3
+                    else
+                      something_else
+                      4
+                    end
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_conditionalassignment_assigning_any_variable_type_to_a_multiline_unless_else
+    source: |
+      #{variable} = unless foo
+                      something
+                      1
+                    else
+                      something_else
+                      2
+                    end
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_conditionalassignment_assigning_any_variable_type_to_a_multiline_case_when
+    source: |
+      #{variable} = case foo
+                    when "a"
+                      something
+                      1
+                    else
+                      something_else
+                      2
+                    end
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_conditionalassignment_any_assignment_to_a_multiline_if_else
+    source: |
+      bar %{assignment} if foo
+                      something
+                      1
+                    else
+                      something_else
+                      2
+                    end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 24
+        message: Assign variables inside of conditionals.
+    corrected: |
+      if foo
+        something
+        bar #{assignment} 1
+      else
+        something_else
+        bar #{assignment} 2
+      end
+    interpolated: true
+
+  - name: rubocop_cop_style_conditionalassignment_any_assignment_to_a_multiline_unless_else
+    source: |
+      bar %{assignment} unless foo
+                      something
+                      1
+                    else
+                      something_else
+                      2
+                    end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 28
+        message: Assign variables inside of conditionals.
+    corrected: |
+      unless foo
+        something
+        bar #{assignment} 1
+      else
+        something_else
+        bar #{assignment} 2
+      end
+    interpolated: true
+
+  - name: rubocop_cop_style_conditionalassignment_any_assignment_to_a_multiline_case_when
+    source: |
+      bar %{assignment} case foo
+                    when "a"
+                      something
+                      1
+                    else
+                      something_else
+                      2
+                    end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 26
+        message: Assign variables inside of conditionals.
+    corrected: |
+      case foo
+      when "a"
+        something
+        bar #{assignment} 1
+      else
+        something_else
+        bar #{assignment} 2
+      end
+    interpolated: true
+
+  - name: rubocop_cop_style_conditionalassignment_any_assignment_to_a_multiline_if_else
+    source: |
+      bar #{assignment} if foo
+                      something
+                      1
+                    else
+                      something_else
+                      2
+                    end
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_conditionalassignment_any_assignment_to_a_multiline_unless_else
+    source: |
+      bar #{assignment} unless foo
+                      something
+                      1
+                    else
+                      something_else
+                      2
+                    end
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_conditionalassignment_any_assignment_to_a_multiline_case_when
+    source: |
+      bar #{assignment} case foo
+                    when "a"
+                      something
+                      1
+                    else
+                      something_else
+                      2
+                    end
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_conditionalassignment_corrects_assignment_to_an_if_else_condition
+    source: |
+      bar = if foo
+              1
+            else
+              2
+            end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 12
+        message: Assign variables inside of conditionals.
+    corrected: |
+      if foo
+        bar = 1
+      else
+        bar = 2
+      end
+
+  - name: rubocop_cop_style_conditionalassignment_corrects_assignment_to_an_if_elsif_else_condition
+    source: |
+      bar = if foo
+              1
+            elsif foobar
+              2
+            else
+              3
+            end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 12
+        message: Assign variables inside of conditionals.
+    corrected: |
+      if foo
+        bar = 1
+      elsif foobar
+        bar = 2
+      else
+        bar = 3
+      end
+
+  - name: rubocop_cop_style_conditionalassignment_corrects_assignment_to_an_if_elsif_else_with_multiple_elsifs
+    source: |
+      bar = if foo
+              1
+            elsif foobar
+              2
+            elsif baz
+              3
+            else
+              4
+            end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 12
+        message: Assign variables inside of conditionals.
+    corrected: |
+      if foo
+        bar = 1
+      elsif foobar
+        bar = 2
+      elsif baz
+        bar = 3
+      else
+        bar = 4
+      end
+
+  - name: rubocop_cop_style_conditionalassignment_corrects_assignment_to_an_unless_condition
+    source: |
+      value = unless condition
+                    1
+                  end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 24
+        message: Assign variables inside of conditionals.
+    corrected: |
+      unless condition
+        value = 1
+      end
+
+  - name: rubocop_cop_style_conditionalassignment_corrects_assignment_to_an_unless_else_condition
+    source: |
+      bar = unless foo
+              1
+            else
+              2
+            end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 16
+        message: Assign variables inside of conditionals.
+    corrected: |
+      unless foo
+        bar = 1
+      else
+        bar = 2
+      end
+
+  - name: rubocop_cop_style_conditionalassignment_corrects_assignment_to_a_case_when_else_condition
+    source: |
+      bar = case foo
+            when foobar
+              1
+            else
+              2
+            end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 14
+        message: Assign variables inside of conditionals.
+    corrected: |
+      case foo
+      when foobar
+        bar = 1
+      else
+        bar = 2
+      end
+
+  - name: rubocop_cop_style_conditionalassignment_corrects_assignment_to_a_case_when_else_with_multiple_whens
+    source: |
+      bar = case foo
+            when foobar
+              1
+            when baz
+              2
+            else
+              3
+            end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 14
+        message: Assign variables inside of conditionals.
+    corrected: |
+      case foo
+      when foobar
+        bar = 1
+      when baz
+        bar = 2
+      else
+        bar = 3
+      end
+
+  - name: rubocop_cop_style_conditionalassignment_corrects_assignment_to_a_ternary_operator
+    source: |
+      bar = foo? ? 1 : 2
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 18
+        message: Assign variables inside of conditionals.
+    corrected: |
+      foo? ? bar = 1 : bar = 2
+
+  - name: rubocop_cop_style_conditionalassignment_registers_an_offense_for_heredoc_inside_branch
+    source: |
+      value = if a
+        239
+      else
+        raise(ArgumentError, <<~ANSWER)
+          4
+      
+          2
+        ANSWER
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 12
+        message: Assign variables inside of conditionals.
+    corrected: |
+      if a
+        value = 239
+      else
+        value = raise(ArgumentError, <<~ANSWER)
+          4
+      
+          2
+        ANSWER
+      end
+
+  - name: rubocop_cop_style_conditionalassignment_registers_an_offense_for_string_interpolation_inside_branch
+    source: |
+      value = if a
+        239
+      else
+        "#{foo} \
+          #{bar} \
+        "
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 12
+        message: Assign variables inside of conditionals.
+    corrected: |
+      if a
+        value = 239
+      else
+        value = "#{foo} \
+          #{bar} \
+        "
+      end
+
+  - name: rubocop_cop_style_conditionalassignment_registers_an_offense_for_a_multiline_r_regex
+    source: |
+      x = if condition
+        %r{a
+          b}x
+      else
+        %r{c
+          d}x
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 16
+        message: Assign variables inside of conditionals.
+    corrected: |
+      if condition
+        x = %r{a
+          b}x
+      else
+        x = %r{c
+          d}x
+      end
+
+  - name: rubocop_cop_style_conditionalassignment_registers_an_offense_for_a_multiline_regex_assignment_with_interpolation_and_comments
+    source: |
+      x = if condition
+        %r{#{foo}
+          b}x
+      else
+        %r{#{bar}
+          d}x
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 16
+        message: Assign variables inside of conditionals.
+    corrected: |
+      if condition
+        x = %r{#{foo}
+          b}x
+      else
+        x = %r{#{bar}
+          d}x
+      end
+
+  - name: rubocop_cop_style_conditionalassignment_does_not_register_an_offense
+    source: |
+      foo.[]=()
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_all_variable_types_bar
+    source: |
+      bar
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_all_variable_types_bar
+    source: |
+      BAR
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_all_variable_types_foo_bar
+    source: |
+      FOO::BAR
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_all_variable_types_bar
+    source: |
+      @bar
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_all_variable_types_bar
+    source: |
+      @@bar
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_all_variable_types_bar
+    source: |
+      $BAR
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_all_variable_types_foo_bar
+    source: |
+      foo.bar
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_multiline_all_variable_types_allow_bar
+    source: |
+      bar
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_multiline_all_variable_types_allow_bar
+    source: |
+      BAR
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_multiline_all_variable_types_allow_foo_bar
+    source: |
+      FOO::BAR
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_multiline_all_variable_types_allow_bar
+    source: |
+      @bar
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_multiline_all_variable_types_allow_bar
+    source: |
+      @@bar
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_multiline_all_variable_types_allow_bar
+    source: |
+      $BAR
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_multiline_all_variable_types_allow_foo_bar
+    source: |
+      foo.bar
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_all_assignment_types
+    source: |
+      =
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_all_assignment_types
+    source: |
+      ==
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_all_assignment_types
+    source: |
+      ===
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_all_assignment_types
+    source: |
+      +=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_all_assignment_types
+    source: |
+      -=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_all_assignment_types
+    source: |
+      *=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_all_assignment_types
+    source: |
+      **=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_all_assignment_types
+    source: |
+      /=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_all_assignment_types
+    source: |
+      %=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_all_assignment_types
+    source: |
+      ^=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_all_assignment_types
+    source: |
+      &=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_all_assignment_types
+    source: |
+      |=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_all_assignment_types
+    source: |
+      <=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_all_assignment_types
+    source: |
+      >=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_all_assignment_types
+    source: |
+      <<=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_all_assignment_types
+    source: |
+      >>=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_all_assignment_types
+    source: |
+      ||=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_all_assignment_types
+    source: |
+      &&=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_all_assignment_types
+    source: |
+      <<
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_multiline_all_assignment_types_allow
+    source: |
+      =
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_multiline_all_assignment_types_allow
+    source: |
+      ==
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_multiline_all_assignment_types_allow
+    source: |
+      ===
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_multiline_all_assignment_types_allow
+    source: |
+      +=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_multiline_all_assignment_types_allow
+    source: |
+      -=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_multiline_all_assignment_types_allow
+    source: |
+      *=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_multiline_all_assignment_types_allow
+    source: |
+      **=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_multiline_all_assignment_types_allow
+    source: |
+      /=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_multiline_all_assignment_types_allow
+    source: |
+      %=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_multiline_all_assignment_types_allow
+    source: |
+      ^=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_multiline_all_assignment_types_allow
+    source: |
+      &=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_multiline_all_assignment_types_allow
+    source: |
+      |=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_multiline_all_assignment_types_allow
+    source: |
+      <=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_multiline_all_assignment_types_allow
+    source: |
+      >=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_multiline_all_assignment_types_allow
+    source: |
+      <<=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_multiline_all_assignment_types_allow
+    source: |
+      >>=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_multiline_all_assignment_types_allow
+    source: |
+      ||=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_multiline_all_assignment_types_allow
+    source: |
+      &&=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_multiline_all_assignment_types_allow
+    source: |
+      <<
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_allows_a_method_call_in_the_subject_of_a_ternary_operator
+    source: |
+      bar << foo? ? 1 : 2
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_registers_an_offense_for_assignment_using_a_method_that_ends_with_an_equal_sign
+    source: |
+      self.attributes = foo? ? 1 : 2
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 30
+        message: Assign variables inside of conditionals.
+    corrected: |
+      foo? ? self.attributes = 1 : self.attributes = 2
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_registers_an_offense_for_assignment_using
+    source: |
+      foo[:a] = if bar?
+                  1
+                else
+                  2
+                end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 17
+        message: Assign variables inside of conditionals.
+    corrected: |
+      if bar?
+        foo[:a] = 1
+      else
+        foo[:a] = 2
+      end
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_registers_an_offense_for_assignment_to_an_if_then_else
+    source: |
+      bar = if foo then 1
+            else 2
+            end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 19
+        message: Assign variables inside of conditionals.
+    corrected: |
+      if foo then bar = 1
+      else bar = 2
+      end
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_registers_an_offense_for_assignment_to_an_one_line_if_then_else
+    source: |
+      bar = if foo then 1 else 2 end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 30
+        message: Assign variables inside of conditionals.
+    corrected: |
+      if foo then bar = 1 else bar = 2 end
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_registers_an_offense_for_assignment_with_one_line_else_and_end
+    source: |
+      bar = if foo
+                  1
+            else 2 end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 12
+        message: Assign variables inside of conditionals.
+    corrected: |
+      if foo
+        bar = 1
+      else bar = 2 end
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_registers_an_offense_for_assignment_with_one_line_else_and_end_with_nested_branch
+    source: |
+      bar = if foo
+                  1
+            elsif baz
+              2
+            else 3 end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 12
+        message: Assign variables inside of conditionals.
+    corrected: |
+      if foo
+        bar = 1
+      elsif baz
+        bar = 2
+      else bar = 3 end
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_registers_an_offense_for_an_assignment_that_uses_if_branch_bodies_including_a_block
+    source: |
+      result = if condition
+        foo do
+        end
+      else
+        bar do
+        end
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 21
+        message: Assign variables inside of conditionals.
+    corrected: |
+      if condition
+        result = foo do
+        end
+      else
+        result = bar do
+        end
+      end
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_registers_an_offense_for_assignment_to_case_when_then_else
+    source: |
+      baz = case foo
+            when bar then 1
+            else 2
+            end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 14
+        message: Assign variables inside of conditionals.
+    corrected: |
+      case foo
+      when bar then baz = 1
+      else baz = 2
+      end
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_registers_an_offense_when_empty_case_condition
+    source: |
+      var = case
+      when foo
+        bar
+      else
+        baz
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 10
+        message: Assign variables inside of conditionals.
+    corrected: |
+      case
+      when foo
+        var = bar
+      else
+        var = baz
+      end
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_for_loop_ignores_pseudo_assignments_in_a_for_loop
+    source: |
+      for i in [1, 2, 3]; puts i; end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_corrects_assignment_to_a_namespaced_constant
+    source: |
+      FOO::BAR = if baz?
+                    1
+                  else
+                    2
+                  end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 18
+        message: Assign variables inside of conditionals.
+    corrected: |
+      if baz?
+        FOO::BAR = 1
+      else
+        FOO::BAR = 2
+      end
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_true_corrects_assignment_when_without_else_branch
+    source: |
+      var = if foo
+        bar
+      elsif baz
+        qux
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 12
+        message: Assign variables inside of conditionals.
+    corrected: |
+      if foo
+        var = bar
+      elsif baz
+        var = qux
+      end
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_all_variable_types_bar
+    source: |
+      bar
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_all_variable_types_bar
+    source: |
+      BAR
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_all_variable_types_foo_bar
+    source: |
+      FOO::BAR
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_all_variable_types_bar
+    source: |
+      @bar
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_all_variable_types_bar
+    source: |
+      @@bar
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_all_variable_types_bar
+    source: |
+      $BAR
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_all_variable_types_foo_bar
+    source: |
+      foo.bar
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_multiline_all_variable_types_offense_bar
+    source: |
+      bar
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_multiline_all_variable_types_offense_bar
+    source: |
+      BAR
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_multiline_all_variable_types_offense_foo_bar
+    source: |
+      FOO::BAR
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_multiline_all_variable_types_offense_bar
+    source: |
+      @bar
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_multiline_all_variable_types_offense_bar
+    source: |
+      @@bar
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_multiline_all_variable_types_offense_bar
+    source: |
+      $BAR
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_multiline_all_variable_types_offense_foo_bar
+    source: |
+      foo.bar
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_all_assignment_types
+    source: |
+      =
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_all_assignment_types
+    source: |
+      ==
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_all_assignment_types
+    source: |
+      ===
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_all_assignment_types
+    source: |
+      +=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_all_assignment_types
+    source: |
+      -=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_all_assignment_types
+    source: |
+      *=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_all_assignment_types
+    source: |
+      **=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_all_assignment_types
+    source: |
+      /=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_all_assignment_types
+    source: |
+      %=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_all_assignment_types
+    source: |
+      ^=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_all_assignment_types
+    source: |
+      &=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_all_assignment_types
+    source: |
+      |=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_all_assignment_types
+    source: |
+      <=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_all_assignment_types
+    source: |
+      >=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_all_assignment_types
+    source: |
+      <<=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_all_assignment_types
+    source: |
+      >>=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_all_assignment_types
+    source: |
+      ||=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_all_assignment_types
+    source: |
+      &&=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_all_assignment_types
+    source: |
+      <<
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_multiline_all_assignment_types_offense
+    source: |
+      =
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_multiline_all_assignment_types_offense
+    source: |
+      ==
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_multiline_all_assignment_types_offense
+    source: |
+      ===
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_multiline_all_assignment_types_offense
+    source: |
+      +=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_multiline_all_assignment_types_offense
+    source: |
+      -=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_multiline_all_assignment_types_offense
+    source: |
+      *=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_multiline_all_assignment_types_offense
+    source: |
+      **=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_multiline_all_assignment_types_offense
+    source: |
+      /=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_multiline_all_assignment_types_offense
+    source: |
+      %=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_multiline_all_assignment_types_offense
+    source: |
+      ^=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_multiline_all_assignment_types_offense
+    source: |
+      &=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_multiline_all_assignment_types_offense
+    source: |
+      |=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_multiline_all_assignment_types_offense
+    source: |
+      <=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_multiline_all_assignment_types_offense
+    source: |
+      >=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_multiline_all_assignment_types_offense
+    source: |
+      <<=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_multiline_all_assignment_types_offense
+    source: |
+      >>=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_multiline_all_assignment_types_offense
+    source: |
+      ||=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_multiline_all_assignment_types_offense
+    source: |
+      &&=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_multiline_all_assignment_types_offense
+    source: |
+      <<
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_corrects_assignment_to_a_multiline_if_else_condition
+    source: |
+      bar = if foo
+              something
+              1
+            else
+              something_else
+              2
+            end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 12
+        message: Assign variables inside of conditionals.
+    corrected: |
+      if foo
+        something
+        bar = 1
+      else
+        something_else
+        bar = 2
+      end
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_corrects_assignment_to_a_multiline_if_elsif_else_condition
+    source: |
+      bar = if foo
+              something
+              1
+            elsif foobar
+              something_elsif
+              2
+            else
+              something_else
+              3
+            end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 12
+        message: Assign variables inside of conditionals.
+    corrected: |
+      if foo
+        something
+        bar = 1
+      elsif foobar
+        something_elsif
+        bar = 2
+      else
+        something_else
+        bar = 3
+      end
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_corrects_assignment_to_an_if_elsif_else_with_multiple_elsifs
+    source: |
+      bar = if foo
+              something
+              1
+            elsif foobar
+              something_elsif1
+              2
+            elsif baz
+              something_elsif2
+              3
+            else
+              something_else
+              4
+            end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 12
+        message: Assign variables inside of conditionals.
+    corrected: |
+      if foo
+        something
+        bar = 1
+      elsif foobar
+        something_elsif1
+        bar = 2
+      elsif baz
+        something_elsif2
+        bar = 3
+      else
+        something_else
+        bar = 4
+      end
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_corrects_assignment_to_an_unless_else_condition
+    source: |
+      bar = unless foo
+              something
+              1
+            else
+              something_else
+              2
+            end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 16
+        message: Assign variables inside of conditionals.
+    corrected: |
+      unless foo
+        something
+        bar = 1
+      else
+        something_else
+        bar = 2
+      end
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_corrects_assignment_to_a_case_when_else_condition
+    source: |
+      bar = case foo
+            when foobar
+              something
+              1
+            else
+              something_else
+              2
+            end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 14
+        message: Assign variables inside of conditionals.
+    corrected: |
+      case foo
+      when foobar
+        something
+        bar = 1
+      else
+        something_else
+        bar = 2
+      end
+
+  - name: rubocop_cop_style_conditionalassignment_singlelineconditionsonly_false_corrects_assignment_to_a_case_when_else_with_multiple_whens
+    source: |
+      bar = case foo
+            when foobar
+              something
+              1
+            when baz
+              something_other
+              2
+            else
+              something_else
+              3
+            end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 14
+        message: Assign variables inside of conditionals.
+    corrected: |
+      case foo
+      when foobar
+        something
+        bar = 1
+      when baz
+        something_other
+        bar = 2
+      else
+        something_else
+        bar = 3
+      end
+
+  - name: rubocop_cop_style_conditionalassignment_includeternaryexpressions_false_allows_assigning_any_variable_type_to_ternary
+    source: |
+      bar = foo? ? 1 : 2
+    offenses:
+      []

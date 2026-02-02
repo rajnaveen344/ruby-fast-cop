@@ -1,0 +1,59 @@
+cop: Style/AutoResourceCleanup
+department: style
+severity: convention
+implemented: true
+
+tests:
+  - name: rubocop_cop_style_autoresourcecleanup_registers_an_offense_for_file_open_without_block
+    source: |
+      File.open("filename")
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 21
+        message: Use the block version of `File.open`.
+
+  - name: rubocop_cop_style_autoresourcecleanup_registers_an_offense_for_tempfile_open_without_block
+    source: |
+      Tempfile.open("filename")
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 25
+        message: Use the block version of `Tempfile.open`.
+
+  - name: rubocop_cop_style_autoresourcecleanup_registers_an_offense_for_file_open_without_block
+    source: |
+      ::File.open("filename")
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 23
+        message: "Use the block version of `::File.open`."
+
+  - name: rubocop_cop_style_autoresourcecleanup_registers_an_offense_for_tempfile_open_without_block
+    source: |
+      ::Tempfile.open("filename")
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 27
+        message: "Use the block version of `::Tempfile.open`."
+
+  - name: rubocop_cop_style_autoresourcecleanup_does_not_register_an_offense_for_file_open_with_block
+    source: |
+      File.open("file") { |f| something }
+    offenses:
+      []
+
+  - name: rubocop_cop_style_autoresourcecleanup_does_not_register_an_offense_for_file_open_with_block_pass
+    source: |
+      File.open("file", &:read)
+    offenses:
+      []
+
+  - name: rubocop_cop_style_autoresourcecleanup_does_not_register_an_offense_for_file_open_with_immediate_close
+    source: |
+      File.open("file", "w", 0o777).close
+    offenses:
+      []

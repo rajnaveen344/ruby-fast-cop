@@ -1,0 +1,52 @@
+cop: InternalAffairs/RedundantContextConfigParameter
+department: internal_affairs
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_internalaffairs_redundantcontextconfigparameter_registers_an_offense_when_using_config_parameter
+    source: |
+      context 'foo', :config do
+      end
+    offenses:
+      - line: 1
+        column_start: 15
+        column_end: 22
+        message: "Remove the redundant `:config` parameter."
+    corrected: |
+      context 'foo' do
+      end
+
+  - name: rubocop_cop_internalaffairs_redundantcontextconfigparameter_registers_an_offense_when_using_config_parameter_with_other_parameters
+    source: |
+      context 'foo', :ruby30, :rails70, :config do
+      end
+    offenses:
+      - line: 1
+        column_start: 34
+        column_end: 41
+        message: "Remove the redundant `:config` parameter."
+    corrected: |
+      context 'foo', :ruby30, :rails70 do
+      end
+
+  - name: rubocop_cop_internalaffairs_redundantcontextconfigparameter_does_not_register_an_offense_when_not_using_config
+    source: |
+      context 'foo' do
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_internalaffairs_redundantcontextconfigparameter_does_not_register_an_offense_when_using_ruby30_only
+    source: |
+      context 'foo', :ruby30 do
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_internalaffairs_redundantcontextconfigparameter_does_not_register_an_offense_when_using_config_in_other_than_context
+    source: |
+      shared_context 'foo', :config do
+      end
+    offenses:
+      []

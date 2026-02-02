@@ -1,0 +1,499 @@
+cop: Style/EmptyElse
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_given_an_if_statement_with_a_completely_empty_else_clause_using_semicolons_autocorrect_if
+    source: |
+      if
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_given_an_if_statement_with_a_completely_empty_else_clause_not_using_semicolons_autocorrect_if
+    source: |
+      if
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_given_an_if_statement_with_an_else_clause_containing_only_the_literal_nil_doesn_t_register_an_offense
+    source: |
+      if a; foo elsif b; bar else nil end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_given_an_if_statement_with_an_else_clause_with_side_effects_doesn_t_register_an_offense
+    source: |
+      if cond; foo else bar; nil end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_given_an_if_statement_with_no_else_clause_doesn_t_register_an_offense
+    source: |
+      if cond; foo end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_given_an_if_statement_in_an_if_statement_autocorrect_if
+    source: |
+      if
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_given_an_if_statement_with_an_empty_comment_does_not_autocorrect
+    source: |
+      if cond
+        something
+      else
+        # TODO
+      end
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 4
+        message: Redundant `else`-clause.
+
+  - name: rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_given_an_unless_statement_with_a_completely_empty_else_clause_autocorrect_if
+    source: |
+      if
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_given_an_unless_statement_with_an_else_clause_containing_only_the_literal_nil_doesn_t_register_an_offense
+    source: |
+      unless cond; foo else nil end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_given_an_unless_statement_with_an_else_clause_with_side_effects_doesn_t_register_an_offense
+    source: |
+      unless cond; foo else bar; nil end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_given_an_unless_statement_with_no_else_clause_doesn_t_register_an_offense
+    source: |
+      unless cond; foo end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_given_a_case_statement_with_a_completely_empty_else_clause_autocorrect_case
+    source: |
+      case
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_given_a_case_statement_with_an_else_clause_containing_only_the_literal_nil_doesn_t_register_an_offense
+    source: |
+      case v; when a; foo; when b; bar; else nil end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_given_a_case_statement_with_an_else_clause_with_side_effects_doesn_t_register_an_offense
+    source: |
+      case v; when a; foo; else b; nil end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_given_a_case_statement_with_no_else_clause_doesn_t_register_an_offense
+    source: |
+      case v; when a; foo; when b; bar; end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_configured_to_warn_on_nil_in_else_given_an_if_statement_with_a_completely_empty_else_clause_doesn_t_register_an_offense
+    source: |
+      if a; foo else end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_configured_to_warn_on_nil_in_else_given_an_if_statement_with_an_else_clause_containing_only_the_literal_nil_when_standalone_autocorrect_if
+    source: |
+      if
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_configured_to_warn_on_nil_in_else_given_an_if_statement_with_an_else_clause_containing_only_the_literal_nil_when_the_result_is_assigned_to_a_variable_autocorrect_if
+    source: |
+      if
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_configured_to_warn_on_nil_in_else_given_an_if_statement_with_an_else_clause_containing_only_the_literal_nil_using_semicolons_with_one_elsif_autocorrect_if
+    source: |
+      if
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_configured_to_warn_on_nil_in_else_given_an_if_statement_with_an_else_clause_containing_only_the_literal_nil_using_semicolons_with_multiple_elsifs_autocorrect_if
+    source: |
+      if
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_configured_to_warn_on_nil_in_else_given_an_if_statement_with_an_else_clause_with_side_effects_doesn_t_register_an_offense
+    source: |
+      if cond; foo else bar; nil end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_configured_to_warn_on_nil_in_else_given_an_if_statement_with_no_else_clause_doesn_t_register_an_offense
+    source: |
+      if cond; foo end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_configured_to_warn_on_nil_in_else_given_an_unless_statement_with_a_completely_empty_else_clause_doesn_t_register_an_offense
+    source: |
+      unless cond; foo else end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_configured_to_warn_on_nil_in_else_given_an_unless_statement_with_an_else_clause_containing_only_the_literal_nil_autocorrect_if
+    source: |
+      if
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_configured_to_warn_on_nil_in_else_given_an_unless_statement_with_an_else_clause_with_side_effects_doesn_t_register_an_offense
+    source: |
+      unless cond; foo else bar; nil end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_configured_to_warn_on_nil_in_else_given_an_unless_statement_with_no_else_clause_doesn_t_register_an_offense
+    source: |
+      unless cond; foo end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_configured_to_warn_on_nil_in_else_given_a_case_statement_with_a_completely_empty_else_clause_doesn_t_register_an_offense
+    source: |
+      case v; when a; foo else end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_configured_to_warn_on_nil_in_else_given_a_case_statement_with_an_else_clause_containing_only_the_literal_nil_using_semicolons_autocorrect_case
+    source: |
+      case
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_configured_to_warn_on_nil_in_else_given_a_case_statement_with_an_else_clause_containing_only_the_literal_nil_when_the_result_is_assigned_to_a_variable_autocorrect_case
+    source: |
+      case
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_configured_to_warn_on_nil_in_else_given_a_case_statement_with_an_else_clause_with_side_effects_doesn_t_register_an_offense
+    source: |
+      case v; when a; foo; else b; nil end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_configured_to_warn_on_nil_in_else_given_a_case_statement_with_no_else_clause_doesn_t_register_an_offense
+    source: |
+      case v; when a; foo; when b; bar; end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_an_if_statement_with_a_completely_empty_else_clause_autocorrect_if
+    source: |
+      if
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_an_if_statement_with_an_else_clause_containing_only_the_literal_nil_with_one_elsif_autocorrect_if
+    source: |
+      if
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_an_if_statement_with_an_else_clause_containing_only_the_literal_nil_with_multiple_elsifs_autocorrect_if
+    source: |
+      if
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_an_if_statement_with_an_else_clause_with_side_effects_doesn_t_register_an_offense
+    source: |
+      if cond; foo else bar; nil end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_an_if_statement_with_no_else_clause_doesn_t_register_an_offense
+    source: |
+      if cond; foo end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_an_unless_statement_with_a_completely_empty_else_clause_autocorrect_if
+    source: |
+      if
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_an_unless_statement_with_an_else_clause_containing_only_the_literal_nil_autocorrect_if
+    source: |
+      if
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_an_unless_statement_with_an_else_clause_with_side_effects_doesn_t_register_an_offense
+    source: |
+      unless cond; foo else bar; nil end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_an_unless_statement_with_no_else_clause_doesn_t_register_an_offense
+    source: |
+      unless cond; foo end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_a_case_statement_with_a_completely_empty_else_clause_autocorrect_case
+    source: |
+      case
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_a_case_statement_with_an_else_clause_containing_only_the_literal_nil_autocorrect_case
+    source: |
+      case
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_a_case_statement_with_an_else_clause_with_side_effects_doesn_t_register_an_offense
+    source: |
+      case v; when a; foo; else b; nil end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_a_case_statement_with_no_else_clause_doesn_t_register_an_offense
+    source: |
+      case v; when a; foo; when b; bar; end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_when_allowcomments_true_given_an_if_statement_with_not_comment_and_empty_else_clause_registers_an_offense
+    source: |
+      if condition
+        statement
+      else
+      end
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 4
+        message: Redundant `else`-clause.
+
+  - name: rubocop_cop_style_emptyelse_when_allowcomments_true_given_an_if_statement_with_no_comment_and_nil_else_clause_registers_an_offense
+    source: |
+      if condition
+        statement
+      else
+        nil
+      end
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 4
+        message: Redundant `else`-clause.
+
+  - name: rubocop_cop_style_emptyelse_when_allowcomments_true_given_an_if_statement_with_comment_and_empty_else_clause_doesn_t_register_an_offense
+    source: |
+      if condition
+        statement
+      else
+        # some comment
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_when_allowcomments_true_given_an_if_statement_with_comment_and_nil_else_clause_doesn_t_register_an_offense
+    source: |
+      if condition
+        statement
+      else
+        nil # some comment
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_when_allowcomments_true_given_an_if_statement_with_no_comment_and_empty_else_clause_after_elsif_registers_an_offense
+    source: |
+      if condition
+        foo
+      elsif condition2
+        bar
+      else
+      end
+    offenses:
+      - line: 5
+        column_start: 0
+        column_end: 4
+        message: Redundant `else`-clause.
+
+  - name: rubocop_cop_style_emptyelse_when_allowcomments_true_given_an_if_statement_with_no_comment_and_nil_else_clause_after_elsif_registers_an_offense
+    source: |
+      if condition
+        foo
+      elsif condition2
+        bar
+      else
+        nil
+      end
+    offenses:
+      - line: 5
+        column_start: 0
+        column_end: 4
+        message: Redundant `else`-clause.
+
+  - name: rubocop_cop_style_emptyelse_when_allowcomments_true_given_an_if_statement_with_comment_and_empty_else_clause_after_elsif_doesn_t_register_an_offense
+    source: |
+      if condition
+        foo
+      elsif condition2
+        bar
+      else
+        # some comment
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_when_allowcomments_true_given_an_if_statement_with_comment_and_nil_else_clause_after_elsif_doesn_t_register_an_offense
+    source: |
+      if condition
+        foo
+      elsif condition2
+        bar
+      else
+        nil # some comment
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_when_allowcomments_true_given_an_if_statement_without_an_else_does_not_register_an_offense
+    source: |
+      if condition
+        statement
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_when_allowcomments_true_given_an_unless_statement_with_no_comment_and_empty_else_clause_registers_an_offense
+    source: |
+      unless condition
+        statement
+      else
+      end
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 4
+        message: Redundant `else`-clause.
+
+  - name: rubocop_cop_style_emptyelse_when_allowcomments_true_given_an_unless_statement_with_no_comment_and_nil_else_clause_registers_an_offense
+    source: |
+      unless condition
+        statement
+      else
+        nil
+      end
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 4
+        message: Redundant `else`-clause.
+
+  - name: rubocop_cop_style_emptyelse_when_allowcomments_true_given_an_unless_statement_with_comment_and_empty_else_clause_doesn_t_register_an_offense
+    source: |
+      unless condition
+        statement
+      else
+        # some comment
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_when_allowcomments_true_given_an_unless_statement_with_comment_and_nil_else_clause_doesn_t_register_an_offense
+    source: |
+      unless condition
+        statement
+      else
+        nil # some comment
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_when_allowcomments_true_given_an_unless_statement_without_an_else_does_not_register_an_offense
+    source: |
+      unless condition
+        statement
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_when_allowcomments_true_given_a_case_statement_with_no_comment_and_empty_else_clause_registers_an_offense
+    source: |
+      case a
+      when condition
+        statement
+      else
+      end
+    offenses:
+      - line: 4
+        column_start: 0
+        column_end: 4
+        message: Redundant `else`-clause.
+
+  - name: rubocop_cop_style_emptyelse_when_allowcomments_true_given_a_case_statement_with_no_comment_and_nil_else_clause_registers_an_offense
+    source: |
+      case a
+      when condition
+        statement
+      else
+        nil
+      end
+    offenses:
+      - line: 4
+        column_start: 0
+        column_end: 4
+        message: Redundant `else`-clause.
+
+  - name: rubocop_cop_style_emptyelse_when_allowcomments_true_given_a_case_statement_with_comment_and_empty_else_clause_doesn_t_register_an_offense
+    source: |
+      case a
+      when condition
+        statement
+      else
+        # some comment
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_when_allowcomments_true_given_a_case_statement_with_comment_and_nil_else_clause_doesn_t_register_an_offense
+    source: |
+      case a
+      when condition
+        statement
+      else
+        nil # some comment
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_when_allowcomments_true_given_a_case_statement_without_an_else_does_not_register_an_offense
+    source: |
+      case a
+      when condition
+        statement
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyelse_with_nested_if_and_case_statement_autocorrect_case
+    source: |
+      case
+    offenses:
+      []

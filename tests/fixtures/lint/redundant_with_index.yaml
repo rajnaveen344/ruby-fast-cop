@@ -1,0 +1,173 @@
+cop: Lint/RedundantWithIndex
+department: lint
+severity: warning
+implemented: false
+
+tests:
+  - name: rubocop_cop_lint_redundantwithindex_registers_an_offense_for_ary_each_with_index_v_v_and_corrects_to_ary_each
+    source: |
+      ary.each_with_index { |v| v }
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 19
+        message: Use `each` instead of `each_with_index`.
+    corrected: |
+      ary.each { |v| v }
+
+  - name: rubocop_cop_lint_redundantwithindex_registers_an_offense_for_ary_each_with_index_v_v_and_corrects_to_ary_each
+    source: |
+      ary&.each_with_index { |v| v }
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 20
+        message: Use `each` instead of `each_with_index`.
+    corrected: |
+      ary&.each { |v| v }
+
+  - name: rubocop_cop_lint_redundantwithindex_registers_an_offense_when_using_ary_each_with_index_v_v_and_corrects_to_ary_each
+    source: |
+      ary.each.with_index { |v| v }
+    offenses:
+      - line: 1
+        column_start: 9
+        column_end: 19
+        message: Remove redundant `with_index`.
+    corrected: |
+      ary.each { |v| v }
+
+  - name: rubocop_cop_lint_redundantwithindex
+    source: |
+      ary.each.with_index(1) { |v| v }
+    offenses:
+      - line: 1
+        column_start: 9
+        column_end: 22
+        message: Remove redundant `with_index`.
+    corrected: |
+      ary.each { |v| v }
+
+  - name: rubocop_cop_lint_redundantwithindex
+    source: |
+      ary.each_with_object([]).with_index { |v| v }
+    offenses:
+      - line: 1
+        column_start: 25
+        column_end: 35
+        message: Remove redundant `with_index`.
+    corrected: |
+      ary.each_with_object([]) { |v| v }
+
+  - name: rubocop_cop_lint_redundantwithindex_accepts_an_index_is_used_as_a_block_argument
+    source: |
+      ary.each_with_index { |v, i| v; i }
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_redundantwithindex_ruby_2_7_registers_an_offense_for_ary_each_with_index_1_and_corrects_to_ary_each
+    source: |
+      ary.each_with_index { _1 }
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 19
+        message: Use `each` instead of `each_with_index`.
+    corrected: |
+      ary.each { _1 }
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_lint_redundantwithindex_ruby_2_7_registers_an_offense_for_ary_each_with_index_1_and_corrects_to_ary_each
+    source: |
+      ary&.each_with_index { _1 }
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 20
+        message: Use `each` instead of `each_with_index`.
+    corrected: |
+      ary&.each { _1 }
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_lint_redundantwithindex_ruby_2_7_registers_an_offense_when_using_ary_each_with_index_1_and_corrects_to_ary_each
+    source: |
+      ary.each.with_index { _1 }
+    offenses:
+      - line: 1
+        column_start: 9
+        column_end: 19
+        message: Remove redundant `with_index`.
+    corrected: |
+      ary.each { _1 }
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_lint_redundantwithindex_ruby_2_7_accepts_an_index_is_used_as_a_numblock_argument
+    source: |
+      ary.each_with_index { _1; _2 }
+    offenses:
+      []
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_lint_redundantwithindex_ruby_2_7_accepts_with_index_with_receiver_and_a_block
+    source: |
+      ary.with_index { |v| v }
+    offenses:
+      []
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_lint_redundantwithindex_ruby_2_7_accepts_with_index_without_receiver_with_a_block
+    source: |
+      with_index { |v| v }
+    offenses:
+      []
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_lint_redundantwithindex_ruby_2_7_accepts_with_index_without_receiver_with_a_numblock
+    source: |
+      with_index { _1 }
+    offenses:
+      []
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_lint_redundantwithindex_ruby_3_4_registers_an_offense_for_ary_each_with_index_it_and_corrects_to_ary_each
+    source: |
+      ary.each_with_index { it }
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 19
+        message: Use `each` instead of `each_with_index`.
+    corrected: |
+      ary.each { it }
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_lint_redundantwithindex_ruby_3_4_registers_an_offense_for_ary_each_with_index_it_and_corrects_to_ary_each
+    source: |
+      ary&.each_with_index { it }
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 20
+        message: Use `each` instead of `each_with_index`.
+    corrected: |
+      ary&.each { it }
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_lint_redundantwithindex_ruby_3_4_registers_an_offense_when_using_ary_each_with_index_it_and_corrects_to_ary_each
+    source: |
+      ary.each.with_index { it }
+    offenses:
+      - line: 1
+        column_start: 9
+        column_end: 19
+        message: Remove redundant `with_index`.
+    corrected: |
+      ary.each { it }
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_lint_redundantwithindex_ruby_3_4_accepts_with_index_without_receiver_with_an_itblock
+    source: |
+      with_index { it }
+    offenses:
+      []
+    ruby_version: ">= 3.4"

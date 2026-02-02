@@ -1,0 +1,489 @@
+cop: Layout/EmptyLinesAroundClassBody
+department: layout
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_layout_emptylinesaroundclassbody_when_enforcedstyle_is_no_empty_lines_registers_an_offense_for_class_body_starting_with_a_blank
+    source: |
+      class SomeClass
+      
+        do_something
+      end
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 0
+        message: "#{extra_begin}"
+    corrected: |
+      class SomeClass
+        do_something
+      end
+    config:
+      EnforcedStyle: no_empty_lines
+    interpolated: true
+
+  - name: rubocop_cop_layout_emptylinesaroundclassbody_when_enforcedstyle_is_no_empty_lines_registers_an_offense_for_class_body_ending_with_a_blank
+    source: |
+      class SomeClass
+        do_something
+      
+      end
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 0
+        message: "#{extra_end}"
+    corrected: |
+      class SomeClass
+        do_something
+      end
+    config:
+      EnforcedStyle: no_empty_lines
+    interpolated: true
+
+  - name: rubocop_cop_layout_emptylinesaroundclassbody_when_enforcedstyle_is_no_empty_lines_autocorrects_singleton_class_body_containing_only_a_blank
+    source: |
+      class << self
+      
+      end
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 0
+        message: "#{extra_begin}"
+    corrected: |
+      class << self
+      end
+    config:
+      EnforcedStyle: no_empty_lines
+    interpolated: true
+
+  - name: rubocop_cop_layout_emptylinesaroundclassbody_when_enforcedstyle_is_no_empty_lines_registers_an_offense_for_singleton_class_body_ending_with_a_blank
+    source: |
+      class << self
+        do_something
+      
+      end
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 0
+        message: "#{extra_end}"
+    corrected: |
+      class << self
+        do_something
+      end
+    config:
+      EnforcedStyle: no_empty_lines
+    interpolated: true
+
+  - name: rubocop_cop_layout_emptylinesaroundclassbody_when_enforcedstyle_is_no_empty_lines_registers_an_offense_when_a_class_body_starts_with_a_blank_line_and_defines_a_multiline_superclass
+    source: |
+      class SomeClass < Struct.new(
+        :attr,
+        keyword_init: true
+      )
+      
+        do_something
+      end
+    offenses:
+      - line: 5
+        column_start: 0
+        column_end: 0
+        message: "#{extra_begin}"
+    corrected: |
+      class SomeClass < Struct.new(
+        :attr,
+        keyword_init: true
+      )
+        do_something
+      end
+    config:
+      EnforcedStyle: no_empty_lines
+    interpolated: true
+
+  - name: rubocop_cop_layout_emptylinesaroundclassbody_when_enforcedstyle_is_empty_lines_does_not_register_offenses
+    source: |
+      class Foo
+      
+        def do_something
+        end
+      
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: empty_lines
+
+  - name: rubocop_cop_layout_emptylinesaroundclassbody_when_enforcedstyle_is_empty_lines_does_not_register_offenses_when_specifying_a_superclass_that_breaks_the_line
+    source: |
+      class Foo <
+            Bar
+      
+        def do_something
+        end
+      
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: empty_lines
+
+  - name: rubocop_cop_layout_emptylinesaroundclassbody_when_enforcedstyle_is_empty_lines_registers_an_offense_for_class_body_not_starting_or_ending_with_a_blank
+    source: |
+      class SomeClass
+        do_something
+      end
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 1
+        message: "#{missing_begin}"
+      - line: 3
+        column_start: 0
+        column_end: 1
+        message: "#{missing_end}"
+    corrected: |
+      class SomeClass
+      
+        do_something
+      
+      end
+    config:
+      EnforcedStyle: empty_lines
+    interpolated: true
+
+  - name: rubocop_cop_layout_emptylinesaroundclassbody_when_enforcedstyle_is_empty_lines_accepts_classes_with_an_empty_body
+    source: |
+      class SomeClass
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: empty_lines
+
+  - name: rubocop_cop_layout_emptylinesaroundclassbody_when_enforcedstyle_is_empty_lines_registers_an_offense_for_singleton_class_body_not_starting_or_ending_with_a_blank
+    source: |
+      class << self
+        do_something
+      end
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 1
+        message: "#{missing_begin}"
+      - line: 3
+        column_start: 0
+        column_end: 1
+        message: "#{missing_end}"
+    corrected: |
+      class << self
+      
+        do_something
+      
+      end
+    config:
+      EnforcedStyle: empty_lines
+    interpolated: true
+
+  - name: rubocop_cop_layout_emptylinesaroundclassbody_when_enforcedstyle_is_empty_lines_accepts_singleton_classes_with_an_empty_body
+    source: |
+      class << self
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: empty_lines
+
+  - name: rubocop_cop_layout_emptylinesaroundclassbody_when_enforcedstyle_is_empty_lines_except_namespace_when_only_child_is_class_requires_no_empty_lines_for_namespace
+    source: |
+      class Parent < Base
+        class Child
+      
+          do_something
+      
+        end
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: empty_lines_except_namespace
+
+  - name: rubocop_cop_layout_emptylinesaroundclassbody_when_enforcedstyle_is_empty_lines_except_namespace_when_only_child_is_class_registers_an_offense_for_namespace_body_starting_with_a_blank
+    source: |
+      class Parent
+      
+        class Child
+      
+          do_something
+      
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 0
+        message: "#{extra_begin}"
+    config:
+      EnforcedStyle: empty_lines_except_namespace
+    interpolated: true
+
+  - name: rubocop_cop_layout_emptylinesaroundclassbody_when_enforcedstyle_is_empty_lines_except_namespace_when_only_child_is_class_registers_an_offense_for_namespace_body_ending_with_a_blank
+    source: |
+      class Parent
+        class Child
+      
+          do_something
+      
+        end
+      
+      end
+    offenses:
+      - line: 7
+        column_start: 0
+        column_end: 0
+        message: "#{extra_end}"
+    config:
+      EnforcedStyle: empty_lines_except_namespace
+    interpolated: true
+
+  - name: rubocop_cop_layout_emptylinesaroundclassbody_when_enforcedstyle_is_empty_lines_except_namespace_when_only_child_is_class_registers_offenses_for_namespaced_class_body_not_starting_with_a_blank
+    source: |
+      class Parent
+        class Child
+          do_something
+      
+        end
+      end
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 1
+        message: "#{missing_begin}"
+    config:
+      EnforcedStyle: empty_lines_except_namespace
+    interpolated: true
+
+  - name: rubocop_cop_layout_emptylinesaroundclassbody_when_enforcedstyle_is_empty_lines_except_namespace_when_only_child_is_class_registers_offenses_for_namespaced_class_body_not_ending_with_a_blank
+    source: |
+      class Parent
+        class Child
+      
+          do_something
+        end
+      end
+    offenses:
+      - line: 5
+        column_start: 0
+        column_end: 1
+        message: "#{missing_end}"
+    config:
+      EnforcedStyle: empty_lines_except_namespace
+    interpolated: true
+
+  - name: rubocop_cop_layout_emptylinesaroundclassbody_when_enforcedstyle_is_empty_lines_except_namespace_when_only_child_is_class_autocorrects_beginning_and_end
+    source: |
+      class Parent < Base
+      
+        class Child
+          do_something
+        end
+      
+      end
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 0
+        message: "#{extra_begin}"
+      - line: 4
+        column_start: 0
+        column_end: 1
+        message: "#{missing_begin}"
+      - line: 5
+        column_start: 0
+        column_end: 1
+        message: "#{missing_end}"
+      - line: 6
+        column_start: 0
+        column_end: 0
+        message: "#{extra_end}"
+    corrected: |
+      class Parent < Base
+        class Child
+      
+          do_something
+      
+        end
+      end
+    config:
+      EnforcedStyle: empty_lines_except_namespace
+    interpolated: true
+
+  - name: rubocop_cop_layout_emptylinesaroundclassbody_when_enforcedstyle_is_empty_lines_except_namespace_when_only_child_is_module_requires_no_empty_lines_for_namespace
+    source: |
+      class Parent
+        module Child
+          do_something
+        end
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: empty_lines_except_namespace
+
+  - name: rubocop_cop_layout_emptylinesaroundclassbody_when_enforcedstyle_is_empty_lines_except_namespace_when_only_child_is_module_registers_an_offense_for_namespace_body_starting_with_a_blank
+    source: |
+      class Parent
+      
+        module Child
+          do_something
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 0
+        message: "#{extra_begin}"
+    config:
+      EnforcedStyle: empty_lines_except_namespace
+    interpolated: true
+
+  - name: rubocop_cop_layout_emptylinesaroundclassbody_when_enforcedstyle_is_empty_lines_except_namespace_when_only_child_is_module_registers_an_offense_for_namespace_body_ending_with_a_blank
+    source: |
+      class Parent
+        module Child
+          do_something
+        end
+      
+      end
+    offenses:
+      - line: 5
+        column_start: 0
+        column_end: 0
+        message: "#{extra_end}"
+    config:
+      EnforcedStyle: empty_lines_except_namespace
+    interpolated: true
+
+  - name: rubocop_cop_layout_emptylinesaroundclassbody_when_enforcedstyle_is_empty_lines_except_namespace_when_has_multiple_child_classes_requires_empty_lines_for_namespace
+    source: |
+      class Parent
+      
+        class Mom
+      
+          do_something
+      
+        end
+        class Dad
+      
+        end
+      
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: empty_lines_except_namespace
+
+  - name: rubocop_cop_layout_emptylinesaroundclassbody_when_enforcedstyle_is_empty_lines_except_namespace_when_has_multiple_child_classes_registers_offenses_for_namespace_body_starting_and_ending_without_a_blank
+    source: |
+      class Parent
+        class Mom
+          do_something
+        end
+        class Dad
+      
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 1
+        message: "#{missing_begin}"
+      - line: 3
+        column_start: 0
+        column_end: 1
+        message: "#{missing_begin}"
+      - line: 4
+        column_start: 0
+        column_end: 1
+        message: "#{missing_end}"
+      - line: 8
+        column_start: 0
+        column_end: 1
+        message: "#{missing_end}"
+    config:
+      EnforcedStyle: empty_lines_except_namespace
+    interpolated: true
+
+  - name: rubocop_cop_layout_emptylinesaroundclassbody_when_enforcedstyle_is_beginning_only_ignores_empty_lines_at_the_beginning_of_a_class
+    source: |
+      class SomeClass
+      
+        do_something
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: beginning_only
+
+  - name: rubocop_cop_layout_emptylinesaroundclassbody_when_enforcedstyle_is_beginning_only_registers_an_offense_for_an_empty_line_at_the_end_of_a_class
+    source: |
+      class SomeClass
+      
+        do_something
+      
+      end
+    offenses:
+      - line: 4
+        column_start: 0
+        column_end: 0
+        message: "#{extra_end}"
+    corrected: |
+      class SomeClass
+      
+        do_something
+      end
+    config:
+      EnforcedStyle: beginning_only
+    interpolated: true
+
+  - name: rubocop_cop_layout_emptylinesaroundclassbody_when_enforcedstyle_is_ending_only_ignores_empty_lines_at_the_beginning_of_a_class
+    source: |
+      class SomeClass
+        do_something
+      
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: ending_only
+
+  - name: rubocop_cop_layout_emptylinesaroundclassbody_when_enforcedstyle_is_ending_only_registers_an_offense_for_an_empty_line_at_the_end_of_a_class
+    source: |
+      class SomeClass
+      
+        do_something
+      
+      end
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 0
+        message: "#{extra_begin}"
+    corrected: |
+      class SomeClass
+        do_something
+      
+      end
+    config:
+      EnforcedStyle: ending_only
+    interpolated: true
+
+  - name: rubocop_cop_layout_emptylinesaroundclassbody_empty_lines_around_class_or_module_body_class
+    source: |
+      class
+    offenses:
+      []
+    config:
+      EnforcedStyle: ending_only

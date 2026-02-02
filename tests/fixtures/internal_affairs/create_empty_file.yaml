@@ -1,0 +1,51 @@
+cop: InternalAffairs/CreateEmptyFile
+department: internal_affairs
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_internalaffairs_createemptyfile_registers_an_offense_when_using_create_file_path
+    source: |
+      create_file(path, '')
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 21
+        message: Use `create_empty_file(path)`.
+    corrected: |
+      create_empty_file(path)
+
+  - name: rubocop_cop_internalaffairs_createemptyfile_registers_an_offense_when_using_create_file_path
+    source: |
+      create_file(path, "")
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 21
+        message: Use `create_empty_file(path)`.
+    corrected: |
+      create_empty_file(path)
+
+  - name: rubocop_cop_internalaffairs_createemptyfile_does_not_register_an_offense_when_using_create_file_path_hello
+    source: |
+      create_file(path, 'hello')
+    offenses:
+      []
+
+  - name: rubocop_cop_internalaffairs_createemptyfile_does_not_register_an_offense_when_using_create_file_path_foo_bar
+    source: |
+      create_file(path, ['foo', 'bar'])
+    offenses:
+      []
+
+  - name: rubocop_cop_internalaffairs_createemptyfile_does_not_register_an_offense_when_using_create_file_path
+    source: |
+      create_file(path)
+    offenses:
+      []
+
+  - name: rubocop_cop_internalaffairs_createemptyfile_does_not_register_an_offense_when_using_receiver_create_file_path
+    source: |
+      receiver.create_file(path, '')
+    offenses:
+      []

@@ -1,0 +1,78 @@
+cop: Style/StringChars
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_stringchars_registers_and_corrects_an_offense_when_using_split
+    source: |
+      string.split(//)
+    offenses:
+      - line: 1
+        column_start: 7
+        column_end: 16
+        message: Use `chars` instead of `split(//)`.
+    corrected: |
+      string.chars
+
+  - name: rubocop_cop_style_stringchars_registers_and_corrects_an_offense_when_using_split
+    source: |
+      string.split('')
+    offenses:
+      - line: 1
+        column_start: 7
+        column_end: 16
+        message: "Use `chars` instead of `split('')`."
+    corrected: |
+      string.chars
+
+  - name: rubocop_cop_style_stringchars_registers_and_corrects_an_offense_when_using_split
+    source: |
+      string.split("")
+    offenses:
+      - line: 1
+        column_start: 7
+        column_end: 16
+        message: "Use `chars` instead of `split(\"\")`."
+    corrected: |
+      string.chars
+
+  - name: rubocop_cop_style_stringchars_registers_and_corrects_an_offense_when_using_split_without_parentheses
+    source: |
+      do_something { |foo| foo.split '' }
+    offenses:
+      - line: 1
+        column_start: 25
+        column_end: 33
+        message: "Use `chars` instead of `split ''`."
+    corrected: |
+      do_something { |foo| foo.chars }
+
+  - name: rubocop_cop_style_stringchars_registers_and_corrects_an_offense_when_using_safe_navigation_split_call
+    source: |
+      string&.split(//)
+    offenses:
+      - line: 1
+        column_start: 8
+        column_end: 17
+        message: Use `chars` instead of `split(//)`.
+    corrected: |
+      string&.chars
+
+  - name: rubocop_cop_style_stringchars_does_not_register_an_offense_when_using_chars
+    source: |
+      string.chars
+    offenses:
+      []
+
+  - name: rubocop_cop_style_stringchars_does_not_register_an_offense_when_using_split
+    source: |
+      string.split(/ /)
+    offenses:
+      []
+
+  - name: rubocop_cop_style_stringchars_does_not_register_an_offense_when_using_split
+    source: |
+      string.split
+    offenses:
+      []

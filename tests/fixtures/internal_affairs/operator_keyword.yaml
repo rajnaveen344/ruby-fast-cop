@@ -1,0 +1,72 @@
+cop: InternalAffairs/OperatorKeyword
+department: internal_affairs
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_internalaffairs_operatorkeyword_registers_an_offense_when_using_node_and_type_node_or_type
+    source: |
+      node.and_type? || node.or_type?
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 31
+        message: Use `node.operator_keyword?`.
+    corrected: |
+      node.operator_keyword?
+
+  - name: rubocop_cop_internalaffairs_operatorkeyword_registers_an_offense_when_using_node_or_type_node_and_type
+    source: |
+      node.or_type? || node.and_type?
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 31
+        message: Use `node.operator_keyword?`.
+    corrected: |
+      node.operator_keyword?
+
+  - name: rubocop_cop_internalaffairs_operatorkeyword_registers_an_offense_when_using_node_parenthesized_node_and_type_node_or_type
+    source: |
+      node.parenthesized? || node.and_type? || node.or_type?
+    offenses:
+      - line: 1
+        column_start: 23
+        column_end: 54
+        message: Use `node.operator_keyword?`.
+    corrected: |
+      node.parenthesized? || node.operator_keyword?
+
+  - name: rubocop_cop_internalaffairs_operatorkeyword_registers_an_offense_when_using_node_parenthesized_node_or_type_node_and_type
+    source: |
+      node.parenthesized? || node.or_type? || node.and_type?
+    offenses:
+      - line: 1
+        column_start: 23
+        column_end: 54
+        message: Use `node.operator_keyword?`.
+    corrected: |
+      node.parenthesized? || node.operator_keyword?
+
+  - name: rubocop_cop_internalaffairs_operatorkeyword_registers_an_offense_when_using_and_type_or_type_without_receivers
+    source: |
+      and_type? || or_type?
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 21
+        message: Use `operator_keyword?`.
+    corrected: |
+      operator_keyword?
+
+  - name: rubocop_cop_internalaffairs_operatorkeyword_does_not_register_an_offense_when_using_node_operator_keyword
+    source: |
+      node.operator_keyword?
+    offenses:
+      []
+
+  - name: rubocop_cop_internalaffairs_operatorkeyword_does_not_register_an_offense_when_lhs_and_rhs_have_different_receivers
+    source: |
+      node1.and_type? || node2.or_type?
+    offenses:
+      []

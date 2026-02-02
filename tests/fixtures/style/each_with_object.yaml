@@ -1,0 +1,196 @@
+cop: Style/EachWithObject
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_eachwithobject_finds_inject_and_reduce_with_passed_in_and_returned_hash
+    source: |
+      [].inject({}) { |a, e| a }
+      
+      [].reduce({}) do |a, e|
+        a[e] = 1
+        a[e] = 1
+        a
+      end
+    offenses:
+      - line: 1
+        column_start: 3
+        column_end: 9
+        message: Use `each_with_object` instead of `inject`.
+      - line: 3
+        column_start: 3
+        column_end: 9
+        message: Use `each_with_object` instead of `reduce`.
+    corrected: |
+      [].each_with_object({}) { |e, a|  }
+      
+      [].each_with_object({}) do |e, a|
+        a[e] = 1
+        a[e] = 1
+      end
+
+  - name: rubocop_cop_style_eachwithobject_finds_inject_is_safe_navigation_called_with_passed_in_and_returned_hash
+    source: |
+      []&.inject({}) { |a, e| a }
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 10
+        message: Use `each_with_object` instead of `inject`.
+    corrected: |
+      []&.each_with_object({}) { |e, a|  }
+
+  - name: rubocop_cop_style_eachwithobject_ruby_2_7_finds_inject_and_reduce_with_passed_in_and_returned_hash_and_numblock
+    source: |
+      [].reduce({}) do
+        _1[_2] = 1
+        _1
+      end
+    offenses:
+      - line: 1
+        column_start: 3
+        column_end: 9
+        message: Use `each_with_object` instead of `reduce`.
+    corrected: |
+      [].each_with_object({}) do
+        _2[_1] = 1
+        _2
+      end
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_style_eachwithobject_ruby_2_7_finds_reduce_is_called_with_passed_in_and_returned_hash_and_numblock
+    source: |
+      []&.reduce({}) do
+        _1[_2] = 1
+        _1
+      end
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 10
+        message: Use `each_with_object` instead of `reduce`.
+    corrected: |
+      []&.each_with_object({}) do
+        _2[_1] = 1
+        _2
+      end
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_style_eachwithobject_correctly_autocorrects
+    source: |
+      [1, 2, 3].inject({}) do |h, i|
+        h[i] = i
+        h
+      end
+    offenses:
+      - line: 1
+        column_start: 10
+        column_end: 16
+        message: Use `each_with_object` instead of `inject`.
+    corrected: |
+      [1, 2, 3].each_with_object({}) do |i, h|
+        h[i] = i
+      end
+
+  - name: rubocop_cop_style_eachwithobject_correctly_autocorrects_with_return_value_only
+    source: |
+      [1, 2, 3].inject({}) do |h, i|
+        h
+      end
+    offenses:
+      - line: 1
+        column_start: 10
+        column_end: 16
+        message: Use `each_with_object` instead of `inject`.
+    corrected: |
+      [1, 2, 3].each_with_object({}) do |i, h|
+      end
+
+  - name: rubocop_cop_style_eachwithobject_ignores_inject_and_reduce_with_block_without_arguments
+    source: |
+      [].inject({}) { $GLOBAL[rand] = rand; $GLOBAL }
+      
+      [].reduce({}) do
+         $GLOBAL[rand] = rand
+         $GLOBAL
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_eachwithobject_ignores_inject_and_reduce_with_block_with_single_argument
+    source: |
+      [].inject({}) { |h| h[rand] = rand; h }
+      
+      [].reduce({}) do |h|
+         h[rand] = rand
+         h
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_eachwithobject_ignores_inject_and_reduce_with_passed_in_but_not_returned_hash
+    source: |
+      [].inject({}) do |a, e|
+        a + e
+      end
+      
+      [].reduce({}) do |a, e|
+        my_method e, a
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_eachwithobject_ignores_inject_and_reduce_with_empty_body
+    source: |
+      [].inject({}) do |a, e|
+      end
+      
+      [].reduce({}) { |a, e| }
+    offenses:
+      []
+
+  - name: rubocop_cop_style_eachwithobject_ignores_inject_and_reduce_with_condition_as_body
+    source: |
+      [].inject({}) do |a, e|
+        a = e if e
+      end
+      
+      [].inject({}) do |a, e|
+        if e
+          a = e
+        end
+      end
+      
+      [].reduce({}) do |a, e|
+        a = e ? e : 2
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_eachwithobject_ignores_inject_and_reduce_passed_in_symbol
+    source: |
+      [].inject(:+)
+    offenses:
+      []
+
+  - name: rubocop_cop_style_eachwithobject_does_not_blow_up_for_reduce_with_no_arguments
+    source: |
+      [1, 2, 3].inject { |a, e| a + e }
+    offenses:
+      []
+
+  - name: rubocop_cop_style_eachwithobject_ignores_inject_reduce_with_assignment_to_accumulator_param_in_block
+    source: |
+      r = [1, 2, 3].reduce({}) do |memo, item|
+        memo += item > 2 ? item : 0
+        memo
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_eachwithobject_when_a_simple_literal_is_passed_as_initial_value_ignores_inject_reduce
+    source: |
+      array.reduce(0) { |a, e| a }
+    offenses:
+      []

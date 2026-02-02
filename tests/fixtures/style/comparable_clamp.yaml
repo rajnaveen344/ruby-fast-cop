@@ -1,0 +1,300 @@
+cop: Style/ComparableClamp
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_comparableclamp_target_ruby_version_2_4_registers_and_corrects_an_offense_when_using_if_x_low_elsif_high_x_else
+    source: |
+      if x < low
+        low
+      elsif high < x
+        high
+      else
+        x
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 10
+        message: Use `x.clamp(low, high)` instead of `if/elsif/else`.
+    corrected: |
+      x.clamp(low, high)
+    ruby_version: ">= 2.4"
+
+  - name: rubocop_cop_style_comparableclamp_target_ruby_version_2_4_registers_and_corrects_an_offense_when_using_if_low_x_elsif_high_x_else
+    source: |
+      if low > x
+        low
+      elsif high < x
+        high
+      else
+        x
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 10
+        message: Use `x.clamp(low, high)` instead of `if/elsif/else`.
+    corrected: |
+      x.clamp(low, high)
+    ruby_version: ">= 2.4"
+
+  - name: rubocop_cop_style_comparableclamp_target_ruby_version_2_4_registers_and_corrects_an_offense_when_using_if_x_low_elsif_x_high_else
+    source: |
+      if x < low
+        low
+      elsif x > high
+        high
+      else
+        x
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 10
+        message: Use `x.clamp(low, high)` instead of `if/elsif/else`.
+    corrected: |
+      x.clamp(low, high)
+    ruby_version: ">= 2.4"
+
+  - name: rubocop_cop_style_comparableclamp_target_ruby_version_2_4_registers_and_corrects_an_offense_when_using_if_low_x_elsif_x_high_else
+    source: |
+      if low > x
+        low
+      elsif x > high
+        high
+      else
+        x
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 10
+        message: Use `x.clamp(low, high)` instead of `if/elsif/else`.
+    corrected: |
+      x.clamp(low, high)
+    ruby_version: ">= 2.4"
+
+  - name: rubocop_cop_style_comparableclamp_target_ruby_version_2_4_registers_and_corrects_an_offense_when_using_if_high_x_elsif_x_low_else
+    source: |
+      if high < x
+        high
+      elsif x < low
+        low
+      else
+        x
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 11
+        message: Use `x.clamp(low, high)` instead of `if/elsif/else`.
+    corrected: |
+      x.clamp(low, high)
+    ruby_version: ">= 2.4"
+
+  - name: rubocop_cop_style_comparableclamp_target_ruby_version_2_4_registers_and_corrects_an_offense_when_using_if_x_high_elsif_x_low_else
+    source: |
+      if x > high
+        high
+      elsif x < low
+        low
+      else
+        x
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 11
+        message: Use `x.clamp(low, high)` instead of `if/elsif/else`.
+    corrected: |
+      x.clamp(low, high)
+    ruby_version: ">= 2.4"
+
+  - name: rubocop_cop_style_comparableclamp_target_ruby_version_2_4_registers_and_corrects_an_offense_when_using_if_high_x_elsif_low_x_else
+    source: |
+      if high < x
+        high
+      elsif low > x
+        low
+      else
+        x
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 11
+        message: Use `x.clamp(low, high)` instead of `if/elsif/else`.
+    corrected: |
+      x.clamp(low, high)
+    ruby_version: ">= 2.4"
+
+  - name: rubocop_cop_style_comparableclamp_target_ruby_version_2_4_registers_and_corrects_an_offense_when_using_if_x_high_elsif_low_x_else
+    source: |
+      if x > high
+        high
+      elsif low > x
+        low
+      else
+        x
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 11
+        message: Use `x.clamp(low, high)` instead of `if/elsif/else`.
+    corrected: |
+      x.clamp(low, high)
+    ruby_version: ">= 2.4"
+
+  - name: rubocop_cop_style_comparableclamp_target_ruby_version_2_4_registers_and_corrects_an_offense_when_using_elsif_x_high_elsif_low_x_else
+    source: |
+      if condition
+        do_something
+      elsif x > high
+        high
+      elsif low > x
+        low
+      else
+        x
+      end
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 14
+        message: Use `x.clamp(low, high)` instead of `if/elsif/else`.
+    corrected: |
+      if condition
+        do_something
+      else
+        x.clamp(low, high)
+      end
+    ruby_version: ">= 2.4"
+
+  - name: rubocop_cop_style_comparableclamp_target_ruby_version_2_4_does_not_register_an_offense_when_using_if_x_low_elsif_high_x_else_and_all_return_values_are_the_same
+    source: |
+      if x < low
+        x
+      elsif high < x
+        x
+      else
+        x
+      end
+    offenses:
+      []
+    ruby_version: ">= 2.4"
+
+  - name: rubocop_cop_style_comparableclamp_target_ruby_version_2_4_registers_an_offense_when_using_x_low_max_high_min
+    source: |
+      [[x, low].max, high].min
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 24
+        message: "Use `Comparable#clamp` instead."
+    ruby_version: ">= 2.4"
+
+  - name: rubocop_cop_style_comparableclamp_target_ruby_version_2_4_registers_an_offense_when_using_low_x_max_high_min
+    source: |
+      [[low, x].max, high].min
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 24
+        message: "Use `Comparable#clamp` instead."
+    ruby_version: ">= 2.4"
+
+  - name: rubocop_cop_style_comparableclamp_target_ruby_version_2_4_registers_an_offense_when_using_high_x_low_max_min
+    source: |
+      [high, [x, low].max].min
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 24
+        message: "Use `Comparable#clamp` instead."
+    ruby_version: ">= 2.4"
+
+  - name: rubocop_cop_style_comparableclamp_target_ruby_version_2_4_registers_an_offense_when_using_high_low_x_max_min
+    source: |
+      [high, [low, x].max].min
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 24
+        message: "Use `Comparable#clamp` instead."
+    ruby_version: ">= 2.4"
+
+  - name: rubocop_cop_style_comparableclamp_target_ruby_version_2_4_registers_an_offense_when_using_x_high_min_low_max
+    source: |
+      [[x, high].min, low].max
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 24
+        message: "Use `Comparable#clamp` instead."
+    ruby_version: ">= 2.4"
+
+  - name: rubocop_cop_style_comparableclamp_target_ruby_version_2_4_registers_an_offense_when_using_high_x_min_low_max
+    source: |
+      [[high, x].min, low].max
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 24
+        message: "Use `Comparable#clamp` instead."
+    ruby_version: ">= 2.4"
+
+  - name: rubocop_cop_style_comparableclamp_target_ruby_version_2_4_registers_but_does_not_correct_an_offense_when_using_low_high_min_max
+    source: |
+      [low, [x, high].min].max
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 24
+        message: "Use `Comparable#clamp` instead."
+    ruby_version: ">= 2.4"
+
+  - name: rubocop_cop_style_comparableclamp_target_ruby_version_2_4_registers_but_does_not_correct_an_offense_when_using_low_high_x_min_max
+    source: |
+      [low, [high, x].min].max
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 24
+        message: "Use `Comparable#clamp` instead."
+    ruby_version: ">= 2.4"
+
+  - name: rubocop_cop_style_comparableclamp_target_ruby_version_2_3_does_not_register_an_offense_when_using_x_low_max_high_min
+    source: |
+      [[x, low].max, high].min
+    offenses:
+      []
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_style_comparableclamp_target_ruby_version_2_3_does_not_register_an_offense_when_using_low_x_max_high_min
+    source: |
+      [[low, x].max, high].min
+    offenses:
+      []
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_style_comparableclamp_target_ruby_version_2_3_does_not_register_an_offense_when_using_high_x_low_max_min
+    source: |
+      [high, [x, low].max].min
+    offenses:
+      []
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_style_comparableclamp_target_ruby_version_2_3_does_not_register_an_offense_when_using_high_low_x_max_min
+    source: |
+      [high, [low, x].max].min
+    offenses:
+      []
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_style_comparableclamp_does_not_register_an_offense_when_using_low_high_min
+    source: |
+      [low, high].min
+    offenses:
+      []

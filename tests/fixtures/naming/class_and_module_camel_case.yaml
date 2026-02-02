@@ -1,0 +1,68 @@
+cop: Naming/ClassAndModuleCamelCase
+department: naming
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_naming_classandmodulecamelcase_registers_an_offense_for_underscore_in_class_and_module_name
+    source: |
+      class My_Class
+      end
+      
+      module My_Module
+      end
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 14
+        message: Use CamelCase for classes and modules.
+      - line: 4
+        column_start: 7
+        column_end: 16
+        message: Use CamelCase for classes and modules.
+
+  - name: rubocop_cop_naming_classandmodulecamelcase_is_not_fooled_by_qualified_names
+    source: |
+      class Top::My_Class
+      end
+      
+      module My_Module::Ala
+      end
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 19
+        message: Use CamelCase for classes and modules.
+      - line: 4
+        column_start: 7
+        column_end: 21
+        message: Use CamelCase for classes and modules.
+
+  - name: rubocop_cop_naming_classandmodulecamelcase_accepts_camelcase_names
+    source: |
+      class MyClass
+      end
+      
+      module Mine
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_naming_classandmodulecamelcase_allows_module_parent_method
+    source: |
+      class module_parent::MyClass
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_naming_classandmodulecamelcase_custom_allowed_names_does_not_register_offense_for_multiple_allowed_names
+    source: |
+      class getter_class::MyClass
+      end
+      
+      class setter_class::MyClass
+      end
+    offenses:
+      []
+    config:
+      AllowedNames: [getter_class, setter_class]

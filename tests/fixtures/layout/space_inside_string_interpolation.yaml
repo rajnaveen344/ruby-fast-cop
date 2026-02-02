@@ -1,0 +1,235 @@
+cop: Layout/SpaceInsideStringInterpolation
+department: layout
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_layout_spaceinsidestringinterpolation_when_enforcedstyle_is_no_space_for_ill_formatted_string_interpolations_registers_offenses_and_autocorrects
+    source: |
+      "#{ var}"
+      "#{var }"
+      "#{   var   }"
+      "#{var	}"
+      "#{	var	}"
+      "#{	var}"
+      "#{ 	 var 	 	}"
+    offenses:
+      - line: 1
+        column_start: 3
+        column_end: 4
+        message: Do not use space inside string interpolation.
+      - line: 2
+        column_start: 6
+        column_end: 7
+        message: Do not use space inside string interpolation.
+      - line: 3
+        column_start: 3
+        column_end: 6
+        message: Do not use space inside string interpolation.
+      - line: 3
+        column_start: 9
+        column_end: 12
+        message: Do not use space inside string interpolation.
+      - line: 4
+        column_start: 6
+        column_end: 7
+        message: Do not use space inside string interpolation.
+      - line: 5
+        column_start: 3
+        column_end: 4
+        message: Do not use space inside string interpolation.
+      - line: 5
+        column_start: 7
+        column_end: 8
+        message: Do not use space inside string interpolation.
+      - line: 6
+        column_start: 3
+        column_end: 4
+        message: Do not use space inside string interpolation.
+      - line: 7
+        column_start: 3
+        column_end: 6
+        message: Do not use space inside string interpolation.
+      - line: 7
+        column_start: 9
+        column_end: 13
+        message: Do not use space inside string interpolation.
+    corrected: |
+      "#{var}"
+      "#{var}"
+      "#{var}"
+      "#{var}"
+      "#{var}"
+      "#{var}"
+      "#{var}"
+    config:
+      EnforcedStyle: no_space
+
+  - name: rubocop_cop_layout_spaceinsidestringinterpolation_when_enforcedstyle_is_no_space_for_ill_formatted_string_interpolations_finds_interpolations_in_string_like_contexts
+    source: |
+      /regexp #{ var}/
+      `backticks #{ var}`
+      :"symbol #{ var}"
+    offenses:
+      - line: 1
+        column_start: 10
+        column_end: 11
+        message: Do not use space inside string interpolation.
+      - line: 2
+        column_start: 13
+        column_end: 14
+        message: Do not use space inside string interpolation.
+      - line: 3
+        column_start: 11
+        column_end: 12
+        message: Do not use space inside string interpolation.
+    corrected: |
+      /regexp #{var}/
+      `backticks #{var}`
+      :"symbol #{var}"
+    config:
+      EnforcedStyle: no_space
+
+  - name: rubocop_cop_layout_spaceinsidestringinterpolation_when_enforcedstyle_is_no_space_for_space_style_formatted_string_interpolations_registers_offenses_and_autocorrects
+    source: |
+      "#{ var }"
+    offenses:
+      - line: 1
+        column_start: 3
+        column_end: 4
+        message: Do not use space inside string interpolation.
+      - line: 1
+        column_start: 7
+        column_end: 8
+        message: Do not use space inside string interpolation.
+    corrected: |
+      "#{var}"
+    config:
+      EnforcedStyle: no_space
+
+  - name: rubocop_cop_layout_spaceinsidestringinterpolation_when_enforcedstyle_is_no_space_does_not_touch_spaces_inside_the_interpolated_expression
+    source: |
+      "#{ a; b }"
+    offenses:
+      - line: 1
+        column_start: 3
+        column_end: 4
+        message: Do not use space inside string interpolation.
+      - line: 1
+        column_start: 8
+        column_end: 9
+        message: Do not use space inside string interpolation.
+    corrected: |
+      "#{a; b}"
+    config:
+      EnforcedStyle: no_space
+
+  - name: rubocop_cop_layout_spaceinsidestringinterpolation_when_enforcedstyle_is_no_space_for_well_formatted_string_interpolations_accepts_excess_literal_spacing
+    source: |
+      "Variable is    #{var}      "
+      "  Variable is  #{var}"
+    offenses:
+      []
+    config:
+      EnforcedStyle: no_space
+
+  - name: rubocop_cop_layout_spaceinsidestringinterpolation_when_enforcedstyle_is_no_space_accepts_empty_interpolation
+    source: |
+      "#{}"
+    offenses:
+      []
+    config:
+      EnforcedStyle: no_space
+
+  - name: rubocop_cop_layout_spaceinsidestringinterpolation_when_enforcedstyle_is_no_space_when_interpolation_starts_or_ends_with_a_line_break_does_not_register_an_offense
+    source: |
+      "#{
+        code
+      }"
+    offenses:
+      []
+    config:
+      EnforcedStyle: no_space
+
+  - name: rubocop_cop_layout_spaceinsidestringinterpolation_when_enforcedstyle_is_no_space_when_interpolation_starts_or_ends_with_a_line_break_ignores_comments_and_whitespace_when_looking_for_line_breaks
+    source: |
+      def foo
+        "#{ # comment
+          code
+        }"
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: no_space
+
+  - name: rubocop_cop_layout_spaceinsidestringinterpolation_when_enforcedstyle_is_space_for_ill_formatted_string_interpolations_registers_offenses_and_autocorrects
+    source: |
+      "#{ var}"
+      "#{var }"
+      "#{   var   }"
+      "#{var	}"
+      "#{	var	}"
+      "#{	var}"
+      "#{ 	 var 	 	}"
+    offenses:
+      - line: 1
+        column_start: 7
+        column_end: 8
+        message: Use space inside string interpolation.
+      - line: 2
+        column_start: 1
+        column_end: 3
+        message: Use space inside string interpolation.
+      - line: 4
+        column_start: 1
+        column_end: 3
+        message: Use space inside string interpolation.
+      - line: 6
+        column_start: 7
+        column_end: 8
+        message: Use space inside string interpolation.
+    corrected: |
+      "#{ var }"
+      "#{ var }"
+      "#{   var   }"
+      "#{ var	}"
+      "#{	var	}"
+      "#{	var }"
+      "#{ 	 var 	 	}"
+    config:
+      EnforcedStyle: space
+
+  - name: rubocop_cop_layout_spaceinsidestringinterpolation_when_enforcedstyle_is_space_for_no_space_style_formatted_string_interpolations_registers_offenses_and_autocorrects
+    source: |
+      "#{var}"
+    offenses:
+      - line: 1
+        column_start: 1
+        column_end: 3
+        message: Use space inside string interpolation.
+      - line: 1
+        column_start: 6
+        column_end: 7
+        message: Use space inside string interpolation.
+    corrected: |
+      "#{ var }"
+    config:
+      EnforcedStyle: space
+
+  - name: rubocop_cop_layout_spaceinsidestringinterpolation_when_enforcedstyle_is_space_for_well_formatted_string_interpolations_does_not_register_an_offense_for_excess_literal_spacing
+    source: |
+      "Variable is    #{ var }      "
+      "  Variable is  #{ var }"
+    offenses:
+      []
+    config:
+      EnforcedStyle: space
+
+  - name: rubocop_cop_layout_spaceinsidestringinterpolation_when_enforcedstyle_is_space_accepts_empty_interpolation
+    source: |
+      "#{}"
+    offenses:
+      []
+    config:
+      EnforcedStyle: space

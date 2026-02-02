@@ -1,0 +1,450 @@
+cop: Layout/LineContinuationLeadingSpace
+department: layout
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_layout_linecontinuationleadingspace_enforcedstyle_trailing_registers_an_offense_when_2nd_line_has_one_leading_space
+    source: |
+      'this text is too' \
+      ' long'
+    offenses:
+      - line: 2
+        column_start: 1
+        column_end: 2
+        message: Move leading spaces to the end of the previous line.
+    corrected: |
+      'this text is too ' \
+      'long'
+    config:
+      EnforcedStyle: trailing
+
+  - name: rubocop_cop_layout_linecontinuationleadingspace_enforcedstyle_trailing_puts_the_offense_message_in_correct_position_also_on_indented_line
+    source: |
+      'this text is too' \
+        ' long'
+    offenses:
+      - line: 2
+        column_start: 3
+        column_end: 4
+        message: Move leading spaces to the end of the previous line.
+    corrected: |
+      'this text is too ' \
+        'long'
+    config:
+      EnforcedStyle: trailing
+
+  - name: rubocop_cop_layout_linecontinuationleadingspace_enforcedstyle_trailing_registers_an_offense_when_2nd_line_has_multiple_leading_spaces
+    source: |
+      'this text contains a lot of' \
+      '               spaces'
+    offenses:
+      - line: 2
+        column_start: 1
+        column_end: 16
+        message: Move leading spaces to the end of the previous line.
+    corrected: |
+      'this text contains a lot of               ' \
+      'spaces'
+    config:
+      EnforcedStyle: trailing
+
+  - name: rubocop_cop_layout_linecontinuationleadingspace_enforcedstyle_trailing_registers_offenses_when_2nd_and_3rd_line_has_leading_spaces
+    source: |
+      'this text is too' \
+      ' long' \
+      '  long long'
+    offenses:
+      - line: 2
+        column_start: 1
+        column_end: 2
+        message: Move leading spaces to the end of the previous line.
+      - line: 3
+        column_start: 1
+        column_end: 3
+        message: Move leading spaces to the end of the previous line.
+    corrected: |
+      'this text is too ' \
+      'long  ' \
+      'long long'
+    config:
+      EnforcedStyle: trailing
+
+  - name: rubocop_cop_layout_linecontinuationleadingspace_enforcedstyle_trailing_registers_an_offense_in_the_right_location_when_1st_line_is_not_the_string
+    source: |
+      something_unrelated_to_the_line_continuation_below
+      'this text is too' \
+      ' long'
+    offenses:
+      - line: 3
+        column_start: 1
+        column_end: 2
+        message: Move leading spaces to the end of the previous line.
+    corrected: |
+      something_unrelated_to_the_line_continuation_below
+      'this text is too ' \
+      'long'
+    config:
+      EnforcedStyle: trailing
+
+  - name: rubocop_cop_layout_linecontinuationleadingspace_enforcedstyle_trailing_marks_the_correct_range_when_string_is_a_block_method_argument
+    source: |
+      long_method_name 'this text is too' \
+        ' long' do
+      end
+    offenses:
+      - line: 2
+        column_start: 3
+        column_end: 4
+        message: Move leading spaces to the end of the previous line.
+    corrected: |
+      long_method_name 'this text is too ' \
+        'long' do
+      end
+    config:
+      EnforcedStyle: trailing
+
+  - name: rubocop_cop_layout_linecontinuationleadingspace_enforcedstyle_trailing_marks_the_correct_range_when_string_is_a_positional_method_argument
+    source: |
+      long_method_name(
+        'this text is too' \
+        ' long'
+      )
+    offenses:
+      - line: 3
+        column_start: 3
+        column_end: 4
+        message: Move leading spaces to the end of the previous line.
+    corrected: |
+      long_method_name(
+        'this text is too ' \
+        'long'
+      )
+    config:
+      EnforcedStyle: trailing
+
+  - name: rubocop_cop_layout_linecontinuationleadingspace_enforcedstyle_trailing_registers_no_offense_for_multiline_string_with_backslash
+    source: |
+      '"this text is too" \
+      " long"'
+    offenses:
+      []
+    config:
+      EnforcedStyle: trailing
+
+  - name: rubocop_cop_layout_linecontinuationleadingspace_enforcedstyle_trailing_registers_no_offense_when_multiline_string_ends_with_a_line_continuation
+    source: |
+      "" "foo
+      bar\
+      "
+    offenses:
+      []
+    config:
+      EnforcedStyle: trailing
+
+  - name: rubocop_cop_layout_linecontinuationleadingspace_enforcedstyle_trailing_registers_an_offense_when_multiline_string_ends_on_1st_line
+    source: |
+      "foo
+      bar" \
+      " baz"
+    offenses:
+      - line: 3
+        column_start: 1
+        column_end: 2
+        message: Move leading spaces to the end of the previous line.
+    corrected: |
+      "foo
+      bar " \
+      "baz"
+    config:
+      EnforcedStyle: trailing
+
+  - name: rubocop_cop_layout_linecontinuationleadingspace_enforcedstyle_trailing_interpolated_strings_registers_no_offense_on_interpolated_string_alone
+    source: |
+      "foo #{bar}"
+    offenses:
+      []
+    config:
+      EnforcedStyle: trailing
+
+  - name: rubocop_cop_layout_linecontinuationleadingspace_enforcedstyle_trailing_interpolated_strings_registers_no_offense_on_doubly_interpolated_string_alone
+    source: |
+      "foo #{bar} baz #{qux}"
+    offenses:
+      []
+    config:
+      EnforcedStyle: trailing
+
+  - name: rubocop_cop_layout_linecontinuationleadingspace_enforcedstyle_trailing_interpolated_strings_registers_offenses_when_2nd_line_has_leading_spaces_and_1st_line_is_interpolated
+    source: |
+      "foo #{bar}" \
+      ' long'
+    offenses:
+      - line: 2
+        column_start: 1
+        column_end: 2
+        message: Move leading spaces to the end of the previous line.
+    corrected: |
+      "foo #{bar} " \
+      'long'
+    config:
+      EnforcedStyle: trailing
+
+  - name: rubocop_cop_layout_linecontinuationleadingspace_enforcedstyle_trailing_interpolated_strings_registers_offenses_when_2nd_line_has_leading_spaces_and_2nd_line_is_interpolated
+    source: |
+      'this line is' \
+      " #{foo}"
+    offenses:
+      - line: 2
+        column_start: 1
+        column_end: 2
+        message: Move leading spaces to the end of the previous line.
+    corrected: |
+      'this line is ' \
+      "#{foo}"
+    config:
+      EnforcedStyle: trailing
+
+  - name: rubocop_cop_layout_linecontinuationleadingspace_enforcedstyle_trailing_interpolated_strings_registers_no_offense_for_correctly_formatted_multiline_interpolation
+    source: |
+      "five is #{2 + \
+        3}"
+    offenses:
+      []
+    config:
+      EnforcedStyle: trailing
+
+  - name: rubocop_cop_layout_linecontinuationleadingspace_enforcedstyle_trailing_interpolated_strings_registers_no_offense_for_correctly_formatted_multiline_interpolated_string
+    source: |
+      "foo #{'bar ' \
+        'baz'}"
+    offenses:
+      []
+    config:
+      EnforcedStyle: trailing
+
+  - name: rubocop_cop_layout_linecontinuationleadingspace_enforcedstyle_trailing_interpolated_strings_registers_an_offense_for_incorrectly_formatted_multiline_interpolated_string
+    source: |
+      "foo #{'bar' \
+        ' baz'}"
+    offenses:
+      - line: 2
+        column_start: 3
+        column_end: 4
+        message: Move leading spaces to the end of the previous line.
+    corrected: |
+      "foo #{'bar ' \
+        'baz'}"
+    config:
+      EnforcedStyle: trailing
+
+  - name: rubocop_cop_layout_linecontinuationleadingspace_enforcedstyle_leading_registers_an_offense_when_1st_line_has_one_trailing_space
+    source: |
+      'this text is too ' \
+      'long'
+    offenses:
+      - line: 1
+        column_start: 17
+        column_end: 18
+        message: Move trailing spaces to the start of the next line.
+    corrected: |
+      'this text is too' \
+      ' long'
+    config:
+      EnforcedStyle: leading
+
+  - name: rubocop_cop_layout_linecontinuationleadingspace_enforcedstyle_leading_puts_the_offense_message_in_correct_position_also_on_indented_line
+    source: |
+      'this text is too' \
+        ' very ' \
+        'long'
+    offenses:
+      - line: 2
+        column_start: 8
+        column_end: 9
+        message: Move trailing spaces to the start of the next line.
+    corrected: |
+      'this text is too' \
+        ' very' \
+        ' long'
+    config:
+      EnforcedStyle: leading
+
+  - name: rubocop_cop_layout_linecontinuationleadingspace_enforcedstyle_leading_registers_an_offense_when_1st_line_has_multiple_trailing_spaces
+    source: |
+      'this text contains a lot of               ' \
+      'spaces'
+    offenses:
+      - line: 1
+        column_start: 28
+        column_end: 43
+        message: Move trailing spaces to the start of the next line.
+    corrected: |
+      'this text contains a lot of' \
+      '               spaces'
+    config:
+      EnforcedStyle: leading
+
+  - name: rubocop_cop_layout_linecontinuationleadingspace_enforcedstyle_leading_registers_offenses_when_1st_and_2nd_line_has_trailing_spaces
+    source: |
+      'this text is too ' \
+      'long  ' \
+      'long long'
+    offenses:
+      - line: 1
+        column_start: 17
+        column_end: 18
+        message: Move trailing spaces to the start of the next line.
+      - line: 2
+        column_start: 5
+        column_end: 7
+        message: Move trailing spaces to the start of the next line.
+    corrected: |
+      'this text is too' \
+      ' long' \
+      '  long long'
+    config:
+      EnforcedStyle: leading
+
+  - name: rubocop_cop_layout_linecontinuationleadingspace_enforcedstyle_leading_registers_an_offense_in_the_right_location_when_1st_line_is_not_the_string
+    source: |
+      something_unrelated_to_the_line_continuation_below
+      'this text is too ' \
+      'long'
+    offenses:
+      - line: 2
+        column_start: 17
+        column_end: 18
+        message: Move trailing spaces to the start of the next line.
+    corrected: |
+      something_unrelated_to_the_line_continuation_below
+      'this text is too' \
+      ' long'
+    config:
+      EnforcedStyle: leading
+
+  - name: rubocop_cop_layout_linecontinuationleadingspace_enforcedstyle_leading_marks_the_correct_range_when_string_is_a_block_method_argument
+    source: |
+      long_method_name 'this text is too' \
+        ' very ' \
+        'long' do
+      end
+    offenses:
+      - line: 2
+        column_start: 8
+        column_end: 9
+        message: Move trailing spaces to the start of the next line.
+    corrected: |
+      long_method_name 'this text is too' \
+        ' very' \
+        ' long' do
+      end
+    config:
+      EnforcedStyle: leading
+
+  - name: rubocop_cop_layout_linecontinuationleadingspace_enforcedstyle_leading_marks_the_correct_range_when_string_is_a_positional_method_argument
+    source: |
+      long_method_name(
+        'this text is too ' \
+        'long'
+      )
+    offenses:
+      - line: 2
+        column_start: 19
+        column_end: 20
+        message: Move trailing spaces to the start of the next line.
+    corrected: |
+      long_method_name(
+        'this text is too' \
+        ' long'
+      )
+    config:
+      EnforcedStyle: leading
+
+  - name: rubocop_cop_layout_linecontinuationleadingspace_enforcedstyle_leading_registers_no_offense_for_multiline_string_with_backslash
+    source: |
+      '"this text is too " \
+      "long"'
+    offenses:
+      []
+    config:
+      EnforcedStyle: leading
+
+  - name: rubocop_cop_layout_linecontinuationleadingspace_enforcedstyle_leading_interpolated_strings_registers_no_offense_on_interpolated_string_alone
+    source: |
+      "foo #{bar}"
+    offenses:
+      []
+    config:
+      EnforcedStyle: leading
+
+  - name: rubocop_cop_layout_linecontinuationleadingspace_enforcedstyle_leading_interpolated_strings_registers_no_offense_on_doubly_interpolated_string_alone
+    source: |
+      "foo #{bar} baz #{qux}"
+    offenses:
+      []
+    config:
+      EnforcedStyle: leading
+
+  - name: rubocop_cop_layout_linecontinuationleadingspace_enforcedstyle_leading_interpolated_strings_registers_offenses_when_1st_line_has_trailing_spaces_and_2nd_line_is_interpolated
+    source: |
+      'foo ' \
+      "#{bar} long"
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 5
+        message: Move trailing spaces to the start of the next line.
+    corrected: |
+      'foo' \
+      " #{bar} long"
+    config:
+      EnforcedStyle: leading
+
+  - name: rubocop_cop_layout_linecontinuationleadingspace_enforcedstyle_leading_interpolated_strings_registers_offenses_when_1st_line_has_leading_spaces_and_1st_line_is_interpolated
+    source: |
+      "this #{foo} is " \
+      'long'
+    offenses:
+      - line: 1
+        column_start: 15
+        column_end: 16
+        message: Move trailing spaces to the start of the next line.
+    corrected: |
+      "this #{foo} is" \
+      ' long'
+    config:
+      EnforcedStyle: leading
+
+  - name: rubocop_cop_layout_linecontinuationleadingspace_enforcedstyle_leading_interpolated_strings_registers_no_offense_for_correctly_formatted_multiline_interpolation
+    source: |
+      "five is #{2 + \
+        3}"
+    offenses:
+      []
+    config:
+      EnforcedStyle: leading
+
+  - name: rubocop_cop_layout_linecontinuationleadingspace_enforcedstyle_leading_interpolated_strings_registers_no_offense_for_correctly_formatted_multiline_interpolated_string
+    source: |
+      "foo #{'bar' \
+        ' baz'}"
+    offenses:
+      []
+    config:
+      EnforcedStyle: leading
+
+  - name: rubocop_cop_layout_linecontinuationleadingspace_enforcedstyle_leading_interpolated_strings_registers_an_offense_for_incorrectly_formatted_multiline_interpolated_string
+    source: |
+      "foo #{'bar ' \
+        'baz'}"
+    offenses:
+      - line: 1
+        column_start: 11
+        column_end: 12
+        message: Move trailing spaces to the start of the next line.
+    corrected: |
+      "foo #{'bar' \
+        ' baz'}"
+    config:
+      EnforcedStyle: leading

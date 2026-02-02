@@ -1,0 +1,398 @@
+cop: Style/TrailingCommaInHashLiteral
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_trailingcommainhashliteral_registers_an_offense_for_trailing_comma_in_a_literal
+    source: |
+      MAP = { a: 1001, b: 2020, c: 3333, }
+    offenses:
+      - line: 1
+        column_start: 33
+        column_end: 34
+        message: "Avoid comma after the last item of a hash#{extra_info}."
+    corrected: |
+      MAP = { a: 1001, b: 2020, c: 3333 }
+    interpolated: true
+
+  - name: rubocop_cop_style_trailingcommainhashliteral_accepts_literal_without_trailing_comma
+    source: |
+      MAP = { a: 1001, b: 2020, c: 3333 }
+    offenses:
+      []
+
+  - name: rubocop_cop_style_trailingcommainhashliteral_accepts_single_element_literal_without_trailing_comma
+    source: |
+      MAP = { a: 10001 }
+    offenses:
+      []
+
+  - name: rubocop_cop_style_trailingcommainhashliteral_accepts_empty_literal
+    source: |
+      MAP = {}
+    offenses:
+      []
+
+  - name: rubocop_cop_style_trailingcommainhashliteral_with_single_line_list_of_values_when_enforcedstyleformultiline_is_comma_single_line_lists_unless_each_item_i
+    source: |
+      , unless each item is on its own line
+    offenses:
+      []
+    config:
+      EnforcedStyleForMultiline: comma
+
+  - name: rubocop_cop_style_trailingcommainhashliteral_with_single_line_list_of_values_when_enforcedstyleformultiline_is_diff_comma_single_line_lists_unless_that_item_i
+    source: |
+      , unless that item immediately precedes a newline
+    offenses:
+      []
+    config:
+      EnforcedStyleForMultiline: diff_comma
+
+  - name: rubocop_cop_style_trailingcommainhashliteral_with_single_line_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_single_line_lists_unless_items_are_s
+    source: |
+      , unless items are split onto multiple lines
+    offenses:
+      []
+    config:
+      EnforcedStyleForMultiline: consistent_comma
+
+  - name: rubocop_cop_style_trailingcommainhashliteral_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_no_comma_registers_an_offense_for_trailing_comma_in_literal
+    source: |
+      MAP = { a: 1001,
+              b: 2020,
+              c: 3333,
+            }
+    offenses:
+      - line: 3
+        column_start: 15
+        column_end: 16
+        message: Avoid comma after the last item of a hash.
+    corrected: |
+      MAP = { a: 1001,
+              b: 2020,
+              c: 3333
+            }
+    config:
+      EnforcedStyleForMultiline: no_comma
+
+  - name: rubocop_cop_style_trailingcommainhashliteral_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_no_comma_accepts_literal_with_no_trailing_comma
+    source: |
+      MAP = {
+              a: 1001,
+              b: 2020,
+              c: 3333
+            }
+    offenses:
+      []
+    config:
+      EnforcedStyleForMultiline: no_comma
+
+  - name: rubocop_cop_style_trailingcommainhashliteral_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_no_comma_accepts_comma_inside_a_heredoc_parameters_at_the_end
+    source: |
+      route(help: {
+        'auth' => <<-HELP.chomp
+      ,
+      HELP
+      })
+    offenses:
+      []
+    config:
+      EnforcedStyleForMultiline: no_comma
+
+  - name: rubocop_cop_style_trailingcommainhashliteral_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_no_comma_accepts_comma_in_comment_after_last_value_item
+    source: |
+      {
+        foo: 'foo',
+        bar: 'bar'.delete(',')#,
+      }
+    offenses:
+      []
+    config:
+      EnforcedStyleForMultiline: no_comma
+
+  - name: rubocop_cop_style_trailingcommainhashliteral_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_comma_when_closing_bracket_is_on_same_line_as_last_value_accepts_literal_with_no_trailing_comma
+    source: |
+      VALUES = {
+                 a: "b",
+                 c: "d",
+                 e: "f"}
+    offenses:
+      []
+    config:
+      EnforcedStyleForMultiline: comma
+
+  - name: rubocop_cop_style_trailingcommainhashliteral_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_comma_registers_an_offense_for_no_trailing_comma
+    source: |
+      MAP = { a: 1001,
+              b: 2020,
+              c: 3333
+      }
+    offenses:
+      - line: 3
+        column_start: 8
+        column_end: 15
+        message: Put a comma after the last item of a multiline hash.
+    corrected: |
+      MAP = { a: 1001,
+              b: 2020,
+              c: 3333,
+      }
+    config:
+      EnforcedStyleForMultiline: comma
+
+  - name: rubocop_cop_style_trailingcommainhashliteral_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_comma_registers_an_offense_for_trailing_comma_in_a_comment
+    source: |
+      MAP = { a: 1001,
+              b: 2020,
+              c: 3333 # a comment,
+      }
+    offenses:
+      - line: 3
+        column_start: 8
+        column_end: 15
+        message: Put a comma after the last item of a multiline hash.
+    corrected: |
+      MAP = { a: 1001,
+              b: 2020,
+              c: 3333, # a comment,
+      }
+    config:
+      EnforcedStyleForMultiline: comma
+
+  - name: rubocop_cop_style_trailingcommainhashliteral_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_comma_accepts_trailing_comma
+    source: |
+      MAP = {
+              a: 1001,
+              b: 2020,
+              c: 3333,
+            }
+    offenses:
+      []
+    config:
+      EnforcedStyleForMultiline: comma
+
+  - name: rubocop_cop_style_trailingcommainhashliteral_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_comma_accepts_trailing_comma_after_a_heredoc
+    source: |
+      route(help: {
+        'auth' => <<-HELP.chomp,
+      ...
+      HELP
+      })
+    offenses:
+      []
+    config:
+      EnforcedStyleForMultiline: comma
+
+  - name: rubocop_cop_style_trailingcommainhashliteral_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_comma_accepts_a_multiline_hash_with_a_single_pair_and_trailing_comma
+    source: |
+      bar = {
+        a: 123,
+      }
+    offenses:
+      []
+    config:
+      EnforcedStyleForMultiline: comma
+
+  - name: rubocop_cop_style_trailingcommainhashliteral_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_diff_comma_when_closing_bracket_is_on_same_line_as_last_value_accepts_a_literal_with_no_trailing_comma
+    source: |
+      VALUES = {
+                 a: "b",
+                 b: "c",
+                 d: "e"}
+    offenses:
+      []
+    config:
+      EnforcedStyleForMultiline: diff_comma
+
+  - name: rubocop_cop_style_trailingcommainhashliteral_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_diff_comma_registers_an_offense_for_no_trailing_comma
+    source: |
+      MAP = { a: 1001,
+              b: 2020,
+              c: 3333
+      }
+    offenses:
+      - line: 3
+        column_start: 8
+        column_end: 15
+        message: Put a comma after the last item of a multiline hash.
+    corrected: |
+      MAP = { a: 1001,
+              b: 2020,
+              c: 3333,
+      }
+    config:
+      EnforcedStyleForMultiline: diff_comma
+
+  - name: rubocop_cop_style_trailingcommainhashliteral_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_diff_comma_accepts_trailing_comma
+    source: |
+      MAP = {
+              a: 1001,
+              b: 2020,
+              c: 3333,
+            }
+    offenses:
+      []
+    config:
+      EnforcedStyleForMultiline: diff_comma
+
+  - name: rubocop_cop_style_trailingcommainhashliteral_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_diff_comma_accepts_trailing_comma_with_comment
+    source: |
+      MAP = {
+              a: 1001,
+              b: 2020,
+              c: 3333, # comment
+            }
+    offenses:
+      []
+    config:
+      EnforcedStyleForMultiline: diff_comma
+
+  - name: rubocop_cop_style_trailingcommainhashliteral_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_diff_comma_registers_an_offense_for_a_trailing_comma_on_same_line_as_closing_brace
+    source: |
+      MAP = { a: 1001,
+              b: 2020,
+              c: 3333, }
+    offenses:
+      - line: 3
+        column_start: 15
+        column_end: 16
+        message: Avoid comma after the last item of a hash, unless that item immediately precedes a newline.
+    corrected: |
+      MAP = { a: 1001,
+              b: 2020,
+              c: 3333 }
+    config:
+      EnforcedStyleForMultiline: diff_comma
+
+  - name: rubocop_cop_style_trailingcommainhashliteral_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_diff_comma_accepts_trailing_comma_after_a_heredoc
+    source: |
+      route(help: {
+        'auth' => <<-HELP.chomp,
+      ...
+      HELP
+      })
+    offenses:
+      []
+    config:
+      EnforcedStyleForMultiline: diff_comma
+
+  - name: rubocop_cop_style_trailingcommainhashliteral_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_diff_comma_accepts_a_multiline_hash_with_a_single_pair_and_trailing_comma
+    source: |
+      bar = {
+        a: 123,
+      }
+    offenses:
+      []
+    config:
+      EnforcedStyleForMultiline: diff_comma
+
+  - name: rubocop_cop_style_trailingcommainhashliteral_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_diff_comma_accepts_a_multiline_hash_with_pairs_on_a_single_line_and_trailing_comma
+    source: |
+      bar = {
+        a: 1001, b: 2020,
+      }
+    offenses:
+      []
+    config:
+      EnforcedStyleForMultiline: diff_comma
+
+  - name: rubocop_cop_style_trailingcommainhashliteral_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_when_closing_bracket_is_on_same_line_as_last_value_registers_an_offense_for_literal_with_no_trailing_comma
+    source: |
+      VALUES = {
+                 a: "b",
+                 b: "c",
+                 d: "e"}
+    offenses:
+      - line: 4
+        column_start: 11
+        column_end: 17
+        message: Put a comma after the last item of a multiline hash.
+    corrected: |
+      VALUES = {
+                 a: "b",
+                 b: "c",
+                 d: "e",}
+    config:
+      EnforcedStyleForMultiline: consistent_comma
+
+  - name: rubocop_cop_style_trailingcommainhashliteral_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_registers_an_offense_for_no_trailing_comma
+    source: |
+      MAP = { a: 1001,
+              b: 2020,
+              c: 3333
+      }
+    offenses:
+      - line: 3
+        column_start: 8
+        column_end: 15
+        message: Put a comma after the last item of a multiline hash.
+    corrected: |
+      MAP = { a: 1001,
+              b: 2020,
+              c: 3333,
+      }
+    config:
+      EnforcedStyleForMultiline: consistent_comma
+
+  - name: rubocop_cop_style_trailingcommainhashliteral_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_accepts_trailing_comma
+    source: |
+      MAP = {
+              a: 1001,
+              b: 2020,
+              c: 3333,
+            }
+    offenses:
+      []
+    config:
+      EnforcedStyleForMultiline: consistent_comma
+
+  - name: rubocop_cop_style_trailingcommainhashliteral_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_registers_an_offense_for_no_trailing_comma_on_same_line_as_closing_brace
+    source: |
+      MAP = { a: 1001,
+              b: 2020,
+              c: 3333 }
+    offenses:
+      - line: 3
+        column_start: 8
+        column_end: 15
+        message: Put a comma after the last item of a multiline hash.
+    corrected: |
+      MAP = { a: 1001,
+              b: 2020,
+              c: 3333, }
+    config:
+      EnforcedStyleForMultiline: consistent_comma
+
+  - name: rubocop_cop_style_trailingcommainhashliteral_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_accepts_trailing_comma_after_a_heredoc
+    source: |
+      route(help: {
+        'auth' => <<-HELP.chomp,
+      ...
+      HELP
+      })
+    offenses:
+      []
+    config:
+      EnforcedStyleForMultiline: consistent_comma
+
+  - name: rubocop_cop_style_trailingcommainhashliteral_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_accepts_a_multiline_hash_with_a_single_pair_and_trailing_comma
+    source: |
+      bar = {
+        a: 123,
+      }
+    offenses:
+      []
+    config:
+      EnforcedStyleForMultiline: consistent_comma
+
+  - name: rubocop_cop_style_trailingcommainhashliteral_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_accepts_a_multiline_hash_with_pairs_on_a_single_line_and_trailing_comma
+    source: |
+      bar = {
+        a: 1001, b: 2020,
+      }
+    offenses:
+      []
+    config:
+      EnforcedStyleForMultiline: consistent_comma

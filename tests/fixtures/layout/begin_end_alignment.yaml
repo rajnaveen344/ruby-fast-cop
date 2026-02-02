@@ -1,0 +1,105 @@
+cop: Layout/BeginEndAlignment
+department: layout
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_layout_beginendalignment_aligned_begin
+    source: |
+      begin
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: begin
+
+  - name: rubocop_cop_layout_beginendalignment_aligned_end
+    source: |
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: begin
+
+  - name: rubocop_cop_layout_beginendalignment_misaligned_begin
+    source: |
+      begin
+        end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 5
+        message: "`end` at 2, 2 is not aligned with `begin` at 1, 0."
+    config:
+      EnforcedStyleAlignWith: begin
+
+  - name: rubocop_cop_layout_beginendalignment_aligned_puts_1_begin
+    source: |
+      puts 1; begin
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: begin
+
+  - name: rubocop_cop_layout_beginendalignment_aligned_end
+    source: |
+              end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: begin
+
+  - name: rubocop_cop_layout_beginendalignment_when_enforcedstylealignwith_is_start_of_line_aligned_puts_1_begin
+    source: |
+      puts 1; begin
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: start_of_line
+
+  - name: rubocop_cop_layout_beginendalignment_when_enforcedstylealignwith_is_start_of_line_aligned_end
+    source: |
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: start_of_line
+
+  - name: rubocop_cop_layout_beginendalignment_when_enforcedstylealignwith_is_start_of_line_misaligned_begin
+    source: |
+      begin
+        end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 5
+        message: "`end` at 2, 2 is not aligned with `begin` at 1, 0."
+    config:
+      EnforcedStyleAlignWith: start_of_line
+
+  - name: rubocop_cop_layout_beginendalignment_when_enforcedstylealignwith_is_start_of_line_misaligned_var_begin
+    source: |
+      var << begin
+             end
+    offenses:
+      - line: 2
+        column_start: 7
+        column_end: 10
+        message: "`end` at 2, 7 is not aligned with `var << begin` at 1, 0."
+    config:
+      EnforcedStyleAlignWith: start_of_line
+
+  - name: rubocop_cop_layout_beginendalignment_when_enforcedstylealignwith_is_start_of_line_aligned_var_begin
+    source: |
+      var = begin
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: start_of_line
+
+  - name: rubocop_cop_layout_beginendalignment_when_enforcedstylealignwith_is_start_of_line_aligned_end
+    source: |
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: start_of_line

@@ -1,0 +1,90 @@
+cop: Style/RedundantRegexpConstructor
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_redundantregexpconstructor_registers_an_offense_when_wrapping_regexp_with_regexp_new
+    source: |
+      Regexp.new(/regexp/)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 20
+        message: Remove the redundant `Regexp.new`.
+    corrected: |
+      /regexp/
+
+  - name: rubocop_cop_style_redundantregexpconstructor_registers_an_offense_when_wrapping_regexp_with_regexp_new
+    source: |
+      ::Regexp.new(/regexp/)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 22
+        message: Remove the redundant `Regexp.new`.
+    corrected: |
+      /regexp/
+
+  - name: rubocop_cop_style_redundantregexpconstructor_registers_an_offense_when_wrapping_regexp_i_with_regexp_new
+    source: |
+      Regexp.new(/regexp/i)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 21
+        message: Remove the redundant `Regexp.new`.
+    corrected: |
+      /regexp/i
+
+  - name: rubocop_cop_style_redundantregexpconstructor_registers_an_offense_when_wrapping_a_regexp_z_io_with_regexp_new
+    source: |
+      Regexp.new(/\A#{regexp}\z/io)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 29
+        message: Remove the redundant `Regexp.new`.
+    corrected: |
+      /\A#{regexp}\z/io
+
+  - name: rubocop_cop_style_redundantregexpconstructor_registers_an_offense_when_wrapping_regexp_with_regexp_compile
+    source: |
+      Regexp.compile(/regexp/)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 24
+        message: Remove the redundant `Regexp.compile`.
+    corrected: |
+      /regexp/
+
+  - name: rubocop_cop_style_redundantregexpconstructor_does_not_register_an_offense_when_wrapping_a_string_literal_with_regexp_new
+    source: |
+      Regexp.new('regexp')
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantregexpconstructor_does_not_register_an_offense_when_wrapping_a_string_literal_with_regexp_new_with_regopt_argument
+    source: |
+      Regexp.new('regexp', Regexp::IGNORECASE)
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantregexpconstructor_does_not_register_an_offense_when_wrapping_a_string_literal_with_regexp_new_with_piped_regopt_argument
+    source: |
+      Regexp.new('regexp', Regexp::IGNORECASE | Regexp::IGNORECASE)
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantregexpconstructor_does_not_register_an_offense_when_wrapping_a_string_literal_with_regexp_compile
+    source: |
+      Regexp.compile('regexp')
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantregexpconstructor_does_not_register_an_offense_when_using_a_regexp_literal
+    source: |
+      /regexp/
+    offenses:
+      []

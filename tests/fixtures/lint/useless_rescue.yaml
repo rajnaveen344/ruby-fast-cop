@@ -1,0 +1,116 @@
+cop: Lint/UselessRescue
+department: lint
+severity: warning
+implemented: false
+
+tests:
+  - name: rubocop_cop_lint_uselessrescue_registers_an_offense_when_single_rescue_which_only_anonymously_reraises
+    source: |
+      def foo
+        do_something
+      rescue
+        raise
+      end
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 6
+        message: Useless `rescue` detected.
+
+  - name: rubocop_cop_lint_uselessrescue_registers_an_offense_when_single_rescue_which_only_reraises_exception_variable
+    source: |
+      def foo
+        do_something
+      rescue
+        raise $ERROR_INFO
+      end
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 6
+        message: Useless `rescue` detected.
+
+  - name: rubocop_cop_lint_uselessrescue_does_not_register_an_offense_when_rescue_not_only_reraises
+    source: |
+      def foo
+        do_something
+      rescue
+        do_cleanup
+        raise e
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_uselessrescue_does_not_register_an_offense_when_rescue_only_reraises_but_not_exception_variable
+    source: |
+      def foo
+        do_something
+      rescue => e
+        raise x
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_uselessrescue_does_not_register_an_offense_when_rescue_does_not_exception_variable_and_ensure_has_empty_body
+    source: |
+      def foo
+      rescue => e
+      ensure
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_uselessrescue_does_not_register_an_offense_when_using_exception_variable_in_ensure_clause
+    source: |
+      def foo
+        do_something
+      rescue => e
+        raise
+      ensure
+        do_something(e)
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_uselessrescue_registers_an_offense_when_multiple_rescue_s_and_last_is_only_reraises
+    source: |
+      def foo
+        do_something
+      rescue ArgumentError
+        # noop
+      rescue
+        raise
+      end
+    offenses:
+      - line: 5
+        column_start: 0
+        column_end: 6
+        message: Useless `rescue` detected.
+
+  - name: rubocop_cop_lint_uselessrescue_does_not_register_an_offense_when_multiple_rescue_s_and_not_last_is_only_reraises
+    source: |
+      def foo
+        do_something
+      rescue ArgumentError
+        raise
+      rescue
+        # noop
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_uselessrescue_does_not_register_an_offense_when_using_thread_raise_in_rescue_clause
+    source: |
+      def foo
+        do_something
+      rescue
+        Thread.current.raise
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_uselessrescue_does_not_register_an_offense_when_using_modifier_rescue
+    source: |
+      do_something rescue nil
+    offenses:
+      []

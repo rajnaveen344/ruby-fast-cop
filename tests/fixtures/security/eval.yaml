@@ -1,0 +1,119 @@
+cop: Security/Eval
+department: security
+severity: warning
+implemented: false
+
+tests:
+  - name: rubocop_cop_security_eval_registers_an_offense_for_eval_as_function
+    source: |
+      eval(something)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 4
+        message: The use of `eval` is a serious security risk.
+
+  - name: rubocop_cop_security_eval_registers_an_offense_for_eval_as_command
+    source: |
+      eval something
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 4
+        message: The use of `eval` is a serious security risk.
+
+  - name: rubocop_cop_security_eval_registers_an_offense_binding_eval
+    source: |
+      binding.eval something
+    offenses:
+      - line: 1
+        column_start: 8
+        column_end: 12
+        message: The use of `eval` is a serious security risk.
+
+  - name: rubocop_cop_security_eval_registers_an_offense_for_kernel_eval
+    source: |
+      Kernel.eval something
+    offenses:
+      - line: 1
+        column_start: 7
+        column_end: 11
+        message: The use of `eval` is a serious security risk.
+
+  - name: rubocop_cop_security_eval_registers_an_offense_for_kernel_eval
+    source: |
+      ::Kernel.eval something
+    offenses:
+      - line: 1
+        column_start: 9
+        column_end: 13
+        message: The use of `eval` is a serious security risk.
+
+  - name: rubocop_cop_security_eval_registers_an_offense_for_eval_with_string_that_has_an_interpolation
+    source: |
+      eval "something#{foo}"
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 4
+        message: The use of `eval` is a serious security risk.
+
+  - name: rubocop_cop_security_eval_accepts_eval_as_variable
+    source: |
+      eval = something
+    offenses:
+      []
+
+  - name: rubocop_cop_security_eval_accepts_eval_as_method
+    source: |
+      something.eval
+    offenses:
+      []
+
+  - name: rubocop_cop_security_eval_accepts_eval_on_a_literal_string
+    source: |
+      eval("puts 1")
+    offenses:
+      []
+
+  - name: rubocop_cop_security_eval_accepts_eval_with_no_arguments
+    source: |
+      eval
+    offenses:
+      []
+
+  - name: rubocop_cop_security_eval_accepts_eval_with_a_multiline_string
+    source: |
+      eval "something\nsomething2"
+    offenses:
+      []
+
+  - name: rubocop_cop_security_eval_accepts_eval_with_a_string_that_interpolates_a_literal
+    source: |
+      eval "something#{2}"
+    offenses:
+      []
+
+  - name: rubocop_cop_security_eval_with_an_explicit_binding_filename_and_line_number_registers_an_offense_for_eval_as_function
+    source: |
+      eval(something, binding, "test.rb", 1)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 4
+        message: The use of `eval` is a serious security risk.
+
+  - name: rubocop_cop_security_eval_with_an_explicit_binding_filename_and_line_number_registers_an_offense_for_eval_as_command
+    source: |
+      eval something, binding, "test.rb", 1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 4
+        message: The use of `eval` is a serious security risk.
+
+  - name: rubocop_cop_security_eval_with_an_explicit_binding_filename_and_line_number_accepts_eval_on_a_literal_string
+    source: |
+      eval("puts 1", binding, "test.rb", 1)
+    offenses:
+      []

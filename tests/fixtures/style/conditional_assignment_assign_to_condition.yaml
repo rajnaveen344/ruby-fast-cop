@@ -1,0 +1,2213 @@
+cop: Style/ConditionalAssignmentAssignToCondition
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_conditionalassignment
+    source: |
+      if var.any?(:prob_a_check)
+        @errors << 'Problem A'
+      elsif var.any?(:prob_a_check)
+        @errors << 'Problem B'
+      else
+        #{keyword} var.all?(:save)
+          @errors << 'Save failed'
+        end
+      end
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_conditionalassignment_else_followed_by_new_conditional_without_else_if
+    source: |
+      if
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_else_followed_by_new_conditional_without_else_unless
+    source: |
+      unless
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_counts_array_assignment_when_determining_multiple_assignment
+    source: |
+      if foo
+        array[1] = 1
+        a = 1
+      else
+        array[1] = 2
+        a = 2
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_allows_method_calls_in_conditionals
+    source: |
+      if line.is_a?(String)
+        expect(actual[ix]).to eq(line)
+      else
+        expect(actual[ix]).to match(line)
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_allows_if_else_without_variable_assignment
+    source: |
+      if foo
+        1
+      else
+        2
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_allows_assignment_to_the_result_of_a_ternary_operation
+    source: |
+      bar = foo? ? "a" : "b"
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_registers_an_offense_for_assignment_in_ternary_operation_using_strings
+    source: |
+      foo? ? bar = "a" : bar = "b"
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 28
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      bar = foo? ? "a" : "b"
+
+  - name: rubocop_cop_style_conditionalassignment_allows_modifier_if
+    source: |
+      return if a == 1
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_allows_modifier_if_inside_of_if_else
+    source: |
+      if foo
+        a unless b
+      else
+        c unless d
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment
+    source: |
+      if condition
+        default['key-with-dash'] << a
+      else
+        default['key-with-dash'] << b
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 12
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      default['key-with-dash'] << if condition
+        a
+      else
+        b
+      end
+
+  - name: rubocop_cop_style_conditionalassignment_doesn_t_crash_with_empty_braces
+    source: |
+      if condition
+        ()
+      else
+        ()
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_registers_an_offense_for_comparison_methods_in_ternary_operations
+    source: |
+      %{source}
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 9
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      bar #{method} (foo? ? 1 : 2)
+    interpolated: true
+
+  - name: rubocop_cop_style_conditionalassignment_corrects_comparison_methods_in_if_elsif_else
+    source: |
+      if foo
+        a #{method} b
+      elsif bar
+        a #{method} c
+      else
+        a #{method} d
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 6
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      a #{method} if foo
+        b
+      elsif bar
+        c
+      else
+        d
+      #{indent}end
+    interpolated: true
+
+  - name: rubocop_cop_style_conditionalassignment_corrects_comparison_methods_in_unless_else
+    source: |
+      unless foo
+        a #{method} b
+      else
+        a #{method} d
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 10
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      a #{method} unless foo
+        b
+      else
+        d
+      #{indent}end
+    interpolated: true
+
+  - name: rubocop_cop_style_conditionalassignment_corrects_comparison_methods_in_case_when
+    source: |
+      case foo
+      when bar
+        a #{method} b
+      else
+        a #{method} d
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 8
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      a #{method} case foo
+      when bar
+        b
+      else
+        d
+      #{indent}end
+    interpolated: true
+
+  - name: rubocop_cop_style_conditionalassignment_ruby_2_7_corrects_comparison_methods_in_case_in
+    source: |
+      case foo
+      in bar
+        a #{method} b
+      else
+        a #{method} d
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 8
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      a #{method} case foo
+      in bar
+        b
+      else
+        d
+      #{indent}end
+    ruby_version: ">= 2.7"
+    interpolated: true
+
+  - name: rubocop_cop_style_conditionalassignment_comparison_methods
+    source: |
+      ==
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_comparison_methods
+    source: |
+      !=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_comparison_methods
+    source: |
+      =~
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_comparison_methods
+    source: |
+      !~
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_comparison_methods
+    source: |
+      <=>
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_comparison_methods
+    source: |
+      ===
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_comparison_methods
+    source: |
+      <=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_comparison_methods
+    source: |
+      >=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_comparison_methods
+    source: |
+      <
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_comparison_methods
+    source: |
+      >
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_empty_branch_allows_an_empty_if_statement
+    source: |
+      if foo
+        # comment
+      else
+        do_something
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_empty_branch_allows_an_empty_elsif_statement
+    source: |
+      if foo
+        bar = 1
+      elsif baz
+        # empty
+      else
+        bar = 2
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_empty_branch_allows_if_elsif_without_else
+    source: |
+      if foo
+        bar = 'some string'
+      elsif bar
+        bar = 'another string'
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_empty_branch_allows_assignment_in_if_without_an_else
+    source: |
+      if foo
+        bar = 1
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_empty_branch_allows_assignment_in_unless_without_an_else
+    source: |
+      unless foo
+        bar = 1
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_empty_branch_allows_assignment_in_case_when_without_an_else
+    source: |
+      case foo
+      when "a"
+        bar = 1
+      when "b"
+        bar = 2
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_empty_branch_allows_an_empty_when_branch_with_an_else
+    source: |
+      case foo
+      when "a"
+        # empty
+      when "b"
+        bar = 2
+      else
+        bar = 3
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_empty_branch_allows_case_with_an_empty_else
+    source: |
+      case foo
+      when "b"
+        bar = 2
+      else
+        # empty
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_allows_assignment_of_different_variables_in_if_else
+    source: |
+      if foo
+        bar = 1
+      else
+        baz = 1
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_allows_method_calls_in_if_else
+    source: |
+      if foo
+        bar
+      else
+        baz
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_allows_if_elsif_else_with_the_same_assignment_only_in_if_else
+    source: |
+      if foo
+        bar = 1
+      elsif foobar
+        baz = 2
+      else
+        bar = 1
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_allows_if_elsif_else_with_the_same_assignment_only_in_if_elsif
+    source: |
+      if foo
+        bar = 1
+      elsif foobar
+        bar = 2
+      else
+        baz = 1
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_allows_if_elsif_else_with_the_same_assignment_only_in_elsif_else
+    source: |
+      if foo
+        bar = 1
+      elsif foobar
+        baz = 2
+      else
+        baz = 1
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_allows_assignment_using_different_operators_in_if_else
+    source: |
+      if foo
+        bar = 1
+      else
+        bar << 2
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_allows_assignment_using_different_method_operators_in_if_else
+    source: |
+      if foo
+        bar[index] = 1
+      else
+        bar << 2
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_allows_aref_assignment_with_different_indices_in_if_else
+    source: |
+      if foo
+        bar[1] = 1
+      else
+        bar[2] = 2
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_allows_assignment_using_different_operators_in_if_elsif_else
+    source: |
+      if foo
+        bar = 1
+      elsif foobar
+        bar += 2
+      else
+        bar << 3
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_allows_assignment_of_different_variables_in_case_when_else
+    source: |
+      case foo
+      when "a"
+        bar = 1
+      else
+        baz = 2
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_registers_an_offense_in_an_if_else_if_the_assignment_is_already_at_the_line_length_limit
+    source: |
+      if foo
+        bar = #{'a' * 72}
+      else
+        bar = #{'b' * 72}
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 6
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      bar = if foo
+        #{'a' * 72}
+      else
+        #{'b' * 72}
+      end
+    interpolated: true
+
+  - name: rubocop_cop_style_conditionalassignment_correction_would_exceed_max_line_length
+    source: |
+      if foo
+        #{'a' * 78}
+        bar = 1
+      else
+        bar = 2
+      end
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_conditionalassignment_correction_would_exceed_max_line_length
+    source: |
+      if #{'a' * 78}
+        bar = 1
+      else
+        bar = 2
+      end
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_conditionalassignment_correction_would_exceed_max_line_length
+    source: |
+      case foo
+      when foobar
+        #{'a' * 78}
+        bar = 1
+      else
+        bar = 2
+      end
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_conditionalassignment_registers_an_offense_assigning_any_variable_type_in_ternary
+    source: |
+      %{source}
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 9
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      #{variable} = #{rhs}
+    interpolated: true
+
+  - name: rubocop_cop_style_conditionalassignment_registers_an_offense_assigning_any_variable_type_in_if_else
+    source: |
+      if foo
+        #{variable} = 1
+      else
+        #{variable} = 2
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 6
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      #{variable} = if foo
+        1
+      else
+        2
+      end
+    interpolated: true
+
+  - name: rubocop_cop_style_conditionalassignment_registers_an_offense_assigning_any_variable_type_in_case_when
+    source: |
+      case foo
+      when "a"
+        #{variable} = 1
+      else
+        #{variable} = 2
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 8
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      #{variable} = case foo
+      when "a"
+        1
+      else
+        2
+      end
+    interpolated: true
+
+  - name: rubocop_cop_style_conditionalassignment_allows_assignment_to_the_return_of_if_else
+    source: |
+      #{variable} = if foo
+                      1
+                    else
+                      2
+                    end
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_conditionalassignment_allows_assignment_to_the_return_of_case_when
+    source: |
+      #{variable} = case foo
+                    when bar
+                      1
+                    else
+                      2
+                    end
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_conditionalassignment_allows_assignment_to_the_return_of_a_ternary
+    source: |
+      #{variable} = foo? ? 1 : 2
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_conditionalassignment_all_variable_types_bar
+    source: |
+      bar
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_all_variable_types_bar
+    source: |
+      BAR
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_all_variable_types_bar
+    source: |
+      @bar
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_all_variable_types_bar
+    source: |
+      @@bar
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_all_variable_types_bar
+    source: |
+      $BAR
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_all_variable_types_foo_bar
+    source: |
+      foo.bar
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_all_variable_types_foo_1
+    source: |
+      foo[1]
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment
+    source: |
+      %{source}
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 9
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      #{name} #{assignment} #{rhs}
+    interpolated: true
+
+  - name: rubocop_cop_style_conditionalassignment
+    source: |
+      if foo
+        #{name} #{assignment} 1
+      else
+        #{name} #{assignment} 2
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 6
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      #{name} #{assignment} if foo
+        1
+      else
+        2
+      #{indent}end
+    interpolated: true
+
+  - name: rubocop_cop_style_conditionalassignment
+    source: |
+      case foo
+      when "a"
+        #{name} #{assignment} 1
+      else
+        #{name} #{assignment} 2
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 8
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      #{name} #{assignment} case foo
+      when "a"
+        1
+      else
+        2
+      #{indent}end
+    interpolated: true
+
+  - name: rubocop_cop_style_conditionalassignment_all_assignment_types
+    source: |
+      =
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_all_assignment_types
+    source: |
+      +=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_all_assignment_types
+    source: |
+      -=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_all_assignment_types
+    source: |
+      *=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_all_assignment_types
+    source: |
+      **=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_all_assignment_types
+    source: |
+      /=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_all_assignment_types
+    source: |
+      %=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_all_assignment_types
+    source: |
+      ^=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_all_assignment_types
+    source: |
+      &=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_all_assignment_types
+    source: |
+      |=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_all_assignment_types
+    source: |
+      <<=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_all_assignment_types
+    source: |
+      >>=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_all_assignment_types
+    source: |
+      ||=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_all_assignment_types
+    source: |
+      &&=
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_all_assignment_types
+    source: |
+      <<
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_registers_an_offense_for_assignment_in_if_elsif_else
+    source: |
+      if foo
+        bar = 1
+      elsif baz
+        bar = 2
+      else
+        bar = 3
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 6
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      bar = if foo
+        1
+      elsif baz
+        2
+      else
+        3
+      end
+
+  - name: rubocop_cop_style_conditionalassignment_registers_an_offense_for_assignment_in_if_elsif_elsif_else
+    source: |
+      if foo
+        bar = 1
+      elsif baz
+        bar = 2
+      elsif foobar
+        bar = 3
+      else
+        bar = 4
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 6
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      bar = if foo
+        1
+      elsif baz
+        2
+      elsif foobar
+        3
+      else
+        4
+      end
+
+  - name: rubocop_cop_style_conditionalassignment_autocorrects_assignment_in_if_else_when_the_assignment_spans_multiple_lines
+    source: |
+      if foo
+        foo = {
+          a: 1,
+          b: 2,
+          c: 2,
+          d: 2,
+          e: 2,
+          f: 2,
+          g: 2,
+          h: 2
+        }
+      else
+        foo = { }
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 6
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      foo = if foo
+        {
+          a: 1,
+          b: 2,
+          c: 2,
+          d: 2,
+          e: 2,
+          f: 2,
+          g: 2,
+          h: 2
+        }
+      else
+        { }
+      end
+
+  - name: rubocop_cop_style_conditionalassignment_allows_out_of_order_multiple_assignment_in_if_elsif_else
+    source: |
+      if baz
+        bar = 1
+        foo = 1
+      elsif foobar
+        foo = 2
+        bar = 2
+      else
+        foo = 3
+        bar = 3
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_assignment_as_the_last_statement_allows_more_than_variable_assignment_in_if_else
+    source: |
+      if foo
+        method_call
+        bar = 1
+      else
+        method_call
+        bar = 2
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_assignment_as_the_last_statement_allows_more_than_variable_assignment_in_if_elsif_else
+    source: |
+      if foo
+        method_call
+        bar = 1
+      elsif foobar
+        method_call
+        bar = 2
+      else
+        method_call
+        bar = 3
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_assignment_as_the_last_statement_allows_multiple_assignment_in_if_else
+    source: |
+      if baz
+        foo = 1
+        bar = 1
+      else
+        foo = 2
+        bar = 2
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_assignment_as_the_last_statement_allows_multiple_assignment_in_if_elsif_else
+    source: |
+      if baz
+        foo = 1
+        bar = 1
+      elsif foobar
+        foo = 2
+        bar = 2
+      else
+        foo = 3
+        bar = 3
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_assignment_as_the_last_statement_allows_multiple_assignment_in_if_elsif_elsif_else
+    source: |
+      if baz
+        foo = 1
+        bar = 1
+      elsif foobar
+        foo = 2
+        bar = 2
+      elsif barfoo
+        foo = 3
+        bar = 3
+      else
+        foo = 4
+        bar = 4
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_assignment_as_the_last_statement
+    source: |
+      if baz
+        foo = 1
+        bar = 1
+      elsif foobar
+        baz = 2
+        bar = 2
+      else
+        boo = 3
+        bar = 3
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_assignment_as_the_last_statement
+    source: |
+      case foo
+      when foobar
+        baz = 1
+        bar = 1
+      when foobaz
+        boo = 2
+        bar = 2
+      else
+        faz = 3
+        bar = 3
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_assignment_as_the_last_statement_allows_multiple_assignment_in_unless_else
+    source: |
+      unless baz
+        foo = 1
+        bar = 1
+      else
+        foo = 2
+        bar = 2
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_assignment_as_the_last_statement_allows_multiple_assignments_in_case_when_with_only_one_when
+    source: |
+      case foo
+      when foobar
+        foo = 1
+        bar = 1
+      else
+        foo = 3
+        bar = 3
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_assignment_as_the_last_statement_allows_multiple_assignments_in_case_when_with_multiple_whens
+    source: |
+      case foo
+      when foobar
+        foo = 1
+        bar = 1
+      when foobaz
+        foo = 2
+        bar = 2
+      else
+        foo = 3
+        bar = 3
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_assignment_as_the_last_statement
+    source: |
+      case foo
+      when foobar
+        foo = 1
+        baz = 1
+        bar = 1
+      when foobaz
+        foo = 2
+        baz = 2
+        bar = 2
+      else
+        foo = 3
+        bar = 3
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_assignment_as_the_last_statement
+    source: |
+      case foo
+      when foobar
+        foo = 1
+        bar = 1
+      when foobaz
+        baz = 2
+        bar = 2
+      else
+        boo = 3
+        bar = 3
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_assignment_as_the_last_statement
+    source: |
+      if foo
+        bar = 1
+      elsif foobar
+        method_call
+        bar = 2
+      elsif baz
+        bar = 3
+      else
+        method_call
+        bar = 4
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_assignment_as_the_last_statement_allows_variable_assignment_in_unless_else_with_more_than_variable_assignment
+    source: |
+      unless foo
+        method_call
+        bar = 1
+      else
+        method_call
+        bar = 2
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_assignment_as_the_last_statement_allows_variable_assignment_in_case_when_else_with_more_than_variable_assignment
+    source: |
+      case foo
+      when foobar
+        method_call
+        bar = 1
+      else
+        method_call
+        bar = 2
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_assignment_as_the_last_statement_multiple_assignment_in_only_one_branch_allows_multiple_assignment_is_in_if
+    source: |
+      if foo
+        baz = 1
+        bar = 1
+      elsif foobar
+        method_call
+        bar = 2
+      else
+        other_method
+        bar = 3
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_assignment_as_the_last_statement_multiple_assignment_in_only_one_branch_allows_multiple_assignment_is_in_elsif
+    source: |
+      if foo
+        method_call
+        bar = 1
+      elsif foobar
+        baz = 2
+        bar = 2
+      else
+        other_method
+        bar = 3
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_assignment_as_the_last_statement_multiple_assignment_in_only_one_branch_does_not_register_an_offense_when_multiple_assignment_is_in_else
+    source: |
+      if foo
+        method_call
+        bar = 1
+      elsif foobar
+        other_method
+        bar = 2
+      else
+        baz = 3
+        bar = 3
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_registers_an_offense_for_assignment_in_if_then_elsif_then_else
+    source: |
+      if foo then bar = 1
+      elsif cond then bar = 2
+      else bar = 2
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 19
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      bar = if foo then 1
+      elsif cond then 2
+      else 2
+      end
+
+  - name: rubocop_cop_style_conditionalassignment_registers_an_offense_for_assignment_in_unless_else
+    source: |
+      unless foo
+        bar = 1
+      else
+        bar = 2
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 10
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      bar = unless foo
+        1
+      else
+        2
+      end
+
+  - name: rubocop_cop_style_conditionalassignment_registers_an_offense_for_assignment_in_case_when_then_else
+    source: |
+      case foo
+      when bar then baz = 1
+      else baz = 2
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 8
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      baz = case foo
+      when bar then 1
+      else 2
+      end
+
+  - name: rubocop_cop_style_conditionalassignment_registers_an_offense_for_assignment_in_case_with_when_else
+    source: |
+      case foo
+      when foobar
+        bar = 1
+      when baz
+        bar = 2
+      else
+        bar = 3
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 8
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      bar = case foo
+      when foobar
+        1
+      when baz
+        2
+      else
+        3
+      end
+
+  - name: rubocop_cop_style_conditionalassignment_allows_different_assignment_types_in_case_with_when_else
+    source: |
+      case foo
+      when foobar
+        bar = 1
+      else
+        bar << 2
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_allows_assignment_in_multiple_branches_when_it_is_wrapped_in_a_modifier
+    source: |
+      if foo
+        bar << 1
+      else
+        bar << 2 if foobar
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_autocorrect_corrects_in_ternary_operations
+    source: |
+      foo? ? bar =~ /a/ : bar =~ /b/
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 30
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      bar =~ (foo? ? /a/ : /b/)
+
+  - name: rubocop_cop_style_conditionalassignment_autocorrect_corrects_assignment_to_unbracketed_array_in_if_else
+    source: |
+      if foo
+        bar = 1
+      else
+        bar = 2, 5, 6
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 6
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      bar = if foo
+        1
+      else
+        [2, 5, 6]
+      end
+
+  - name: rubocop_cop_style_conditionalassignment_autocorrect_assignment_from_a_method_corrects_if_else
+    source: |
+      if foo?(scope.node)
+        bar << foobar(var, all)
+      else
+        bar << baz(var, all)
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 19
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      bar << if foo?(scope.node)
+        foobar(var, all)
+      else
+        baz(var, all)
+      end
+
+  - name: rubocop_cop_style_conditionalassignment_autocorrect_assignment_from_a_method_corrects_unless_else
+    source: |
+      unless foo?(scope.node)
+        bar << foobar(var, all)
+      else
+        bar << baz(var, all)
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 23
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      bar << unless foo?(scope.node)
+        foobar(var, all)
+      else
+        baz(var, all)
+      end
+
+  - name: rubocop_cop_style_conditionalassignment_autocorrect_assignment_from_a_method_corrects_case_when
+    source: |
+      case foo
+      when foobar
+        bar << foobar(var, all)
+      else
+        bar << baz(var, all)
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 8
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      bar << case foo
+      when foobar
+        foobar(var, all)
+      else
+        baz(var, all)
+      end
+
+  - name: rubocop_cop_style_conditionalassignment_autocorrect_preserves_comments_during_correction_in_if_else
+    source: |
+      if foo
+        # comment in if
+        bar = 1
+      else
+        # comment in else
+        bar = 2
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 6
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      bar = if foo
+        # comment in if
+        1
+      else
+        # comment in else
+        2
+      end
+
+  - name: rubocop_cop_style_conditionalassignment_autocorrect_preserves_comments_during_correction_in_case_when_else
+    source: |
+      case foo
+      when foobar
+        # comment in when
+        bar = 1
+      else
+        # comment in else
+        bar = 2
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 8
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      bar = case foo
+      when foobar
+        # comment in when
+        1
+      else
+        # comment in else
+        2
+      end
+
+  - name: rubocop_cop_style_conditionalassignment_autocorrect_aref_assignment_corrects_if_else
+    source: |
+      if something
+        array[1] = 1
+      else
+        array[1] = 2
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 12
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      array[1] = if something
+        1
+      else
+        2
+      end
+
+  - name: rubocop_cop_style_conditionalassignment_autocorrect_aref_assignment_with_different_indices_doesn_t_register_an_offense
+    source: |
+      if something
+        array[1, 2] = 1
+      else
+        array[1, 3] = 2
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_autocorrect_constant_assignment_corrects_if_else_with_namespaced_constant
+    source: |
+      if something
+        FOO::BAR = 1
+      else
+        FOO::BAR = 2
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 12
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      FOO::BAR = if something
+        1
+      else
+        2
+      end
+
+  - name: rubocop_cop_style_conditionalassignment_autocorrect_constant_assignment_corrects_if_else_with_top_level_constant
+    source: |
+      if something
+        ::BAR = 1
+      else
+        ::BAR = 2
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 12
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      ::BAR = if something
+        1
+      else
+        2
+      end
+
+  - name: rubocop_cop_style_conditionalassignment_autocorrect_self_attribute_assignment_corrects_if_else
+    source: |
+      if something
+        self.attribute = 1
+      else
+        self.attribute = 2
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 12
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      self.attribute = if something
+        1
+      else
+        2
+      end
+
+  - name: rubocop_cop_style_conditionalassignment_autocorrect_self_attribute_assignment_with_different_receivers_doesn_t_register_an_offense
+    source: |
+      if something
+        obj1.attribute = 1
+      else
+        obj2.attribute = 2
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_autocorrect_multiple_assignment_does_not_register_an_offense_in_if_else
+    source: |
+      if something
+        a, b = 1, 2
+      else
+        a, b = 2, 1
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_autocorrect_multiple_assignment_does_not_register_an_offense_in_case_when
+    source: |
+      case foo
+      when bar
+        a, b = 1, 2
+      else
+        a, b = 2, 1
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_configured_to_check_conditions_with_multiple_statements_assignment_as_the_last_statement_registers_an_offense_in_if_else_with_more_than_variable_assignment
+    source: |
+      if foo
+        method_call
+        bar = 1
+      else
+        method_call
+        bar = 2
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 6
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      bar = if foo
+        method_call
+        1
+      else
+        method_call
+        2
+            end
+
+  - name: rubocop_cop_style_conditionalassignment_configured_to_check_conditions_with_multiple_statements_assignment_as_the_last_statement_registers_an_offense_in_if_elsif_else_with_more_than_variable_assignment
+    source: |
+      if foo
+        method_call
+        bar = 1
+      elsif foobar
+        method_call
+        bar = 2
+      else
+        method_call
+        bar = 3
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 6
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      bar = if foo
+        method_call
+        1
+      elsif foobar
+        method_call
+        2
+      else
+        method_call
+        3
+            end
+
+  - name: rubocop_cop_style_conditionalassignment_configured_to_check_conditions_with_multiple_statements_assignment_as_the_last_statement_registers_an_offense_for_multiple_assignment_in_if_else
+    source: |
+      if baz
+        foo = 1
+        bar = 1
+      else
+        foo = 2
+        bar = 2
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 6
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      bar = if baz
+        foo = 1
+        1
+      else
+        foo = 2
+        2
+            end
+
+  - name: rubocop_cop_style_conditionalassignment_configured_to_check_conditions_with_multiple_statements_assignment_as_the_last_statement_registers_an_offense_for_multiple_assignment_in_if_elsif_else
+    source: |
+      if baz
+        foo = 1
+        bar = 1
+      elsif foobar
+        foo = 2
+        bar = 2
+      else
+        foo = 3
+        bar = 3
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 6
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      bar = if baz
+        foo = 1
+        1
+      elsif foobar
+        foo = 2
+        2
+      else
+        foo = 3
+        3
+            end
+
+  - name: rubocop_cop_style_conditionalassignment_configured_to_check_conditions_with_multiple_statements_assignment_as_the_last_statement_registers_an_offense_for_multiple_assignment_in_if_elsif_elsif_else
+    source: |
+      if baz
+        foo = 1
+        bar = 1
+      elsif foobar
+        foo = 2
+        bar = 2
+      elsif barfoo
+        foo = 3
+        bar = 3
+      else
+        foo = 4
+        bar = 4
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 6
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      bar = if baz
+        foo = 1
+        1
+      elsif foobar
+        foo = 2
+        2
+      elsif barfoo
+        foo = 3
+        3
+      else
+        foo = 4
+        4
+            end
+
+  - name: rubocop_cop_style_conditionalassignment_configured_to_check_conditions_with_multiple_statements_assignment_as_the_last_statement_registers_an_offense_for_multiple_assignment_in_unless_else
+    source: |
+      unless baz
+        foo = 1
+        bar = 1
+      else
+        foo = 2
+        bar = 2
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 10
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      bar = unless baz
+        foo = 1
+        1
+      else
+        foo = 2
+        2
+            end
+
+  - name: rubocop_cop_style_conditionalassignment_configured_to_check_conditions_with_multiple_statements_assignment_as_the_last_statement_registers_an_offense_for_multiple_assignments_in_case_when_with_only_one_when
+    source: |
+      case foo
+      when foobar
+        foo = 1
+        bar = 1
+      else
+        foo = 3
+        bar = 3
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 8
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      bar = case foo
+      when foobar
+        foo = 1
+        1
+      else
+        foo = 3
+        3
+            end
+
+  - name: rubocop_cop_style_conditionalassignment_configured_to_check_conditions_with_multiple_statements_assignment_as_the_last_statement_registers_an_offense_for_multiple_assignments_in_case_when_with_multiple_whens
+    source: |
+      case foo
+      when foobar
+        foo = 1
+        bar = 1
+      when foobaz
+        foo = 2
+        bar = 2
+      else
+        foo = 3
+        bar = 3
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 8
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      bar = case foo
+      when foobar
+        foo = 1
+        1
+      when foobaz
+        foo = 2
+        2
+      else
+        foo = 3
+        3
+            end
+
+  - name: rubocop_cop_style_conditionalassignment_configured_to_check_conditions_with_multiple_statements_assignment_as_the_last_statement
+    source: |
+      if foo
+        bar = 1
+      elsif foobar
+        method_call
+        bar = 2
+      elsif baz
+        bar = 3
+      else
+        method_call
+        bar = 4
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 6
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      bar = if foo
+        1
+      elsif foobar
+        method_call
+        2
+      elsif baz
+        3
+      else
+        method_call
+        4
+            end
+
+  - name: rubocop_cop_style_conditionalassignment_configured_to_check_conditions_with_multiple_statements_assignment_as_the_last_statement_registers_an_offense_in_unless_else_with_more_than_variable_assignment
+    source: |
+      unless foo
+        method_call
+        bar = 1
+      else
+        method_call
+        bar = 2
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 10
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      bar = unless foo
+        method_call
+        1
+      else
+        method_call
+        2
+            end
+
+  - name: rubocop_cop_style_conditionalassignment_configured_to_check_conditions_with_multiple_statements_assignment_as_the_last_statement_registers_an_offense_in_case_when_else_with_more_than_variable_assignment
+    source: |
+      case foo
+      when foobar
+        method_call
+        bar = 1
+      else
+        method_call
+        bar = 2
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 8
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      bar = case foo
+      when foobar
+        method_call
+        1
+      else
+        method_call
+        2
+            end
+
+  - name: rubocop_cop_style_conditionalassignment_configured_to_check_conditions_with_multiple_statements_assignment_as_the_last_statement_multiple_assignment_in_only_one_branch_registers_an_offense_when_multiple_assignment_is_in_if
+    source: |
+      if foo
+        baz = 1
+        bar = 1
+      elsif foobar
+        method_call
+        bar = 2
+      else
+        other_method
+        bar = 3
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 6
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      bar = if foo
+        baz = 1
+        1
+      elsif foobar
+        method_call
+        2
+      else
+        other_method
+        3
+            end
+
+  - name: rubocop_cop_style_conditionalassignment_configured_to_check_conditions_with_multiple_statements_assignment_as_the_last_statement_multiple_assignment_in_only_one_branch_registers_an_offense_when_multiple_assignment_is_in_elsif
+    source: |
+      if foo
+        method_call
+        bar = 1
+      elsif foobar
+        baz = 2
+        bar = 2
+      else
+        other_method
+        bar = 3
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 6
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      bar = if foo
+        method_call
+        1
+      elsif foobar
+        baz = 2
+        2
+      else
+        other_method
+        3
+            end
+
+  - name: rubocop_cop_style_conditionalassignment_configured_to_check_conditions_with_multiple_statements_assignment_as_the_last_statement_multiple_assignment_in_only_one_branch_registers_an_offense_when_multiple_assignment_is_in_else
+    source: |
+      if foo
+        method_call
+        bar = 1
+      elsif foobar
+        other_method
+        bar = 2
+      else
+        baz = 3
+        bar = 3
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 6
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      bar = if foo
+        method_call
+        1
+      elsif foobar
+        other_method
+        2
+      else
+        baz = 3
+        3
+            end
+
+  - name: rubocop_cop_style_conditionalassignment_configured_to_check_conditions_with_multiple_statements_allows_assignment_in_multiple_branches_when_it_is_wrapped_in_a_modifier
+    source: |
+      if foo
+        bar << 1
+        bar << 2
+      else
+        bar << 3
+        bar << 4 if foobar
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_conditionalassignment_configured_to_check_conditions_with_multiple_statements
+    source: |
+      if foo
+        bar << 1
+        bar << 2
+      else
+        bar << 3 if foobar
+        bar << 4
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 6
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      bar << if foo
+        bar << 1
+        2
+      else
+        bar << 3 if foobar
+        4
+             end
+
+  - name: rubocop_cop_style_conditionalassignment_configured_to_check_conditions_with_multiple_statements_autocorrect_corrects_multiple_assignment_in_if_else
+    source: |
+      if foo
+        baz = 1
+        bar = 1
+      else
+        baz = 3
+        bar = 3
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 6
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      bar = if foo
+        baz = 1
+        1
+      else
+        baz = 3
+        3
+            end
+
+  - name: rubocop_cop_style_conditionalassignment_configured_to_check_conditions_with_multiple_statements_autocorrect_corrects_multiple_assignment_in_if_elsif_else
+    source: |
+      if foo
+        baz = 1
+        bar = 1
+      elsif foobar
+        baz = 2
+        bar = 2
+      else
+        baz = 3
+        bar = 3
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 6
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      bar = if foo
+        baz = 1
+        1
+      elsif foobar
+        baz = 2
+        2
+      else
+        baz = 3
+        3
+            end
+
+  - name: rubocop_cop_style_conditionalassignment_configured_to_check_conditions_with_multiple_statements_autocorrect_corrects_multiple_assignment_in_if_elsif_else_with_multiple_elsifs
+    source: |
+      if foo
+        baz = 1
+        bar = 1
+      elsif foobar
+        baz = 2
+        bar = 2
+      elsif foobaz
+        baz = 3
+        bar = 3
+      else
+        baz = 4
+        bar = 4
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 6
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      bar = if foo
+        baz = 1
+        1
+      elsif foobar
+        baz = 2
+        2
+      elsif foobaz
+        baz = 3
+        3
+      else
+        baz = 4
+        4
+            end
+
+  - name: rubocop_cop_style_conditionalassignment_configured_to_check_conditions_with_multiple_statements_autocorrect_corrects_multiple_assignment_in_case_when
+    source: |
+      case foo
+      when foobar
+        baz = 1
+        bar = 1
+      else
+        baz = 2
+        bar = 2
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 8
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      bar = case foo
+      when foobar
+        baz = 1
+        1
+      else
+        baz = 2
+        2
+            end
+
+  - name: rubocop_cop_style_conditionalassignment_configured_to_check_conditions_with_multiple_statements_autocorrect_corrects_multiple_assignment_in_case_when_with_multiple_whens
+    source: |
+      case foo
+      when foobar
+        baz = 1
+        bar = 1
+      when foobaz
+        baz = 2
+        bar = 2
+      else
+        baz = 3
+        bar = 3
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 8
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      bar = case foo
+      when foobar
+        baz = 1
+        1
+      when foobaz
+        baz = 2
+        2
+      else
+        baz = 3
+        3
+            end
+
+  - name: rubocop_cop_style_conditionalassignment_configured_to_check_conditions_with_multiple_statements_autocorrect_corrects_multiple_assignment_in_unless_else
+    source: |
+      unless foo
+        baz = 1
+        bar = 1
+      else
+        baz = 2
+        bar = 2
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 10
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      bar = unless foo
+        baz = 1
+        1
+      else
+        baz = 2
+        2
+            end
+
+  - name: rubocop_cop_style_conditionalassignment_configured_to_check_conditions_with_multiple_statements_autocorrect_corrects_assignment_in_an_if_statement_that_is_nested_in_unless_else
+    source: |
+      unless foo
+        if foobar
+          baz = 1
+        elsif qux
+          baz = 2
+        else
+          baz = 3
+        end
+      else
+        baz = 4
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 11
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      unless foo
+        baz = if foobar
+          1
+        elsif qux
+          2
+        else
+          3
+              end
+      else
+        baz = 4
+      end
+
+  - name: rubocop_cop_style_conditionalassignment_endalignment_configured_to_start_of_line_autocorrect_uses_proper_end_alignment_in_if
+    source: |
+      if foo
+        a =  b
+      elsif bar
+        a = c
+      else
+        a = d
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 6
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      a = if foo
+        b
+      elsif bar
+        c
+      else
+        d
+      end
+
+  - name: rubocop_cop_style_conditionalassignment_endalignment_configured_to_start_of_line_autocorrect_uses_proper_end_alignment_in_unless
+    source: |
+      unless foo
+        a = b
+      else
+        a = d
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 10
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      a = unless foo
+        b
+      else
+        d
+      end
+
+  - name: rubocop_cop_style_conditionalassignment_endalignment_configured_to_start_of_line_autocorrect_uses_proper_end_alignment_in_case
+    source: |
+      case foo
+      when bar
+        a = b
+      when baz
+        a = c
+      else
+        a = d
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 8
+        message: Use the return of the conditional for variable assignment and comparison.
+    corrected: |
+      a = case foo
+      when bar
+        b
+      when baz
+        c
+      else
+        d
+      end
+
+  - name: rubocop_cop_style_conditionalassignment_includeternaryexpressions_false_allows_assignment_in_ternary_operation
+    source: |
+      foo? ? bar = "a" : bar = "b"
+    offenses:
+      []

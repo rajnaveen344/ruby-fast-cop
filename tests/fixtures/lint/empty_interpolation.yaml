@@ -1,0 +1,120 @@
+cop: Lint/EmptyInterpolation
+department: lint
+severity: warning
+implemented: false
+
+tests:
+  - name: rubocop_cop_lint_emptyinterpolation_registers_an_offense_and_corrects_in_interpolation
+    source: |
+      "this is the #{}"
+    offenses:
+      - line: 1
+        column_start: 13
+        column_end: 16
+        message: Empty interpolation detected.
+    corrected: |
+      "this is the "
+
+  - name: rubocop_cop_lint_emptyinterpolation_registers_an_offense_and_corrects_in_interpolation
+    source: |
+      "this is the #{ }"
+    offenses:
+      - line: 1
+        column_start: 13
+        column_end: 17
+        message: Empty interpolation detected.
+    corrected: |
+      "this is the "
+
+  - name: rubocop_cop_lint_emptyinterpolation_registers_an_offense_and_corrects_in_interpolation
+    source: |
+      "this is the #{''}"
+    offenses:
+      - line: 1
+        column_start: 13
+        column_end: 18
+        message: Empty interpolation detected.
+    corrected: |
+      "this is the "
+
+  - name: rubocop_cop_lint_emptyinterpolation_registers_an_offense_and_corrects_in_interpolation
+    source: |
+      "this is the #{""}"
+    offenses:
+      - line: 1
+        column_start: 13
+        column_end: 18
+        message: Empty interpolation detected.
+    corrected: |
+      "this is the "
+
+  - name: rubocop_cop_lint_emptyinterpolation_registers_an_offense_and_corrects_nil_in_interpolation
+    source: |
+      "this is the #{nil}"
+    offenses:
+      - line: 1
+        column_start: 13
+        column_end: 19
+        message: Empty interpolation detected.
+    corrected: |
+      "this is the "
+
+  - name: rubocop_cop_lint_emptyinterpolation_finds_interpolations_in_string_like_contexts
+    source: |
+      /regexp #{}/
+      `backticks #{}`
+      :"symbol #{}"
+    offenses:
+      - line: 1
+        column_start: 8
+        column_end: 11
+        message: Empty interpolation detected.
+      - line: 2
+        column_start: 11
+        column_end: 14
+        message: Empty interpolation detected.
+      - line: 3
+        column_start: 9
+        column_end: 12
+        message: Empty interpolation detected.
+
+  - name: rubocop_cop_lint_emptyinterpolation_accepts_non_empty_interpolation
+    source: |
+      "this is #{top} silly"
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_emptyinterpolation_does_not_register_an_offense_when_using_an_integer_inside_interpolation
+    source: |
+      "this is the #{1}"
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_emptyinterpolation_does_not_register_an_offense_when_using_a_boolean_literal_inside_interpolation
+    source: |
+      "this is the #{true}"
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_emptyinterpolation_does_not_register_an_offense_for_an_empty_string_interpolation_inside_a_w_literal
+    source: |
+      %W[#{''} one two]
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_emptyinterpolation_does_not_register_an_offense_for_an_empty_string_interpolation_inside_a_i_literal
+    source: |
+      %I[#{''} one two]
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_emptyinterpolation_registers_an_offense_for_an_empty_string_interpolation_inside_an_array
+    source: |
+      ["#{''}", one, two]
+    offenses:
+      - line: 1
+        column_start: 2
+        column_end: 7
+        message: Empty interpolation detected.
+    corrected: |
+      ["", one, two]

@@ -1,0 +1,647 @@
+cop: Style/For
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_for_when_each_is_the_enforced_style_registers_an_offense_for_for
+    source: |
+      def func
+        for n in [1, 2, 3] do
+          puts n
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 23
+        message: Prefer `each` over `for`.
+    corrected: |
+      def func
+        [1, 2, 3].each do |n|
+          puts n
+        end
+      end
+    config:
+      EnforcedStyle: each
+
+  - name: rubocop_cop_style_for_when_each_is_the_enforced_style_registers_an_offense_for_opposite_correct_style
+    source: |
+      def func
+        for n in [1, 2, 3] do
+          puts n
+        end
+        [1, 2, 3].each do |n|
+          puts n
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 23
+        message: Prefer `each` over `for`.
+    corrected: |
+      def func
+        [1, 2, 3].each do |n|
+          puts n
+        end
+        [1, 2, 3].each do |n|
+          puts n
+        end
+      end
+    config:
+      EnforcedStyle: each
+
+  - name: rubocop_cop_style_for_when_each_is_the_enforced_style_registers_multiple_offenses
+    source: |
+      for n in [1, 2, 3] do
+        puts n
+      end
+      [1, 2, 3].each do |n|
+        puts n
+      end
+      for n in [1, 2, 3] do
+        puts n
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 21
+        message: Prefer `each` over `for`.
+      - line: 7
+        column_start: 0
+        column_end: 21
+        message: Prefer `each` over `for`.
+    corrected: |
+      [1, 2, 3].each do |n|
+        puts n
+      end
+      [1, 2, 3].each do |n|
+        puts n
+      end
+      [1, 2, 3].each do |n|
+        puts n
+      end
+    config:
+      EnforcedStyle: each
+
+  - name: rubocop_cop_style_for_when_each_is_the_enforced_style_autocorrect_with_range_changes_for_to_each
+    source: |
+      def func
+        for n in (1...value) do
+          puts n
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 25
+        message: Prefer `each` over `for`.
+    config:
+      EnforcedStyle: each
+
+  - name: rubocop_cop_style_for_when_each_is_the_enforced_style_autocorrect_with_range_changes_for_that_does_not_have_do_or_semicolon_to_each
+    source: |
+      def func
+        for n in (1...value)
+          puts n
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 22
+        message: Prefer `each` over `for`.
+    config:
+      EnforcedStyle: each
+
+  - name: rubocop_cop_style_for_when_each_is_the_enforced_style_autocorrect_with_range_without_parentheses_changes_for_to_each
+    source: |
+      def func
+        for n in 1...value do
+          puts n
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 23
+        message: Prefer `each` over `for`.
+    config:
+      EnforcedStyle: each
+
+  - name: rubocop_cop_style_for_when_each_is_the_enforced_style_autocorrect_with_range_without_parentheses_changes_for_that_does_not_have_do_or_semicolon_to_each
+    source: |
+      def func
+        for n in 1...value
+          puts n
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 20
+        message: Prefer `each` over `for`.
+    config:
+      EnforcedStyle: each
+
+  - name: rubocop_cop_style_for_when_each_is_the_enforced_style_autocorrect_corrects_a_tuple_of_items
+    source: |
+      def func
+        for (a, b) in {a: 1, b: 2, c: 3} do
+          puts a, b
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 37
+        message: Prefer `each` over `for`.
+    corrected: |
+      def func
+        {a: 1, b: 2, c: 3}.each do |(a, b)|
+          puts a, b
+        end
+      end
+    config:
+      EnforcedStyle: each
+
+  - name: rubocop_cop_style_for_when_each_is_the_enforced_style_autocorrect_changes_for_that_does_not_have_do_or_semicolon_to_each
+    source: |
+      def func
+        for n in [1, 2, 3]
+          puts n
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 20
+        message: Prefer `each` over `for`.
+    corrected: |
+      def func
+        [1, 2, 3].each do |n|
+          puts n
+        end
+      end
+    config:
+      EnforcedStyle: each
+
+  - name: rubocop_cop_style_for_when_each_is_the_enforced_style_autocorrect_corrects_an_array_with_operator
+    source: |
+      def func
+        a = [1, 2]
+        b = [3, 4]
+        c = [5]
+      
+        for n in a + b + c
+          puts n
+        end
+      end
+    offenses:
+      - line: 6
+        column_start: 2
+        column_end: 20
+        message: Prefer `each` over `for`.
+    corrected: |
+      def func
+        a = [1, 2]
+        b = [3, 4]
+        c = [5]
+      
+        (a + b + c).each do |n|
+          puts n
+        end
+      end
+    config:
+      EnforcedStyle: each
+
+  - name: rubocop_cop_style_for_when_each_is_the_enforced_style_autocorrect_corrects_an_array_with_operator
+    source: |
+      def func
+        a = [1, 2, 3, 4]
+        b = [3]
+      
+        for n in a - b
+          puts n
+        end
+      end
+    offenses:
+      - line: 5
+        column_start: 2
+        column_end: 16
+        message: Prefer `each` over `for`.
+    corrected: |
+      def func
+        a = [1, 2, 3, 4]
+        b = [3]
+      
+        (a - b).each do |n|
+          puts n
+        end
+      end
+    config:
+      EnforcedStyle: each
+
+  - name: rubocop_cop_style_for_when_each_is_the_enforced_style_autocorrect_corrects_an_array_with_operator
+    source: |
+      def func
+        for n in [1, 2, 3, 4] * 3
+          puts n
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 27
+        message: Prefer `each` over `for`.
+    corrected: |
+      def func
+        ([1, 2, 3, 4] * 3).each do |n|
+          puts n
+        end
+      end
+    config:
+      EnforcedStyle: each
+
+  - name: rubocop_cop_style_for_when_each_is_the_enforced_style_autocorrect_corrects_an_array_with_operator
+    source: |
+      def func
+        a = [1, 2, 3, 4]
+        b = [4, 5]
+      
+        for n in a | b
+          puts n
+        end
+      end
+    offenses:
+      - line: 5
+        column_start: 2
+        column_end: 16
+        message: Prefer `each` over `for`.
+    corrected: |
+      def func
+        a = [1, 2, 3, 4]
+        b = [4, 5]
+      
+        (a | b).each do |n|
+          puts n
+        end
+      end
+    config:
+      EnforcedStyle: each
+
+  - name: rubocop_cop_style_for_when_each_is_the_enforced_style_autocorrect_corrects_an_array_with_operator
+    source: |
+      def func
+        a = [1, 2, 3, 4]
+        b = [4, 5]
+      
+        for n in a & b
+          puts n
+        end
+      end
+    offenses:
+      - line: 5
+        column_start: 2
+        column_end: 16
+        message: Prefer `each` over `for`.
+    corrected: |
+      def func
+        a = [1, 2, 3, 4]
+        b = [4, 5]
+      
+        (a & b).each do |n|
+          puts n
+        end
+      end
+    config:
+      EnforcedStyle: each
+
+  - name: rubocop_cop_style_for_when_each_is_the_enforced_style_autocorrect_corrects_an_array_with_operator
+    source: |
+      def func
+        a = []
+        b = [1, 2, 3]
+      
+        for n in a && b
+          puts n
+        end
+      end
+    offenses:
+      - line: 5
+        column_start: 2
+        column_end: 17
+        message: Prefer `each` over `for`.
+    corrected: |
+      def func
+        a = []
+        b = [1, 2, 3]
+      
+        (a && b).each do |n|
+          puts n
+        end
+      end
+    config:
+      EnforcedStyle: each
+
+  - name: rubocop_cop_style_for_when_each_is_the_enforced_style_autocorrect_corrects_an_array_with_operator
+    source: |
+      def func
+        a = nil
+        b = [1, 2, 3]
+      
+        for n in a || b
+          puts n
+        end
+      end
+    offenses:
+      - line: 5
+        column_start: 2
+        column_end: 17
+        message: Prefer `each` over `for`.
+    corrected: |
+      def func
+        a = nil
+        b = [1, 2, 3]
+      
+        (a || b).each do |n|
+          puts n
+        end
+      end
+    config:
+      EnforcedStyle: each
+
+  - name: rubocop_cop_style_for_when_each_is_the_enforced_style_autocorrect_corrects_to_each_without_parenthesize_collection_if_non_operator_method_called
+    source: |
+      def func
+        for n in [1, 2, nil].compact
+          puts n
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 30
+        message: Prefer `each` over `for`.
+    corrected: |
+      def func
+        [1, 2, nil].compact.each do |n|
+          puts n
+        end
+      end
+    config:
+      EnforcedStyle: each
+
+  - name: rubocop_cop_style_for_when_each_is_the_enforced_style_autocorrect_corrects_to_each_with_safe_navigation_if_collection_ends_with_safe_navigation
+    source: |
+      for item in foo&.items
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 22
+        message: Prefer `each` over `for`.
+    corrected: |
+      foo&.items&.each do |item|
+      end
+    config:
+      EnforcedStyle: each
+
+  - name: rubocop_cop_style_for_when_each_is_the_enforced_style_accepts_multiline_each
+    source: |
+      def func
+        [1, 2, 3].each do |n|
+          puts n
+        end
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: each
+
+  - name: rubocop_cop_style_for_when_each_is_the_enforced_style_accepts_for
+    source: |
+      [:for, :ala, :bala]
+    offenses:
+      []
+    config:
+      EnforcedStyle: each
+
+  - name: rubocop_cop_style_for_when_each_is_the_enforced_style_accepts_def_for
+    source: |
+      def for; end
+    offenses:
+      []
+    config:
+      EnforcedStyle: each
+
+  - name: rubocop_cop_style_for_when_for_is_the_enforced_style_accepts_for
+    source: |
+      def func
+        for n in [1, 2, 3] do
+          puts n
+        end
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: for
+
+  - name: rubocop_cop_style_for_when_for_is_the_enforced_style_registers_an_offense_for_multiline_each
+    source: |
+      def func
+        [1, 2, 3].each do |n|
+          puts n
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 23
+        message: Prefer `for` over `each`.
+    corrected: |
+      def func
+        for n in [1, 2, 3] do
+          puts n
+        end
+      end
+    config:
+      EnforcedStyle: for
+
+  - name: rubocop_cop_style_for_when_for_is_the_enforced_style_registers_an_offense_for_each_without_an_item_and_uses_as_the_item
+    source: |
+      def func
+        [1, 2, 3].each do
+          something
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 19
+        message: Prefer `for` over `each`.
+    corrected: |
+      def func
+        for _ in [1, 2, 3] do
+          something
+        end
+      end
+    config:
+      EnforcedStyle: for
+
+  - name: rubocop_cop_style_for_when_for_is_the_enforced_style_ruby_2_7_registers_an_offense_for_each_without_an_item_and_uses_as_the_item
+    source: |
+      def func
+        [1, 2, 3].each do
+          puts _1
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 19
+        message: Prefer `for` over `each`.
+    corrected: |
+      def func
+        for _ in [1, 2, 3] do
+          puts _1
+        end
+      end
+    config:
+      EnforcedStyle: for
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_style_for_when_for_is_the_enforced_style_ruby_3_4_registers_an_offense_for_each_without_an_item_and_uses_as_the_item
+    source: |
+      def func
+        [1, 2, 3].each do
+          puts it
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 19
+        message: Prefer `for` over `each`.
+    corrected: |
+      def func
+        for _ in [1, 2, 3] do
+          puts it
+        end
+      end
+    config:
+      EnforcedStyle: for
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_style_for_when_for_is_the_enforced_style_registers_an_offense_for_correct_opposite_style
+    source: |
+      def func
+        for n in [1, 2, 3] do
+          puts n
+        end
+        [1, 2, 3].each do |n|
+          puts n
+        end
+      end
+    offenses:
+      - line: 5
+        column_start: 2
+        column_end: 23
+        message: Prefer `for` over `each`.
+    corrected: |
+      def func
+        for n in [1, 2, 3] do
+          puts n
+        end
+        for n in [1, 2, 3] do
+          puts n
+        end
+      end
+    config:
+      EnforcedStyle: for
+
+  - name: rubocop_cop_style_for_when_for_is_the_enforced_style_registers_no_offense_when_there_is_no_receiver
+    source: |
+      each do |n|
+        puts n
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: for
+
+  - name: rubocop_cop_style_for_when_for_is_the_enforced_style_registers_multiple_offenses
+    source: |
+      for n in [1, 2, 3] do
+        puts n
+      end
+      [1, 2, 3].each do |n|
+        puts n
+      end
+      [1, 2, 3].each do |n|
+        puts n
+      end
+    offenses:
+      - line: 4
+        column_start: 0
+        column_end: 21
+        message: Prefer `for` over `each`.
+      - line: 7
+        column_start: 0
+        column_end: 21
+        message: Prefer `for` over `each`.
+    corrected: |
+      for n in [1, 2, 3] do
+        puts n
+      end
+      for n in [1, 2, 3] do
+        puts n
+      end
+      for n in [1, 2, 3] do
+        puts n
+      end
+    config:
+      EnforcedStyle: for
+
+  - name: rubocop_cop_style_for_when_for_is_the_enforced_style_registers_an_offense_for_a_tuple_of_items
+    source: |
+      def func
+        {a: 1, b: 2, c: 3}.each do |(a, b)|
+          puts a, b
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 37
+        message: Prefer `for` over `each`.
+    corrected: |
+      def func
+        for (a, b) in {a: 1, b: 2, c: 3} do
+          puts a, b
+        end
+      end
+    config:
+      EnforcedStyle: for
+
+  - name: rubocop_cop_style_for_when_for_is_the_enforced_style_accepts_single_line_each
+    source: |
+      def func
+        [1, 2, 3].each { |n| puts n }
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: for
+
+  - name: rubocop_cop_style_for_when_for_is_the_enforced_style_when_using_safe_navigation_operator_does_not_break
+    source: |
+      def func
+        [1, 2, 3]&.each { |n| puts n }
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: for
+    ruby_version: ">= 2.3"

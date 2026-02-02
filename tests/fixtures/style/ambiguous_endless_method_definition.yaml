@@ -1,0 +1,77 @@
+cop: Style/AmbiguousEndlessMethodDefinition
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_ambiguousendlessmethoddefinition_ruby_3_0_does_not_register_an_offense_for_a_non_endless_method
+    source: |
+      def foo
+      end
+    offenses:
+      []
+    ruby_version: ">= 3.0"
+
+  - name: rubocop_cop_style_ambiguousendlessmethoddefinition_ruby_3_0
+    source: |
+      def foo
+      end #{operator} bar
+    offenses:
+      []
+    ruby_version: ">= 3.0"
+    interpolated: true
+
+  - name: rubocop_cop_style_ambiguousendlessmethoddefinition_ruby_3_0_does_not_register_an_offense_when_the_operator_is_already_wrapped_in_parens
+    source: |
+      def foo = (true #{operator} bar)
+    offenses:
+      []
+    ruby_version: ">= 3.0"
+    interpolated: true
+
+  - name: rubocop_cop_style_ambiguousendlessmethoddefinition_ruby_3_0_does_not_register_an_offense_when_the_method_definition_is_already_wrapped_in_parens
+    source: |
+      (def foo = true) #{operator} bar
+    offenses:
+      []
+    ruby_version: ">= 3.0"
+    interpolated: true
+
+  - name: rubocop_cop_style_ambiguousendlessmethoddefinition_ruby_3_0
+    source: |
+      #{operator} bar
+        def foo = true
+      end
+    offenses:
+      []
+    ruby_version: ">= 3.0"
+    interpolated: true
+
+  - name: rubocop_cop_style_ambiguousendlessmethoddefinition_ruby_3_0
+    source: |
+      def foo = true #{operator} bar
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 30
+        message: "Avoid using `#{operator}` statements with endless methods."
+    corrected: |
+      def foo
+        true
+      end #{operator} bar
+    ruby_version: ">= 3.0"
+    interpolated: true
+
+  - name: rubocop_cop_style_ambiguousendlessmethoddefinition_ruby_3_0_does_not_register_an_offense_for
+    source: |
+      def foo = true && bar
+    offenses:
+      []
+    ruby_version: ">= 3.0"
+
+  - name: rubocop_cop_style_ambiguousendlessmethoddefinition_ruby_3_0_does_not_register_an_offense_for
+    source: |
+      def foo = true || bar
+    offenses:
+      []
+    ruby_version: ">= 3.0"

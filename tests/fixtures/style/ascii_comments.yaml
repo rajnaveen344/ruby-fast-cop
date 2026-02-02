@@ -1,0 +1,48 @@
+cop: Style/AsciiComments
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_asciicomments_registers_an_offense_for_a_comment_with_non_ascii_chars
+    source: |
+      # 这是什么？
+    offenses:
+      - line: 1
+        column_start: 2
+        column_end: 7
+        message: Use only ascii symbols in comments.
+
+  - name: rubocop_cop_style_asciicomments_registers_an_offense_for_comments_with_mixed_chars
+    source: |
+      # foo ∂ bar
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 7
+        message: Use only ascii symbols in comments.
+
+  - name: rubocop_cop_style_asciicomments_accepts_comments_with_only_ascii_chars
+    source: |
+      # AZaz1@$%~,;*_`|
+    offenses:
+      []
+
+  - name: rubocop_cop_style_asciicomments_when_certain_non_ascii_chars_are_allowed_accepts_comment_with_allowed_non_ascii_chars
+    source: |
+      # foo ∂ bar
+    offenses:
+      []
+    config:
+      AllowedChars: [∂]
+
+  - name: rubocop_cop_style_asciicomments_when_certain_non_ascii_chars_are_allowed_registers_an_offense_for_comments_with_non_allowed_non_ascii_chars
+    source: |
+      # 这是什么？
+    offenses:
+      - line: 1
+        column_start: 2
+        column_end: 7
+        message: Use only ascii symbols in comments.
+    config:
+      AllowedChars: [∂]

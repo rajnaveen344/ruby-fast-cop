@@ -1,0 +1,84 @@
+cop: Layout/MultilineArrayLineBreaks
+department: layout
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_layout_multilinearraylinebreaks_when_on_same_line_does_not_add_any_offenses
+    source: |
+      [1,2,3]
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_multilinearraylinebreaks_when_on_same_line_separate_line_from_brackets_does_not_add_any_offenses
+    source: |
+      [
+        1,2,3,
+      ]
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_multilinearraylinebreaks_when_two_elements_on_same_line_registers_an_offense_and_corrects
+    source: |
+      [1,
+        2, 4]
+    offenses:
+      - line: 2
+        column_start: 5
+        column_end: 6
+        message: Each item in a multi-line array must start on a separate line.
+    corrected: |
+      [1,
+        2, 
+      4]
+
+  - name: rubocop_cop_layout_multilinearraylinebreaks_when_nested_arrays_registers_an_offense_and_corrects
+    source: |
+      [1,
+        [2, 3], 4]
+    offenses:
+      - line: 2
+        column_start: 10
+        column_end: 11
+        message: Each item in a multi-line array must start on a separate line.
+    corrected: |
+      [1,
+        [2, 3], 
+      4]
+
+  - name: rubocop_cop_layout_multilinearraylinebreaks_ignore_last_element_ignores_last_value_that_is_a_multiline_hash
+    source: |
+      [1, 2, 3, {
+        a: 1
+      }]
+    offenses:
+      []
+    config:
+      AllowMultilineFinalElement: true
+
+  - name: rubocop_cop_layout_multilinearraylinebreaks_ignore_last_element_registers_and_corrects_values_that_are_multiline_hashes_and_not_the_last_value
+    source: |
+      [1, 2, 3, {
+             ^ Each item in a multi-line array must start on a separate line.
+        a: 1
+      }, 4]
+    offenses:
+      - line: 1
+        column_start: 10
+        column_end: 11
+        message: Each item in a multi-line array must start on a separate line.
+      - line: 2
+        column_start: 4
+        column_end: 5
+        message: Each item in a multi-line array must start on a separate line.
+    corrected: |
+      [1,#{trailing_whitespace}
+      2,#{trailing_whitespace}
+      3,#{trailing_whitespace}
+      {
+        a: 1
+      },#{trailing_whitespace}
+      4]
+    config:
+      AllowMultilineFinalElement: true
+    interpolated: true

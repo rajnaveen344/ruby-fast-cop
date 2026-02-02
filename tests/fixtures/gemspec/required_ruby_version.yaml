@@ -1,0 +1,223 @@
+cop: Gemspec/RequiredRubyVersion
+department: gemspec
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_gemspec_requiredrubyversion_target_ruby_version_3_4_registers_an_offense_when_required_ruby_version_is_specified_with_and_is_lower_than_targetrubyversion
+    source: |
+      Gem::Specification.new do |spec|
+        spec.required_ruby_version = '>= 3.3.0'
+      end
+    offenses:
+      - line: 2
+        column_start: 31
+        column_end: 41
+        message: "`required_ruby_version` and `TargetRubyVersion` (3.4, which may be specified in .rubocop.yml) should be equal."
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_gemspec_requiredrubyversion_target_ruby_version_3_4_registers_an_offense_when_required_ruby_version_is_specified_with_and_is_lower_than_targetrubyversion
+    source: |
+      Gem::Specification.new do |spec|
+        spec.required_ruby_version = '~> 3.3.0'
+      end
+    offenses:
+      - line: 2
+        column_start: 31
+        column_end: 41
+        message: "`required_ruby_version` and `TargetRubyVersion` (3.4, which may be specified in .rubocop.yml) should be equal."
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_gemspec_requiredrubyversion_target_ruby_version_3_4_registers_an_offense_when_required_ruby_version_is_specified_in_array_and_is_lower_than_targetrubyversion
+    source: |
+      Gem::Specification.new do |spec|
+        spec.required_ruby_version = ['>= 3.3.0', '< 4.0.0']
+      end
+    offenses:
+      - line: 2
+        column_start: 31
+        column_end: 54
+        message: "`required_ruby_version` and `TargetRubyVersion` (3.4, which may be specified in .rubocop.yml) should be equal."
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_gemspec_requiredrubyversion_target_ruby_version_3_4_recognizes_gem_requirement_and_registers_an_offense
+    source: |
+      Gem::Specification.new do |spec|
+        spec.required_ruby_version = Gem::Requirement.new(">= 3.3.0")
+      end
+    offenses:
+      - line: 2
+        column_start: 31
+        column_end: 63
+        message: "`required_ruby_version` and `TargetRubyVersion` (3.4, which may be specified in .rubocop.yml) should be equal."
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_gemspec_requiredrubyversion_target_ruby_version_3_4_registers_an_offense_when_required_ruby_version_is_specified_with_gem_requirement_new_and_is_higher_than_targetrubyversion
+    source: |
+      Gem::Specification.new do |spec|
+        spec.required_ruby_version = Gem::Requirement.new('< 3.4')
+      end
+    offenses:
+      - line: 2
+        column_start: 31
+        column_end: 60
+        message: "`required_ruby_version` and `TargetRubyVersion` (3.4, which may be specified in .rubocop.yml) should be equal."
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_gemspec_requiredrubyversion_target_ruby_version_3_4_recognizes_a_gem_requirement_with_multiple_requirements_and_does_not_register_an_offense
+    source: |
+      Gem::Specification.new do |spec|
+        spec.required_ruby_version = Gem::Requirement.new(">= 3.4.0", "<= 3.8")
+      end
+    offenses:
+      []
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_gemspec_requiredrubyversion_target_ruby_version_3_4_false_negatives
+    source: |
+      Gem::Specification.new do |spec|
+        version = '>= 3.3.0'
+        spec.required_ruby_version = version
+      end
+    offenses:
+      []
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_gemspec_requiredrubyversion_target_ruby_version_3_4_false_negatives
+    source: |
+      Gem::Specification.new do |spec|
+        lowest_version = '>= 3.3.0'
+        highest_version = '< 3.8.0'
+        spec.required_ruby_version = [lowest_version, highest_version]
+      end
+    offenses:
+      []
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_gemspec_requiredrubyversion_target_ruby_version_3_3_registers_an_offense_when_required_ruby_version_is_specified_with_and_is_higher_than_targetrubyversion
+    source: |
+      Gem::Specification.new do |spec|
+        spec.required_ruby_version = '>= 3.4.0'
+      end
+    offenses:
+      - line: 2
+        column_start: 31
+        column_end: 41
+        message: "`required_ruby_version` and `TargetRubyVersion` (3.3, which may be specified in .rubocop.yml) should be equal."
+    ruby_version: ">= 3.3"
+
+  - name: rubocop_cop_gemspec_requiredrubyversion_target_ruby_version_3_3_registers_an_offense_when_required_ruby_version_is_specified_with_and_is_higher_than_targetrubyversion
+    source: |
+      Gem::Specification.new do |spec|
+        spec.required_ruby_version = '~> 3.4.0'
+      end
+    offenses:
+      - line: 2
+        column_start: 31
+        column_end: 41
+        message: "`required_ruby_version` and `TargetRubyVersion` (3.3, which may be specified in .rubocop.yml) should be equal."
+    ruby_version: ">= 3.3"
+
+  - name: rubocop_cop_gemspec_requiredrubyversion_target_ruby_version_3_4_does_not_register_an_offense_when_required_ruby_version_is_specified_with_and_equals_targetrubyversion
+    source: |
+      Gem::Specification.new do |spec|
+        spec.required_ruby_version = '>= 3.4.0'
+      end
+    offenses:
+      []
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_gemspec_requiredrubyversion_target_ruby_version_3_4_does_not_register_an_offense_when_required_ruby_version_is_specified_with_and_equals_targetrubyversion
+    source: |
+      Gem::Specification.new do |spec|
+        spec.required_ruby_version = '~> 3.4.0'
+      end
+    offenses:
+      []
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_gemspec_requiredrubyversion_target_ruby_version_3_4
+    source: |
+      Gem::Specification.new do |spec|
+        spec.required_ruby_version = '>= 3.4'
+      end
+    offenses:
+      []
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_gemspec_requiredrubyversion_target_ruby_version_3_4
+    source: |
+      Gem::Specification.new do |spec|
+        spec.required_ruby_version = '~> 3.4'
+      end
+    offenses:
+      []
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_gemspec_requiredrubyversion_target_ruby_version_3_4
+    source: |
+      Gem::Specification.new do |spec|
+        spec.required_ruby_version = ['>= 3.4.0', '< 4.1.0']
+      end
+    offenses:
+      []
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_gemspec_requiredrubyversion_target_ruby_version_3_4
+    source: |
+      Gem::Specification.new do |spec|
+        spec.required_ruby_version = '>= 3'
+      end
+    offenses:
+      - line: 2
+        column_start: 31
+        column_end: 37
+        message: "`required_ruby_version` and `TargetRubyVersion` (3.4, which may be specified in .rubocop.yml) should be equal."
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_gemspec_requiredrubyversion_target_ruby_version_3_4
+    source: |
+      Gem::Specification.new do |spec|
+        spec.required_ruby_version = '~> 3'
+      end
+    offenses:
+      - line: 2
+        column_start: 31
+        column_end: 37
+        message: "`required_ruby_version` and `TargetRubyVersion` (3.4, which may be specified in .rubocop.yml) should be equal."
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_gemspec_requiredrubyversion_target_ruby_version_3_4_registers_an_offense_when_required_ruby_version_is_not_specified
+    source: |
+      Gem::Specification.new do |spec|
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 32
+        message: "`required_ruby_version` should be specified."
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_gemspec_requiredrubyversion_target_ruby_version_3_4_registers_an_offense_when_required_ruby_version_is_blank
+    source: |
+      Gem::Specification.new do |spec|
+        spec.required_ruby_version = ''
+      end
+    offenses:
+      - line: 2
+        column_start: 31
+        column_end: 33
+        message: "`required_ruby_version` and `TargetRubyVersion` (3.4, which may be specified in .rubocop.yml) should be equal."
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_gemspec_requiredrubyversion_target_ruby_version_3_4_registers_an_offense_when_required_ruby_version_is_an_empty_array
+    source: |
+      Gem::Specification.new do |spec|
+        spec.required_ruby_version = []
+      end
+    offenses:
+      - line: 2
+        column_start: 31
+        column_end: 33
+        message: "`required_ruby_version` and `TargetRubyVersion` (3.4, which may be specified in .rubocop.yml) should be equal."
+    ruby_version: ">= 3.4"

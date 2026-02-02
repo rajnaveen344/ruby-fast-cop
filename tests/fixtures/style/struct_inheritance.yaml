@@ -1,0 +1,135 @@
+cop: Style/StructInheritance
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_structinheritance_registers_an_offense_when_extending_instance_of_struct
+    source: |
+      class Person < Struct.new(:first_name, :last_name)
+        def foo; end
+      end
+    offenses:
+      - line: 1
+        column_start: 15
+        column_end: 50
+        message: "Don't extend an instance initialized by `Struct.new`. Use a block to customize the struct."
+    corrected: |
+      Person = Struct.new(:first_name, :last_name) do
+        def foo; end
+      end
+
+  - name: rubocop_cop_style_structinheritance_registers_an_offense_when_extending_instance_of_struct
+    source: |
+      class Person < ::Struct.new(:first_name, :last_name)
+        def foo; end
+      end
+    offenses:
+      - line: 1
+        column_start: 15
+        column_end: 52
+        message: "Don't extend an instance initialized by `Struct.new`. Use a block to customize the struct."
+    corrected: |
+      Person = ::Struct.new(:first_name, :last_name) do
+        def foo; end
+      end
+
+  - name: rubocop_cop_style_structinheritance_registers_an_offense_when_extending_instance_of_struct_with_do_end
+    source: |
+      class Person < Struct.new(:first_name, :last_name) do end
+      end
+    offenses:
+      - line: 1
+        column_start: 15
+        column_end: 57
+        message: "Don't extend an instance initialized by `Struct.new`. Use a block to customize the struct."
+    corrected: |
+      Person = Struct.new(:first_name, :last_name) do
+      end
+
+  - name: rubocop_cop_style_structinheritance_registers_an_offense_when_extending_instance_of_struct_without_do_end_and_class_body_is_empty
+    source: |
+      class Person < Struct.new(:first_name, :last_name)
+      end
+    offenses:
+      - line: 1
+        column_start: 15
+        column_end: 50
+        message: "Don't extend an instance initialized by `Struct.new`. Use a block to customize the struct."
+    corrected: |
+      Person = Struct.new(:first_name, :last_name)
+
+  - name: rubocop_cop_style_structinheritance_registers_an_offense_when_extending_instance_of_struct_without_do_end_and_class_body_is_empty_and_single_line_definition
+    source: |
+      class Person < Struct.new(:first_name, :last_name); end
+    offenses:
+      - line: 1
+        column_start: 15
+        column_end: 50
+        message: "Don't extend an instance initialized by `Struct.new`. Use a block to customize the struct."
+    corrected: |
+      Person = Struct.new(:first_name, :last_name)
+
+  - name: rubocop_cop_style_structinheritance_registers_an_offense_when_extending_instance_of_struct_with_do_end
+    source: |
+      class Person < ::Struct.new(:first_name, :last_name) do end
+      end
+    offenses:
+      - line: 1
+        column_start: 15
+        column_end: 59
+        message: "Don't extend an instance initialized by `Struct.new`. Use a block to customize the struct."
+    corrected: |
+      Person = ::Struct.new(:first_name, :last_name) do
+      end
+
+  - name: rubocop_cop_style_structinheritance
+    source: |
+      # comment
+      class Person < Struct.new(:first_name, :last_name) do end
+      end
+    offenses:
+      - line: 2
+        column_start: 15
+        column_end: 57
+        message: "Don't extend an instance initialized by `Struct.new`. Use a block to customize the struct."
+    corrected: |
+      # comment
+      Person = Struct.new(:first_name, :last_name) do
+      end
+
+  - name: rubocop_cop_style_structinheritance_accepts_plain_class
+    source: |
+      class Person
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_structinheritance_accepts_extending_delegateclass
+    source: |
+      class Person < DelegateClass(Animal)
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_structinheritance_accepts_assignment_to_struct_new
+    source: |
+      Person = Struct.new(:first_name, :last_name)
+    offenses:
+      []
+
+  - name: rubocop_cop_style_structinheritance_accepts_assignment_to_struct_new
+    source: |
+      Person = ::Struct.new(:first_name, :last_name)
+    offenses:
+      []
+
+  - name: rubocop_cop_style_structinheritance_accepts_assignment_to_block_form_of_struct_new
+    source: |
+      Person = Struct.new(:first_name, :last_name) do
+        def age
+          42
+        end
+      end
+    offenses:
+      []

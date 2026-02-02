@@ -1,0 +1,159 @@
+cop: Style/ModuleMemberExistenceCheck
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_modulememberexistencecheck
+    source: |
+      x.#{array_returning_method}.include?(method)
+    offenses:
+      - line: 1
+        column_start: 2
+        column_end: 44
+        message: "Use `#{predicate_method}(method)` instead."
+    corrected: |
+      x.#{predicate_method}(method)
+    interpolated: true
+
+  - name: rubocop_cop_style_modulememberexistencecheck
+    source: |
+      x.#{array_returning_method}.include? method
+    offenses:
+      - line: 1
+        column_start: 2
+        column_end: 43
+        message: "Use `#{predicate_method}(method)` instead."
+    corrected: |
+      x.#{predicate_method}(method)
+    interpolated: true
+
+  - name: rubocop_cop_style_modulememberexistencecheck
+    source: |
+      x.#{array_returning_method}.member?(method)
+    offenses:
+      - line: 1
+        column_start: 2
+        column_end: 43
+        message: "Use `#{predicate_method}(method)` instead."
+    corrected: |
+      x.#{predicate_method}(method)
+    interpolated: true
+
+  - name: rubocop_cop_style_modulememberexistencecheck
+    source: |
+      x&.#{array_returning_method}&.include?(method)
+    offenses:
+      - line: 1
+        column_start: 3
+        column_end: 46
+        message: "Use `#{predicate_method}(method)` instead."
+    corrected: |
+      x&.#{predicate_method}(method)
+    interpolated: true
+
+  - name: rubocop_cop_style_modulememberexistencecheck
+    source: |
+      #{array_returning_method}.include?(method)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 42
+        message: "Use `#{predicate_method}(method)` instead."
+    corrected: |
+      #{predicate_method}(method)
+    interpolated: true
+
+  - name: rubocop_cop_style_modulememberexistencecheck
+    source: |
+      x.#{array_returning_method}(false).include?(method)
+    offenses:
+      - line: 1
+        column_start: 2
+        column_end: 51
+        message: "Use `#{predicate_method}(method, false)` instead."
+    corrected: |
+      x.#{predicate_method}(method, false)
+    interpolated: true
+
+  - name: rubocop_cop_style_modulememberexistencecheck
+    source: |
+      x.#{array_returning_method}(true).include?(method)
+    offenses:
+      - line: 1
+        column_start: 2
+        column_end: 50
+        message: "Use `#{predicate_method}(method)` instead."
+    corrected: |
+      x.#{predicate_method}(method)
+    interpolated: true
+
+  - name: rubocop_cop_style_modulememberexistencecheck
+    source: |
+      x.#{array_returning_method}(inherit).include?(method)
+    offenses:
+      - line: 1
+        column_start: 2
+        column_end: 53
+        message: "Use `#{predicate_method}(method, inherit)` instead."
+    corrected: |
+      x.#{predicate_method}(method, inherit)
+    interpolated: true
+
+  - name: rubocop_cop_style_modulememberexistencecheck
+    source: |
+      x.#{array_returning_method}(inherit).include?(method)
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_modulememberexistencecheck
+    source: |
+      x.#{array_returning_method}(true, false).include?(method)
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_modulememberexistencecheck_does_not_register_an_offense_when_passing_more_than_one_argument_to_include
+    source: |
+      x.#{array_returning_method}.include?(foo, bar)
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_modulememberexistencecheck_does_not_register_an_offense_when_passing_a_splat_argument_to_include
+    source: |
+      x.#{array_returning_method}.include?(*foo)
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_modulememberexistencecheck_does_not_register_an_offense_when_passing_a_kwargs_argument_to_include
+    source: |
+      x.#{array_returning_method}.include?(**foo)
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_modulememberexistencecheck_does_not_register_an_offense_when_passing_a_block_argument_to_include
+    source: |
+      x.#{array_returning_method}.include?(&foo)
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_modulememberexistencecheck
+    source: |
+      x.#{array_returning_method}(*foo).include?(method)
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_style_modulememberexistencecheck
+    source: |
+      x.#{array_returning_method}.include?(method)
+    offenses:
+      []
+    config:
+      AllowedMethods: [array_returning_method.to_s]
+    interpolated: true

@@ -1,0 +1,124 @@
+cop: Lint/RequireParentheses
+department: lint
+severity: warning
+implemented: false
+
+tests:
+  - name: rubocop_cop_lint_requireparentheses_registers_an_offense_for_missing_parentheses_around_expression_with_operator
+    source: |
+      if day.is? 'monday' && month == :jan
+        foo
+      end
+    offenses:
+      - line: 1
+        column_start: 3
+        column_end: 36
+        message: Use parentheses in the method call to avoid confusion about precedence.
+
+  - name: rubocop_cop_lint_requireparentheses_registers_an_offense_for_missing_parentheses_around_expression_with_operator
+    source: |
+      day_is? 'tuesday' || true
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 25
+        message: Use parentheses in the method call to avoid confusion about precedence.
+
+  - name: rubocop_cop_lint_requireparentheses_registers_an_offense_for_missing_parentheses_around_expression_in_ternary
+    source: |
+      wd.include? 'tuesday' && true == true ? a : b
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 37
+        message: Use parentheses in the method call to avoid confusion about precedence.
+
+  - name: rubocop_cop_lint_requireparentheses_when_using_safe_navigation_operator_registers_an_offense_for_missing_parentheses_around_expression_with_operator
+    source: |
+      if day&.is? 'monday' && month == :jan
+        foo
+      end
+    offenses:
+      - line: 1
+        column_start: 3
+        column_end: 37
+        message: Use parentheses in the method call to avoid confusion about precedence.
+
+  - name: rubocop_cop_lint_requireparentheses_accepts_missing_parentheses_around_expression_with_operator
+    source: |
+      if day_is? 'tuesday' + rest
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_requireparentheses_accepts_method_calls_without_parentheses_followed_by_keyword_and_or
+    source: |
+      if day.is? 'tuesday' and month == :jan
+      end
+      if day.is? 'tuesday' or month == :jan
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_requireparentheses_accepts_method_calls_that_are_all_operations
+    source: |
+      if current_level == max + 1
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_requireparentheses_accepts_condition_that_is_not_a_call
+    source: |
+      if @debug
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_requireparentheses_accepts_parentheses_around_expression_with_boolean_operator
+    source: |
+      if day.is?('tuesday' && true == true)
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_requireparentheses_accepts_method_call_with_parentheses_in_ternary
+    source: |
+      wd.include?('tuesday' && true == true) ? a : b
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_requireparentheses_accepts_missing_parentheses_when_method_is_not_a_predicate
+    source: |
+      weekdays.foo 'tuesday' && true == true
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_requireparentheses_accepts_missing_parentheses_when_using_ternary_operator
+    source: |
+      foo && bar ? baz : qux
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_requireparentheses_accepts_missing_parentheses_when_using_ternary_operator_in_square_brackets
+    source: |
+      do_something[foo && bar ? baz : qux]
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_requireparentheses_accepts_missing_parentheses_when_assigning_ternary_operator
+    source: |
+      self.foo = bar && baz ? qux : quux
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_requireparentheses_accepts_calls_to_methods_that_are_setters
+    source: |
+      s.version = @version || ">= 1.8.5"
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_requireparentheses_accepts_calls_to_methods_that_are_operators
+    source: |
+      a[b || c]
+    offenses:
+      []

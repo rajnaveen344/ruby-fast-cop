@@ -1,0 +1,882 @@
+cop: Style/HashSlice
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_hashslice_using_include_does_not_register_an_offense_when_using_select_and_calling_include_method_with_symbol_array
+    source: |
+      {foo: 1, bar: 2, baz: 3}.select { |k, v| !%i[foo bar].include?(k) }
+    offenses:
+      []
+
+  - name: rubocop_cop_style_hashslice_using_include_registers_and_corrects_an_offense_when_using_reject_and_calling_include_method_with_symbol_array
+    source: |
+      {foo: 1, bar: 2, baz: 3}.reject { |k, v| !%i[foo bar].include?(k) }
+    offenses:
+      - line: 1
+        column_start: 25
+        column_end: 67
+        message: "Use `slice(:foo, :bar)` instead."
+    corrected: |
+      {foo: 1, bar: 2, baz: 3}.slice(:foo, :bar)
+
+  - name: rubocop_cop_style_hashslice_using_include_registers_and_corrects_an_offense_when_using_filter_and_calling_include_method_with_symbol_array
+    source: |
+      {foo: 1, bar: 2, baz: 3}.filter { |k, v| [:foo, :bar].include?(k) }
+    offenses:
+      - line: 1
+        column_start: 25
+        column_end: 67
+        message: "Use `slice(:foo, :bar)` instead."
+    corrected: |
+      {foo: 1, bar: 2, baz: 3}.slice(:foo, :bar)
+
+  - name: rubocop_cop_style_hashslice_using_include_registers_and_corrects_an_offense_when_using_select_and_calling_include_method_with_dynamic_symbol_array
+    source: |
+      {foo: 1, bar: 2, baz: 3}.select { |k, v| %I[#{foo} bar].include?(k) }
+    offenses:
+      - line: 1
+        column_start: 25
+        column_end: 69
+        message: "Use `slice(:\"#{foo}\", :bar)` instead."
+    corrected: |
+      {foo: 1, bar: 2, baz: 3}.slice(:"#{foo}", :bar)
+
+  - name: rubocop_cop_style_hashslice_using_include_registers_and_corrects_an_offense_when_using_select_and_calling_include_method_with_dynamic_string_array
+    source: |
+      {foo: 1, bar: 2, baz: 3}.select { |k, v| %W[#{foo} bar].include?(k) }
+    offenses:
+      - line: 1
+        column_start: 25
+        column_end: 69
+        message: "Use `slice(\"#{foo}\", 'bar')` instead."
+    corrected: |
+      {foo: 1, bar: 2, baz: 3}.slice("#{foo}", 'bar')
+
+  - name: rubocop_cop_style_hashslice_using_include_does_not_register_an_offense_when_using_select_and_calling_include_method_with_variable
+    source: |
+      array = %i[foo bar]
+      {foo: 1, bar: 2, baz: 3}.select { |k, v| !array.include?(k) }
+    offenses:
+      []
+
+  - name: rubocop_cop_style_hashslice_using_include_does_not_register_an_offense_when_using_select_and_calling_include_method_with_method_call
+    source: |
+      {foo: 1, bar: 2, baz: 3}.select { |k, v| !array.include?(k) }
+    offenses:
+      []
+
+  - name: rubocop_cop_style_hashslice_using_include_registers_an_offense_when_using_select_and_include
+    source: |
+      {foo: 1, bar: 2, baz: 3}.select { |k, v| [:bar].include?(k) }
+    offenses:
+      - line: 1
+        column_start: 25
+        column_end: 61
+        message: "Use `slice(:bar)` instead."
+    corrected: |
+      {foo: 1, bar: 2, baz: 3}.slice(:bar)
+
+  - name: rubocop_cop_style_hashslice_using_include_does_not_register_an_offense_when_using_select_and_calling_include_method_with_symbol_array_and_second_block_value
+    source: |
+      {foo: 1, bar: 2, baz: 3}.select { |k, v| ![1, 2].include?(v) }
+    offenses:
+      []
+
+  - name: rubocop_cop_style_hashslice_using_include_does_not_register_an_offense_when_using_select_and_calling_include_method_on_a_key
+    source: |
+      {foo: 1, bar: 2, baz: 3}.select { |k, v| k.include?('oo') }
+    offenses:
+      []
+
+  - name: rubocop_cop_style_hashslice_using_include_does_not_register_an_offense_when_using_select_and_calling_include_method_on_a_key
+    source: |
+      {foo: 1, bar: 2, baz: 3}.select { |k, v| !k.include?('oo') }
+    offenses:
+      []
+
+  - name: rubocop_cop_style_hashslice_using_include_does_not_register_an_offense_when_using_select_with_include_with_an_inclusive_range_receiver
+    source: |
+      { foo: 1, bar: 2, baz: 3 }.select{ |k, v| (:baa..:bbb).include?(k) }
+    offenses:
+      []
+
+  - name: rubocop_cop_style_hashslice_using_include_does_not_register_an_offense_when_using_select_with_include_with_an_exclusive_range_receiver
+    source: |
+      { foo: 1, bar: 2, baz: 3 }.select{ |k, v| (:baa...:bbb).include?(k) }
+    offenses:
+      []
+
+  - name: rubocop_cop_style_hashslice_using_include_does_not_register_an_offense_when_using_select_with_include_called_on_the_key_block_variable
+    source: |
+      hash.select { |k, v| k.include?('foo') }
+    offenses:
+      []
+
+  - name: rubocop_cop_style_hashslice_using_include_does_not_register_an_offense_when_using_select_with_include_called_on_the_value_block_variable
+    source: |
+      hash.select { |k, v| v.include?(k) }
+    offenses:
+      []
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_registers_and_corrects_an_offense_when_using_select_and_comparing_with_lvar_sym
+    source: |
+      {foo: 1, bar: 2, baz: 3}.select { |k, v| k == :bar }
+    offenses:
+      - line: 1
+        column_start: 25
+        column_end: 52
+        message: "Use `slice(:bar)` instead."
+    corrected: |
+      {foo: 1, bar: 2, baz: 3}.slice(:bar)
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_registers_and_corrects_an_offense_when_using_safe_navigation_select_call_and_comparing_with_lvar_sym
+    source: |
+      {foo: 1, bar: 2, baz: 3}&.select { |k, v| k == :bar }
+    offenses:
+      - line: 1
+        column_start: 26
+        column_end: 53
+        message: "Use `slice(:bar)` instead."
+    corrected: |
+      {foo: 1, bar: 2, baz: 3}&.slice(:bar)
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_registers_and_corrects_an_offense_when_using_select_and_comparing_with_sym_lvar
+    source: |
+      {foo: 1, bar: 2, baz: 3}.select { |k, v| :bar == k }
+    offenses:
+      - line: 1
+        column_start: 25
+        column_end: 52
+        message: "Use `slice(:bar)` instead."
+    corrected: |
+      {foo: 1, bar: 2, baz: 3}.slice(:bar)
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_registers_and_corrects_an_offense_when_using_reject_and_comparing_with_lvar_sym
+    source: |
+      {foo: 1, bar: 2, baz: 3}.reject { |k, v| k != :bar }
+    offenses:
+      - line: 1
+        column_start: 25
+        column_end: 52
+        message: "Use `slice(:bar)` instead."
+    corrected: |
+      {foo: 1, bar: 2, baz: 3}.slice(:bar)
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_registers_and_corrects_an_offense_when_using_reject_and_comparing_with_sym_lvar
+    source: |
+      {foo: 1, bar: 2, baz: 3}.reject { |k, v| :bar != k }
+    offenses:
+      - line: 1
+        column_start: 25
+        column_end: 52
+        message: "Use `slice(:bar)` instead."
+    corrected: |
+      {foo: 1, bar: 2, baz: 3}.slice(:bar)
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_registers_and_corrects_an_offense_when_using_select_and_comparing_with_lvar_str
+    source: |
+      hash.select { |k, v| k == 'str' }
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 33
+        message: "Use `slice('str')` instead."
+    corrected: |
+      hash.slice('str')
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_registers_and_corrects_an_offense_when_using_select_and_other_than_comparison_by_string_and_symbol_using_eql
+    source: |
+      hash.select { |k, v| k.eql?(0.0) }
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 34
+        message: Use `slice(0.0)` instead.
+    corrected: |
+      hash.slice(0.0)
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_registers_and_corrects_an_offense_when_using_filter_and_comparing_with_lvar_sym
+    source: |
+      {foo: 1, bar: 2, baz: 3}.filter { |k, v| k == :bar }
+    offenses:
+      - line: 1
+        column_start: 25
+        column_end: 52
+        message: "Use `slice(:bar)` instead."
+    corrected: |
+      {foo: 1, bar: 2, baz: 3}.slice(:bar)
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_using_in_does_not_register_offenses_when_using_select_and_calling_key_in_method_with_symbol_array
+    source: |
+      {foo: 1, bar: 2, baz: 3}.select { |k, v| k.in?(%i[foo bar]) }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_using_in_does_not_register_offenses_when_using_safe_navigation_select_and_calling_key_in_method_with_symbol_array
+    source: |
+      {foo: 1, bar: 2, baz: 3}&.select { |k, v| k.in?(%i[foo bar]) }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_using_in_does_not_register_offenses_when_using_select_and_calling_in_method_with_key
+    source: |
+      {foo: 1, bar: 2, baz: 3}.select { |k, v| %i[foo bar].in?(k) }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_using_in_does_not_register_an_offense_when_using_select_with_include_called_on_the_value_block_variable
+    source: |
+      hash.select { |k, v| k.in?(v) }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_using_exclude_does_not_register_offenses_when_using_select_and_calling_exclude_method_with_symbol_array
+    source: |
+      {foo: 1, bar: 2, baz: 3}.select { |k, v| !%i[foo bar].exclude?(k) }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_using_exclude_does_not_register_offenses_when_using_safe_navigation_select_and_calling_exclude_method_with_symbol_array
+    source: |
+      {foo: 1, bar: 2, baz: 3}&.select { |k, v| !%i[foo bar].exclude?(k) }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_using_exclude_does_not_register_an_offense_when_using_select_and_calling_exclude_method_on_a_key
+    source: |
+      {foo: 1, bar: 2, baz: 3}.select { |k, v| k.exclude?('oo') }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_using_exclude_does_not_register_an_offense_when_using_select_and_calling_exclude_method_on_a_key
+    source: |
+      {foo: 1, bar: 2, baz: 3}.select { |k, v| !k.exclude?('oo') }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_using_exclude_does_not_register_an_offense_when_using_select_with_exclude_called_on_the_value_block_variable
+    source: |
+      hash.select { |k, v| !v.exclude?(k) }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_does_not_register_an_offense_when_using_select_and_other_than_comparison_by_string_and_symbol_using
+    source: |
+      hash.select { |k, v| k == 0.0 }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_does_not_register_an_offense_when_using_reject_and_other_than_comparison_by_string_and_symbol_using
+    source: |
+      hash.reject { |k, v| k != 0.0 }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_does_not_register_an_offense_when_using_reject_and_other_than_comparison_by_string_and_symbol_using_with_bang
+    source: |
+      hash.reject { |k, v| !(k == 0.0) }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_does_not_register_an_offense_when_using_select_and_other_than_comparison_by_string_and_symbol_using_with_bang
+    source: |
+      hash.select { |k, v| !(k != 0.0) }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_does_not_register_an_offense_when_using_delete_if_and_comparing_with_lvar_sym
+    source: |
+      {foo: 1, bar: 2, baz: 3}.delete_if { |k, v| k == :bar }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_does_not_register_an_offense_when_using_keep_if_and_comparing_with_lvar_sym
+    source: |
+      {foo: 1, bar: 2, baz: 3}.keep_if { |k, v| k != :bar }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_does_not_register_an_offense_when_comparing_with_hash_value
+    source: |
+      {foo: 1, bar: 2, baz: 3}.select { |k, v| v.eql? :bar }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_does_not_register_an_offense_when_using_more_than_two_block_arguments
+    source: |
+      {foo: 1, bar: 2, baz: 3}.select { |k, v, o| k == :bar }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_does_not_register_an_offense_when_calling_include_method_without_a_param
+    source: |
+      {foo: 1, bar: 2, baz: 3}.select { |k, v| %i[foo bar].include? }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_when_allcops_activesupportextensionsenabled_true_registers_and_corrects_an_offense_when_using_select_and_comparing_with_lvar_sym
+    source: |
+      {foo: 1, bar: 2, baz: 3}.select { |k, v| k == :bar }
+    offenses:
+      - line: 1
+        column_start: 25
+        column_end: 52
+        message: "Use `slice(:bar)` instead."
+    corrected: |
+      {foo: 1, bar: 2, baz: 3}.slice(:bar)
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_when_allcops_activesupportextensionsenabled_true_registers_and_corrects_an_offense_when_using_select_and_comparing_with_sym_lvar
+    source: |
+      {foo: 1, bar: 2, baz: 3}.select { |k, v| :bar == k }
+    offenses:
+      - line: 1
+        column_start: 25
+        column_end: 52
+        message: "Use `slice(:bar)` instead."
+    corrected: |
+      {foo: 1, bar: 2, baz: 3}.slice(:bar)
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_when_allcops_activesupportextensionsenabled_true_registers_and_corrects_an_offense_when_using_reject_and_comparing_with_lvar_sym
+    source: |
+      {foo: 1, bar: 2, baz: 3}.reject { |k, v| k != :bar }
+    offenses:
+      - line: 1
+        column_start: 25
+        column_end: 52
+        message: "Use `slice(:bar)` instead."
+    corrected: |
+      {foo: 1, bar: 2, baz: 3}.slice(:bar)
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_when_allcops_activesupportextensionsenabled_true_registers_and_corrects_an_offense_when_using_reject_and_comparing_with_sym_lvar
+    source: |
+      {foo: 1, bar: 2, baz: 3}.reject { |k, v| :bar != k }
+    offenses:
+      - line: 1
+        column_start: 25
+        column_end: 52
+        message: "Use `slice(:bar)` instead."
+    corrected: |
+      {foo: 1, bar: 2, baz: 3}.slice(:bar)
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_when_allcops_activesupportextensionsenabled_true_registers_and_corrects_an_offense_when_using_select_and_comparing_with_lvar_str
+    source: |
+      hash.select { |k, v| k == 'str' }
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 33
+        message: "Use `slice('str')` instead."
+    corrected: |
+      hash.slice('str')
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_when_allcops_activesupportextensionsenabled_true_registers_and_corrects_an_offense_when_using_select_and_other_than_comparison_by_string_and_symbol_using_eql
+    source: |
+      hash.select { |k, v| k.eql?(0.0) }
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 34
+        message: Use `slice(0.0)` instead.
+    corrected: |
+      hash.slice(0.0)
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_when_allcops_activesupportextensionsenabled_true_registers_and_corrects_an_offense_when_using_filter_and_comparing_with_lvar_sym
+    source: |
+      {foo: 1, bar: 2, baz: 3}.filter { |k, v| k == :bar }
+    offenses:
+      - line: 1
+        column_start: 25
+        column_end: 52
+        message: "Use `slice(:bar)` instead."
+    corrected: |
+      {foo: 1, bar: 2, baz: 3}.slice(:bar)
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_when_allcops_activesupportextensionsenabled_true_using_in_registers_and_corrects_an_offense_when_using_select_and_calling_key_in_method_with_symbol_array
+    source: |
+      {foo: 1, bar: 2, baz: 3}.select { |k, v| k.in?(%i[foo bar]) }
+    offenses:
+      - line: 1
+        column_start: 25
+        column_end: 61
+        message: "Use `slice(:foo, :bar)` instead."
+    corrected: |
+      {foo: 1, bar: 2, baz: 3}.slice(:foo, :bar)
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_when_allcops_activesupportextensionsenabled_true_using_in_registers_and_corrects_an_offense_when_using_safe_navigation_select_and_calling_key_in_method_with_symbol_array
+    source: |
+      {foo: 1, bar: 2, baz: 3}&.select { |k, v| k.in?(%i[foo bar]) }
+    offenses:
+      - line: 1
+        column_start: 26
+        column_end: 62
+        message: "Use `slice(:foo, :bar)` instead."
+    corrected: |
+      {foo: 1, bar: 2, baz: 3}&.slice(:foo, :bar)
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_when_allcops_activesupportextensionsenabled_true_using_in_registers_and_corrects_an_offense_when_using_reject_and_calling_key_in_method_with_symbol_array
+    source: |
+      {foo: 1, bar: 2, baz: 3}.reject { |k, v| !k.in?(%i[foo bar]) }
+    offenses:
+      - line: 1
+        column_start: 25
+        column_end: 62
+        message: "Use `slice(:foo, :bar)` instead."
+    corrected: |
+      {foo: 1, bar: 2, baz: 3}.slice(:foo, :bar)
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_when_allcops_activesupportextensionsenabled_true_using_in_registers_and_corrects_an_offense_when_using_filter_and_calling_key_in_method_with_symbol_array
+    source: |
+      {foo: 1, bar: 2, baz: 3}.filter { |k, v| k.in?(%i[foo bar]) }
+    offenses:
+      - line: 1
+        column_start: 25
+        column_end: 61
+        message: "Use `slice(:foo, :bar)` instead."
+    corrected: |
+      {foo: 1, bar: 2, baz: 3}.slice(:foo, :bar)
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_when_allcops_activesupportextensionsenabled_true_using_in_registers_and_corrects_an_offense_when_using_select_and_calling_key_in_method_with_dynamic_symbol_array
+    source: |
+      {foo: 1, bar: 2, baz: 3}.select { |k, v| k.in?(%I[#{foo} bar]) }
+    offenses:
+      - line: 1
+        column_start: 25
+        column_end: 64
+        message: "Use `slice(:\"#{foo}\", :bar)` instead."
+    corrected: |
+      {foo: 1, bar: 2, baz: 3}.slice(:"#{foo}", :bar)
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_when_allcops_activesupportextensionsenabled_true_using_in_registers_and_corrects_an_offense_when_using_select_and_calling_key_in_method_with_dynamic_string_array
+    source: |
+      {foo: 1, bar: 2, baz: 3}.select { |k, v| k.in?(%W[#{foo} bar]) }
+    offenses:
+      - line: 1
+        column_start: 25
+        column_end: 64
+        message: "Use `slice(\"#{foo}\", 'bar')` instead."
+    corrected: |
+      {foo: 1, bar: 2, baz: 3}.slice("#{foo}", 'bar')
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_when_allcops_activesupportextensionsenabled_true_using_in_registers_and_corrects_an_offense_when_using_select_and_calling_key_in_method_with_variable
+    source: |
+      array = %i[foo bar]
+      {foo: 1, bar: 2, baz: 3}.select { |k, v| k.in?(array) }
+    offenses:
+      - line: 2
+        column_start: 25
+        column_end: 55
+        message: Use `slice(*array)` instead.
+    corrected: |
+      array = %i[foo bar]
+      {foo: 1, bar: 2, baz: 3}.slice(*array)
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_when_allcops_activesupportextensionsenabled_true_using_in_registers_and_corrects_an_offense_when_using_select_and_calling_key_in_method_with_method_call
+    source: |
+      {foo: 1, bar: 2, baz: 3}.select { |k, v| k.in?(array) }
+    offenses:
+      - line: 1
+        column_start: 25
+        column_end: 55
+        message: Use `slice(*array)` instead.
+    corrected: |
+      {foo: 1, bar: 2, baz: 3}.slice(*array)
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_when_allcops_activesupportextensionsenabled_true_using_in_does_not_register_an_offense_when_using_select_and_calling_key_in_method_with_symbol_array
+    source: |
+      {foo: 1, bar: 2, baz: 3}.select { |k, v| !k.in?(%i[foo bar]) }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_when_allcops_activesupportextensionsenabled_true_using_in_does_not_register_an_offense_when_using_select_and_calling_in_method_with_key
+    source: |
+      {foo: 1, bar: 2, baz: 3}.select { |k, v| %i[foo bar].in?(k) }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_when_allcops_activesupportextensionsenabled_true_using_in_does_not_register_an_offense_when_using_select_and_calling_in_method_with_symbol_array_and_second_block_value
+    source: |
+      {foo: 1, bar: 2, baz: 3}.select { |k, v| v.in?([1, 2]) }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_when_allcops_activesupportextensionsenabled_true_using_in_does_not_register_an_offense_when_using_select_with_in_with_an_inclusive_range_argument
+    source: |
+      { foo: 1, bar: 2, baz: 3 }.select{ |k, v| k.in?(:baa..:bbb) }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_when_allcops_activesupportextensionsenabled_true_using_in_does_not_register_an_offense_when_using_select_with_in_with_an_exclusive_range_argument
+    source: |
+      { foo: 1, bar: 2, baz: 3 }.select{ |k, v| k.in?(:baa...:bbb) }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_when_allcops_activesupportextensionsenabled_true_using_in_does_not_register_an_offense_when_using_select_with_in_called_on_the_key_block_variable
+    source: |
+      hash.select { |k, v| 'foo'.in?(k) }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_when_allcops_activesupportextensionsenabled_true_using_in_does_not_register_an_offense_when_using_select_with_in_called_on_the_value_block_variable
+    source: |
+      hash.select { |k, v| k.in?(v) }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_when_allcops_activesupportextensionsenabled_true_using_in_does_not_register_an_offense_when_using_reject_with_in_called_on_the_key_block_variable
+    source: |
+      hash.reject { |k, v| !'foo'.in?(k) }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_when_allcops_activesupportextensionsenabled_true_using_in_does_not_register_an_offense_when_using_reject_with_in_called_on_the_value_block_variable
+    source: |
+      hash.reject { |k, v| !k.in?(v) }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_when_allcops_activesupportextensionsenabled_true_using_exclude_registers_and_corrects_an_offense_when_using_select_and_calling_exclude_method_with_symbol_array
+    source: |
+      {foo: 1, bar: 2, baz: 3}.select { |k, v| !%i[foo bar].exclude?(k) }
+    offenses:
+      - line: 1
+        column_start: 25
+        column_end: 67
+        message: "Use `slice(:foo, :bar)` instead."
+    corrected: |
+      {foo: 1, bar: 2, baz: 3}.slice(:foo, :bar)
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_when_allcops_activesupportextensionsenabled_true_using_exclude_registers_and_corrects_an_offense_when_using_safe_navigation_select_and_calling_exclude_method_with_symbol_array
+    source: |
+      {foo: 1, bar: 2, baz: 3}&.select { |k, v| !%i[foo bar].exclude?(k) }
+    offenses:
+      - line: 1
+        column_start: 26
+        column_end: 68
+        message: "Use `slice(:foo, :bar)` instead."
+    corrected: |
+      {foo: 1, bar: 2, baz: 3}&.slice(:foo, :bar)
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_when_allcops_activesupportextensionsenabled_true_using_exclude_registers_and_corrects_an_offense_when_using_reject_and_calling_exclude_method_with_symbol_array
+    source: |
+      {foo: 1, bar: 2, baz: 3}.reject { |k, v| %i[foo bar].exclude?(k) }
+    offenses:
+      - line: 1
+        column_start: 25
+        column_end: 66
+        message: "Use `slice(:foo, :bar)` instead."
+    corrected: |
+      {foo: 1, bar: 2, baz: 3}.slice(:foo, :bar)
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_when_allcops_activesupportextensionsenabled_true_using_exclude_does_not_register_an_offense_when_using_reject_and_calling_exclude_method_with_symbol_array
+    source: |
+      {foo: 1, bar: 2, baz: 3}.reject { |k, v| !%i[foo bar].exclude?(k) }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_when_allcops_activesupportextensionsenabled_true_using_exclude_registers_and_corrects_an_offense_when_using_filter_and_calling_exclude_method_with_symbol_array
+    source: |
+      {foo: 1, bar: 2, baz: 3}.filter { |k, v| ![:foo, :bar].exclude?(k) }
+    offenses:
+      - line: 1
+        column_start: 25
+        column_end: 68
+        message: "Use `slice(:foo, :bar)` instead."
+    corrected: |
+      {foo: 1, bar: 2, baz: 3}.slice(:foo, :bar)
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_when_allcops_activesupportextensionsenabled_true_using_exclude_registers_and_corrects_an_offense_when_using_select_and_calling_exclude_method_with_dynamic_symbol_array
+    source: |
+      {foo: 1, bar: 2, baz: 3}.select { |k, v| !%I[#{foo} bar].exclude?(k) }
+    offenses:
+      - line: 1
+        column_start: 25
+        column_end: 70
+        message: "Use `slice(:\"#{foo}\", :bar)` instead."
+    corrected: |
+      {foo: 1, bar: 2, baz: 3}.slice(:"#{foo}", :bar)
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_when_allcops_activesupportextensionsenabled_true_using_exclude_registers_and_corrects_an_offense_when_using_select_and_calling_exclude_method_with_dynamic_string_array
+    source: |
+      {foo: 1, bar: 2, baz: 3}.select { |k, v| !%W[#{foo} bar].exclude?(k) }
+    offenses:
+      - line: 1
+        column_start: 25
+        column_end: 70
+        message: "Use `slice(\"#{foo}\", 'bar')` instead."
+    corrected: |
+      {foo: 1, bar: 2, baz: 3}.slice("#{foo}", 'bar')
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_when_allcops_activesupportextensionsenabled_true_using_exclude_registers_and_corrects_an_offense_when_using_select_and_calling_exclude_method_with_variable
+    source: |
+      array = %i[foo bar]
+      {foo: 1, bar: 2, baz: 3}.select { |k, v| !array.exclude?(k) }
+    offenses:
+      - line: 2
+        column_start: 25
+        column_end: 61
+        message: Use `slice(*array)` instead.
+    corrected: |
+      array = %i[foo bar]
+      {foo: 1, bar: 2, baz: 3}.slice(*array)
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_when_allcops_activesupportextensionsenabled_true_using_exclude_registers_and_corrects_an_offense_when_using_select_and_calling_exclude_method_with_method_call
+    source: |
+      {foo: 1, bar: 2, baz: 3}.select { |k, v| !array.exclude?(k) }
+    offenses:
+      - line: 1
+        column_start: 25
+        column_end: 61
+        message: Use `slice(*array)` instead.
+    corrected: |
+      {foo: 1, bar: 2, baz: 3}.slice(*array)
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_when_allcops_activesupportextensionsenabled_true_using_exclude_does_not_register_an_offense_when_using_select_and_calling_exclude_method_with_symbol_array_and_second_block_value
+    source: |
+      {foo: 1, bar: 2, baz: 3}.select { |k, v| ![1, 2].exclude?(v) }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_when_allcops_activesupportextensionsenabled_true_using_exclude_does_not_register_an_offense_when_using_select_and_calling_exclude_method_on_a_key
+    source: |
+      {foo: 1, bar: 2, baz: 3}.select { |k, v| k.exclude?('oo') }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_when_allcops_activesupportextensionsenabled_true_using_exclude_does_not_register_an_offense_when_using_select_and_calling_exclude_method_on_a_key
+    source: |
+      {foo: 1, bar: 2, baz: 3}.select { |k, v| !k.exclude?('oo') }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_when_allcops_activesupportextensionsenabled_true_using_exclude_does_not_register_an_offense_when_using_select_with_exclude_called_on_the_key_block_variable
+    source: |
+      hash.select { |k, v| !k.exclude?('foo') }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_when_allcops_activesupportextensionsenabled_true_using_exclude_does_not_register_an_offense_when_using_select_with_exclude_called_on_the_value_block_variable
+    source: |
+      hash.select { |k, v| !v.exclude?(k) }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_when_allcops_activesupportextensionsenabled_true_using_exclude_does_not_register_an_offense_when_using_reject_with_exclude_called_on_the_key_block_variable
+    source: |
+      hash.reject { |k, v| k.exclude?('foo') }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_when_allcops_activesupportextensionsenabled_true_using_exclude_does_not_register_an_offense_when_using_reject_with_exclude_called_on_the_value_block_variable
+    source: |
+      hash.reject { |k, v| v.exclude?(k) }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_when_allcops_activesupportextensionsenabled_true_does_not_register_an_offense_when_using_select_and_other_than_comparison_by_string_and_symbol_using
+    source: |
+      hash.select { |k, v| k == 0.0 }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_when_allcops_activesupportextensionsenabled_true_does_not_register_an_offense_when_using_reject_and_other_than_comparison_by_string_and_symbol_using
+    source: |
+      hash.reject { |k, v| k != 0.0 }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_when_allcops_activesupportextensionsenabled_true_does_not_register_an_offense_when_using_reject_and_other_than_comparison_by_string_and_symbol_using_with_bang
+    source: |
+      hash.reject { |k, v| !(k == 0.0) }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_when_allcops_activesupportextensionsenabled_true_does_not_register_an_offense_when_using_select_and_other_than_comparison_by_string_and_symbol_using_with_bang
+    source: |
+      hash.select { |k, v| !(k != 0.0) }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_when_allcops_activesupportextensionsenabled_true_does_not_register_an_offense_when_using_delete_if_and_comparing_with_lvar_sym
+    source: |
+      {foo: 1, bar: 2, baz: 3}.delete_if { |k, v| k == :bar }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_when_allcops_activesupportextensionsenabled_true_does_not_register_an_offense_when_using_keep_if_and_comparing_with_lvar_sym
+    source: |
+      {foo: 1, bar: 2, baz: 3}.keep_if { |k, v| k != :bar }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_when_allcops_activesupportextensionsenabled_true_does_not_register_an_offense_when_comparing_with_hash_value
+    source: |
+      {foo: 1, bar: 2, baz: 3}.select { |k, v| v.eql? :bar }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_when_allcops_activesupportextensionsenabled_true_does_not_register_an_offense_when_using_more_than_two_block_arguments
+    source: |
+      {foo: 1, bar: 2, baz: 3}.select { |k, v, z| k == :bar }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_when_allcops_activesupportextensionsenabled_true_does_not_register_an_offense_when_calling_include_method_without_a_param
+    source: |
+      {foo: 1, bar: 2, baz: 3}.select { |k, v| %i[foo bar].include? }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_does_not_register_an_offense_when_using_select_and_comparing_with_lvar_key
+    source: |
+      {foo: 1, bar: 2, baz: 3}.select { |k, v| k != :bar }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_does_not_register_an_offense_when_using_select_and_comparing_with_key_lvar
+    source: |
+      {foo: 1, bar: 2, baz: 3}.select { |k, v| :bar != key }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_does_not_register_an_offense_when_using_reject_and_comparing_with_lvar_key
+    source: |
+      {foo: 1, bar: 2, baz: 3}.reject { |k, v| k == :bar }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_does_not_register_an_offense_when_using_reject_and_comparing_with_key_lvar
+    source: |
+      {foo: 1, bar: 2, baz: 3}.reject { |k, v| :bar == key }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_does_not_register_an_offense_when_not_using_key_block_argument
+    source: |
+      {foo: 1, bar: 2, baz: 3}.select { |k, v| do_something != :bar }
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_does_not_register_an_offense_when_not_using_block
+    source: |
+      {foo: 1, bar: 2, baz: 3}.select
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_5_or_higher_does_not_register_an_offense_when_using_hash_slice
+    source: |
+      {foo: 1, bar: 2, baz: 3}.slice(:bar)
+    offenses:
+      []
+    ruby_version: ">= 2.5"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_4_or_lower_does_not_register_an_offense_when_using_select_and_comparing_with_lvar_key
+    source: |
+      {foo: 1, bar: 2, baz: 3}.select { |k, v| k == :bar }
+    offenses:
+      []
+    ruby_version: ">= 2.4"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_4_or_lower_does_not_register_an_offense_when_using_select_and_comparing_with_key_lvar
+    source: |
+      {foo: 1, bar: 2, baz: 3}.select { |k, v| :bar == k }
+    offenses:
+      []
+    ruby_version: ">= 2.4"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_4_or_lower_does_not_register_an_offense_when_using_reject_and_comparing_with_lvar_key
+    source: |
+      {foo: 1, bar: 2, baz: 3}.reject { |k, v| k != :bar }
+    offenses:
+      []
+    ruby_version: ">= 2.4"
+
+  - name: rubocop_cop_style_hashslice_ruby_2_4_or_lower_does_not_register_an_offense_when_using_reject_and_comparing_with_key_lvar
+    source: |
+      {foo: 1, bar: 2, baz: 3}.reject { |k, v| :bar != k }
+    offenses:
+      []
+    ruby_version: ">= 2.4"

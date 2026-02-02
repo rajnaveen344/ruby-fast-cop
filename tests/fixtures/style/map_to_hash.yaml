@@ -1,0 +1,237 @@
+cop: Style/MapToHash
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_maptohash_ruby_2_6_registers_an_offense_and_corrects
+    source: |
+      foo.#{method} { |x| [x, x * 2] }.to_h
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 37
+        message: "Pass a block to `to_h` instead of calling `#{method}.to_h`."
+    corrected: |
+      foo.to_h { |x| [x, x * 2] }
+    ruby_version: ">= 2.6"
+    interpolated: true
+
+  - name: rubocop_cop_style_maptohash_ruby_2_6_registers_an_offense_and_corrects
+    source: |
+      foo.#{method} { |(k, v)| [k, v * 2] }.to_h
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 42
+        message: "Pass a block to `to_h` instead of calling `#{method}.to_h`."
+    corrected: |
+      foo.to_h { |k, v| [k, v * 2] }
+    ruby_version: ">= 2.6"
+    interpolated: true
+
+  - name: rubocop_cop_style_maptohash_ruby_2_6_registers_an_offense_and_corrects
+    source: |
+      foo.#{method} { |x, y| [x.to_s, y.to_i] }.to_h
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 46
+        message: "Pass a block to `to_h` instead of calling `#{method}.to_h`."
+    corrected: |
+      foo.to_h { |x, y| [x.to_s, y.to_i] }
+    ruby_version: ">= 2.6"
+    interpolated: true
+
+  - name: rubocop_cop_style_maptohash_ruby_2_6_registers_an_offense_and_corrects
+    source: |
+      #{method} { |x| [x, x * 2] }.to_h
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 33
+        message: "Pass a block to `to_h` instead of calling `#{method}.to_h`."
+    corrected: |
+      to_h { |x| [x, x * 2] }
+    ruby_version: ">= 2.6"
+    interpolated: true
+
+  - name: rubocop_cop_style_maptohash_ruby_2_6_registers_an_offense_and_corrects
+    source: |
+      foo&.#{method} { |x| [x, x * 2] }&.to_h
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 39
+        message: "Pass a block to `to_h` instead of calling `#{method}&.to_h`."
+    corrected: |
+      foo&.to_h { |x| [x, x * 2] }
+    ruby_version: ">= 2.6"
+    interpolated: true
+
+  - name: rubocop_cop_style_maptohash_ruby_2_6_registers_an_offense_and_corrects
+    source: |
+      foo&.#{method} { |x| [x, x * 2] }.to_h
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 38
+        message: "Pass a block to `to_h` instead of calling `#{method}.to_h`."
+    corrected: |
+      foo.to_h { |x| [x, x * 2] }
+    ruby_version: ">= 2.6"
+    interpolated: true
+
+  - name: rubocop_cop_style_maptohash_ruby_2_6_registers_an_offense_and_corrects
+    source: |
+      foo&.#{method} { |x, y| [x.to_s, y.to_i] }&.to_h
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 48
+        message: "Pass a block to `to_h` instead of calling `#{method}&.to_h`."
+    corrected: |
+      foo&.to_h { |x, y| [x.to_s, y.to_i] }
+    ruby_version: ">= 2.6"
+    interpolated: true
+
+  - name: rubocop_cop_style_maptohash_ruby_2_6_when_using_numbered_parameters_registers_an_offense_and_corrects
+    source: |
+      foo.#{method} { [_1, _1 * 2] }.to_h
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 35
+        message: "Pass a block to `to_h` instead of calling `#{method}.to_h`."
+    corrected: |
+      foo.to_h { [_1, _1 * 2] }
+    ruby_version: ">= 2.7"
+    interpolated: true
+
+  - name: rubocop_cop_style_maptohash_ruby_2_6_when_using_numbered_parameters_registers_an_offense_and_corrects
+    source: |
+      foo.#{method} { [_1.to_s, _2.to_i] }.to_h
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 41
+        message: "Pass a block to `to_h` instead of calling `#{method}.to_h`."
+    corrected: |
+      foo.to_h { [_1.to_s, _2.to_i] }
+    ruby_version: ">= 2.7"
+    interpolated: true
+
+  - name: rubocop_cop_style_maptohash_ruby_2_6_registers_an_offense_and_corrects
+    source: |
+      foo.#{method}(&:do_something).to_h
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 34
+        message: "Pass a block to `to_h` instead of calling `#{method}.to_h`."
+    corrected: |
+      foo.to_h(&:do_something)
+    ruby_version: ">= 2.6"
+    interpolated: true
+
+  - name: rubocop_cop_style_maptohash_ruby_2_6_registers_an_offense_and_corrects
+    source: |
+      foo&.#{method}(&:do_something)&.to_h
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 36
+        message: "Pass a block to `to_h` instead of calling `#{method}&.to_h`."
+    corrected: |
+      foo&.to_h(&:do_something)
+    ruby_version: ">= 2.6"
+    interpolated: true
+
+  - name: rubocop_cop_style_maptohash_ruby_2_6_when_the_receiver_is_an_array_registers_an_offense_and_corrects
+    source: |
+      [1, 2, 3].#{method} { |x| [x, x * 2] }.to_h
+    offenses:
+      - line: 1
+        column_start: 10
+        column_end: 43
+        message: "Pass a block to `to_h` instead of calling `#{method}.to_h`."
+    corrected: |
+      [1, 2, 3].to_h { |x| [x, x * 2] }
+    ruby_version: ">= 2.6"
+    interpolated: true
+
+  - name: rubocop_cop_style_maptohash_ruby_2_6_when_the_receiver_is_a_hash_registers_an_offense_and_corrects
+    source: |
+      { foo: :bar }.#{method} { |x, y| [x.to_s, y.to_s] }.to_h
+    offenses:
+      - line: 1
+        column_start: 14
+        column_end: 56
+        message: "Pass a block to `to_h` instead of calling `#{method}.to_h`."
+    corrected: |
+      { foo: :bar }.to_h { |x, y| [x.to_s, y.to_s] }
+    ruby_version: ">= 2.6"
+    interpolated: true
+
+  - name: rubocop_cop_style_maptohash_ruby_2_6_when_chained_further_registers_an_offense_and_corrects
+    source: |
+      foo.#{method} { |x| x * 2 }.to_h.bar
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 36
+        message: "Pass a block to `to_h` instead of calling `#{method}.to_h`."
+    corrected: |
+      foo.to_h { |x| x * 2 }.bar
+    ruby_version: ">= 2.6"
+    interpolated: true
+
+  - name: rubocop_cop_style_maptohash_ruby_2_6_does_not_register_an_offense
+    source: |
+      foo.#{method} { |x| x * 2 }
+    offenses:
+      []
+    ruby_version: ">= 2.6"
+    interpolated: true
+
+  - name: rubocop_cop_style_maptohash_ruby_2_6_does_not_register_an_offense
+    source: |
+      foo.#{method} { |x| x * 2 }.to_h { |x| [x.to_s, x] }
+    offenses:
+      []
+    ruby_version: ">= 2.6"
+    interpolated: true
+
+  - name: rubocop_cop_style_maptohash_ruby_2_6_does_not_register_an_offense
+    source: |
+      foo.#{method} { |x| x * 2 }.to_h { |x| [x.to_s, x] }
+    offenses:
+      []
+    ruby_version: ">= 2.7"
+    interpolated: true
+
+  - name: rubocop_cop_style_maptohash_ruby_2_6_does_not_register_an_offense
+    source: |
+      foo.#{method} { |x| x * 2 }.to_h { [it.to_s, it] }
+    offenses:
+      []
+    ruby_version: ">= 3.4"
+    interpolated: true
+
+  - name: rubocop_cop_style_maptohash_ruby_2_6_registers_an_offense_and_corrects_with_newline_removal
+    source: |
+      {foo: bar}
+        .#{method} { |k, v| [k.to_s, v.do_something] }
+        .to_h
+        .freeze
+    offenses:
+      - line: 2
+        column_start: 3
+        column_end: 48
+        message: "Pass a block to `to_h` instead of calling `#{method}.to_h`."
+    corrected: |
+      {foo: bar}
+        .to_h { |k, v| [k.to_s, v.do_something] }
+        .freeze
+    ruby_version: ">= 2.6"
+    interpolated: true

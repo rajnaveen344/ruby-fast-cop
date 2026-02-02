@@ -1,0 +1,123 @@
+cop: Lint/DuplicateRequire
+department: lint
+severity: warning
+implemented: false
+
+tests:
+  - name: rubocop_cop_lint_duplicaterequire_registers_and_corrects_an_offense_when_duplicate_require_is_detected
+    source: |
+      require 'foo'
+      require 'foo'
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 13
+        message: Duplicate `require` detected.
+    corrected: |
+      require 'foo'
+
+  - name: rubocop_cop_lint_duplicaterequire_registers_and_corrects_an_offense_when_duplicate_require_relative_is_detected
+    source: |
+      require_relative '../bar'
+      require_relative '../bar'
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 25
+        message: Duplicate `require_relative` detected.
+    corrected: |
+      require_relative '../bar'
+
+  - name: rubocop_cop_lint_duplicaterequire_registers_and_corrects_an_offense_when_duplicate_require_through_kernel_is_detected
+    source: |
+      require 'foo'
+      Kernel.require 'foo'
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 20
+        message: Duplicate `require` detected.
+    corrected: |
+      require 'foo'
+
+  - name: rubocop_cop_lint_duplicaterequire_registers_and_corrects_an_offense_for_multiple_duplicate_requires
+    source: |
+      require 'foo'
+      require_relative '../bar'
+      require 'foo/baz'
+      require_relative '../bar'
+      Kernel.require 'foo'
+      require 'quux'
+    offenses:
+      - line: 4
+        column_start: 0
+        column_end: 25
+        message: Duplicate `require_relative` detected.
+      - line: 5
+        column_start: 0
+        column_end: 20
+        message: Duplicate `require` detected.
+    corrected: |
+      require 'foo'
+      require_relative '../bar'
+      require 'foo/baz'
+      require 'quux'
+
+  - name: rubocop_cop_lint_duplicaterequire_registers_and_corrects_an_offense_when_duplicate_requires_are_interleaved_with_some_other_code
+    source: |
+      require 'foo'
+      def m
+      end
+      require 'foo'
+    offenses:
+      - line: 4
+        column_start: 0
+        column_end: 13
+        message: Duplicate `require` detected.
+    corrected: |
+      require 'foo'
+      def m
+      end
+
+  - name: rubocop_cop_lint_duplicaterequire_registers_and_corrects_an_offense_for_duplicate_non_top_level_requires
+    source: |
+      def m
+        require 'foo'
+        require 'foo'
+      end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 15
+        message: Duplicate `require` detected.
+    corrected: |
+      def m
+        require 'foo'
+      end
+
+  - name: rubocop_cop_lint_duplicaterequire_does_not_register_an_offense_when_there_are_no_duplicate_require_s
+    source: |
+      require 'foo'
+      require 'bar'
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_duplicaterequire_does_not_register_an_offense_when_using_single_require
+    source: |
+      require 'foo'
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_duplicaterequire_does_not_register_an_offense_when_same_feature_argument_but_different_require_method
+    source: |
+      require 'feature'
+      require_relative 'feature'
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_duplicaterequire_does_not_register_an_offense_when_calling_user_defined_require_method
+    source: |
+      params.require(:user)
+      params.require(:user)
+    offenses:
+      []

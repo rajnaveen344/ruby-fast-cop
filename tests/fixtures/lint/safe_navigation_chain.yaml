@@ -1,0 +1,522 @@
+cop: Lint/SafeNavigationChain
+department: lint
+severity: warning
+implemented: false
+
+tests:
+  - name: rubocop_cop_lint_safenavigationchain_targetrubyversion_2_3_registers_an_offense_for_ordinary_method_call_exists_after_safe_navigation_method_call
+    source: |
+      x&.foo.bar
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 10
+        message: Do not chain ordinary method call after safe navigation operator.
+    corrected: |
+      x&.foo&.bar
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_lint_safenavigationchain_targetrubyversion_2_3
+    source: |
+      x&.foo(x).bar(y)
+    offenses:
+      - line: 1
+        column_start: 9
+        column_end: 16
+        message: Do not chain ordinary method call after safe navigation operator.
+    corrected: |
+      x&.foo(x)&.bar(y)
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_lint_safenavigationchain_targetrubyversion_2_3_registers_an_offense_for_ordinary_method_chain_exists_after_safe_navigation_method_call
+    source: |
+      something
+      x&.foo.bar.baz
+    offenses:
+      - line: 2
+        column_start: 6
+        column_end: 10
+        message: Do not chain ordinary method call after safe navigation operator.
+    corrected: |
+      something
+      x&.foo&.bar&.baz
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_lint_safenavigationchain_targetrubyversion_2_3_registers_an_offense_for_ordinary_method_chain_exists_after_safe_navigation_leading_dot_method_call
+    source: |
+      x&.foo
+       &.bar
+       .baz
+    offenses:
+      - line: 3
+        column_start: 1
+        column_end: 5
+        message: Do not chain ordinary method call after safe navigation operator.
+    corrected: |
+      x&.foo
+       &.bar
+       &.baz
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_lint_safenavigationchain_targetrubyversion_2_3
+    source: |
+      x&.foo(x).bar(y).baz(z)
+    offenses:
+      - line: 1
+        column_start: 9
+        column_end: 16
+        message: Do not chain ordinary method call after safe navigation operator.
+    corrected: |
+      x&.foo(x)&.bar(y)&.baz(z)
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_lint_safenavigationchain_targetrubyversion_2_3
+    source: |
+      something
+      x&.select(&:foo).bar
+    offenses:
+      - line: 2
+        column_start: 16
+        column_end: 20
+        message: Do not chain ordinary method call after safe navigation operator.
+    corrected: |
+      something
+      x&.select(&:foo)&.bar
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_lint_safenavigationchain_targetrubyversion_2_3
+    source: |
+      something
+      x&.select { |x| foo(x) }.bar
+    offenses:
+      - line: 2
+        column_start: 24
+        column_end: 28
+        message: Do not chain ordinary method call after safe navigation operator.
+    corrected: |
+      something
+      x&.select { |x| foo(x) }&.bar
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_lint_safenavigationchain_targetrubyversion_2_3_registers_an_offense_for_safe_navigation_with_operator
+    source: |
+      x&.foo < bar
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 12
+        message: Do not chain ordinary method call after safe navigation operator.
+    corrected: |
+      x&.foo&. < bar
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_lint_safenavigationchain_targetrubyversion_2_3_registers_an_offense_for_safe_navigation_with_operator
+    source: |
+      x&.foo > bar
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 12
+        message: Do not chain ordinary method call after safe navigation operator.
+    corrected: |
+      x&.foo&. > bar
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_lint_safenavigationchain_targetrubyversion_2_3_registers_an_offense_for_safe_navigation_with_operator
+    source: |
+      x&.foo <= bar
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 13
+        message: Do not chain ordinary method call after safe navigation operator.
+    corrected: |
+      x&.foo&. <= bar
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_lint_safenavigationchain_targetrubyversion_2_3_registers_an_offense_for_safe_navigation_with_operator
+    source: |
+      x&.foo >= bar
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 13
+        message: Do not chain ordinary method call after safe navigation operator.
+    corrected: |
+      x&.foo&. >= bar
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_lint_safenavigationchain_targetrubyversion_2_3_registers_an_offense_when_a_safe_navigation_operator_is_used_with_a_method_call_as_both_the_lhs_and_rhs_operands_of_for_the_same_receiver
+    source: |
+      x&.foo.bar && x&.foo.baz
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 10
+        message: Do not chain ordinary method call after safe navigation operator.
+    corrected: |
+      x&.foo&.bar && x&.foo.baz
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_lint_safenavigationchain_targetrubyversion_2_3_does_not_register_an_offense_when_a_safe_navigation_operator_is_used_with_a_method_call_as_the_rhs_operand_of_for_the_same_receiver
+    source: |
+      x&.foo&.bar && x&.foo.baz
+    offenses:
+      []
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_lint_safenavigationchain_targetrubyversion_2_3_registers_an_offense_when_a_safe_navigation_operator_is_used_with_a_method_call_as_the_rhs_operand_of_for_a_different_receiver
+    source: |
+      x&.foo&.bar && y&.foo.baz
+    offenses:
+      - line: 1
+        column_start: 21
+        column_end: 25
+        message: Do not chain ordinary method call after safe navigation operator.
+    corrected: |
+      x&.foo&.bar && y&.foo&.baz
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_lint_safenavigationchain_targetrubyversion_2_3_registers_an_offense_when_a_safe_navigation_operator_is_used_with_a_method_call_as_both_the_lhs_and_rhs_operands_of_for_the_same_receiver
+    source: |
+      x&.foo.bar || x&.foo.baz
+    offenses:
+      - line: 1
+        column_start: 20
+        column_end: 24
+        message: Do not chain ordinary method call after safe navigation operator.
+      - line: 1
+        column_start: 6
+        column_end: 10
+        message: Do not chain ordinary method call after safe navigation operator.
+    corrected: |
+      x&.foo&.bar || x&.foo&.baz
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_lint_safenavigationchain_targetrubyversion_2_3_registers_an_offense_when_a_safe_navigation_operator_is_used_with_a_method_call_as_the_rhs_operand_of_for_the_same_receiver
+    source: |
+      x&.foo&.bar || x&.foo.baz
+    offenses:
+      - line: 1
+        column_start: 21
+        column_end: 25
+        message: Do not chain ordinary method call after safe navigation operator.
+    corrected: |
+      x&.foo&.bar || x&.foo&.baz
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_lint_safenavigationchain_targetrubyversion_2_3_registers_an_offense_when_a_safe_navigation_operator_is_used_with_a_method_call_as_the_rhs_operand_of_for_a_different_receiver
+    source: |
+      x&.foo&.bar || y&.foo.baz
+    offenses:
+      - line: 1
+        column_start: 21
+        column_end: 25
+        message: Do not chain ordinary method call after safe navigation operator.
+    corrected: |
+      x&.foo&.bar || y&.foo&.baz
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_lint_safenavigationchain_targetrubyversion_2_3_registers_an_offense_for_safe_navigation_with_a_method_call_as_an_expression_of_operand
+    source: |
+      do_something && x&.foo.bar
+    offenses:
+      - line: 1
+        column_start: 22
+        column_end: 26
+        message: Do not chain ordinary method call after safe navigation operator.
+    corrected: |
+      do_something && x&.foo&.bar
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_lint_safenavigationchain_targetrubyversion_2_3_registers_an_offense_for_safe_navigation_with_operator_as_an_expression_of_operand
+    source: |
+      do_something && x&.foo >= bar
+    offenses:
+      - line: 1
+        column_start: 22
+        column_end: 29
+        message: Do not chain ordinary method call after safe navigation operator.
+    corrected: |
+      do_something && (x&.foo&. >= bar)
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_lint_safenavigationchain_targetrubyversion_2_3_registers_an_offense_for_safe_navigation_with_operator_as_an_expression_of_operand
+    source: |
+      do_something || x&.foo >= bar
+    offenses:
+      - line: 1
+        column_start: 22
+        column_end: 29
+        message: Do not chain ordinary method call after safe navigation operator.
+    corrected: |
+      do_something || (x&.foo&. >= bar)
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_lint_safenavigationchain_targetrubyversion_2_3_registers_an_offense_for_safe_navigation_with_operator_as_an_expression_of_and_operand
+    source: |
+      do_something and x&.foo >= bar
+    offenses:
+      - line: 1
+        column_start: 23
+        column_end: 30
+        message: Do not chain ordinary method call after safe navigation operator.
+    corrected: |
+      do_something and x&.foo&. >= bar
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_lint_safenavigationchain_targetrubyversion_2_3_registers_an_offense_for_safe_navigation_with_operator_as_an_expression_of_or_operand
+    source: |
+      do_something or x&.foo >= bar
+    offenses:
+      - line: 1
+        column_start: 22
+        column_end: 29
+        message: Do not chain ordinary method call after safe navigation operator.
+    corrected: |
+      do_something or x&.foo&. >= bar
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_lint_safenavigationchain_targetrubyversion_2_3_registers_an_offense_for_safe_navigation_with_operator_as_an_expression_of_comparison_method_operand
+    source: |
+      do_something == x&.foo >= bar
+    offenses:
+      - line: 1
+        column_start: 22
+        column_end: 29
+        message: Do not chain ordinary method call after safe navigation operator.
+    corrected: |
+      do_something == (x&.foo&. >= bar)
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_lint_safenavigationchain_targetrubyversion_2_3_registers_an_offense_for_safe_navigation_with_operator
+    source: |
+      x&.foo + bar
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 12
+        message: Do not chain ordinary method call after safe navigation operator.
+    corrected: |
+      x&.foo&. + bar
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_lint_safenavigationchain_targetrubyversion_2_3_registers_an_offense_for_safe_navigation_with_operator
+    source: |
+      x&.foo[bar]
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 11
+        message: Do not chain ordinary method call after safe navigation operator.
+    corrected: |
+      x&.foo&.[](bar)
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_lint_safenavigationchain_targetrubyversion_2_3_registers_an_offense_for_safe_navigation_with_operator_followed_by_method_chain
+    source: |
+      x&.foo[bar].to_s
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 11
+        message: Do not chain ordinary method call after safe navigation operator.
+    corrected: |
+      x&.foo&.[](bar).to_s
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_lint_safenavigationchain_targetrubyversion_2_3_registers_an_offense_for_safe_navigation_with_operator
+    source: |
+      x&.foo[bar] = baz
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 17
+        message: Do not chain ordinary method call after safe navigation operator.
+    corrected: |
+      x&.foo&.[]=(bar, baz)
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_lint_safenavigationchain_targetrubyversion_2_3_registers_an_offense_for_operator_followed_by_a_safe_navigation_and_method_chain
+    source: |
+      foo[bar]&.x.y
+    offenses:
+      - line: 1
+        column_start: 11
+        column_end: 13
+        message: Do not chain ordinary method call after safe navigation operator.
+    corrected: |
+      foo[bar]&.x&.y
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_lint_safenavigationchain_targetrubyversion_2_3_registers_an_offense_for_safe_navigation_on_the_right_hand_side_of_the
+    source: |
+      x + foo&.bar.baz
+    offenses:
+      - line: 1
+        column_start: 12
+        column_end: 16
+        message: Do not chain ordinary method call after safe navigation operator.
+    corrected: |
+      x + foo&.bar&.baz
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_lint_safenavigationchain_targetrubyversion_2_3_registers_an_offense_for_safe_navigation_on_the_right_hand_side_of_the
+    source: |
+      x - foo&.bar.baz
+    offenses:
+      - line: 1
+        column_start: 12
+        column_end: 16
+        message: Do not chain ordinary method call after safe navigation operator.
+    corrected: |
+      x - foo&.bar&.baz
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_lint_safenavigationchain_targetrubyversion_2_3_registers_an_offense_for_safe_navigation_on_the_right_hand_side_of_the
+    source: |
+      x * foo&.bar.baz
+    offenses:
+      - line: 1
+        column_start: 12
+        column_end: 16
+        message: Do not chain ordinary method call after safe navigation operator.
+    corrected: |
+      x * foo&.bar&.baz
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_lint_safenavigationchain_targetrubyversion_2_3_registers_an_offense_for_safe_navigation_on_the_right_hand_side_of_the
+    source: |
+      x / foo&.bar.baz
+    offenses:
+      - line: 1
+        column_start: 12
+        column_end: 16
+        message: Do not chain ordinary method call after safe navigation operator.
+    corrected: |
+      x / foo&.bar&.baz
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_lint_safenavigationchain_targetrubyversion_2_3_registers_an_offense_for_safe_navigation_on_the_left_hand_side_of_a_operator_when_inside_an_array
+    source: |
+      [foo, a&.baz - 1]
+    offenses:
+      - line: 1
+        column_start: 12
+        column_end: 16
+        message: Do not chain ordinary method call after safe navigation operator.
+    corrected: |
+      [foo, (a&.baz&. - 1)]
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_lint_safenavigationchain_targetrubyversion_2_3_registers_an_offense_for_safe_navigation_on_the_left_hand_side_of_a_operator_when_inside_a_hash
+    source: |
+      { foo: a&.baz - 1 }
+    offenses:
+      - line: 1
+        column_start: 13
+        column_end: 17
+        message: Do not chain ordinary method call after safe navigation operator.
+    corrected: |
+      { foo: (a&.baz&. - 1) }
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_lint_safenavigationchain_targetrubyversion_2_3_proper_highlighting_when_there_are_methods_before
+    source: |
+      something
+      x&.foo.bar.baz
+    offenses:
+      - line: 2
+        column_start: 6
+        column_end: 10
+        message: Do not chain ordinary method call after safe navigation operator.
+    corrected: |
+      something
+      x&.foo&.bar&.baz
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_lint_safenavigationchain_targetrubyversion_2_3_proper_highlighting_when_there_are_methods_after
+    source: |
+      x&.foo.bar.baz
+      something
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 10
+        message: Do not chain ordinary method call after safe navigation operator.
+    corrected: |
+      x&.foo&.bar&.baz
+      something
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_lint_safenavigationchain_targetrubyversion_2_3_proper_highlighting_when_in_a_method
+    source: |
+      def something
+        x&.foo.bar.baz
+      end
+    offenses:
+      - line: 2
+        column_start: 8
+        column_end: 12
+        message: Do not chain ordinary method call after safe navigation operator.
+    corrected: |
+      def something
+        x&.foo&.bar&.baz
+      end
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_lint_safenavigationchain_targetrubyversion_2_3_proper_highlighting_when_in_a_begin
+    source: |
+      begin
+        x&.foo.bar.baz
+      end
+    offenses:
+      - line: 2
+        column_start: 8
+        column_end: 12
+        message: Do not chain ordinary method call after safe navigation operator.
+    corrected: |
+      begin
+        x&.foo&.bar&.baz
+      end
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_lint_safenavigationchain_targetrubyversion_2_3_proper_highlighting_when_used_with_a_modifier_if
+    source: |
+      x&.foo.bar.baz if something
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 10
+        message: Do not chain ordinary method call after safe navigation operator.
+    corrected: |
+      x&.foo&.bar&.baz if something
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_lint_safenavigationchain_ruby_2_7
+    source: |
+      something
+      x&.select { foo(_1) }.bar
+    offenses:
+      - line: 2
+        column_start: 21
+        column_end: 25
+        message: Do not chain ordinary method call after safe navigation operator.
+    corrected: |
+      something
+      x&.select { foo(_1) }&.bar
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_lint_safenavigationchain_ruby_3_4
+    source: |
+      something
+      x&.select { foo(it) }.bar
+    offenses:
+      - line: 2
+        column_start: 21
+        column_end: 25
+        message: Do not chain ordinary method call after safe navigation operator.
+    corrected: |
+      something
+      x&.select { foo(it) }&.bar
+    ruby_version: ">= 3.4"

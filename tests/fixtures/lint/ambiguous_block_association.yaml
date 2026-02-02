@@ -1,0 +1,276 @@
+cop: Lint/AmbiguousBlockAssociation
+department: lint
+severity: warning
+implemented: false
+
+tests:
+  - name: rubocop_cop_lint_ambiguousblockassociation_accepts_foo_bar_baz_a
+    source: |
+      foo == bar { baz a }
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_ambiguousblockassociation_accepts_foo_a_bar_a
+    source: |
+      foo ->(a) { bar a }
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_ambiguousblockassociation_accepts_some_method_a_el
+    source: |
+      some_method(a) { |el| puts el }
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_ambiguousblockassociation_accepts_some_method_a_put
+    source: |
+      some_method(a) { puts _1 }
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_ambiguousblockassociation_accepts_some_method_a_do_pu
+    source: |
+      some_method(a) do;puts a;end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_ambiguousblockassociation_accepts_some_method_a_do_put
+    source: |
+      some_method a do;puts "dev";end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_ambiguousblockassociation_accepts_some_method_a_do_e
+    source: |
+      some_method a do |e|;puts e;end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_ambiguousblockassociation_accepts_foo_bar_a_el_pu
+    source: |
+      Foo.bar(a) { |el| puts el }
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_ambiguousblockassociation_accepts_env_env_fetch_env
+    source: |
+      env ENV.fetch("ENV") { "dev" }
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_ambiguousblockassociation_accepts_env_env_fetch_env
+    source: |
+      env(ENV.fetch("ENV") { "dev" })
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_ambiguousblockassociation_accepts_f_b_fetch_a
+    source: |
+      { f: "b"}.fetch(:a) do |e|;puts e;end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_ambiguousblockassociation_accepts_hash_some_method_a
+    source: |
+      Hash[some_method(a) { |el| el }]
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_ambiguousblockassociation_accepts_foo_lambda_do_dia
+    source: |
+      foo = lambda do |diagnostic|;end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_ambiguousblockassociation_accepts_proc_new_puts_pro
+    source: |
+      Proc.new { puts "proc" }
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_ambiguousblockassociation_accepts_expect_order_save
+    source: |
+      expect { order.save }.to(change { orders.size })
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_ambiguousblockassociation_accepts_scope_active
+    source: |
+      scope :active, -> { where(status: "active") }
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_ambiguousblockassociation_accepts_scope_active_proc
+    source: |
+      scope :active, proc { where(status: "active") }
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_ambiguousblockassociation_accepts_scope_active_proc
+    source: |
+      scope :active, Proc.new { where(status: "active") }
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_ambiguousblockassociation_accepts_assert_equal_posts_f
+    source: |
+      assert_equal posts.find { |p| p.title == "Foo" }, results.first
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_ambiguousblockassociation_accepts_assert_equal_posts_f
+    source: |
+      assert_equal(posts.find { |p| p.title == "Foo" }, results.first)
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_ambiguousblockassociation_accepts_assert_equal_results
+    source: |
+      assert_equal(results.first, posts.find { |p| p.title == "Foo" })
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_ambiguousblockassociation_accepts_allow_cop_to_receiv
+    source: |
+      allow(cop).to receive(:on_int) { raise RuntimeError }
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_ambiguousblockassociation_accepts_allow_cop_to_receiv
+    source: |
+      allow(cop).to(receive(:on_int) { raise RuntimeError })
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_ambiguousblockassociation_without_parentheses_without_receiver_registers_an_offense
+    source: |
+      some_method a { |el| puts el }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 30
+        message: Parenthesize the param `a { |el| puts el }` to make sure that the block will be associated with the `a` method call.
+    corrected: |
+      some_method(a { |el| puts el })
+
+  - name: rubocop_cop_lint_ambiguousblockassociation_without_parentheses_without_receiver_and_numblock_registers_an_offense
+    source: |
+      some_method a { puts _1 }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 25
+        message: Parenthesize the param `a { puts _1 }` to make sure that the block will be associated with the `a` method call.
+    corrected: |
+      some_method(a { puts _1 })
+
+  - name: rubocop_cop_lint_ambiguousblockassociation_without_parentheses_without_receiver_and_itblock_registers_an_offense
+    source: |
+      some_method a { puts it }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 25
+        message: Parenthesize the param `a { puts it }` to make sure that the block will be associated with the `a` method call.
+    corrected: |
+      some_method(a { puts it })
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_lint_ambiguousblockassociation_without_parentheses_with_receiver_registers_an_offense
+    source: |
+      Foo.some_method a { |el| puts el }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 34
+        message: Parenthesize the param `a { |el| puts el }` to make sure that the block will be associated with the `a` method call.
+    corrected: |
+      Foo.some_method(a { |el| puts el })
+
+  - name: rubocop_cop_lint_ambiguousblockassociation_without_parentheses_with_receiver_when_using_safe_navigation_operator_registers_an_offense
+    source: |
+      Foo&.some_method a { |el| puts el }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 35
+        message: Parenthesize the param `a { |el| puts el }` to make sure that the block will be associated with the `a` method call.
+    corrected: |
+      Foo&.some_method(a { |el| puts el })
+
+  - name: rubocop_cop_lint_ambiguousblockassociation_without_parentheses_rspec_expect_to_change_registers_an_offense
+    source: |
+      expect { order.expire }.to change { order.events }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 50
+        message: Parenthesize the param `change { order.events }` to make sure that the block will be associated with the `change` method call.
+    corrected: |
+      expect { order.expire }.to(change { order.events })
+
+  - name: rubocop_cop_lint_ambiguousblockassociation_without_parentheses_as_a_hash_key_registers_an_offense
+    source: |
+      Hash[some_method a { |el| el }]
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 30
+        message: Parenthesize the param `a { |el| el }` to make sure that the block will be associated with the `a` method call.
+    corrected: |
+      Hash[some_method(a { |el| el })]
+
+  - name: rubocop_cop_lint_ambiguousblockassociation_without_parentheses_with_assignment_registers_an_offense
+    source: |
+      foo = some_method a { |el| puts el }
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 36
+        message: Parenthesize the param `a { |el| puts el }` to make sure that the block will be associated with the `a` method call.
+    corrected: |
+      foo = some_method(a { |el| puts el })
+
+  - name: rubocop_cop_lint_ambiguousblockassociation_when_allowedmethods_is_enabled_does_not_register_an_offense_for_an_allowed_method
+    source: |
+      expect { order.expire }.to change { order.events }
+    offenses:
+      []
+    config:
+      AllowedMethods: [change]
+
+  - name: rubocop_cop_lint_ambiguousblockassociation_when_allowedmethods_is_enabled_registers_an_offense_for_other_methods
+    source: |
+      expect { order.expire }.to update { order.events }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 50
+        message: Parenthesize the param `update { order.events }` to make sure that the block will be associated with the `update` method call.
+    corrected: |
+      expect { order.expire }.to(update { order.events })
+    config:
+      AllowedMethods: [change]
+
+  - name: rubocop_cop_lint_ambiguousblockassociation_when_allowedpatterns_is_enabled_does_not_register_an_offense_for_an_allowed_method
+    source: |
+      expect(order).to receive(:complete).twice { OrderCount.update! }
+    offenses:
+      []
+    config:
+      AllowedMethods: [change]
+      AllowedPatterns: [/change/, '/receive\(.*?\)\.twice/']
+
+  - name: rubocop_cop_lint_ambiguousblockassociation_when_allowedpatterns_is_enabled_registers_an_offense_for_other_methods
+    source: |
+      expect { order.expire }.to update { order.events }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 50
+        message: Parenthesize the param `update { order.events }` to make sure that the block will be associated with the `update` method call.
+    corrected: |
+      expect { order.expire }.to(update { order.events })
+    config:
+      AllowedMethods: [change]
+      AllowedPatterns: [/change/, '/receive\(.*?\)\.twice/']

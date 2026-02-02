@@ -1,0 +1,22 @@
+cop: Style/EndBlock
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_endblock_reports_an_offense_and_corrects_end_block
+    source: |
+      END { test }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 3
+        message: "Avoid the use of `END` blocks. Use `Kernel#at_exit` instead."
+    corrected: |
+      at_exit { test }
+
+  - name: rubocop_cop_style_endblock_does_not_report_offenses_for_other_blocks
+    source: |
+      end_block { test }
+    offenses:
+      []

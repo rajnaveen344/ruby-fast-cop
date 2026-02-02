@@ -1,0 +1,122 @@
+cop: Style/Attr
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_attr_registers_an_offense_attr
+    source: |
+      class SomeClass
+        attr :name
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 6
+        message: Do not use `attr`. Use `attr_reader` instead.
+
+  - name: rubocop_cop_style_attr_registers_an_offense_for_attr_within_class_eval
+    source: |
+      SomeClass.class_eval do
+        attr :name
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 6
+        message: Do not use `attr`. Use `attr_reader` instead.
+
+  - name: rubocop_cop_style_attr_registers_an_offense_for_attr_within_module_eval
+    source: |
+      SomeClass.module_eval do
+        attr :name
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 6
+        message: Do not use `attr`. Use `attr_reader` instead.
+
+  - name: rubocop_cop_style_attr_registers_an_offense_when_using_attr_and_method_definitions
+    source: |
+      class SomeClass
+        attr :name
+      
+        def foo
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 6
+        message: Do not use `attr`. Use `attr_reader` instead.
+
+  - name: rubocop_cop_style_attr_accepts_attr_when_it_does_not_take_arguments
+    source: |
+      func(attr)
+    offenses:
+      []
+
+  - name: rubocop_cop_style_attr_accepts_attr_when_it_has_a_receiver
+    source: |
+      x.attr arg
+    offenses:
+      []
+
+  - name: rubocop_cop_style_attr_does_not_register_offense_for_custom_attr_method
+    source: |
+      class SomeClass
+        def attr(*args)
+          p args
+        end
+      
+        def a
+          attr(1)
+        end
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_attr_autocorrects_attr_to_attr_reader
+    source: |
+      attr :name
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 4
+        message: Do not use `attr`. Use `attr_reader` instead.
+    corrected: |
+      attr_reader :name
+
+  - name: rubocop_cop_style_attr_autocorrects_attr_false_to_attr_reader
+    source: |
+      attr :name, false
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 4
+        message: Do not use `attr`. Use `attr_reader` instead.
+    corrected: |
+      attr_reader :name
+
+  - name: rubocop_cop_style_attr_autocorrects_attr_name_true_to_attr_accessor_name
+    source: |
+      attr :name, true
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 4
+        message: Do not use `attr`. Use `attr_accessor` instead.
+    corrected: |
+      attr_accessor :name
+
+  - name: rubocop_cop_style_attr_autocorrects_attr_with_multiple_names_to_attr_reader
+    source: |
+      attr :foo, :bar
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 4
+        message: Do not use `attr`. Use `attr_reader` instead.
+    corrected: |
+      attr_reader :foo, :bar

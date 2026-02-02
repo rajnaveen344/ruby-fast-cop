@@ -1,0 +1,233 @@
+cop: Lint/MixedCaseRange
+department: lint
+severity: warning
+implemented: false
+
+tests:
+  - name: rubocop_cop_lint_mixedcaserange_registers_an_offense_for_an_overly_broad_character_range
+    source: |
+      foo = 'A'..'z'
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 14
+        message: "#{message}"
+    interpolated: true
+
+  - name: rubocop_cop_lint_mixedcaserange_registers_an_offense_for_an_overly_broad_exclusive_character_range
+    source: |
+      foo = 'A'...'z'
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 15
+        message: "#{message}"
+    interpolated: true
+
+  - name: rubocop_cop_lint_mixedcaserange_does_not_register_an_offense_for_an_acceptable_range
+    source: |
+      foo = 'A'..'Z'
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_mixedcaserange_does_not_register_an_offense_when_the_number_of_characters_at_the_start_of_range_is_other_than_1
+    source: |
+      foo = 'aa'..'z'
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_mixedcaserange_does_not_register_an_offense_when_the_number_of_characters_at_the_end_of_range_is_other_than_1
+    source: |
+      foo = 'a'..'zz'
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_mixedcaserange_ruby_2_6_does_not_register_an_offense_for_a_beginless_range
+    source: |
+      (..'z')
+    offenses:
+      []
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_lint_mixedcaserange_does_not_register_an_offense_for_an_endless_range
+    source: |
+      ('a'..)
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_mixedcaserange_registers_an_offense_for_an_overly_broad_range
+    source: |
+      foo = /[A-z]/
+    offenses:
+      - line: 1
+        column_start: 8
+        column_end: 11
+        message: "#{message}"
+    corrected: |
+      foo = /[A-Za-z]/
+    interpolated: true
+
+  - name: rubocop_cop_lint_mixedcaserange_registers_an_offense_for_each_of_multiple_unsafe_ranges
+    source: |
+      foo = /[_A-b;Z-a!]/
+    offenses:
+      - line: 1
+        column_start: 13
+        column_end: 16
+        message: "#{message}"
+      - line: 1
+        column_start: 9
+        column_end: 12
+        message: "#{message}"
+    corrected: |
+      foo = /[_A-Za-b;Za!]/
+    interpolated: true
+
+  - name: rubocop_cop_lint_mixedcaserange_registers_an_offense_for_each_of_multiple_unsafe_ranges_at_the_correct_place
+    source: |
+      foo = %r{[A-z]+/[A-z]+|all}.freeze || /_[A-z]/
+                       ^^^ #{message}
+    offenses:
+      - line: 1
+        column_start: 41
+        column_end: 44
+        message: "#{message}"
+      - line: 2
+        column_start: 10
+        column_end: 13
+        message: "#{message}"
+    corrected: |
+      foo = %r{[A-Za-z]+/[A-Za-z]+|all}.freeze || /_[A-Za-z]/
+    interpolated: true
+
+  - name: rubocop_cop_lint_mixedcaserange_registers_an_offense_in_an_extended_regexp
+    source: |
+      foo = /
+        A-z # not a character class
+        [A-z]_..._
+      /x
+    offenses:
+      - line: 3
+        column_start: 3
+        column_end: 6
+        message: "#{message}"
+    corrected: |
+      foo = /
+        A-z # not a character class
+        [A-Za-z]_..._
+      /x
+    interpolated: true
+
+  - name: rubocop_cop_lint_mixedcaserange_registers_an_offense_for_negated_ranges
+    source: |
+      foo = /[^G-f]/
+    offenses:
+      - line: 1
+        column_start: 9
+        column_end: 12
+        message: "#{message}"
+    corrected: |
+      foo = /[^G-Za-f]/
+    interpolated: true
+
+  - name: rubocop_cop_lint_mixedcaserange_registers_an_offense_for_unsafe_range_with_possible_octal_digits_following
+    source: |
+      foo = /[_A-z123]/
+    offenses:
+      - line: 1
+        column_start: 9
+        column_end: 12
+        message: "#{message}"
+    corrected: |
+      foo = /[_A-Za-z123]/
+    interpolated: true
+
+  - name: rubocop_cop_lint_mixedcaserange_does_not_register_an_offense_for_accepted_ranges
+    source: |
+      foo = /[_a-zA-Z0-9;]/
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_mixedcaserange_does_not_register_an_offense_with_escaped_octal_opening_bound
+    source: |
+      foo = /[\101-z]/
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_mixedcaserange_does_not_register_an_offense_with_escaped_octal_closing_bound
+    source: |
+      foo = /[A-\172]/
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_mixedcaserange_does_not_register_an_offense_with_opening_hex_bound
+    source: |
+      foo = /[\x01-z]/
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_mixedcaserange_does_not_register_an_offense_with_closing_hex_bound
+    source: |
+      foo = /[A-\x7a]/
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_mixedcaserange_does_not_register_an_offense_with_escaped_hex_bounds
+    source: |
+      foo = /[\x41-\x7a]/
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_mixedcaserange_does_not_register_an_offense_with_tricky_escaped_hex_bounds
+    source: |
+      foo = /[\xA-\xf]/
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_mixedcaserange_does_not_register_an_offense_with_escaped_unicode_bounds
+    source: |
+      foo = /[\u0041-\u007a]/
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_mixedcaserange_does_not_register_an_offense_with_control_characters
+    source: |
+      foo = /[\C-A-\cz]/
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_mixedcaserange_does_not_register_an_offense_with_escaped_dash_not_a_range
+    source: |
+      foo = /[A\-z]/
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_mixedcaserange_does_not_register_an_offense_with_nested_character_class
+    source: |
+      foo = /[a-[bc]]/
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_mixedcaserange_does_not_register_an_offense_with
+    source: |
+      /[[ ]]/
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_mixedcaserange_does_not_register_an_offense_when_a_character_between_z_and_a_is_at_the_start_of_range
+    source: |
+      foo = /[_-a]/
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_mixedcaserange_does_not_register_an_offense_when_a_character_between_z_and_a_is_at_the_end_of_range
+    source: |
+      foo = /[A-_]/
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_mixedcaserange_does_not_register_an_offense_with_invalid_byte_sequence_in_utf_8
+    source: |
+      foo = /[\–]/
+    offenses:
+      []

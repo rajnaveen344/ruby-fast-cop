@@ -1,0 +1,155 @@
+cop: Style/HashLookupMethod
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_hashlookupmethod_with_enforcedstyle_brackets_default_registers_an_offense_for_fetch_with_one_argument
+    source: |
+      hash.fetch(key)
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 10
+        message: "Use `Hash#[]` instead of `Hash#fetch`."
+    corrected: |
+      hash[key]
+    config:
+      EnforcedStyle: brackets
+
+  - name: rubocop_cop_style_hashlookupmethod_with_enforcedstyle_brackets_default_registers_an_offense_for_fetch_with_one_argument_and_receiver_chain
+    source: |
+      some_method.hash.fetch(key)
+    offenses:
+      - line: 1
+        column_start: 17
+        column_end: 22
+        message: "Use `Hash#[]` instead of `Hash#fetch`."
+    corrected: |
+      some_method.hash[key]
+    config:
+      EnforcedStyle: brackets
+
+  - name: rubocop_cop_style_hashlookupmethod_with_enforcedstyle_brackets_default_accepts_bracket_access
+    source: |
+      hash[key]
+    offenses:
+      []
+    config:
+      EnforcedStyle: brackets
+
+  - name: rubocop_cop_style_hashlookupmethod_with_enforcedstyle_brackets_default_accepts_fetch_with_default_value
+    source: |
+      hash.fetch(key, default)
+    offenses:
+      []
+    config:
+      EnforcedStyle: brackets
+
+  - name: rubocop_cop_style_hashlookupmethod_with_enforcedstyle_brackets_default_accepts_fetch_with_block
+    source: |
+      hash.fetch(key) { default }
+    offenses:
+      []
+    config:
+      EnforcedStyle: brackets
+
+  - name: rubocop_cop_style_hashlookupmethod_with_enforcedstyle_brackets_default_accepts_fetch_without_receiver
+    source: |
+      fetch(key)
+    offenses:
+      []
+    config:
+      EnforcedStyle: brackets
+
+  - name: rubocop_cop_style_hashlookupmethod_with_enforcedstyle_brackets_default_accepts_fetch_without_receiver_and_with_block
+    source: |
+      fetch(key) { default }
+    offenses:
+      []
+    config:
+      EnforcedStyle: brackets
+
+  - name: rubocop_cop_style_hashlookupmethod_with_enforcedstyle_brackets_default_when_using_safe_navigation_operator_registers_an_offense_for_fetch_with_one_argument
+    source: |
+      hash&.fetch(key)
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 11
+        message: "Use `Hash#[]` instead of `Hash#fetch`."
+    corrected: |
+      (hash[key])
+    config:
+      EnforcedStyle: brackets
+
+  - name: rubocop_cop_style_hashlookupmethod_with_enforcedstyle_fetch_registers_an_offense_for_bracket_access_with_one_argument
+    source: |
+      hash[key]
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 9
+        message: "Use `Hash#fetch` instead of `Hash#[]`."
+    corrected: |
+      hash.fetch(key)
+    config:
+      EnforcedStyle: fetch
+
+  - name: rubocop_cop_style_hashlookupmethod_with_enforcedstyle_fetch_registers_an_offense_for_bracket_access_with_receiver_chain
+    source: |
+      some_method.hash[key]
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 21
+        message: "Use `Hash#fetch` instead of `Hash#[]`."
+    corrected: |
+      some_method.hash.fetch(key)
+    config:
+      EnforcedStyle: fetch
+
+  - name: rubocop_cop_style_hashlookupmethod_with_enforcedstyle_fetch_accepts_fetch_with_one_argument
+    source: |
+      hash.fetch(key)
+    offenses:
+      []
+    config:
+      EnforcedStyle: fetch
+
+  - name: rubocop_cop_style_hashlookupmethod_with_enforcedstyle_fetch_accepts_fetch_with_default_value
+    source: |
+      hash.fetch(key, default)
+    offenses:
+      []
+    config:
+      EnforcedStyle: fetch
+
+  - name: rubocop_cop_style_hashlookupmethod_with_enforcedstyle_fetch_accepts_fetch_with_block
+    source: |
+      hash.fetch(key) { default }
+    offenses:
+      []
+    config:
+      EnforcedStyle: fetch
+
+  - name: rubocop_cop_style_hashlookupmethod_with_enforcedstyle_fetch_does_not_flag_bracket_access_with_multiple_arguments
+    source: |
+      array[1, 2]
+    offenses:
+      []
+    config:
+      EnforcedStyle: fetch
+
+  - name: rubocop_cop_style_hashlookupmethod_with_enforcedstyle_fetch_when_using_safe_navigation_operator_registers_an_offense_for_bracket_access
+    source: |
+      hash&.[](key)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 13
+        message: "Use `Hash#fetch` instead of `Hash#[]`."
+    corrected: |
+      hash&.fetch(key)
+    config:
+      EnforcedStyle: fetch

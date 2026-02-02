@@ -1,0 +1,127 @@
+cop: Style/DateTime
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_datetime_registers_an_offense_when_using_datetime_for_current_time
+    source: |
+      DateTime.now
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 12
+        message: Prefer `Time` over `DateTime`.
+    corrected: |
+      Time.now
+    config:
+      AllowCoercion: false
+
+  - name: rubocop_cop_style_datetime_registers_an_offense_when_using_datetime_for_current_time_with_safe_navigation_operator
+    source: |
+      DateTime&.now
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 13
+        message: Prefer `Time` over `DateTime`.
+    corrected: |
+      Time&.now
+    config:
+      AllowCoercion: false
+
+  - name: rubocop_cop_style_datetime_registers_an_offense_when_using_datetime_for_current_time
+    source: |
+      ::DateTime.now
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 14
+        message: Prefer `Time` over `DateTime`.
+    corrected: |
+      ::Time.now
+    config:
+      AllowCoercion: false
+
+  - name: rubocop_cop_style_datetime_registers_an_offense_when_using_datetime_for_modern_date
+    source: |
+      DateTime.iso8601('2016-06-29')
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 30
+        message: Prefer `Time` over `DateTime`.
+    corrected: |
+      Time.iso8601('2016-06-29')
+    config:
+      AllowCoercion: false
+
+  - name: rubocop_cop_style_datetime_does_not_register_an_offense_when_using_time_for_current_time
+    source: |
+      Time.now
+    offenses:
+      []
+    config:
+      AllowCoercion: false
+
+  - name: rubocop_cop_style_datetime_does_not_register_an_offense_when_using_date_for_modern_date
+    source: |
+      Date.iso8601('2016-06-29')
+    offenses:
+      []
+    config:
+      AllowCoercion: false
+
+  - name: rubocop_cop_style_datetime_does_not_register_an_offense_when_using_datetime_for_historic_date
+    source: |
+      DateTime.iso8601('2016-06-29', Date::ENGLAND)
+    offenses:
+      []
+    config:
+      AllowCoercion: false
+
+  - name: rubocop_cop_style_datetime_does_not_register_an_offense_when_using_datetime_for_historic_date
+    source: |
+      ::DateTime.iso8601('2016-06-29', ::Date::ITALY)
+    offenses:
+      []
+    config:
+      AllowCoercion: false
+
+  - name: rubocop_cop_style_datetime_does_not_register_an_offense_when_using_datetime_in_another_namespace
+    source: |
+      Icalendar::Values::DateTime.new(start_at)
+    offenses:
+      []
+    config:
+      AllowCoercion: false
+
+  - name: rubocop_cop_style_datetime_when_configured_to_not_allow_to_datetime_registers_an_offense
+    source: |
+      thing.to_datetime
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 17
+        message: "Do not use `#to_datetime`."
+    config:
+      AllowCoercion: false
+
+  - name: rubocop_cop_style_datetime_when_configured_to_not_allow_to_datetime_registers_an_offense_when_using_safe_navigation_operator
+    source: |
+      thing&.to_datetime
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 18
+        message: "Do not use `#to_datetime`."
+    config:
+      AllowCoercion: false
+
+  - name: rubocop_cop_style_datetime_when_configured_to_allow_to_datetime_does_not_register_an_offense
+    source: |
+      thing.to_datetime
+    offenses:
+      []
+    config:
+      AllowCoercion: false

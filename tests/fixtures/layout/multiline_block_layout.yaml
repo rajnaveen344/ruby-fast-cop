@@ -1,0 +1,444 @@
+cop: Layout/MultilineBlockLayout
+department: layout
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_layout_multilineblocklayout_registers_an_offense_for_missing_newline_in_do_end_block_w_o_params
+    source: |
+      test do foo
+      end
+    offenses:
+      - line: 1
+        column_start: 8
+        column_end: 11
+        message: Block body expression is on the same line as the block start.
+    corrected: |
+      test do#{trailing_whitespace}
+        foo
+      end
+    interpolated: true
+
+  - name: rubocop_cop_layout_multilineblocklayout_registers_an_offense_and_corrects_for_missing_newline_in_block_w_o_params
+    source: |
+      test { foo
+      }
+    offenses:
+      - line: 1
+        column_start: 7
+        column_end: 10
+        message: Block body expression is on the same line as the block start.
+    corrected: |
+      test {#{trailing_whitespace}
+        foo
+      }
+    interpolated: true
+
+  - name: rubocop_cop_layout_multilineblocklayout_registers_an_offense_and_corrects_for_missing_newline_in_do_end_block_with_params
+    source: |
+      test do |x| foo
+      end
+    offenses:
+      - line: 1
+        column_start: 12
+        column_end: 15
+        message: Block body expression is on the same line as the block start.
+    corrected: |
+      test do |x|#{trailing_whitespace}
+        foo
+      end
+    interpolated: true
+
+  - name: rubocop_cop_layout_multilineblocklayout_registers_an_offense_and_corrects_for_missing_newline_in_block_with_params
+    source: |
+      test { |x| foo
+      }
+    offenses:
+      - line: 1
+        column_start: 11
+        column_end: 14
+        message: Block body expression is on the same line as the block start.
+    corrected: |
+      test { |x|#{trailing_whitespace}
+        foo
+      }
+    interpolated: true
+
+  - name: rubocop_cop_layout_multilineblocklayout_does_not_register_an_offense_for_one_line_do_end_blocks
+    source: |
+      test do foo end
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_multilineblocklayout_does_not_register_an_offense_for_one_line_blocks
+    source: |
+      test { foo }
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_multilineblocklayout_does_not_register_offenses_when_there_is_a_newline_for_do_end_block
+    source: |
+      test do
+        foo
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_multilineblocklayout_does_not_register_offenses_when_there_are_too_many_parameters_to_fit_on_one_line
+    source: |
+      some_result = lambda do |
+        so_many,
+        parameters,
+        it_will,
+        be_too_long,
+        for_one_line,
+        line_length,
+        has_increased,
+        add_3_more|
+        do_something
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_multilineblocklayout_registers_offenses_when_there_are_not_too_many_parameters_to_fit_on_one_line
+    source: |
+      some_result = lambda do |
+        so_many,
+        parameters,
+        it_will,
+        be_too_long,
+        for_one_line,
+        line_length,
+        has_increased,
+        add_3_mor|
+        do_something
+      end
+    offenses:
+      - line: 1
+        column_start: 24
+        column_end: 25
+        message: Block argument expression is not on the same line as the block start.
+    corrected: |
+      some_result = lambda do |so_many, parameters, it_will, be_too_long, for_one_line, line_length, has_increased, add_3_mor|
+        do_something
+      end
+
+  - name: rubocop_cop_layout_multilineblocklayout_considers_the_extra_space_required_to_join_the_lines_together
+    source: |
+      some_result = lambda do
+        |so_many, parameters, it_will, be_too_long, for_one_line, line_length, has_increased, add_3_more|
+        do_something
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_multilineblocklayout_does_not_error_out_when_the_block_is_empty
+    source: |
+      test do |x|
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_multilineblocklayout_does_not_register_offenses_when_there_is_a_newline_for_block
+    source: |
+      test {
+        foo
+      }
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_multilineblocklayout_registers_offenses_and_corrects_for_lambdas
+    source: |
+      -> (x) do foo
+        bar
+      end
+    offenses:
+      - line: 1
+        column_start: 10
+        column_end: 13
+        message: Block body expression is on the same line as the block start.
+    corrected: |
+      -> (x) do#{trailing_whitespace}
+        foo
+        bar
+      end
+    interpolated: true
+
+  - name: rubocop_cop_layout_multilineblocklayout_registers_offenses_and_corrects_for_new_lambda_literal_syntax
+    source: |
+      -> x do foo
+        bar
+      end
+    offenses:
+      - line: 1
+        column_start: 8
+        column_end: 11
+        message: Block body expression is on the same line as the block start.
+    corrected: |
+      -> x do#{trailing_whitespace}
+        foo
+        bar
+      end
+    interpolated: true
+
+  - name: rubocop_cop_layout_multilineblocklayout_registers_an_offense_and_corrects_line_break_before_arguments
+    source: |
+      test do
+        |x| play_with(x)
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 5
+        message: Block argument expression is not on the same line as the block start.
+    corrected: |
+      test do |x|
+        play_with(x)
+      end
+
+  - name: rubocop_cop_layout_multilineblocklayout_registers_an_offense_and_corrects_line_break_before_arguments_with_empty_block
+    source: |
+      test do
+        |x|
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 5
+        message: Block argument expression is not on the same line as the block start.
+    corrected: |
+      test do |x|
+      end
+
+  - name: rubocop_cop_layout_multilineblocklayout_registers_an_offense_and_corrects_line_break_within_arguments
+    source: |
+      test do |x,
+        y|
+      end
+    offenses:
+      - line: 1
+        column_start: 8
+        column_end: 11
+        message: Block argument expression is not on the same line as the block start.
+    corrected: |
+      test do |x, y|
+      end
+
+  - name: rubocop_cop_layout_multilineblocklayout_registers_an_offense_and_corrects_a_do_end_block_with_a_multi_line_body
+    source: |
+      test do |foo| bar
+        test
+      end
+    offenses:
+      - line: 1
+        column_start: 14
+        column_end: 17
+        message: Block body expression is on the same line as the block start.
+    corrected: |
+      test do |foo|#{trailing_whitespace}
+        bar
+        test
+      end
+    interpolated: true
+
+  - name: rubocop_cop_layout_multilineblocklayout
+    source: |
+      x = -> (y) { foo
+        bar
+      }
+    offenses:
+      - line: 1
+        column_start: 13
+        column_end: 16
+        message: Block body expression is on the same line as the block start.
+    corrected: |
+      x = -> (y) {#{trailing_whitespace}
+            foo
+        bar
+      }
+    interpolated: true
+
+  - name: rubocop_cop_layout_multilineblocklayout_registers_an_offense_and_corrects_for_missing_newline_before_opening_parenthesis_for_block_body
+    source: |
+      foo do |o| (
+          bar
+        )
+      end
+    offenses:
+      - line: 1
+        column_start: 11
+        column_end: 12
+        message: Block body expression is on the same line as the block start.
+    corrected: |
+      foo do |o|#{trailing_whitespace}
+        (
+          bar
+        )
+      end
+    interpolated: true
+
+  - name: rubocop_cop_layout_multilineblocklayout_registers_an_offense_and_corrects_a_line_break_within_arguments
+    source: |
+      test do |x,
+        y| play_with(x, y)
+      end
+    offenses:
+      - line: 1
+        column_start: 8
+        column_end: 11
+        message: Block argument expression is not on the same line as the block start.
+    corrected: |
+      test do |x, y|
+        play_with(x, y)
+      end
+
+  - name: rubocop_cop_layout_multilineblocklayout_registers_an_offense_and_corrects_a_line_break_within_destructured_arguments
+    source: |
+      test do |(x,
+        y)| play_with(x, y)
+      end
+    offenses:
+      - line: 1
+        column_start: 8
+        column_end: 12
+        message: Block argument expression is not on the same line as the block start.
+    corrected: |
+      test do |(x, y)|
+        play_with(x, y)
+      end
+
+  - name: rubocop_cop_layout_multilineblocklayout
+    source: |
+      def f
+        X.map do |(a,
+        b)|
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 11
+        column_end: 15
+        message: Block argument expression is not on the same line as the block start.
+    corrected: |
+      def f
+        X.map do |(a, b)|
+        end
+      end
+
+  - name: rubocop_cop_layout_multilineblocklayout_does_not_remove_a_trailing_comma_when_only_one_argument_is_present
+    source: |
+      def f
+        X.map do |
+          a,
+        |
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 11
+        column_end: 12
+        message: Block argument expression is not on the same line as the block start.
+    corrected: |
+      def f
+        X.map do |a,|
+        end
+      end
+
+  - name: rubocop_cop_layout_multilineblocklayout_autocorrects_nested_parens_correctly
+    source: |
+      def f
+        X.map do |
+          (((a), b), c)
+        |
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 11
+        column_end: 12
+        message: Block argument expression is not on the same line as the block start.
+    corrected: |
+      def f
+        X.map do |(((a), b), c)|
+        end
+      end
+
+  - name: rubocop_cop_layout_multilineblocklayout_when_layout_linelength_is_disabled_registers_an_offense
+    source: |
+      test do
+      |(x, y)|
+        play_with(x, y)
+      end
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 8
+        message: Block argument expression is not on the same line as the block start.
+    corrected: |
+      test do |(x, y)|
+        play_with(x, y)
+      end
+
+  - name: rubocop_cop_layout_multilineblocklayout_ruby_2_7_registers_an_offense_and_corrects_for_missing_newline_in_block_w_o_params
+    source: |
+      test { _1
+      }
+    offenses:
+      - line: 1
+        column_start: 7
+        column_end: 9
+        message: Block body expression is on the same line as the block start.
+    corrected: |
+      test {#{trailing_whitespace}
+        _1
+      }
+    ruby_version: ">= 2.7"
+    interpolated: true
+
+  - name: rubocop_cop_layout_multilineblocklayout_ruby_2_7_registers_an_offense_and_corrects_for_missing_newline_in_do_end_block_with_params
+    source: |
+      test do _1
+      end
+    offenses:
+      - line: 1
+        column_start: 8
+        column_end: 10
+        message: Block body expression is on the same line as the block start.
+    corrected: |
+      test do#{trailing_whitespace}
+        _1
+      end
+    ruby_version: ">= 2.7"
+    interpolated: true
+
+  - name: rubocop_cop_layout_multilineblocklayout_ruby_3_4_registers_an_offense_and_corrects_for_missing_newline_in_block_w_o_params
+    source: |
+      test { it
+      }
+    offenses:
+      - line: 1
+        column_start: 7
+        column_end: 9
+        message: Block body expression is on the same line as the block start.
+    corrected: |
+      test {#{trailing_whitespace}
+        it
+      }
+    ruby_version: ">= 3.4"
+    interpolated: true
+
+  - name: rubocop_cop_layout_multilineblocklayout_ruby_3_4_registers_an_offense_and_corrects_for_missing_newline_in_do_end_block_with_params
+    source: |
+      test do it
+      end
+    offenses:
+      - line: 1
+        column_start: 8
+        column_end: 10
+        message: Block body expression is on the same line as the block start.
+    corrected: |
+      test do#{trailing_whitespace}
+        it
+      end
+    ruby_version: ">= 3.4"
+    interpolated: true

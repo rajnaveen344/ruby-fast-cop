@@ -1,0 +1,136 @@
+cop: Style/EmptyStringInsideInterpolation
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_emptystringinsideinterpolation_when_enforcedstyle_is_trailing_conditional_does_not_register_an_offense_when_if_branch_is_not_a_literal
+    source: |
+      "#{condition ? send_node : 'foo'}"
+    offenses:
+      []
+    config:
+      EnforcedStyle: trailing_conditional
+
+  - name: rubocop_cop_style_emptystringinsideinterpolation_when_enforcedstyle_is_trailing_conditional_does_not_register_an_offense_when_else_branch_is_not_a_literal
+    source: |
+      "#{condition ? 'foo' : send_node}"
+    offenses:
+      []
+    config:
+      EnforcedStyle: trailing_conditional
+
+  - name: rubocop_cop_style_emptystringinsideinterpolation_when_enforcedstyle_is_trailing_conditional_does_not_register_an_offense_when_both_if_and_else_branches_are_not_literals
+    source: |
+      "#{condition ? send_node : another_send_node}"
+    offenses:
+      []
+    config:
+      EnforcedStyle: trailing_conditional
+
+  - name: rubocop_cop_style_emptystringinsideinterpolation_when_enforcedstyle_is_trailing_conditional
+    source: |
+      "#{condition ? 'foo' : %{empty}}"
+    offenses:
+      - line: 1
+        column_start: 3
+        column_end: 33
+        message: Do not return empty strings in string interpolation.
+    corrected: |
+      "#{'foo' if condition}"
+    config:
+      EnforcedStyle: trailing_conditional
+
+  - name: rubocop_cop_style_emptystringinsideinterpolation_when_enforcedstyle_is_trailing_conditional
+    source: |
+      "#{condition ? 42 : %{empty}}"
+    offenses:
+      - line: 1
+        column_start: 3
+        column_end: 30
+        message: Do not return empty strings in string interpolation.
+    corrected: |
+      "#{42 if condition}"
+    config:
+      EnforcedStyle: trailing_conditional
+
+  - name: rubocop_cop_style_emptystringinsideinterpolation_when_enforcedstyle_is_trailing_conditional
+    source: |
+      "#{if condition; 'foo' else %{empty} end}"
+    offenses:
+      - line: 1
+        column_start: 3
+        column_end: 42
+        message: Do not return empty strings in string interpolation.
+    corrected: |
+      "#{'foo' if condition}"
+    config:
+      EnforcedStyle: trailing_conditional
+
+  - name: rubocop_cop_style_emptystringinsideinterpolation_when_enforcedstyle_is_trailing_conditional
+    source: |
+      "#{condition ? %{empty} : 'foo'}"
+    offenses:
+      - line: 1
+        column_start: 3
+        column_end: 33
+        message: Do not return empty strings in string interpolation.
+    corrected: |
+      "#{'foo' unless condition}"
+    config:
+      EnforcedStyle: trailing_conditional
+
+  - name: rubocop_cop_style_emptystringinsideinterpolation_when_enforcedstyle_is_trailing_conditional
+    source: |
+      "#{if condition; %{empty} else 'foo' end}"
+    offenses:
+      - line: 1
+        column_start: 3
+        column_end: 42
+        message: Do not return empty strings in string interpolation.
+    corrected: |
+      "#{'foo' unless condition}"
+    config:
+      EnforcedStyle: trailing_conditional
+
+  - name: rubocop_cop_style_emptystringinsideinterpolation_when_enforcedstyle_is_trailing_conditional_does_not_register_an_offense_when_a_trailing_if_is_used_inside_string_interpolation
+    source: |
+      "#{'foo' if condition}"
+    offenses:
+      []
+    config:
+      EnforcedStyle: trailing_conditional
+
+  - name: rubocop_cop_style_emptystringinsideinterpolation_when_enforcedstyle_is_ternary_registers_an_offense_when_a_trailing_if_is_used_inside_string_interpolation
+    source: |
+      "#{'foo' if condition}"
+    offenses:
+      - line: 1
+        column_start: 1
+        column_end: 22
+        message: Do not use trailing conditionals in string interpolation.
+    corrected: |
+      "#{condition ? 'foo' : ''}"
+    config:
+      EnforcedStyle: ternary
+
+  - name: rubocop_cop_style_emptystringinsideinterpolation_when_enforcedstyle_is_ternary_registers_an_offense_when_a_trailing_unless_is_used_inside_string_interpolation
+    source: |
+      "#{'foo' unless condition}"
+    offenses:
+      - line: 1
+        column_start: 1
+        column_end: 26
+        message: Do not use trailing conditionals in string interpolation.
+    corrected: |
+      "#{condition ? '' : 'foo'}"
+    config:
+      EnforcedStyle: ternary
+
+  - name: rubocop_cop_style_emptystringinsideinterpolation_when_enforcedstyle_is_ternary_does_not_register_an_offense_when_empty_string_is_the_false_outcome_of_a_ternary
+    source: |
+      "#{condition ? 'foo' : ''}"
+    offenses:
+      []
+    config:
+      EnforcedStyle: ternary

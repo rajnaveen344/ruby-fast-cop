@@ -1,0 +1,1187 @@
+cop: Lint/Void
+department: lint
+severity: warning
+implemented: false
+
+tests:
+  - name: rubocop_cop_lint_void
+    source: |
+      a %{op} b
+      a %{op} b
+      a %{op} b
+    offenses:
+      - line: 1
+        column_start: 2
+        column_end: 9
+        message: "Operator `#{op}` used in void context."
+      - line: 2
+        column_start: 2
+        column_end: 9
+        message: "Operator `#{op}` used in void context."
+    corrected: |
+      a
+      b
+      a
+      b
+      a #{op} b
+    interpolated: true
+
+  - name: rubocop_cop_lint_void
+    source: |
+      something
+      a #{op} b
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_lint_void
+    source: |
+      a #{op} b
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_lint_void
+    source: |
+      a.#{op}
+      something
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_lint_void
+    source: |
+      a&.#{op}
+      something
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_lint_void
+    source: |
+      (a %{op} b)
+      ((a %{op} b))
+      (((a %{op} b)))
+    offenses:
+      - line: 1
+        column_start: 3
+        column_end: 11
+        message: "Operator `#{op}` used in void context."
+      - line: 2
+        column_start: 4
+        column_end: 13
+        message: "Operator `#{op}` used in void context."
+    corrected: |
+      (a
+      b)
+      ((a
+      b))
+      (((a #{op} b)))
+    interpolated: true
+
+  - name: rubocop_cop_lint_void
+    source: |
+      something
+      (a #{op} b)
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_lint_void
+    source: |
+      (a #{op} b)
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_lint_void_handles_methods_called_by_dot
+    source: |
+      a.%{op}(b)
+      nil
+    offenses:
+      - line: 1
+        column_start: 2
+        column_end: 10
+        message: "Operator `#{op}` used in void context."
+    corrected: |
+      a
+      (b)
+      nil
+    interpolated: true
+
+  - name: rubocop_cop_lint_void_handles_methods_called_by_dot_with_safe_navigation
+    source: |
+      a&.%{op}(b)
+      nil
+    offenses:
+      - line: 1
+        column_start: 3
+        column_end: 11
+        message: "Operator `#{op}` used in void context."
+    corrected: |
+      a
+      (b)
+      nil
+    interpolated: true
+
+  - name: rubocop_cop_lint_void
+    source: |
+      %{op}b
+      %{op}b
+      %{op}b
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 6
+        message: "Operator `#{op}@` used in void context."
+      - line: 2
+        column_start: 0
+        column_end: 6
+        message: "Operator `#{op}@` used in void context."
+    corrected: |
+      b
+      b
+      #{op}b
+    interpolated: true
+
+  - name: rubocop_cop_lint_void
+    source: |
+      %{op}b
+      %{op}b
+      %{op}b
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 6
+        message: "Operator `#{op}` used in void context."
+      - line: 2
+        column_start: 0
+        column_end: 6
+        message: "Operator `#{op}` used in void context."
+    corrected: |
+      b
+      b
+      #{op}b
+    interpolated: true
+
+  - name: rubocop_cop_lint_void
+    source: |
+      b.%{op}
+      b.%{op}
+    offenses:
+      - line: 1
+        column_start: 2
+        column_end: 7
+        message: "Operator `#{op}` used in void context."
+    corrected: |
+      b
+      b.#{op}
+    interpolated: true
+
+  - name: rubocop_cop_lint_void
+    source: |
+      b&.%{op}
+      b&.%{op}
+    offenses:
+      - line: 1
+        column_start: 3
+        column_end: 8
+        message: "Operator `#{op}` used in void context."
+    corrected: |
+      b
+      b&.#{op}
+    interpolated: true
+
+  - name: rubocop_cop_lint_void
+    source: |
+      something
+      #{op}b
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_lint_void
+    source: |
+      #{op}b
+    offenses:
+      []
+    interpolated: true
+
+  - name: rubocop_cop_lint_void
+    source: |
+      %{var} = 5
+      %{var}
+      top
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 6
+        message: "Variable `#{var}` used in void context."
+    corrected: |
+      #{var} = 5
+      top
+    interpolated: true
+
+  - name: rubocop_cop_lint_void
+    source: |
+      %{var} = 5
+      %{var} unless condition
+      top
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 23
+        message: "Variable `#{var}` used in void context."
+    interpolated: true
+
+  - name: rubocop_cop_lint_void
+    source: |
+      %{var} = 5
+      unless condition
+        %{var}
+      end
+      top
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 8
+        message: "Variable `#{var}` used in void context."
+    interpolated: true
+
+  - name: rubocop_cop_lint_void
+    source: |
+      %{var} = 5
+      condition ? %{var} : nil
+      top
+    offenses:
+      - line: 2
+        column_start: 12
+        column_end: 24
+        message: "Variable `#{var}` used in void context."
+    interpolated: true
+
+  - name: rubocop_cop_lint_void_registers_an_offense_for_void_constant_const_if_not_on_last_line
+    source: |
+      CONST = 5
+      CONST
+      top
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 5
+        message: Constant `CONST` used in void context.
+    corrected: |
+      CONST = 5
+      top
+
+  - name: rubocop_cop_lint_void_registers_an_offense_for_void_constant_const_with_guard_condition_if_not_on_last_line
+    source: |
+      CONST = 5
+      CONST unless condition
+      top
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 5
+        message: Constant `CONST` used in void context.
+
+  - name: rubocop_cop_lint_void_registers_an_offense_for_void_constant_const_within_conditional_if_not_on_last_line
+    source: |
+      CONST = 5
+      unless condition
+        CONST
+      end
+      top
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 7
+        message: Constant `CONST` used in void context.
+
+  - name: rubocop_cop_lint_void_registers_an_offense_for_void_constant_const_within_ternary_if_not_on_last_line
+    source: |
+      CONST = 5
+      condition ? CONST : nil
+      top
+    offenses:
+      - line: 2
+        column_start: 12
+        column_end: 17
+        message: Constant `CONST` used in void context.
+
+  - name: rubocop_cop_lint_void
+    source: |
+      %{lit}
+      top
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 6
+        message: "Literal `#{lit}` used in void context."
+    corrected: |
+      
+      top
+    interpolated: true
+
+  - name: rubocop_cop_lint_void
+    source: |
+      %{lit} unless condition
+      top
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 23
+        message: "Literal `#{lit}` used in void context."
+    interpolated: true
+
+  - name: rubocop_cop_lint_void
+    source: |
+      unless condition
+        %{lit}
+      end
+      top
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 8
+        message: "Literal `#{lit}` used in void context."
+    interpolated: true
+
+  - name: rubocop_cop_lint_void
+    source: |
+      condition ? %{lit} : nil
+      top
+    offenses:
+      - line: 1
+        column_start: 12
+        column_end: 24
+        message: "Literal `#{lit}` used in void context."
+    interpolated: true
+
+  - name: rubocop_cop_lint_void_registers_an_offense_for_void_self_if_not_on_last_line
+    source: |
+      self; top
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 4
+        message: "`self` used in void context."
+    corrected: |
+      ; top
+
+  - name: rubocop_cop_lint_void_registers_an_offense_for_void_defined_if_not_on_last_line
+    source: |
+      defined?(x)
+      top
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 11
+        message: "`defined?(x)` used in void context."
+    corrected: |
+      
+      top
+
+  - name: rubocop_cop_lint_void_registers_an_offense_for_void_bar_if_not_on_last_line
+    source: |
+      def foo
+        -> { bar }
+        top
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 12
+        message: "`-> { bar }` used in void context."
+    corrected: |
+      def foo
+        top
+      end
+
+  - name: rubocop_cop_lint_void_does_not_register_an_offense_for_void_bar_if_on_last_line
+    source: |
+      def foo
+        top
+        -> { bar }
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_void_does_not_register_an_offense_for_void_bar_call_if_not_on_last_line
+    source: |
+      def foo
+        -> { bar }.call
+        top
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_void_registers_an_offense_for_void_lambda_bar_if_not_on_last_line
+    source: |
+      def foo
+        lambda { bar }
+        top
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 16
+        message: "`lambda { bar }` used in void context."
+    corrected: |
+      def foo
+        top
+      end
+
+  - name: rubocop_cop_lint_void_does_not_register_an_offense_for_void_lambda_bar_if_on_last_line
+    source: |
+      def foo
+        top
+        lambda { bar }
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_void_does_not_register_an_offense_for_void_lambda_bar_call_if_not_on_last_line
+    source: |
+      def foo
+        lambda { bar }.call
+        top
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_void_registers_an_offense_for_void_proc_bar_if_not_on_last_line
+    source: |
+      def foo
+        proc { bar }
+        top
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 14
+        message: "`proc { bar }` used in void context."
+    corrected: |
+      def foo
+        top
+      end
+
+  - name: rubocop_cop_lint_void_does_not_register_an_offense_for_void_proc_bar_if_on_last_line
+    source: |
+      def foo
+        top
+        proc { bar }
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_void_does_not_register_an_offense_for_void_proc_bar_call_if_not_on_last_line
+    source: |
+      def foo
+        proc { bar }.call
+        top
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_void_registers_an_offense_for_void_proc_new_bar_if_not_on_last_line
+    source: |
+      def foo
+        Proc.new { bar }
+        top
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 18
+        message: "`Proc.new { bar }` used in void context."
+    corrected: |
+      def foo
+        top
+      end
+
+  - name: rubocop_cop_lint_void_does_not_register_an_offense_for_void_proc_new_bar_if_on_last_line
+    source: |
+      def foo
+        top
+        Proc.new { bar }
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_void_does_not_register_an_offense_for_void_proc_new_bar_call_if_not_on_last_line
+    source: |
+      def foo
+        Proc.new { bar }.call
+        top
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_void_when_checking_for_methods_with_no_side_effects_registers_an_offense_for_nonmutating_method_that_takes_a_block
+    source: |
+      [1,2,3].collect do |n|
+        n.to_s
+      end
+      "done"
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 22
+        message: "Method `#collect` used in void context. Did you mean `#each`?"
+    corrected: |
+      [1,2,3].each do |n|
+        n.to_s
+      end
+      "done"
+
+  - name: rubocop_cop_lint_void_when_checking_for_methods_with_no_side_effects_ruby_2_7_registers_an_offense_for_nonmutating_method_that_takes_a_numbered_parameter_block
+    source: |
+      [1,2,3].map do
+        _1.to_s
+      end
+      "done"
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 14
+        message: "Method `#map` used in void context. Did you mean `#each`?"
+    corrected: |
+      [1,2,3].each do
+        _1.to_s
+      end
+      "done"
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_lint_void_when_checking_for_methods_with_no_side_effects_ruby_3_4_registers_an_offense_for_nonmutating_method_that_takes_an_it_parameter_block
+    source: |
+      [1,2,3].map do
+        it.to_s
+      end
+      "done"
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 14
+        message: "Method `#map` used in void context. Did you mean `#each`?"
+    corrected: |
+      [1,2,3].each do
+        it.to_s
+      end
+      "done"
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_lint_void_when_checking_for_methods_with_no_side_effects_registers_an_offense_if_not_on_last_line
+    source: |
+      x.sort
+      top(x)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 6
+        message: "Method `#sort` used in void context. Did you mean `#sort!`?"
+    corrected: |
+      x.sort!
+      top(x)
+
+  - name: rubocop_cop_lint_void_when_checking_for_methods_with_no_side_effects_registers_an_offense_for_chained_methods
+    source: |
+      x.sort.flatten
+      top(x)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 14
+        message: "Method `#flatten` used in void context. Did you mean `#flatten!`?"
+    corrected: |
+      x.sort.flatten!
+      top(x)
+
+  - name: rubocop_cop_lint_void_when_checking_for_methods_with_no_side_effects_does_not_register_an_offense_assigning_variable
+    source: |
+      foo = bar
+      baz
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_void_when_checking_for_methods_with_no_side_effects_does_not_register_an_offense_when_using_a_method_definition
+    source: |
+      def merge
+      end
+      
+      42
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_void_when_not_checking_for_methods_with_no_side_effects_does_not_register_an_offense_for_void_nonmutating_methods
+    source: |
+      x.sort
+      top(x)
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_void_does_not_register_an_offense_for_an_array_literal_that_includes_non_literal_elements_in_a_method_definition
+    source: |
+      def something
+        [foo, bar]
+        baz
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_void_does_not_register_an_offense_for_a_nested_array_literal_that_includes_non_literal_elements_in_a_method_definition
+    source: |
+      def something
+        [1, 2, [foo, bar]]
+        baz
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_void_registers_an_offense_for_an_array_literal_composed_entirely_of_literals_in_a_method_definition
+    source: |
+      def something
+        [1, 2]
+        baz
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 8
+        message: Literal `[1, 2]` used in void context.
+
+  - name: rubocop_cop_lint_void_registers_an_offense_for_a_nested_array_literal_composed_entirely_of_literals_in_a_method_definition
+    source: |
+      def something
+        [1, 2, [3]]
+        baz
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 13
+        message: Literal `[1, 2, [3]]` used in void context.
+
+  - name: rubocop_cop_lint_void_registers_an_offense_for_a_frozen_literal_in_a_method_definition
+    source: |
+      def something
+        'foo'.freeze
+        baz
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 14
+        message: "Literal `'foo'.freeze` used in void context."
+
+  - name: rubocop_cop_lint_void_registers_an_offense_for_a_literal_frozen_via_safe_navigation_in_a_method_definition
+    source: |
+      def something
+        'foo'&.freeze
+        baz
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 15
+        message: "Literal `'foo'&.freeze` used in void context."
+
+  - name: rubocop_cop_lint_void_does_not_register_an_offense_for_frozen_non_literal_in_a_method_definition
+    source: |
+      def something
+        foo.freeze
+        baz
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_void_registers_an_offense_for_a_nested_array_literal_composed_of_frozen_and_unfrozen_literals_in_a_method_definition
+    source: |
+      def something
+        [1, ['foo'.freeze]]
+        baz
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 21
+        message: "Literal `[1, ['foo'.freeze]]` used in void context."
+
+  - name: rubocop_cop_lint_void_does_not_register_an_offense_for_a_nested_array_literal_that_includes_frozen_non_literal_value_elements_in_a_method_definition
+    source: |
+      def something
+        [1, [foo.freeze]]
+        baz
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_void_does_not_register_an_offense_for_a_hash_literal_that_includes_non_literal_value_elements_in_a_method_definition
+    source: |
+      def something
+        {k1: foo, k2: bar}
+        baz
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_void_does_not_register_an_offense_for_a_nested_hash_literal_that_includes_non_literal_value_elements_in_a_method_definition
+    source: |
+      def something
+        {k0: {k1: foo, k2: bar}}
+        baz
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_void_does_not_register_an_offense_for_a_hash_literal_that_includes_non_literal_key_elements_in_a_method_definition
+    source: |
+      def something
+        {foo => 1, bar => 2}
+        baz
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_void_does_not_register_an_offense_for_a_nested_hash_literal_that_includes_non_literal_key_elements_in_a_method_definition
+    source: |
+      def something
+        {foo: 1, bar: {baz => 2}}
+        baz
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_void_registers_an_offense_for_a_hash_literal_composed_entirely_of_literals_in_a_method_definition
+    source: |
+      def something
+        {k1: 1, k2: 2}
+        baz
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 16
+        message: "Literal `{k1: 1, k2: 2}` used in void context."
+    corrected: |
+      def something
+        baz
+      end
+
+  - name: rubocop_cop_lint_void_registers_an_offense_for_a_nested_hash_literal_composed_entirely_of_literals_in_a_method_definition
+    source: |
+      def something
+        {x: {k1: 1, k2: 2}}
+        baz
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 21
+        message: "Literal `{x: {k1: 1, k2: 2}}` used in void context."
+    corrected: |
+      def something
+        baz
+      end
+
+  - name: rubocop_cop_lint_void_does_not_register_an_offense_for_a_hash_literal_that_includes_array_literal_key_within_non_literal_elements_in_a_method_definition
+    source: |
+      def something
+        {[foo, bar] => :foo}
+        baz
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_void_registers_an_offense_for_a_hash_literal_that_includes_array_literal_key_within_literal_elements_in_a_method_definition
+    source: |
+      def something
+        {[1, 2] => :foo}
+        baz
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 18
+        message: "Literal `{[1, 2] => :foo}` used in void context."
+
+  - name: rubocop_cop_lint_void_registers_an_offense_for_void_literal_in_a_method_definition
+    source: |
+      def something
+        42
+        42
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 4
+        message: Literal `42` used in void context.
+    corrected: |
+      def something
+        42
+      end
+
+  - name: rubocop_cop_lint_void_registers_two_offenses_for_void_literals_in_an_initialize_method
+    source: |
+      def initialize
+        42
+        42
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 4
+        message: Literal `42` used in void context.
+      - line: 3
+        column_start: 2
+        column_end: 4
+        message: Literal `42` used in void context.
+    corrected: |
+      def initialize
+      end
+
+  - name: rubocop_cop_lint_void_registers_two_offenses_for_void_literals_in_a_setter_method
+    source: |
+      def foo=(rhs)
+        42
+        42
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 4
+        message: Literal `42` used in void context.
+      - line: 3
+        column_start: 2
+        column_end: 4
+        message: Literal `42` used in void context.
+
+  - name: rubocop_cop_lint_void_registers_two_offenses_for_void_literals_in_a_class_setter_method
+    source: |
+      def self.foo=(rhs)
+        42
+        42
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 4
+        message: Literal `42` used in void context.
+      - line: 3
+        column_start: 2
+        column_end: 4
+        message: Literal `42` used in void context.
+
+  - name: rubocop_cop_lint_void_registers_two_offenses_for_void_literals_in_a_each_method
+    source: |
+      array.each do |_item|
+        42
+        42
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 4
+        message: Literal `42` used in void context.
+      - line: 3
+        column_start: 2
+        column_end: 4
+        message: Literal `42` used in void context.
+    corrected: |
+      array.each do |_item|
+      end
+
+  - name: rubocop_cop_lint_void_registers_an_offense_for_void_constant_in_a_each_method
+    source: |
+      array.each do |_item|
+        CONST
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 7
+        message: Constant `CONST` used in void context.
+    corrected: |
+      array.each do |_item|
+      end
+
+  - name: rubocop_cop_lint_void_handles_each_block_with_single_expression
+    source: |
+      array.each do |_item|
+        42
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 4
+        message: Literal `42` used in void context.
+    corrected: |
+      array.each do |_item|
+      end
+
+  - name: rubocop_cop_lint_void_does_not_register_each_block_with_conditional_expression
+    source: |
+      enumerator_as_filter.each do |item|
+        # The `filter` method is used to filter for matches with `42`.
+        # In this case, it's not void.
+        item == 42
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_void_does_not_register_each_block_with_conditional_expressions_that_has_multiple_statements
+    source: |
+      enumerator_as_filter.each do |item|
+        puts item
+      
+        # The `filter` method is used to filter for matches with `42`.
+        # In this case, it's not void.
+        item == 42
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_void_does_not_register_each_numblock_with_conditional_expressions_that_has_multiple_statements
+    source: |
+      enumerator_as_filter.each do
+        puts _1
+      
+        # The `filter` method is used to filter for matches with `42`.
+        # In this case, it's not void.
+        _1 == 42
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_void_ruby_2_7_registers_two_offenses_for_void_literals_in_tap_method
+    source: |
+      foo.tap do
+        _1
+        42
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 4
+        message: Variable `_1` used in void context.
+      - line: 3
+        column_start: 2
+        column_end: 4
+        message: Literal `42` used in void context.
+    corrected: |
+      foo.tap do
+      end
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_lint_void_registers_two_offenses_for_void_literals_in_tap_method_with_a_numbered_block
+    source: |
+      foo.tap do
+        _1
+        42
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 4
+        message: Variable `_1` used in void context.
+      - line: 3
+        column_start: 2
+        column_end: 4
+        message: Literal `42` used in void context.
+    corrected: |
+      foo.tap do
+      end
+
+  - name: rubocop_cop_lint_void_accepts_empty_block
+    source: |
+      array.each { |_item| }
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_void_registers_two_offenses_for_void_literals_in_tap_method
+    source: |
+      foo.tap do |x|
+        42
+        42
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 4
+        message: Literal `42` used in void context.
+      - line: 3
+        column_start: 2
+        column_end: 4
+        message: Literal `42` used in void context.
+    corrected: |
+      foo.tap do |x|
+      end
+
+  - name: rubocop_cop_lint_void_registers_two_offenses_for_void_literals_in_a_for
+    source: |
+      for _item in array do
+        42
+        42
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 4
+        message: Literal `42` used in void context.
+      - line: 3
+        column_start: 2
+        column_end: 4
+        message: Literal `42` used in void context.
+    corrected: |
+      for _item in array do
+      end
+
+  - name: rubocop_cop_lint_void_registers_two_offenses_for_void_literals_in_an_ensure
+    source: |
+      def foo
+      ensure
+        bar
+        42
+        42
+      end
+    offenses:
+      - line: 4
+        column_start: 2
+        column_end: 4
+        message: Literal `42` used in void context.
+      - line: 5
+        column_start: 2
+        column_end: 4
+        message: Literal `42` used in void context.
+    corrected: |
+      def foo
+      ensure
+        bar
+      end
+
+  - name: rubocop_cop_lint_void_registers_an_offense_when_the_body_of_ensure_is_a_literal
+    source: |
+      def foo
+        bar
+      ensure
+        [1, 2, [3]]
+      end
+    offenses:
+      - line: 4
+        column_start: 2
+        column_end: 13
+        message: Literal `[1, 2, [3]]` used in void context.
+    corrected: |
+      def foo
+        bar
+      ensure
+      end
+
+  - name: rubocop_cop_lint_void_handles_explicit_begin_blocks
+    source: |
+      begin
+       1
+       2
+      end
+    offenses:
+      - line: 2
+        column_start: 1
+        column_end: 2
+        message: Literal `1` used in void context.
+    corrected: |
+      begin
+       2
+      end
+
+  - name: rubocop_cop_lint_void_accepts_short_call_syntax
+    source: |
+      lambda.(a)
+      top
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_void_accepts_backtick_commands
+    source: |
+      `touch x`
+      nil
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_void_accepts_assigned_if_statements
+    source: |
+      x = if condition
+            42
+          end
+      nil
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_void_accepts_assigned_if_statements_in_modifier_form
+    source: |
+      x = (42 if condition)
+      nil
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_void_accepts_assigned_ternary_statements
+    source: |
+      x = condition ? 42 : nil
+      nil
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_void_accepts_percent_x_commands
+    source: |
+      %x(touch x)
+      nil
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_void_accepts_method_with_irange_block
+    source: |
+      def foo
+        1..100.times.each { puts 1 }
+        do_something
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_void_accepts_method_with_erange_block
+    source: |
+      def foo
+        1...100.times.each { puts 1 }
+        do_something
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_void_registers_an_offense_when_using_special_encoding
+    source: |
+      def foo
+        __ENCODING__
+        42
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 14
+        message: Variable `__ENCODING__` used in void context.
+    corrected: |
+      def foo
+        42
+      end
+
+  - name: rubocop_cop_lint_void_does_not_register_an_offense_for_if_without_body
+    source: |
+      if some_condition
+      end
+      
+      puts :ok
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_void_does_not_register_an_offense_for_nested_empty_begin
+    source: |
+      ((); 1)
+    offenses:
+      []

@@ -1,0 +1,439 @@
+cop: Layout/ArrayAlignment
+department: layout
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_layout_arrayalignment_when_aligned_with_first_parameter_registers_an_offense_and_corrects_misaligned_array_elements
+    source: |
+      array = [a,
+         b,
+        c,
+         d]
+    offenses:
+      - line: 2
+        column_start: 3
+        column_end: 4
+        message: Align the elements of an array literal if they span more than one line.
+      - line: 3
+        column_start: 2
+        column_end: 3
+        message: Align the elements of an array literal if they span more than one line.
+      - line: 4
+        column_start: 3
+        column_end: 4
+        message: Align the elements of an array literal if they span more than one line.
+    corrected: |
+      array = [a,
+               b,
+               c,
+               d]
+    config:
+      EnforcedStyle: with_first_element
+
+  - name: rubocop_cop_layout_arrayalignment_when_aligned_with_first_parameter_accepts_aligned_array_keys
+    source: |
+      array = [a,
+               b,
+               c,
+               d]
+    offenses:
+      []
+    config:
+      EnforcedStyle: with_first_element
+
+  - name: rubocop_cop_layout_arrayalignment_when_aligned_with_first_parameter_accepts_single_line_array
+    source: |
+      array = [ a, b ]
+    offenses:
+      []
+    config:
+      EnforcedStyle: with_first_element
+
+  - name: rubocop_cop_layout_arrayalignment_when_aligned_with_first_parameter_accepts_several_elements_per_line
+    source: |
+      array = [ a, b,
+                c, d ]
+    offenses:
+      []
+    config:
+      EnforcedStyle: with_first_element
+
+  - name: rubocop_cop_layout_arrayalignment_when_aligned_with_first_parameter_accepts_aligned_array_with_fullwidth_characters
+    source: |
+      puts 'Ｒｕｂｙ', [ a,
+                         b ]
+    offenses:
+      []
+    config:
+      EnforcedStyle: with_first_element
+
+  - name: rubocop_cop_layout_arrayalignment_when_aligned_with_first_parameter_autocorrects_array_within_array_with_too_much_indentation
+    source: |
+      [:l1,
+        [:l2,
+          [:l3,
+           [:l4]]]]
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 7
+        message: Align the elements of an array literal if they span more than one line.
+      - line: 3
+        column_start: 4
+        column_end: 9
+        message: Align the elements of an array literal if they span more than one line.
+    corrected: |
+      [:l1,
+       [:l2,
+         [:l3,
+          [:l4]]]]
+    config:
+      EnforcedStyle: with_first_element
+
+  - name: rubocop_cop_layout_arrayalignment_when_aligned_with_first_parameter_autocorrects_array_within_array_with_too_little_indentation
+    source: |
+      [:l1,
+      [:l2,
+        [:l3,
+         [:l4]]]]
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 5
+        message: Align the elements of an array literal if they span more than one line.
+      - line: 3
+        column_start: 2
+        column_end: 7
+        message: Align the elements of an array literal if they span more than one line.
+    corrected: |
+      [:l1,
+       [:l2,
+         [:l3,
+          [:l4]]]]
+    config:
+      EnforcedStyle: with_first_element
+
+  - name: rubocop_cop_layout_arrayalignment_when_aligned_with_first_parameter_does_not_indent_heredoc_strings_when_autocorrecting
+    source: |
+      var = [
+             { :type => 'something',
+               :sql => <<EOF
+      Select something
+      from atable
+      EOF
+             },
+            { :type => 'something',
+              :sql => <<EOF
+      Select something
+      from atable
+      EOF
+            }
+      ]
+    offenses:
+      - line: 8
+        column_start: 6
+        column_end: 29
+        message: Align the elements of an array literal if they span more than one line.
+    corrected: |
+      var = [
+             { :type => 'something',
+               :sql => <<EOF
+      Select something
+      from atable
+      EOF
+             },
+             { :type => 'something',
+               :sql => <<EOF
+      Select something
+      from atable
+      EOF
+             }
+      ]
+    config:
+      EnforcedStyle: with_first_element
+
+  - name: rubocop_cop_layout_arrayalignment_when_aligned_with_first_parameter_accepts_the_first_element_being_on_a_new_row
+    source: |
+      array = [
+        a,
+        b,
+        c,
+        d
+      ]
+    offenses:
+      []
+    config:
+      EnforcedStyle: with_first_element
+
+  - name: rubocop_cop_layout_arrayalignment_when_aligned_with_first_parameter_autocorrects_misaligned_array_with_the_first_element_on_a_new_row
+    source: |
+      array = [
+        a,
+         b,
+        c,
+         d
+      ]
+    offenses:
+      - line: 3
+        column_start: 3
+        column_end: 4
+        message: Align the elements of an array literal if they span more than one line.
+      - line: 5
+        column_start: 3
+        column_end: 4
+        message: Align the elements of an array literal if they span more than one line.
+    corrected: |
+      array = [
+        a,
+        b,
+        c,
+        d
+      ]
+    config:
+      EnforcedStyle: with_first_element
+
+  - name: rubocop_cop_layout_arrayalignment_when_aligned_with_first_parameter_does_not_register_an_offense_or_try_to_correct_parallel_assignment
+    source: |
+      thing, foo =
+        1, 2
+    offenses:
+      []
+    config:
+      EnforcedStyle: with_first_element
+
+  - name: rubocop_cop_layout_arrayalignment_when_aligned_with_fixed_indentation_registers_an_offense_and_corrects_misaligned_array_elements
+    source: |
+      array = [a,
+         b,
+        c,
+         d]
+    offenses:
+      - line: 2
+        column_start: 3
+        column_end: 4
+        message: Use one level of indentation for elements following the first line of a multi-line array.
+      - line: 4
+        column_start: 3
+        column_end: 4
+        message: Use one level of indentation for elements following the first line of a multi-line array.
+    corrected: |
+      array = [a,
+        b,
+        c,
+        d]
+    config:
+      EnforcedStyle: with_fixed_indentation
+
+  - name: rubocop_cop_layout_arrayalignment_when_aligned_with_fixed_indentation_accepts_aligned_array_keys
+    source: |
+      array = [a,
+        b,
+        c,
+        d]
+    offenses:
+      []
+    config:
+      EnforcedStyle: with_fixed_indentation
+
+  - name: rubocop_cop_layout_arrayalignment_when_aligned_with_fixed_indentation_accepts_when_assigning_aligned_bracketed_array_elements
+    source: |
+      var = [
+        first,
+        second
+      ]
+    offenses:
+      []
+    config:
+      EnforcedStyle: with_fixed_indentation
+
+  - name: rubocop_cop_layout_arrayalignment_when_aligned_with_fixed_indentation_accepts_when_assigning_aligned_unbracketed_array_elements
+    source: |
+      var =
+        first,
+        second
+    offenses:
+      []
+    config:
+      EnforcedStyle: with_fixed_indentation
+
+  - name: rubocop_cop_layout_arrayalignment_when_aligned_with_fixed_indentation_registers_an_offense_when_assigning_not_aligned_unbracketed_array_elements
+    source: |
+      var =
+           first,
+          second
+    offenses:
+      - line: 2
+        column_start: 5
+        column_end: 10
+        message: Use one level of indentation for elements following the first line of a multi-line array.
+      - line: 3
+        column_start: 4
+        column_end: 10
+        message: Use one level of indentation for elements following the first line of a multi-line array.
+    corrected: |
+      var =
+        first,
+        second
+    config:
+      EnforcedStyle: with_fixed_indentation
+
+  - name: rubocop_cop_layout_arrayalignment_when_aligned_with_fixed_indentation_accepts_single_line_array
+    source: |
+      array = [ a, b ]
+    offenses:
+      []
+    config:
+      EnforcedStyle: with_fixed_indentation
+
+  - name: rubocop_cop_layout_arrayalignment_when_aligned_with_fixed_indentation_accepts_several_elements_per_line
+    source: |
+      array = [ a, b,
+        c, d ]
+    offenses:
+      []
+    config:
+      EnforcedStyle: with_fixed_indentation
+
+  - name: rubocop_cop_layout_arrayalignment_when_aligned_with_fixed_indentation_accepts_aligned_array_with_fullwidth_characters
+    source: |
+      puts 'Ｒｕｂｙ', [ a,
+        b ]
+    offenses:
+      []
+    config:
+      EnforcedStyle: with_fixed_indentation
+
+  - name: rubocop_cop_layout_arrayalignment_when_aligned_with_fixed_indentation_autocorrects_array_within_array_with_too_much_indentation
+    source: |
+      [:l1,
+         [:l2,
+            [:l3,
+              [:l4]]]]
+    offenses:
+      - line: 2
+        column_start: 3
+        column_end: 8
+        message: Use one level of indentation for elements following the first line of a multi-line array.
+      - line: 3
+        column_start: 6
+        column_end: 11
+        message: Use one level of indentation for elements following the first line of a multi-line array.
+    corrected: |
+      [:l1,
+        [:l2,
+           [:l3,
+             [:l4]]]]
+    config:
+      EnforcedStyle: with_fixed_indentation
+
+  - name: rubocop_cop_layout_arrayalignment_when_aligned_with_fixed_indentation_autocorrects_array_within_array_with_too_little_indentation
+    source: |
+      [:l1,
+       [:l2,
+        [:l3,
+          [:l4]]]]
+    offenses:
+      - line: 2
+        column_start: 1
+        column_end: 6
+        message: Use one level of indentation for elements following the first line of a multi-line array.
+      - line: 3
+        column_start: 2
+        column_end: 7
+        message: Use one level of indentation for elements following the first line of a multi-line array.
+    corrected: |
+      [:l1,
+        [:l2,
+         [:l3,
+           [:l4]]]]
+    config:
+      EnforcedStyle: with_fixed_indentation
+
+  - name: rubocop_cop_layout_arrayalignment_when_aligned_with_fixed_indentation_does_not_indent_heredoc_strings_when_autocorrecting
+    source: |
+      var = [
+        { :type => 'something',
+          :sql => <<EOF
+      Select something
+      from atable
+      EOF
+        },
+       { :type => 'something',
+         :sql => <<EOF
+      Select something
+      from atable
+      EOF
+       }
+      ]
+    offenses:
+      - line: 8
+        column_start: 1
+        column_end: 24
+        message: Use one level of indentation for elements following the first line of a multi-line array.
+    corrected: |
+      var = [
+        { :type => 'something',
+          :sql => <<EOF
+      Select something
+      from atable
+      EOF
+        },
+        { :type => 'something',
+          :sql => <<EOF
+      Select something
+      from atable
+      EOF
+        }
+      ]
+    config:
+      EnforcedStyle: with_fixed_indentation
+
+  - name: rubocop_cop_layout_arrayalignment_when_aligned_with_fixed_indentation_accepts_the_first_element_being_on_a_new_row
+    source: |
+      array = [
+        a,
+        b,
+        c,
+        d
+      ]
+    offenses:
+      []
+    config:
+      EnforcedStyle: with_fixed_indentation
+
+  - name: rubocop_cop_layout_arrayalignment_when_aligned_with_fixed_indentation_autocorrects_misaligned_array_with_the_first_element_on_a_new_row
+    source: |
+      array = [
+        a,
+         b,
+        c,
+         d
+      ]
+    offenses:
+      - line: 3
+        column_start: 3
+        column_end: 4
+        message: Use one level of indentation for elements following the first line of a multi-line array.
+      - line: 5
+        column_start: 3
+        column_end: 4
+        message: Use one level of indentation for elements following the first line of a multi-line array.
+    corrected: |
+      array = [
+        a,
+        b,
+        c,
+        d
+      ]
+    config:
+      EnforcedStyle: with_fixed_indentation
+
+  - name: rubocop_cop_layout_arrayalignment_when_aligned_with_fixed_indentation_does_not_register_an_offense_or_try_to_correct_parallel_assignment
+    source: |
+      thing, foo =
+        1, 2
+    offenses:
+      []
+    config:
+      EnforcedStyle: with_fixed_indentation

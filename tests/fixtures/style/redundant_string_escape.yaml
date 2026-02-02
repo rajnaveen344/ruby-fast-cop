@@ -1,0 +1,401 @@
+cop: Style/RedundantStringEscape
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_redundantstringescape_registers_an_offense_and_corrects_an_escaped_before_interpolation
+    source: |
+      %{l}\##{whatever}%{r}
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 21
+        message: "Redundant escape of # inside string literal."
+    corrected: |
+      #{l}##{whatever}#{r}
+    interpolated: true
+
+  - name: rubocop_cop_style_redundantstringescape_registers_an_offense_and_corrects_an_escaped_without_following
+    source: |
+      %{l}\#whatever%{r}
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 18
+        message: "Redundant escape of # inside string literal."
+    corrected: |
+      #{l}#whatever#{r}
+    interpolated: true
+
+  - name: rubocop_cop_style_redundantstringescape_registers_an_offense_and_corrects_an_escaped_when_escaping_both_brackets_to_avoid_interpolation
+    source: |
+      %{l}#\{whatever\}%{r}
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 21
+        message: Redundant escape of } inside string literal.
+    corrected: |
+      #{l}#\{whatever}#{r}
+    interpolated: true
+
+  - name: rubocop_cop_style_redundantstringescape_registers_an_offense_and_corrects_an_escaped_when_escaping_to_avoid_interpolation
+    source: |
+      %{l}\#\{whatever}%{r}
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 21
+        message: Redundant escape of { inside string literal.
+    corrected: |
+      #{l}\#{whatever}#{r}
+    interpolated: true
+
+  - name: rubocop_cop_style_redundantstringescape_registers_an_offense_and_corrects_an_escaped_at_end_of_string
+    source: |
+      %{l}\#%{r}
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 10
+        message: "Redundant escape of # inside string literal."
+    corrected: |
+      #{l}##{r}
+    interpolated: true
+
+  - name: rubocop_cop_style_redundantstringescape_registers_an_offense_and_corrects_an_escaped_single_quote
+    source: |
+      %{l}\'%{r}
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 10
+        message: "Redundant escape of ' inside string literal."
+    corrected: |
+      #{l}'#{r}
+    interpolated: true
+
+  - name: rubocop_cop_style_redundantstringescape_registers_an_offense_and_corrects_an_escaped_nested_delimiter_in_a_double_quoted_string
+    source: |
+      %{l}#{"\%{r}"}%{r}
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 18
+        message: Redundant escape of %{r} inside string literal.
+    corrected: |
+      #{l}#{"#{r}"}#{r}
+    interpolated: true
+
+  - name: rubocop_cop_style_redundantstringescape_registers_an_offense_and_corrects_an_escaped_double_quote
+    source: |
+      %{l}\"%{r}
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 10
+        message: "Redundant escape of \" inside string literal."
+    corrected: |
+      #{l}"#{r}
+    interpolated: true
+
+  - name: rubocop_cop_style_redundantstringescape_does_not_register_an_offense_for_a_regexp_literal
+    source: |
+      /\#/
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantstringescape_does_not_register_an_offense_for_an_xstr_literal
+    source: |
+      %x{\#}
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantstringescape_does_not_register_an_offense_for_a_file_literal
+    source: |
+      "__FILE__"
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantstringescape_does_not_register_an_offense_for_a_dir_literal
+    source: |
+      "__dir__"
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantstringescape_with_a_double_quoted_string_a_literal_with_interpolation
+    source: |
+      "
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantstringescape_with_a_double_quoted_string_a_literal_with_interpolation
+    source: |
+      "
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantstringescape_with_a_double_quoted_string_does_not_register_an_offense_with_multiple_escaped_backslashes
+    source: |
+      "\\\\ \\'foo\\' \\\\"
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantstringescape_with_a_double_quoted_string_does_not_register_an_offense_when_escaping_a_quote_in_multi_line_broken_string
+    source: |
+      "\""\
+        "\""
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantstringescape_with_a_double_quoted_string_registers_an_offense_and_corrects_an_unnecessary_escape_in_multi_line_broken_string
+    source: |
+      "\'"\
+        "\'"
+    offenses:
+      - line: 1
+        column_start: 1
+        column_end: 3
+        message: "Redundant escape of ' inside string literal."
+      - line: 2
+        column_start: 3
+        column_end: 5
+        message: "Redundant escape of ' inside string literal."
+    corrected: |
+      "'"\
+        "'"
+
+  - name: rubocop_cop_style_redundantstringescape_with_a_double_quoted_string_does_not_register_an_offense_with_escaped_double_quote
+    source: |
+      "\""
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantstringescape_with_a_double_quoted_string_does_not_register_an_offense_when_an_escaped_double_quote_precedes_interpolation_in_a_symbol_literal
+    source: |
+      :"\"#{value}"
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantstringescape_with_a_single_quoted_string_a_literal_without_interpolation
+    source: |
+      '
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantstringescape_with_a_single_quoted_string_a_literal_without_interpolation
+    source: |
+      '
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantstringescape_with_a_q_literal_a_literal_without_interpolation_q
+    source: |
+      %q(
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantstringescape_with_a_q_literal_a_literal_without_interpolation
+    source: |
+      )
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantstringescape_with_a_q_literal_a_literal_with_interpolation_q
+    source: |
+      %Q(
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantstringescape_with_a_q_literal_a_literal_with_interpolation
+    source: |
+      )
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantstringescape_with_a_q_literal_a_literal_with_interpolation_q
+    source: |
+      %Q!
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantstringescape_with_a_q_literal_a_literal_with_interpolation
+    source: |
+      !
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantstringescape_with_a_literal_a_literal_with_interpolation
+    source: |
+      %(
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantstringescape_with_a_literal_a_literal_with_interpolation
+    source: |
+      )
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantstringescape_with_a_w_literal_a_literal_without_interpolation_w
+    source: |
+      %w(
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantstringescape_with_a_w_literal_a_literal_without_interpolation
+    source: |
+      )
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantstringescape_with_a_w_literal_does_not_register_an_offense_for_escaped_spaces
+    source: |
+      %w[foo\  bar\  baz]
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantstringescape_with_a_w_literal_a_literal_with_interpolation_w
+    source: |
+      %W[
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantstringescape_with_a_w_literal_a_literal_with_interpolation
+    source: |
+      ]
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantstringescape_with_a_w_literal_does_not_register_an_offense_for_escaped_spaces
+    source: |
+      %W[foo\  bar\  baz]
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantstringescape_when_using_character_literals_does_not_register_an_offense_for_a
+    source: |
+      ?a
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantstringescape_when_using_character_literals_does_not_register_an_offense_for_n
+    source: |
+      ?\n
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantstringescape_with_an_interpolation_enabled_heredoc_common_no_offenses_myheredoc
+    source: |
+      <<~MYHEREDOC
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantstringescape_with_an_interpolation_enabled_heredoc_common_no_offenses
+    source: |
+      
+      MYHEREDOC
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantstringescape_with_an_interpolation_enabled_heredoc_does_not_register_an_offense_for_a_heredoc_interpolating_a_string_with_an_allowed_escape
+    source: |
+      <<~MYHEREDOC
+        #{foo.gsub(/[a-z]+/, '\"')}
+      MYHEREDOC
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantstringescape_with_an_interpolation_enabled_heredoc_does_not_register_an_offense_for_a_nested_heredoc_without_interpolation
+    source: |
+      <<~MYHEREDOC
+        #{
+          <<~'OTHERHEREDOC'
+            \#
+          OTHERHEREDOC
+        }
+      MYHEREDOC
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantstringescape_with_an_interpolation_enabled_heredoc_registers_an_offense_and_corrects_an_escaped_before_interpolation
+    source: |
+      <<~MYHEREDOC
+        \##{whatever}
+      MYHEREDOC
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 4
+        message: "Redundant escape of # inside string literal."
+    corrected: |
+      <<~MYHEREDOC
+        ##{whatever}
+      MYHEREDOC
+
+  - name: rubocop_cop_style_redundantstringescape_with_an_interpolation_enabled_heredoc_registers_an_offense_and_corrects_an_escaped_without_following
+    source: |
+      <<~MYHEREDOC
+        \#whatever
+      MYHEREDOC
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 4
+        message: "Redundant escape of # inside string literal."
+    corrected: |
+      <<~MYHEREDOC
+        #whatever
+      MYHEREDOC
+
+  - name: rubocop_cop_style_redundantstringescape_with_an_interpolation_enabled_heredoc_registers_an_offense_and_corrects_an_escaped_at_end_of_string
+    source: |
+      <<~MYHEREDOC
+        \#
+      MYHEREDOC
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 4
+        message: "Redundant escape of # inside string literal."
+    corrected: |
+      <<~MYHEREDOC
+        #
+      MYHEREDOC
+
+  - name: rubocop_cop_style_redundantstringescape_with_an_interpolation_enabled_heredoc_registers_an_offense_and_corrects_an_escaped_single_quote
+    source: |
+      <<~MYHEREDOC
+        \'
+      MYHEREDOC
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 4
+        message: "Redundant escape of ' inside string literal."
+    corrected: |
+      <<~MYHEREDOC
+        '
+      MYHEREDOC
+
+  - name: rubocop_cop_style_redundantstringescape_with_an_interpolation_enabled_heredoc_does_not_register_an_offense_an_escaped_space
+    source: |
+      <<~MYHEREDOC
+        \ text
+      MYHEREDOC
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantstringescape_with_an_interpolation_disabled_heredoc_a_literal_without_interpolation_myheredoc
+    source: |
+      <<~'MYHEREDOC'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantstringescape_with_an_interpolation_disabled_heredoc_a_literal_without_interpolation
+    source: |
+      
+      MYHEREDOC
+    offenses:
+      []

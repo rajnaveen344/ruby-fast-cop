@@ -1,0 +1,155 @@
+cop: Style/MultilineMemoization
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_multilinememoization_with_a_single_line_memoization_allows_expression_on_first_line
+    source: |
+      foo ||= bar
+    offenses:
+      []
+
+  - name: rubocop_cop_style_multilinememoization_with_a_single_line_memoization_allows_expression_on_the_following_line
+    source: |
+      foo ||=
+        bar
+    offenses:
+      []
+
+  - name: rubocop_cop_style_multilinememoization_with_a_multiline_memoization_without_a_begin_and_end_block_allows_with_another_block_on_the_first_line
+    source: |
+      foo ||= bar.each do |b|
+        b.baz
+        bb.ax
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_multilinememoization_with_a_multiline_memoization_without_a_begin_and_end_block_allows_with_another_block_on_the_following_line
+    source: |
+      foo ||=
+        bar.each do |b|
+          b.baz
+          b.bax
+        end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_multilinememoization_with_a_multiline_memoization_without_a_begin_and_end_block_allows_with_a_conditional_on_the_first_line
+    source: |
+      foo ||= if bar
+                baz
+              else
+                bax
+              end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_multilinememoization_with_a_multiline_memoization_without_a_begin_and_end_block_allows_with_a_conditional_on_the_following_line
+    source: |
+      foo ||=
+        if bar
+          baz
+        else
+          bax
+        end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_multilinememoization_enforcedstyle_keyword_with_a_multiline_memoization_without_a_begin_and_end_block_when_the_expression_is_wrapped_in_parentheses_registers_an_offense_when_expression_starts_on_first_line
+    source: |
+      foo ||= (
+        bar
+        baz
+      )
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 9
+        message: Wrap multiline memoization blocks in `begin` and `end`.
+    corrected: |
+      foo ||= begin
+        bar
+        baz
+      end
+    config:
+      EnforcedStyle: keyword
+
+  - name: rubocop_cop_style_multilinememoization_enforcedstyle_keyword_with_a_multiline_memoization_without_a_begin_and_end_block_when_the_expression_is_wrapped_in_parentheses_registers_an_offense_when_expression_starts_on_following_line
+    source: |
+      foo ||=
+        (
+          bar
+          baz
+        )
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 7
+        message: Wrap multiline memoization blocks in `begin` and `end`.
+    corrected: |
+      foo ||=
+        begin
+          bar
+          baz
+        end
+    config:
+      EnforcedStyle: keyword
+
+  - name: rubocop_cop_style_multilinememoization_enforcedstyle_keyword_with_a_multiline_memoization_without_a_begin_and_end_block_when_the_expression_is_wrapped_in_parentheses_registers_an_offense_with_multiline_expression
+    source: |
+      foo ||= (bar ||
+                baz)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 15
+        message: Wrap multiline memoization blocks in `begin` and `end`.
+    corrected: |
+      foo ||= begin
+                bar ||
+                baz
+              end
+    config:
+      EnforcedStyle: keyword
+
+  - name: rubocop_cop_style_multilinememoization_enforcedstyle_braces_with_a_multiline_memoization_without_braces_when_the_expression_is_wrapped_in_begin_and_end_keywords_registers_an_offense_for_begin_end_block_on_first_line
+    source: |
+      foo ||= begin
+        bar
+        baz
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 13
+        message: Wrap multiline memoization blocks in `(` and `)`.
+    corrected: |
+      foo ||= (
+        bar
+        baz
+      )
+    config:
+      EnforcedStyle: braces
+
+  - name: rubocop_cop_style_multilinememoization_enforcedstyle_braces_with_a_multiline_memoization_without_braces_when_the_expression_is_wrapped_in_begin_and_end_keywords_registers_an_offense_for_begin_end_block_on_following_line
+    source: |
+      foo ||=
+        begin
+          bar
+          baz
+        end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 7
+        message: Wrap multiline memoization blocks in `(` and `)`.
+    corrected: |
+      foo ||=
+        (
+          bar
+          baz
+        )
+    config:
+      EnforcedStyle: braces

@@ -1,0 +1,297 @@
+cop: Style/RedundantRegexpArgument
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_redundantregexpargument
+    source: |
+      'foo'.#{method}(/f/)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 20
+        message: "Use string `'f'` as argument instead of regexp `/f/`."
+    corrected: |
+      'foo'.#{method}('f')
+    interpolated: true
+
+  - name: rubocop_cop_style_redundantregexpargument
+    source: |
+      'foo'&.#{method}(/f/)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 21
+        message: "Use string `'f'` as argument instead of regexp `/f/`."
+    corrected: |
+      'foo'&.#{method}('f')
+    interpolated: true
+
+  - name: rubocop_cop_style_redundantregexpargument_registers_an_offense_and_corrects_when_using_double_quote_and_single_quote_characters
+    source: |
+      str.gsub(/"''/, '')
+    offenses:
+      - line: 1
+        column_start: 9
+        column_end: 14
+        message: "Use string `'\"\\'\\''` as argument instead of regexp `/\"''/`."
+    corrected: |
+      str.gsub('"\'\'', '')
+
+  - name: rubocop_cop_style_redundantregexpargument_registers_an_offense_and_corrects_when_using_double_quote_character
+    source: |
+      str.gsub(/"/)
+    offenses:
+      - line: 1
+        column_start: 9
+        column_end: 12
+        message: "Use string `'\"'` as argument instead of regexp `/\"/`."
+    corrected: |
+      str.gsub('"')
+
+  - name: rubocop_cop_style_redundantregexpargument_registers_an_offense_and_corrects_when_using_single_quote_character
+    source: |
+      str.gsub(/'/)
+    offenses:
+      - line: 1
+        column_start: 9
+        column_end: 12
+        message: "Use string `'\\''` as argument instead of regexp `/'/`."
+    corrected: |
+      str.gsub('\'')
+
+  - name: rubocop_cop_style_redundantregexpargument_registers_an_offense_and_corrects_when_using_escaped_single_quote_character
+    source: |
+      str.gsub(/\'/)
+    offenses:
+      - line: 1
+        column_start: 9
+        column_end: 13
+        message: "Use string `'\\''` as argument instead of regexp `/\\'/`."
+    corrected: |
+      str.gsub('\'')
+
+  - name: rubocop_cop_style_redundantregexpargument_single_quote_with_escape_character_s_registers_an_offense_and_corrects_when_using_single_backslash_and_single_quote
+    source: |
+      str.gsub!(/\\'/, "'")
+    offenses:
+      - line: 1
+        column_start: 10
+        column_end: 15
+        message: "Use string `'\\\\\\''` as argument instead of regexp `/\\\\'/`."
+    corrected: |
+      str.gsub!('\\\'', "'")
+
+  - name: rubocop_cop_style_redundantregexpargument_single_quote_with_escape_character_s_registers_an_offense_and_corrects_when_using_single_backslash_and_escaped_single_quote
+    source: |
+      str.gsub!(/\\\'/, "'")
+    offenses:
+      - line: 1
+        column_start: 10
+        column_end: 16
+        message: "Use string `'\\\\\\''` as argument instead of regexp `/\\\\\\'/`."
+    corrected: |
+      str.gsub!('\\\'', "'")
+
+  - name: rubocop_cop_style_redundantregexpargument_single_quote_with_escape_character_s_registers_an_offense_and_corrects_when_using_double_backslash_and_single_quote
+    source: |
+      str.gsub!(/\\\\'/, "'")
+    offenses:
+      - line: 1
+        column_start: 10
+        column_end: 17
+        message: "Use string `'\\\\\\\\\\''` as argument instead of regexp `/\\\\\\\\'/`."
+    corrected: |
+      str.gsub!('\\\\\'', "'")
+
+  - name: rubocop_cop_style_redundantregexpargument_single_quote_with_escape_character_s_registers_an_offense_and_corrects_when_using_double_backslash_and_escaped_single_quote
+    source: |
+      str.gsub!(/\\\\\'/, "'")
+    offenses:
+      - line: 1
+        column_start: 10
+        column_end: 18
+        message: "Use string `'\\\\\\\\\\''` as argument instead of regexp `/\\\\\\\\\\'/`."
+    corrected: |
+      str.gsub!('\\\\\'', "'")
+
+  - name: rubocop_cop_style_redundantregexpargument_registers_an_offense_and_corrects_when_using_escaped_double_quote_character
+    source: |
+      str.gsub(/\"/)
+    offenses:
+      - line: 1
+        column_start: 9
+        column_end: 13
+        message: "Use string `'\"'` as argument instead of regexp `/\\\"/`."
+    corrected: |
+      str.gsub('"')
+
+  - name: rubocop_cop_style_redundantregexpargument_registers_an_offense_and_corrects_when_using_escape_character_with_double_quote_character
+    source: |
+      str.gsub(/\\"/)
+    offenses:
+      - line: 1
+        column_start: 9
+        column_end: 14
+        message: "Use string `'\\\"'` as argument instead of regexp `/\\\\\"/`."
+    corrected: |
+      str.gsub('\"')
+
+  - name: rubocop_cop_style_redundantregexpargument_registers_an_offense_and_corrects_when_using_escaping_characters
+    source: |
+      'a,b,c'.split(/\./)
+    offenses:
+      - line: 1
+        column_start: 14
+        column_end: 18
+        message: "Use string `'.'` as argument instead of regexp `/\\./`."
+    corrected: |
+      'a,b,c'.split('.')
+
+  - name: rubocop_cop_style_redundantregexpargument_registers_an_offense_and_corrects_when_using_special_string_chars
+    source: |
+      "foo\nbar\nbaz\n".split(/\n/)
+    offenses:
+      - line: 1
+        column_start: 24
+        column_end: 28
+        message: 'Use string `"\n"` as argument instead of regexp `/\n/`.'
+    corrected: |
+      "foo\nbar\nbaz\n".split("\n")
+
+  - name: rubocop_cop_style_redundantregexpargument_registers_an_offense_and_corrects_when_using_consecutive_special_string_chars
+    source: |
+      "foo\n\nbar\n\nbaz\n\n".split(/\n\n/)
+    offenses:
+      - line: 1
+        column_start: 30
+        column_end: 36
+        message: 'Use string `"\n\n"` as argument instead of regexp `/\n\n/`.'
+    corrected: |
+      "foo\n\nbar\n\nbaz\n\n".split("\n\n")
+
+  - name: rubocop_cop_style_redundantregexpargument_registers_an_offense_and_corrects_when_using_unicode_chars
+    source: |
+      "foo\nbar\nbaz\n".split(/\u3000/)
+    offenses:
+      - line: 1
+        column_start: 24
+        column_end: 32
+        message: 'Use string `"\u3000"` as argument instead of regexp `/\u3000/`.'
+    corrected: |
+      "foo\nbar\nbaz\n".split("\u3000")
+
+  - name: rubocop_cop_style_redundantregexpargument_registers_an_offense_and_corrects_when_using_consecutive_backslash_escape_chars
+    source: |
+      "foo\\\.bar".split(/\\\./)
+    offenses:
+      - line: 1
+        column_start: 19
+        column_end: 25
+        message: 'Use string `"\\."` as argument instead of regexp `/\\\./`.'
+    corrected: |
+      "foo\\\.bar".split("\\.")
+
+  - name: rubocop_cop_style_redundantregexpargument_registers_an_offense_and_corrects_when_using_complex_special_string_chars
+    source: |
+      "foo\nbar\nbaz\n".split(/foo\n\.\n/)
+    offenses:
+      - line: 1
+        column_start: 24
+        column_end: 35
+        message: 'Use string `"foo\n.\n"` as argument instead of regexp `/foo\n\.\n/`.'
+    corrected: |
+      "foo\nbar\nbaz\n".split("foo\n.\n")
+
+  - name: rubocop_cop_style_redundantregexpargument_registers_an_offense_and_corrects_when_using_two_or_more_spaces_regexp
+    source: |
+      'foo         bar'.split(/  /)
+    offenses:
+      - line: 1
+        column_start: 24
+        column_end: 28
+        message: "Use string `'  '` as argument instead of regexp `/  /`."
+    corrected: |
+      'foo         bar'.split('  ')
+
+  - name: rubocop_cop_style_redundantregexpargument_accepts_methods_other_than_pattern_argument_method
+    source: |
+      'a,b,c'.insert(2, 'a')
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantregexpargument_accepts_when_using_method
+    source: |
+      hash[/regexp/]
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantregexpargument_accepts_when_using_method
+    source: |
+      hash[/regexp/] = value
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantregexpargument_accepts_when_not_receiving_a_regexp
+    source: |
+      'a,b,c'.split(',')
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantregexpargument_accepts_when_not_receiving_a_deterministic_regexp
+    source: |
+      'a,b,c'.split(/,+/)
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantregexpargument_accepts_when_using_regexp_argument_with_ignorecase_regexp_option
+    source: |
+      'fooSplitbar'.split(/split/i)
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantregexpargument_accepts_when_using_regexp_argument_with_extended_regexp_option
+    source: |
+      'fooSplitbar'.split(/split/x)
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantregexpargument_accepts_when_using_method_argument_is_exactly_one_space_regexp
+    source: |
+      'foo         bar'.split(/ /)
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantregexpargument_when_style_stringliterals_is_configured_with_single_quotes_registers_an_offense_and_corrects_to_single_quoted_string_when_using_non_backquoted_regexp
+    source: |
+      'foo'.split(/f/)
+    offenses:
+      - line: 1
+        column_start: 12
+        column_end: 15
+        message: "Use string `'f'` as argument instead of regexp `/f/`."
+    corrected: |
+      'foo'.split('f')
+
+  - name: rubocop_cop_style_redundantregexpargument_when_style_stringliterals_is_configured_with_single_quotes_registers_an_offense_and_corrects_to_double_quoted_string_when_using_backquoted_regexp
+    source: |
+      'foo'.split(/\n/)
+    offenses:
+      - line: 1
+        column_start: 12
+        column_end: 16
+        message: 'Use string `"\n"` as argument instead of regexp `/\n/`.'
+    corrected: |
+      'foo'.split("\n")
+
+  - name: rubocop_cop_style_redundantregexpargument_when_style_stringliterals_is_configured_with_double_quotes_registers_an_offense_and_corrects_to_double_quoted_string_when_using_non_backquoted_regexp
+    source: |
+      'foo'.split(/f/)
+    offenses:
+      - line: 1
+        column_start: 12
+        column_end: 15
+        message: "Use string `\"f\"` as argument instead of regexp `/f/`."
+    corrected: |
+      'foo'.split("f")

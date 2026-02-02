@@ -1,0 +1,151 @@
+cop: Lint/AmbiguousOperator
+department: lint
+severity: warning
+implemented: false
+
+tests:
+  - name: rubocop_cop_lint_ambiguousoperator_with_unary_operator_in_the_first_argument_without_parentheses_without_whitespaces_on_the_right_of_the_operator_registers_an_offense_and_corrects
+    source: |
+      do_something(+24)
+      do_something +42
+    offenses:
+      - line: 2
+        column_start: 13
+        column_end: 14
+        message: "Ambiguous positive number operator. Parenthesize the method arguments if it's surely a positive number operator, or add a whitespace to the right of the `+` if it should be an addition."
+    corrected: |
+      do_something(+24)
+      do_something(+42)
+
+  - name: rubocop_cop_lint_ambiguousoperator_with_unary_operator_in_the_first_argument_without_parentheses_without_whitespaces_on_the_right_of_the_operator_when_a_method_with_no_arguments_is_used_in_advance_registers_an_offense_and_corrects
+    source: |
+      do_something
+      do_something +42
+    offenses:
+      - line: 2
+        column_start: 13
+        column_end: 14
+        message: "Ambiguous positive number operator. Parenthesize the method arguments if it's surely a positive number operator, or add a whitespace to the right of the `+` if it should be an addition."
+    corrected: |
+      do_something
+      do_something(+42)
+
+  - name: rubocop_cop_lint_ambiguousoperator_with_unary_operator_in_the_first_argument_without_parentheses_with_a_whitespace_on_the_right_of_the_operator_does_not_register_an_offense
+    source: |
+      do_something + 42
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_ambiguousoperator_with_unary_operator_in_the_first_argument_with_parentheses_around_the_operator_does_not_register_an_offense
+    source: |
+      do_something(+42)
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_ambiguousoperator_with_unary_operator_in_the_first_argument_without_parentheses_without_whitespaces_on_the_right_of_the_operator_registers_an_offense_and_corrects
+    source: |
+      do_something(-24)
+      do_something -42
+    offenses:
+      - line: 2
+        column_start: 13
+        column_end: 14
+        message: "Ambiguous negative number operator. Parenthesize the method arguments if it's surely a negative number operator, or add a whitespace to the right of the `-` if it should be a subtraction."
+    corrected: |
+      do_something(-24)
+      do_something(-42)
+
+  - name: rubocop_cop_lint_ambiguousoperator_with_unary_operator_in_the_first_argument_without_parentheses_with_a_whitespace_on_the_right_of_the_operator_does_not_register_an_offense
+    source: |
+      do_something - 42
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_ambiguousoperator_with_unary_operator_in_the_first_argument_with_parentheses_around_the_operator_does_not_register_an_offense
+    source: |
+      do_something(-42)
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_ambiguousoperator_with_a_splat_operator_in_the_first_argument_without_parentheses_without_whitespaces_on_the_right_of_the_operator_registers_an_offense_and_corrects
+    source: |
+      array = [1, 2, 3]
+      puts *array
+    offenses:
+      - line: 2
+        column_start: 5
+        column_end: 6
+        message: "Ambiguous splat operator. Parenthesize the method arguments if it's surely a splat operator, or add a whitespace to the right of the `*` if it should be a multiplication."
+    corrected: |
+      array = [1, 2, 3]
+      puts(*array)
+
+  - name: rubocop_cop_lint_ambiguousoperator_with_a_splat_operator_in_the_first_argument_without_parentheses_with_a_whitespace_on_the_right_of_the_operator_does_not_register_an_offense
+    source: |
+      array = [1, 2, 3]
+      puts * array
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_ambiguousoperator_with_a_splat_operator_in_the_first_argument_with_parentheses_around_the_splatted_argument_does_not_register_an_offense
+    source: |
+      array = [1, 2, 3]
+      puts(*array)
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_ambiguousoperator_with_a_block_ampersand_in_the_first_argument_without_parentheses_without_whitespaces_on_the_right_of_the_operator_registers_an_offense_and_corrects
+    source: |
+      process = proc { do_something }
+      2.times &process
+    offenses:
+      - line: 2
+        column_start: 8
+        column_end: 9
+        message: "Ambiguous block operator. Parenthesize the method arguments if it's surely a block operator, or add a whitespace to the right of the `&` if it should be a binary AND."
+    corrected: |
+      process = proc { do_something }
+      2.times(&process)
+
+  - name: rubocop_cop_lint_ambiguousoperator_with_a_block_ampersand_in_the_first_argument_without_parentheses_with_a_whitespace_on_the_right_of_the_operator_does_not_register_an_offense
+    source: |
+      process = proc { do_something }
+      2.times & process
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_ambiguousoperator_with_a_block_ampersand_in_the_first_argument_with_parentheses_around_the_block_argument_does_not_register_an_offense
+    source: |
+      process = proc { do_something }
+      2.times(&process)
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_ambiguousoperator_with_a_keyword_splat_operator_in_the_first_argument_without_parentheses_without_whitespaces_on_the_right_of_the_operator_registers_an_offense_and_corrects
+    source: |
+      do_something **kwargs
+    offenses:
+      - line: 1
+        column_start: 13
+        column_end: 15
+        message: "Ambiguous keyword splat operator. Parenthesize the method arguments if it's surely a keyword splat operator, or add a whitespace to the right of the `**` if it should be an exponent."
+    corrected: |
+      do_something(**kwargs)
+
+  - name: rubocop_cop_lint_ambiguousoperator_with_a_keyword_splat_operator_in_the_first_argument_without_parentheses_with_a_whitespace_on_the_right_of_the_operator_does_not_register_an_offense
+    source: |
+      do_something ** kwargs
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_ambiguousoperator_with_a_keyword_splat_operator_in_the_first_argument_with_parentheses_around_the_keyword_splat_operator_does_not_register_an_offense
+    source: |
+      do_something(**kwargs)
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_ambiguousoperator_when_using_safe_navigation_operator_with_a_unary_operator_does_not_register_an_offense
+    source: |
+      do_something&.* -1
+    offenses:
+      []

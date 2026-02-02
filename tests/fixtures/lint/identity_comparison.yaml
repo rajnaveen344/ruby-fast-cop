@@ -1,0 +1,87 @@
+cop: Lint/IdentityComparison
+department: lint
+severity: warning
+implemented: false
+
+tests:
+  - name: rubocop_cop_lint_identitycomparison_registers_an_offense_and_corrects_when_using_for_comparison_between_object_id_s
+    source: |
+      foo.object_id == bar.object_id
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 30
+        message: Use `equal?` instead of `==` when comparing `object_id`.
+    corrected: |
+      foo.equal?(bar)
+
+  - name: rubocop_cop_lint_identitycomparison_registers_an_offense_and_corrects_when_using_for_comparison_between_object_id_s
+    source: |
+      foo.object_id != bar.object_id
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 30
+        message: Use `!equal?` instead of `!=` when comparing `object_id`.
+    corrected: |
+      !foo.equal?(bar)
+
+  - name: rubocop_cop_lint_identitycomparison_does_not_register_an_offense_when_using_for_comparison_between_object_id_and_other
+    source: |
+      foo.object_id == bar.do_something
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_identitycomparison_does_not_register_an_offense_when_using_for_comparison_between_object_id_and_other
+    source: |
+      foo.object_id != bar.do_something
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_identitycomparison_does_not_register_an_offense_when_a_receiver_that_is_not_object_id_uses
+    source: |
+      foo.do_something == bar.object_id
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_identitycomparison_does_not_register_an_offense_when_a_receiver_that_is_not_object_id_uses
+    source: |
+      foo.do_something != bar.object_id
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_identitycomparison_does_not_register_an_offense_when_using_equal
+    source: |
+      foo.equal?(bar)
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_identitycomparison_does_not_register_an_offense_when_using_equal
+    source: |
+      !foo.equal?(bar)
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_identitycomparison_does_not_register_an_offense_when_lhs_is_object_id_without_receiver_when_using
+    source: |
+      object_id == bar.object_id
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_identitycomparison_does_not_register_an_offense_when_lhs_is_object_id_without_receiver_when_using
+    source: |
+      object_id != bar.object_id
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_identitycomparison_does_not_register_an_offense_when_rhs_is_object_id_without_receiver_when_using
+    source: |
+      foo.object_id == object_id
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_identitycomparison_does_not_register_an_offense_when_rhs_is_object_id_without_receiver_when_using
+    source: |
+      foo.object_id != object_id
+    offenses:
+      []

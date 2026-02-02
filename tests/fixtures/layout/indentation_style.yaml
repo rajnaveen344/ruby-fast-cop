@@ -1,0 +1,288 @@
+cop: Layout/IndentationStyle
+department: layout
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_layout_indentationstyle_when_enforcedstyle_is_spaces_registers_and_corrects_an_offense_for_a_line_indented_with_tab
+    source: |
+      	x = 0
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 1
+        message: Tab detected in indentation.
+    config:
+      EnforcedStyle: spaces
+
+  - name: rubocop_cop_layout_indentationstyle_when_enforcedstyle_is_spaces_registers_and_corrects_an_offense_for_a_line_indented_with_multiple_tabs
+    source: |
+      			x = 0
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 3
+        message: Tab detected in indentation.
+    config:
+      EnforcedStyle: spaces
+
+  - name: rubocop_cop_layout_indentationstyle_when_enforcedstyle_is_spaces_registers_and_corrects_an_offense_for_a_line_indented_with_mixed_whitespaces
+    source: |
+       	x = 0
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 2
+        message: Tab detected in indentation.
+    config:
+      EnforcedStyle: spaces
+
+  - name: rubocop_cop_layout_indentationstyle_when_enforcedstyle_is_spaces_registers_offenses_before_end_but_not_after
+    source: |
+      	x = 0
+      __END__
+      	x = 0
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 1
+        message: Tab detected in indentation.
+    config:
+      EnforcedStyle: spaces
+
+  - name: rubocop_cop_layout_indentationstyle_when_enforcedstyle_is_spaces_accepts_a_line_with_a_tab_other_than_indentation
+    source: |
+      foo 	 bar
+    offenses:
+      []
+    config:
+      EnforcedStyle: spaces
+
+  - name: rubocop_cop_layout_indentationstyle_when_enforcedstyle_is_spaces_accepts_a_line_with_a_tab_between_string_literals
+    source: |
+      'foo'	'bar'
+    offenses:
+      []
+    config:
+      EnforcedStyle: spaces
+
+  - name: rubocop_cop_layout_indentationstyle_when_enforcedstyle_is_spaces_accepts_a_line_with_tab_in_a_string
+    source: |
+      (x = "	")
+    offenses:
+      []
+    config:
+      EnforcedStyle: spaces
+
+  - name: rubocop_cop_layout_indentationstyle_when_enforcedstyle_is_spaces_accepts_a_line_which_begins_with_tab_in_a_string
+    source: |
+      x = '
+      	hello'
+    offenses:
+      []
+    config:
+      EnforcedStyle: spaces
+
+  - name: rubocop_cop_layout_indentationstyle_when_enforcedstyle_is_spaces_accepts_a_line_which_begins_with_tab_in_a_heredoc
+    source: |
+      x = <<HELLO
+      	hello
+      HELLO
+    offenses:
+      []
+    config:
+      EnforcedStyle: spaces
+
+  - name: rubocop_cop_layout_indentationstyle_when_enforcedstyle_is_spaces_accepts_a_line_which_begins_with_tab_in_a_multiline_heredoc
+    source: |
+      x = <<HELLO
+      	hello
+      	
+      		
+      hello
+      HELLO
+    offenses:
+      []
+    config:
+      EnforcedStyle: spaces
+
+  - name: rubocop_cop_layout_indentationstyle_when_enforcedstyle_is_spaces_registers_and_corrects_an_offense_for_a_line_with_tab_in_a_string_indented_with_tab
+    source: |
+      	(x = "	")
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 1
+        message: Tab detected in indentation.
+    config:
+      EnforcedStyle: spaces
+
+  - name: rubocop_cop_layout_indentationstyle_when_enforcedstyle_is_spaces_custom_indentation_width_uses_the_configured_number_of_spaces_to_replace_a_tab
+    source: |
+      	x = 0
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 1
+        message: Tab detected in indentation.
+    config:
+      IndentationWidth: 3
+      EnforcedStyle: spaces
+
+  - name: rubocop_cop_layout_indentationstyle_when_enforcedstyle_is_tabs_registers_and_corrects_an_offense_for_a_line_indented_with_space
+    source: |
+        x = 0
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 2
+        message: Space detected in indentation.
+    corrected: |
+      	x = 0
+    config:
+      IndentationWidth: 3
+      EnforcedStyle: tabs
+
+  - name: rubocop_cop_layout_indentationstyle_when_enforcedstyle_is_tabs_registers_and_corrects_an_offense_for_a_line_indented_with_multiple_spaces
+    source: |
+            x = 0
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 6
+        message: Space detected in indentation.
+    corrected: |
+      			x = 0
+    config:
+      IndentationWidth: 3
+      EnforcedStyle: tabs
+
+  - name: rubocop_cop_layout_indentationstyle_when_enforcedstyle_is_tabs_registers_an_offense_for_a_line_indented_with_mixed_whitespace
+    source: |
+       	x = 0
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 1
+        message: Space detected in indentation.
+    config:
+      IndentationWidth: 3
+      EnforcedStyle: tabs
+
+  - name: rubocop_cop_layout_indentationstyle_when_enforcedstyle_is_tabs_registers_offenses_before_end_but_not_after
+    source: |
+        x = 0
+      __END__
+        x = 0
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 2
+        message: Space detected in indentation.
+    config:
+      IndentationWidth: 3
+      EnforcedStyle: tabs
+
+  - name: rubocop_cop_layout_indentationstyle_when_enforcedstyle_is_tabs_accepts_a_line_a_tab_other_than_indentation
+    source: |
+      	foo 	 bar
+    offenses:
+      []
+    config:
+      IndentationWidth: 3
+      EnforcedStyle: tabs
+
+  - name: rubocop_cop_layout_indentationstyle_when_enforcedstyle_is_tabs_accepts_a_line_with_tabs_between_string_literals
+    source: |
+      'foo'	'bar'
+    offenses:
+      []
+    config:
+      IndentationWidth: 3
+      EnforcedStyle: tabs
+
+  - name: rubocop_cop_layout_indentationstyle_when_enforcedstyle_is_tabs_accepts_a_line_with_tab_in_a_string
+    source: |
+      (x = "	")
+    offenses:
+      []
+    config:
+      IndentationWidth: 3
+      EnforcedStyle: tabs
+
+  - name: rubocop_cop_layout_indentationstyle_when_enforcedstyle_is_tabs_accepts_a_line_which_begins_with_tab_in_a_string
+    source: |
+      x = '
+      	hello'
+    offenses:
+      []
+    config:
+      IndentationWidth: 3
+      EnforcedStyle: tabs
+
+  - name: rubocop_cop_layout_indentationstyle_when_enforcedstyle_is_tabs_accepts_a_line_which_begins_with_tab_in_a_heredoc
+    source: |
+      x = <<HELLO
+      	hello
+      HELLO
+    offenses:
+      []
+    config:
+      IndentationWidth: 3
+      EnforcedStyle: tabs
+
+  - name: rubocop_cop_layout_indentationstyle_when_enforcedstyle_is_tabs_accepts_a_line_which_begins_with_tab_in_a_multiline_heredoc
+    source: |
+      x = <<HELLO
+      	hello
+      	
+      		
+      hello
+      HELLO
+    offenses:
+      []
+    config:
+      IndentationWidth: 3
+      EnforcedStyle: tabs
+
+  - name: rubocop_cop_layout_indentationstyle_when_enforcedstyle_is_tabs
+    source: |
+         x = 0
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 3
+        message: Space detected in indentation.
+    corrected: |
+      	x = 0
+    config:
+      IndentationWidth: 3
+      EnforcedStyle: tabs
+
+  - name: rubocop_cop_layout_indentationstyle_when_enforcedstyle_is_tabs_registers_and_corrects_an_offense_for_a_line_with_tab_in_a_string_indented_with_space
+    source: |
+        (x = "	")
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 2
+        message: Space detected in indentation.
+    corrected: |
+      	(x = "	")
+    config:
+      IndentationWidth: 3
+      EnforcedStyle: tabs
+
+  - name: rubocop_cop_layout_indentationstyle_when_enforcedstyle_is_tabs_custom_indentation_width_uses_the_configured_number_of_spaces_to_replace_with_a_tab
+    source: |
+            x = 0
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 6
+        message: Space detected in indentation.
+    corrected: |
+      		x = 0
+    config:
+      IndentationWidth: 3
+      EnforcedStyle: tabs

@@ -1,0 +1,90 @@
+cop: Lint/HashNewWithKeywordArgumentsAsDefault
+department: lint
+severity: warning
+implemented: false
+
+tests:
+  - name: rubocop_cop_lint_hashnewwithkeywordargumentsasdefault_registers_an_offense_when_using_hash_new_with_keyword_arguments_for_default
+    source: |
+      Hash.new(key: :value)
+    offenses:
+      - line: 1
+        column_start: 9
+        column_end: 20
+        message: Use a hash literal instead of keyword arguments.
+    corrected: |
+      Hash.new({key: :value})
+
+  - name: rubocop_cop_lint_hashnewwithkeywordargumentsasdefault_registers_an_offense_when_using_hash_new_with_keyword_arguments_including_capacity_for_default
+    source: |
+      Hash.new(capacity: 42, key: :value)
+    offenses:
+      - line: 1
+        column_start: 9
+        column_end: 34
+        message: Use a hash literal instead of keyword arguments.
+    corrected: |
+      Hash.new({capacity: 42, key: :value})
+
+  - name: rubocop_cop_lint_hashnewwithkeywordargumentsasdefault_registers_an_offense_when_using_hash_new_with_keyword_arguments_for_default
+    source: |
+      ::Hash.new(key: :value)
+    offenses:
+      - line: 1
+        column_start: 11
+        column_end: 22
+        message: Use a hash literal instead of keyword arguments.
+    corrected: |
+      ::Hash.new({key: :value})
+
+  - name: rubocop_cop_lint_hashnewwithkeywordargumentsasdefault_registers_an_offense_when_using_hash_new_with_hash_rocket_argument_for_default
+    source: |
+      Hash.new(:key => :value)
+    offenses:
+      - line: 1
+        column_start: 9
+        column_end: 23
+        message: Use a hash literal instead of keyword arguments.
+    corrected: |
+      Hash.new({:key => :value})
+
+  - name: rubocop_cop_lint_hashnewwithkeywordargumentsasdefault_registers_an_offense_when_using_hash_new_with_key_as_method_call_and_hash_rocket_argument_for_default
+    source: |
+      Hash.new(key => 'value')
+    offenses:
+      - line: 1
+        column_start: 9
+        column_end: 23
+        message: Use a hash literal instead of keyword arguments.
+    corrected: |
+      Hash.new({key => 'value'})
+
+  - name: rubocop_cop_lint_hashnewwithkeywordargumentsasdefault_does_not_register_an_offense_when_using_hash_new_with_hash_for_default
+    source: |
+      Hash.new({key: :value})
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_hashnewwithkeywordargumentsasdefault_does_not_register_an_offense_when_using_hash_new_with_capacity_keyword
+    source: |
+      Hash.new(capacity: 42)
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_hashnewwithkeywordargumentsasdefault_does_not_register_an_offense_when_using_hash_new_with_no_arguments
+    source: |
+      Hash.new
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_hashnewwithkeywordargumentsasdefault_does_not_register_an_offense_when_using_new_for_no_hash_receiver
+    source: |
+      Foo.new(key: :value)
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_hashnewwithkeywordargumentsasdefault_does_not_register_an_offense_when_using_hash_new_with_non_hash_object_for_default
+    source: |
+      Hash.new(42)
+    offenses:
+      []

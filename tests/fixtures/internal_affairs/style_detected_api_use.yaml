@@ -1,0 +1,76 @@
+cop: InternalAffairs/StyleDetectedApiUse
+department: internal_affairs
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_internalaffairs_styledetectedapiuse_registers_an_offense_when_correct_style_detected_is_used_without_a_negative_style_detected_follow_up
+    source: |
+      def on_send(node)
+        if offense?
+          add_offense(node)
+        else
+          correct_style_detected
+        end
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 17
+        message: "`correct_style_detected` method called without calling a negative `*_style_detected` method."
+
+  - name: rubocop_cop_internalaffairs_styledetectedapiuse_registers_an_offense_when_correct_style_detected_is_used_in_a_conditional_expression
+    source: |
+      def on_send(node)
+        return if correct_style_detected
+      
+        add_offense(node)
+        opposite_style_detected
+      end
+    offenses:
+      - line: 2
+        column_start: 12
+        column_end: 34
+        message: "`*_style_detected` method called in conditional."
+
+  - name: rubocop_cop_internalaffairs_styledetectedapiuse
+    source: |
+      def on_send(node)
+        return add_offense(node) if #{negative_style_detected_method}
+        correct_style_detected
+      end
+    offenses:
+      - line: 2
+        column_start: 30
+        column_end: 63
+        message: "`*_style_detected` method called in conditional."
+    interpolated: true
+
+  - name: rubocop_cop_internalaffairs_styledetectedapiuse
+    source: |
+      def on_send(node)
+        return unless offense?
+      
+        add_offense(node)
+        #{negative_style_detected_method}
+      end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 17
+        message: negative `*_style_detected` methods called without calling `correct_style_detected` method.
+    interpolated: true
+
+  - name: rubocop_cop_internalaffairs_styledetectedapiuse
+    source: |
+      def on_send(node)
+        if offense?
+          add_offense(node)
+          #{negative_style_detected_method}
+        else
+          correct_style_detected
+        end
+      end
+    offenses:
+      []
+    interpolated: true

@@ -1,0 +1,517 @@
+cop: Layout/EmptyLinesAroundExceptionHandlingKeywords
+department: layout
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_layout_emptylinesaroundexceptionhandlingkeywords_registers_an_offense_for_above_rescue_keyword_with_a_blank
+    source: |
+      begin
+        f1
+      
+      #{message} before the `rescue`.
+      rescue
+        f2
+      end
+    offenses:
+      []
+    corrected: |
+      begin
+        f1
+      rescue
+        f2
+      end
+    interpolated: true
+
+  - name: rubocop_cop_layout_emptylinesaroundexceptionhandlingkeywords_registers_an_offense_for_rescue_section_starting_with_a_blank
+    source: |
+      begin
+        f1
+      rescue
+      
+      #{message} after the `rescue`.
+        f2
+      end
+    offenses:
+      []
+    corrected: |
+      begin
+        f1
+      rescue
+        f2
+      end
+    interpolated: true
+
+  - name: rubocop_cop_layout_emptylinesaroundexceptionhandlingkeywords_registers_an_offense_for_rescue_section_ending_with_a_blank
+    source: |
+      begin
+        f1
+      rescue
+        f2
+      
+      #{message} before the `else`.
+      else
+        f3
+      end
+    offenses:
+      []
+    corrected: |
+      begin
+        f1
+      rescue
+        f2
+      else
+        f3
+      end
+    interpolated: true
+
+  - name: rubocop_cop_layout_emptylinesaroundexceptionhandlingkeywords_registers_an_offense_for_rescue_section_ending_for_method_definition_a_blank
+    source: |
+      def foo
+        f1
+      rescue
+        f2
+      
+      #{message} before the `else`.
+      else
+        f3
+      end
+    offenses:
+      []
+    corrected: |
+      def foo
+        f1
+      rescue
+        f2
+      else
+        f3
+      end
+    interpolated: true
+
+  - name: rubocop_cop_layout_emptylinesaroundexceptionhandlingkeywords_registers_an_offense_when_there_is_a_blank_line_above_rescue_keyword_in_a_block
+    source: |
+      foo do
+        f1
+      
+      #{message} before the `rescue`.
+      rescue
+        f2
+      else
+        f3
+      end
+    offenses:
+      []
+    corrected: |
+      foo do
+        f1
+      rescue
+        f2
+      else
+        f3
+      end
+    ruby_version: ">= 2.5"
+    interpolated: true
+
+  - name: rubocop_cop_layout_emptylinesaroundexceptionhandlingkeywords_registers_an_offense_when_rescue_section_starts_with_a_blank_line_in_a_block
+    source: |
+      foo do
+        f1
+      rescue
+      
+      #{message} after the `rescue`.
+        f2
+      else
+        f3
+      end
+    offenses:
+      []
+    corrected: |
+      foo do
+        f1
+      rescue
+        f2
+      else
+        f3
+      end
+    ruby_version: ">= 2.5"
+    interpolated: true
+
+  - name: rubocop_cop_layout_emptylinesaroundexceptionhandlingkeywords_registers_an_offense_when_rescue_section_ends_with_a_blank_line_in_a_block
+    source: |
+      foo do
+        f1
+      rescue
+        f2
+      
+      #{message} before the `else`.
+      else
+        f3
+      end
+    offenses:
+      []
+    corrected: |
+      foo do
+        f1
+      rescue
+        f2
+      else
+        f3
+      end
+    ruby_version: ">= 2.5"
+    interpolated: true
+
+  - name: rubocop_cop_layout_emptylinesaroundexceptionhandlingkeywords_registers_an_offense_when_there_is_a_blank_line_above_rescue_keyword_in_a_numbered_block
+    source: |
+      foo do
+        f1(_1)
+      
+      #{message} before the `rescue`.
+      rescue
+        f2
+      else
+        f3
+      end
+    offenses:
+      []
+    corrected: |
+      foo do
+        f1(_1)
+      rescue
+        f2
+      else
+        f3
+      end
+    ruby_version: ">= 2.7"
+    interpolated: true
+
+  - name: rubocop_cop_layout_emptylinesaroundexceptionhandlingkeywords_registers_an_offense_when_rescue_section_starts_with_a_blank_line_in_a_numbered_block
+    source: |
+      foo do
+        f1(_1)
+      rescue
+      
+      #{message} after the `rescue`.
+        f2
+      else
+        f3
+      end
+    offenses:
+      []
+    corrected: |
+      foo do
+        f1(_1)
+      rescue
+        f2
+      else
+        f3
+      end
+    ruby_version: ">= 2.7"
+    interpolated: true
+
+  - name: rubocop_cop_layout_emptylinesaroundexceptionhandlingkeywords_registers_an_offense_when_rescue_section_ends_with_a_blank_line_in_a_numbered_block
+    source: |
+      foo do
+        f1(_1)
+      rescue
+        f2
+      
+      #{message} before the `else`.
+      else
+        f3
+      end
+    offenses:
+      []
+    corrected: |
+      foo do
+        f1(_1)
+      rescue
+        f2
+      else
+        f3
+      end
+    ruby_version: ">= 2.7"
+    interpolated: true
+
+  - name: rubocop_cop_layout_emptylinesaroundexceptionhandlingkeywords_accepts_no_empty_line
+    source: |
+      no empty line
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylinesaroundexceptionhandlingkeywords_accepts_begin
+    source: |
+      begin
+        f1
+      rescue
+        f2
+      else
+        f3
+      ensure
+        f4
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylinesaroundexceptionhandlingkeywords_accepts_empty_lines_around_b
+    source: |
+      empty lines around begin body
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylinesaroundexceptionhandlingkeywords_accepts_begin
+    source: |
+      begin
+      
+        f1
+      
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylinesaroundexceptionhandlingkeywords_accepts_empty_begin
+    source: |
+      empty begin
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylinesaroundexceptionhandlingkeywords_accepts_begin
+    source: |
+      begin
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylinesaroundexceptionhandlingkeywords_accepts_empty_method_definit
+    source: |
+      empty method definition
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylinesaroundexceptionhandlingkeywords_accepts_def_foo
+    source: |
+      def foo
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylinesaroundexceptionhandlingkeywords_accepts_begin_and_rescue
+    source: |
+      `begin` and `rescue` are on the same line
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylinesaroundexceptionhandlingkeywords_accepts_begin_foo_rescue
+    source: |
+      begin; foo; rescue => e; end
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylinesaroundexceptionhandlingkeywords_accepts_rescue_and_end_a
+    source: |
+      `rescue` and `end` are on the same line
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylinesaroundexceptionhandlingkeywords_accepts_begin
+    source: |
+      begin
+        foo
+      rescue => e; end
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylinesaroundexceptionhandlingkeywords_accepts_last_rescue_and_e
+    source: |
+      last `rescue` and `end` are on the same line
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylinesaroundexceptionhandlingkeywords_accepts_begin
+    source: |
+      begin
+        foo
+      rescue => x
+      rescue => y; end
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylinesaroundexceptionhandlingkeywords_accepts_def_and_rescue_a
+    source: |
+      `def` and `rescue` are on the same line
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylinesaroundexceptionhandlingkeywords_accepts_def_do_something_fo
+    source: |
+      def do_something; foo; rescue => e; end
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylinesaroundexceptionhandlingkeywords_accepts_ensure_and_end_a
+    source: |
+      `ensure` and `end` are on the same line
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylinesaroundexceptionhandlingkeywords_accepts_def_do_something
+    source: |
+      def do_something
+      ensure end
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylinesaroundexceptionhandlingkeywords_accepts_else_and_end_are
+    source: |
+      `else` and `end` are on the same line
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylinesaroundexceptionhandlingkeywords_accepts_def_do_something
+    source: |
+      def do_something
+      rescue
+      else end
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylinesaroundexceptionhandlingkeywords_accepts_ensure_body_expres
+    source: |
+      `ensure` body expression and `end` are on the same line
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylinesaroundexceptionhandlingkeywords_accepts_def_do_something
+    source: |
+      def do_something
+      foo
+      ensure bar end
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylinesaroundexceptionhandlingkeywords_accepts_else_body_expressi
+    source: |
+      `else` body expression and `end` are on the same line
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylinesaroundexceptionhandlingkeywords_accepts_def_do_something
+    source: |
+      def do_something
+      rescue
+      else foo end
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_emptylinesaroundexceptionhandlingkeywords_with_complex_begin_end_registers_many_offenses
+    source: |
+      begin
+      
+        do_something1
+      
+      #{message} before the `rescue`.
+      rescue RuntimeError
+      
+      #{message} after the `rescue`.
+        do_something2
+      
+      #{message} before the `rescue`.
+      rescue ArgumentError => ex
+      
+      #{message} after the `rescue`.
+        do_something3
+      
+      #{message} before the `rescue`.
+      rescue
+      
+      #{message} after the `rescue`.
+        do_something3
+      
+      #{message} before the `else`.
+      else
+      
+      #{message} after the `else`.
+        do_something4
+      
+      #{message} before the `ensure`.
+      ensure
+      
+      #{message} after the `ensure`.
+        do_something4
+      
+      end
+    offenses:
+      []
+    corrected: |
+      begin
+      
+        do_something1
+      rescue RuntimeError
+        do_something2
+      rescue ArgumentError => ex
+        do_something3
+      rescue
+        do_something3
+      else
+        do_something4
+      ensure
+        do_something4
+      
+      end
+    interpolated: true
+
+  - name: rubocop_cop_layout_emptylinesaroundexceptionhandlingkeywords_with_complex_method_definition_registers_many_offenses
+    source: |
+      def foo
+      
+        do_something1
+      
+      #{message} before the `rescue`.
+      rescue RuntimeError
+      
+      #{message} after the `rescue`.
+        do_something2
+      
+      #{message} before the `rescue`.
+      rescue ArgumentError => ex
+      
+      #{message} after the `rescue`.
+        do_something3
+      
+      #{message} before the `rescue`.
+      rescue
+      
+      #{message} after the `rescue`.
+        do_something3
+      
+      #{message} before the `else`.
+      else
+      
+      #{message} after the `else`.
+        do_something4
+      
+      #{message} before the `ensure`.
+      ensure
+      
+      #{message} after the `ensure`.
+        do_something4
+      
+      end
+    offenses:
+      []
+    corrected: |
+      def foo
+      
+        do_something1
+      rescue RuntimeError
+        do_something2
+      rescue ArgumentError => ex
+        do_something3
+      rescue
+        do_something3
+      else
+        do_something4
+      ensure
+        do_something4
+      
+      end
+    interpolated: true

@@ -1,0 +1,130 @@
+cop: Bundler/DuplicatedGem
+department: bundler
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_bundler_duplicatedgem_when_investigating_ruby_files_does_not_register_any_offenses
+    source: |
+      # cop will not read these contents
+      gem('rubocop')
+      gem('rubocop')
+    offenses:
+      []
+    config:
+      Include: ["**/Gemfile"]
+
+  - name: rubocop_cop_bundler_duplicatedgem_when_investigating_gemfiles_and_no_duplicate_gems_are_present_does_not_register_any_offenses
+    source: |
+      gem 'rubocop'
+      gem 'flog'
+    offenses:
+      []
+    config:
+      Include: ["**/Gemfile"]
+
+  - name: rubocop_cop_bundler_duplicatedgem_when_investigating_gemfiles_and_a_gem_is_duplicated_in_default_group_registers_an_offense
+    source: |
+      source 'https://rubygems.org'
+      gem 'rubocop'
+      gem 'rubocop'
+    offenses:
+      - line: 3
+        column_start: 0
+        column_end: 13
+        message: Gem `rubocop` requirements already given on line 2 of the Gemfile.
+    config:
+      Include: ["**/Gemfile"]
+
+  - name: rubocop_cop_bundler_duplicatedgem_when_investigating_gemfiles_and_a_duplicated_gem_is_in_a_git_path_group_platforms_block_registers_an_offense
+    source: |
+      gem 'rubocop'
+      group :development do
+        gem 'rubocop', path: '/path/to/gem'
+      end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 37
+        message: Gem `rubocop` requirements already given on line 1 of the Gemfile.
+    config:
+      Include: ["**/Gemfile"]
+
+  - name: rubocop_cop_bundler_duplicatedgem_when_investigating_gemfiles_registers_an_offense_when_gem_from_default_group_is_conditionally_duplicated
+    source: |
+      gem 'rubocop'
+      if Dir.exist? local
+        gem 'rubocop', path: local
+      else
+        gem 'rubocop', '~> 0.90.0'
+      end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 28
+        message: Gem `rubocop` requirements already given on line 1 of the Gemfile.
+      - line: 5
+        column_start: 2
+        column_end: 28
+        message: Gem `rubocop` requirements already given on line 1 of the Gemfile.
+    config:
+      Include: ["**/Gemfile"]
+
+  - name: rubocop_cop_bundler_duplicatedgem_when_investigating_gemfiles_does_not_register_an_offense_when_gem_is_duplicated_within_if_else_statement
+    source: |
+      if Dir.exist?(local)
+        gem 'rubocop', path: local
+        gem 'flog', path: local
+      else
+        gem 'rubocop', '~> 0.90.0'
+      end
+    offenses:
+      []
+    config:
+      Include: ["**/Gemfile"]
+
+  - name: rubocop_cop_bundler_duplicatedgem_when_investigating_gemfiles_does_not_register_an_offense_when_gem_is_duplicated_within_if_elsif_statement
+    source: |
+      if Dir.exist?(local)
+        gem 'rubocop', path: local
+      elsif ENV['RUBOCOP_VERSION'] == 'master'
+        gem 'rubocop', git: 'https://github.com/rubocop/rubocop.git'
+      elsif (version = ENV['RUBOCOP_VERSION'])
+        gem 'rubocop', version
+      else
+        gem 'rubocop', '~> 0.90.0'
+      end
+    offenses:
+      []
+    config:
+      Include: ["**/Gemfile"]
+
+  - name: rubocop_cop_bundler_duplicatedgem_when_investigating_gemfiles_does_not_register_an_offense_when_gem_is_duplicated_within_case_statement
+    source: |
+      case
+      when Dir.exist?(local)
+        gem 'rubocop', path: local
+      when ENV['RUBOCOP_VERSION'] == 'master'
+        gem 'rubocop', git: 'https://github.com/rubocop/rubocop.git'
+      else
+        gem 'rubocop', '~> 0.90.0'
+      end
+    offenses:
+      []
+    config:
+      Include: ["**/Gemfile"]
+
+  - name: rubocop_cop_bundler_duplicatedgem_when_investigating_gemfiles_does_not_register_an_offense_when_gem_is_duplicated_within_case_statement_with_empty_branch
+    source: |
+      case
+      when Dir.exist?(local)
+        gem 'rubocop', path: local
+      when ENV['RUBOCOP_VERSION'] == 'master'
+        # no-op, do nothing club
+      else
+        gem 'rubocop', '~> 0.90.0'
+      end
+    offenses:
+      []
+    config:
+      Include: ["**/Gemfile"]

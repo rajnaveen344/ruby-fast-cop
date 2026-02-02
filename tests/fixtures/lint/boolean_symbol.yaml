@@ -1,0 +1,99 @@
+cop: Lint/BooleanSymbol
+department: lint
+severity: warning
+implemented: false
+
+tests:
+  - name: rubocop_cop_lint_booleansymbol_registers_an_offense_when_using_true
+    source: |
+      :true
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 5
+        message: Symbol with a boolean name - you probably meant to use `true`.
+    corrected: |
+      true
+
+  - name: rubocop_cop_lint_booleansymbol_registers_an_offense_when_using_false
+    source: |
+      :false
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 6
+        message: Symbol with a boolean name - you probably meant to use `false`.
+    corrected: |
+      false
+
+  - name: rubocop_cop_lint_booleansymbol_when_using_the_rocket_hash_syntax_registers_an_offense_when_using_a_boolean_symbol_key
+    source: |
+      { :false => 42 }
+    offenses:
+      - line: 1
+        column_start: 2
+        column_end: 8
+        message: Symbol with a boolean name - you probably meant to use `false`.
+    corrected: |
+      { false => 42 }
+
+  - name: rubocop_cop_lint_booleansymbol_when_using_the_new_hash_syntax_registers_an_offense_when_using_true
+    source: |
+      { true: 'Foo' }
+    offenses:
+      - line: 1
+        column_start: 2
+        column_end: 6
+        message: Symbol with a boolean name - you probably meant to use `true`.
+    corrected: |
+      { true => 'Foo' }
+
+  - name: rubocop_cop_lint_booleansymbol_when_using_the_new_hash_syntax_registers_an_offense_when_using_false
+    source: |
+      { false: :bar }
+    offenses:
+      - line: 1
+        column_start: 2
+        column_end: 7
+        message: Symbol with a boolean name - you probably meant to use `false`.
+    corrected: |
+      { false => :bar }
+
+  - name: rubocop_cop_lint_booleansymbol_when_using_the_new_hash_syntax_registers_an_offense_when_using_key_false
+    source: |
+      { false: :false }
+    offenses:
+      - line: 1
+        column_start: 9
+        column_end: 15
+        message: Symbol with a boolean name - you probably meant to use `false`.
+      - line: 1
+        column_start: 2
+        column_end: 7
+        message: Symbol with a boolean name - you probably meant to use `false`.
+    corrected: |
+      { false => false }
+
+  - name: rubocop_cop_lint_booleansymbol_does_not_register_an_offense_when_using_regular_symbol
+    source: |
+      :something
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_booleansymbol_does_not_register_an_offense_when_using_true
+    source: |
+      true
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_booleansymbol_does_not_register_an_offense_when_using_false
+    source: |
+      false
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_booleansymbol_does_not_register_an_offense_when_used_inside_percent_literal_symbol_array
+    source: |
+      %i[foo false]
+    offenses:
+      []

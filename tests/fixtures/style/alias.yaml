@@ -1,0 +1,297 @@
+cop: Style/Alias
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_alias_when_enforcedstyle_is_prefer_alias_method_registers_an_offense_for_alias_with_symbol_args
+    source: |
+      alias :ala :bala
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 5
+        message: Use `alias_method` instead of `alias`.
+    corrected: |
+      alias_method :ala, :bala
+    config:
+      EnforcedStyle: prefer_alias_method
+
+  - name: rubocop_cop_style_alias_when_enforcedstyle_is_prefer_alias_method_registers_an_offense_for_alias_with_bareword_args
+    source: |
+      alias ala bala
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 5
+        message: Use `alias_method` instead of `alias`.
+    corrected: |
+      alias_method :ala, :bala
+    config:
+      EnforcedStyle: prefer_alias_method
+
+  - name: rubocop_cop_style_alias_when_enforcedstyle_is_prefer_alias_method_registers_an_offense_for_alias_with_interpolated_symbol_argument
+    source: |
+      alias :"string#{interpolation}" :symbol
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 5
+        message: Use `alias_method` instead of `alias`.
+    corrected: |
+      alias_method :"string#{interpolation}", :symbol
+    config:
+      EnforcedStyle: prefer_alias_method
+
+  - name: rubocop_cop_style_alias_when_enforcedstyle_is_prefer_alias_method_does_not_register_an_offense_for_alias_method
+    source: |
+      alias_method :ala, :bala
+    offenses:
+      []
+    config:
+      EnforcedStyle: prefer_alias_method
+
+  - name: rubocop_cop_style_alias_when_enforcedstyle_is_prefer_alias_method_does_not_register_an_offense_for_alias_with_gvars
+    source: |
+      alias $ala $bala
+    offenses:
+      []
+    config:
+      EnforcedStyle: prefer_alias_method
+
+  - name: rubocop_cop_style_alias_when_enforcedstyle_is_prefer_alias_method_does_not_register_an_offense_for_alias_in_an_instance_eval_block
+    source: |
+      module M
+        def foo
+          instance_eval {
+            alias bar baz
+          }
+        end
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: prefer_alias_method
+
+  - name: rubocop_cop_style_alias_when_enforcedstyle_is_prefer_alias_method_does_not_register_an_offense_for_alias_method_when_calling_with_no_arguments
+    source: |
+      alias_method
+    offenses:
+      []
+    config:
+      EnforcedStyle: prefer_alias_method
+
+  - name: rubocop_cop_style_alias_when_enforcedstyle_is_prefer_alias_method_registers_no_offense_for_alias_method_when_calling_with_one_argument
+    source: |
+      alias_method :foo
+    offenses:
+      []
+    config:
+      EnforcedStyle: prefer_alias_method
+
+  - name: rubocop_cop_style_alias_when_enforcedstyle_is_prefer_alias_registers_an_offense_for_alias_with_symbol_args
+    source: |
+      alias :ala :bala
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 16
+        message: "Use `alias ala bala` instead of `alias :ala :bala`."
+    corrected: |
+      alias ala bala
+    config:
+      EnforcedStyle: prefer_alias
+
+  - name: rubocop_cop_style_alias_when_enforcedstyle_is_prefer_alias_does_not_register_an_offense_for_alias_with_bareword_args
+    source: |
+      alias ala bala
+    offenses:
+      []
+    config:
+      EnforcedStyle: prefer_alias
+
+  - name: rubocop_cop_style_alias_when_enforcedstyle_is_prefer_alias_registers_an_offense_for_alias_method_at_the_top_level
+    source: |
+      alias_method :ala, :bala
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 12
+        message: Use `alias` instead of `alias_method` at the top level.
+    corrected: |
+      alias ala bala
+    config:
+      EnforcedStyle: prefer_alias
+
+  - name: rubocop_cop_style_alias_when_enforcedstyle_is_prefer_alias_registers_an_offense_for_alias_method_in_a_class_block
+    source: |
+      class C
+        alias_method :ala, :bala
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 14
+        message: Use `alias` instead of `alias_method` in a class body.
+    corrected: |
+      class C
+        alias ala bala
+      end
+    config:
+      EnforcedStyle: prefer_alias
+
+  - name: rubocop_cop_style_alias_when_enforcedstyle_is_prefer_alias_registers_an_offense_for_alias_method_in_a_module_block
+    source: |
+      module M
+        alias_method :ala, :bala
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 14
+        message: Use `alias` instead of `alias_method` in a module body.
+    corrected: |
+      module M
+        alias ala bala
+      end
+    config:
+      EnforcedStyle: prefer_alias
+
+  - name: rubocop_cop_style_alias_when_enforcedstyle_is_prefer_alias_does_not_register_an_offense_for_alias_in_a_def
+    source: |
+      def foo
+        alias :ala :bala
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: prefer_alias
+
+  - name: rubocop_cop_style_alias_when_enforcedstyle_is_prefer_alias_does_not_register_an_offense_for_multiple_alias_in_a_def
+    source: |
+      def foo
+        alias :foo :bar
+        alias :baz :qux
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: prefer_alias
+
+  - name: rubocop_cop_style_alias_when_enforcedstyle_is_prefer_alias_does_not_register_an_offense_for_alias_with_interpolated_symbol_argument
+    source: |
+      alias :"string#{interpolation}" :symbol
+    offenses:
+      []
+    config:
+      EnforcedStyle: prefer_alias
+
+  - name: rubocop_cop_style_alias_when_enforcedstyle_is_prefer_alias_registers_an_offense_for_alias_in_a_defs
+    source: |
+      def some_obj.foo
+        alias :ala :bala
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 7
+        message: Use `alias_method` instead of `alias`.
+    corrected: |
+      def some_obj.foo
+        alias_method :ala, :bala
+      end
+    config:
+      EnforcedStyle: prefer_alias
+
+  - name: rubocop_cop_style_alias_when_enforcedstyle_is_prefer_alias_registers_an_offense_for_alias_in_a_block
+    source: |
+      included do
+        alias :ala :bala
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 7
+        message: Use `alias_method` instead of `alias`.
+    corrected: |
+      included do
+        alias_method :ala, :bala
+      end
+    config:
+      EnforcedStyle: prefer_alias
+
+  - name: rubocop_cop_style_alias_when_enforcedstyle_is_prefer_alias_does_not_register_an_offense_for_alias_method_with_explicit_receiver
+    source: |
+      class C
+        receiver.alias_method :ala, :bala
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: prefer_alias
+
+  - name: rubocop_cop_style_alias_when_enforcedstyle_is_prefer_alias_does_not_register_an_offense_for_alias_method_in_self_method_def
+    source: |
+      def self.method
+        alias_method :ala, :bala
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: prefer_alias
+
+  - name: rubocop_cop_style_alias_when_enforcedstyle_is_prefer_alias_does_not_register_an_offense_for_alias_method_in_a_block
+    source: |
+      dsl_method do
+        alias_method :ala, :bala
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: prefer_alias
+
+  - name: rubocop_cop_style_alias_when_enforcedstyle_is_prefer_alias_does_not_register_an_offense_for_alias_method_with_non_literal_constant_argument
+    source: |
+      alias_method :bar, FOO
+    offenses:
+      []
+    config:
+      EnforcedStyle: prefer_alias
+
+  - name: rubocop_cop_style_alias_when_enforcedstyle_is_prefer_alias_does_not_register_an_offense_for_alias_method_with_non_literal_method_call_argument
+    source: |
+      alias_method :baz, foo.bar
+    offenses:
+      []
+    config:
+      EnforcedStyle: prefer_alias
+
+  - name: rubocop_cop_style_alias_when_enforcedstyle_is_prefer_alias_does_not_register_an_offense_for_alias_in_an_instance_eval_block
+    source: |
+      module M
+        def foo
+          instance_eval {
+            alias bar baz
+          }
+        end
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyle: prefer_alias
+
+  - name: rubocop_cop_style_alias_when_enforcedstyle_is_prefer_alias_registers_no_offense_for_alias_method_when_calling_with_no_arguments
+    source: |
+      alias_method
+    offenses:
+      []
+    config:
+      EnforcedStyle: prefer_alias
+
+  - name: rubocop_cop_style_alias_when_enforcedstyle_is_prefer_alias_registers_no_offense_for_alias_method_when_calling_with_one_argument
+    source: |
+      alias_method :foo
+    offenses:
+      []
+    config:
+      EnforcedStyle: prefer_alias

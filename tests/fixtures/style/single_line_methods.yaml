@@ -1,0 +1,129 @@
+cop: Style/SingleLineMethods
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_singlelinemethods_registers_an_offense_for_a_single_line_method
+    source: |
+      def some_method; body end
+      def link_to(name, url); {:name => name}; end
+      def @table.columns; super; end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 25
+        message: Avoid single-line method definitions.
+      - line: 2
+        column_start: 0
+        column_end: 44
+        message: Avoid single-line method definitions.
+      - line: 3
+        column_start: 0
+        column_end: 30
+        message: Avoid single-line method definitions.
+    corrected: |
+      def some_method;#{trailing_whitespace}
+        body#{trailing_whitespace}
+      end
+      def link_to(name, url);#{trailing_whitespace}
+        {:name => name};#{trailing_whitespace}
+      end
+      def @table.columns;#{trailing_whitespace}
+        super;#{trailing_whitespace}
+      end
+    config:
+      AllowIfMethodIsEmpty: true
+    interpolated: true
+
+  - name: rubocop_cop_style_singlelinemethods_registers_an_offense_for_a_single_line_method_and_method_body_is_enclosed_in_parentheses
+    source: |
+      def foo() (do_something) end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 28
+        message: Avoid single-line method definitions.
+    corrected: |
+      def foo()#{trailing_whitespace}
+        (do_something)#{trailing_whitespace}
+      end
+    config:
+      AllowIfMethodIsEmpty: true
+    interpolated: true
+
+  - name: rubocop_cop_style_singlelinemethods_when_allowifmethodisempty_is_disabled_registers_an_offense_for_an_empty_method
+    source: |
+      def no_op; end
+      def self.resource_class=(klass); end
+      def @table.columns; end
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 14
+        message: Avoid single-line method definitions.
+      - line: 2
+        column_start: 0
+        column_end: 36
+        message: Avoid single-line method definitions.
+      - line: 3
+        column_start: 0
+        column_end: 23
+        message: Avoid single-line method definitions.
+    corrected: |
+      def no_op;#{trailing_whitespace}
+      end
+      def self.resource_class=(klass);#{trailing_whitespace}
+      end
+      def @table.columns;#{trailing_whitespace}
+      end
+    config:
+      AllowIfMethodIsEmpty: false
+    interpolated: true
+
+  - name: rubocop_cop_style_singlelinemethods_when_allowifmethodisempty_is_enabled_accepts_a_single_line_empty_method
+    source: |
+      def no_op; end
+      def self.resource_class=(klass); end
+      def @table.columns; end
+    offenses:
+      []
+    config:
+      AllowIfMethodIsEmpty: true
+
+  - name: rubocop_cop_style_singlelinemethods_accepts_a_multi_line_method
+    source: |
+      def some_method
+        body
+      end
+    offenses:
+      []
+    config:
+      AllowIfMethodIsEmpty: true
+
+  - name: rubocop_cop_style_singlelinemethods_does_not_crash_on_a_method_with_a_capitalized_name
+    source: |
+      def NoSnakeCase
+      end
+    offenses:
+      []
+    config:
+      AllowIfMethodIsEmpty: true
+
+  - name: rubocop_cop_style_singlelinemethods_endless_methods_does_not_register_an_offense
+    source: |
+      def some_method() = x
+    offenses:
+      []
+    config:
+      AllowIfMethodIsEmpty: true
+    ruby_version: ">= 3.0"
+
+  - name: rubocop_cop_style_singlelinemethods_when_style_endlessmethod_is_enabled_with_allowifmethodisempty_true_does_not_correct
+    source: |
+      def some_method; end
+    offenses:
+      []
+    config:
+      AllowIfMethodIsEmpty: true
+    ruby_version: ">= 3.0"

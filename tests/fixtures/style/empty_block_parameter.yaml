@@ -1,0 +1,87 @@
+cop: Style/EmptyBlockParameter
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_emptyblockparameter_registers_an_offense_for_an_empty_block_parameter_with_do_end_style
+    source: |
+      a do ||
+      end
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 7
+        message: Omit pipes for the empty block parameters.
+    corrected: |
+      a do
+      end
+
+  - name: rubocop_cop_style_emptyblockparameter_registers_an_offense_for_an_empty_block_parameter_with_style
+    source: |
+      a { || do_something }
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 6
+        message: Omit pipes for the empty block parameters.
+    corrected: |
+      a { do_something }
+
+  - name: rubocop_cop_style_emptyblockparameter_registers_an_offense_for_an_empty_block_parameter_with_super
+    source: |
+      def foo
+        super { || do_something }
+      end
+    offenses:
+      - line: 2
+        column_start: 10
+        column_end: 12
+        message: Omit pipes for the empty block parameters.
+    corrected: |
+      def foo
+        super { do_something }
+      end
+
+  - name: rubocop_cop_style_emptyblockparameter_registers_an_offense_for_an_empty_block_parameter_with_lambda
+    source: |
+      lambda { || do_something }
+    offenses:
+      - line: 1
+        column_start: 9
+        column_end: 11
+        message: Omit pipes for the empty block parameters.
+    corrected: |
+      lambda { do_something }
+
+  - name: rubocop_cop_style_emptyblockparameter_accepts_a_block_that_is_do_end_style_without_parameter
+    source: |
+      a do
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyblockparameter_accepts_a_block_that_is_style_without_parameter
+    source: |
+      a { }
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyblockparameter_accepts_a_non_empty_block_parameter_with_do_end_style
+    source: |
+      a do |x|
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyblockparameter_accepts_a_non_empty_block_parameter_with_style
+    source: |
+      a { |x| }
+    offenses:
+      []
+
+  - name: rubocop_cop_style_emptyblockparameter_accepts_an_empty_block_parameter_with_a_lambda
+    source: |
+      -> () { do_something }
+    offenses:
+      []

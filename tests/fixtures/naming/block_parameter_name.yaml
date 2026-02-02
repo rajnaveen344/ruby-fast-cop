@@ -1,0 +1,173 @@
+cop: Naming/BlockParameterName
+department: naming
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_naming_blockparametername_does_not_register_for_block_without_parameters
+    source: |
+      something do
+        do_stuff
+      end
+    offenses:
+      []
+    config:
+      AllowNamesEndingInNumbers: false
+      MinNameLength: 2
+
+  - name: rubocop_cop_naming_blockparametername_does_not_register_for_brace_block_without_parameters
+    source: |
+      something { do_stuff }
+    offenses:
+      []
+    config:
+      AllowNamesEndingInNumbers: false
+      MinNameLength: 2
+
+  - name: rubocop_cop_naming_blockparametername_does_not_register_offense_for_valid_parameter_names
+    source: |
+      something { |foo, bar| do_stuff }
+    offenses:
+      []
+    config:
+      AllowNamesEndingInNumbers: false
+      MinNameLength: 2
+
+  - name: rubocop_cop_naming_blockparametername_registers_an_offense_when_param_ends_in_number
+    source: |
+      something { |foo1, bar| do_stuff }
+    offenses:
+      - line: 1
+        column_start: 13
+        column_end: 17
+        message: Do not end block parameter with a number.
+    config:
+      AllowNamesEndingInNumbers: false
+      MinNameLength: 2
+
+  - name: rubocop_cop_naming_blockparametername_registers_an_offense_when_param_is_less_than_minimum_length
+    source: |
+      something do |x|
+        do_stuff
+      end
+    offenses:
+      - line: 1
+        column_start: 14
+        column_end: 15
+        message: Block parameter must be at least 2 characters long.
+    config:
+      AllowNamesEndingInNumbers: false
+      MinNameLength: 2
+
+  - name: rubocop_cop_naming_blockparametername_registers_an_offense_when_param_with_prefix_is_less_than_minimum_length
+    source: |
+      something do |_a, __b, *c, **__d|
+                        ^^^ Block parameter must be at least 2 characters long.
+        do_stuff
+      end
+    offenses:
+      - line: 1
+        column_start: 14
+        column_end: 16
+        message: Block parameter must be at least 2 characters long.
+      - line: 2
+        column_start: 23
+        column_end: 25
+        message: Block parameter must be at least 2 characters long.
+      - line: 2
+        column_start: 27
+        column_end: 32
+        message: Block parameter must be at least 2 characters long.
+    config:
+      AllowNamesEndingInNumbers: false
+      MinNameLength: 2
+
+  - name: rubocop_cop_naming_blockparametername_registers_an_offense_when_param_contains_uppercase_characters
+    source: |
+      something { |number_One| do_stuff }
+    offenses:
+      - line: 1
+        column_start: 13
+        column_end: 23
+        message: Only use lowercase characters for block parameter.
+    config:
+      AllowNamesEndingInNumbers: false
+      MinNameLength: 2
+
+  - name: rubocop_cop_naming_blockparametername_can_register_multiple_offenses_in_one_block
+    source: |
+      something do |y, num1, oFo|
+                       ^^^^ Do not end block parameter with a number.
+        do_stuff
+      end
+    offenses:
+      - line: 1
+        column_start: 14
+        column_end: 15
+        message: Block parameter must be at least 2 characters long.
+      - line: 2
+        column_start: 23
+        column_end: 26
+        message: Only use lowercase characters for block parameter.
+    config:
+      AllowNamesEndingInNumbers: false
+      MinNameLength: 2
+
+  - name: rubocop_cop_naming_blockparametername_with_allowednames_accepts_specified_block_param_names
+    source: |
+      something { |foo1, foo2| do_things }
+    offenses:
+      []
+    config:
+      AllowNamesEndingInNumbers: false
+      MinNameLength: 2
+      AllowedNames: [foo1, foo2]
+
+  - name: rubocop_cop_naming_blockparametername_with_allowednames_registers_unlisted_offensive_names
+    source: |
+      something { |bar, bar1| do_things }
+    offenses:
+      - line: 1
+        column_start: 18
+        column_end: 22
+        message: Do not end block parameter with a number.
+    config:
+      AllowNamesEndingInNumbers: false
+      MinNameLength: 2
+      AllowedNames: [foo1, foo2]
+
+  - name: rubocop_cop_naming_blockparametername_with_forbiddennames_registers_an_offense_for_param_listed_as_forbidden
+    source: |
+      something { |arg| do_stuff }
+    offenses:
+      - line: 1
+        column_start: 13
+        column_end: 16
+        message: Do not use arg as a name for a block parameter.
+    config:
+      ForbiddenNames: [arg]
+      AllowNamesEndingInNumbers: false
+      MinNameLength: 2
+      AllowedNames: [foo1, foo2]
+
+  - name: rubocop_cop_naming_blockparametername_with_forbiddennames_accepts_param_that_uses_a_forbidden_name_s_letters
+    source: |
+      something { |foo_arg| do_stuff }
+    offenses:
+      []
+    config:
+      ForbiddenNames: [arg]
+      AllowNamesEndingInNumbers: false
+      MinNameLength: 2
+      AllowedNames: [foo1, foo2]
+
+  - name: rubocop_cop_naming_blockparametername_with_allownamesendinginnumbers_accepts_params_that_end_in_numbers
+    source: |
+      something { |foo1, bar2, qux3| do_that_stuff }
+    offenses:
+      []
+    config:
+      ForbiddenNames: [arg]
+      AllowNamesEndingInNumbers: true
+      MinNameLength: 2
+      AllowedNames: [foo1, foo2]

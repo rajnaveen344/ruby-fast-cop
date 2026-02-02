@@ -1,0 +1,57 @@
+cop: Style/StabbyLambdaParentheses
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_stabbylambdaparentheses_does_not_check_the_old_lambda_syntax
+    source: |
+      lambda(&:nil?)
+    offenses:
+      []
+
+  - name: rubocop_cop_style_stabbylambdaparentheses_does_not_check_a_stabby_lambda_without_arguments
+    source: |
+      -> { true }
+    offenses:
+      []
+
+  - name: rubocop_cop_style_stabbylambdaparentheses_does_not_check_a_method_call_named_lambda
+    source: |
+      o.lambda
+    offenses:
+      []
+
+  - name: rubocop_cop_style_stabbylambdaparentheses_require_parentheses_registers_an_offense_for_a_stabby_lambda_without_parentheses
+    source: |
+      ->a,b,c { a + b + c }
+    offenses:
+      - line: 1
+        column_start: 2
+        column_end: 7
+        message: Wrap stabby lambda arguments with parentheses.
+    corrected: |
+      ->(a,b,c) { a + b + c }
+    config:
+      EnforcedStyle: require_parentheses
+
+  - name: rubocop_cop_style_stabbylambdaparentheses_require_parentheses_does_not_register_an_offense_for_a_stabby_lambda_with_parentheses
+    source: |
+      ->(a,b,c) { a + b + c }
+    offenses:
+      []
+    config:
+      EnforcedStyle: require_parentheses
+
+  - name: rubocop_cop_style_stabbylambdaparentheses_require_no_parentheses_registers_an_offense_for_a_stabby_lambda_with_parentheses
+    source: |
+      ->(a,b,c) { a + b + c }
+    offenses:
+      - line: 1
+        column_start: 2
+        column_end: 9
+        message: Do not wrap stabby lambda arguments with parentheses.
+    corrected: |
+      ->a,b,c { a + b + c }
+    config:
+      EnforcedStyle: require_no_parentheses

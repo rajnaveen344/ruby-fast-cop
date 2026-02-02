@@ -1,0 +1,88 @@
+cop: Lint/DuplicateRescueException
+department: lint
+severity: warning
+implemented: false
+
+tests:
+  - name: rubocop_cop_lint_duplicaterescueexception_registers_an_offense_when_duplicate_exception_exists
+    source: |
+      begin
+        something
+      rescue FirstError
+      rescue SecondError, FirstError
+      end
+    offenses:
+      - line: 4
+        column_start: 20
+        column_end: 30
+        message: Duplicate `rescue` exception detected.
+
+  - name: rubocop_cop_lint_duplicaterescueexception_registers_an_offense_when_duplicate_exception_splat_exists
+    source: |
+      begin
+        something
+      rescue *ERRORS
+      rescue SecondError, *ERRORS
+      end
+    offenses:
+      - line: 4
+        column_start: 20
+        column_end: 27
+        message: Duplicate `rescue` exception detected.
+
+  - name: rubocop_cop_lint_duplicaterescueexception_registers_an_offense_when_multiple_duplicate_exceptions_exist
+    source: |
+      begin
+        something
+      rescue FirstError
+      rescue SecondError
+      rescue FirstError
+      rescue SecondError
+      end
+    offenses:
+      - line: 5
+        column_start: 7
+        column_end: 17
+        message: Duplicate `rescue` exception detected.
+      - line: 6
+        column_start: 7
+        column_end: 18
+        message: Duplicate `rescue` exception detected.
+
+  - name: rubocop_cop_lint_duplicaterescueexception_registers_an_offense_when_duplicate_exception_exists_within_rescues_with_else_branch
+    source: |
+      begin
+        something
+      rescue FirstError
+      rescue SecondError, FirstError
+      else
+      end
+    offenses:
+      - line: 4
+        column_start: 20
+        column_end: 30
+        message: Duplicate `rescue` exception detected.
+
+  - name: rubocop_cop_lint_duplicaterescueexception_registers_an_offense_when_duplicate_exception_exists_within_rescues_with_empty_rescue_branch
+    source: |
+      begin
+        something
+      rescue FirstError
+      rescue SecondError, FirstError
+      rescue
+      end
+    offenses:
+      - line: 4
+        column_start: 20
+        column_end: 30
+        message: Duplicate `rescue` exception detected.
+
+  - name: rubocop_cop_lint_duplicaterescueexception_does_not_register_an_offense_when_there_are_no_duplicate_exceptions
+    source: |
+      begin
+        something
+      rescue FirstError
+      rescue SecondError
+      end
+    offenses:
+      []

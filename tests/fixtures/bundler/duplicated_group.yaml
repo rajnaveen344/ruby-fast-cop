@@ -1,0 +1,342 @@
+cop: Bundler/DuplicatedGroup
+department: bundler
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_bundler_duplicatedgroup_when_investigating_ruby_files_does_not_register_any_offenses
+    source: |
+      # cop will not read these contents
+      group :development
+      group :development
+    offenses:
+      []
+    config:
+      Include: ["**/Gemfile"]
+
+  - name: rubocop_cop_bundler_duplicatedgroup_when_investigating_gemfiles_and_no_duplicate_groups_are_present_does_not_register_any_offenses
+    source: |
+      group :development do
+        gem 'rubocop'
+      end
+      group :test do
+        gem 'flog'
+      end
+    offenses:
+      []
+    config:
+      Include: ["**/Gemfile"]
+
+  - name: rubocop_cop_bundler_duplicatedgroup_when_investigating_gemfiles_and_a_group_is_duplicated_registers_an_offense
+    source: |
+      group :development do
+        gem 'rubocop'
+      end
+      group :development do
+        gem 'rubocop-rails'
+      end
+    offenses:
+      - line: 4
+        column_start: 0
+        column_end: 18
+        message: "Gem group `:development` already defined on line 1 of the Gemfile."
+    config:
+      Include: ["**/Gemfile"]
+
+  - name: rubocop_cop_bundler_duplicatedgroup_when_investigating_gemfiles_and_a_group_is_duplicated_using_different_argument_types_registers_an_offense
+    source: |
+      group :development do
+        gem 'rubocop'
+      end
+      group 'development' do
+        gem 'rubocop-rails'
+      end
+    offenses:
+      - line: 4
+        column_start: 0
+        column_end: 19
+        message: "Gem group `'development'` already defined on line 1 of the Gemfile."
+    config:
+      Include: ["**/Gemfile"]
+
+  - name: rubocop_cop_bundler_duplicatedgroup_when_investigating_gemfiles_and_a_group_is_present_in_different_sets_of_groups_does_not_register_any_offenses
+    source: |
+      group :development do
+        gem 'rubocop'
+      end
+      group :development, :test do
+        gem 'rspec'
+      end
+      group :ci, :development do
+        gem 'flog'
+      end
+    offenses:
+      []
+    config:
+      Include: ["**/Gemfile"]
+
+  - name: rubocop_cop_bundler_duplicatedgroup_when_investigating_gemfiles_and_same_groups_with_different_keyword_names_does_not_register_an_offense
+    source: |
+      group :test, foo: true do
+        gem 'activesupport'
+      end
+      
+      group :test, bar: true do
+        gem 'rspec'
+      end
+    offenses:
+      []
+    config:
+      Include: ["**/Gemfile"]
+
+  - name: rubocop_cop_bundler_duplicatedgroup_when_investigating_gemfiles_and_same_groups_with_different_keyword_values_does_not_register_an_offense
+    source: |
+      group :test, foo: true do
+        gem 'activesupport'
+      end
+      
+      group :test, foo: false do
+        gem 'rspec'
+      end
+    offenses:
+      []
+    config:
+      Include: ["**/Gemfile"]
+
+  - name: rubocop_cop_bundler_duplicatedgroup_when_investigating_gemfiles_and_same_groups_with_same_keyword_option_and_the_option_order_is_the_same_registers_an_offense
+    source: |
+      group :test, foo: true, bar: true do
+        gem 'activesupport'
+      end
+      
+      group :test, foo: true, bar: true do
+        gem 'rspec'
+      end
+    offenses:
+      - line: 5
+        column_start: 0
+        column_end: 33
+        message: "Gem group `:test, foo: true, bar: true` already defined on line 1 of the Gemfile."
+    config:
+      Include: ["**/Gemfile"]
+
+  - name: rubocop_cop_bundler_duplicatedgroup_when_investigating_gemfiles_and_same_groups_with_same_keyword_option_and_the_option_order_is_different_registers_an_offense
+    source: |
+      group :test, foo: true, bar: true do
+        gem 'activesupport'
+      end
+      
+      group :test, bar: true, foo: true do
+        gem 'rspec'
+      end
+    offenses:
+      - line: 5
+        column_start: 0
+        column_end: 33
+        message: "Gem group `:test, bar: true, foo: true` already defined on line 1 of the Gemfile."
+    config:
+      Include: ["**/Gemfile"]
+
+  - name: rubocop_cop_bundler_duplicatedgroup_when_investigating_gemfiles_and_a_set_of_groups_is_duplicated_registers_an_offense
+    source: |
+      group :test, :development do
+        gem 'rubocop'
+      end
+      group :development, :test do
+        gem 'rubocop-rails'
+      end
+    offenses:
+      - line: 4
+        column_start: 0
+        column_end: 25
+        message: "Gem group `:development, :test` already defined on line 1 of the Gemfile."
+    config:
+      Include: ["**/Gemfile"]
+
+  - name: rubocop_cop_bundler_duplicatedgroup_when_investigating_gemfiles_and_a_set_of_groups_is_duplicated_and_group_value_is_a_splat_value_registers_an_offense
+    source: |
+      group(*LIVE_ENVS) do
+        gem 'admin_ui'
+      end
+      
+      group(*LIVE_ENVS) do
+        gem 'public_ui'
+      end
+    offenses:
+      - line: 5
+        column_start: 0
+        column_end: 17
+        message: Gem group `*LIVE_ENVS` already defined on line 1 of the Gemfile.
+    config:
+      Include: ["**/Gemfile"]
+
+  - name: rubocop_cop_bundler_duplicatedgroup_when_investigating_gemfiles_and_a_set_of_groups_is_duplicated_but_source_urls_are_different_does_not_register_an_offense
+    source: |
+      source 'https://rubygems.pkg.github.com/private-org' do
+        group :development do
+          gem 'rubocop'
+        end
+      end
+      
+      group :development do
+        gem 'rubocop-rails'
+      end
+    offenses:
+      []
+    config:
+      Include: ["**/Gemfile"]
+
+  - name: rubocop_cop_bundler_duplicatedgroup_when_investigating_gemfiles_and_a_set_of_groups_is_duplicated_and_source_urls_are_the_same_registers_an_offense
+    source: |
+      source 'https://rubygems.pkg.github.com/private-org' do
+        group :development do
+          gem 'rubocop'
+        end
+      end
+      
+      source 'https://rubygems.pkg.github.com/private-org' do
+        group :development do
+          gem 'rubocop-rails'
+        end
+      end
+      
+      group :development do
+        gem 'rubocop-performance'
+      end
+    offenses:
+      - line: 8
+        column_start: 2
+        column_end: 20
+        message: "Gem group `:development` already defined on line 2 of the Gemfile."
+    config:
+      Include: ["**/Gemfile"]
+
+  - name: rubocop_cop_bundler_duplicatedgroup_when_investigating_gemfiles_and_a_set_of_groups_is_duplicated_but_git_urls_are_different_does_not_register_an_offense
+    source: |
+      git 'https://github.com/rubocop/rubocop.git' do
+        group :default do
+          gem 'rubocop'
+        end
+      end
+      
+      git 'https://github.com/rails/rails.git' do
+        group :default do
+          gem 'activesupport'
+          gem 'actionpack'
+        end
+      end
+    offenses:
+      []
+    config:
+      Include: ["**/Gemfile"]
+
+  - name: rubocop_cop_bundler_duplicatedgroup_when_investigating_gemfiles_and_a_set_of_groups_is_duplicated_and_git_urls_are_the_same_registers_an_offense
+    source: |
+      git 'https://github.com/rails/rails.git' do
+        group :default do
+          gem 'activesupport'
+        end
+      end
+      
+      git 'https://github.com/rails/rails.git' do
+        group :default do
+          gem 'actionpack'
+        end
+      end
+    offenses:
+      - line: 8
+        column_start: 2
+        column_end: 16
+        message: "Gem group `:default` already defined on line 2 of the Gemfile."
+    config:
+      Include: ["**/Gemfile"]
+
+  - name: rubocop_cop_bundler_duplicatedgroup_when_investigating_gemfiles_and_a_set_of_groups_is_duplicated_but_platforms_values_are_different_does_not_register_an_offense
+    source: |
+      platforms :ruby do
+        group :default do
+          gem 'openssl'
+        end
+      end
+      
+      platforms :jruby do
+        group :default do
+          gem 'jruby-openssl'
+        end
+      end
+    offenses:
+      []
+    config:
+      Include: ["**/Gemfile"]
+
+  - name: rubocop_cop_bundler_duplicatedgroup_when_investigating_gemfiles_and_a_set_of_groups_is_duplicated_and_platforms_values_are_the_same_registers_an_offense
+    source: |
+      platforms :ruby do
+        group :default do
+          gem 'ruby-debug'
+        end
+      end
+      
+      platforms :ruby do
+        group :default do
+          gem 'sqlite3'
+        end
+      end
+    offenses:
+      - line: 8
+        column_start: 2
+        column_end: 16
+        message: "Gem group `:default` already defined on line 2 of the Gemfile."
+    config:
+      Include: ["**/Gemfile"]
+
+  - name: rubocop_cop_bundler_duplicatedgroup_when_investigating_gemfiles_and_a_set_of_groups_is_duplicated_but_path_values_are_different_does_not_register_an_offense
+    source: |
+      path 'components_admin' do
+        group :default do
+          gem 'admin_ui'
+        end
+      end
+      
+      path 'components_public' do
+        group :default do
+          gem 'public_ui'
+        end
+      end
+    offenses:
+      []
+    config:
+      Include: ["**/Gemfile"]
+
+  - name: rubocop_cop_bundler_duplicatedgroup_when_investigating_gemfiles_and_a_set_of_groups_is_duplicated_and_path_values_are_the_same_registers_an_offense
+    source: |
+      path 'components' do
+        group :default do
+          gem 'admin_ui'
+        end
+      end
+      
+      path 'components' do
+        group :default do
+          gem 'public_ui'
+        end
+      end
+    offenses:
+      - line: 8
+        column_start: 2
+        column_end: 16
+        message: "Gem group `:default` already defined on line 2 of the Gemfile."
+    config:
+      Include: ["**/Gemfile"]
+
+  - name: rubocop_cop_bundler_duplicatedgroup_when_investigating_gemfiles_when_source_url_argument_is_not_given_does_not_crash
+    source: |
+      source do
+        group :development do
+          gem 'rubocop'
+        end
+      end
+    offenses:
+      []
+    config:
+      Include: ["**/Gemfile"]

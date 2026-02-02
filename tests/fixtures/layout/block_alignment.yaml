@@ -1,0 +1,1143 @@
+cop: Layout/BlockAlignment
+department: layout
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_layout_blockalignment_when_the_block_has_no_arguments_registers_an_offense_for_mismatched_block_end
+    source: |
+      test do
+        end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 5
+        message: "`end` at 2, 2 is not aligned with `test do` at 1, 0."
+    corrected: |
+      test do
+      end
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_when_the_block_has_arguments_registers_an_offense_for_mismatched_block_end
+    source: |
+      test do |ala|
+        end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 5
+        message: "`end` at 2, 2 is not aligned with `test do |ala|` at 1, 0."
+    corrected: |
+      test do |ala|
+      end
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_accepts_a_block_end_that_does_not_begin_its_line
+    source: |
+      scope :bar, lambda { joins(:baz)
+                           .distinct }
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_when_the_block_is_a_logical_operand_accepts_a_correctly_aligned_block_end
+    source: |
+      (value.is_a? Array) && value.all? do |subvalue|
+        type_check_value(subvalue, array_type)
+      end
+      a || b do
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_accepts_end_aligned_with_a_variable
+    source: |
+      variable = test do |ala|
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_when_there_is_an_assignment_chain_registers_an_offense_for_an_end_aligned_with_the_2nd_variable
+    source: |
+      a = b = c = test do |ala|
+          end
+    offenses:
+      - line: 2
+        column_start: 4
+        column_end: 7
+        message: "`end` at 2, 4 is not aligned with `a = b = c = test do |ala|` at 1, 0."
+    corrected: |
+      a = b = c = test do |ala|
+      end
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_when_there_is_an_assignment_chain_accepts_end_aligned_with_the_first_variable
+    source: |
+      a = b = c = test do |ala|
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_and_the_block_is_an_operand_accepts_end_aligned_with_a_variable
+    source: |
+      b = 1 + preceding_line.reduce(0) do |a, e|
+        a + e.length + newline_length
+      end + 1
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_registers_an_offense_for_mismatched_block_end_with_a_variable
+    source: |
+      variable = test do |ala|
+        end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 5
+        message: "`end` at 2, 2 is not aligned with `variable = test do |ala|` at 1, 0."
+    corrected: |
+      variable = test do |ala|
+      end
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_when_the_block_is_defined_on_the_next_line_accepts_end_aligned_with_the_block_expression
+    source: |
+      variable =
+        a_long_method_that_dont_fit_on_the_line do |v|
+          v.foo
+        end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_when_the_block_is_defined_on_the_next_line_registers_an_offense_for_mismatched_end_alignment
+    source: |
+      variable =
+        a_long_method_that_dont_fit_on_the_line do |v|
+          v.foo
+      end
+    offenses:
+      - line: 4
+        column_start: 0
+        column_end: 3
+        message: "`end` at 4, 0 is not aligned with `a_long_method_that_dont_fit_on_the_line do |v|` at 2, 2."
+    corrected: |
+      variable =
+        a_long_method_that_dont_fit_on_the_line do |v|
+          v.foo
+        end
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_when_the_method_part_is_a_call_chain_that_spans_several_lines_accepts_pretty_alignment_style
+    source: |
+      def foo(bar)
+        bar.get_stuffs
+            .reject do |stuff|
+              stuff.with_a_very_long_expression_that_doesnt_fit_the_line
+            end.select do |stuff|
+              stuff.another_very_long_expression_that_doesnt_fit_the_line
+            end
+            .select do |stuff|
+              stuff.another_very_long_expression_that_doesnt_fit_the_line
+            end
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_when_the_method_part_is_a_call_chain_that_spans_several_lines_registers_offenses_for_misaligned_ends
+    source: |
+      def foo(bar)
+        bar.get_stuffs
+            .reject do |stuff|
+              stuff.with_a_very_long_expression_that_doesnt_fit_the_line
+              end.select do |stuff|
+              stuff.another_very_long_expression_that_doesnt_fit_the_line
+          end
+            .select do |stuff|
+              stuff.another_very_long_expression_that_doesnt_fit_the_line
+              end
+      end
+    offenses:
+      - line: 5
+        column_start: 8
+        column_end: 11
+        message: "`end` at 5, 8 is not aligned with `bar.get_stuffs` at 2, 2 or `.reject do |stuff|` at 3, 6."
+      - line: 7
+        column_start: 4
+        column_end: 7
+        message: "`end` at 7, 4 is not aligned with `bar.get_stuffs` at 2, 2 or `end.select do |stuff|` at 5, 8."
+      - line: 10
+        column_start: 8
+        column_end: 11
+        message: "`end` at 10, 8 is not aligned with `bar.get_stuffs` at 2, 2 or `.select do |stuff|` at 8, 6."
+    corrected: |
+      def foo(bar)
+        bar.get_stuffs
+            .reject do |stuff|
+              stuff.with_a_very_long_expression_that_doesnt_fit_the_line
+        end.select do |stuff|
+              stuff.another_very_long_expression_that_doesnt_fit_the_line
+        end
+            .select do |stuff|
+              stuff.another_very_long_expression_that_doesnt_fit_the_line
+        end
+      end
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_when_the_method_part_is_a_call_chain_that_spans_several_lines_accepts_end_indented_as_the_start_of_the_block
+    source: |
+             my_object.chaining_this_very_long_method(with_a_parameter)
+                 .and_one_with_a_block do
+               do_something
+             end
+      # Other variant:
+             my_object.chaining_this_very_long_method(
+                 with_a_parameter).and_one_with_a_block do
+               do_something
+             end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_when_the_method_part_is_a_call_chain_that_spans_several_lines_accepts_two_kinds_of_end_alignment
+    source: |
+      # Aligned with start of line where do is:
+      params = default_options.merge(options)
+                .delete_if { |k, v| v.nil? }
+                .each_with_object({}) do |(k, v), new_hash|
+                  new_hash[k.to_s] = v.to_s
+                end
+      # Aligned with start of the whole expression:
+      params = default_options.merge(options)
+                .delete_if { |k, v| v.nil? }
+                .each_with_object({}) do |(k, v), new_hash|
+                  new_hash[k.to_s] = v.to_s
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_when_variables_of_a_mass_assignment_spans_several_lines_accepts_end_aligned_with_the_variables
+    source: |
+      e,
+      f = [5, 6].map do |i|
+        i - 5
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_when_variables_of_a_mass_assignment_spans_several_lines_registers_an_offense_for_end_aligned_with_the_block
+    source: |
+      e,
+      f = [5, 6].map do |i|
+        i - 5
+          end
+    offenses:
+      - line: 4
+        column_start: 4
+        column_end: 7
+        message: "`end` at 4, 4 is not aligned with `e,` at 1, 0 or `f = [5, 6].map do |i|` at 2, 0."
+    corrected: |
+      e,
+      f = [5, 6].map do |i|
+        i - 5
+      end
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_accepts_end_aligned_with_an_instance_variable
+    source: |
+      @variable = test do |ala|
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_registers_an_offense_for_mismatched_block_end_with_an_instance_variable
+    source: |
+      @variable = test do |ala|
+        end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 5
+        message: "`end` at 2, 2 is not aligned with `@variable = test do |ala|` at 1, 0."
+    corrected: |
+      @variable = test do |ala|
+      end
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_accepts_end_aligned_with_a_class_variable
+    source: |
+      @@variable = test do |ala|
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_registers_an_offense_for_mismatched_block_end_with_a_class_variable
+    source: |
+      @@variable = test do |ala|
+        end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 5
+        message: "`end` at 2, 2 is not aligned with `@@variable = test do |ala|` at 1, 0."
+    corrected: |
+      @@variable = test do |ala|
+      end
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_accepts_end_aligned_with_a_global_variable
+    source: |
+      $variable = test do |ala|
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_registers_an_offense_for_mismatched_block_end_with_a_global_variable
+    source: |
+      $variable = test do |ala|
+        end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 5
+        message: "`end` at 2, 2 is not aligned with `$variable = test do |ala|` at 1, 0."
+    corrected: |
+      $variable = test do |ala|
+      end
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_accepts_end_aligned_with_a_constant
+    source: |
+      CONSTANT = test do |ala|
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_registers_an_offense_for_mismatched_block_end_with_a_constant
+    source: |
+      Module::CONSTANT = test do |ala|
+        end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 5
+        message: "`end` at 2, 2 is not aligned with `Module::CONSTANT = test do |ala|` at 1, 0."
+    corrected: |
+      Module::CONSTANT = test do |ala|
+      end
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_accepts_end_aligned_with_a_method_call
+    source: |
+      parser.children << lambda do |token|
+        token << 1
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_registers_an_offense_for_mismatched_block_end_with_a_method_call
+    source: |
+      parser.children << lambda do |token|
+        token << 1
+        end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 5
+        message: "`end` at 3, 2 is not aligned with `parser.children << lambda do |token|` at 1, 0."
+    corrected: |
+      parser.children << lambda do |token|
+        token << 1
+      end
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_accepts_end_aligned_with_a_method_call_with_arguments
+    source: |
+      @h[:f] = f.each_pair.map do |f, v|
+        v = 1
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_registers_an_offense_for_mismatched_end_with_a_method_call_with_arguments
+    source: |
+      @h[:f] = f.each_pair.map do |f, v|
+        v = 1
+        end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 5
+        message: "`end` at 3, 2 is not aligned with `@h[:f] = f.each_pair.map do |f, v|` at 1, 0."
+    corrected: |
+      @h[:f] = f.each_pair.map do |f, v|
+        v = 1
+      end
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_does_not_raise_an_error_for_nested_block_in_a_method_call
+    source: |
+      expect(arr.all? { |o| o.valid? })
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_accepts_end_aligned_with_the_block_when_the_block_is_a_method_argument
+    source: |
+      expect(arr.all? do |o|
+               o.valid?
+             end)
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_registers_an_offense_for_mismatched_end_not_aligned_with_the_block_that_is_an_argument
+    source: |
+      expect(arr.all? do |o|
+        o.valid?
+        end)
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 5
+        message: "`end` at 3, 2 is not aligned with `arr.all? do |o|` at 1, 7 or `expect(arr.all? do |o|` at 1, 0."
+    corrected: |
+      expect(arr.all? do |o|
+        o.valid?
+      end)
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_accepts_end_aligned_with_an_op_asgn
+    source: |
+      rb += files.select do |file|
+        file << something
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_registers_an_offense_for_mismatched_block_end_with_an_op_asgn
+    source: |
+      rb += files.select do |file|
+        file << something
+        end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 5
+        message: "`end` at 3, 2 is not aligned with `rb` at 1, 0."
+    corrected: |
+      rb += files.select do |file|
+        file << something
+      end
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_accepts_end_aligned_with_an_and_asgn
+    source: |
+      variable &&= test do |ala|
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_registers_an_offense_for_mismatched_block_end_with_an_and_asgn
+    source: |
+      variable &&= test do |ala|
+        end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 5
+        message: "`end` at 2, 2 is not aligned with `variable &&= test do |ala|` at 1, 0."
+    corrected: |
+      variable &&= test do |ala|
+      end
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_accepts_end_aligned_with_an_or_asgn
+    source: |
+      variable ||= test do |ala|
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_registers_an_offense_for_mismatched_block_end_with_an_or_asgn
+    source: |
+      variable ||= test do |ala|
+        end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 5
+        message: "`end` at 2, 2 is not aligned with `variable ||= test do |ala|` at 1, 0."
+    corrected: |
+      variable ||= test do |ala|
+      end
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_accepts_end_aligned_with_a_mass_assignment
+    source: |
+      var1, var2 = lambda do |test|
+        [1, 2]
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_accepts_end_aligned_with_a_call_chain_left_hand_side
+    source: |
+      parser.diagnostics.consumer = lambda do |diagnostic|
+        diagnostics << diagnostic
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_registers_an_offense_for_mismatched_block_end_with_a_mass_assignment
+    source: |
+      var1, var2 = lambda do |test|
+        [1, 2]
+        end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 5
+        message: "`end` at 3, 2 is not aligned with `var1, var2` at 1, 0."
+    corrected: |
+      var1, var2 = lambda do |test|
+        [1, 2]
+      end
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_when_multiple_similar_looking_blocks_have_misaligned_ends_registers_an_offense_for_each_of_them
+    source: |
+      a = test do
+       end
+      b = test do
+       end
+    offenses:
+      - line: 2
+        column_start: 1
+        column_end: 4
+        message: "`end` at 2, 1 is not aligned with `a = test do` at 1, 0."
+      - line: 4
+        column_start: 1
+        column_end: 4
+        message: "`end` at 4, 1 is not aligned with `b = test do` at 3, 0."
+    corrected: |
+      a = test do
+      end
+      b = test do
+      end
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_on_a_splatted_method_call_aligns_end_with_the_splat_operator
+    source: |
+      def get_gems_by_name
+        @gems ||= Hash[*get_latest_gems.map { |gem|
+                         [gem.name, gem, gem.full_name, gem]
+                       }.flatten]
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_on_a_splatted_method_call_registers_an_offense_and_corrects_misaligned_end_braces
+    source: |
+      def get_gems_by_name
+        @gems ||= Hash[*get_latest_gems.map { |gem|
+                         [gem.name, gem, gem.full_name, gem]
+                    }.flatten]
+      end
+    offenses:
+      - line: 4
+        column_start: 14
+        column_end: 15
+        message: "`}` at 4, 14 is not aligned with `*get_latest_gems.map { |gem|` at 2, 17 or `@gems ||= Hash[*get_latest_gems.map { |gem|` at 2, 2."
+    corrected: |
+      def get_gems_by_name
+        @gems ||= Hash[*get_latest_gems.map { |gem|
+                         [gem.name, gem, gem.full_name, gem]
+        }.flatten]
+      end
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_on_a_bit_flipped_method_call_aligns_end_with_the_operator
+    source: |
+      def abc
+        @abc ||= A[~xyz { |x|
+                     x
+                   }.flatten]
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_on_a_bit_flipped_method_call_registers_an_offense_and_corrects_misaligned_end_brace
+    source: |
+      def abc
+        @abc ||= A[~xyz { |x|
+                     x
+                              }.flatten]
+      end
+    offenses:
+      - line: 4
+        column_start: 24
+        column_end: 25
+        message: "`}` at 4, 24 is not aligned with `~xyz { |x|` at 2, 13 or `@abc ||= A[~xyz { |x|` at 2, 2."
+    corrected: |
+      def abc
+        @abc ||= A[~xyz { |x|
+                     x
+        }.flatten]
+      end
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_on_a_logically_negated_method_call_aligns_end_with_the_operator
+    source: |
+      def abc
+        @abc ||= A[!xyz { |x|
+                     x
+                   }.flatten]
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_on_a_logically_negated_method_call_registers_an_offense_and_corrects
+    source: |
+      def abc
+        @abc ||= A[!xyz { |x|
+                     x
+      }.flatten]
+      end
+    offenses:
+      - line: 4
+        column_start: 0
+        column_end: 1
+        message: "`}` at 4, 0 is not aligned with `!xyz { |x|` at 2, 13 or `@abc ||= A[!xyz { |x|` at 2, 2."
+    corrected: |
+      def abc
+        @abc ||= A[!xyz { |x|
+                     x
+        }.flatten]
+      end
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_on_an_arithmetically_negated_method_call_aligns_end_with_the_operator
+    source: |
+      def abc
+        @abc ||= A[-xyz { |x|
+                     x
+                   }.flatten]
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_on_an_arithmetically_negated_method_call_registers_an_offense_and_corrects
+    source: |
+      def abc
+        @abc ||= A[-xyz { |x|
+                     x
+                        }.flatten]
+      end
+    offenses:
+      - line: 4
+        column_start: 18
+        column_end: 19
+        message: "`}` at 4, 18 is not aligned with `-xyz { |x|` at 2, 13 or `@abc ||= A[-xyz { |x|` at 2, 2."
+    corrected: |
+      def abc
+        @abc ||= A[-xyz { |x|
+                     x
+        }.flatten]
+      end
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_when_the_block_is_terminated_by_mentions_not_end_in_the_message
+    source: |
+      test {
+        }
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 3
+        message: "`}` at 2, 2 is not aligned with `test {` at 1, 0."
+    corrected: |
+      test {
+      }
+    config:
+      EnforcedStyleAlignWith: either
+
+  - name: rubocop_cop_layout_blockalignment_with_enforcedstyle_start_of_line_allows_when_start_of_line_aligned
+    source: |
+      foo.bar
+        .each do
+          baz
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: start_of_line
+
+  - name: rubocop_cop_layout_blockalignment_with_enforcedstyle_start_of_line_errors_when_do_aligned
+    source: |
+      foo.bar
+        .each do
+          baz
+        end
+    offenses:
+      - line: 4
+        column_start: 2
+        column_end: 5
+        message: "`end` at 4, 2 is not aligned with `foo.bar` at 1, 0."
+    corrected: |
+      foo.bar
+        .each do
+          baz
+      end
+    config:
+      EnforcedStyleAlignWith: start_of_line
+
+  - name: rubocop_cop_layout_blockalignment_with_enforcedstyle_start_of_line_inside_a_non_endless_method_does_not_register_an_offense_when_end_is_aligned_with_the_block_start
+    source: |
+      def foo
+        bar do
+          baz
+        end
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: start_of_line
+
+  - name: rubocop_cop_layout_blockalignment_with_enforcedstyle_start_of_line_inside_a_non_endless_method_registers_an_offense_and_corrects_when_end_is_aligned_with_the_method_start
+    source: |
+      def foo
+        bar do
+          baz
+      end
+      end
+    offenses:
+      - line: 4
+        column_start: 0
+        column_end: 3
+        message: "`end` at 4, 0 is not aligned with `bar do` at 2, 2."
+    corrected: |
+      def foo
+        bar do
+          baz
+        end
+      end
+    config:
+      EnforcedStyleAlignWith: start_of_line
+
+  - name: rubocop_cop_layout_blockalignment_with_enforcedstyle_start_of_line_inside_a_non_endless_singleton_method_does_not_register_an_offense_when_end_is_aligned_with_the_block_start
+    source: |
+      def self.foo
+        bar do
+          baz
+        end
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: start_of_line
+
+  - name: rubocop_cop_layout_blockalignment_with_enforcedstyle_start_of_line_inside_a_non_endless_singleton_method_registers_an_offense_and_corrects_when_end_is_aligned_with_the_method_start
+    source: |
+      def self.foo
+        bar do
+          baz
+      end
+      end
+    offenses:
+      - line: 4
+        column_start: 0
+        column_end: 3
+        message: "`end` at 4, 0 is not aligned with `bar do` at 2, 2."
+    corrected: |
+      def self.foo
+        bar do
+          baz
+        end
+      end
+    config:
+      EnforcedStyleAlignWith: start_of_line
+
+  - name: rubocop_cop_layout_blockalignment_with_enforcedstyle_start_of_line_with_endless_methods_does_not_register_an_offense_when_end_is_aligned_with_the_start_of_the_method_definition
+    source: |
+      def foo = bar do
+        baz
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: start_of_line
+    ruby_version: ">= 3.0"
+
+  - name: rubocop_cop_layout_blockalignment_with_enforcedstyle_start_of_line_with_endless_methods_does_not_register_an_offense_when_end_is_aligned_with_the_start_of_a_multiline_method_definition
+    source: |
+      def foo = bar(123,
+                    456) do
+        baz
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: start_of_line
+    ruby_version: ">= 3.0"
+
+  - name: rubocop_cop_layout_blockalignment_with_enforcedstyle_start_of_line_with_endless_methods_registers_an_offense_when_end_is_not_aligned_with_the_start_of_the_method_definition
+    source: |
+      def foo = bar do
+        baz
+          end
+    offenses:
+      - line: 3
+        column_start: 4
+        column_end: 7
+        message: "`end` at 3, 4 is not aligned with `def foo = bar do` at 1, 0."
+    corrected: |
+      def foo = bar do
+        baz
+      end
+    config:
+      EnforcedStyleAlignWith: start_of_line
+    ruby_version: ">= 3.0"
+
+  - name: rubocop_cop_layout_blockalignment_with_enforcedstyle_start_of_line_with_endless_methods_does_not_register_an_offense_when_end_is_aligned_with_the_start_of_a_singleton_method_definition
+    source: |
+      def self.foo = bar do
+        baz
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: start_of_line
+    ruby_version: ">= 3.0"
+
+  - name: rubocop_cop_layout_blockalignment_with_enforcedstyle_start_of_line_with_endless_methods_does_not_register_an_offense_when_end_is_aligned_with_the_start_of_a_multiline_singleton_method_definition
+    source: |
+      def self.foo = bar(123,
+                         456) do
+        baz
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: start_of_line
+    ruby_version: ">= 3.0"
+
+  - name: rubocop_cop_layout_blockalignment_with_enforcedstyle_start_of_line_with_endless_methods_registers_an_offense_when_end_is_not_aligned_with_the_start_of_a_singleton_method_definition
+    source: |
+      def self.foo = bar do
+        baz
+          end
+    offenses:
+      - line: 3
+        column_start: 4
+        column_end: 7
+        message: "`end` at 3, 4 is not aligned with `def self.foo = bar do` at 1, 0."
+    corrected: |
+      def self.foo = bar do
+        baz
+      end
+    config:
+      EnforcedStyleAlignWith: start_of_line
+    ruby_version: ">= 3.0"
+
+  - name: rubocop_cop_layout_blockalignment_with_enforcedstyle_start_of_block_allows_when_do_aligned
+    source: |
+      foo.bar
+        .each do
+          baz
+        end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: start_of_block
+
+  - name: rubocop_cop_layout_blockalignment_with_enforcedstyle_start_of_block_errors_when_start_of_line_aligned
+    source: |
+      foo.bar
+        .each do
+          baz
+      end
+    offenses:
+      - line: 4
+        column_start: 0
+        column_end: 3
+        message: "`end` at 4, 0 is not aligned with `.each do` at 2, 2."
+    corrected: |
+      foo.bar
+        .each do
+          baz
+        end
+    config:
+      EnforcedStyleAlignWith: start_of_block
+
+  - name: rubocop_cop_layout_blockalignment_with_enforcedstyle_start_of_block_inside_a_non_endless_method_does_not_register_an_offense_when_end_is_aligned_with_the_block_start
+    source: |
+      def foo
+        bar do
+          baz
+        end
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: start_of_block
+
+  - name: rubocop_cop_layout_blockalignment_with_enforcedstyle_start_of_block_inside_a_non_endless_method_registers_an_offense_and_corrects_when_end_is_aligned_with_the_method_start
+    source: |
+      def foo
+        bar do
+          baz
+      end
+      end
+    offenses:
+      - line: 4
+        column_start: 0
+        column_end: 3
+        message: "`end` at 4, 0 is not aligned with `bar do` at 2, 2."
+    corrected: |
+      def foo
+        bar do
+          baz
+        end
+      end
+    config:
+      EnforcedStyleAlignWith: start_of_block
+
+  - name: rubocop_cop_layout_blockalignment_with_enforcedstyle_start_of_block_inside_a_non_endless_singleton_method_does_not_register_an_offense_when_end_is_aligned_with_the_block_start
+    source: |
+      def self.foo
+        bar do
+          baz
+        end
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: start_of_block
+
+  - name: rubocop_cop_layout_blockalignment_with_enforcedstyle_start_of_block_inside_a_non_endless_singleton_method_registers_an_offense_and_corrects_when_end_is_aligned_with_the_method_start
+    source: |
+      def self.foo
+        bar do
+          baz
+      end
+      end
+    offenses:
+      - line: 4
+        column_start: 0
+        column_end: 3
+        message: "`end` at 4, 0 is not aligned with `bar do` at 2, 2."
+    corrected: |
+      def self.foo
+        bar do
+          baz
+        end
+      end
+    config:
+      EnforcedStyleAlignWith: start_of_block
+
+  - name: rubocop_cop_layout_blockalignment_with_enforcedstyle_start_of_block_with_endless_methods_does_not_register_an_offense_when_end_is_aligned_with_the_start_of_the_method_definition
+    source: |
+      def foo = bar do
+        baz
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: start_of_block
+    ruby_version: ">= 3.0"
+
+  - name: rubocop_cop_layout_blockalignment_with_enforcedstyle_start_of_block_with_endless_methods_registers_an_offense_when_end_is_aligned_with_the_start_of_a_multiline_method_definition
+    source: |
+      def foo = bar(123,
+                    456) do
+        baz
+      end
+    offenses:
+      - line: 4
+        column_start: 0
+        column_end: 3
+        message: "`end` at 4, 0 is not aligned with `456) do` at 2, 14."
+    corrected: |
+      def foo = bar(123,
+                    456) do
+        baz
+                    end
+    config:
+      EnforcedStyleAlignWith: start_of_block
+    ruby_version: ">= 3.0"
+
+  - name: rubocop_cop_layout_blockalignment_with_enforcedstyle_start_of_block_with_endless_methods_registers_an_offense_when_end_is_not_aligned_with_the_start_of_the_method_definition
+    source: |
+      def foo = bar do
+        baz
+          end
+    offenses:
+      - line: 3
+        column_start: 4
+        column_end: 7
+        message: "`end` at 3, 4 is not aligned with `def foo = bar do` at 1, 0."
+    corrected: |
+      def foo = bar do
+        baz
+      end
+    config:
+      EnforcedStyleAlignWith: start_of_block
+    ruby_version: ">= 3.0"
+
+  - name: rubocop_cop_layout_blockalignment_with_enforcedstyle_start_of_block_with_endless_methods_does_not_register_an_offense_when_end_is_aligned_with_the_start_of_a_singleton_method_definition
+    source: |
+      def self.foo = bar do
+        baz
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: start_of_block
+    ruby_version: ">= 3.0"
+
+  - name: rubocop_cop_layout_blockalignment_with_enforcedstyle_start_of_block_with_endless_methods_registers_an_offense_when_end_is_aligned_with_the_start_of_a_multiline_singleton_method_definition
+    source: |
+      def self.foo = bar(123,
+                         456) do
+        baz
+      end
+    offenses:
+      - line: 4
+        column_start: 0
+        column_end: 3
+        message: "`end` at 4, 0 is not aligned with `456) do` at 2, 19."
+    corrected: |
+      def self.foo = bar(123,
+                         456) do
+        baz
+                         end
+    config:
+      EnforcedStyleAlignWith: start_of_block
+    ruby_version: ">= 3.0"
+
+  - name: rubocop_cop_layout_blockalignment_with_enforcedstyle_start_of_block_with_endless_methods_registers_an_offense_when_end_is_not_aligned_with_the_start_of_a_singleton_method_definition
+    source: |
+      def self.foo = bar do
+        baz
+          end
+    offenses:
+      - line: 3
+        column_start: 4
+        column_end: 7
+        message: "`end` at 3, 4 is not aligned with `def self.foo = bar do` at 1, 0."
+    corrected: |
+      def self.foo = bar do
+        baz
+      end
+    config:
+      EnforcedStyleAlignWith: start_of_block
+    ruby_version: ">= 3.0"
+
+  - name: rubocop_cop_layout_blockalignment_ruby_2_7_accepts_end_aligned_with_a_call_chain_left_hand_side
+    source: |
+      parser.diagnostics.consumer = lambda do
+        _1 << diagnostic
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: start_of_block
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_layout_blockalignment_ruby_2_7_registers_an_offense_for_mismatched_block_end_with_a_mass_assignment
+    source: |
+      var1, var2 = lambda do
+        [_1, _2]
+        end
+    offenses:
+      - line: 3
+        column_start: 2
+        column_end: 5
+        message: "`end` at 3, 2 is not aligned with `var1, var2` at 1, 0."
+    config:
+      EnforcedStyleAlignWith: start_of_block
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_layout_blockalignment_ruby_3_4_accepts_end_aligned_with_a_call_chain_left_hand_side
+    source: |
+      parser.diagnostics.consumer = lambda do
+        it << diagnostic
+      end
+    offenses:
+      []
+    config:
+      EnforcedStyleAlignWith: start_of_block
+    ruby_version: ">= 3.4"

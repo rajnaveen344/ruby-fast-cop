@@ -1,0 +1,977 @@
+cop: Style/ParallelAssignment
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_parallelassignment_registers_an_offense_when_the_right_side_has_multiple_arrays
+    source: |
+      a, b, c = [1, 2], [3, 4], [5, 6]
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 32
+        message: Do not use parallel assignment.
+    corrected: |
+      a = [1, 2]
+      b = [3, 4]
+      c = [5, 6]
+
+  - name: rubocop_cop_style_parallelassignment_registers_an_offense_when_the_right_side_has_multiple_hashes
+    source: |
+      a, b, c = {a: 1}, {b: 2}, {c: 3}
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 32
+        message: Do not use parallel assignment.
+    corrected: |
+      a = {a: 1}
+      b = {b: 2}
+      c = {c: 3}
+
+  - name: rubocop_cop_style_parallelassignment_registers_an_offense_when_the_right_side_has_constants
+    source: |
+      a, b, c = CONSTANT1, CONSTANT2, CONSTANT3
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 41
+        message: Do not use parallel assignment.
+    corrected: |
+      a = CONSTANT1
+      b = CONSTANT2
+      c = CONSTANT3
+
+  - name: rubocop_cop_style_parallelassignment_registers_an_offense_when_the_right_side_has_mixed_expressions
+    source: |
+      a, b, c = [1, 2], {a: 1}, CONSTANT3
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 35
+        message: Do not use parallel assignment.
+    corrected: |
+      a = [1, 2]
+      b = {a: 1}
+      c = CONSTANT3
+
+  - name: rubocop_cop_style_parallelassignment_registers_an_offense_when_the_right_side_has_methods_with_without_blocks
+    source: |
+      a, b = foo { |a| puts a }, bar()
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 32
+        message: Do not use parallel assignment.
+    corrected: |
+      a = foo { |a| puts a }
+      b = bar()
+
+  - name: rubocop_cop_style_parallelassignment_registers_an_offense_when_assignments_must_be_reordered_to_preserve_meaning
+    source: |
+      a, b = 1, a
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 11
+        message: Do not use parallel assignment.
+    corrected: |
+      b = a
+      a = 1
+
+  - name: rubocop_cop_style_parallelassignment_registers_an_offense_when_assigning_to_same_variables_in_same_order
+    source: |
+      a, b = a, b
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 11
+        message: Do not use parallel assignment.
+    corrected: |
+      a = a
+      b = b
+
+  - name: rubocop_cop_style_parallelassignment_registers_an_offense_when_right_hand_side_has_maps_with_blocks
+    source: |
+      a, b = foo.map { |e| e.id }, bar.map { |e| e.id }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 49
+        message: Do not use parallel assignment.
+    corrected: |
+      a = foo.map { |e| e.id }
+      b = bar.map { |e| e.id }
+
+  - name: rubocop_cop_style_parallelassignment_registers_an_offense_when_left_hand_side_ends_with_an_implicit_variable
+    source: |
+      array = [1, 2, 3]
+      a, b, c, = 8, 9, array
+    offenses:
+      - line: 2
+        column_start: 0
+        column_end: 22
+        message: Do not use parallel assignment.
+    corrected: |
+      array = [1, 2, 3]
+      a = 8
+      b = 9
+      c = array
+
+  - name: rubocop_cop_style_parallelassignment_registers_an_offense_when_right_hand_side_has_namespaced_constants
+    source: |
+      a, b = Float::INFINITY, Float::INFINITY
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 39
+        message: Do not use parallel assignment.
+    corrected: |
+      a = Float::INFINITY
+      b = Float::INFINITY
+
+  - name: rubocop_cop_style_parallelassignment_registers_an_offense_when_assigning_to_namespaced_constants
+    source: |
+      Float::INFINITY, Float::INFINITY = 1, 2
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 39
+        message: Do not use parallel assignment.
+    corrected: |
+      Float::INFINITY = 1
+      Float::INFINITY = 2
+
+  - name: rubocop_cop_style_parallelassignment_registers_an_offense_with_indices
+    source: |
+      a[0], a[1] = a[1], a[2]
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 23
+        message: Do not use parallel assignment.
+    corrected: |
+      a[0] = a[1]
+      a[1] = a[2]
+
+  - name: rubocop_cop_style_parallelassignment
+    source: |
+      obj.attr1, obj.attr2 = obj.attr3, obj.attr1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 43
+        message: Do not use parallel assignment.
+    corrected: |
+      obj.attr2 = obj.attr1
+      obj.attr1 = obj.attr3
+
+  - name: rubocop_cop_style_parallelassignment
+    source: |
+      obj.attr1, ary[0] = ary[1], obj.attr1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 37
+        message: Do not use parallel assignment.
+    corrected: |
+      ary[0] = obj.attr1
+      obj.attr1 = ary[1]
+
+  - name: rubocop_cop_style_parallelassignment_registers_an_offense_with_indices_of_different_variables
+    source: |
+      a[0], a[1] = a[1], b[0]
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 23
+        message: Do not use parallel assignment.
+    corrected: |
+      a[0] = a[1]
+      a[1] = b[0]
+
+  - name: rubocop_cop_style_parallelassignment_registers_an_offense_when_a_lambda_with_parallel_assignment_is_used_on_the_rhs
+    source: |
+      a, b = x, -> { a, b = x, y }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 28
+        message: Do not use parallel assignment.
+    corrected: |
+      a = x
+      b = -> { a, b = x, y }
+
+  - name: rubocop_cop_style_parallelassignment_allowed_a_1
+    source: |
+      a = 1
+    offenses:
+      []
+
+  - name: rubocop_cop_style_parallelassignment_allowed_a_a
+    source: |
+      a = a
+    offenses:
+      []
+
+  - name: rubocop_cop_style_parallelassignment_allowed_a_a
+    source: |
+      a, = a
+    offenses:
+      []
+
+  - name: rubocop_cop_style_parallelassignment_allowed_a_1
+    source: |
+      a, = 1
+    offenses:
+      []
+
+  - name: rubocop_cop_style_parallelassignment_allowed_a_foo
+    source: |
+      a = *'foo'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_parallelassignment_allowed_a_foo
+    source: |
+      a, = *'foo'
+    offenses:
+      []
+
+  - name: rubocop_cop_style_parallelassignment_allowed_a_1_2_3
+    source: |
+      a, = 1, 2, 3
+    offenses:
+      []
+
+  - name: rubocop_cop_style_parallelassignment_allowed_a_foo
+    source: |
+      a, = *foo
+    offenses:
+      []
+
+  - name: rubocop_cop_style_parallelassignment_allowed_a_b_1_2_3
+    source: |
+      a, *b = [1, 2, 3]
+    offenses:
+      []
+
+  - name: rubocop_cop_style_parallelassignment_allowed_a_b_1_2_3
+    source: |
+      *a, b = [1, 2, 3]
+    offenses:
+      []
+
+  - name: rubocop_cop_style_parallelassignment_allowed_b_1_2_3
+    source: |
+      *, b = [1, 2, 3]
+    offenses:
+      []
+
+  - name: rubocop_cop_style_parallelassignment_allowed_a_b_1_2_3
+    source: |
+      a, *, b = [1, 2, 3]
+    offenses:
+      []
+
+  - name: rubocop_cop_style_parallelassignment_allowed_a_b_b_a
+    source: |
+      a, b = b, a
+    offenses:
+      []
+
+  - name: rubocop_cop_style_parallelassignment_allowed_a_b_c_b_c_a
+    source: |
+      a, b, c = b, c, a
+    offenses:
+      []
+
+  - name: rubocop_cop_style_parallelassignment_allowed_a_b_a_b_a
+    source: |
+      a, b = (a + b), (a - b)
+    offenses:
+      []
+
+  - name: rubocop_cop_style_parallelassignment_allowed_a_b_foo_map_e
+    source: |
+      a, b = foo.map { |e| e.id }
+    offenses:
+      []
+
+  - name: rubocop_cop_style_parallelassignment_allowed_a_b_foo
+    source: |
+      a, b = foo()
+    offenses:
+      []
+
+  - name: rubocop_cop_style_parallelassignment_allowed_a_b_foo
+    source: |
+      a, b = *foo
+    offenses:
+      []
+
+  - name: rubocop_cop_style_parallelassignment_allowed_a_b_c_1_2_nod
+    source: |
+      a, b, c = 1, 2, *node
+    offenses:
+      []
+
+  - name: rubocop_cop_style_parallelassignment_allowed_a_b_c_node_1
+    source: |
+      a, b, c = *node, 1, 2
+    offenses:
+      []
+
+  - name: rubocop_cop_style_parallelassignment_allowed_begin_token_end_tok
+    source: |
+      begin_token, end_token = CONSTANT
+    offenses:
+      []
+
+  - name: rubocop_cop_style_parallelassignment_allowed_constant_1_2
+    source: |
+      CONSTANT, = 1, 2
+    offenses:
+      []
+
+  - name: rubocop_cop_style_parallelassignment_allowed_a_1
+    source: |
+      a = 1
+      b = 2
+    offenses:
+      []
+
+  - name: rubocop_cop_style_parallelassignment_allowed_foo_1_2_3
+    source: |
+      foo = [1, 2, 3]
+      a, b, c = foo
+    offenses:
+      []
+
+  - name: rubocop_cop_style_parallelassignment_allowed_array_1_2_3
+    source: |
+      array = [1, 2, 3]
+      a, = array
+    offenses:
+      []
+
+  - name: rubocop_cop_style_parallelassignment_allowed_a_b_float_infini
+    source: |
+      a, b = Float::INFINITY
+    offenses:
+      []
+
+  - name: rubocop_cop_style_parallelassignment_allowed_a_0_a_1_a_1_a
+    source: |
+      a[0], a[1] = a[1], a[0]
+    offenses:
+      []
+
+  - name: rubocop_cop_style_parallelassignment_allowed_obj_attr1_obj_attr2
+    source: |
+      obj.attr1, obj.attr2 = obj.attr2, obj.attr1
+    offenses:
+      []
+
+  - name: rubocop_cop_style_parallelassignment_allowed_obj_attr1_ary_0
+    source: |
+      obj.attr1, ary[0] = ary[0], obj.attr1
+    offenses:
+      []
+
+  - name: rubocop_cop_style_parallelassignment_allowed_ary_0_ary_1_ary
+    source: |
+      ary[0], ary[1], ary[2] = ary[1], ary[2], ary[0]
+    offenses:
+      []
+
+  - name: rubocop_cop_style_parallelassignment_allowed_self_a_self_b_sel
+    source: |
+      self.a, self.b = self.b, self.a
+    offenses:
+      []
+
+  - name: rubocop_cop_style_parallelassignment_allowed_self_a_self_b_b
+    source: |
+      self.a, self.b = b, a
+    offenses:
+      []
+
+  - name: rubocop_cop_style_parallelassignment_corrects_when_the_number_of_left_hand_variables_matches_the_number_of_right_hand_variables
+    source: |
+      a, b, c = 1, 2, 3
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 17
+        message: Do not use parallel assignment.
+    corrected: |
+      a = 1
+      b = 2
+      c = 3
+
+  - name: rubocop_cop_style_parallelassignment_corrects_when_the_right_variable_is_an_array
+    source: |
+      a, b, c = ["1", "2", :c]
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 24
+        message: Do not use parallel assignment.
+    corrected: |
+      a = "1"
+      b = "2"
+      c = :c
+
+  - name: rubocop_cop_style_parallelassignment_corrects_when_the_right_variable_is_a_word_array
+    source: |
+      a, b, c = %w(1 2 3)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 19
+        message: Do not use parallel assignment.
+    corrected: |
+      a = '1'
+      b = '2'
+      c = '3'
+
+  - name: rubocop_cop_style_parallelassignment_corrects_when_the_right_variable_is_a_symbol_array
+    source: |
+      a, b, c = %i(a b c)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 19
+        message: Do not use parallel assignment.
+    corrected: |
+      a = :a
+      b = :b
+      c = :c
+
+  - name: rubocop_cop_style_parallelassignment_corrects_when_assigning_to_method_returns
+    source: |
+      a, b = foo(), bar()
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 19
+        message: Do not use parallel assignment.
+    corrected: |
+      a = foo()
+      b = bar()
+
+  - name: rubocop_cop_style_parallelassignment_corrects_when_assigning_from_multiple_methods_with_blocks
+    source: |
+      a, b = foo() { |c| puts c }, bar() { |d| puts d }
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 49
+        message: Do not use parallel assignment.
+    corrected: |
+      a = foo() { |c| puts c }
+      b = bar() { |d| puts d }
+
+  - name: rubocop_cop_style_parallelassignment_corrects_when_using_constants
+    source: |
+      CONSTANT1, CONSTANT2 = CONSTANT3, CONSTANT4
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 43
+        message: Do not use parallel assignment.
+    corrected: |
+      CONSTANT1 = CONSTANT3
+      CONSTANT2 = CONSTANT4
+
+  - name: rubocop_cop_style_parallelassignment_corrects_when_using_parallel_assignment_in_singleton_method
+    source: |
+      def self.foo
+        foo, bar = 1, 2
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 17
+        message: Do not use parallel assignment.
+    corrected: |
+      def self.foo
+        foo = 1
+        bar = 2
+      end
+
+  - name: rubocop_cop_style_parallelassignment_corrects_when_the_expression_is_missing_spaces
+    source: |
+      a,b,c=1,2,3
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 11
+        message: Do not use parallel assignment.
+    corrected: |
+      a = 1
+      b = 2
+      c = 3
+
+  - name: rubocop_cop_style_parallelassignment_corrects_when_using_single_indentation
+    source: |
+      def foo
+        a, b, c = 1, 2, 3
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 19
+        message: Do not use parallel assignment.
+    corrected: |
+      def foo
+        a = 1
+        b = 2
+        c = 3
+      end
+
+  - name: rubocop_cop_style_parallelassignment_corrects_when_using_nested_indentation
+    source: |
+      def foo
+        if true
+          a, b, c = 1, 2, 3
+        end
+      end
+    offenses:
+      - line: 3
+        column_start: 4
+        column_end: 21
+        message: Do not use parallel assignment.
+    corrected: |
+      def foo
+        if true
+          a = 1
+          b = 2
+          c = 3
+        end
+      end
+
+  - name: rubocop_cop_style_parallelassignment_corrects_when_the_expression_uses_a_modifier_if_statement
+    source: |
+      a, b = 1, 2 if foo
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 11
+        message: Do not use parallel assignment.
+    corrected: |
+      if foo
+        a = 1
+        b = 2
+      end
+
+  - name: rubocop_cop_style_parallelassignment_corrects_when_the_expression_uses_a_modifier_if_statement_inside_a_method
+    source: |
+      def foo
+        a, b = 1, 2 if foo
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 13
+        message: Do not use parallel assignment.
+    corrected: |
+      def foo
+        if foo
+          a = 1
+          b = 2
+        end
+      end
+
+  - name: rubocop_cop_style_parallelassignment_corrects_parallel_assignment_in_if_statements
+    source: |
+      if foo
+        a, b = 1, 2
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 13
+        message: Do not use parallel assignment.
+    corrected: |
+      if foo
+        a = 1
+        b = 2
+      end
+
+  - name: rubocop_cop_style_parallelassignment_corrects_when_the_expression_uses_a_modifier_unless_statement
+    source: |
+      a, b = 1, 2 unless foo
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 11
+        message: Do not use parallel assignment.
+    corrected: |
+      unless foo
+        a = 1
+        b = 2
+      end
+
+  - name: rubocop_cop_style_parallelassignment_corrects_parallel_assignment_in_unless_statements
+    source: |
+      unless foo
+        a, b = 1, 2
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 13
+        message: Do not use parallel assignment.
+    corrected: |
+      unless foo
+        a = 1
+        b = 2
+      end
+
+  - name: rubocop_cop_style_parallelassignment_corrects_when_the_expression_uses_a_modifier_while_statement
+    source: |
+      a, b = 1, 2 while foo
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 11
+        message: Do not use parallel assignment.
+    corrected: |
+      while foo
+        a = 1
+        b = 2
+      end
+
+  - name: rubocop_cop_style_parallelassignment_corrects_parallel_assignment_in_while_statements
+    source: |
+      while foo
+        a, b = 1, 2
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 13
+        message: Do not use parallel assignment.
+    corrected: |
+      while foo
+        a = 1
+        b = 2
+      end
+
+  - name: rubocop_cop_style_parallelassignment_corrects_when_the_expression_uses_a_modifier_until_statement
+    source: |
+      a, b = 1, 2 until foo
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 11
+        message: Do not use parallel assignment.
+    corrected: |
+      until foo
+        a = 1
+        b = 2
+      end
+
+  - name: rubocop_cop_style_parallelassignment_corrects_parallel_assignment_in_until_statements
+    source: |
+      until foo
+        a, b = 1, 2
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 13
+        message: Do not use parallel assignment.
+    corrected: |
+      until foo
+        a = 1
+        b = 2
+      end
+
+  - name: rubocop_cop_style_parallelassignment_corrects_when_the_expression_uses_a_modifier_rescue_statement
+    source: |
+      a, b = 1, 2 rescue foo
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 11
+        message: Do not use parallel assignment.
+    corrected: |
+      begin
+        a = 1
+        b = 2
+      rescue
+        foo
+      end
+    ruby_version: ">= 2.6"
+
+  - name: rubocop_cop_style_parallelassignment_corrects_when_the_expression_uses_a_modifier_rescue_statement
+    source: |
+      a, b = 1, 2 rescue foo
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 11
+        message: Do not use parallel assignment.
+    corrected: |
+      begin
+        a = 1
+        b = 2
+      rescue
+        foo
+      end
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_style_parallelassignment_corrects_parallel_assignment_inside_rescue_statements_within_method_definitions
+    source: |
+      def bar
+        a, b = 1, 2
+      rescue
+        'foo'
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 13
+        message: Do not use parallel assignment.
+    corrected: |
+      def bar
+        a = 1
+        b = 2
+      rescue
+        'foo'
+      end
+
+  - name: rubocop_cop_style_parallelassignment_corrects_parallel_assignment_in_rescue_statements_within_begin_rescue
+    source: |
+      begin
+        a, b = 1, 2
+      rescue
+        'foo'
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 13
+        message: Do not use parallel assignment.
+    corrected: |
+      begin
+        a = 1
+        b = 2
+      rescue
+        'foo'
+      end
+
+  - name: rubocop_cop_style_parallelassignment_corrects_when_the_expression_uses_a_modifier_rescue_statement_as_the_only_thing_inside_of_a_method
+    source: |
+      def foo
+        a, b = 1, 2 rescue foo
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 13
+        message: Do not use parallel assignment.
+    corrected: |
+      def foo
+        a = 1
+        b = 2
+      rescue
+        foo
+      end
+    ruby_version: ">= 2.6"
+
+  - name: rubocop_cop_style_parallelassignment_corrects_when_the_expression_uses_a_modifier_rescue_statement_as_the_only_thing_inside_of_a_method
+    source: |
+      def foo
+        a, b = 1, 2 rescue foo
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 13
+        message: Do not use parallel assignment.
+    corrected: |
+      def foo
+        a = 1
+        b = 2
+      rescue
+        foo
+      end
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_style_parallelassignment_corrects_when_the_expression_uses_a_modifier_rescue_statement_inside_of_a_method
+    source: |
+      def foo
+        a, b = %w(1 2) rescue foo
+        something_else
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 16
+        message: Do not use parallel assignment.
+    corrected: |
+      def foo
+        begin
+          a = '1'
+          b = '2'
+        rescue
+          foo
+        end
+        something_else
+      end
+    ruby_version: ">= 2.6"
+
+  - name: rubocop_cop_style_parallelassignment_corrects_when_the_expression_uses_a_modifier_rescue_statement_inside_of_a_method
+    source: |
+      def foo
+        a, b = %w(1 2) rescue foo
+        something_else
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 16
+        message: Do not use parallel assignment.
+    corrected: |
+      def foo
+        begin
+          a = '1'
+          b = '2'
+        rescue
+          foo
+        end
+        something_else
+      end
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_style_parallelassignment_corrects_when_assignments_must_be_reordered_to_avoid_changing_meaning
+    source: |
+      a, b, c, d = 1, a + 1, b + 1, a + b + c
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 39
+        message: Do not use parallel assignment.
+    corrected: |
+      d = a + b + c
+      c = b + 1
+      b = a + 1
+      a = 1
+
+  - name: rubocop_cop_style_parallelassignment_corrects_when_assignments_include_file
+    source: |
+      a, b = c, __FILE__
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 18
+        message: Do not use parallel assignment.
+    corrected: |
+      a = c
+      b = __FILE__
+
+  - name: rubocop_cop_style_parallelassignment_allows_more_left_variables_than_right_variables
+    source: |
+      a, b, c, d = 1, 2
+    offenses:
+      []
+
+  - name: rubocop_cop_style_parallelassignment_allows_more_right_variables_than_left_variables
+    source: |
+      a, b = 1, 2, 3
+    offenses:
+      []
+
+  - name: rubocop_cop_style_parallelassignment_allows_expanding_an_assigned_var
+    source: |
+      foo = [1, 2, 3]
+      a, b, c = foo
+    offenses:
+      []
+
+  - name: rubocop_cop_style_parallelassignment_using_custom_indentation_width_works_with_standard_correction
+    source: |
+      a, b, c = 1, 2, 3
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 17
+        message: Do not use parallel assignment.
+    corrected: |
+      a = 1
+      b = 2
+      c = 3
+
+  - name: rubocop_cop_style_parallelassignment_using_custom_indentation_width_works_with_guard_clauses
+    source: |
+      a, b = 1, 2 if foo
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 11
+        message: Do not use parallel assignment.
+    corrected: |
+      if foo
+         a = 1
+         b = 2
+      end
+
+  - name: rubocop_cop_style_parallelassignment_using_custom_indentation_width_works_with_rescue
+    source: |
+      a, b = 1, 2 rescue foo
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 11
+        message: Do not use parallel assignment.
+    corrected: |
+      begin
+         a = 1
+         b = 2
+      rescue
+         foo
+      end
+    ruby_version: ">= 2.6"
+
+  - name: rubocop_cop_style_parallelassignment_using_custom_indentation_width_works_with_rescue
+    source: |
+      a, b = 1, 2 rescue foo
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 11
+        message: Do not use parallel assignment.
+    corrected: |
+      begin
+         a = 1
+         b = 2
+      rescue
+         foo
+      end
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_style_parallelassignment_using_custom_indentation_width_works_with_nesting
+    source: |
+      def foo
+         if true
+            a, b, c = 1, 2, 3
+         end
+      end
+    offenses:
+      - line: 3
+        column_start: 6
+        column_end: 23
+        message: Do not use parallel assignment.
+    corrected: |
+      def foo
+         if true
+            a = 1
+            b = 2
+            c = 3
+         end
+      end

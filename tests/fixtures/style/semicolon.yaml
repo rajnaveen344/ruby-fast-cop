@@ -1,0 +1,426 @@
+cop: Style/Semicolon
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_semicolon_registers_an_offense_for_a_single_expression
+    source: |
+      puts "this is a test";
+    offenses:
+      - line: 1
+        column_start: 21
+        column_end: 22
+        message: Do not use semicolons to terminate expressions.
+    corrected: |
+      puts "this is a test"
+    config:
+      AllowAsExpressionSeparator: false
+
+  - name: rubocop_cop_style_semicolon_registers_an_offense_for_several_expressions
+    source: |
+      puts "this is a test"; puts "So is this"
+    offenses:
+      - line: 1
+        column_start: 21
+        column_end: 22
+        message: Do not use semicolons to terminate expressions.
+    corrected: |
+      puts "this is a test"
+       puts "So is this"
+    config:
+      AllowAsExpressionSeparator: false
+
+  - name: rubocop_cop_style_semicolon_registers_an_offense_for_one_line_method_with_two_statements
+    source: |
+      def foo(a) x(1); y(2); z(3); end
+                           ^ Do not use semicolons to terminate expressions.
+    offenses:
+      - line: 1
+        column_start: 27
+        column_end: 28
+        message: Do not use semicolons to terminate expressions.
+      - line: 2
+        column_start: 15
+        column_end: 16
+        message: Do not use semicolons to terminate expressions.
+    corrected: |
+      def foo(a) x(1)
+       y(2)
+       z(3)
+       end
+    config:
+      AllowAsExpressionSeparator: false
+
+  - name: rubocop_cop_style_semicolon_registers_an_offense_when_using_a_semicolon_between_a_closing_parenthesis_after_a_line_break_and_a_consequent_expression
+    source: |
+      foo(
+        bar); baz
+    offenses:
+      - line: 2
+        column_start: 6
+        column_end: 7
+        message: Do not use semicolons to terminate expressions.
+    corrected: |
+      foo(
+        bar)
+       baz
+    config:
+      AllowAsExpressionSeparator: false
+
+  - name: rubocop_cop_style_semicolon_accepts_semicolon_before_end_if_so_configured
+    source: |
+      def foo(a) z(3); end
+    offenses:
+      []
+    config:
+      AllowAsExpressionSeparator: false
+
+  - name: rubocop_cop_style_semicolon_accepts_semicolon_after_params_if_so_configured
+    source: |
+      def foo(a); z(3) end
+    offenses:
+      []
+    config:
+      AllowAsExpressionSeparator: false
+
+  - name: rubocop_cop_style_semicolon_accepts_one_line_method_definitions
+    source: |
+      def foo1; x(3) end
+      def initialize(*_); end
+      def foo2() x(3); end
+      def foo3; x(3); end
+    offenses:
+      []
+    config:
+      AllowAsExpressionSeparator: false
+
+  - name: rubocop_cop_style_semicolon_accepts_one_line_empty_class_definitions
+    source: |
+      # Prefer a single-line format for class ...
+      class Foo < Exception; end
+      
+      class Bar; end
+    offenses:
+      []
+    config:
+      AllowAsExpressionSeparator: false
+
+  - name: rubocop_cop_style_semicolon_accepts_one_line_empty_method_definitions
+    source: |
+      # One exception to the rule are empty-body methods
+      def no_op; end
+      
+      def foo; end
+    offenses:
+      []
+    config:
+      AllowAsExpressionSeparator: false
+
+  - name: rubocop_cop_style_semicolon_accepts_one_line_empty_module_definitions
+    source: |
+      module Foo; end
+    offenses:
+      []
+    config:
+      AllowAsExpressionSeparator: false
+
+  - name: rubocop_cop_style_semicolon_registers_an_offense_for_semicolon_at_the_end_no_matter_what
+    source: |
+      module Foo; end;
+    offenses:
+      - line: 1
+        column_start: 15
+        column_end: 16
+        message: Do not use semicolons to terminate expressions.
+    corrected: |
+      module Foo; end
+    config:
+      AllowAsExpressionSeparator: false
+
+  - name: rubocop_cop_style_semicolon_accepts_semicolons_inside_strings
+    source: |
+      string = ";
+      multi-line string"
+    offenses:
+      []
+    config:
+      AllowAsExpressionSeparator: false
+
+  - name: rubocop_cop_style_semicolon_registers_an_offense_for_a_semicolon_at_the_beginning_of_a_line
+    source: |
+      ; puts 1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 1
+        message: Do not use semicolons to terminate expressions.
+    corrected: |
+       puts 1
+    config:
+      AllowAsExpressionSeparator: false
+
+  - name: rubocop_cop_style_semicolon_registers_an_offense_for_a_semicolon_at_the_beginning_of_a_block
+    source: |
+      foo {; bar }
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 6
+        message: Do not use semicolons to terminate expressions.
+    corrected: |
+      foo { bar }
+    config:
+      AllowAsExpressionSeparator: false
+
+  - name: rubocop_cop_style_semicolon_registers_an_offense_for_a_semicolon_at_the_beginning_of_a_lambda_block
+    source: |
+      foo -> {; bar }
+    offenses:
+      - line: 1
+        column_start: 8
+        column_end: 9
+        message: Do not use semicolons to terminate expressions.
+    corrected: |
+      foo -> { bar }
+    config:
+      AllowAsExpressionSeparator: false
+
+  - name: rubocop_cop_style_semicolon_registers_an_offense_for_a_semicolon_at_the_end_of_a_block
+    source: |
+      foo { bar; }
+    offenses:
+      - line: 1
+        column_start: 9
+        column_end: 10
+        message: Do not use semicolons to terminate expressions.
+    corrected: |
+      foo { bar }
+    config:
+      AllowAsExpressionSeparator: false
+
+  - name: rubocop_cop_style_semicolon_registers_an_offense_for_a_semicolon_at_the_middle_of_a_block
+    source: |
+      foo { bar; baz }
+    offenses:
+      - line: 1
+        column_start: 9
+        column_end: 10
+        message: Do not use semicolons to terminate expressions.
+    corrected: |
+      foo { bar
+       baz }
+    config:
+      AllowAsExpressionSeparator: false
+
+  - name: rubocop_cop_style_semicolon_does_not_register_an_offense_when_using_a_comment_containing_a_semicolon_before_a_block
+    source: |
+      # ;
+      foo {
+      }
+    offenses:
+      []
+    config:
+      AllowAsExpressionSeparator: false
+
+  - name: rubocop_cop_style_semicolon_registers_an_offense_when_a_semicolon_at_before_a_closing_brace_of_string_interpolation
+    source: |
+      "#{foo;}"
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 7
+        message: Do not use semicolons to terminate expressions.
+    corrected: |
+      "#{foo}"
+    config:
+      AllowAsExpressionSeparator: false
+
+  - name: rubocop_cop_style_semicolon_registers_an_offense_when_a_semicolon_at_after_an_opening_brace_of_string_interpolation
+    source: |
+      "#{;foo}"
+    offenses:
+      - line: 1
+        column_start: 3
+        column_end: 4
+        message: Do not use semicolons to terminate expressions.
+    corrected: |
+      "#{foo}"
+    config:
+      AllowAsExpressionSeparator: false
+
+  - name: rubocop_cop_style_semicolon_registers_an_offense_for_range_1_42_with_semicolon
+    source: |
+      1..42;
+    offenses:
+      - line: 1
+        column_start: 5
+        column_end: 6
+        message: Do not use semicolons to terminate expressions.
+    corrected: |
+      1..42
+    config:
+      AllowAsExpressionSeparator: false
+
+  - name: rubocop_cop_style_semicolon_registers_an_offense_for_range_1_42_with_semicolon
+    source: |
+      1...42;
+    offenses:
+      - line: 1
+        column_start: 6
+        column_end: 7
+        message: Do not use semicolons to terminate expressions.
+    corrected: |
+      1...42
+    config:
+      AllowAsExpressionSeparator: false
+
+  - name: rubocop_cop_style_semicolon_ruby_2_6_registers_an_offense_for_endless_range_with_semicolon_irange_only
+    source: |
+      42..;
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 5
+        message: Do not use semicolons to terminate expressions.
+    corrected: |
+      (42..)
+    config:
+      AllowAsExpressionSeparator: false
+    ruby_version: ">= 2.6"
+
+  - name: rubocop_cop_style_semicolon_ruby_2_6_registers_an_offense_for_endless_range_with_semicolon_irange_and_erange
+    source: |
+      42..;
+      42...;
+    offenses:
+      - line: 1
+        column_start: 4
+        column_end: 5
+        message: Do not use semicolons to terminate expressions.
+      - line: 2
+        column_start: 5
+        column_end: 6
+        message: Do not use semicolons to terminate expressions.
+    corrected: |
+      (42..)
+      (42...)
+    config:
+      AllowAsExpressionSeparator: false
+    ruby_version: ">= 2.6"
+
+  - name: rubocop_cop_style_semicolon_ruby_2_6_registers_an_offense_for_endless_range_with_semicolon_in_the_method_definition
+    source: |
+      def foo
+        42..;
+      end
+    offenses:
+      - line: 2
+        column_start: 6
+        column_end: 7
+        message: Do not use semicolons to terminate expressions.
+    corrected: |
+      def foo
+        (42..)
+      end
+    config:
+      AllowAsExpressionSeparator: false
+    ruby_version: ">= 2.6"
+
+  - name: rubocop_cop_style_semicolon_ruby_2_6_does_not_register_an_offense_for_endless_range_without_semicolon
+    source: |
+      42..
+    offenses:
+      []
+    config:
+      AllowAsExpressionSeparator: false
+    ruby_version: ">= 2.6"
+
+  - name: rubocop_cop_style_semicolon_registers_an_offense_for_a_method_call_with_keyword_arguments_without_parentheses_when_terminated_with_a_semicolon
+    source: |
+      m key: value;
+      do_something
+    offenses:
+      - line: 1
+        column_start: 12
+        column_end: 13
+        message: Do not use semicolons to terminate expressions.
+    corrected: |
+      m key: value
+      do_something
+    config:
+      AllowAsExpressionSeparator: false
+
+  - name: rubocop_cop_style_semicolon_ruby_3_1_registers_an_offense_for_a_method_call_using_multiple_hash_value_omission_without_parentheses_when_terminated_with_a_semicolon
+    source: |
+      m key1:, key2:;
+      do_something
+    offenses:
+      - line: 1
+        column_start: 14
+        column_end: 15
+        message: Do not use semicolons to terminate expressions.
+    corrected: |
+      m(key1:, key2:)
+      do_something
+    config:
+      AllowAsExpressionSeparator: false
+    ruby_version: ">= 3.1"
+
+  - name: rubocop_cop_style_semicolon_ruby_3_1_registers_an_offense_for_a_method_call_using_hash_value_omission_with_parentheses_when_terminated_with_a_semicolon
+    source: |
+      m(key:);
+      do_something
+    offenses:
+      - line: 1
+        column_start: 7
+        column_end: 8
+        message: Do not use semicolons to terminate expressions.
+    corrected: |
+      m(key:)
+      do_something
+    config:
+      AllowAsExpressionSeparator: false
+    ruby_version: ">= 3.1"
+
+  - name: rubocop_cop_style_semicolon_ruby_3_1_registers_an_offense_for_a_safe_navigation_method_call_using_hash_value_omission_without_parentheses_when_terminated_with_a_semicolon
+    source: |
+      obj&.m key:;
+      do_something
+    offenses:
+      - line: 1
+        column_start: 11
+        column_end: 12
+        message: Do not use semicolons to terminate expressions.
+    corrected: |
+      obj&.m(key:)
+      do_something
+    config:
+      AllowAsExpressionSeparator: false
+    ruby_version: ">= 3.1"
+
+  - name: rubocop_cop_style_semicolon_with_a_multi_expression_line_without_a_semicolon_does_not_register_an_offense
+    source: |
+      def foo
+        bar = baz if qux rescue quux
+      end
+    offenses:
+      []
+    config:
+      AllowAsExpressionSeparator: false
+
+  - name: rubocop_cop_style_semicolon_when_allowasexpressionseparator_is_true_accepts_several_expressions
+    source: |
+      puts "this is a test"; puts "So is this"
+    offenses:
+      []
+    config:
+      AllowAsExpressionSeparator: true
+
+  - name: rubocop_cop_style_semicolon_when_allowasexpressionseparator_is_true_accepts_one_line_method_with_two_statements
+    source: |
+      def foo(a) x(1); y(2); z(3); end
+    offenses:
+      []
+    config:
+      AllowAsExpressionSeparator: true

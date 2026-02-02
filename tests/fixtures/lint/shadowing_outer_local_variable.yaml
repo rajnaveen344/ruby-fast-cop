@@ -1,0 +1,431 @@
+cop: Lint/ShadowingOuterLocalVariable
+department: lint
+severity: warning
+implemented: false
+
+tests:
+  - name: rubocop_cop_lint_shadowingouterlocalvariable_when_a_block_argument_has_same_name_as_an_outer_scope_variable_registers_an_offense
+    source: |
+      def some_method
+        foo = 1
+        puts foo
+        1.times do |foo|
+        end
+      end
+    offenses:
+      - line: 4
+        column_start: 14
+        column_end: 17
+        message: Shadowing outer local variable - `foo`.
+
+  - name: rubocop_cop_lint_shadowingouterlocalvariable_when_a_splat_block_argument_has_same_name_as_an_outer_scope_variable_registers_an_offense
+    source: |
+      def some_method
+        foo = 1
+        puts foo
+        1.times do |*foo|
+        end
+      end
+    offenses:
+      - line: 4
+        column_start: 14
+        column_end: 18
+        message: Shadowing outer local variable - `foo`.
+
+  - name: rubocop_cop_lint_shadowingouterlocalvariable_when_a_block_block_argument_has_same_name_as_an_outer_scope_variable_registers_an_offense
+    source: |
+      def some_method
+        foo = 1
+        puts foo
+        proc_taking_block = proc do |&foo|
+        end
+        proc_taking_block.call do
+        end
+      end
+    offenses:
+      - line: 4
+        column_start: 31
+        column_end: 35
+        message: Shadowing outer local variable - `foo`.
+
+  - name: rubocop_cop_lint_shadowingouterlocalvariable_when_a_block_local_variable_has_same_name_as_an_outer_scope_variable_registers_an_offense
+    source: |
+      def some_method
+        foo = 1
+        puts foo
+        1.times do |i; foo|
+          puts foo
+        end
+      end
+    offenses:
+      - line: 4
+        column_start: 17
+        column_end: 20
+        message: Shadowing outer local variable - `foo`.
+
+  - name: rubocop_cop_lint_shadowingouterlocalvariable_when_a_block_local_variable_has_same_name_as_an_outer_until_scope_variable_registers_an_offense
+    source: |
+      until foo
+        var = do_something
+      end
+      
+      if bar
+        array.each do |var|
+        end
+      end
+    offenses:
+      - line: 6
+        column_start: 17
+        column_end: 20
+        message: Shadowing outer local variable - `var`.
+
+  - name: rubocop_cop_lint_shadowingouterlocalvariable_when_a_block_local_variable_has_same_name_as_an_outer_while_scope_variable_registers_an_offense
+    source: |
+      while foo
+        var = do_something
+      end
+      
+      if bar
+        array.each do |var|
+        end
+      end
+    offenses:
+      - line: 6
+        column_start: 17
+        column_end: 20
+        message: Shadowing outer local variable - `var`.
+
+  - name: rubocop_cop_lint_shadowingouterlocalvariable_registers_an_offense
+    source: |
+      if condition?
+        foo = 1
+        puts foo
+        bar.each do |foo|
+        end
+      else
+        bar.each do |foo|
+        end
+      end
+    offenses:
+      - line: 4
+        column_start: 15
+        column_end: 18
+        message: Shadowing outer local variable - `foo`.
+
+  - name: rubocop_cop_lint_shadowingouterlocalvariable_registers_an_offense
+    source: |
+      def some_method
+        if condition?
+          foo = 1
+          puts foo
+          bar.each do |foo|
+          end
+        else
+          bar.each do |foo|
+          end
+        end
+      end
+    offenses:
+      - line: 5
+        column_start: 17
+        column_end: 20
+        message: Shadowing outer local variable - `foo`.
+
+  - name: rubocop_cop_lint_shadowingouterlocalvariable_registers_an_offense
+    source: |
+      def some_method
+        if condition?
+          foo = 1
+          puts foo
+          if other_condition?
+            bar.each do |foo|
+            end
+          end
+        elsif other_condition?
+          bar.each do |foo|
+          end
+        else
+          bar.each do |foo|
+          end
+        end
+      end
+    offenses:
+      - line: 6
+        column_start: 19
+        column_end: 22
+        message: Shadowing outer local variable - `foo`.
+
+  - name: rubocop_cop_lint_shadowingouterlocalvariable_registers_an_offense
+    source: |
+      def some_method
+        unless condition?
+          foo = 1
+          puts foo
+          bar.each do |foo|
+          end
+        else
+          bar.each do |foo|
+          end
+        end
+      end
+    offenses:
+      - line: 5
+        column_start: 17
+        column_end: 20
+        message: Shadowing outer local variable - `foo`.
+
+  - name: rubocop_cop_lint_shadowingouterlocalvariable_registers_an_offense
+    source: |
+      def some_method
+        case condition
+        when foo then
+          foo = 1
+          puts foo
+          bar.each do |foo|
+          end
+        when bar then
+          bar.each do |foo|
+          end
+        else
+          bar.each do |foo|
+          end
+        end
+      end
+    offenses:
+      - line: 6
+        column_start: 17
+        column_end: 20
+        message: Shadowing outer local variable - `foo`.
+
+  - name: rubocop_cop_lint_shadowingouterlocalvariable_when_a_block_local_variable_inside_an_if_has_same_name_as_an_outer_scope_variable_registers_an_offense
+    source: |
+      def some_method
+        foo = 1
+      
+        if cond
+          bar.each do |foo|
+          end
+        end
+      end
+    offenses:
+      - line: 5
+        column_start: 17
+        column_end: 20
+        message: Shadowing outer local variable - `foo`.
+
+  - name: rubocop_cop_lint_shadowingouterlocalvariable_when_a_block_local_variable_has_same_name_as_method_argument_registers_an_offense
+    source: |
+      def some_method(foo)
+        1.times do |foo|
+        end
+      end
+    offenses:
+      - line: 2
+        column_start: 14
+        column_end: 17
+        message: Shadowing outer local variable - `foo`.
+
+  - name: rubocop_cop_lint_shadowingouterlocalvariable_does_not_register_an_offense
+    source: |
+      def some_method
+        if condition?
+          foo = 1
+        elsif other_condition?
+          bar.each do |foo|
+          end
+        else
+          bar.each do |foo|
+          end
+        end
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_shadowingouterlocalvariable_does_not_register_an_offense
+    source: |
+      def some_method
+        unless condition?
+          foo = 1
+        else
+          bar.each do |foo|
+          end
+        end
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_shadowingouterlocalvariable_does_not_register_an_offense
+    source: |
+      def some_method
+        if condition?
+          foo = 1
+        else
+          bar = [1, 2, 3]
+          bar.each do |foo|
+          end
+        end
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_shadowingouterlocalvariable_does_not_register_an_offense
+    source: |
+      def some_method
+        case condition
+        when foo then
+          foo = 1
+        else
+          bar.each do |foo|
+          end
+        end
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_shadowingouterlocalvariable_when_a_block_argument_has_different_name_with_outer_scope_variables_does_not_register_an_offense
+    source: |
+      def some_method
+        foo = 1
+        puts foo
+        1.times do |bar|
+        end
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_shadowingouterlocalvariable_when_an_outer_scope_variable_is_reassigned_in_a_block_does_not_register_an_offense
+    source: |
+      def some_method
+        foo = 1
+        puts foo
+        1.times do
+          foo = 2
+        end
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_shadowingouterlocalvariable_when_an_outer_scope_variable_is_referenced_in_a_block_does_not_register_an_offense
+    source: |
+      def some_method
+        foo = 1
+        puts foo
+        1.times do
+          puts foo
+        end
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_shadowingouterlocalvariable_when_the_same_variable_name_as_a_block_variable_is_used_in_return_value_assignment_of_if_does_not_register_an_offense
+    source: |
+      def some_method
+        foo = if condition
+                bar { |foo| baz(foo) }
+              end
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_shadowingouterlocalvariable_when_the_same_variable_name_as_a_block_variable_is_used_in_return_value_assignment_of_method_does_not_register_an_offense
+    source: |
+      def some_method
+        foo = bar { |foo| baz(foo) }
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_shadowingouterlocalvariable_when_multiple_block_arguments_have_same_name_does_not_register_an_offense
+    source: |
+      def some_method
+        1.times do |_, foo, _|
+        end
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_shadowingouterlocalvariable_when_multiple_block_arguments_have_a_same_name_starts_with_does_not_register_an_offense
+    source: |
+      def some_method
+        1.times do |_foo, bar, _foo|
+        end
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_shadowingouterlocalvariable_when_a_block_argument_has_same_name_as_outer_scope_variable_does_not_register_an_offense
+    source: |
+      def some_method
+        _ = 1
+        puts _
+        1.times do |_|
+        end
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_shadowingouterlocalvariable_when_a_block_argument_has_a_same_name_starts_with_as_an_outer_scope_variable_does_not_register_an_offense
+    source: |
+      def some_method
+        _foo = 1
+        puts _foo
+        1.times do |_foo|
+        end
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_shadowingouterlocalvariable_when_a_method_argument_has_same_name_as_an_outer_scope_variable_does_not_register_an_offense
+    source: |
+      class SomeClass
+        foo = 1
+        puts foo
+        def some_method(foo)
+        end
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_shadowingouterlocalvariable_when_a_block_parameter_has_same_name_as_a_prior_block_body_variable_when_assigning_a_block_parameter_does_not_register_an_offense
+    source: |
+      def x(array)
+        array.each { |foo|
+          bar = foo
+        }.each { |bar|
+        }
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_lint_shadowingouterlocalvariable_when_a_block_parameter_has_same_name_as_a_prior_block_body_variable_when_assigning_a_numbered_block_parameter_does_not_register_an_offense
+    source: |
+      def x(array)
+        array.each {
+          bar = _1
+        }.each { |bar|
+        }
+      end
+    offenses:
+      []
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_lint_shadowingouterlocalvariable_when_a_block_parameter_has_same_name_as_a_prior_block_body_variable_when_assigning_an_it_block_parameter_does_not_register_an_offense
+    source: |
+      def x(array)
+        array.each {
+          bar = it
+        }.each { |bar|
+        }
+      end
+    offenses:
+      []
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_lint_shadowingouterlocalvariable_with_ractor_new_does_not_register_an_offense
+    source: |
+      def foo(*args)
+        Ractor.new(*args) do |*args|
+        end
+      end
+    offenses:
+      []

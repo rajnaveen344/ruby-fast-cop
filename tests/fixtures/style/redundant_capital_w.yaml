@@ -1,0 +1,108 @@
+cop: Style/RedundantCapitalW
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_redundantcapitalw_registers_no_offense_for_normal_arrays_of_strings
+    source: |
+      ["one", "two", "three"]
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantcapitalw_registers_no_offense_for_normal_arrays_of_strings_with_interpolation
+    source: |
+      ["one", "two", "th#{?r}ee"]
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantcapitalw_registers_an_offense_for_misused_w
+    source: |
+      %W(cat dog)
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 11
+        message: Do not use `%W` unless interpolation is needed. If not, use `%w`.
+    corrected: |
+      %w(cat dog)
+
+  - name: rubocop_cop_style_redundantcapitalw_registers_an_offense_for_misused_w_with_different_bracket
+    source: |
+      %W[cat dog]
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 11
+        message: Do not use `%W` unless interpolation is needed. If not, use `%w`.
+    corrected: |
+      %w[cat dog]
+
+  - name: rubocop_cop_style_redundantcapitalw_registers_no_offense_for_w_with_interpolation
+    source: |
+      %W(c#{?a}t dog)
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantcapitalw_registers_no_offense_for_w_with_special_characters
+    source: |
+      def dangerous_characters
+        %W(\000) +
+        %W(\001) +
+        %W(\027) +
+        %W(\002) +
+        %W(\003) +
+        %W(\004) +
+        %W(\005) +
+        %W(\006) +
+        %W(\007) +
+        %W(\00) +
+        %W(\a)
+        %W(\s)
+        %W(\n)
+        %W(\!)
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantcapitalw_registers_no_offense_for_w_without_interpolation
+    source: |
+      %w(cat dog)
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantcapitalw_registers_no_offense_for_w_with_interpolation_like_syntax
+    source: |
+      %w(c#{?a}t dog)
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantcapitalw_registers_no_offense_for_arrays_with_character_constants
+    source: |
+      ["one", ?\n]
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantcapitalw_does_not_register_an_offense_for_array_of_non_words
+    source: |
+      ["one space", "two", "three"]
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantcapitalw_does_not_register_an_offense_for_array_containing_non_string
+    source: |
+      ["one", "two", 3]
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantcapitalw_does_not_register_an_offense_for_array_with_one_element
+    source: |
+      ["three"]
+    offenses:
+      []
+
+  - name: rubocop_cop_style_redundantcapitalw_does_not_register_an_offense_for_array_with_empty_strings
+    source: |
+      ["", "two", "three"]
+    offenses:
+      []

@@ -1,0 +1,280 @@
+cop: Layout/BlockEndNewline
+department: layout
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_layout_blockendnewline_accepts_a_one_liner
+    source: |
+      test do foo end
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_blockendnewline_accepts_multiline_blocks_with_newlines_before_the_end
+    source: |
+      test do
+        foo
+      end
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_blockendnewline_does_not_register_an_offense_when_multiline_blocks_with_newlines_before_the_end
+    source: |
+      test do
+        foo
+      ; end
+    offenses:
+      []
+
+  - name: rubocop_cop_layout_blockendnewline_registers_an_offense_and_corrects_when_multiline_block_end_is_not_on_its_own_line
+    source: |
+      test do
+        foo end
+    offenses:
+      - line: 2
+        column_start: 6
+        column_end: 9
+        message: Expression at 2, 7 should be on its own line.
+    corrected: |
+      test do
+        foo
+      end
+
+  - name: rubocop_cop_layout_blockendnewline_registers_an_offense_and_corrects_when_multiline_block_is_not_on_its_own_line
+    source: |
+      test {
+        foo }
+    offenses:
+      - line: 2
+        column_start: 6
+        column_end: 7
+        message: Expression at 2, 7 should be on its own line.
+    corrected: |
+      test {
+        foo
+      }
+
+  - name: rubocop_cop_layout_blockendnewline
+    source: |
+      test {
+        |foo| }
+    offenses:
+      - line: 2
+        column_start: 8
+        column_end: 9
+        message: Expression at 2, 9 should be on its own line.
+    corrected: |
+      test {
+        |foo|
+      }
+
+  - name: rubocop_cop_layout_blockendnewline
+    source: |
+      test {
+        foo }.bar.baz
+    offenses:
+      - line: 2
+        column_start: 6
+        column_end: 7
+        message: Expression at 2, 7 should be on its own line.
+    corrected: |
+      test {
+        foo
+      }.bar.baz
+
+  - name: rubocop_cop_layout_blockendnewline
+    source: |
+      foo(one {
+        x }, two {
+        y })
+    offenses:
+      - line: 2
+        column_start: 4
+        column_end: 5
+        message: Expression at 2, 5 should be on its own line.
+      - line: 3
+        column_start: 4
+        column_end: 5
+        message: Expression at 3, 5 should be on its own line.
+    corrected: |
+      foo(one {
+        x
+      }, two {
+        y
+      })
+
+  - name: rubocop_cop_layout_blockendnewline
+    source: |
+      test {
+        foo(<<~EOS) }
+          Heredoc text.
+        EOS
+    offenses:
+      - line: 2
+        column_start: 14
+        column_end: 15
+        message: Expression at 2, 15 should be on its own line.
+    corrected: |
+      test {
+        foo(<<~EOS)
+          Heredoc text.
+        EOS
+      }
+
+  - name: rubocop_cop_layout_blockendnewline
+    source: |
+      test {
+        foo(<<~FIRST, <<~SECOND) }
+          Heredoc text.
+        FIRST
+          Heredoc text.
+        SECOND
+    offenses:
+      - line: 2
+        column_start: 27
+        column_end: 28
+        message: Expression at 2, 28 should be on its own line.
+    corrected: |
+      test {
+        foo(<<~FIRST, <<~SECOND)
+          Heredoc text.
+        FIRST
+          Heredoc text.
+        SECOND
+      }
+
+  - name: rubocop_cop_layout_blockendnewline
+    source: |
+      test {
+        foo(<<~EOS).bar }
+          Heredoc text.
+        EOS
+    offenses:
+      - line: 2
+        column_start: 18
+        column_end: 19
+        message: Expression at 2, 19 should be on its own line.
+    corrected: |
+      test {
+        foo(<<~EOS).bar
+          Heredoc text.
+        EOS
+      }
+
+  - name: rubocop_cop_layout_blockendnewline
+    source: |
+      test {
+        foo(<<~FIRST).bar(<<~SECOND) }
+          Heredoc text.
+        FIRST
+          Heredoc text.
+        SECOND
+    offenses:
+      - line: 2
+        column_start: 31
+        column_end: 32
+        message: Expression at 2, 32 should be on its own line.
+    corrected: |
+      test {
+        foo(<<~FIRST).bar(<<~SECOND)
+          Heredoc text.
+        FIRST
+          Heredoc text.
+        SECOND
+      }
+
+  - name: rubocop_cop_layout_blockendnewline_registers_an_offense_and_corrects_when_a_multiline_block_ends_with_a_hash
+    source: |
+      foo {
+        { bar: :baz } }
+    offenses:
+      - line: 2
+        column_start: 16
+        column_end: 17
+        message: Expression at 2, 17 should be on its own line.
+    corrected: |
+      foo {
+        { bar: :baz }
+      }
+
+  - name: rubocop_cop_layout_blockendnewline_registers_an_offense_and_corrects_when_a_multiline_block_ends_with_a_method_call_with_hash_arguments
+    source: |
+      foo {
+        bar(baz: :quux) }
+    offenses:
+      - line: 2
+        column_start: 18
+        column_end: 19
+        message: Expression at 2, 19 should be on its own line.
+    corrected: |
+      foo {
+        bar(baz: :quux)
+      }
+
+  - name: rubocop_cop_layout_blockendnewline_ruby_2_7
+    source: |
+      test {
+        _1 }.bar.baz
+    offenses:
+      - line: 2
+        column_start: 5
+        column_end: 6
+        message: Expression at 2, 6 should be on its own line.
+    corrected: |
+      test {
+        _1
+      }.bar.baz
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_layout_blockendnewline_ruby_2_7
+    source: |
+      test {
+        _1.push(<<~EOS) }
+          Heredoc text.
+        EOS
+    offenses:
+      - line: 2
+        column_start: 18
+        column_end: 19
+        message: Expression at 2, 19 should be on its own line.
+    corrected: |
+      test {
+        _1.push(<<~EOS)
+          Heredoc text.
+        EOS
+      }
+    ruby_version: ">= 2.7"
+
+  - name: rubocop_cop_layout_blockendnewline_ruby_3_4
+    source: |
+      test {
+        it }.bar.baz
+    offenses:
+      - line: 2
+        column_start: 5
+        column_end: 6
+        message: Expression at 2, 6 should be on its own line.
+    corrected: |
+      test {
+        it
+      }.bar.baz
+    ruby_version: ">= 3.4"
+
+  - name: rubocop_cop_layout_blockendnewline_ruby_3_4
+    source: |
+      test {
+        it.push(<<~EOS) }
+          Heredoc text.
+        EOS
+    offenses:
+      - line: 2
+        column_start: 18
+        column_end: 19
+        message: Expression at 2, 19 should be on its own line.
+    corrected: |
+      test {
+        it.push(<<~EOS)
+          Heredoc text.
+        EOS
+      }
+    ruby_version: ">= 3.4"

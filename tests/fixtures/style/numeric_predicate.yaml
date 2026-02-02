@@ -1,0 +1,526 @@
+cop: Style/NumericPredicate
+department: style
+severity: convention
+implemented: false
+
+tests:
+  - name: rubocop_cop_style_numericpredicate_when_configured_to_enforce_numeric_predicate_methods_when_checking_if_a_number_is_zero_registers_an_offense
+    source: |
+      number == 0
+      0 == number
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 11
+        message: Use `number.zero?` instead of `number == 0`.
+      - line: 2
+        column_start: 0
+        column_end: 11
+        message: Use `number.zero?` instead of `0 == number`.
+    corrected: |
+      number.zero?
+      number.zero?
+    config:
+      EnforcedStyle: predicate
+      AutoCorrect: true
+
+  - name: rubocop_cop_style_numericpredicate_when_configured_to_enforce_numeric_predicate_methods_when_checking_if_a_number_is_zero_registers_an_offense_with_a_complex_expression
+    source: |
+      foo - 1 == 0
+      0 == foo - 1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 12
+        message: Use `(foo - 1).zero?` instead of `foo - 1 == 0`.
+      - line: 2
+        column_start: 0
+        column_end: 12
+        message: Use `(foo - 1).zero?` instead of `0 == foo - 1`.
+    corrected: |
+      (foo - 1).zero?
+      (foo - 1).zero?
+    config:
+      EnforcedStyle: predicate
+      AutoCorrect: true
+
+  - name: rubocop_cop_style_numericpredicate_when_configured_to_enforce_numeric_predicate_methods_when_checking_if_a_number_is_zero_allows_comparing_against_a_global_variable
+    source: |
+      0 == $CHILD_STATUS
+    offenses:
+      []
+    config:
+      EnforcedStyle: predicate
+      AutoCorrect: true
+
+  - name: rubocop_cop_style_numericpredicate_when_configured_to_enforce_numeric_predicate_methods_when_checking_if_a_number_is_zero_when_comparing_against_a_method_argument_variable_registers_an_offense
+    source: |
+      def m(foo)
+        foo == 0
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 10
+        message: Use `foo.zero?` instead of `foo == 0`.
+    corrected: |
+      def m(foo)
+        foo.zero?
+      end
+    config:
+      EnforcedStyle: predicate
+      AutoCorrect: true
+
+  - name: rubocop_cop_style_numericpredicate_when_configured_to_enforce_numeric_predicate_methods_when_checking_if_a_number_is_zero_when_comparing_against_a_method_argument_variable_registers_an_offense_with_complex_expression
+    source: |
+      def m(foo)
+        foo - 1 == 0
+      end
+    offenses:
+      - line: 2
+        column_start: 2
+        column_end: 14
+        message: Use `(foo - 1).zero?` instead of `foo - 1 == 0`.
+    corrected: |
+      def m(foo)
+        (foo - 1).zero?
+      end
+    config:
+      EnforcedStyle: predicate
+      AutoCorrect: true
+
+  - name: rubocop_cop_style_numericpredicate_when_configured_to_enforce_numeric_predicate_methods_with_checking_if_a_number_is_not_zero_allows_comparing_against_a_variable
+    source: |
+      0 != number
+    offenses:
+      []
+    config:
+      EnforcedStyle: predicate
+      AutoCorrect: true
+
+  - name: rubocop_cop_style_numericpredicate_when_configured_to_enforce_numeric_predicate_methods_with_checking_if_a_number_is_not_zero_allows_comparing_against_a_complex_expression
+    source: |
+      0 != foo - 1
+    offenses:
+      []
+    config:
+      EnforcedStyle: predicate
+      AutoCorrect: true
+
+  - name: rubocop_cop_style_numericpredicate_when_configured_to_enforce_numeric_predicate_methods_with_checking_if_a_number_is_not_zero_allows_comparing_against_a_global_variable
+    source: |
+      0 != $CHILD_STATUS
+    offenses:
+      []
+    config:
+      EnforcedStyle: predicate
+      AutoCorrect: true
+
+  - name: rubocop_cop_style_numericpredicate_when_configured_to_enforce_numeric_predicate_methods_when_checking_if_a_number_is_positive_when_target_ruby_version_is_2_3_or_higher_registers_an_offense
+    source: |
+      number > 0
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 10
+        message: Use `number.positive?` instead of `number > 0`.
+    corrected: |
+      number.positive?
+    config:
+      EnforcedStyle: predicate
+      AutoCorrect: true
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_style_numericpredicate_when_configured_to_enforce_numeric_predicate_methods_when_checking_if_a_number_is_positive_when_target_ruby_version_is_2_3_or_higher_registers_an_offense_in_yoda_condition
+    source: |
+      0 < number
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 10
+        message: Use `number.positive?` instead of `0 < number`.
+    corrected: |
+      number.positive?
+    config:
+      EnforcedStyle: predicate
+      AutoCorrect: true
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_style_numericpredicate_when_configured_to_enforce_numeric_predicate_methods_when_checking_if_a_number_is_positive_when_target_ruby_version_is_2_3_or_higher_with_a_complex_expression_registers_an_offense
+    source: |
+      foo - 1 > 0
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 11
+        message: Use `(foo - 1).positive?` instead of `foo - 1 > 0`.
+    corrected: |
+      (foo - 1).positive?
+    config:
+      EnforcedStyle: predicate
+      AutoCorrect: true
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_style_numericpredicate_when_configured_to_enforce_numeric_predicate_methods_when_checking_if_a_number_is_positive_when_target_ruby_version_is_2_3_or_higher_with_a_complex_expression_registers_an_offense_in_yoda_condition
+    source: |
+      0 < foo - 1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 11
+        message: Use `(foo - 1).positive?` instead of `0 < foo - 1`.
+    corrected: |
+      (foo - 1).positive?
+    config:
+      EnforcedStyle: predicate
+      AutoCorrect: true
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_style_numericpredicate_when_configured_to_enforce_numeric_predicate_methods_when_checking_if_a_number_is_positive_when_target_ruby_version_is_2_2_or_lower_does_not_register_an_offense
+    source: |
+      number > 0
+    offenses:
+      []
+    config:
+      EnforcedStyle: predicate
+      AutoCorrect: true
+    ruby_version: ">= 2.2"
+
+  - name: rubocop_cop_style_numericpredicate_when_configured_to_enforce_numeric_predicate_methods_when_checking_if_a_number_is_negative_when_target_ruby_version_is_2_3_or_higher_registers_an_offense
+    source: |
+      number < 0
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 10
+        message: Use `number.negative?` instead of `number < 0`.
+    corrected: |
+      number.negative?
+    config:
+      EnforcedStyle: predicate
+      AutoCorrect: true
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_style_numericpredicate_when_configured_to_enforce_numeric_predicate_methods_when_checking_if_a_number_is_negative_when_target_ruby_version_is_2_3_or_higher_registers_an_offense_in_yoda_condition
+    source: |
+      0 > number
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 10
+        message: Use `number.negative?` instead of `0 > number`.
+    corrected: |
+      number.negative?
+    config:
+      EnforcedStyle: predicate
+      AutoCorrect: true
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_style_numericpredicate_when_configured_to_enforce_numeric_predicate_methods_when_checking_if_a_number_is_negative_when_target_ruby_version_is_2_3_or_higher_with_a_complex_expression_registers_an_offense
+    source: |
+      foo - 1 < 0
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 11
+        message: Use `(foo - 1).negative?` instead of `foo - 1 < 0`.
+    corrected: |
+      (foo - 1).negative?
+    config:
+      EnforcedStyle: predicate
+      AutoCorrect: true
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_style_numericpredicate_when_configured_to_enforce_numeric_predicate_methods_when_checking_if_a_number_is_negative_when_target_ruby_version_is_2_3_or_higher_with_a_complex_expression_registers_an_offense_in_yoda_condition
+    source: |
+      0 > foo - 1
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 11
+        message: Use `(foo - 1).negative?` instead of `0 > foo - 1`.
+    corrected: |
+      (foo - 1).negative?
+    config:
+      EnforcedStyle: predicate
+      AutoCorrect: true
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_style_numericpredicate_when_configured_to_enforce_numeric_predicate_methods_when_checking_if_a_number_is_negative_when_target_ruby_version_is_2_2_or_lower_does_not_register_an_offense
+    source: |
+      number < 0
+    offenses:
+      []
+    config:
+      EnforcedStyle: predicate
+      AutoCorrect: true
+    ruby_version: ">= 2.2"
+
+  - name: rubocop_cop_style_numericpredicate_when_configured_to_enforce_numeric_comparison_methods_registers_an_offense_for_checking_if_a_number_is_zero
+    source: |
+      number.zero?
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 12
+        message: Use `number == 0` instead of `number.zero?`.
+    corrected: |
+      number == 0
+    config:
+      EnforcedStyle: comparison
+      AutoCorrect: true
+
+  - name: rubocop_cop_style_numericpredicate_when_configured_to_enforce_numeric_comparison_methods_registers_an_offense_for_checking_if_a_number_is_not_zero
+    source: |
+      !number.zero?
+    offenses:
+      - line: 1
+        column_start: 1
+        column_end: 13
+        message: Use `(number == 0)` instead of `number.zero?`.
+    corrected: |
+      !(number == 0)
+    config:
+      EnforcedStyle: comparison
+      AutoCorrect: true
+
+  - name: rubocop_cop_style_numericpredicate_when_configured_to_enforce_numeric_comparison_methods_allows_checking_if_a_number_is_not_zero
+    source: |
+      number.nonzero?
+    offenses:
+      []
+    config:
+      EnforcedStyle: comparison
+      AutoCorrect: true
+
+  - name: rubocop_cop_style_numericpredicate_when_configured_to_enforce_numeric_comparison_methods_registers_an_offense_for_checking_if_a_number_is_positive
+    source: |
+      number.positive?
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 16
+        message: Use `number > 0` instead of `number.positive?`.
+    corrected: |
+      number > 0
+    config:
+      EnforcedStyle: comparison
+      AutoCorrect: true
+
+  - name: rubocop_cop_style_numericpredicate_when_configured_to_enforce_numeric_comparison_methods_registers_an_offense_for_checking_if_a_number_is_negative
+    source: |
+      number.negative?
+    offenses:
+      - line: 1
+        column_start: 0
+        column_end: 16
+        message: Use `number < 0` instead of `number.negative?`.
+    corrected: |
+      number < 0
+    config:
+      EnforcedStyle: comparison
+      AutoCorrect: true
+
+  - name: rubocop_cop_style_numericpredicate_when_there_are_allowed_methods_simple_method_call_enforcedstyle_is_predicate_allows_checking_if_a_number_is_zero
+    source: |
+      if number == 0
+        puts 'hello'
+      end
+    offenses:
+      []
+    config:
+      AllowedMethods: [==]
+      AllowedPatterns: []
+      EnforcedStyle: predicate
+      AutoCorrect: true
+
+  - name: rubocop_cop_style_numericpredicate_when_there_are_allowed_methods_simple_method_call_enforcedstyle_is_comparison_allows_checking_if_a_number_is_zero
+    source: |
+      if number.zero?
+        puts 'hello'
+      end
+    offenses:
+      []
+    config:
+      AllowedMethods: []
+      AllowedPatterns: [zero]
+      EnforcedStyle: comparison
+      AutoCorrect: true
+
+  - name: rubocop_cop_style_numericpredicate_when_there_are_allowed_methods_in_argument_ignored_method_with_a_string_allows_checking_if_a_number_is_positive
+    source: |
+      where(Sequel[:number] > 0)
+    offenses:
+      []
+    config:
+      AllowedMethods: []
+      AllowedPatterns: [zero]
+      EnforcedStyle: comparison
+      AutoCorrect: true
+
+  - name: rubocop_cop_style_numericpredicate_when_there_are_allowed_methods_in_argument_ignored_method_with_a_string_allows_checking_if_a_number_is_negative
+    source: |
+      where(Sequel[:number] < 0)
+    offenses:
+      []
+    config:
+      AllowedMethods: []
+      AllowedPatterns: [zero]
+      EnforcedStyle: comparison
+      AutoCorrect: true
+
+  - name: rubocop_cop_style_numericpredicate_when_there_are_allowed_methods_in_argument_ignored_method_with_a_regex_allows_checking_if_a_number_is_positive
+    source: |
+      order(Sequel[:number] > 0)
+    offenses:
+      []
+    config:
+      AllowedMethods: []
+      AllowedPatterns: [zero]
+      EnforcedStyle: comparison
+      AutoCorrect: true
+
+  - name: rubocop_cop_style_numericpredicate_when_there_are_allowed_methods_in_argument_ignored_method_with_a_regex_allows_checking_if_a_number_is_negative
+    source: |
+      order(Sequel[:number] < 0)
+    offenses:
+      []
+    config:
+      AllowedMethods: []
+      AllowedPatterns: [zero]
+      EnforcedStyle: comparison
+      AutoCorrect: true
+
+  - name: rubocop_cop_style_numericpredicate_when_there_are_allowed_methods_in_argument_not_ignored_method_when_checking_if_a_number_is_positive_when_target_ruby_version_is_2_3_or_higher_registers_an_offense
+    source: |
+      exclude(number > 0)
+    offenses:
+      - line: 1
+        column_start: 8
+        column_end: 18
+        message: Use `number.positive?` instead of `number > 0`.
+    corrected: |
+      exclude(number.positive?)
+    config:
+      AllowedMethods: []
+      AllowedPatterns: [zero]
+      EnforcedStyle: comparison
+      AutoCorrect: true
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_style_numericpredicate_when_there_are_allowed_methods_in_argument_not_ignored_method_when_checking_if_a_number_is_positive_when_target_ruby_version_is_2_2_or_lower_does_not_register_an_offense
+    source: |
+      exclude { number > 0 }
+    offenses:
+      []
+    config:
+      AllowedMethods: []
+      AllowedPatterns: [zero]
+      EnforcedStyle: comparison
+      AutoCorrect: true
+    ruby_version: ">= 2.2"
+
+  - name: rubocop_cop_style_numericpredicate_when_there_are_allowed_methods_in_argument_not_ignored_method_when_checking_if_a_number_is_negative_when_target_ruby_version_is_2_3_or_higher_registers_an_offense
+    source: |
+      exclude(number < 0)
+    offenses:
+      - line: 1
+        column_start: 8
+        column_end: 18
+        message: Use `number.negative?` instead of `number < 0`.
+    corrected: |
+      exclude(number.negative?)
+    config:
+      AllowedMethods: []
+      AllowedPatterns: [zero]
+      EnforcedStyle: comparison
+      AutoCorrect: true
+    ruby_version: ">= 2.3"
+
+  - name: rubocop_cop_style_numericpredicate_when_there_are_allowed_methods_in_argument_not_ignored_method_when_checking_if_a_number_is_negative_when_target_ruby_version_is_2_2_or_lower_does_not_register_an_offense
+    source: |
+      exclude { number > 0 }
+    offenses:
+      []
+    config:
+      AllowedMethods: []
+      AllowedPatterns: [zero]
+      EnforcedStyle: comparison
+      AutoCorrect: true
+    ruby_version: ">= 2.2"
+
+  - name: rubocop_cop_style_numericpredicate_when_there_are_allowed_methods_in_block_ignored_method_with_a_string_allows_checking_if_a_number_is_positive
+    source: |
+      where { table[number] > 0 }
+    offenses:
+      []
+    config:
+      AllowedMethods: []
+      AllowedPatterns: [zero]
+      EnforcedStyle: comparison
+      AutoCorrect: true
+
+  - name: rubocop_cop_style_numericpredicate_when_there_are_allowed_methods_in_block_ignored_method_with_a_string_allows_checking_if_a_number_is_negative
+    source: |
+      where { table[number] < 0 }
+    offenses:
+      []
+    config:
+      AllowedMethods: []
+      AllowedPatterns: [zero]
+      EnforcedStyle: comparison
+      AutoCorrect: true
+
+  - name: rubocop_cop_style_numericpredicate_when_there_are_allowed_methods_in_block_ignored_method_with_a_regex_allows_checking_if_a_number_is_positive
+    source: |
+      order { table[number] > 0 }
+    offenses:
+      []
+    config:
+      AllowedMethods: []
+      AllowedPatterns: [zero]
+      EnforcedStyle: comparison
+      AutoCorrect: true
+
+  - name: rubocop_cop_style_numericpredicate_when_there_are_allowed_methods_in_block_ignored_method_with_a_regex_allows_checking_if_a_number_is_negative
+    source: |
+      order { table[number] < 0 }
+    offenses:
+      []
+    config:
+      AllowedMethods: []
+      AllowedPatterns: [zero]
+      EnforcedStyle: comparison
+      AutoCorrect: true
+
+  - name: rubocop_cop_style_numericpredicate_when_there_are_allowed_methods_in_block_not_ignored_method_registers_an_offense_for_checking_if_a_number_is_positive
+    source: |
+      exclude { number > 0 }
+    offenses:
+      - line: 1
+        column_start: 10
+        column_end: 20
+        message: Use `number.positive?` instead of `number > 0`.
+    corrected: |
+      exclude { number.positive? }
+    config:
+      AllowedMethods: []
+      AllowedPatterns: [zero]
+      EnforcedStyle: comparison
+      AutoCorrect: true
+
+  - name: rubocop_cop_style_numericpredicate_when_there_are_allowed_methods_in_block_not_ignored_method_registers_an_offense_for_checking_if_a_number_is_negative
+    source: |
+      exclude { number < 0 }
+    offenses:
+      - line: 1
+        column_start: 10
+        column_end: 20
+        message: Use `number.negative?` instead of `number < 0`.
+    corrected: |
+      exclude { number.negative? }
+    config:
+      AllowedMethods: []
+      AllowedPatterns: [zero]
+      EnforcedStyle: comparison
+      AutoCorrect: true
