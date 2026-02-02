@@ -270,7 +270,19 @@ fn rubocop_parity_tests() {
                 all_errors.extend(errors);
             }
             Err(e) => {
-                all_errors.push(e);
+                // Check if this file is likely unimplemented by looking for the marker
+                // This allows us to skip YAML parse errors for unimplemented cops
+                let content = std::fs::read_to_string(file_path).unwrap_or_default();
+                if content.contains("implemented: false") {
+                    skipped_cops += 1;
+                    println!(
+                        "  Skipping {} (unimplemented, YAML has parse issues)",
+                        file_path.display()
+                    );
+                } else {
+                    // Only count as error if file appears to be implemented
+                    all_errors.push(e);
+                }
             }
         }
     }

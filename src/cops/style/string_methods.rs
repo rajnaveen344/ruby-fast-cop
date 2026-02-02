@@ -49,12 +49,15 @@ impl Cop for StringMethods {
         let method_name = String::from_utf8_lossy(node.name().as_slice());
 
         if let Some(&preferred) = self.preferred_methods.get(method_name.as_ref()) {
-            return vec![ctx.offense(
-                self.name(),
-                &format!("Prefer `{}` over `{}`.", preferred, method_name),
-                self.severity(),
-                &node.location(),
-            )];
+            // Use message_loc() to get the location of just the method name, not the whole call
+            if let Some(message_loc) = node.message_loc() {
+                return vec![ctx.offense(
+                    self.name(),
+                    &format!("Prefer `{}` over `{}`.", preferred, method_name),
+                    self.severity(),
+                    &message_loc,
+                )];
+            }
         }
 
         vec![]

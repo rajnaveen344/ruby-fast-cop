@@ -184,9 +184,14 @@ The extraction script may have edge cases or errors. Before trusting a YAML fixt
    - Check `corrected:` field matches `expect_correction` blocks
 
 3. **Watch for extraction issues:**
-   - Tests marked `interpolated: true` contain Ruby string interpolation (`#{...}`) - these need manual verification
+   - **Interpolated strings**: Tests marked `interpolated: true` contain Ruby string interpolation (`#{...}`) that was NOT correctly extracted. You MUST:
+     1. Fetch the original RuboCop spec file from GitHub
+     2. Find the corresponding test case in the spec
+     3. Semantically translate the Ruby test to our YAML format (replace interpolated variables with their actual values)
+     4. Update the YAML fixture with the correct source code
    - Shared examples (`it_behaves_like`) may not have captured all context
    - Deeply nested `context` blocks may have missed config inheritance
+   - **YAML parse errors**: Some fixtures contain tab characters or special characters that break YAML parsing. The test runner skips files with parse errors if they're marked `implemented: false`, but you must fix YAML issues before marking a cop as implemented.
 
 4. **Validation workflow when implementing a cop:**
    ```
@@ -196,7 +201,7 @@ The extraction script may have edge cases or errors. Before trusting a YAML fixt
    3. Spot-check 3-5 test cases match
 
    After implementing:
-   1. Run: cargo test --test rubocop_parity
+   1. Run: cargo test --test tester
    2. If tests fail unexpectedly, compare with original spec
    3. Fix YAML if extraction was wrong, or fix implementation
    ```
@@ -209,7 +214,7 @@ The extraction script may have edge cases or errors. Before trusting a YAML fixt
 
 ### Test Types
 
-- **Parity tests** (`tests/rubocop_parity.rs`) - Data-driven tests from YAML fixtures
+- **Parity tests** (`tests/tester.rs`) - Data-driven tests from YAML fixtures
 - **Unit tests** - Cop-specific edge cases in `src/cops/{dept}/{cop}.rs`
 - **Integration tests** - End-to-end CLI comparison with RuboCop
 - **Benchmark tests** - Performance validation
@@ -234,7 +239,7 @@ The extraction script may have edge cases or errors. Before trusting a YAML fixt
 4. Add to department's `mod.rs`
 5. Register in cop registry
 6. Set `implemented: true` in the YAML fixture
-7. Run `cargo test --test rubocop_parity` - verify tests pass
+7. Run `cargo test --test tester` - verify tests pass
 8. **Post-implementation validation:**
    - If any test fails unexpectedly, compare with original RuboCop spec
    - Run actual RuboCop on failing test source to confirm expected behavior

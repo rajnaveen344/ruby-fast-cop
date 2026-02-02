@@ -28,6 +28,41 @@ impl AutoResourceCleanup {
     pub fn new() -> Self {
         Self
     }
+
+    fn is_resource_open_call(node: &ruby_prism::CallNode) -> Option<String> {
+        // Check if the method is 'open'
+        let method_name = String::from_utf8_lossy(node.name().as_slice());
+        if method_name != "open" {
+            return None;
+        }
+
+        // Check if receiver is File or Tempfile
+        if let Some(receiver) = node.receiver() {
+            // Handle simple constant: File.open
+            if let ruby_prism::Node::ConstantReadNode { .. } = &receiver {
+                let const_node = receiver.as_constant_read_node().unwrap();
+                let const_name = String::from_utf8_lossy(const_node.name().as_slice());
+                if const_name == "File" || const_name == "Tempfile" {
+                    return Some(format!("{}.open", const_name));
+                }
+            }
+            // Handle constant path: ::File.open
+            if let ruby_prism::Node::ConstantPathNode { .. } = &receiver {
+                let path_node = receiver.as_constant_path_node().unwrap();
+                // Check if it's a root constant (::File)
+                if path_node.parent().is_none() {
+                    if let Some(name) = path_node.name() {
+                        let const_name = String::from_utf8_lossy(name.as_slice());
+                        if const_name == "File" || const_name == "Tempfile" {
+                            return Some(format!("::{}.open", const_name));
+                        }
+                    }
+                }
+            }
+        }
+
+        None
+    }
 }
 
 impl Default for AutoResourceCleanup {
@@ -51,50 +86,46 @@ impl<'a> ResourceVisitor<'a> {
         }
     }
 
-    fn is_resource_open_call(&self, node: &ruby_prism::CallNode) -> Option<String> {
-        // Check if the method is 'open'
-        let method_name = String::from_utf8_lossy(node.name().as_slice());
-        if method_name != "open" {
-            return None;
-        }
-
-        // Check if receiver is File or Tempfile
-        if let Some(receiver) = node.receiver() {
-            if let ruby_prism::Node::ConstantReadNode { .. } = &receiver {
-                let const_node = receiver.as_constant_read_node().unwrap();
-                let const_name = String::from_utf8_lossy(const_node.name().as_slice());
-                if const_name == "File" || const_name == "Tempfile" {
-                    return Some(format!("{}.open", const_name));
-                }
+    fn check_open_call(&mut self, node: &ruby_prism::CallNode) {
+        // Check if this is a resource open call without a block
+        if let Some(resource_name) = AutoResourceCleanup::is_resource_open_call(node) {
+            // Check if the call has a block
+            if node.block().is_none() {
+                self.offenses.push(self.ctx.offense(
+                    self.cop_name,
+                    &format!("Use the block version of `{}`.", resource_name),
+                    Severity::Convention,
+                    &node.location(),
+                ));
             }
         }
-
-        None
     }
 }
 
 impl Visit<'_> for ResourceVisitor<'_> {
-    fn visit_local_variable_write_node(&mut self, node: &ruby_prism::LocalVariableWriteNode) {
-        // Check if the value being assigned is a File.open or Tempfile.open call
-        let value = node.value();
-        if let ruby_prism::Node::CallNode { .. } = &value {
-            let call = value.as_call_node().unwrap();
+    fn visit_call_node(&mut self, node: &ruby_prism::CallNode) {
+        let method_name = String::from_utf8_lossy(node.name().as_slice());
 
-            // Check if this is a resource open call without a block
-            if let Some(resource_name) = self.is_resource_open_call(&call) {
-                // Check if the call has a block
-                if call.block().is_none() {
-                    self.offenses.push(self.ctx.offense(
-                        self.cop_name,
-                        &format!("Use the block version of `{}`.", resource_name),
-                        Severity::Convention,
-                        &node.location(),
-                    ));
+        // If this is a .close call, check if the receiver is a File.open call
+        // In that case, we don't flag it (e.g., File.open("f").close is okay)
+        if method_name == "close" {
+            if let Some(receiver) = node.receiver() {
+                if let ruby_prism::Node::CallNode { .. } = &receiver {
+                    let call = receiver.as_call_node().unwrap();
+                    if AutoResourceCleanup::is_resource_open_call(&call).is_some() {
+                        // Don't flag the File.open part - it's immediately closed
+                        // But we still need to visit other nodes
+                        return;
+                    }
                 }
             }
         }
 
-        ruby_prism::visit_local_variable_write_node(self, node);
+        // Check if this is a resource open call that needs a block
+        self.check_open_call(node);
+
+        // Continue visiting child nodes
+        ruby_prism::visit_call_node(self, node);
     }
 }
 
@@ -176,9 +207,17 @@ end
     }
 
     #[test]
-    fn allows_file_open_without_assignment() {
-        // Not assigned to variable - likely used directly
+    fn flags_file_open_without_assignment() {
+        // File.open without a block should be flagged even without assignment
         let offenses = check("File.open('test.txt')");
+        assert_eq!(offenses.len(), 1);
+        assert!(offenses[0].message.contains("File.open"));
+    }
+
+    #[test]
+    fn allows_file_open_with_immediate_close() {
+        // File.open("f").close is okay - resource is immediately closed
+        let offenses = check("File.open('test.txt').close");
         assert_eq!(offenses.len(), 0);
     }
 }
