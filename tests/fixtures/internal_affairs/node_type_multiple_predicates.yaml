@@ -24,6 +24,7 @@ tests:
 
   - name: rubocop_cop_internalaffairs_nodetypemultiplepredicates_in_an_or_node_with_multiple_node_type_predicate_branches_does_not_register_an_offense_for_negated_predicates
     source: |
+      ‹BASE›0‹/BASE›
       !node.str_type? || !node.sym_type?
     offenses:
       []
@@ -96,18 +97,21 @@ tests:
 
   - name: rubocop_cop_internalaffairs_nodetypemultiplepredicates_in_an_and_node_with_multiple_negated_type_predicate_branches_does_not_register_an_offense_for_type_predicates_called_without_a_receiver
     source: |
+      ‹BASE›0‹/BASE›
       !str_type? && !sym_type?
     offenses:
       []
 
   - name: rubocop_cop_internalaffairs_nodetypemultiplepredicates_in_an_and_node_with_multiple_negated_type_predicate_branches_does_not_register_an_offense_for_type_predicates_called_with_different_receivers
     source: |
+      ‹BASE›0‹/BASE›
       !foo.str_type? && !bar.sym_type?
     offenses:
       []
 
   - name: rubocop_cop_internalaffairs_nodetypemultiplepredicates_in_an_and_node_with_multiple_negated_type_predicate_branches_does_not_register_an_offense_when_all_method_calls_are_not_type_predicates
     source: |
+      ‹BASE›0‹/BASE›
       !foo.bar? && !foo.sym_type?
     offenses:
       []
@@ -120,6 +124,7 @@ tests:
 
   - name: rubocop_cop_internalaffairs_nodetypemultiplepredicates_in_an_and_node_with_multiple_negated_type_predicate_branches_registers_an_offense_and_corrects
     source: |
+      ‹BASE›0‹/BASE›
       !node.str_type? && !node.sym_type?
     offenses:
       - line: 1
@@ -127,10 +132,12 @@ tests:
         column_end: 34
         message: "Use `!node.type?(:str, :sym)` instead of checking against multiple node types."
     corrected: |
+      ‹BASE›0‹/BASE›
       !node.type?(:str, :sym)
 
   - name: rubocop_cop_internalaffairs_nodetypemultiplepredicates_in_an_and_node_with_multiple_negated_type_predicate_branches_registers_an_offense_and_corrects_with_defined_type
     source: |
+      ‹BASE›0‹/BASE›
       !node.call_type? && !node.defined_type?
     offenses:
       - line: 1
@@ -138,10 +145,12 @@ tests:
         column_end: 39
         message: "Use `!node.type?(:call, :defined?)` instead of checking against multiple node types."
     corrected: |
+      ‹BASE›0‹/BASE›
       !node.type?(:call, :defined?)
 
   - name: rubocop_cop_internalaffairs_nodetypemultiplepredicates_in_an_and_node_with_multiple_negated_type_predicate_branches_registers_an_offense_and_corrects_for_nested_and_nodes
     source: |
+      ‹BASE›0‹/BASE›
       !node.str_type? && !node.sym_type? && !node.boolean_type?
     offenses:
       - line: 1
@@ -149,10 +158,12 @@ tests:
         column_end: 34
         message: "Use `!node.type?(:str, :sym)` instead of checking against multiple node types."
     corrected: |
+      ‹BASE›0‹/BASE›
       !node.type?(:str, :sym, :boolean)
 
   - name: rubocop_cop_internalaffairs_nodetypemultiplepredicates_in_an_and_node_with_multiple_negated_type_predicate_branches_registers_an_offense_and_corrects_when_the_lhs_is_a_type_call
     source: |
+      ‹BASE›0‹/BASE›
       !node.type?(:str, :sym) && !node.boolean_type?
     offenses:
       - line: 1
@@ -160,10 +171,12 @@ tests:
         column_end: 46
         message: "Use `!node.type?(:str, :sym, :boolean)` instead of checking against multiple node types."
     corrected: |
+      ‹BASE›0‹/BASE›
       !node.type?(:str, :sym, :boolean)
 
   - name: rubocop_cop_internalaffairs_nodetypemultiplepredicates_in_an_and_node_with_multiple_negated_type_predicate_branches_registers_an_offense_and_corrects_when_the_rhs_is_a_type_call
     source: |
+      ‹BASE›0‹/BASE›
       !node.boolean_type? && !node.type?(:str, :sym)
     offenses:
       - line: 1
@@ -171,10 +184,12 @@ tests:
         column_end: 46
         message: "Use `!node.type?(:boolean, :str, :sym)` instead of checking against multiple node types."
     corrected: |
+      ‹BASE›0‹/BASE›
       !node.type?(:boolean, :str, :sym)
 
   - name: rubocop_cop_internalaffairs_nodetypemultiplepredicates_in_an_and_node_with_multiple_negated_type_predicate_branches_registers_an_offense_and_corrects_with_safe_navigation
     source: |
+      ‹BASE›0‹/BASE›
       !node&.str_type? && !node&.sym_type?
     offenses:
       - line: 1
@@ -182,4 +197,5 @@ tests:
         column_end: 36
         message: "Use `!node&.type?(:str, :sym)` instead of checking against multiple node types."
     corrected: |
+      ‹BASE›0‹/BASE›
       !node&.type?(:str, :sym)

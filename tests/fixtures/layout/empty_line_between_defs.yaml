@@ -163,6 +163,7 @@ tests:
 
   - name: rubocop_cop_layout_emptylinebetweendefs_accepts_a_def_that_follows_code_and_a_comment
     source: |
+      ‹BASE›0‹/BASE›
       x = 0
       # 123
       def m
@@ -335,6 +336,7 @@ tests:
     config:
       AllowAdjacentOneLineDefs: false
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_emptylinebetweendefs_when_allowadjacentonelinedefs_is_enabled_accepts_adjacent_one_liners
     source: |
@@ -521,8 +523,8 @@ tests:
     offenses:
       []
     config:
-      EmptyLineBetweenClassDefs: false
       AllowAdjacentOneLineDefs: true
+      EmptyLineBetweenClassDefs: false
       NumberOfEmptyLines: 2
 
   - name: rubocop_cop_layout_emptylinebetweendefs_emptylinebetweenmoduledefs_registers_an_offense_when_no_empty_lines_between_module_and_method_definitions
@@ -552,8 +554,8 @@ tests:
       def example
       end
     config:
-      EmptyLineBetweenClassDefs: false
       AllowAdjacentOneLineDefs: true
+      EmptyLineBetweenClassDefs: false
       NumberOfEmptyLines: 2
 
   - name: rubocop_cop_layout_emptylinebetweendefs_emptylinebetweenmoduledefs_when_disabled_does_not_register_offense
@@ -567,10 +569,10 @@ tests:
     offenses:
       []
     config:
-      EmptyLineBetweenClassDefs: false
       AllowAdjacentOneLineDefs: true
-      NumberOfEmptyLines: 2
+      EmptyLineBetweenClassDefs: false
       EmptyLineBetweenModuleDefs: false
+      NumberOfEmptyLines: 2
 
   - name: rubocop_cop_layout_emptylinebetweendefs_when_empty_lines_between_classes_and_modules_together_registers_an_offense_when_no_empty_lines_between_module_and_method_definitions
     source: |
@@ -599,10 +601,10 @@ tests:
       def example
       end
     config:
-      EmptyLineBetweenClassDefs: false
       AllowAdjacentOneLineDefs: true
-      NumberOfEmptyLines: 2
+      EmptyLineBetweenClassDefs: false
       EmptyLineBetweenModuleDefs: false
+      NumberOfEmptyLines: 2
 
   - name: rubocop_cop_layout_emptylinebetweendefs_endless_methods_between_endless_and_regular_methods_registers_an_offense_and_corrects
     source: |
@@ -622,10 +624,10 @@ tests:
         y
       end
     config:
-      EmptyLineBetweenClassDefs: false
       AllowAdjacentOneLineDefs: true
-      NumberOfEmptyLines: 2
+      EmptyLineBetweenClassDefs: false
       EmptyLineBetweenModuleDefs: false
+      NumberOfEmptyLines: 2
     ruby_version: ">= 3.0"
 
   - name: rubocop_cop_layout_emptylinebetweendefs_endless_methods_between_regular_and_endless_methods_registers_an_offense_and_corrects
@@ -646,10 +648,10 @@ tests:
       
       def bar() = y
     config:
-      EmptyLineBetweenClassDefs: false
       AllowAdjacentOneLineDefs: true
-      NumberOfEmptyLines: 2
+      EmptyLineBetweenClassDefs: false
       EmptyLineBetweenModuleDefs: false
+      NumberOfEmptyLines: 2
     ruby_version: ">= 3.0"
 
   - name: rubocop_cop_layout_emptylinebetweendefs_endless_methods_between_endless_class_method_and_regular_methods_registers_an_offense_and_corrects
@@ -670,10 +672,10 @@ tests:
         y
       end
     config:
-      EmptyLineBetweenClassDefs: false
       AllowAdjacentOneLineDefs: true
-      NumberOfEmptyLines: 2
+      EmptyLineBetweenClassDefs: false
       EmptyLineBetweenModuleDefs: false
+      NumberOfEmptyLines: 2
     ruby_version: ">= 3.0"
 
   - name: rubocop_cop_layout_emptylinebetweendefs_endless_methods_between_endless_class_method_and_regular_class_methods_registers_an_offense_and_corrects
@@ -694,10 +696,10 @@ tests:
         y
       end
     config:
-      EmptyLineBetweenClassDefs: false
       AllowAdjacentOneLineDefs: true
-      NumberOfEmptyLines: 2
+      EmptyLineBetweenClassDefs: false
       EmptyLineBetweenModuleDefs: false
+      NumberOfEmptyLines: 2
     ruby_version: ">= 3.0"
 
   - name: rubocop_cop_layout_emptylinebetweendefs_endless_methods_with_allowadjacentonelinedefs_false_registers_an_offense_and_corrects
@@ -714,10 +716,10 @@ tests:
       
       def bar() = y
     config:
-      EmptyLineBetweenClassDefs: false
       AllowAdjacentOneLineDefs: true
-      NumberOfEmptyLines: 2
+      EmptyLineBetweenClassDefs: false
       EmptyLineBetweenModuleDefs: false
+      NumberOfEmptyLines: 2
     ruby_version: ">= 3.0"
 
   - name: rubocop_cop_layout_emptylinebetweendefs_endless_methods_with_allowadjacentonelinedefs_true_does_not_register_an_offense
@@ -727,10 +729,10 @@ tests:
     offenses:
       []
     config:
-      EmptyLineBetweenClassDefs: false
       AllowAdjacentOneLineDefs: true
-      NumberOfEmptyLines: 2
+      EmptyLineBetweenClassDefs: false
       EmptyLineBetweenModuleDefs: false
+      NumberOfEmptyLines: 2
     ruby_version: ">= 3.0"
 
   - name: rubocop_cop_layout_emptylinebetweendefs_deflikemacros_foo_registers_an_offense
@@ -755,11 +757,13 @@ tests:
         #foo body
       end
     config:
-      DefLikeMacros: [foo]
+      AllowAdjacentOneLineDefs: $UNRESOLVED:allow_adjacent_one_line_defs
+      DefLikeMacros: [$UNRESOLVED:foo]
       EmptyLineBetweenClassDefs: false
-      AllowAdjacentOneLineDefs: allow_adjacent_one_line_defs
-      NumberOfEmptyLines: 2
       EmptyLineBetweenModuleDefs: false
+      NumberOfEmptyLines: 2
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_emptylinebetweendefs_deflikemacros_foo_registers_an_offense_if_next_to_method
     source: |
@@ -783,11 +787,13 @@ tests:
         #foo body
       end
     config:
-      DefLikeMacros: [foo]
+      AllowAdjacentOneLineDefs: $UNRESOLVED:allow_adjacent_one_line_defs
+      DefLikeMacros: [$UNRESOLVED:foo]
       EmptyLineBetweenClassDefs: false
-      AllowAdjacentOneLineDefs: allow_adjacent_one_line_defs
-      NumberOfEmptyLines: 2
       EmptyLineBetweenModuleDefs: false
+      NumberOfEmptyLines: 2
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_emptylinebetweendefs_deflikemacros_foo_registers_an_offense_if_next_to_numblock
     source: |
@@ -811,11 +817,13 @@ tests:
         _1
       end
     config:
-      DefLikeMacros: [foo]
+      AllowAdjacentOneLineDefs: $UNRESOLVED:allow_adjacent_one_line_defs
+      DefLikeMacros: [$UNRESOLVED:foo]
       EmptyLineBetweenClassDefs: false
-      AllowAdjacentOneLineDefs: allow_adjacent_one_line_defs
-      NumberOfEmptyLines: 2
       EmptyLineBetweenModuleDefs: false
+      NumberOfEmptyLines: 2
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_emptylinebetweendefs_deflikemacros_foo_registers_an_offense_if_next_to_itblock
     source: |
@@ -839,12 +847,14 @@ tests:
         it
       end
     config:
-      DefLikeMacros: [foo]
+      AllowAdjacentOneLineDefs: $UNRESOLVED:allow_adjacent_one_line_defs
+      DefLikeMacros: [$UNRESOLVED:foo]
       EmptyLineBetweenClassDefs: false
-      AllowAdjacentOneLineDefs: allow_adjacent_one_line_defs
-      NumberOfEmptyLines: 2
       EmptyLineBetweenModuleDefs: false
+      NumberOfEmptyLines: 2
     ruby_version: ">= 3.4"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_emptylinebetweendefs_deflikemacros_foo_does_not_register_offense
     source: |
@@ -858,11 +868,13 @@ tests:
     offenses:
       []
     config:
-      DefLikeMacros: [foo]
+      AllowAdjacentOneLineDefs: $UNRESOLVED:allow_adjacent_one_line_defs
+      DefLikeMacros: [$UNRESOLVED:foo]
       EmptyLineBetweenClassDefs: false
-      AllowAdjacentOneLineDefs: allow_adjacent_one_line_defs
-      NumberOfEmptyLines: 2
       EmptyLineBetweenModuleDefs: false
+      NumberOfEmptyLines: 2
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_emptylinebetweendefs_deflikemacros_foo_does_not_register_offense_for_non_registered_macro_names
     source: |
@@ -880,11 +892,13 @@ tests:
     offenses:
       []
     config:
-      DefLikeMacros: [foo]
+      AllowAdjacentOneLineDefs: $UNRESOLVED:allow_adjacent_one_line_defs
+      DefLikeMacros: [$UNRESOLVED:foo]
       EmptyLineBetweenClassDefs: false
-      AllowAdjacentOneLineDefs: allow_adjacent_one_line_defs
-      NumberOfEmptyLines: 2
       EmptyLineBetweenModuleDefs: false
+      NumberOfEmptyLines: 2
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_emptylinebetweendefs_deflikemacros_foo_does_not_register_an_offense_for_single_line_macros
     source: |
@@ -893,11 +907,13 @@ tests:
     offenses:
       []
     config:
-      DefLikeMacros: [foo]
+      AllowAdjacentOneLineDefs: $UNRESOLVED:allow_adjacent_one_line_defs
+      DefLikeMacros: [$UNRESOLVED:foo]
       EmptyLineBetweenClassDefs: false
-      AllowAdjacentOneLineDefs: allow_adjacent_one_line_defs
-      NumberOfEmptyLines: 2
       EmptyLineBetweenModuleDefs: false
+      NumberOfEmptyLines: 2
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_emptylinebetweendefs_deflikemacros_foo_and_allowadjacentonelinedefs_false_registers_an_offense_for_macros_that_take_no_block
     source: |
@@ -913,8 +929,10 @@ tests:
       
       foo :second_attribute
     config:
-      DefLikeMacros: [foo]
+      AllowAdjacentOneLineDefs: $UNRESOLVED:allow_adjacent_one_line_defs
+      DefLikeMacros: [$UNRESOLVED:foo]
       EmptyLineBetweenClassDefs: false
-      AllowAdjacentOneLineDefs: allow_adjacent_one_line_defs
-      NumberOfEmptyLines: 2
       EmptyLineBetweenModuleDefs: false
+      NumberOfEmptyLines: 2
+    interpolated: true
+    verified: false

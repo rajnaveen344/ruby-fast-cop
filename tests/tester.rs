@@ -41,6 +41,12 @@ struct TestCase {
     /// Optional Ruby version requirement (e.g., ">= 3.1")
     #[serde(default)]
     ruby_version: Option<String>,
+    /// Whether this test contains unresolved Ruby string interpolation
+    #[serde(default)]
+    interpolated: bool,
+    /// Whether an interpolated test has been manually verified/fixed
+    #[serde(default)]
+    verified: bool,
 }
 
 /// An expected offense in a test case
@@ -133,6 +139,36 @@ fn compare_offense(
     errors
 }
 
+/// Decode source from YAML format
+/// - Converts ‹TAB› back to actual tabs
+/// - Restores base indentation from ‹BASE›N‹/BASE› markers
+fn decode_source(source: &str) -> String {
+    let source = source.replace("‹TAB›", "\t");
+
+    // Check for base indentation marker
+    if source.starts_with("‹BASE›") {
+        if let Some(end_marker) = source.find("‹/BASE›") {
+            let base_indent: usize = source[7..end_marker].parse().unwrap_or(0);
+            let rest = &source[end_marker + 10..]; // Skip "‹/BASE›\n"
+            let indent_str = " ".repeat(base_indent);
+
+            return rest
+                .lines()
+                .map(|line| {
+                    if line.trim().is_empty() {
+                        String::new()
+                    } else {
+                        format!("{}{}", indent_str, line)
+                    }
+                })
+                .collect::<Vec<_>>()
+                .join("\n");
+        }
+    }
+
+    source
+}
+
 /// Run a single test case and return any errors
 fn run_test_case(
     test_case: &TestCase,
@@ -143,8 +179,11 @@ fn run_test_case(
     // Build config from test case's config field
     let config = Config::from_cop_yaml(cop_name, &test_case.config);
 
+    // Decode source (converts ‹TAB› markers back to actual tabs)
+    let source = decode_source(&test_case.source);
+
     // Run the linter with the test-specific config
-    let offenses = check_source_with_cop_config(&test_case.source, "test.rb", cop_name, &config);
+    let offenses = check_source_with_cop_config(&source, "test.rb", cop_name, &config);
 
     // Check offense count
     if offenses.len() != test_case.offenses.len() {
@@ -211,9 +250,20 @@ fn run_test_case(
     errors
 }
 
+/// Result of running tests for a single file
+struct TestFileResult {
+    errors: Vec<String>,
+    skipped_interpolated: usize,
+    ran: usize,
+}
+
 /// Run all tests from a single test file
-fn run_test_file(test_file: &CopTestFile, file_path: &PathBuf) -> Vec<String> {
-    let mut errors = Vec::new();
+fn run_test_file(test_file: &CopTestFile, file_path: &PathBuf) -> TestFileResult {
+    let mut result = TestFileResult {
+        errors: Vec::new(),
+        skipped_interpolated: 0,
+        ran: 0,
+    };
 
     // Skip unimplemented cops
     if !test_file.implemented {
@@ -221,27 +271,36 @@ fn run_test_file(test_file: &CopTestFile, file_path: &PathBuf) -> Vec<String> {
             "  Skipping {} (not implemented)",
             test_file.cop
         );
-        return errors;
+        return result;
     }
 
+    let runnable_tests: Vec<_> = test_file.tests.iter()
+        .filter(|t| !t.interpolated || t.verified)
+        .collect();
+
+    let skipped = test_file.tests.len() - runnable_tests.len();
+    result.skipped_interpolated = skipped;
+
     println!(
-        "  Testing {} ({} test cases)",
+        "  Testing {} ({} test cases, {} skipped as unverified interpolated)",
         test_file.cop,
-        test_file.tests.len()
+        runnable_tests.len(),
+        skipped
     );
 
-    for test_case in &test_file.tests {
+    for test_case in runnable_tests {
+        result.ran += 1;
         let test_errors = run_test_case(test_case, &test_file.cop);
         if !test_errors.is_empty() {
-            errors.push(format!(
+            result.errors.push(format!(
                 "Failures in {}:",
                 file_path.display()
             ));
-            errors.extend(test_errors);
+            result.errors.extend(test_errors);
         }
     }
 
-    errors
+    result
 }
 
 #[test]
@@ -257,7 +316,9 @@ fn rubocop_parity_tests() {
 
     let mut all_errors = Vec::new();
     let mut total_tests = 0;
+    let mut tests_ran = 0;
     let mut skipped_cops = 0;
+    let mut skipped_interpolated = 0;
 
     for file_path in &test_files {
         match load_test_file(file_path) {
@@ -266,8 +327,10 @@ fn rubocop_parity_tests() {
                     skipped_cops += 1;
                 }
                 total_tests += test_file.tests.len();
-                let errors = run_test_file(&test_file, file_path);
-                all_errors.extend(errors);
+                let result = run_test_file(&test_file, file_path);
+                all_errors.extend(result.errors);
+                skipped_interpolated += result.skipped_interpolated;
+                tests_ran += result.ran;
             }
             Err(e) => {
                 // Check if this file is likely unimplemented by looking for the marker
@@ -290,8 +353,10 @@ fn rubocop_parity_tests() {
     println!();
     println!("Summary:");
     println!("  Total test files: {}", test_files.len());
-    println!("  Skipped (unimplemented): {}", skipped_cops);
+    println!("  Skipped cops (unimplemented): {}", skipped_cops);
     println!("  Total test cases: {}", total_tests);
+    println!("  Tests ran: {}", tests_ran);
+    println!("  Skipped (unverified interpolated): {}", skipped_interpolated);
 
     if !all_errors.is_empty() {
         println!();

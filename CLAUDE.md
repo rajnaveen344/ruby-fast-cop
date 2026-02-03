@@ -184,21 +184,69 @@ The extraction script may have edge cases or errors. Before trusting a YAML fixt
    - Check `corrected:` field matches `expect_correction` blocks
 
 3. **Watch for extraction issues:**
-   - **Interpolated strings**: Tests marked `interpolated: true` contain Ruby string interpolation (`#{...}`) that was NOT correctly extracted. You MUST:
-     1. Fetch the original RuboCop spec file from GitHub
-     2. Find the corresponding test case in the spec
-     3. Semantically translate the Ruby test to our YAML format (replace interpolated variables with their actual values)
-     4. Update the YAML fixture with the correct source code
    - Shared examples (`it_behaves_like`) may not have captured all context
    - Deeply nested `context` blocks may have missed config inheritance
    - **YAML parse errors**: Some fixtures contain tab characters or special characters that break YAML parsing. The test runner skips files with parse errors if they're marked `implemented: false`, but you must fix YAML issues before marking a cop as implemented.
 
-4. **Validation workflow when implementing a cop:**
+4. **The `interpolated` and `verified` flags:**
+
+   **`interpolated: true` means the test requires manual verification by an AI agent.** This flag is set when:
+   - Source code contains unresolved Ruby string interpolation (`#{...}`)
+   - Config has unresolved values (marked with `$UNRESOLVED:` prefix)
+
+   Tests with `interpolated: true` are **automatically skipped** unless they also have `verified: true`.
+
+   ```yaml
+   # SKIPPED - has unresolved source interpolation
+   - name: test_with_interpolated_source
+     source: |
+       spec.#{attribute} = #{value}
+     offenses:
+       - message: "Do not set `#{attribute}`"
+     interpolated: true
+     verified: false
+
+   # SKIPPED - has unresolved config values
+   - name: test_with_unresolved_config
+     source: |
+       format('%s', foo)
+     config:
+       EnforcedStyle: $UNRESOLVED:enforced_style
+       Mode: $UNRESOLVED:mode
+     interpolated: true
+     verified: false
+
+   # RUNS - manually verified and fixed
+   - name: test_verified
+     source: |
+       spec.rubygems_version = '1.0'
+     config:
+       EnforcedStyle: annotated
+     interpolated: true
+     verified: true
+   ```
+
+   **How to verify an interpolated test:**
+   1. Fetch the original RuboCop spec file from GitHub:
+      ```bash
+      curl -s "https://raw.githubusercontent.com/rubocop/rubocop/master/spec/rubocop/cop/{dept}/{cop}_spec.rb"
+      ```
+   2. Find the corresponding test case in the spec
+   3. Resolve all `#{...}` in source/message with actual values from the spec
+   4. Replace `$UNRESOLVED:variable_name` config values with actual values from `let(:variable_name)` blocks
+   5. Change `verified: false` to `verified: true`
+   6. Keep `interpolated: true` as a marker that it was originally interpolated
+
+5. **Validation workflow when implementing a cop:**
    ```
    Before implementing:
    1. Read the YAML fixture: tests/fixtures/{dept}/{cop}.yaml
    2. Fetch original spec from RuboCop repo
    3. Spot-check 3-5 test cases match
+   4. Fix any interpolated tests:
+      - Replace #{...} with actual values
+      - Replace $UNRESOLVED:var with actual config values
+      - Set verified: true
 
    After implementing:
    1. Run: cargo test --test tester
@@ -206,7 +254,7 @@ The extraction script may have edge cases or errors. Before trusting a YAML fixt
    3. Fix YAML if extraction was wrong, or fix implementation
    ```
 
-5. **Re-extract if needed:**
+6. **Re-extract if needed:**
    ```bash
    # Re-extract a single cop's tests
    cargo run --bin extract-rubocop-tests -- /tmp/rubocop-specs/spec/rubocop/cop/{dept}/{cop}_spec.rb

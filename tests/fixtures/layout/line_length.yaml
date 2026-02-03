@@ -1,11 +1,12 @@
 cop: Layout/LineLength
 department: layout
 severity: convention
-implemented: false  # YAML has tab characters that break parsing
+implemented: false
 
 tests:
   - name: rubocop_cop_layout_linelength_registers_an_offense_for_a_line_that_s_81_characters_wide
     source: |
+      ‹BASE›0‹/BASE›
       #{maximum_string}#
     offenses:
       - line: 1
@@ -13,12 +14,14 @@ tests:
         column_end: 18
         message: Line is too long. [81/80]
     config:
-      Max: 80
       AllowedPatterns: null
+      Max: 80
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_highlights_excessive_characters
     source: |
+      ‹BASE›0‹/BASE›
       #{maximum_string}abc
     offenses:
       - line: 1
@@ -26,23 +29,26 @@ tests:
         column_end: 20
         message: Line is too long. [83/80]
     config:
-      Max: 80
       AllowedPatterns: null
+      Max: 80
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_accepts_the_first_line_if_it_is_a_shebang_line
     source: |
+      ‹BASE›0‹/BASE›
       #!/System/Library/Frameworks/Ruby.framework/Versions/2.3/usr/bin/ruby --disable-gems
       
       do_something
     offenses:
       []
     config:
-      Max: 80
       AllowedPatterns: null
+      Max: 80
 
   - name: rubocop_cop_layout_linelength_registers_an_offense_for_long_line_before_end_but_not_after
     source: |
+      ‹BASE›0‹/BASE›
       #{maximum_string}#{'#' * 70}
       __END__
       #{'#' * 200}
@@ -52,30 +58,31 @@ tests:
         column_end: 28
         message: Line is too long. [150/80]
     config:
-      Max: 80
       AllowedPatterns: null
+      Max: 80
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_when_line_is_indented_with_tabs_accepts_a_short_line
     source: |
-      			123
+      ‹TAB›‹TAB›‹TAB›123
     offenses:
       []
     config:
-      Max: 10
       AllowedPatterns: null
+      Max: 10
 
   - name: rubocop_cop_layout_linelength_when_line_is_indented_with_tabs_registers_an_offense_for_a_long_line
     source: |
-      												1
+      ‹TAB›‹TAB›‹TAB›‹TAB›‹TAB›‹TAB›‹TAB›‹TAB›‹TAB›‹TAB›‹TAB›‹TAB›1
     offenses:
       - line: 1
         column_start: 0
         column_end: 13
         message: Line is too long. [25/10]
     config:
-      Max: 10
       AllowedPatterns: null
+      Max: 10
 
   - name: rubocop_cop_layout_linelength_when_allowuri_option_is_enabled_and_the_url_fits_within_the_max_allowed_characters_registers_an_offense_for_the_line
     source: |
@@ -89,8 +96,8 @@ tests:
     config:
       AllowQualifiedName: true
       AllowURI: true
-      Max: 80
       AllowedPatterns: null
+      Max: 80
 
   - name: rubocop_cop_layout_linelength_when_allowuri_option_is_enabled_and_all_the_excessive_characters_are_part_of_a_url_accepts_the_line
     source: |
@@ -101,8 +108,8 @@ tests:
     config:
       AllowQualifiedName: true
       AllowURI: true
-      Max: 80
       AllowedPatterns: null
+      Max: 80
 
   - name: rubocop_cop_layout_linelength_when_allowuri_option_is_enabled_and_all_the_excessive_characters_are_part_of_a_url_and_the_url_is_wrapped_in_single_quotes_accepts_the_line
     source: |
@@ -112,8 +119,8 @@ tests:
     config:
       AllowQualifiedName: true
       AllowURI: true
-      Max: 80
       AllowedPatterns: null
+      Max: 80
 
   - name: rubocop_cop_layout_linelength_when_allowuri_option_is_enabled_and_all_the_excessive_characters_are_part_of_a_url_and_the_url_is_wrapped_in_double_quotes_accepts_the_line
     source: |
@@ -123,8 +130,8 @@ tests:
     config:
       AllowQualifiedName: true
       AllowURI: true
-      Max: 80
       AllowedPatterns: null
+      Max: 80
 
   - name: rubocop_cop_layout_linelength_when_allowuri_option_is_enabled_and_all_the_excessive_characters_are_part_of_a_url_and_the_url_is_wrapped_in_braces_accepts_the_line
     source: |
@@ -134,8 +141,8 @@ tests:
     config:
       AllowQualifiedName: true
       AllowURI: true
-      Max: 80
       AllowedPatterns: null
+      Max: 80
 
   - name: rubocop_cop_layout_linelength_when_allowuri_option_is_enabled_and_all_the_excessive_characters_are_part_of_a_url_and_the_url_is_wrapped_in_braces_with_title_accepts_the_line
     source: |
@@ -145,8 +152,8 @@ tests:
     config:
       AllowQualifiedName: true
       AllowURI: true
-      Max: 80
       AllowedPatterns: null
+      Max: 80
 
   - name: rubocop_cop_layout_linelength_when_allowuri_option_is_enabled_and_the_excessive_characters_include_a_complete_url_registers_an_offense_for_the_line
     source: |
@@ -159,8 +166,8 @@ tests:
     config:
       AllowQualifiedName: true
       AllowURI: true
-      Max: 80
       AllowedPatterns: null
+      Max: 80
 
   - name: rubocop_cop_layout_linelength_when_allowuri_option_is_enabled_and_the_excessive_characters_include_part_of_a_url_and_another_word_registers_an_offense_for_the_line
     source: |
@@ -174,8 +181,8 @@ tests:
     config:
       AllowQualifiedName: true
       AllowURI: true
-      Max: 80
       AllowedPatterns: null
+      Max: 80
 
   - name: rubocop_cop_layout_linelength_when_allowuri_option_is_enabled_and_the_excessive_characters_include_part_of_a_url_in_double_quotes_does_not_include_the_quote_as_part_of_the_offense
     source: |
@@ -189,8 +196,8 @@ tests:
     config:
       AllowQualifiedName: true
       AllowURI: true
-      Max: 80
       AllowedPatterns: null
+      Max: 80
 
   - name: rubocop_cop_layout_linelength_when_allowuri_option_is_enabled_and_the_excessive_characters_include_part_of_a_url_in_braces_and_another_word_registers_an_offense_for_the_line
     source: |
@@ -204,8 +211,8 @@ tests:
     config:
       AllowQualifiedName: true
       AllowURI: true
-      Max: 80
       AllowedPatterns: null
+      Max: 80
 
   - name: rubocop_cop_layout_linelength_when_allowuri_option_is_enabled_and_the_excessive_characters_include_part_of_a_url_and_trailing_whitespace_registers_an_offense_for_the_line
     source: |
@@ -219,13 +226,14 @@ tests:
     config:
       AllowQualifiedName: true
       AllowURI: true
-      Max: 80
       AllowedPatterns: null
+      Max: 80
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_when_allowuri_option_is_enabled_with_uri_starting_before_or_after_limit_depending_on_tabs_count_registers_an_offense_for_the_line
     source: |
-      				# There is some content http://test.com
+      ‹TAB›‹TAB›‹TAB›‹TAB›# There is some content http://test.com
     offenses:
       - line: 1
         column_start: 26
@@ -234,8 +242,8 @@ tests:
     config:
       AllowQualifiedName: true
       AllowURI: true
-      Max: 30
       AllowedPatterns: null
+      Max: 30
 
   - name: rubocop_cop_layout_linelength_when_allowuri_option_is_enabled_does_not_crash
     source: |
@@ -248,12 +256,13 @@ tests:
     config:
       AllowQualifiedName: true
       AllowURI: true
-      Max: 80
       AllowedPatterns: null
+      Max: 80
       URISchemes: [LDAP]
 
   - name: rubocop_cop_layout_linelength_when_allowuri_option_is_enabled_and_the_url_does_not_have_a_http_s_scheme_rejects_the_line
     source: |
+      ‹BASE›0‹/BASE›
       #{'x' * 40} = 'otherprotocol://a.very.long.line.which.violates.LineLength/sadf'
       #{' ' * 40}                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Line is too long. [108/80]
     offenses:
@@ -261,26 +270,30 @@ tests:
     config:
       AllowQualifiedName: true
       AllowURI: true
-      Max: 80
       AllowedPatterns: null
+      Max: 80
       URISchemes: [LDAP]
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_when_allowuri_option_is_enabled_and_the_url_does_not_have_a_http_s_scheme_and_the_scheme_has_been_configured_does_not_register_an_offense
     source: |
+      ‹BASE›0‹/BASE›
       #{'x' * 40} = 'otherprotocol://a.very.long.line.which.violates.LineLength/sadf'
     offenses:
       []
     config:
       AllowQualifiedName: true
       AllowURI: true
-      Max: 80
       AllowedPatterns: null
-      URISchemes: [otherprotocol]
+      Max: 80
+      URISchemes: [$UNRESOLVED:otherprotocol]
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_when_allowuri_option_is_enabled_and_the_uri_is_assigned_does_not_register_an_offense
     source: |
+      ‹BASE›0‹/BASE›
       #{'x' * 40} = 'https://a.very.long.line.which.violates.LineLength/sadf'
       #{'x' * 40} = "https://a.very.long.line.which.violates.LineLength/sadf"
     offenses:
@@ -288,13 +301,15 @@ tests:
     config:
       AllowQualifiedName: true
       AllowURI: true
-      Max: 80
       AllowedPatterns: null
-      URISchemes: [otherprotocol]
+      Max: 80
+      URISchemes: [$UNRESOLVED:otherprotocol]
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_when_allowuri_option_is_enabled_and_the_uri_is_an_argument_does_not_register_an_offense
     source: |
+      ‹BASE›0‹/BASE›
       #{'x' * 40}("https://a.very.long.line.which.violates.LineLength/sadf")
       #{'x' * 40} "https://a.very.long.line.which.violates.LineLength/sadf"
       #{'x' * 40}('https://a.very.long.line.which.violates.LineLength/sadf')
@@ -304,10 +319,11 @@ tests:
     config:
       AllowQualifiedName: true
       AllowURI: true
-      Max: 80
       AllowedPatterns: null
-      URISchemes: [otherprotocol]
+      Max: 80
+      URISchemes: [$UNRESOLVED:otherprotocol]
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_when_allowqualifiedname_option_is_enabled_and_the_namespace_fits_within_the_max_allowed_characters_registers_an_offense_for_the_line
     source: |
@@ -321,9 +337,9 @@ tests:
     config:
       AllowQualifiedName: true
       AllowURI: true
-      Max: 80
       AllowedPatterns: null
-      URISchemes: [otherprotocol]
+      Max: 80
+      URISchemes: [$UNRESOLVED:otherprotocol]
 
   - name: rubocop_cop_layout_linelength_when_allowqualifiedname_option_is_enabled_and_all_the_excessive_characters_are_part_of_a_qualifed_name_accepts_the_line
     source: |
@@ -334,9 +350,9 @@ tests:
     config:
       AllowQualifiedName: true
       AllowURI: true
-      Max: 80
       AllowedPatterns: null
-      URISchemes: [otherprotocol]
+      Max: 80
+      URISchemes: [$UNRESOLVED:otherprotocol]
 
   - name: rubocop_cop_layout_linelength_when_allowqualifiedname_option_is_enabled_and_all_the_excessive_characters_are_part_of_a_qualifed_name_and_the_qualifed_name_is_wrapped_in_single_quotes_accepts_the_line
     source: |
@@ -346,9 +362,9 @@ tests:
     config:
       AllowQualifiedName: true
       AllowURI: true
-      Max: 80
       AllowedPatterns: null
-      URISchemes: [otherprotocol]
+      Max: 80
+      URISchemes: [$UNRESOLVED:otherprotocol]
 
   - name: rubocop_cop_layout_linelength_when_allowqualifiedname_option_is_enabled_and_all_the_excessive_characters_are_part_of_a_qualifed_name_and_the_qualifed_name_is_wrapped_in_double_quotes_accepts_the_line
     source: |
@@ -358,9 +374,9 @@ tests:
     config:
       AllowQualifiedName: true
       AllowURI: true
-      Max: 80
       AllowedPatterns: null
-      URISchemes: [otherprotocol]
+      Max: 80
+      URISchemes: [$UNRESOLVED:otherprotocol]
 
   - name: rubocop_cop_layout_linelength_when_allowqualifiedname_option_is_enabled_and_all_the_excessive_characters_are_part_of_a_qualifed_name_and_the_qualifed_name_is_wrapped_in_braces_accepts_the_line
     source: |
@@ -370,9 +386,9 @@ tests:
     config:
       AllowQualifiedName: true
       AllowURI: true
-      Max: 80
       AllowedPatterns: null
-      URISchemes: [otherprotocol]
+      Max: 80
+      URISchemes: [$UNRESOLVED:otherprotocol]
 
   - name: rubocop_cop_layout_linelength_when_allowqualifiedname_option_is_enabled_and_the_excessive_characters_include_a_complete_qualifed_name_registers_an_offense_for_the_line
     source: |
@@ -385,9 +401,9 @@ tests:
     config:
       AllowQualifiedName: true
       AllowURI: true
-      Max: 80
       AllowedPatterns: null
-      URISchemes: [otherprotocol]
+      Max: 80
+      URISchemes: [$UNRESOLVED:otherprotocol]
 
   - name: rubocop_cop_layout_linelength_when_allowqualifiedname_option_is_enabled_and_the_excessive_characters_include_a_complete_qualifed_name_when_multiple_entries_are_present_registers_an_offense_for_the_line
     source: |
@@ -400,9 +416,9 @@ tests:
     config:
       AllowQualifiedName: true
       AllowURI: true
-      Max: 80
       AllowedPatterns: null
-      URISchemes: [otherprotocol]
+      Max: 80
+      URISchemes: [$UNRESOLVED:otherprotocol]
 
   - name: rubocop_cop_layout_linelength_when_allowqualifiedname_option_is_enabled_and_the_excessive_characters_include_part_of_a_qualifed_name_and_another_word_registers_an_offense_for_the_line
     source: |
@@ -416,9 +432,9 @@ tests:
     config:
       AllowQualifiedName: true
       AllowURI: true
-      Max: 80
       AllowedPatterns: null
-      URISchemes: [otherprotocol]
+      Max: 80
+      URISchemes: [$UNRESOLVED:otherprotocol]
 
   - name: rubocop_cop_layout_linelength_when_allowqualifiedname_option_is_enabled_and_the_excessive_characters_include_part_of_a_qualifed_name_in_double_quotes_does_not_include_the_quote_as_part_of_the_offense
     source: |
@@ -432,9 +448,9 @@ tests:
     config:
       AllowQualifiedName: true
       AllowURI: true
-      Max: 80
       AllowedPatterns: null
-      URISchemes: [otherprotocol]
+      Max: 80
+      URISchemes: [$UNRESOLVED:otherprotocol]
 
   - name: rubocop_cop_layout_linelength_when_allowqualifiedname_option_is_enabled_and_the_excessive_characters_include_part_of_a_qualifed_name_in_braces_and_another_word_registers_an_offense_for_the_line
     source: |
@@ -448,9 +464,9 @@ tests:
     config:
       AllowQualifiedName: true
       AllowURI: true
-      Max: 80
       AllowedPatterns: null
-      URISchemes: [otherprotocol]
+      Max: 80
+      URISchemes: [$UNRESOLVED:otherprotocol]
 
   - name: rubocop_cop_layout_linelength_when_allowqualifiedname_option_is_enabled_and_the_excessive_characters_include_part_of_a_qualifed_name_and_trailing_whitespace_registers_an_offense_for_the_line
     source: |
@@ -464,13 +480,15 @@ tests:
     config:
       AllowQualifiedName: true
       AllowURI: true
-      Max: 80
       AllowedPatterns: null
-      URISchemes: [otherprotocol]
+      Max: 80
+      URISchemes: [$UNRESOLVED:otherprotocol]
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_when_allowqualifiedname_option_is_enabled_and_the_qualifed_name_is_an_argument_does_not_register_an_offense
     source: |
+      ‹BASE›0‹/BASE›
       #{'x' * 40}("ActiveRecord::Oracle::SchemaStatements::create_table")
       #{'x' * 40} "ActiveRecord::Oracle::SchemaStatements::create_table"
       #{'x' * 40}('ActiveRecord::Oracle::SchemaStatements::create_table')
@@ -480,10 +498,11 @@ tests:
     config:
       AllowQualifiedName: true
       AllowURI: true
-      Max: 80
       AllowedPatterns: null
-      URISchemes: [otherprotocol]
+      Max: 80
+      URISchemes: [$UNRESOLVED:otherprotocol]
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_when_allowqualifiedname_option_is_not_enabled_and_all_the_excessive_characters_are_part_of_a_qualifed_name_registers_an_offense
     source: |
@@ -497,9 +516,9 @@ tests:
     config:
       AllowQualifiedName: true
       AllowURI: true
-      Max: 80
       AllowedPatterns: null
-      URISchemes: [otherprotocol]
+      Max: 80
+      URISchemes: [$UNRESOLVED:otherprotocol]
 
   - name: rubocop_cop_layout_linelength_when_allowedpatterns_option_is_set_only_registers_an_offense_for_lines_not_matching_the_pattern
     source: |
@@ -517,9 +536,9 @@ tests:
     config:
       AllowQualifiedName: true
       AllowURI: true
-      Max: 18
       AllowedPatterns: ['^\s*test\s', '/^\s*def\s+test_/']
-      URISchemes: [otherprotocol]
+      Max: 18
+      URISchemes: [$UNRESOLVED:otherprotocol]
 
   - name: rubocop_cop_layout_linelength_when_allowheredoc_option_is_enabled_accepts_long_lines_in_heredocs
     source: |
@@ -529,12 +548,12 @@ tests:
     offenses:
       []
     config:
+      AllowHeredoc: true
       AllowQualifiedName: true
       AllowURI: true
-      Max: 80
       AllowedPatterns: ['^\s*test\s', '/^\s*def\s+test_/']
-      URISchemes: [otherprotocol]
-      AllowHeredoc: true
+      Max: 80
+      URISchemes: [$UNRESOLVED:otherprotocol]
 
   - name: rubocop_cop_layout_linelength_when_allowheredoc_option_is_enabled_and_splitstrings_option_is_enabled_does_not_register_an_offense
     source: |
@@ -544,25 +563,26 @@ tests:
     offenses:
       []
     config:
+      AllowHeredoc: true
       AllowQualifiedName: true
       AllowURI: true
-      Max: 80
       AllowedPatterns: ['^\s*test\s', '/^\s*def\s+test_/']
-      URISchemes: [otherprotocol]
-      AllowHeredoc: true
+      Max: 80
+      URISchemes: [$UNRESOLVED:otherprotocol]
 
   - name: rubocop_cop_layout_linelength_when_allowheredoc_option_is_enabled_when_the_source_has_no_ast_does_not_crash
     source: |
+      ‹BASE›0‹/BASE›
       # this results in AST being nil
     offenses:
       []
     config:
+      AllowHeredoc: true
       AllowQualifiedName: true
       AllowURI: true
-      Max: 80
       AllowedPatterns: ['^\s*test\s', '/^\s*def\s+test_/']
-      URISchemes: [otherprotocol]
-      AllowHeredoc: true
+      Max: 80
+      URISchemes: [$UNRESOLVED:otherprotocol]
 
   - name: rubocop_cop_layout_linelength_when_allowheredoc_option_is_enabled_and_only_certain_heredoc_delimiters_are_permitted_rejects_long_lines_in_heredocs_with_not_permitted_delimiters
     source: |
@@ -592,13 +612,14 @@ tests:
     offenses:
       []
     config:
+      AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
       AllowURI: true
-      Max: 80
       AllowedPatterns: []
-      URISchemes: [otherprotocol]
-      AllowHeredoc: [SQL, OK]
+      Max: 80
+      URISchemes: [$UNRESOLVED:otherprotocol]
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_when_allowuri_option_is_disabled_and_all_the_excessive_characters_are_part_of_a_url_registers_an_offense_for_the_line
     source: |
@@ -610,15 +631,16 @@ tests:
         column_end: 99
         message: Line is too long. [99/80]
     config:
+      AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
       AllowURI: false
-      Max: 80
       AllowedPatterns: []
-      URISchemes: [otherprotocol]
-      AllowHeredoc: [SQL, OK]
+      Max: 80
+      URISchemes: [$UNRESOLVED:otherprotocol]
 
   - name: rubocop_cop_layout_linelength_when_allowrbsinlineannotation_is_disabled_registers_an_offense_for_a_long_line_with_an_rbs_inline_annotation
     source: |
+      ‹BASE›0‹/BASE›
       #: () -> String
       def hash
       end
@@ -628,13 +650,13 @@ tests:
         column_end: 15
         message: Line is too long. [15/10]
     config:
+      AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
       AllowRBSInlineAnnotation: false
       AllowURI: false
-      Max: 10
       AllowedPatterns: []
-      URISchemes: [otherprotocol]
-      AllowHeredoc: [SQL, OK]
+      Max: 10
+      URISchemes: [$UNRESOLVED:otherprotocol]
 
   - name: rubocop_cop_layout_linelength_when_allowrbsinlineannotation_is_disabled_registers_an_offense_for_a_long_line_with_an_rbs_inline_annotation_on_the_same_line_as_the_code
     source: |
@@ -646,29 +668,30 @@ tests:
         column_end: 32
         message: Line is too long. [32/10]
     config:
+      AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
       AllowRBSInlineAnnotation: false
       AllowURI: false
-      Max: 10
       AllowedPatterns: []
-      URISchemes: [otherprotocol]
-      AllowHeredoc: [SQL, OK]
+      Max: 10
+      URISchemes: [$UNRESOLVED:otherprotocol]
 
   - name: rubocop_cop_layout_linelength_when_allowrbsinlineannotation_is_enabled_does_not_register_an_offense_for_a_long_line_with_an_rbs_inline_annotation
     source: |
+      ‹BASE›0‹/BASE›
       #: () -> String
       def hash
       end
     offenses:
       []
     config:
-      AllowURI: false
-      Max: 10
-      AllowedPatterns: []
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: []
+      Max: 10
+      URISchemes: [$UNRESOLVED:otherprotocol]
 
   - name: rubocop_cop_layout_linelength_when_allowrbsinlineannotation_is_enabled_does_not_register_an_offense_for_a_long_line_with_an_rbs_inline_annotation_on_the_same_line_as_the_code
     source: |
@@ -677,79 +700,86 @@ tests:
     offenses:
       []
     config:
-      AllowURI: false
-      Max: 10
-      AllowedPatterns: []
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: []
+      Max: 10
+      URISchemes: [$UNRESOLVED:otherprotocol]
 
   - name: rubocop_cop_layout_linelength_when_allowcopdirectives_is_disabled_and_the_source_is_acceptable_length_with_a_trailing_rubocop_directive_registers_an_offense_for_the_line
     source: |
+      ‹BASE›0‹/BASE›
       #{'a' * 80} # rubocop:disable Layout/SomeCop
       #{' ' * 80}^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Line is too long. [113/80]
     offenses:
       []
     config:
       AllowCopDirectives: false
-      AllowURI: false
-      Max: 80
-      AllowedPatterns: []
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: []
+      Max: 80
+      URISchemes: [$UNRESOLVED:otherprotocol]
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_when_allowcopdirectives_is_disabled_and_the_source_is_acceptable_length_with_an_inline_comment_highlights_the_excess_comment
     source: |
+      ‹BASE›0‹/BASE›
       #{'a' * 80} ###
       #{' ' * 80}^^^^ Line is too long. [84/80]
     offenses:
       []
     config:
       AllowCopDirectives: false
-      AllowURI: false
-      Max: 80
-      AllowedPatterns: []
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: []
+      Max: 80
+      URISchemes: [$UNRESOLVED:otherprotocol]
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_when_allowcopdirectives_is_disabled_and_the_source_is_too_long_and_has_a_trailing_cop_directive_highlights_the_excess_source_and_cop_directive
     source: |
+      ‹BASE›0‹/BASE›
       #{'a' * 80} b # rubocop:disable Metrics/AbcSize
       #{' ' * 80}^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Line is too long. [116/80]
     offenses:
       []
     config:
       AllowCopDirectives: false
-      AllowURI: false
-      Max: 80
-      AllowedPatterns: []
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: []
+      Max: 80
+      URISchemes: [$UNRESOLVED:otherprotocol]
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_when_allowcopdirectives_is_enabled_and_the_rubocop_directive_is_excessively_long_accepts_the_line
     source: |
+      ‹BASE›0‹/BASE›
       # rubocop:disable Metrics/SomeReallyLongMetricNameThatShouldBeMuchShorterAndNeedsANameChange
     offenses:
       []
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      Max: 80
-      AllowedPatterns: []
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: []
+      Max: 80
+      URISchemes: [$UNRESOLVED:otherprotocol]
 
   - name: rubocop_cop_layout_linelength_when_allowcopdirectives_is_enabled_and_the_rubocop_directive_causes_an_excessive_line_length_accepts_the_line
     source: |
@@ -760,13 +790,13 @@ tests:
       []
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      Max: 80
-      AllowedPatterns: []
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: []
+      Max: 80
+      URISchemes: [$UNRESOLVED:otherprotocol]
 
   - name: rubocop_cop_layout_linelength_when_allowcopdirectives_is_enabled_and_the_rubocop_directive_causes_an_excessive_line_length_and_has_explanatory_text_does_not_register_an_offense
     source: |
@@ -777,47 +807,51 @@ tests:
       []
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      Max: 80
-      AllowedPatterns: []
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: []
+      Max: 80
+      URISchemes: [$UNRESOLVED:otherprotocol]
 
   - name: rubocop_cop_layout_linelength_when_allowcopdirectives_is_enabled_and_the_source_is_too_long_highlights_only_the_non_directive_part
     source: |
+      ‹BASE›0‹/BASE›
       #{'a' * 80}bcd # rubocop:enable Style/ClassVars
       #{' ' * 80}^^^ Line is too long. [83/80]
     offenses:
       []
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      Max: 80
-      AllowedPatterns: []
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: []
+      Max: 80
+      URISchemes: [$UNRESOLVED:otherprotocol]
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_when_allowcopdirectives_is_enabled_and_the_source_is_too_long_and_the_source_contains_non_directive_as_comment_highlights_only_the_non_directive_part
     source: |
+      ‹BASE›0‹/BASE›
       #{'a' * 70} # bbbbbbbbbbbbbb # rubocop:enable Style/ClassVars'
       #{' ' * 70}          ^^^^^^^ Line is too long. [87/80]
     offenses:
       []
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      Max: 80
-      AllowedPatterns: []
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: []
+      Max: 80
+      URISchemes: [$UNRESOLVED:otherprotocol]
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_when_allowcopdirectives_is_enabled_and_the_source_is_too_long_and_the_source_contains_non_directive_s_as_non_comment_registers_an_offense_for_the_line
     source: |
@@ -827,111 +861,114 @@ tests:
       []
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      Max: 80
-      AllowedPatterns: []
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: []
+      Max: 80
+      URISchemes: [$UNRESOLVED:otherprotocol]
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_affecting_by_indentationwidth_from_layout_tab
     source: |
-      		#{'#' * 28}a
+      ‹TAB›‹TAB›#{'#' * 28}a
           #{' ' * 24}^^^ Line is too long. [33/30]
     offenses:
       []
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      Max: 80
-      AllowedPatterns: []
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: []
+      Max: 80
+      URISchemes: [$UNRESOLVED:otherprotocol]
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_affecting_by_indentationwidth_from_layout_tab_accepts_a_line_that_s_including_1_tab_with_size_2_and_28_other_characters
     source: |
-      	#{'#' * 28}
+      ‹TAB›#{'#' * 28}
     offenses:
       []
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      Max: 80
-      AllowedPatterns: []
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: []
+      Max: 80
+      URISchemes: [$UNRESOLVED:otherprotocol]
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_affecting_by_indentationwidth_from_layout_tab_with_allowuri_option_accepts_a_line_that_s_including_uri
     source: |
-      		# https://github.com/rubocop/rubocop
+      ‹TAB›‹TAB›# https://github.com/rubocop/rubocop
     offenses:
       []
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      Max: 80
-      AllowedPatterns: []
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: []
+      Max: 80
+      URISchemes: [$UNRESOLVED:otherprotocol]
 
   - name: rubocop_cop_layout_linelength_affecting_by_indentationwidth_from_layout_tab_with_allowuri_option_accepts_a_line_that_s_including_uri_and_exceeds_by_1_char
     source: |
-      		# https://github.com/ruboco
+      ‹TAB›‹TAB›# https://github.com/ruboco
     offenses:
       []
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      Max: 80
-      AllowedPatterns: []
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: []
+      Max: 80
+      URISchemes: [$UNRESOLVED:otherprotocol]
 
   - name: rubocop_cop_layout_linelength_affecting_by_indentationwidth_from_layout_tab_with_allowuri_option_accepts_a_line_that_s_including_uri_with_text
     source: |
-      		# See https://github.com/rubocop/rubocop
+      ‹TAB›‹TAB›# See https://github.com/rubocop/rubocop
     offenses:
       []
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      Max: 80
-      AllowedPatterns: []
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: []
+      Max: 80
+      URISchemes: [$UNRESOLVED:otherprotocol]
 
   - name: rubocop_cop_layout_linelength_affecting_by_indentationwidth_from_layout_tab_with_allowuri_option_accepts_a_line_that_s_including_uri_in_quotes_with_text
     source: |
-      		# See 'https://github.com/rubocop/rubocop'
+      ‹TAB›‹TAB›# See 'https://github.com/rubocop/rubocop'
     offenses:
       []
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      Max: 80
-      AllowedPatterns: []
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: []
+      Max: 80
+      URISchemes: [$UNRESOLVED:otherprotocol]
 
   - name: rubocop_cop_layout_linelength_affecting_by_indentationwidth_from_layout_tab_with_allowuri_option_registers_the_line_which_looks_like_yard_comment
     source: |
-                	expect(some_exception_variable) {|e| e.url.should == 'http://host/path'}
+                ‹TAB›expect(some_exception_variable) {|e| e.url.should == 'http://host/path'}
     offenses:
       - line: 1
         column_start: 30
@@ -939,13 +976,13 @@ tests:
         message: Line is too long. [83/30]
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      Max: 80
-      AllowedPatterns: []
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: []
+      Max: 80
+      URISchemes: [$UNRESOLVED:otherprotocol]
 
   - name: rubocop_cop_layout_linelength_autocorrection_string_when_under_limit_does_not_add_any_offenses
     source: |
@@ -954,15 +991,17 @@ tests:
       []
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_string_when_under_limit_does_not_add_any_offenses_with_interpolation
     source: |
@@ -971,15 +1010,17 @@ tests:
       []
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_breaks_the_string_at_the_limit
     source: |
@@ -994,15 +1035,17 @@ tests:
       'bbbbb'
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_when_allowheredoc_false_with_multiple_string_interpolations_registers_an_offense_and_autocorrects
     source: |
@@ -1021,15 +1064,17 @@ tests:
       MESSAGE
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_when_the_string_straddles_after_the_limit_registers_an_offense_but_does_not_correct
     source: |
@@ -1042,15 +1087,17 @@ tests:
         message: Line is too long. [43/40]
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_when_the_string_starts_after_the_limit_registers_an_offense_but_does_not_correct
     source: |
@@ -1063,15 +1110,17 @@ tests:
         message: Line is too long. [46/40]
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_when_there_is_already_a_continuation_breaks_the_string_at_the_limit
     source: |
@@ -1088,15 +1137,17 @@ tests:
       'cccccccccccc'
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_when_the_string_is_not_at_the_start_of_the_source_breaks_the_string_at_the_limit
     source: |
@@ -1111,15 +1162,17 @@ tests:
       'bbbbb'
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_when_the_string_is_not_at_the_start_of_the_source_with_spaces_breaks_the_string_at_the_last_space
     source: |
@@ -1134,15 +1187,17 @@ tests:
       'bbbbbbbbbbbbbbb'
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_when_the_string_is_not_at_the_start_of_the_source_with_escape_characters_breaks_the_string_at_the_last_space
     source: |
@@ -1157,15 +1212,17 @@ tests:
       '\nbbbbbbbbbb'
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_inside_a_hash_breaks_the_hash_not_the_string
     source: |
@@ -1180,16 +1237,17 @@ tests:
       y: 'bbbbbbbbbbbbbbbbbbbbbbbbbbb', z: 'cccccccccccccccccccccccccccccccccccccccccc' }
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_due_to_a_comment_registers_an_offense_but_does_not_correct
     source: |
@@ -1201,15 +1259,17 @@ tests:
         message: Line is too long. [62/40]
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_when_there_is_a_space_in_the_string_breaks_the_string_at_the_space
     source: |
@@ -1224,15 +1284,17 @@ tests:
       'bbbbbbbbbbbbbbbbbb'
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_when_there_are_multiple_spaces_in_the_string_breaks_the_string_at_the_last_space_before_the_limit
     source: |
@@ -1248,15 +1310,17 @@ tests:
       'eeeeeeeeeeee'
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_when_there_is_an_escape_character_at_the_limit_breaks_the_string_before_the_escape_character
     source: |
@@ -1271,15 +1335,17 @@ tests:
       "\nbbbb"
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_when_there_is_an_u_escape_character_at_the_limit_breaks_the_string_before_the_escape_character
     source: |
@@ -1294,15 +1360,17 @@ tests:
       "\u0061bbbb"
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_when_there_is_an_x_escape_character_at_the_limit_breaks_the_string_before_the_escape_character
     source: |
@@ -1317,15 +1385,17 @@ tests:
       "\x61bbbb"
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_when_there_is_a_multibyte_character_at_the_limit_breaks_the_string_at_the_limit
     source: |
@@ -1340,18 +1410,21 @@ tests:
       "あbbbbb"
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_when_the_string_is_inside_a_registers_an_offense_but_does_not_correct
     source: |
+      ‹BASE›0‹/BASE›
       %{aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
     offenses:
       - line: 1
@@ -1360,18 +1433,21 @@ tests:
         message: Line is too long. [44/40]
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_registers_an_offense_but_does_not_correct
     source: |
+      ‹BASE›0‹/BASE›
       %{macro}[aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa]
     offenses:
       - line: 1
@@ -1380,15 +1456,17 @@ tests:
         message: Line is too long. [45/40]
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_when_the_string_is_inside_a_heredoc_registers_an_offense_but_does_not_correct
     source: |
@@ -1402,15 +1480,17 @@ tests:
         message: Line is too long. [43/40]
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_with_interpolation_breaks_the_string_before_the_interpolation
     source: |
@@ -1425,15 +1505,17 @@ tests:
       "#{bbbb}"
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_with_interpolation_when_the_interpolation_is_before_the_limit_breaks_the_string_at_the_limit
     source: |
@@ -1448,15 +1530,17 @@ tests:
       "aaaaaaaaaaaaaaaa"
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_with_interpolation_when_the_interpolation_comes_after_the_limit_breaks_the_string_but_not_the_interpolation
     source: |
@@ -1471,15 +1555,17 @@ tests:
       "aaaaaaaaa#{bbbb}"
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_with_interpolation_when_the_interpolation_is_not_on_the_first_line_registers_an_offense_and_corrects
     source: |
@@ -1496,15 +1582,17 @@ tests:
       "#{bbbbbbbbb}"
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_with_interpolation_when_the_entire_string_is_interpolation_registers_an_offense_but_does_not_correct
     source: |
@@ -1516,15 +1604,17 @@ tests:
         message: Line is too long. [54/40]
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_with_interpolation_with_multiple_interpolations_breaks_the_string_where_appropriate
     source: |
@@ -1539,15 +1629,17 @@ tests:
       "ddddddddd#{eeeeeeeeeeee}"
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_with_interpolation_nested_interpolation_breaks_the_string_before_the_outer_interpolation
     source: |
@@ -1562,15 +1654,17 @@ tests:
       "#{"#{bbbbbbbbbbbbbbbbbbbbbbbb}"}"
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_when_the_string_has_no_spaces_and_spans_multiple_words_with_max_set_to_30_registers_an_offense_and_corrects_by_splitting_the_string
     source: |
@@ -1587,15 +1681,17 @@ tests:
       '000000000000000000000000000'
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_false_registers_an_offense_but_does_not_correct
     source: |
@@ -1607,15 +1703,17 @@ tests:
         message: Line is too long. [43/40]
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_hash_when_under_limit_does_not_add_any_offenses
     source: |
@@ -1624,15 +1722,17 @@ tests:
       []
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_hash_when_over_limit_because_of_a_comment_adds_an_offense_and_does_not_autocorrect
     source: |
@@ -1646,15 +1746,17 @@ tests:
         message: Line is too long. [75/40]
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_hash_when_over_limit_and_already_on_multiple_lines_long_key_adds_an_offense_and_does_not_autocorrect
     source: |
@@ -1668,15 +1770,17 @@ tests:
         message: Line is too long. [74/40]
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_hash_when_over_limit_and_keys_already_on_multiple_lines_adds_an_offense_and_does_not_autocorrect
     source: |
@@ -1692,15 +1796,17 @@ tests:
         message: Line is too long. [61/40]
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_hash_when_over_limit_adds_an_offense_and_autocorrects_it
     source: |
@@ -1715,16 +1821,17 @@ tests:
       ghi: "100000", jkl: "100000", mno: "100000"}
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_hash_when_over_limit_rocket_adds_an_offense_and_autocorrects_it
     source: |
@@ -1739,16 +1846,17 @@ tests:
       "casd" => "100000", "asdf" => "100000"}
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_hash_when_over_limit_rocket_symbol_adds_an_offense_and_autocorrects_it
     source: |
@@ -1763,16 +1871,17 @@ tests:
       :asd => "100000", :fds => "100000"}
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_hash_when_nested_hashes_on_same_line_adds_an_offense_only_to_outer_and_autocorrects_it
     source: |
@@ -1787,16 +1896,17 @@ tests:
       ghi: {abc: "100000"}, jkl: "100000", mno: "100000"}
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_hash_when_hash_in_method_call_adds_an_offense_only_to_outer_and_autocorrects_it
     source: |
@@ -1817,16 +1927,17 @@ tests:
         xhr: true)
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_method_definition_when_under_limit_does_not_add_any_offenses
     source: |
@@ -1835,15 +1946,17 @@ tests:
       []
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_method_definition_when_over_limit_adds_an_offense_and_autocorrects_it
     source: |
@@ -1860,16 +1973,17 @@ tests:
       end
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_class_method_definition_when_under_limit_does_not_add_any_offenses
     source: |
@@ -1878,15 +1992,17 @@ tests:
       []
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_class_method_definition_when_over_limit_adds_an_offense_and_autocorrects_it
     source: |
@@ -1903,16 +2019,17 @@ tests:
       end
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_method_call_when_under_limit_does_not_add_any_offenses
     source: |
@@ -1921,15 +2038,17 @@ tests:
       []
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_method_call_when_two_together_does_not_add_any_offenses
     source: |
@@ -1941,15 +2060,17 @@ tests:
       []
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_method_call_when_over_limit_adds_an_offense_and_autocorrects_it
     source: |
@@ -1964,15 +2085,17 @@ tests:
       ghi: "100000", jkl: "100000", mno: "100000")
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_method_call_when_unparenthesized_when_there_is_one_argument_does_not_autocorrect
     source: |
@@ -1984,15 +2107,17 @@ tests:
         message: Line is too long. [42/40]
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_method_call_when_unparenthesized_when_there_are_multiple_arguments_splits_the_line_after_the_first_element
     source: |
@@ -2007,16 +2132,17 @@ tests:
       abc
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_method_call_when_call_with_hash_on_same_line_adds_an_offense_only_to_outer_and_autocorrects_it
     source: |
@@ -2031,15 +2157,17 @@ tests:
       ghi: {abc: "100000"}, jkl: "100000", mno: "100000")
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_method_call_with_a_hash_with_a_too_long_first_item_when_parenthesized_corrects
     source: |
@@ -2054,15 +2182,17 @@ tests:
       abc: '10000000000000000000000000000000000000000000000000000', def: '1000')
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_method_call_with_a_hash_with_a_too_long_first_item_when_the_hash_is_parenthesized_corrects
     source: |
@@ -2077,16 +2207,17 @@ tests:
       abc: '10000000000000000000000000000000000000000000000000000', def: '1000' })
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_method_call_with_a_hash_with_a_too_long_first_item_when_not_parenthesized_when_there_is_only_one_element_does_not_autocorrect
     source: |
@@ -2098,15 +2229,17 @@ tests:
         message: Line is too long. [64/40]
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_method_call_with_a_hash_with_a_too_long_first_item_when_not_parenthesized_when_there_are_multiple_elements_moves_the_2nd_element_to_a_new_line
     source: |
@@ -2121,16 +2254,17 @@ tests:
       ghi: '1000'
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_method_call_with_a_hash_with_a_too_long_first_item_when_not_parenthesized_when_on_multiple_lines_does_not_correct
     source: |
@@ -2143,15 +2277,17 @@ tests:
         message: Line is too long. [65/40]
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_method_call_when_two_method_calls_adds_an_offense_only_to_outer_and_autocorrects_it
     source: |
@@ -2166,15 +2302,17 @@ tests:
       foo(44440000, 30000, 39999, 19929120312093))
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_method_call_when_nested_method_calls_allows_outer_to_get_broken_up_first_adds_offense_and_does_not_autocorrect
     source: |
@@ -2187,15 +2325,17 @@ tests:
         message: Line is too long. [70/40]
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_method_call_with_long_argument_list_registers_an_offense_and_autocorrects_it
     source: |
@@ -2210,16 +2350,17 @@ tests:
       :email, :username, :country, :state, :city, :postal_code
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_method_call_with_a_heredoc_argument_does_not_break_up_the_line
     source: |
@@ -2232,16 +2373,17 @@ tests:
         message: Line is too long. [44/40]
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_method_call_with_a_heredoc_argument_does_not_break_up_the_line_when_parentheses_are_omitted
     source: |
@@ -2254,16 +2396,17 @@ tests:
         message: Line is too long. [43/40]
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_method_call_with_a_heredoc_argument_does_not_break_up_the_line_when_a_heredoc_is_used_as_the_first_element_of_an_array
     source: |
@@ -2276,15 +2419,17 @@ tests:
         message: Line is too long. [43/40]
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_method_call_with_a_heredoc_argument_and_other_arguments_before_the_heredoc_can_break_up_the_line_before_the_heredoc_argument
     source: |
@@ -2301,16 +2446,17 @@ tests:
       STRING
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_method_call_with_a_heredoc_argument_and_the_heredoc_is_after_the_line_should_split_can_break_up_the_line_before_the_heredoc_argument
     source: |
@@ -2327,16 +2473,17 @@ tests:
       STRING
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_safe_navigation_method_call_when_under_limit_does_not_add_any_offenses
     source: |
@@ -2345,15 +2492,17 @@ tests:
       []
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_safe_navigation_method_call_when_two_together_does_not_add_any_offenses
     source: |
@@ -2365,15 +2514,17 @@ tests:
       []
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_safe_navigation_method_call_when_over_limit_adds_an_offense_and_autocorrects_it
     source: |
@@ -2388,15 +2539,17 @@ tests:
       ghi: "100000", jkl: "100000", mno: "100000")
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_safe_navigation_method_call_when_unparenthesized_when_there_is_one_argument_does_not_autocorrect
     source: |
@@ -2408,15 +2561,17 @@ tests:
         message: Line is too long. [42/40]
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_safe_navigation_method_call_when_unparenthesized_when_there_are_multiple_arguments_splits_the_line_after_the_first_element
     source: |
@@ -2431,16 +2586,17 @@ tests:
       abc
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_safe_navigation_method_call_when_call_with_hash_on_same_line_adds_an_offense_only_to_outer_and_autocorrects_it
     source: |
@@ -2455,15 +2611,17 @@ tests:
       ghi: {abc: "100000"}, jkl: "100000", mno: "100000")
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_safe_navigation_method_call_with_a_hash_with_a_too_long_first_item_when_parenthesized_corrects
     source: |
@@ -2478,15 +2636,17 @@ tests:
       abc: '10000000000000000000000000000000000000000000000000000', def: '1000')
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_safe_navigation_method_call_with_a_hash_with_a_too_long_first_item_when_the_hash_is_parenthesized_corrects
     source: |
@@ -2501,16 +2661,17 @@ tests:
       abc: '10000000000000000000000000000000000000000000000000000', def: '1000' })
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_safe_navigation_method_call_with_a_hash_with_a_too_long_first_item_when_not_parenthesized_when_there_is_only_one_element_does_not_autocorrect
     source: |
@@ -2522,15 +2683,17 @@ tests:
         message: Line is too long. [69/40]
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_safe_navigation_method_call_with_a_hash_with_a_too_long_first_item_when_not_parenthesized_when_there_are_multiple_elements_breaks_after_the_method_call
     source: |
@@ -2545,16 +2708,17 @@ tests:
       ghi: '1000'
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_safe_navigation_method_call_with_a_hash_with_a_too_long_first_item_when_not_parenthesized_when_on_multiple_lines_does_not_correct
     source: |
@@ -2567,15 +2731,17 @@ tests:
         message: Line is too long. [70/40]
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_safe_navigation_method_call_when_two_method_calls_when_the_inner_uses_safe_navigation_adds_an_offense_only_to_outer_and_autocorrects_it
     source: |
@@ -2590,15 +2756,17 @@ tests:
       foo&.bar(44440000, 30000, 39999, 19929120312093))
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_safe_navigation_method_call_when_two_method_calls_when_the_outer_uses_safe_navigation_adds_an_offense_only_to_outer_and_autocorrects_it
     source: |
@@ -2613,15 +2781,17 @@ tests:
       foo(44440000, 30000, 39999, 19929120312093))
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_safe_navigation_method_call_when_two_method_calls_when_both_use_safe_navigation_adds_an_offense_only_to_outer_and_autocorrects_it
     source: |
@@ -2636,15 +2806,17 @@ tests:
       foo&.baz(44440000, 30000, 39999, 19929120312093))
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_safe_navigation_method_call_when_nested_method_calls_allows_outer_to_get_broken_up_first_adds_offense_and_does_not_autocorrect
     source: |
@@ -2657,15 +2829,17 @@ tests:
         message: Line is too long. [80/40]
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_safe_navigation_method_call_when_nested_method_calls_with_safe_navigation_allows_outer_to_get_broken_up_first_adds_offense_and_does_not_autocorrect
     source: |
@@ -2678,15 +2852,17 @@ tests:
         message: Line is too long. [80/40]
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_safe_navigation_method_call_with_long_argument_list_registers_an_offense_and_autocorrects_it
     source: |
@@ -2701,16 +2877,17 @@ tests:
       :email, :username, :country, :state, :city, :postal_code
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_safe_navigation_method_call_with_a_heredoc_argument_does_not_break_up_the_line
     source: |
@@ -2723,16 +2900,17 @@ tests:
         message: Line is too long. [44/40]
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_safe_navigation_method_call_with_a_heredoc_argument_does_not_break_up_the_line_when_parentheses_are_omitted
     source: |
@@ -2745,16 +2923,17 @@ tests:
         message: Line is too long. [43/40]
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_safe_navigation_method_call_with_a_heredoc_argument_and_other_arguments_before_the_heredoc_can_break_up_the_line_before_the_heredoc_argument
     source: |
@@ -2771,16 +2950,17 @@ tests:
       STRING
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_safe_navigation_method_call_with_a_heredoc_argument_and_the_heredoc_is_after_the_line_should_split_can_break_up_the_line_before_the_heredoc_argument
     source: |
@@ -2797,16 +2977,17 @@ tests:
       STRING
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_array_when_under_limit_does_not_add_any_offenses
     source: |
@@ -2815,15 +2996,17 @@ tests:
       []
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_array_when_already_on_two_lines_does_not_add_any_offenses
     source: |
@@ -2833,15 +3016,17 @@ tests:
       []
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_array_when_over_limit_adds_an_offense_and_autocorrects_it
     source: |
@@ -2856,15 +3041,17 @@ tests:
       "100000", "100000"]
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_array_when_has_inside_array_adds_an_offense_only_to_outer_and_autocorrects_it
     source: |
@@ -2879,15 +3066,17 @@ tests:
       {abc: "100000", b: "2"}, "100000", "100000"]
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_array_when_two_arrays_on_two_lines_allows_outer_to_get_broken_first_adds_an_offense_only_to_inner_and_does_not_autocorrect_it
     source: |
@@ -2901,15 +3090,17 @@ tests:
         message: Line is too long. [70/40]
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_breakable_collection_method_call_inside_a_hash_breaks_the_hash_not_the_method
     source: |
@@ -2924,16 +3115,17 @@ tests:
       bar: method_call(x, y, z) }
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_breakable_collection_safe_navigation_method_call_inside_a_hash_breaks_the_hash_not_the_method
     source: |
@@ -2948,16 +3140,17 @@ tests:
       bar: foo&.bar(x, y, z) }
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_no_breakable_collections_adds_an_offense_and_does_not_autocorrect_it
     source: |
@@ -2971,15 +3164,17 @@ tests:
         message: Line is too long. [70/40]
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_long_blocks_braces_adds_an_offense_and_does_correct_it
     source: |
@@ -2994,15 +3189,17 @@ tests:
        4444000039123123129993912312312999199291203123123 }
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_long_blocks_do_end_adds_an_offense_for_block_with_arguments_and_does_correct_it
     source: |
@@ -3017,15 +3214,17 @@ tests:
        4444000039123123129993912312312999199291203123 end
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_long_blocks_do_end_adds_an_offense_for_block_without_arguments_and_does_correct_it
     source: |
@@ -3040,15 +3239,17 @@ tests:
        4444000039123123129993912312312999199291203123 end
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_long_blocks_let_block_adds_an_offense_and_does_correct_it
     source: |
@@ -3063,15 +3264,17 @@ tests:
        BazBazBaz::BazBazBaz::BazBazBaz::BazBazBaz.baz(baz12) }
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_long_blocks_no_spaces_adds_an_offense_and_does_correct_it
     source: |
@@ -3086,15 +3289,17 @@ tests:
       BazBazBaz::BazBazBaz::BazBazBaz::BazBazBaz.baz(baz12345)}
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_long_blocks_lambda_syntax_when_argument_is_enclosed_in_parentheses_registers_an_offense_and_corrects
     source: |
@@ -3109,15 +3314,17 @@ tests:
        fooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo }
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_long_blocks_lambda_syntax_when_argument_is_not_enclosed_in_parentheses_registers_an_offense_and_corrects
     source: |
@@ -3132,15 +3339,17 @@ tests:
        foooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo }
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_long_blocks_heredoc_in_receiver_receiver_is_a_heredoc_registers_an_offense_but_does_not_correct
     source: |
@@ -3154,15 +3363,17 @@ tests:
         message: Line is too long. [73/40]
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_long_blocks_heredoc_in_receiver_receiver_is_an_array_containing_a_heredoc_registers_an_offense_but_does_not_correct
     source: |
@@ -3176,15 +3387,17 @@ tests:
         message: Line is too long. [75/40]
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_long_blocks_heredoc_in_receiver_receiver_is_an_array_containing_multiple_heredocs_registers_an_offense_but_does_not_correct
     source: |
@@ -3200,15 +3413,17 @@ tests:
         message: Line is too long. [83/40]
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_long_blocks_heredoc_in_receiver_receiver_is_a_heredoc_chain_registers_an_offense_but_does_not_correct
     source: |
@@ -3222,15 +3437,17 @@ tests:
         message: Line is too long. [81/40]
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_long_blocks_heredoc_in_receiver_receiver_contains_a_heredoc_as_a_method_argument_registers_an_offense_but_does_not_correct
     source: |
@@ -3244,15 +3461,17 @@ tests:
         message: Line is too long. [82/40]
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_long_blocks_heredoc_in_receiver_receiver_is_a_dstr_heredoc_registers_an_offense_but_does_not_correct
     source: |
@@ -3266,15 +3485,17 @@ tests:
         message: Line is too long. [73/40]
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_long_blocks_heredoc_in_receiver_receiver_is_an_xstr_heredoc_registers_an_offense_but_does_not_correct
     source: |
@@ -3288,15 +3509,17 @@ tests:
         message: Line is too long. [75/40]
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_long_blocks_ruby_3_4_adds_an_offense_for_block_does_correct_it
     source: |
@@ -3311,16 +3534,18 @@ tests:
        it + 4444000039123123129993912312312999199291203123123 }
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
     ruby_version: ">= 3.4"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_long_blocks_ruby_3_4_adds_an_offense_for_do_end_block_and_does_correct_it
     source: |
@@ -3335,16 +3560,18 @@ tests:
        it + 4444000039123123129993912312312999199291203123 end
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
     ruby_version: ">= 3.4"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_semicolon_when_under_limit_does_not_add_any_offenses
     source: |
@@ -3353,15 +3580,17 @@ tests:
       []
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_semicolon_when_over_limit_adds_offense_and_autocorrects_it_by_breaking_the_semicolon_before_the_hash
     source: |
@@ -3376,15 +3605,17 @@ tests:
        a = 400000000000 + 500000000000000
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_semicolon_when_over_limit_and_semicolon_at_end_of_line_adds_offense_and_autocorrects_it_by_breaking_the_first_semicolon_before_the_hash
     source: |
@@ -3399,15 +3630,17 @@ tests:
        a = 400000000000 + 500000000000000;
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_semicolon_when_over_limit_and_many_spaces_around_semicolon_adds_offense_and_autocorrects_it_by_breaking_the_semicolon_before_the_hash
     source: |
@@ -3422,15 +3655,17 @@ tests:
          a = 400000000000 + 500000000000000
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_semicolon_when_over_limit_and_many_semicolons_adds_offense_and_autocorrects_it_by_breaking_the_semicolon_before_the_hash
     source: |
@@ -3445,15 +3680,17 @@ tests:
        a = 400000000000 + 500000000000000
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_semicolon_when_over_limit_and_one_semicolon_at_the_end_adds_offense_and_does_not_autocorrect_before_the_hash
     source: |
@@ -3465,15 +3702,17 @@ tests:
         message: Line is too long. [41/40]
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_semicolon_when_over_limit_and_many_semicolons_at_the_end_adds_offense_and_does_not_autocorrect_before_the_hash
     source: |
@@ -3485,15 +3724,17 @@ tests:
         message: Line is too long. [47/40]
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_semicolon_semicolon_inside_string_literal_adds_offense_and_autocorrects_elsewhere
     source: |
@@ -3508,15 +3749,17 @@ tests:
       bat: 'publisher_group:123;publisher:456;s:123')
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_semicolon_semicolons_inside_string_literal_adds_offense_and_autocorrects
     source: |
@@ -3531,15 +3774,17 @@ tests:
       "0'000000;00000'0000;0000;000"
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: [SQL, OK]
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_heredoc_when_over_limit_with_semicolon_adds_offense_and_does_not_autocorrect
     source: |
@@ -3553,15 +3798,17 @@ tests:
         message: Line is too long. [52/40]
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: false
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_heredoc_when_heredoc_start_delimiter_has_a_chained_method_with_arguments_that_go_over_limit_adds_offense_and_does_not_autocorrect
     source: |
@@ -3575,15 +3822,17 @@ tests:
         message: Line is too long. [66/40]
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: false
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_heredoc_when_heredoc_start_delimiter_has_a_chained_method_with_arguments_that_go_over_limit_adds_offense_and_does_not_autocorrect_for_dstr
     source: |
@@ -3597,15 +3846,17 @@ tests:
         message: Line is too long. [66/40]
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: false
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_heredoc_when_heredoc_start_delimiter_has_a_chained_method_with_arguments_that_go_over_limit_adds_offense_and_does_not_autocorrect_for_xstr
     source: |
@@ -3619,18 +3870,21 @@ tests:
         message: Line is too long. [68/40]
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: false
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_comments_when_over_limit_with_semicolon_adds_offense_and_does_not_autocorrect
     source: |
+      ‹BASE›0‹/BASE›
       # a b c d a b c d a b c d ; a b c d a b c d a b c d a
     offenses:
       - line: 1
@@ -3639,15 +3893,17 @@ tests:
         message: Line is too long. [53/40]
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: false
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_layout_linelength_autocorrection_multiple_assignment_when_over_limit_at_right_hand_side_registers_and_corrects_an_offense
     source: |
@@ -3663,13 +3919,14 @@ tests:
       b
     config:
       AllowCopDirectives: true
-      AllowURI: false
-      AutoCorrect: true
-      Max: 40
-      AllowedPatterns: null
-      AllowRBSInlineAnnotation: true
       AllowHeredoc: false
       AllowQualifiedName: true
-      SplitStrings: split_strings
-      URISchemes: [otherprotocol]
+      AllowRBSInlineAnnotation: true
+      AllowURI: false
+      AllowedPatterns: null
+      AutoCorrect: true
+      Max: 40
+      SplitStrings: $UNRESOLVED:split_strings
+      URISchemes: [$UNRESOLVED:otherprotocol]
     interpolated: true
+    verified: false

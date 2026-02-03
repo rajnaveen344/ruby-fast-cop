@@ -23,6 +23,7 @@ tests:
         end # Comment 2
       end
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_ifunlessmodifier_modifier_if_that_does_not_fit_on_one_line_when_layout_linelength_is_enabled_and_the_long_line_is_allowed_because_allowuri_is_true_accepts
     source: |
@@ -30,6 +31,7 @@ tests:
     offenses:
       []
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_ifunlessmodifier_modifier_if_that_does_not_fit_on_one_line_when_layout_linelength_is_enabled_and_the_long_line_is_too_long_because_allowuri_is_false_registers_an_offense
     source: |
@@ -44,6 +46,7 @@ tests:
         puts 1
       end
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_ifunlessmodifier_modifier_if_that_does_not_fit_on_one_line_when_layout_linelength_is_enabled_when_using_multiple_if_modifier_in_the_long_one_line_registers_an_offense
     source: |
@@ -105,6 +108,7 @@ tests:
         column_end: 17
         message: Modifier form of `if` makes the line too long.
     corrected: |
+      ‹BASE›0‹/BASE›
       # The condition might have been long, but this comment is longer. In fact, it is too long for RuboCop
       some_statement if some_quite_long_condition
 
@@ -116,6 +120,7 @@ tests:
     offenses:
       []
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_ifunlessmodifier_modifier_if_that_does_not_fit_on_one_line_when_layout_linelength_is_enabled_allowcopdirectives_and_the_long_line_is_too_long_because_allowcopdirectives_is_false_registers_an_offense
     source: |
@@ -133,6 +138,7 @@ tests:
         #{body} if condition
       end
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_ifunlessmodifier_modifier_if_that_does_not_fit_on_one_line_when_layout_linelength_is_disabled_in_configuration_accepts
     source: |
@@ -142,6 +148,7 @@ tests:
     offenses:
       []
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_ifunlessmodifier_modifier_if_that_does_not_fit_on_one_line_when_layout_linelength_is_disabled_with_enable_disable_comments_accepts
     source: |
@@ -153,6 +160,7 @@ tests:
     offenses:
       []
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_ifunlessmodifier_modifier_if_that_does_not_fit_on_one_line_when_layout_linelength_is_disabled_with_an_eol_comment_accepts
     source: |
@@ -162,6 +170,7 @@ tests:
     offenses:
       []
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_ifunlessmodifier_multiline_if_that_fits_on_one_line_registers_an_offense
     source: |
@@ -175,8 +184,10 @@ tests:
         column_end: 2
         message: Favor modifier `if` usage when having a single-line body. Another good alternative is the usage of control flow `&&`/`||`.
     corrected: |
+      ‹BASE›0‹/BASE›
       #{body} if #{condition}
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_ifunlessmodifier_multiline_if_that_fits_on_one_line_and_has_two_statements_separated_by_semicolon_accepts
     source: |
@@ -207,6 +218,7 @@ tests:
     offenses:
       []
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_ifunlessmodifier_multiline_if_that_fits_on_one_line_with_comment_on_first_line_registers_an_offense_and_preserves_comment
     source: |
@@ -594,8 +606,9 @@ tests:
 
   - name: rubocop_cop_style_ifunlessmodifier_with_tabs_used_for_indentation_it_fits_on_one_line_registers_an_offense
     source: |
+      ‹BASE›0‹/BASE›
       %{indent}if #{condition}
-      %{indent}	#{body}
+      %{indent}‹TAB›#{body}
       %{indent}end
     offenses:
       - line: 1
@@ -603,17 +616,21 @@ tests:
         column_end: 24
         message: Favor modifier `if` usage when having a single-line body. [...]
     corrected: |
+      ‹BASE›0‹/BASE›
       #{indent}#{body} if #{condition}
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_ifunlessmodifier_with_tabs_used_for_indentation_it_doesn_t_fit_on_one_line_doesn_t_register_an_offense
     source: |
+      ‹BASE›0‹/BASE›
       #{indent}if #{condition}
-      #{indent}	#{body}
+      #{indent}‹TAB›#{body}
       #{indent}end
     offenses:
       []
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_ifunlessmodifier_when_layout_linelength_is_disabled_registers_an_offense_even_for_a_long_modifier_statement
     source: |
@@ -641,6 +658,7 @@ tests:
     corrected: |
       x = (#{body} if a)
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_ifunlessmodifier_when_if_end_condition_is_assigned_to_a_variable_with_variable_being_on_the_same_line_when_it_is_not_short_enough_to_fit_on_a_single_line_accepts_it_in_the_multiline_form
     source: |
@@ -650,6 +668,7 @@ tests:
     offenses:
       []
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_ifunlessmodifier_when_if_end_condition_is_assigned_to_a_variable_with_variable_being_on_the_previous_line_when_it_is_short_enough_to_fit_on_a_single_line_corrects_it_to_the_single_line_form
     source: |
@@ -666,6 +685,7 @@ tests:
       x =
         (#{body} if a)
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_ifunlessmodifier_when_if_end_condition_is_assigned_to_a_variable_with_variable_being_on_the_previous_line_when_it_is_not_short_enough_to_fit_on_a_single_line_accepts_it_in_the_multiline_form
     source: |
@@ -676,6 +696,7 @@ tests:
     offenses:
       []
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_ifunlessmodifier_when_if_end_condition_is_an_element_of_an_array_when_short_enough_to_fit_on_a_single_line_corrects_it_to_the_single_line_form
     source: |
@@ -694,6 +715,7 @@ tests:
         (#{body} if a)
       ]
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_ifunlessmodifier_when_if_end_condition_is_an_element_of_an_array_when_not_short_enough_to_fit_on_a_single_line_accepts_it_in_the_multiline_form
     source: |
@@ -705,6 +727,7 @@ tests:
     offenses:
       []
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_ifunlessmodifier_when_if_end_condition_is_a_value_in_a_hash_when_it_is_short_enough_to_fit_on_a_single_line_corrects_it_to_the_single_line_form
     source: |
@@ -723,6 +746,7 @@ tests:
         x: (#{body} if a)
       }
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_ifunlessmodifier_when_if_end_condition_is_a_value_in_a_hash_when_it_is_not_short_enough_to_fit_on_a_single_line_accepts_it_in_the_multiline_form
     source: |
@@ -734,6 +758,7 @@ tests:
     offenses:
       []
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_ifunlessmodifier_when_if_end_condition_has_a_first_line_comment_when_it_is_short_enough_to_fit_on_a_single_line_corrects_it_to_the_single_line_form
     source: |
@@ -748,6 +773,7 @@ tests:
     corrected: |
       bar if foo # #{comment}
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_ifunlessmodifier_when_if_end_condition_has_a_first_line_comment_when_it_is_not_short_enough_to_fit_on_a_single_line_accepts_it_in_the_multiline_form
     source: |
@@ -757,6 +783,7 @@ tests:
     offenses:
       []
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_ifunlessmodifier_when_if_end_condition_has_some_code_after_the_end_keyword_when_it_is_short_enough_to_fit_on_a_single_line_corrects_it_to_the_single_line_form
     source: |
@@ -775,6 +802,7 @@ tests:
         1, (#{body} if foo), 300_000_000
       ]
     interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_ifunlessmodifier_when_if_end_condition_has_some_code_after_the_end_keyword_when_it_is_not_short_enough_to_fit_on_a_single_line_accepts_it_in_the_multiline_form
     source: |
@@ -786,3 +814,4 @@ tests:
     offenses:
       []
     interpolated: true
+    verified: false

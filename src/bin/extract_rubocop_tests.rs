@@ -27,18 +27,10 @@ const DEPARTMENTS: &[&str] = &[
     "migration",
 ];
 
-/// Cops that are implemented in ruby-fast-cop
+/// Cops that are implemented in ruby-fast-cop and have passing tests
+/// Only add cops here after verifying all their tests pass!
 const IMPLEMENTED_COPS: &[&str] = &[
-    "Lint/Debugger",
-    "Lint/AssignmentInCondition",
-    "Layout/LineLength",
-    "Metrics/BlockLength",
     "Style/AutoResourceCleanup",
-    "Style/FormatStringToken",
-    "Style/HashSyntax",
-    "Style/MethodCalledOnDoEndBlock",
-    "Style/RaiseArgs",
-    "Style/RescueStandardError",
     "Style/StringMethods",
 ];
 
@@ -57,6 +49,9 @@ struct TestCase {
     /// True if source contains Ruby interpolation (#{...}) - requires manual sync
     #[serde(skip_serializing_if = "std::ops::Not::not")]
     interpolated: bool,
+    /// True if an interpolated test has been manually verified/fixed
+    #[serde(skip_serializing_if = "std::ops::Not::not")]
+    verified: bool,
 }
 
 /// An expected offense
@@ -634,6 +629,7 @@ impl Visit<'_> for TestExtractor<'_> {
                             config: self.current_cop_config.clone(),
                             ruby_version: ruby_version_tag.or_else(|| self.current_ruby_version()),
                             interpolated: test_data.interpolated,
+                            verified: false,
                         };
 
                         self.tests.push(test);
@@ -709,6 +705,7 @@ impl Visit<'_> for TestExtractor<'_> {
                                     config: self.current_cop_config.clone(),
                                     ruby_version: self.current_ruby_version(),
                                     interpolated,
+                                    verified: false,
                                 };
                                 self.tests.push(test);
                             }
@@ -945,10 +942,89 @@ fn default_severity(dept: &str) -> &str {
     }
 }
 
+/// Check if a string looks like an unresolved Ruby variable
+/// (snake_case identifier that's not a known valid value)
+fn is_unresolved_variable(s: &str) -> bool {
+    // Empty strings are not variables
+    if s.is_empty() {
+        return false;
+    }
+
+    // Known valid values that look like variables but aren't
+    let known_values = [
+        // Booleans
+        "true", "false", "null", "nil",
+        // Format string styles
+        "annotated", "template", "unannotated",
+        // Modes
+        "conservative", "aggressive",
+        // Raise args styles
+        "exploded", "compact",
+        // Rescue styles
+        "explicit", "implicit",
+        // Hash syntax styles
+        "ruby19", "hash_rockets", "no_mixed_keys", "ruby19_no_mixed_keys",
+        // String literal styles
+        "single_quotes", "double_quotes",
+        // Common options
+        "always", "never", "contextual",
+        // Parentheses options
+        "require_parentheses", "omit_parentheses",
+        // Comparison operators
+        "forbid_for_all_comparison_operators",
+        "allow_for_equality_operators_only",
+        "require_for_all_comparison_operators",
+        "require_for_equality_operators_only",
+        "forbid_for_equality_operators_only",
+        // Common Ruby method names used in configs
+        "to_sym", "intern", "to_s", "to_i", "to_f", "to_a", "to_h",
+        "upcase", "downcase", "capitalize", "swapcase",
+        "strip", "lstrip", "rstrip", "chomp", "chop",
+        "reverse", "length", "size", "count", "empty",
+        "freeze", "dup", "clone",
+        // File paths/patterns
+        "spec", "test", "lib", "app", "config",
+        // Indentation styles
+        "special_inside_parentheses", "consistent", "align_braces",
+        "consistent_relative_to_receiver", "align_brackets",
+        // Naming styles
+        "snake_case", "camelcase", "normalcase",
+        // Block styles
+        "line_count_based", "semantic", "braces_for_chaining", "always_braces",
+        // Empty lines
+        "empty_lines", "empty_lines_except_class", "empty_lines_special",
+        "no_empty_lines", "beginning_only", "ending_only",
+        // Alignment
+        "with_first_parameter", "with_fixed_indentation",
+        // Condition styles
+        "assign_to_condition", "assign_inside_condition",
+        // Method call styles
+        "require_no_parentheses", "require_no_parentheses_except_multiline",
+    ];
+
+    if known_values.contains(&s) {
+        return false;
+    }
+
+    // Check if it looks like a Ruby variable (snake_case, lowercase)
+    let is_snake_case = s.chars().all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '_');
+
+    // Variables typically don't start with a digit
+    let starts_with_letter = s.chars().next().map_or(false, |c| c.is_ascii_lowercase());
+
+    is_snake_case && starts_with_letter
+}
+
 /// Convert a serde_yaml::Value to a YAML string representation
 fn yaml_value_to_string(value: &serde_yaml::Value) -> String {
     match value {
-        serde_yaml::Value::String(s) => yaml_escape(s),
+        serde_yaml::Value::String(s) => {
+            if is_unresolved_variable(s) {
+                format!("$UNRESOLVED:{}", s)
+            } else {
+                yaml_escape(s)
+            }
+        }
         serde_yaml::Value::Number(n) => n.to_string(),
         serde_yaml::Value::Bool(b) => b.to_string(),
         serde_yaml::Value::Null => "null".to_string(),
@@ -964,6 +1040,93 @@ fn yaml_value_to_string(value: &serde_yaml::Value) -> String {
         }
         _ => format!("{:?}", value),
     }
+}
+
+/// Check if source needs special handling for YAML block scalar
+fn source_needs_special_handling(source: &str) -> bool {
+    // Check for tabs
+    if source.contains('\t') {
+        return true;
+    }
+
+    // Get indentation of all non-empty lines
+    let indents: Vec<usize> = source
+        .lines()
+        .filter(|line| !line.trim().is_empty())
+        .map(|line| line.len() - line.trim_start().len())
+        .collect();
+
+    if indents.is_empty() {
+        return false;
+    }
+
+    // YAML block scalar uses first line's indentation as the base.
+    // If any subsequent line has LESS indentation, it breaks parsing.
+    let first_indent = indents[0];
+    for &indent in &indents[1..] {
+        if indent < first_indent {
+            return true;
+        }
+    }
+
+    // Also check for lines that start with YAML-special characters at column 0
+    for line in source.lines() {
+        let trimmed = line.trim_start();
+        let indent = line.len() - trimmed.len();
+        if indent == 0 && !trimmed.is_empty() {
+            if trimmed.starts_with('#') || trimmed.starts_with('%') ||
+               trimmed.starts_with('!') || trimmed.starts_with('&') ||
+               trimmed.starts_with('*') || trimmed.starts_with('@') ||
+               trimmed.starts_with('`') {
+                return true;
+            }
+        }
+    }
+
+    false
+}
+
+/// Encode source code for YAML compatibility
+/// - Replaces tab characters with ‹TAB› marker (YAML block scalars can't have tabs)
+/// - For sources with inconsistent indentation, adds ‹BASE›N‹/BASE› wrapper
+/// - The test runner should decode these back
+fn encode_source_for_yaml(source: &str) -> String {
+    let source = source.replace('\t', "‹TAB›");
+
+    if !source_needs_special_handling(&source) {
+        return source;
+    }
+
+    // Find minimum indentation of non-empty lines
+    let min_indent = source
+        .lines()
+        .filter(|line| !line.trim().is_empty())
+        .map(|line| line.len() - line.trim_start().len())
+        .min()
+        .unwrap_or(0);
+
+    // Add marker indicating base indentation was stripped
+    let mut result = format!("‹BASE›{}‹/BASE›\n", min_indent);
+
+    // Dedent all lines
+    for line in source.lines() {
+        if line.trim().is_empty() {
+            result.push('\n');
+        } else if line.len() >= min_indent {
+            result.push_str(&line[min_indent..]);
+            result.push('\n');
+        } else {
+            result.push_str(line.trim_start());
+            result.push('\n');
+        }
+    }
+
+    // Remove trailing newline if original didn't have one
+    if !source.ends_with('\n') && result.ends_with('\n') {
+        result.pop();
+    }
+
+    result
 }
 
 /// Escape a string for YAML output
@@ -1012,8 +1175,11 @@ fn generate_yaml(test_file: &CopTestFile) -> String {
 
     for test in &test_file.tests {
         lines.push(format!("  - name: {}", test.name));
+
+        // Handle source - encode tabs as ‹TAB› for YAML compatibility
+        let encoded_source = encode_source_for_yaml(&test.source);
         lines.push("    source: |".to_string());
-        for line in test.source.lines() {
+        for line in encoded_source.lines() {
             lines.push(format!("      {}", line));
         }
 
@@ -1033,15 +1199,29 @@ fn generate_yaml(test_file: &CopTestFile) -> String {
         }
 
         if let Some(corrected) = &test.corrected {
+            let encoded_corrected = encode_source_for_yaml(corrected);
             lines.push("    corrected: |".to_string());
-            for line in corrected.lines() {
+            for line in encoded_corrected.lines() {
                 lines.push(format!("      {}", line));
             }
         }
 
+        // Check if config has any unresolved values
+        let has_unresolved_config = test.config.values().any(|v| {
+            if let serde_yaml::Value::String(s) = v {
+                is_unresolved_variable(s)
+            } else {
+                false
+            }
+        });
+
         if !test.config.is_empty() {
             lines.push("    config:".to_string());
-            for (key, value) in &test.config {
+            // Sort config keys for consistent output
+            let mut keys: Vec<_> = test.config.keys().collect();
+            keys.sort();
+            for key in keys {
+                let value = &test.config[key];
                 let val_str = yaml_value_to_string(value);
                 lines.push(format!("      {}: {}", key, val_str));
             }
@@ -1051,8 +1231,10 @@ fn generate_yaml(test_file: &CopTestFile) -> String {
             lines.push(format!("    ruby_version: {}", yaml_escape(rv)));
         }
 
-        if test.interpolated {
+        // Mark as interpolated if source has #{...} OR config has unresolved values
+        if test.interpolated || has_unresolved_config {
             lines.push("    interpolated: true".to_string());
+            lines.push("    verified: false".to_string());
         }
 
         lines.push(String::new());

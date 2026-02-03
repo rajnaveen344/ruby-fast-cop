@@ -427,9 +427,9 @@ tests:
     corrected: |
       x = { :a => 0, :b => 2}
     config:
+      EnforcedStyle: hash_rockets
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: false
-      EnforcedStyle: hash_rockets
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_hash_rockets_style_registers_an_offense_for_mixed_syntax
     source: |
@@ -442,9 +442,9 @@ tests:
     corrected: |
       x = { a => 0, :b => 1 }
     config:
+      EnforcedStyle: hash_rockets
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: false
-      EnforcedStyle: hash_rockets
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_hash_rockets_style_registers_an_offense_for_1_9_style_in_method_calls
     source: |
@@ -457,9 +457,9 @@ tests:
     corrected: |
       func(3, :a => 0)
     config:
+      EnforcedStyle: hash_rockets
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: false
-      EnforcedStyle: hash_rockets
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_hash_rockets_style_accepts_hash_rockets_in_a_hash_literal
     source: |
@@ -467,9 +467,9 @@ tests:
     offenses:
       []
     config:
+      EnforcedStyle: hash_rockets
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: false
-      EnforcedStyle: hash_rockets
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_hash_rockets_style_accepts_hash_rockets_in_method_calls
     source: |
@@ -477,9 +477,9 @@ tests:
     offenses:
       []
     config:
+      EnforcedStyle: hash_rockets
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: false
-      EnforcedStyle: hash_rockets
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_hash_rockets_style_accepts_an_empty_hash
     source: |
@@ -487,9 +487,9 @@ tests:
     offenses:
       []
     config:
+      EnforcedStyle: hash_rockets
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: false
-      EnforcedStyle: hash_rockets
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_hash_rockets_style_usehashrocketswithsymbolvalues_has_no_impact_does_not_register_an_offense_when_there_is_a_symbol_value
     source: |
@@ -658,7 +658,7 @@ tests:
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_ruby_1_9_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_disabled_ruby_2_2_registers_an_offense_when_keys_have_special_symbols_and_mix_styles
     source: |
-      x = { :"	ab" => 1, b: 1 }
+      x = { :"‹TAB›ab" => 1, b: 1 }
     offenses:
       - line: 1
         column_start: 19
@@ -945,7 +945,7 @@ tests:
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_ruby_1_9_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_enabled_ruby_2_2_registers_an_offense_when_keys_have_special_symbols_and_mix_styles
     source: |
-      x = { :"	ab" => 1, b: 1 }
+      x = { :"‹TAB›ab" => 1, b: 1 }
     offenses:
       - line: 1
         column_start: 19
@@ -1187,7 +1187,7 @@ tests:
         column_end: 30
         message: "Don't mix styles in the same hash."
     corrected: |
-      x = { :"	ab" => 1, :b => 1 }
+      x = { :"‹TAB›ab" => 1, :b => 1 }
     config:
       EnforcedStyle: no_mixed_keys
       SupportedStyles: [ruby19, hash_rockets]
@@ -1269,10 +1269,12 @@ tests:
       {foo:, bar:}
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_and_corrects_an_offense_when_hash_key_and_hash_value_lvar_are_the_same
     source: |
@@ -1296,10 +1298,12 @@ tests:
       {foo:, bar:}
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_and_corrects_an_offense_when_hash_key_and_hash_value_are_partially_the_same
     source: |
@@ -1313,10 +1317,12 @@ tests:
       {foo:, bar:, baz: qux}
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_and_corrects_an_offense_when_hash_foo_foo
     source: |
@@ -1330,10 +1336,12 @@ tests:
       Hash[foo:]
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_and_corrects_an_offense_when_hash_foo_foo_and_an_expression_follows
     source: |
@@ -1349,10 +1357,12 @@ tests:
       do_something
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_and_corrects_an_offense_when_braced_hash_key_and_value_are_the_same_and_it_is_used_in_if_else
     source: |
@@ -1374,10 +1384,12 @@ tests:
       end
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_and_corrects_an_offense_when_hash_key_and_hash_value_are_the_same_and_it_in_the_method_body
     source: |
@@ -1405,10 +1417,12 @@ tests:
       end
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1
     source: |
@@ -1438,10 +1452,12 @@ tests:
       do_something
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_does_not_register_an_offense_when_hash_values_are_omitted
     source: |
@@ -1450,10 +1466,12 @@ tests:
       []
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_does_not_register_an_offense_when_hash_key_and_hash_value_are_not_the_same
     source: |
@@ -1462,10 +1480,12 @@ tests:
       []
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_does_not_register_an_offense_when_symbol_hash_key_and_hash_value_lvar_are_not_the_same
     source: |
@@ -1477,10 +1497,12 @@ tests:
       []
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_when_hash_key_and_hash_value_are_not_the_same_and_method_with_is_called
     source: |
@@ -1494,10 +1516,12 @@ tests:
       {foo:}.do_something[key]
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_does_not_register_an_offense_when_hash_pattern_matching
     source: |
@@ -1509,10 +1533,12 @@ tests:
       []
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_does_not_register_an_offense_when_hash_key_and_hash_value_are_the_same_but_the_value_ends
     source: |
@@ -1521,10 +1547,12 @@ tests:
       []
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_does_not_register_an_offense_when_hash_key_and_hash_value_are_the_same_but_the_value_ends
     source: |
@@ -1533,10 +1561,12 @@ tests:
       []
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_does_not_register_an_offense_when_symbol_hash_key_and_string_hash_value_are_the_same
     source: |
@@ -1545,10 +1575,12 @@ tests:
       []
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_does_not_register_an_offense_when_method_call_hash_key_and_hash_value_are_the_same
     source: |
@@ -1557,10 +1589,12 @@ tests:
       []
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_does_not_register_an_offense_when_lvar_hash_key_and_hash_value_are_the_same
     source: |
@@ -1570,10 +1604,12 @@ tests:
       []
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_when_without_parentheses_call_expr_follows
     source: |
@@ -1601,10 +1637,12 @@ tests:
       foo arg
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_in_chained_calls
     source: |
@@ -1618,10 +1656,12 @@ tests:
       create(:foo, bar:).baz
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_when_without_parentheses_call_expr_follows_after_nested_method_call
     source: |
@@ -1637,10 +1677,12 @@ tests:
       baz
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_when_without_parentheses_call_expr_follows_after_multiple_keyword_arguments_method_call
     source: |
@@ -1660,10 +1702,12 @@ tests:
       baz
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_when_expression_follows_hash_key_assignment
     source: |
@@ -1679,10 +1723,12 @@ tests:
       bar
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_when_expression_follows_attribute_assignment
     source: |
@@ -1698,10 +1744,12 @@ tests:
       pass
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_when_expression_follows_multiple_assignments
     source: |
@@ -1723,10 +1771,12 @@ tests:
       pass
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_when_one_line_if_condition_follows_with_parentheses
     source: |
@@ -1740,10 +1790,12 @@ tests:
       foo(value:) if bar
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_when_one_line_if_condition_follows_super_with_parentheses
     source: |
@@ -1757,13 +1809,16 @@ tests:
       super(value:) unless foo
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_in_super_followed_by_ivar_assignment_without_parentheses
     source: |
+      ‹BASE›0‹/BASE›
       super value: value, other: other
       @ivar = ivar
     offenses:
@@ -1776,14 +1831,17 @@ tests:
         column_end: 18
         message: Omit the hash value.
     corrected: |
+      ‹BASE›0‹/BASE›
       super(value:, other:)
       @ivar = ivar
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_in_super_followed_by_expr_without_parentheses
     source: |
@@ -1803,10 +1861,12 @@ tests:
       foo baz
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_ruby_3_2_registers_an_offense_in_chained_calls_with_dispatch_keywords
     source: |
@@ -1820,10 +1880,12 @@ tests:
       yield(:foo, bar:).baz
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.2"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_ruby_3_2_registers_an_offense_when_one_line_if_condition_follows_yield_with_parentheses
     source: |
@@ -1837,13 +1899,16 @@ tests:
       yield(value:) unless foo
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.2"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_ruby_3_2_registers_an_offense_in_yield_followed_by_ivar_assignment_without_parentheses
     source: |
+      ‹BASE›0‹/BASE›
       yield value: value, other: other
       @ivar = ivar
     offenses:
@@ -1856,14 +1921,17 @@ tests:
         column_end: 18
         message: Omit the hash value.
     corrected: |
+      ‹BASE›0‹/BASE›
       yield(value:, other:)
       @ivar = ivar
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.2"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_ruby_3_2_registers_an_offense_in_yield_followed_by_expr_without_parentheses
     source: |
@@ -1883,10 +1951,12 @@ tests:
       foo baz
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.2"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_does_not_register_an_offense_when_one_line_if_condition_follows_without_parentheses
     source: |
@@ -1895,10 +1965,12 @@ tests:
       []
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_does_not_register_an_offense_when_one_line_if_condition_follows_super_without_parentheses
     source: |
@@ -1907,10 +1979,12 @@ tests:
       []
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_does_not_register_an_offense_when_one_line_if_condition_follows_without_parentheses_in_methods
     source: |
@@ -1921,10 +1995,12 @@ tests:
       []
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_does_not_register_an_offense_when_return_with_one_line_if_condition_follows_without_parentheses
     source: |
@@ -1933,10 +2009,12 @@ tests:
       []
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_when_one_line_until_condition_follows_with_parentheses
     source: |
@@ -1950,10 +2028,12 @@ tests:
       foo(value:) until bar
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_does_not_register_an_offense_when_one_line_until_condition_follows_without_parentheses
     source: |
@@ -1962,10 +2042,12 @@ tests:
       []
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_when_call_expr_with_argument_and_a_block_follows
     source: |
@@ -1985,10 +2067,12 @@ tests:
       end
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_when_call_expr_without_arguments_and_with_a_block_follows
     source: |
@@ -2008,10 +2092,12 @@ tests:
       end
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_when_with_parentheses_call_expr_follows
     source: |
@@ -2027,10 +2113,12 @@ tests:
       foo(arg)
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_when_with_parentheses_safe_navigation_call_expr_follows
     source: |
@@ -2046,10 +2134,12 @@ tests:
       foo(arg)
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_when_with_parentheses_call_expr_follows_assignment_expr
     source: |
@@ -2065,10 +2155,12 @@ tests:
       foo(arg)
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_when_hash_key_and_hash_value_are_partially_the_same
     source: |
@@ -2088,10 +2180,12 @@ tests:
       end
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_when_hash_first_arg_key_and_hash_value_only_are_the_same_which_has_a_method_call_on_the_next_line
     source: |
@@ -2109,10 +2203,12 @@ tests:
       def buz(foo:, bar:); end
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_in_method_receiving_hash_literals
     source: |
@@ -2130,10 +2226,12 @@ tests:
       foo = {bar:, baz: :baz, quux:}.merge foo
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_in_arguments_as_method_calls_with_hash_omissions
     source: |
@@ -2151,10 +2249,12 @@ tests:
       end
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_in_calls_without_parentheses_but_inside_parentheses
     source: |
@@ -2172,10 +2272,12 @@ tests:
       pass
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_and_adds_parentheses_for_if_condition
     source: |
@@ -2193,10 +2295,12 @@ tests:
       end
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_and_adds_parentheses_for_unless_condition
     source: |
@@ -2214,10 +2318,12 @@ tests:
       end
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_and_adds_parentheses_for_while_condition
     source: |
@@ -2235,10 +2341,12 @@ tests:
       end
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_and_adds_parentheses_for_until_condition
     source: |
@@ -2256,10 +2364,12 @@ tests:
       end
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_does_not_register_an_offense_for_modifier_form
     source: |
@@ -2268,10 +2378,12 @@ tests:
       []
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_when_hash_rocket_syntax_does_not_register_an_offense
     source: |
@@ -2280,10 +2392,12 @@ tests:
       []
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_0_does_not_register_an_offense_when_hash_key_and_hash_value_are_the_same
     source: |
@@ -2292,10 +2406,12 @@ tests:
       []
     config:
       EnforcedShorthandSyntax: always
-      EnforcedStyle: enforced_style
+      EnforcedStyle: $UNRESOLVED:enforced_style
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.0"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_enforce_explicit_hash_value_syntax_style_ruby_3_1_registers_and_corrects_an_offense_when_hash_values_are_omitted
     source: |
@@ -2377,11 +2493,13 @@ tests:
     offenses:
       []
     config:
-      EnforcedShorthandSyntax: either
+      EnforcedShorthandSyntax: $UNRESOLVED:either
       EnforcedStyle: ruby19
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_accept_both_shorthand_and_explicit_use_of_hash_literal_value_ruby_3_1_does_not_register_an_offense_when_hash_key_and_hash_value_are_partially_the_same
     source: |
@@ -2389,11 +2507,13 @@ tests:
     offenses:
       []
     config:
-      EnforcedShorthandSyntax: either
+      EnforcedShorthandSyntax: $UNRESOLVED:either
       EnforcedStyle: ruby19
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_accept_both_shorthand_and_explicit_use_of_hash_literal_value_ruby_3_1_does_not_register_an_offense_when_hash_key_and_hash_value_are_not_the_same
     source: |
@@ -2401,11 +2521,13 @@ tests:
     offenses:
       []
     config:
-      EnforcedShorthandSyntax: either
+      EnforcedShorthandSyntax: $UNRESOLVED:either
       EnforcedStyle: ruby19
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_accept_both_shorthand_and_explicit_use_of_hash_literal_value_ruby_3_1_does_not_register_an_offense_when_hash_key_and_hash_value_are_the_same
     source: |
@@ -2413,11 +2535,13 @@ tests:
     offenses:
       []
     config:
-      EnforcedShorthandSyntax: either
+      EnforcedShorthandSyntax: $UNRESOLVED:either
       EnforcedStyle: ruby19
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_accept_both_shorthand_and_explicit_use_of_hash_literal_value_ruby_3_0_does_not_register_an_offense_when_hash_key_and_hash_value_are_the_same
     source: |
@@ -2425,11 +2549,13 @@ tests:
     offenses:
       []
     config:
-      EnforcedShorthandSyntax: either
+      EnforcedShorthandSyntax: $UNRESOLVED:either
       EnforcedStyle: ruby19
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.0"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_disallow_mixing_of_implicit_and_explicit_hash_literal_value_but_prefers_shorthand_syntax_whenever_possible_ruby_3_1_does_not_register_an_offense_when_all_hash_values_are_omitted
     source: |
@@ -2636,11 +2762,13 @@ tests:
     offenses:
       []
     config:
-      EnforcedShorthandSyntax: either_consistent
+      EnforcedShorthandSyntax: $UNRESOLVED:either_consistent
       EnforcedStyle: ruby19
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_disallow_mixing_of_implicit_and_explicit_hash_literal_value_ruby_3_1_registers_an_offense_when_some_hash_values_are_omitted_but_they_can_all_be_omitted
     source: |
@@ -2653,11 +2781,13 @@ tests:
     corrected: |
       {foo:, bar:}
     config:
-      EnforcedShorthandSyntax: either_consistent
+      EnforcedShorthandSyntax: $UNRESOLVED:either_consistent
       EnforcedStyle: ruby19
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_disallow_mixing_of_implicit_and_explicit_hash_literal_value_ruby_3_1_registers_an_offense_when_some_hash_values_are_omitted_but_they_cannot_all_be_omitted
     source: |
@@ -2670,11 +2800,13 @@ tests:
     corrected: |
       {foo: foo, bar: baz}
     config:
-      EnforcedShorthandSyntax: either_consistent
+      EnforcedShorthandSyntax: $UNRESOLVED:either_consistent
       EnforcedStyle: ruby19
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_disallow_mixing_of_implicit_and_explicit_hash_literal_value_ruby_3_1_does_not_register_an_offense_when_all_hash_values_are_present_but_no_values_can_be_omitted
     source: |
@@ -2682,11 +2814,13 @@ tests:
     offenses:
       []
     config:
-      EnforcedShorthandSyntax: either_consistent
+      EnforcedShorthandSyntax: $UNRESOLVED:either_consistent
       EnforcedStyle: ruby19
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_disallow_mixing_of_implicit_and_explicit_hash_literal_value_ruby_3_1_does_not_register_an_offense_when_all_hash_values_are_present_but_only_some_values_can_be_omitted
     source: |
@@ -2694,11 +2828,13 @@ tests:
     offenses:
       []
     config:
-      EnforcedShorthandSyntax: either_consistent
+      EnforcedShorthandSyntax: $UNRESOLVED:either_consistent
       EnforcedStyle: ruby19
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_disallow_mixing_of_implicit_and_explicit_hash_literal_value_ruby_3_1_does_not_register_an_offense_when_all_hash_values_are_present_but_can_all_be_omitted
     source: |
@@ -2706,11 +2842,13 @@ tests:
     offenses:
       []
     config:
-      EnforcedShorthandSyntax: either_consistent
+      EnforcedShorthandSyntax: $UNRESOLVED:either_consistent
       EnforcedStyle: ruby19
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.1"
+    interpolated: true
+    verified: false
 
   - name: rubocop_cop_style_hashsyntax_configured_to_disallow_mixing_of_implicit_and_explicit_hash_literal_value_ruby_3_0_does_not_register_an_offense_when_hash_key_and_hash_value_are_the_same
     source: |
@@ -2718,8 +2856,10 @@ tests:
     offenses:
       []
     config:
-      EnforcedShorthandSyntax: either_consistent
+      EnforcedShorthandSyntax: $UNRESOLVED:either_consistent
       EnforcedStyle: ruby19
       SupportedStyles: [ruby19, hash_rockets]
       UseHashRocketsWithSymbolValues: true
     ruby_version: ">= 3.0"
+    interpolated: true
+    verified: false
