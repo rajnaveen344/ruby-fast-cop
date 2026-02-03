@@ -52,7 +52,9 @@ pub fn check_file_with_config(path: &Path, config: &Config) -> Result<Vec<Offens
     let cops = build_cops_from_config(config);
 
     let result = parse(source.as_bytes());
-    let mut offenses = cops::run_cops(&cops, &result, &source, &filename);
+    let target_ruby_version = config.all_cops.target_ruby_version.unwrap_or(2.5);
+    let mut offenses =
+        cops::run_cops_with_version(&cops, &result, &source, &filename, target_ruby_version);
 
     // Filter out offenses for cops that have this file excluded
     offenses.retain(|offense| !config.is_excluded_for_cop(path, &offense.cop_name));
@@ -177,9 +179,24 @@ pub fn check_source_with_cop_config(
     cop_name: &str,
     config: &Config,
 ) -> Vec<Offense> {
+    check_source_with_cop_config_and_version(source, filename, cop_name, config, 2.5)
+}
+
+/// Check Ruby source code for offenses using a specific cop with config and Ruby version
+/// This is mainly for testing purposes
+pub fn check_source_with_cop_config_and_version(
+    source: &str,
+    filename: &str,
+    cop_name: &str,
+    config: &Config,
+    target_ruby_version: f64,
+) -> Vec<Offense> {
     let cop = build_single_cop(cop_name, config);
     match cop {
-        Some(c) => check_source_with_cops(source, filename, &[c]),
+        Some(c) => {
+            let result = parse(source.as_bytes());
+            cops::run_cops_with_version(&[c], &result, source, filename, target_ruby_version)
+        }
         None => vec![],
     }
 }

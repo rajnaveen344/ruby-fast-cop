@@ -4,9 +4,12 @@
 //! against the source code, comparing actual offenses with expected offenses.
 
 use glob::glob;
-use ruby_fast_cop::{check_source_with_cop_config, Config, Offense};
+use ruby_fast_cop::{check_source_with_cop_config_and_version, Config, Offense};
 use serde::Deserialize;
 use std::path::PathBuf;
+
+/// Default Ruby version for tests without a specified version
+const DEFAULT_RUBY_VERSION: f64 = 2.5;
 
 /// Represents a complete test file for a cop
 #[derive(Debug, Deserialize)]
@@ -139,6 +142,26 @@ fn compare_offense(
     errors
 }
 
+/// Parse a Ruby version requirement string like ">= 3.0" into a version number
+/// Returns the version number if parseable, or None
+fn parse_ruby_version(version_str: &str) -> Option<f64> {
+    // Handle formats like ">= 3.0", ">= 2.7", "3.1", etc.
+    let version_str = version_str.trim();
+
+    // Strip comparison operators
+    let version_num = version_str
+        .trim_start_matches(">=")
+        .trim_start_matches(">")
+        .trim_start_matches("<=")
+        .trim_start_matches("<")
+        .trim_start_matches("==")
+        .trim_start_matches("~>")
+        .trim();
+
+    // Parse as f64
+    version_num.parse::<f64>().ok()
+}
+
 /// Decode source from YAML format
 /// - Converts ‹TAB› back to actual tabs
 /// - Restores base indentation from ‹BASE›N‹/BASE› markers
@@ -182,8 +205,21 @@ fn run_test_case(
     // Decode source (converts ‹TAB› markers back to actual tabs)
     let source = decode_source(&test_case.source);
 
-    // Run the linter with the test-specific config
-    let offenses = check_source_with_cop_config(&source, "test.rb", cop_name, &config);
+    // Get Ruby version from test case, or use default
+    let ruby_version = test_case
+        .ruby_version
+        .as_ref()
+        .and_then(|v| parse_ruby_version(v))
+        .unwrap_or(DEFAULT_RUBY_VERSION);
+
+    // Run the linter with the test-specific config and Ruby version
+    let offenses = check_source_with_cop_config_and_version(
+        &source,
+        "test.rb",
+        cop_name,
+        &config,
+        ruby_version,
+    );
 
     // Check offense count
     if offenses.len() != test_case.offenses.len() {

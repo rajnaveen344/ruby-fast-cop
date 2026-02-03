@@ -6,7 +6,7 @@
 //! - Per-cop configuration (Enabled, Exclude, custom options)
 //! - Global AllCops configuration
 
-use glob::Pattern;
+use globset::Glob;
 use serde::{Deserialize, Deserializer};
 use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
@@ -444,32 +444,88 @@ impl Config {
     }
 
     fn matches_pattern(&self, file_path: &str, pattern: &str) -> bool {
-        // Handle special RuboCop patterns
-        let normalized_pattern = pattern
-            .replace("**/*", "**")
-            .replace("{", "[")
-            .replace("}", "]");
+        // Build glob matcher - globset supports brace expansion {a,b}, **, ?, [abc], etc.
+        let glob = match Glob::new(pattern) {
+            Ok(g) => g,
+            Err(_) => return false,
+        };
+        let matcher = glob.compile_matcher();
 
-        // Try glob matching
-        if let Ok(glob_pattern) = Pattern::new(&normalized_pattern) {
-            if glob_pattern.matches(file_path) {
-                return true;
-            }
-        }
-
-        // Also try with the pattern as-is
-        if let Ok(glob_pattern) = Pattern::new(pattern) {
-            if glob_pattern.matches(file_path) {
-                return true;
-            }
-        }
-
-        // Simple substring check as fallback
-        if file_path.contains(pattern.trim_start_matches("**/").trim_end_matches("/**/*")) {
+        // Try direct match first
+        if matcher.is_match(file_path) {
             return true;
         }
 
+        // Strip leading "./" from path
+        let normalized_path = file_path.trim_start_matches("./");
+        if matcher.is_match(normalized_path) {
+            return true;
+        }
+
+        // For absolute paths, try matching against path suffixes
+        // This handles patterns like "vendor/**/*" matching "/project/vendor/foo.rb"
+        if file_path.starts_with('/') {
+            // Extract possible root directories from the pattern
+            let pattern_roots = self.extract_pattern_roots(pattern);
+
+            for root in &pattern_roots {
+                // Find if this root exists in the path and try matching from that point
+                for (i, _) in file_path.match_indices(&format!("/{}/", root)) {
+                    let suffix = &file_path[i + 1..];
+                    if matcher.is_match(suffix) {
+                        return true;
+                    }
+                }
+                // Also try at end (for paths like /project/vendor)
+                if let Some(i) = file_path.rfind(&format!("/{}", root)) {
+                    let suffix = &file_path[i + 1..];
+                    if matcher.is_match(suffix) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        // Try pattern without leading "./" if it has one
+        let normalized_pattern = pattern.trim_start_matches("./");
+        if normalized_pattern != pattern {
+            if let Ok(norm_glob) = Glob::new(normalized_pattern) {
+                let norm_matcher = norm_glob.compile_matcher();
+                if norm_matcher.is_match(file_path) || norm_matcher.is_match(normalized_path) {
+                    return true;
+                }
+            }
+        }
+
         false
+    }
+
+    /// Extract possible root directory names from a pattern
+    /// Handles brace expansion like "{spec,test}/**/*" -> ["spec", "test"]
+    fn extract_pattern_roots(&self, pattern: &str) -> Vec<String> {
+        let pattern = pattern.trim_start_matches("./");
+        let first_component = pattern.split('/').next().unwrap_or("");
+
+        // Check if first component has brace expansion
+        if first_component.starts_with('{') && first_component.contains('}') {
+            // Extract content between braces
+            if let Some(start) = first_component.find('{') {
+                if let Some(end) = first_component.find('}') {
+                    let inside = &first_component[start + 1..end];
+                    return inside.split(',').map(|s| s.trim().to_string()).collect();
+                }
+            }
+        }
+
+        // No brace expansion, return the first component if it's not a wildcard
+        if !first_component.is_empty()
+            && !first_component.starts_with('*')
+            && !first_component.contains('?')
+        {
+            vec![first_component.to_string()]
+        } else {
+            vec![]
+        }
     }
 
     /// Mark a cop as unsupported
@@ -625,9 +681,156 @@ Style/StringMethods:
     fn test_pattern_matching() {
         let config = Config::default();
 
+        // Basic patterns
         assert!(config.matches_pattern("vendor/bundle/foo.rb", "vendor/**/*"));
         assert!(config.matches_pattern("db/schema.rb", "db/schema.rb"));
         assert!(config.matches_pattern("spec/models/user_spec.rb", "spec/**/*"));
+    }
+
+    #[test]
+    fn test_pattern_matching_brace_expansion() {
+        let config = Config::default();
+
+        // Brace expansion {a,b} - matches either a or b
+        assert!(config.matches_pattern("spec/models/user_spec.rb", "{spec,test}/**/*"));
+        assert!(config.matches_pattern("test/models/user_test.rb", "{spec,test}/**/*"));
+        assert!(!config.matches_pattern("app/models/user.rb", "{spec,test}/**/*"));
+
+        // Multiple options in braces
+        assert!(config.matches_pattern("spec/foo.rb", "{spec,test,features}/**/*"));
+        assert!(config.matches_pattern("test/foo.rb", "{spec,test,features}/**/*"));
+        assert!(config.matches_pattern("features/foo.rb", "{spec,test,features}/**/*"));
+    }
+
+    #[test]
+    fn test_pattern_matching_recursive() {
+        let config = Config::default();
+
+        // ** matches any depth
+        assert!(config.matches_pattern("a/b/c/d/e.rb", "**/*.rb"));
+        assert!(config.matches_pattern("foo.rb", "**/*.rb"));
+        assert!(config.matches_pattern("spec/models/concerns/foo_spec.rb", "spec/**/*_spec.rb"));
+    }
+
+    #[test]
+    fn test_pattern_matching_character_class() {
+        let config = Config::default();
+
+        // [abc] character class
+        assert!(config.matches_pattern("test.rb", "tes[t].rb"));
+        assert!(config.matches_pattern("file1.rb", "file[0-9].rb"));
+        assert!(!config.matches_pattern("filea.rb", "file[0-9].rb"));
+    }
+
+    #[test]
+    fn test_pattern_matching_single_wildcard() {
+        let config = Config::default();
+
+        // ? matches single character
+        assert!(config.matches_pattern("file1.rb", "file?.rb"));
+        assert!(config.matches_pattern("filea.rb", "file?.rb"));
+        assert!(!config.matches_pattern("file12.rb", "file?.rb"));
+    }
+
+    #[test]
+    fn test_is_excluded_for_cop() {
+        let yaml = r#"
+AllCops:
+  Exclude:
+    - 'vendor/**/*'
+
+Metrics/BlockLength:
+  Max: 50
+  Exclude:
+    - 'spec/**/*_spec.rb'
+    - '{db,config}/**/*'
+"#;
+        let config = Config::parse_with_inheritance(yaml, Path::new(".")).unwrap();
+
+        // Global excludes
+        assert!(config.is_excluded(Path::new("vendor/bundle/foo.rb")));
+        assert!(!config.is_excluded(Path::new("app/models/user.rb")));
+
+        // Cop-specific excludes
+        assert!(config.is_excluded_for_cop(
+            Path::new("spec/models/user_spec.rb"),
+            "Metrics/BlockLength"
+        ));
+        assert!(config.is_excluded_for_cop(
+            Path::new("db/migrate/001_create_users.rb"),
+            "Metrics/BlockLength"
+        ));
+        assert!(config.is_excluded_for_cop(
+            Path::new("config/routes.rb"),
+            "Metrics/BlockLength"
+        ));
+        assert!(!config.is_excluded_for_cop(
+            Path::new("app/models/user.rb"),
+            "Metrics/BlockLength"
+        ));
+
+        // Global exclude applies to all cops
+        assert!(config.is_excluded_for_cop(
+            Path::new("vendor/bundle/foo.rb"),
+            "Metrics/BlockLength"
+        ));
+    }
+
+    #[test]
+    fn test_exclude_with_absolute_paths() {
+        let yaml = r#"
+AllCops:
+  Exclude:
+    - 'vendor/**/*'
+
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*_spec.rb'
+"#;
+        let config = Config::parse_with_inheritance(yaml, Path::new(".")).unwrap();
+
+        // Absolute paths should still match relative patterns
+        // This is how RuboCop works - it uses paths relative to project root
+        assert!(config.is_excluded(Path::new("/project/vendor/bundle/foo.rb")));
+        assert!(config.is_excluded_for_cop(
+            Path::new("/project/spec/models/user_spec.rb"),
+            "Metrics/BlockLength"
+        ));
+    }
+
+    #[test]
+    fn test_exclude_brace_expansion_with_absolute_paths() {
+        let yaml = r#"
+Metrics/BlockLength:
+  Exclude:
+    - '{spec,test}/**/*'
+    - '{db,config}/**/*'
+"#;
+        let config = Config::parse_with_inheritance(yaml, Path::new(".")).unwrap();
+
+        // Brace expansion with absolute paths
+        assert!(config.is_excluded_for_cop(
+            Path::new("/my/project/spec/models/user_spec.rb"),
+            "Metrics/BlockLength"
+        ));
+        assert!(config.is_excluded_for_cop(
+            Path::new("/my/project/test/models/user_test.rb"),
+            "Metrics/BlockLength"
+        ));
+        assert!(config.is_excluded_for_cop(
+            Path::new("/my/project/db/migrate/001_create.rb"),
+            "Metrics/BlockLength"
+        ));
+        assert!(config.is_excluded_for_cop(
+            Path::new("/my/project/config/routes.rb"),
+            "Metrics/BlockLength"
+        ));
+
+        // Should NOT match app directory
+        assert!(!config.is_excluded_for_cop(
+            Path::new("/my/project/app/models/user.rb"),
+            "Metrics/BlockLength"
+        ));
     }
 
     #[test]

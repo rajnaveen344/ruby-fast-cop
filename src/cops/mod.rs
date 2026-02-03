@@ -10,11 +10,31 @@ use ruby_prism::{ParseResult, Visit};
 pub struct CheckContext<'a> {
     pub source: &'a str,
     pub filename: &'a str,
+    /// Target Ruby version (e.g., 2.5, 3.0, 3.2)
+    pub target_ruby_version: f64,
 }
 
 impl<'a> CheckContext<'a> {
     pub fn new(source: &'a str, filename: &'a str) -> Self {
-        Self { source, filename }
+        Self {
+            source,
+            filename,
+            target_ruby_version: 2.5, // Default to oldest supported
+        }
+    }
+
+    pub fn with_ruby_version(source: &'a str, filename: &'a str, target_ruby_version: f64) -> Self {
+        Self {
+            source,
+            filename,
+            target_ruby_version,
+        }
+    }
+
+    /// Check if target Ruby version is at least the given version
+    pub fn ruby_version_at_least(&self, major: u32, minor: u32) -> bool {
+        let required = major as f64 + (minor as f64 / 10.0);
+        self.target_ruby_version >= required
     }
 
     /// Create a Location from a Prism node location
@@ -224,7 +244,18 @@ pub fn run_cops(
     source: &str,
     filename: &str,
 ) -> Vec<Offense> {
-    let ctx = CheckContext::new(source, filename);
+    run_cops_with_version(cops, result, source, filename, 2.5)
+}
+
+/// Run all cops against a parse result with a specific Ruby version
+pub fn run_cops_with_version(
+    cops: &[Box<dyn Cop>],
+    result: &ParseResult<'_>,
+    source: &str,
+    filename: &str,
+    target_ruby_version: f64,
+) -> Vec<Offense> {
+    let ctx = CheckContext::with_ruby_version(source, filename, target_ruby_version);
     let mut runner = CopRunner::new(cops, ctx);
     runner.visit(&result.node());
     runner.offenses
