@@ -215,19 +215,107 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
         }
 
         "Layout/LineLength" => {
-            let max = config
-                .get_cop_config("Layout/LineLength")
-                .and_then(|c| c.max)
-                .unwrap_or(120);
-            Some(Box::new(cops::layout::LineLength::new(max)))
+            let cop_config = config.get_cop_config("Layout/LineLength");
+            let max = cop_config.and_then(|c| c.max).unwrap_or(120);
+            let allow_uri = cop_config
+                .and_then(|c| c.raw.get("AllowURI"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(true);
+            let allow_heredoc = cop_config
+                .and_then(|c| c.raw.get("AllowHeredoc"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
+            let allow_qualified_name = cop_config
+                .and_then(|c| c.raw.get("AllowQualifiedName"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
+            let uri_schemes = cop_config
+                .and_then(|c| c.raw.get("URISchemes"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| {
+                    seq.iter()
+                        .filter_map(|v| v.as_str().map(|s| s.to_string()))
+                        .collect()
+                })
+                .unwrap_or_else(|| vec!["http".to_string(), "https".to_string()]);
+            let allowed_patterns = cop_config
+                .and_then(|c| c.raw.get("AllowedPatterns"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| {
+                    seq.iter()
+                        .filter_map(|v| v.as_str().map(|s| s.to_string()))
+                        .collect()
+                })
+                .unwrap_or_default();
+            let tab_width = cop_config
+                .and_then(|c| c.raw.get("TabWidth"))
+                .and_then(|v| v.as_u64())
+                .map(|v| v as usize)
+                .unwrap_or(2);
+            Some(Box::new(cops::layout::LineLength::with_config(
+                max,
+                allow_uri,
+                allow_heredoc,
+                allow_qualified_name,
+                uri_schemes,
+                allowed_patterns,
+                tab_width,
+            )))
         }
 
         "Metrics/BlockLength" => {
-            let max = config
-                .get_cop_config("Metrics/BlockLength")
-                .and_then(|c| c.max)
-                .unwrap_or(25);
-            Some(Box::new(cops::metrics::BlockLength::new(max)))
+            let cop_config = config.get_cop_config("Metrics/BlockLength");
+            let max = cop_config.and_then(|c| c.max).unwrap_or(25);
+            let count_comments = cop_config
+                .and_then(|c| c.raw.get("CountComments"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
+            let count_as_one = cop_config
+                .and_then(|c| c.raw.get("CountAsOne"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| {
+                    seq.iter()
+                        .filter_map(|v| v.as_str().map(|s| s.to_string()))
+                        .collect()
+                })
+                .unwrap_or_default();
+
+            // Merge AllowedMethods + IgnoredMethods + ExcludedMethods (legacy names)
+            let mut allowed_methods: Vec<String> = Vec::new();
+            for key in &["AllowedMethods", "IgnoredMethods", "ExcludedMethods"] {
+                if let Some(seq) = cop_config
+                    .and_then(|c| c.raw.get(*key))
+                    .and_then(|v| v.as_sequence())
+                {
+                    for v in seq {
+                        if let Some(s) = v.as_str() {
+                            allowed_methods.push(s.to_string());
+                        }
+                    }
+                }
+            }
+
+            let mut allowed_patterns: Vec<String> = Vec::new();
+            for key in &["AllowedPatterns", "IgnoredPatterns"] {
+                if let Some(seq) = cop_config
+                    .and_then(|c| c.raw.get(*key))
+                    .and_then(|v| v.as_sequence())
+                {
+                    for v in seq {
+                        if let Some(s) = v.as_str() {
+                            allowed_patterns.push(s.to_string());
+                        }
+                    }
+                }
+            }
+
+            Some(Box::new(cops::metrics::BlockLength::with_config(
+                max,
+                count_comments,
+                count_as_one,
+                allowed_methods,
+                allowed_patterns,
+            )))
         }
 
         "Style/AutoResourceCleanup" => Some(Box::new(cops::style::AutoResourceCleanup::new())),
@@ -264,15 +352,30 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
         }
 
         "Style/RaiseArgs" => {
-            let style = config
-                .get_cop_config("Style/RaiseArgs")
+            let cop_config = config.get_cop_config("Style/RaiseArgs");
+            let style = cop_config
                 .and_then(|c| c.enforced_style.as_ref())
                 .map(|s| match s.as_str() {
                     "compact" => cops::style::RaiseArgsStyle::Compact,
                     _ => cops::style::RaiseArgsStyle::Explode,
                 })
                 .unwrap_or(cops::style::RaiseArgsStyle::Explode);
-            Some(Box::new(cops::style::RaiseArgs::new(style)))
+
+            // Parse AllowedCompactTypes from raw config
+            let allowed_compact_types = cop_config
+                .and_then(|c| c.raw.get("AllowedCompactTypes"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| {
+                    seq.iter()
+                        .filter_map(|v| v.as_str().map(String::from))
+                        .collect()
+                })
+                .unwrap_or_default();
+
+            Some(Box::new(cops::style::RaiseArgs::with_allowed_compact_types(
+                style,
+                allowed_compact_types,
+            )))
         }
 
         "Style/RescueStandardError" => {

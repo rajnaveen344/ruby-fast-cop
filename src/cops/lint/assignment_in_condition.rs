@@ -35,7 +35,28 @@ impl Cop for AssignmentInCondition {
     fn check_if(&self, node: &ruby_prism::IfNode, ctx: &CheckContext) -> Vec<Offense> {
         let mut offenses = Vec::new();
         let predicate = node.predicate();
-        self.check_condition(&predicate, ctx, &mut offenses);
+        self.check_condition(&predicate, ctx, &mut offenses, false);
+        offenses
+    }
+
+    fn check_while(&self, node: &ruby_prism::WhileNode, ctx: &CheckContext) -> Vec<Offense> {
+        let mut offenses = Vec::new();
+        let predicate = node.predicate();
+        self.check_condition(&predicate, ctx, &mut offenses, false);
+        offenses
+    }
+
+    fn check_until(&self, node: &ruby_prism::UntilNode, ctx: &CheckContext) -> Vec<Offense> {
+        let mut offenses = Vec::new();
+        let predicate = node.predicate();
+        self.check_condition(&predicate, ctx, &mut offenses, false);
+        offenses
+    }
+
+    fn check_unless(&self, node: &ruby_prism::UnlessNode, ctx: &CheckContext) -> Vec<Offense> {
+        let mut offenses = Vec::new();
+        let predicate = node.predicate();
+        self.check_condition(&predicate, ctx, &mut offenses, false);
         offenses
     }
 }
@@ -46,147 +67,251 @@ impl AssignmentInCondition {
         node: &ruby_prism::Node,
         ctx: &CheckContext,
         offenses: &mut Vec<Offense>,
+        inside_block: bool,
     ) {
         match node {
             // Local variable assignment: x = 1
             ruby_prism::Node::LocalVariableWriteNode { .. } => {
-                if !self.is_safe_assignment(node, ctx) {
-                    offenses.push(self.create_offense(node, ctx));
+                let write_node = node.as_local_variable_write_node().unwrap();
+                if !self.is_safe_assignment_lvar(&write_node, ctx) {
+                    offenses.push(self.create_offense_at_operator(
+                        write_node.operator_loc(),
+                        ctx,
+                    ));
                 }
             }
             // Instance variable assignment: @x = 1
             ruby_prism::Node::InstanceVariableWriteNode { .. } => {
-                if !self.is_safe_assignment(node, ctx) {
-                    offenses.push(self.create_offense(node, ctx));
+                let write_node = node.as_instance_variable_write_node().unwrap();
+                if !self.is_safe_assignment_node(node, ctx) {
+                    offenses.push(self.create_offense_at_operator(
+                        write_node.operator_loc(),
+                        ctx,
+                    ));
                 }
             }
             // Class variable assignment: @@x = 1
             ruby_prism::Node::ClassVariableWriteNode { .. } => {
-                if !self.is_safe_assignment(node, ctx) {
-                    offenses.push(self.create_offense(node, ctx));
+                let write_node = node.as_class_variable_write_node().unwrap();
+                if !self.is_safe_assignment_node(node, ctx) {
+                    offenses.push(self.create_offense_at_operator(
+                        write_node.operator_loc(),
+                        ctx,
+                    ));
                 }
             }
             // Global variable assignment: $x = 1
             ruby_prism::Node::GlobalVariableWriteNode { .. } => {
-                if !self.is_safe_assignment(node, ctx) {
-                    offenses.push(self.create_offense(node, ctx));
+                let write_node = node.as_global_variable_write_node().unwrap();
+                if !self.is_safe_assignment_node(node, ctx) {
+                    offenses.push(self.create_offense_at_operator(
+                        write_node.operator_loc(),
+                        ctx,
+                    ));
                 }
             }
             // Constant assignment: X = 1
             ruby_prism::Node::ConstantWriteNode { .. } => {
-                if !self.is_safe_assignment(node, ctx) {
-                    offenses.push(self.create_offense(node, ctx));
+                let write_node = node.as_constant_write_node().unwrap();
+                if !self.is_safe_assignment_node(node, ctx) {
+                    offenses.push(self.create_offense_at_operator(
+                        write_node.operator_loc(),
+                        ctx,
+                    ));
                 }
             }
-            // Multi-assignment: a, b = 1, 2
-            ruby_prism::Node::MultiWriteNode { .. } => {
-                if !self.is_safe_assignment(node, ctx) {
-                    offenses.push(self.create_offense(node, ctx));
+            // Index assignment: a[3] = 1
+            ruby_prism::Node::IndexOperatorWriteNode { .. } => {
+                let write_node = node.as_index_operator_write_node().unwrap();
+                if !self.is_safe_assignment_node(node, ctx) {
+                    offenses.push(self.create_offense_at_operator(
+                        write_node.binary_operator_loc(),
+                        ctx,
+                    ));
                 }
             }
-            // Operator assignment: x += 1, x ||= 1
-            ruby_prism::Node::LocalVariableOperatorWriteNode { .. }
-            | ruby_prism::Node::LocalVariableOrWriteNode { .. }
-            | ruby_prism::Node::LocalVariableAndWriteNode { .. } => {
-                if !self.is_safe_assignment(node, ctx) {
-                    offenses.push(self.create_offense(node, ctx));
+            // Call assignment: obj.attr = 1
+            ruby_prism::Node::CallOperatorWriteNode { .. } => {
+                let write_node = node.as_call_operator_write_node().unwrap();
+                if !self.is_safe_assignment_node(node, ctx) {
+                    offenses.push(self.create_offense_at_operator(
+                        write_node.binary_operator_loc(),
+                        ctx,
+                    ));
                 }
+            }
+            // Operator assignment: x ||= 1, x &&= 1
+            ruby_prism::Node::LocalVariableOrWriteNode { .. }
+            | ruby_prism::Node::LocalVariableAndWriteNode { .. }
+            | ruby_prism::Node::InstanceVariableOrWriteNode { .. }
+            | ruby_prism::Node::InstanceVariableAndWriteNode { .. }
+            | ruby_prism::Node::ClassVariableOrWriteNode { .. }
+            | ruby_prism::Node::ClassVariableAndWriteNode { .. }
+            | ruby_prism::Node::GlobalVariableOrWriteNode { .. }
+            | ruby_prism::Node::GlobalVariableAndWriteNode { .. } => {
+                // ||= and &&= are generally allowed in conditions
             }
             // Parenthesized expression - check inside
             ruby_prism::Node::ParenthesesNode { .. } => {
                 let paren = node.as_parentheses_node().unwrap();
                 if let Some(body) = paren.body() {
-                    // If allow_safe_assignment is true, parentheses make it safe
-                    // If allow_safe_assignment is false, still check inside parens
-                    if !self.allow_safe_assignment {
+                    if self.allow_safe_assignment {
+                        // Parentheses make it safe, don't check inside
+                    } else {
                         // When safe assignment is not allowed, check inside the parens
-                        self.check_condition_ignoring_parens(&body, ctx, offenses);
+                        self.check_condition(&body, ctx, offenses, inside_block);
                     }
-                    // When safe assignment IS allowed, parens make it safe, so don't report
                 }
             }
             // And/Or expressions - check both sides
             ruby_prism::Node::AndNode { .. } => {
                 let and_node = node.as_and_node().unwrap();
-                self.check_condition(&and_node.left(), ctx, offenses);
-                self.check_condition(&and_node.right(), ctx, offenses);
+                self.check_condition(&and_node.left(), ctx, offenses, inside_block);
+                self.check_condition(&and_node.right(), ctx, offenses, inside_block);
             }
             ruby_prism::Node::OrNode { .. } => {
                 let or_node = node.as_or_node().unwrap();
-                self.check_condition(&or_node.left(), ctx, offenses);
-                self.check_condition(&or_node.right(), ctx, offenses);
+                self.check_condition(&or_node.left(), ctx, offenses, inside_block);
+                self.check_condition(&or_node.right(), ctx, offenses, inside_block);
             }
-            _ => {}
-        }
-    }
-
-    /// Check condition but don't treat parentheses as making assignments safe
-    fn check_condition_ignoring_parens(
-        &self,
-        node: &ruby_prism::Node,
-        ctx: &CheckContext,
-        offenses: &mut Vec<Offense>,
-    ) {
-        match node {
-            ruby_prism::Node::LocalVariableWriteNode { .. }
-            | ruby_prism::Node::InstanceVariableWriteNode { .. }
-            | ruby_prism::Node::ClassVariableWriteNode { .. }
-            | ruby_prism::Node::GlobalVariableWriteNode { .. }
-            | ruby_prism::Node::ConstantWriteNode { .. }
-            | ruby_prism::Node::MultiWriteNode { .. }
-            | ruby_prism::Node::LocalVariableOperatorWriteNode { .. }
-            | ruby_prism::Node::LocalVariableOrWriteNode { .. }
-            | ruby_prism::Node::LocalVariableAndWriteNode { .. } => {
-                offenses.push(self.create_offense(node, ctx));
-            }
-            // Handle nested parentheses
-            ruby_prism::Node::ParenthesesNode { .. } => {
-                let paren = node.as_parentheses_node().unwrap();
-                if let Some(body) = paren.body() {
-                    self.check_condition_ignoring_parens(&body, ctx, offenses);
+            // Call nodes - check for method calls that might contain conditions with blocks
+            ruby_prism::Node::CallNode { .. } => {
+                let call = node.as_call_node().unwrap();
+                // Check for assignment method calls (ending in =)
+                let method_name = String::from_utf8_lossy(call.name().as_slice());
+                if method_name.ends_with('=') && method_name != "==" && method_name != "!=" {
+                    // This is an assignment method like obj.attr = value or a[0] = value
+                    if !self.is_safe_assignment_node(node, ctx) {
+                        // Find the = sign position in the source
+                        // For a[0] = 1, we need to find = after the closing bracket
+                        // For obj.attr = 1, we need to find = after the method name
+                        if let Some(eq_pos) = self.find_assignment_operator_position(&call, ctx) {
+                            offenses.push(ctx.offense_with_range(
+                                self.name(),
+                                self.get_message(),
+                                self.severity(),
+                                eq_pos,
+                                eq_pos + 1,
+                            ));
+                        }
+                    }
                 }
+                // Don't check inside blocks - assignments in blocks are allowed
+                // But if we're already inside a block, we should still check
+                // the condition if it's an if/unless modifier
             }
-            // Handle statements node (wrapper for body content)
+            // Block nodes - assignments inside blocks are allowed
+            ruby_prism::Node::BlockNode { .. } => {
+                // Don't check inside blocks - this is allowed
+            }
+            // Statements node
             ruby_prism::Node::StatementsNode { .. } => {
                 let stmts = node.as_statements_node().unwrap();
                 for stmt in stmts.body().iter() {
-                    self.check_condition_ignoring_parens(&stmt, ctx, offenses);
+                    self.check_condition(&stmt, ctx, offenses, inside_block);
                 }
             }
             _ => {}
         }
     }
 
-    fn is_safe_assignment(&self, node: &ruby_prism::Node, ctx: &CheckContext) -> bool {
+    fn is_safe_assignment_lvar(
+        &self,
+        node: &ruby_prism::LocalVariableWriteNode,
+        ctx: &CheckContext,
+    ) -> bool {
         if !self.allow_safe_assignment {
             return false;
         }
+        self.is_wrapped_in_parens(node.location().start_offset(), ctx)
+    }
 
-        // Check if the assignment is wrapped in parentheses
-        // This is a simplified check - we look at the source
-        let loc = node.location();
-        let start = loc.start_offset();
+    fn is_safe_assignment_node(&self, node: &ruby_prism::Node, ctx: &CheckContext) -> bool {
+        if !self.allow_safe_assignment {
+            return false;
+        }
+        self.is_wrapped_in_parens(node.location().start_offset(), ctx)
+    }
 
-        // Check if there's a '(' before the assignment
+    fn is_wrapped_in_parens(&self, start: usize, ctx: &CheckContext) -> bool {
+        // Check if there's a '(' before the assignment (skipping whitespace)
         if start > 0 {
-            if let Some(prev_char) = ctx.source.as_bytes().get(start.saturating_sub(1)) {
-                if *prev_char == b'(' {
-                    return true;
-                }
+            let before = &ctx.source[..start];
+            let trimmed = before.trim_end();
+            if trimmed.ends_with('(') {
+                return true;
             }
         }
-
         false
     }
 
-    fn create_offense(&self, node: &ruby_prism::Node, ctx: &CheckContext) -> Offense {
-        let message = if self.allow_safe_assignment {
+    /// Find the position of the `=` operator in an assignment method call.
+    /// For `a[0] = 1`, finds the `=` after the `]`.
+    /// For `obj.attr = 1`, finds the `=` after the method name.
+    fn find_assignment_operator_position(
+        &self,
+        call: &ruby_prism::CallNode,
+        ctx: &CheckContext,
+    ) -> Option<usize> {
+        let method_name = String::from_utf8_lossy(call.name().as_slice());
+
+        // For index assignment []=, look after the closing bracket
+        if method_name == "[]=" {
+            if let Some(closing_loc) = call.closing_loc() {
+                // Search for = after the closing bracket
+                let start = closing_loc.end_offset();
+                return self.find_equals_after(start, ctx);
+            }
+        }
+
+        // For regular method assignment (attr=), look after the message location
+        if let Some(msg_loc) = call.message_loc() {
+            // The message_loc is just the method name without the =
+            // So we need to find the = after it
+            let start = msg_loc.end_offset();
+            return self.find_equals_after(start, ctx);
+        }
+
+        None
+    }
+
+    /// Find the position of `=` character starting from a given position
+    fn find_equals_after(&self, start: usize, ctx: &CheckContext) -> Option<usize> {
+        let bytes = ctx.source.as_bytes();
+        for i in start..bytes.len() {
+            let c = bytes[i];
+            if c == b'=' {
+                // Make sure it's not == or !=
+                if i + 1 < bytes.len() && bytes[i + 1] == b'=' {
+                    continue;
+                }
+                if i > 0 && bytes[i - 1] == b'!' {
+                    continue;
+                }
+                return Some(i);
+            }
+            // Stop at end of line
+            if c == b'\n' {
+                break;
+            }
+        }
+        None
+    }
+
+    fn get_message(&self) -> &'static str {
+        if self.allow_safe_assignment {
             "Use `==` if you meant to do a comparison or wrap the expression in parentheses to indicate you meant to assign in a condition."
         } else {
             "Use `==` if you meant to do a comparison or move the assignment up out of the condition."
-        };
+        }
+    }
 
-        ctx.offense(self.name(), message, self.severity(), &node.location())
+    fn create_offense_at_operator(
+        &self,
+        operator_loc: ruby_prism::Location,
+        ctx: &CheckContext,
+    ) -> Offense {
+        ctx.offense(self.name(), self.get_message(), self.severity(), &operator_loc)
     }
 }
 
@@ -260,5 +385,19 @@ end
 "#,
         );
         assert_eq!(offenses.len(), 0);
+    }
+
+    #[test]
+    fn detects_assignment_in_unless_modifier() {
+        // Test unless modifier
+        let source = "raise foo unless x = 1";
+        let offenses = check(source);
+        assert_eq!(offenses.len(), 1, "Should detect assignment in unless modifier");
+    }
+
+    #[test]
+    fn detects_assignment_after_or_in_unless() {
+        let offenses = check("raise StandardError unless (foo ||= bar) || a = b");
+        assert_eq!(offenses.len(), 1, "Should detect 'a = b' in unless condition");
     }
 }

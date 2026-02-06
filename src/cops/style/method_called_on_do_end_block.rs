@@ -64,6 +64,12 @@ impl Cop for MethodCalledOnDoEndBlock {
     }
 
     fn check_call(&self, node: &ruby_prism::CallNode, ctx: &CheckContext) -> Vec<Offense> {
+        // If this call itself has a block, it's allowed (chained block pattern)
+        // e.g., `a do...end.each do...end` is acceptable
+        if node.block().is_some() {
+            return vec![];
+        }
+
         // Check if the receiver is a do...end block
         // The AST structure for `a do...end.c` has the CallNode with block as receiver
         if let Some(receiver) = node.receiver() {
@@ -72,15 +78,27 @@ impl Cop for MethodCalledOnDoEndBlock {
                 let recv_call = receiver.as_call_node().unwrap();
                 if let Some(ref block) = recv_call.block() {
                     if self.is_do_end_block_node(block, ctx) {
-                        let method_name = String::from_utf8_lossy(node.name().as_slice());
-                        return vec![ctx.offense(
+                        // Get the block's closing location ("end") and the method location
+                        // The offense should highlight from "end" through the method call
+                        let block_node = block.as_block_node().unwrap();
+                        let closing_loc = block_node.closing_loc();
+                        let closing_start = closing_loc.start_offset();
+
+                        // Get the end of the method call (call operator + method name)
+                        let call_end = if let Some(msg_loc) = node.message_loc() {
+                            msg_loc.end_offset()
+                        } else if let Some(op_loc) = node.call_operator_loc() {
+                            op_loc.end_offset()
+                        } else {
+                            node.location().end_offset()
+                        };
+
+                        return vec![ctx.offense_with_range(
                             self.name(),
-                            &format!(
-                                "Avoid chaining a method call on a do...end block. Method `{}` called on block.",
-                                method_name
-                            ),
+                            "Avoid chaining a method call on a do...end block.",
                             self.severity(),
-                            &node.location(),
+                            closing_start,
+                            call_end,
                         )];
                     }
                 }

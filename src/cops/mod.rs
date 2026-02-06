@@ -52,6 +52,19 @@ impl<'a> CheckContext<'a> {
     ) -> Offense {
         Offense::new(cop_name, message, severity, self.location(loc), self.filename)
     }
+
+    /// Create an offense with custom byte range
+    pub fn offense_with_range(
+        &self,
+        cop_name: &str,
+        message: &str,
+        severity: Severity,
+        start_offset: usize,
+        end_offset: usize,
+    ) -> Offense {
+        let location = Location::from_offsets(self.source, start_offset, end_offset);
+        Offense::new(cop_name, message, severity, location, self.filename)
+    }
 }
 
 /// Trait that all cops must implement
@@ -96,6 +109,21 @@ pub trait Cop: Send + Sync {
 
     /// Check an IfNode
     fn check_if(&self, _node: &ruby_prism::IfNode, _ctx: &CheckContext) -> Vec<Offense> {
+        vec![]
+    }
+
+    /// Check a WhileNode
+    fn check_while(&self, _node: &ruby_prism::WhileNode, _ctx: &CheckContext) -> Vec<Offense> {
+        vec![]
+    }
+
+    /// Check an UntilNode
+    fn check_until(&self, _node: &ruby_prism::UntilNode, _ctx: &CheckContext) -> Vec<Offense> {
+        vec![]
+    }
+
+    /// Check an UnlessNode
+    fn check_unless(&self, _node: &ruby_prism::UnlessNode, _ctx: &CheckContext) -> Vec<Offense> {
         vec![]
     }
 
@@ -205,6 +233,27 @@ impl Visit<'_> for CopRunner<'_> {
             self.offenses.extend(cop.check_if(node, &self.ctx));
         }
         ruby_prism::visit_if_node(self, node);
+    }
+
+    fn visit_while_node(&mut self, node: &ruby_prism::WhileNode) {
+        for cop in self.cops {
+            self.offenses.extend(cop.check_while(node, &self.ctx));
+        }
+        ruby_prism::visit_while_node(self, node);
+    }
+
+    fn visit_until_node(&mut self, node: &ruby_prism::UntilNode) {
+        for cop in self.cops {
+            self.offenses.extend(cop.check_until(node, &self.ctx));
+        }
+        ruby_prism::visit_until_node(self, node);
+    }
+
+    fn visit_unless_node(&mut self, node: &ruby_prism::UnlessNode) {
+        for cop in self.cops {
+            self.offenses.extend(cop.check_unless(node, &self.ctx));
+        }
+        ruby_prism::visit_unless_node(self, node);
     }
 
     fn visit_local_variable_write_node(&mut self, node: &ruby_prism::LocalVariableWriteNode) {

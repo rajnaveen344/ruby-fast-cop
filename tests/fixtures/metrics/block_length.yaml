@@ -1,7 +1,7 @@
 cop: Metrics/BlockLength
 department: metrics
 severity: convention
-implemented: false
+implemented: true
 
 tests:
   - name: rubocop_cop_metrics_blocklength_still_rejects_other_methods_with_long_blocks
@@ -22,8 +22,7 @@ tests:
 
   - name: rubocop_cop_metrics_blocklength_accepts_the_foo_method_with_a_long_block
     source: |
-      ‹BASE›0‹/BASE›
-      #{allowed} do
+      foo do
         a = 1
         a = 2
         a = 3
@@ -33,8 +32,27 @@ tests:
     config:
       CountComments: false
       Max: 2
+      AllowedMethods:
+        - foo
     interpolated: true
-    verified: false
+    verified: true
+
+  - name: rubocop_cop_metrics_blocklength_accepts_gem_specification_new_with_a_long_block
+    source: |
+      Gem::Specification.new do
+        a = 1
+        a = 2
+        a = 3
+      end
+    offenses:
+      []
+    config:
+      CountComments: false
+      Max: 2
+      AllowedMethods:
+        - "Gem::Specification.new"
+    interpolated: true
+    verified: true
 
   - name: rubocop_cop_metrics_blocklength_rejects_a_block_with_more_than_5_lines
     source: |
@@ -380,7 +398,7 @@ tests:
         column_end: 12
         message: Block has too many lines. [3/2]
     config:
-      CountComments: false
+      CountComments: true
       Max: 2
 
   - name: rubocop_cop_metrics_blocklength_when_countasone_is_not_empty_folds_array_into_one_line
@@ -396,43 +414,57 @@ tests:
       []
     config:
       CountComments: false
+      CountAsOne:
+        - array
       Max: 2
 
-  - name: rubocop_cop_metrics_blocklength_when_methods_to_allow_are_defined_when_allowedmethods_is_enabled_allow_an_offense_on_an_allowed_method_foo
+  - name: rubocop_cop_metrics_blocklength_when_methods_to_allow_are_defined_when_allowedmethods_is_enabled_accepts_foo_with_long_block
     source: |
-      foo
+      foo do
+        a = 1
+        a = 2
+        a = 3
+      end
     offenses:
       []
     config:
       CountComments: false
       Max: 2
+      AllowedMethods:
+        - foo
 
-  - name: rubocop_cop_metrics_blocklength_when_methods_to_allow_are_defined_when_allowedmethods_is_enabled_allow_an_offense_on_an_allowed_method_allowedmethods
+  - name: rubocop_cop_metrics_blocklength_when_methods_to_allow_are_defined_when_allowedmethods_is_enabled_accepts_gem_specification_new_with_long_block
     source: |
-      AllowedMethods
+      Gem::Specification.new do
+        a = 1
+        a = 2
+        a = 3
+      end
     offenses:
       []
     config:
       CountComments: false
       Max: 2
+      AllowedMethods:
+        - "Gem::Specification.new"
 
-  - name: rubocop_cop_metrics_blocklength_when_methods_to_allow_are_defined_when_allowedmethods_is_enabled_allow_an_offense_on_an_allowed_method_gem_specification_n
+  - name: rubocop_cop_metrics_blocklength_when_methods_to_allow_are_defined_when_allowedmethods_is_enabled_still_rejects_other_methods_with_foo_allowed
     source: |
-      Gem::Specification.new
+      something do
+        a = 1
+        a = 2
+        a = 3
+      end
     offenses:
-      []
+      - line: 1
+        column_start: 0
+        column_end: 12
+        message: Block has too many lines. [3/2]
     config:
       CountComments: false
       Max: 2
-
-  - name: rubocop_cop_metrics_blocklength_when_methods_to_allow_are_defined_when_allowedmethods_is_enabled_allow_an_offense_on_an_allowed_method_allowedmethods
-    source: |
-      AllowedMethods
-    offenses:
-      []
-    config:
-      CountComments: false
-      Max: 2
+      AllowedMethods:
+        - foo
 
   - name: rubocop_cop_metrics_blocklength_when_methods_to_allow_are_defined_when_allowedmethods_is_enabled_when_receiver_contains_whitespaces_allows_whitespaces
     source: |
@@ -447,6 +479,8 @@ tests:
     config:
       CountComments: false
       Max: 2
+      AllowedMethods:
+        - "Foo::Bar.baz"
 
   - name: rubocop_cop_metrics_blocklength_when_methods_to_allow_are_defined_when_allowedmethods_is_enabled_when_a_method_is_allowed_but_receiver_is_a_module_does_not_report_an_offense
     source: |
@@ -460,6 +494,8 @@ tests:
     config:
       CountComments: false
       Max: 2
+      AllowedMethods:
+        - baz
 
   - name: rubocop_cop_metrics_blocklength_when_methods_to_allow_are_defined_when_allowedpatterns_is_enabled_does_not_report_an_offense
     source: |
@@ -473,6 +509,8 @@ tests:
     config:
       CountComments: false
       Max: 2
+      AllowedPatterns:
+        - baz
 
   - name: rubocop_cop_metrics_blocklength_when_methods_to_allow_are_defined_when_allowedpatterns_is_enabled_that_does_not_match_reports_an_offense
     source: |
@@ -489,6 +527,8 @@ tests:
     config:
       CountComments: false
       Max: 2
+      AllowedPatterns:
+        - baz
 
   - name: rubocop_cop_metrics_blocklength_when_methods_to_allow_are_defined_when_ignoredmethods_is_enabled_when_string_does_not_report_an_offense
     source: |
@@ -502,6 +542,8 @@ tests:
     config:
       CountComments: false
       Max: 2
+      IgnoredMethods:
+        - "Foo::Bar.baz"
 
   - name: rubocop_cop_metrics_blocklength_when_methods_to_allow_are_defined_when_ignoredmethods_is_enabled_when_string_that_does_not_match_reports_an_offense
     source: |
@@ -518,6 +560,8 @@ tests:
     config:
       CountComments: false
       Max: 2
+      IgnoredMethods:
+        - "Foo::Bar.baz"
 
   - name: rubocop_cop_metrics_blocklength_when_methods_to_allow_are_defined_when_ignoredmethods_is_enabled_when_regex_does_not_report_an_offense
     source: |
@@ -531,6 +575,8 @@ tests:
     config:
       CountComments: false
       Max: 2
+      IgnoredMethods:
+        - "/baz/"
 
   - name: rubocop_cop_metrics_blocklength_when_methods_to_allow_are_defined_when_ignoredmethods_is_enabled_when_regex_that_does_not_match_reports_an_offense
     source: |
@@ -547,6 +593,8 @@ tests:
     config:
       CountComments: false
       Max: 2
+      IgnoredMethods:
+        - "/baz/"
 
   - name: rubocop_cop_metrics_blocklength_when_methods_to_allow_are_defined_when_excludedmethods_is_enabled_does_not_report_an_offense
     source: |
@@ -560,6 +608,8 @@ tests:
     config:
       CountComments: false
       Max: 2
+      ExcludedMethods:
+        - "Foo::Bar.baz"
 
   - name: rubocop_cop_metrics_blocklength_when_methods_to_allow_are_defined_when_excludedmethods_is_enabled_that_does_not_match_reports_an_offense
     source: |
@@ -576,3 +626,5 @@ tests:
     config:
       CountComments: false
       Max: 2
+      ExcludedMethods:
+        - "Foo::Bar.baz"

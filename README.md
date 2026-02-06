@@ -79,28 +79,22 @@ Style/Documentation:
 
 ## Implemented Cops
 
-### Lint
-
-- **Lint/AssignmentInCondition** - Checks for assignments in conditions
-- **Lint/Debugger** - Checks for debugger calls (binding.pry, debugger, byebug, etc.)
-
-### Style
+### Verified (passing all RuboCop parity tests)
 
 - **Style/AutoResourceCleanup** - Checks for resources opened without block form
 - **Style/FormatStringToken** - Checks format string token style (annotated/template/unannotated)
-- **Style/HashSyntax** - Checks hash literal syntax (ruby19/hash_rockets/no_mixed_keys)
 - **Style/MethodCalledOnDoEndBlock** - Checks for methods called on do...end blocks
 - **Style/RaiseArgs** - Checks style of raise/fail arguments (explode/compact)
 - **Style/RescueStandardError** - Checks rescue StandardError style (explicit/implicit)
 - **Style/StringMethods** - Checks for preferred string methods (intern vs to_sym)
 
-### Layout
+### Partial Implementation (code exists, needs more config options)
 
-- **Layout/LineLength** - Checks line length
-
-### Metrics
-
-- **Metrics/BlockLength** - Checks block length
+- **Lint/AssignmentInCondition** - Checks for assignments in conditions
+- **Lint/Debugger** - Checks for debugger calls (needs DebuggerMethods config)
+- **Layout/LineLength** - Checks line length (needs tab width, AllowURI)
+- **Metrics/BlockLength** - Checks block length (needs AllowedMethods, CountAsOne)
+- **Style/HashSyntax** - Checks hash literal syntax (needs hash value omission support)
 
 ## Library Usage
 
@@ -206,7 +200,7 @@ cargo run --bin extract-rubocop-tests -- /path/to/rubocop/spec/rubocop/cop
 | Feature          | RuboCop  | ruby-fast-cop           |
 | ---------------- | -------- | ----------------------- |
 | Performance      | Baseline | 50-100x faster (target) |
-| Cop count        | ~500     | 11 (growing)            |
+| Cop count        | ~500     | 6 verified, 5 partial   |
 | Custom Ruby cops | Yes      | No                      |
 | .rubocop.yml     | Yes      | Yes                     |
 | Auto-correct     | Yes      | Planned                 |

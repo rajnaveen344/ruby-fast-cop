@@ -89,14 +89,28 @@ impl<'a> RescueVisitor<'a> {
         }
     }
 
-    fn is_only_standard_error(&self, exceptions: &ruby_prism::Node) -> bool {
-        // Check if the exceptions is a single ConstantReadNode for StandardError
-        if let ruby_prism::Node::ConstantReadNode { .. } = exceptions {
-            let const_node = exceptions.as_constant_read_node().unwrap();
-            let name = String::from_utf8_lossy(const_node.name().as_slice());
-            return name == "StandardError";
+    fn is_standard_error(&self, node: &ruby_prism::Node) -> bool {
+        match node {
+            // Direct reference: StandardError
+            ruby_prism::Node::ConstantReadNode { .. } => {
+                let const_node = node.as_constant_read_node().unwrap();
+                let name = String::from_utf8_lossy(const_node.name().as_slice());
+                name == "StandardError"
+            }
+            // Top-level reference: ::StandardError
+            ruby_prism::Node::ConstantPathNode { .. } => {
+                let path_node = node.as_constant_path_node().unwrap();
+                // Check if parent is nil (top-level) and name is StandardError
+                if path_node.parent().is_none() {
+                    if let Some(name) = path_node.name() {
+                        let const_name = String::from_utf8_lossy(name.as_slice());
+                        return const_name == "StandardError";
+                    }
+                }
+                false
+            }
+            _ => false,
         }
-        false
     }
 }
 
@@ -104,6 +118,7 @@ impl Visit<'_> for RescueVisitor<'_> {
     fn visit_rescue_node(&mut self, node: &ruby_prism::RescueNode) {
         // Get the exceptions being rescued
         let exceptions = node.exceptions();
+        let keyword_loc = node.keyword_loc();
 
         match self.enforced_style {
             EnforcedStyle::Implicit => {
@@ -111,12 +126,16 @@ impl Visit<'_> for RescueVisitor<'_> {
                 if exceptions.len() == 1 {
                     let first = exceptions.iter().next();
                     if let Some(exc) = first {
-                        if self.is_only_standard_error(&exc) {
-                            self.offenses.push(self.ctx.offense(
+                        if self.is_standard_error(&exc) {
+                            // Highlight from 'rescue' to end of 'StandardError'
+                            let start = keyword_loc.start_offset();
+                            let end = exc.location().end_offset();
+                            self.offenses.push(self.ctx.offense_with_range(
                                 self.cop_name,
                                 "Omit the error class when rescuing `StandardError` by itself.",
                                 Severity::Convention,
-                                &node.location(),
+                                start,
+                                end,
                             ));
                         }
                     }
@@ -125,11 +144,12 @@ impl Visit<'_> for RescueVisitor<'_> {
             EnforcedStyle::Explicit => {
                 // Flag if no exception class is specified (bare rescue)
                 if exceptions.is_empty() {
+                    // Highlight just the 'rescue' keyword
                     self.offenses.push(self.ctx.offense(
                         self.cop_name,
                         "Avoid rescuing without specifying an error class.",
                         Severity::Convention,
-                        &node.location(),
+                        &keyword_loc,
                     ));
                 }
             }
