@@ -182,9 +182,15 @@ impl BlockLength {
     /// Check if the method is in any of the allowed lists.
     fn is_method_allowed(&self, method_name: &str, qualified_name: &str) -> bool {
         for allowed in &self.allowed_methods {
-            // Entries wrapped in / are treated as regex patterns
-            if allowed.starts_with('/') && allowed.ends_with('/') && allowed.len() > 2 {
-                let pat = &allowed[1..allowed.len() - 1];
+            // Entries wrapped in / or starting with (?  are treated as regex patterns
+            let is_regex = (allowed.starts_with('/') && allowed.ends_with('/') && allowed.len() > 2)
+                || allowed.starts_with("(?");
+            if is_regex {
+                let pat = if allowed.starts_with('/') {
+                    &allowed[1..allowed.len() - 1]
+                } else {
+                    allowed.as_str()
+                };
                 if let Ok(re) = regex::Regex::new(pat) {
                     if re.is_match(qualified_name) || re.is_match(method_name) {
                         return true;

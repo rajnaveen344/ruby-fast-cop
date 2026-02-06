@@ -28,6 +28,7 @@ ruby-fast-cop is a high-performance Ruby linter written in Rust, designed as a d
 - Rewrite cops in Rust (like Ruff did for Python)
 - Don't try to extract or translate Ruby cops automatically
 - Focus on most-used cops first (~50-100 covers 90% of real usage)
+- **Never hardcode fixes to pass specific test cases.** Always understand the underlying RuboCop behavior and implement the general solution. If a test fails, study the original RuboCop cop source to understand *why* it behaves that way, then replicate that logic broadly.
 
 ## Project Structure
 
