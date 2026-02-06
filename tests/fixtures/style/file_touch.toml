@@ -1,0 +1,40 @@
+cop = "Style/FileTouch"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_filetouch_registers_an_offense_when_using_file_open_in_append_mode_with_empty_block"
+source = '''
+File.open(filename, 'a') {}
+'''
+corrected = '''
+FileUtils.touch(filename)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 27
+message = "Use `FileUtils.touch(filename)` instead of `File.open` in append mode with empty block."
+
+[[tests]]
+name = "rubocop_cop_style_filetouch_does_not_register_an_offense_when_using_file_open_in_append_mode_without_a_block"
+source = '''
+File.open(filename, 'a')
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_filetouch_does_not_register_an_offense_when_using_file_open_in_write_mode"
+source = '''
+File.open(filename, 'w') {}
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_filetouch_does_not_register_an_offense_when_using_file_open_without_an_access_mode"
+source = '''
+File.open(filename) {}
+'''
+offenses = []

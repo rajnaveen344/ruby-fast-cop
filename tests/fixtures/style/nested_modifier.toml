@@ -1,0 +1,177 @@
+cop = "Style/NestedModifier"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_nestedmodifier"
+source = '''
+something if a %{keyword} b
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 12
+message = "Avoid using nested modifiers."
+
+[[tests]]
+name = "rubocop_cop_style_nestedmodifier"
+source = '''
+something %{keyword} a if b
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 27
+message = "Avoid using nested modifiers."
+
+[[tests]]
+name = "rubocop_cop_style_nestedmodifier_autocorrects_if_if"
+source = '''
+something if a if b
+'''
+corrected = '''
+something if b && a
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 12
+message = "Avoid using nested modifiers."
+
+[[tests]]
+name = "rubocop_cop_style_nestedmodifier_autocorrects_unless_unless"
+source = '''
+something unless a unless b
+'''
+corrected = '''
+something unless b || a
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 16
+message = "Avoid using nested modifiers."
+
+[[tests]]
+name = "rubocop_cop_style_nestedmodifier_autocorrects_if_unless"
+source = '''
+something if a unless b
+'''
+corrected = '''
+something unless b || !a
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 12
+message = "Avoid using nested modifiers."
+
+[[tests]]
+name = "rubocop_cop_style_nestedmodifier_autocorrects_unless_with_a_comparison_operator_if"
+source = '''
+something unless b > 1 if true
+'''
+corrected = '''
+something if true && !(b > 1)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 16
+message = "Avoid using nested modifiers."
+
+[[tests]]
+name = "rubocop_cop_style_nestedmodifier_autocorrects_unless_if"
+source = '''
+something unless a if b
+'''
+corrected = '''
+something if b && !a
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 16
+message = "Avoid using nested modifiers."
+
+[[tests]]
+name = "rubocop_cop_style_nestedmodifier_adds_parentheses_when_needed_in_autocorrection"
+source = '''
+something if a || b if c || d
+'''
+corrected = '''
+something if (c || d) && (a || b)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 12
+message = "Avoid using nested modifiers."
+
+[[tests]]
+name = "rubocop_cop_style_nestedmodifier_adds_parentheses_to_method_arguments_when_needed_in_autocorrection"
+source = '''
+a unless [1, 2].include? a if a
+'''
+corrected = '''
+a if a && ![1, 2].include?(a)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 8
+message = "Avoid using nested modifiers."
+
+[[tests]]
+name = "rubocop_cop_style_nestedmodifier_does_not_add_redundant_parentheses_in_autocorrection"
+source = '''
+something if a unless c || d
+'''
+corrected = '''
+something unless c || d || !a
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 12
+message = "Avoid using nested modifiers."
+
+[[tests]]
+name = "rubocop_cop_style_nestedmodifier_while_not_correctable_while"
+source = '''
+while
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_nestedmodifier_until_not_correctable_until"
+source = '''
+until
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_nestedmodifier_registers_one_offense_for_more_than_two_modifiers"
+source = '''
+something until a while b unless c if d
+'''
+corrected = '''
+something until a while b if d && !c
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 26
+column_end = 32
+message = "Avoid using nested modifiers."

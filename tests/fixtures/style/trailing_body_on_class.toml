@@ -1,0 +1,152 @@
+cop = "Style/TrailingBodyOnClass"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_trailingbodyonclass_registers_an_offense_when_body_trails_after_class_definition"
+source = '''
+class Foo; body
+end
+class Foo body
+end
+class Bar; def bar; end
+end
+class Bar def bar; end
+end
+'''
+corrected = '''
+class Foo#{trailing_whitespace}
+  body
+end
+class Foo#{trailing_whitespace}
+  body
+end
+class Bar#{trailing_whitespace}
+  def bar; end
+end
+class Bar#{trailing_whitespace}
+  def bar; end
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 15
+message = "Place the first line of class body on its own line."
+
+[[tests.offenses]]
+line = 3
+column_start = 10
+column_end = 14
+message = "Place the first line of class body on its own line."
+
+[[tests.offenses]]
+line = 5
+column_start = 11
+column_end = 23
+message = "Place the first line of class body on its own line."
+
+[[tests.offenses]]
+line = 7
+column_start = 10
+column_end = 22
+message = "Place the first line of class body on its own line."
+
+[[tests]]
+name = "rubocop_cop_style_trailingbodyonclass_registers_an_offense_when_body_trails_after_singleton_class_definition"
+source = '''
+class << self; body
+end
+class << self; def bar; end
+end
+'''
+corrected = '''
+class << self#{trailing_whitespace}
+  body
+end
+class << self#{trailing_whitespace}
+  def bar; end
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 19
+message = "Place the first line of class body on its own line."
+
+[[tests.offenses]]
+line = 3
+column_start = 15
+column_end = 27
+message = "Place the first line of class body on its own line."
+
+[[tests]]
+name = "rubocop_cop_style_trailingbodyonclass_registers_an_offense_with_multi_line_class"
+source = '''
+class Foo; body
+  def bar
+    qux
+  end
+end
+'''
+corrected = '''
+class Foo#{trailing_whitespace}
+  body
+  def bar
+    qux
+  end
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 15
+message = "Place the first line of class body on its own line."
+
+[[tests]]
+name = "rubocop_cop_style_trailingbodyonclass_accepts_regular_class"
+source = '''
+class Foo
+  def no_op; end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_trailingbodyonclass_accepts_class_inheritance"
+source = '''
+class Foo < Bar
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_trailingbodyonclass_autocorrects_with_comment_after_body"
+source = '''
+class BarQux; foo # comment
+end
+'''
+corrected = '''
+# comment
+class BarQux#{trailing_whitespace}
+  foo#{trailing_whitespace}
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 14
+column_end = 17
+message = "Place the first line of class body on its own line."

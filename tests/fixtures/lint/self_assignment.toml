@@ -1,0 +1,967 @@
+cop = "Lint/SelfAssignment"
+department = "lint"
+severity = "warning"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_registers_an_offense_when_using_local_var_self_assignment"
+source = '''
+foo = foo
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 9
+message = "Self-assignment detected."
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_does_not_register_an_offense_when_using_local_var_assignment"
+source = '''
+foo = bar
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_registers_an_offense_when_using_instance_var_self_assignment"
+source = '''
+@foo = @foo
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 11
+message = "Self-assignment detected."
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_does_not_register_an_offense_when_using_instance_var_assignment"
+source = '''
+@foo = @bar
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_registers_an_offense_when_using_class_var_self_assignment"
+source = '''
+@@foo = @@foo
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 13
+message = "Self-assignment detected."
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_does_not_register_an_offense_when_using_class_var_assignment"
+source = '''
+@@foo = @@bar
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_registers_an_offense_when_using_global_var_self_assignment"
+source = '''
+$foo = $foo
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 11
+message = "Self-assignment detected."
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_does_not_register_an_offense_when_using_global_var_assignment"
+source = '''
+$foo = $bar
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_registers_an_offense_when_using_constant_var_self_assignment"
+source = '''
+Foo = Foo
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 9
+message = "Self-assignment detected."
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_does_not_register_an_offense_when_using_constant_var_assignment_for_constant_from_another_scope"
+source = '''
+Foo = ::Foo
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_does_not_register_an_offense_when_using_constant_var_or_assignment_for_constant_from_another_scope"
+source = '''
+Foo ||= ::Foo
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_registers_an_offense_when_using_multiple_var_self_assignment"
+source = '''
+foo, bar = foo, bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 19
+message = "Self-assignment detected."
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_registers_an_offense_when_using_multiple_var_self_assignment_through_array"
+source = '''
+foo, bar = [foo, bar]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 21
+message = "Self-assignment detected."
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_does_not_register_an_offense_when_using_multiple_var_assignment"
+source = '''
+foo, bar = bar, foo
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_does_not_register_an_offense_when_using_multiple_var_assignment_through_splat"
+source = '''
+foo, bar = *something
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_does_not_register_an_offense_when_using_multiple_var_assignment_through_method_call"
+source = '''
+foo, bar = something
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_registers_an_offense_when_using_shorthand_or_var_self_assignment"
+source = '''
+foo ||= foo
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 11
+message = "Self-assignment detected."
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_does_not_register_an_offense_when_using_shorthand_or_var_assignment"
+source = '''
+foo ||= bar
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_registers_an_offense_when_using_shorthand_and_var_self_assignment"
+source = '''
+foo &&= foo
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 11
+message = "Self-assignment detected."
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_does_not_register_an_offense_when_using_shorthand_and_var_assignment"
+source = '''
+foo &&= bar
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_registers_an_offense_when_using_attribute_self_assignment"
+source = '''
+foo.bar = foo.bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 17
+message = "Self-assignment detected."
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_registers_an_offense_when_using_attribute_self_assignment_with_a_safe_navigation_call"
+source = '''
+foo&.bar = foo&.bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 19
+message = "Self-assignment detected."
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_does_not_register_an_offense_when_using_attribute_assignment_with_different_attributes"
+source = '''
+foo.bar = foo.baz
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_does_not_register_an_offense_when_using_attribute_assignment_with_different_receivers"
+source = '''
+bar.foo = baz.foo
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_does_not_register_an_offense_when_using_attribute_assignment_with_extra_expression"
+source = '''
+foo.bar = foo.bar + 1
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_does_not_register_an_offense_when_using_attribute_assignment_with_method_call_with_arguments"
+source = '''
+foo.bar = foo.bar(arg)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_does_not_register_an_offense_when_using_attribute_assignment_with_literals"
+source = '''
+foo.bar = true
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_registers_an_offense_when_using_self_assignment_with_same_string_literals"
+source = '''
+foo["bar"] = foo["bar"]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 23
+message = "Self-assignment detected."
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_does_not_register_an_offense_when_using_self_assignment_with_different_string_literals"
+source = '''
+foo["bar"] = foo["baz"]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_registers_an_offense_when_using_self_assignment_with_same_integer_literals"
+source = '''
+foo[1] = foo[1]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 15
+message = "Self-assignment detected."
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_does_not_register_an_offense_when_using_self_assignment_with_different_integer_literals"
+source = '''
+foo[1] = foo[2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_registers_an_offense_when_using_self_assignment_with_same_float_literals"
+source = '''
+foo[1.2] = foo[1.2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 19
+message = "Self-assignment detected."
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_does_not_register_an_offense_when_using_self_assignment_with_different_float_literals"
+source = '''
+foo[1.2] = foo[2.2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_registers_an_offense_when_using_self_assignment_with_same_constant_reference"
+source = '''
+foo[Foo] = foo[Foo]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 19
+message = "Self-assignment detected."
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_does_not_register_an_offense_when_using_self_assignment_with_different_constant_references"
+source = '''
+foo[Foo] = foo[Bar]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_registers_an_offense_when_using_self_assignment_with_same_symbol_literals"
+source = '''
+foo[:bar] = foo[:bar]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 21
+message = "Self-assignment detected."
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_does_not_register_an_offense_when_using_self_assignment_with_different_symbol_literals"
+source = '''
+foo[:foo] = foo[:bar]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_registers_an_offense_when_using_self_assignment_with_same_local_variables"
+source = '''
+var = 1
+foo[var] = foo[var]
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 19
+message = "Self-assignment detected."
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_does_not_register_an_offense_when_using_self_assignment_with_different_local_variables"
+source = '''
+var1 = 1
+var2 = 2
+foo[var1] = foo[var2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_registers_an_offense_when_using_self_assignment_with_same_instance_variables"
+source = '''
+foo[@var] = foo[@var]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 21
+message = "Self-assignment detected."
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_does_not_register_an_offense_when_using_self_assignment_with_different_instance_variables"
+source = '''
+foo[@var1] = foo[@var2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_registers_an_offense_when_using_self_assignment_with_same_class_variables"
+source = '''
+foo[@@var] = foo[@@var]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 23
+message = "Self-assignment detected."
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_does_not_register_an_offense_when_using_self_assignment_with_different_class_variables"
+source = '''
+foo[@@var1] = foo[@@var2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_registers_an_offense_when_using_self_assignment_with_same_global_variables"
+source = '''
+foo[$var] = foo[$var]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 21
+message = "Self-assignment detected."
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_does_not_register_an_offense_when_using_self_assignment_with_different_global_variables"
+source = '''
+foo[$var1] = foo[$var2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_does_not_register_an_offense_when_using_assignment_with_method_calls"
+source = '''
+foo[bar] = foo[bar]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_does_not_register_an_offense_when_using_assignment_with_different_receivers"
+source = '''
+bar["foo"] = baz["foo"]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_does_not_register_an_offense_when_using_assignment_with_extra_expression"
+source = '''
+foo["bar"] = foo["bar"] + 1
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_registers_an_offense_when_using_self_assignment_with_a_safe_navigation_method_call"
+source = '''
+foo&.[]=("bar", foo["bar"])
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 27
+message = "Self-assignment detected."
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_registers_an_offense_when_ussing_self_assignment_with_multiple_key_arguments"
+source = '''
+matrix[1, 2] = matrix[1, 2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 27
+message = "Self-assignment detected."
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_does_not_register_an_offense_when_ussing_self_assignment_with_multiple_key_arguments_with_arguments_mismatch"
+source = '''
+matrix[1, 2] = matrix[1, 3]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_does_not_register_an_offense_when_ussing_self_assignment_with_multiple_key_arguments_with_method_call_argument"
+source = '''
+matrix[1, foo] = matrix[1, foo]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_registers_an_offense_when_ussing_self_assignment_with_using_zero_key_arguments"
+source = '''
+singleton[] = singleton[]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 25
+message = "Self-assignment detected."
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_does_not_register_an_offense_when_using_assignment_with_no_arguments"
+source = '''
+foo.[]=
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_rbs_inline_annotation_when_config_option_is_disabled_registers_offenses_and_it_has_a_comment"
+source = '''
+foo = foo #: Integer
+@foo = @foo #: Integer
+@@foo = @@foo #: Integer
+$foo = $foo #: Integer
+Foo = Foo #: Integer
+foo, bar = foo, bar #: Integer
+foo ||= foo #: Integer
+foo &&= foo #: Integer
+foo.bar = foo.bar #: Integer
+foo&.bar = foo&.bar #: Integer
+foo["bar"] = foo["bar"] #: Integer
+foo&.[]=("bar", foo["bar"]) #: Integer
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 9
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 11
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 13
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 11
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 5
+column_start = 0
+column_end = 9
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 6
+column_start = 0
+column_end = 19
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 7
+column_start = 0
+column_end = 11
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 8
+column_start = 0
+column_end = 11
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 9
+column_start = 0
+column_end = 17
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 10
+column_start = 0
+column_end = 19
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 11
+column_start = 0
+column_end = 23
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 12
+column_start = 0
+column_end = 27
+message = "Self-assignment detected."
+
+[tests.config]
+AllowRBSInlineAnnotation = false
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_rbs_inline_annotation_when_config_option_is_disabled_registers_an_offense_and_it_has_a_no_comment"
+source = '''
+foo = foo
+@foo = @foo
+@@foo = @@foo
+$foo = $foo
+Foo = Foo
+foo, bar = foo, bar
+foo ||= foo
+foo &&= foo
+foo.bar = foo.bar
+foo&.bar = foo&.bar
+foo["bar"] = foo["bar"]
+foo&.[]=("bar", foo["bar"])
+
+foo = foo # comment
+@foo = @foo # comment
+@@foo = @@foo # comment
+$foo = $foo # comment
+Foo = Foo # comment
+foo, bar = foo, bar # comment
+foo ||= foo # comment
+foo &&= foo # comment
+foo.bar = foo.bar # comment
+foo&.bar = foo&.bar # comment
+foo["bar"] = foo["bar"] # comment
+foo&.[]=("bar", foo["bar"]) # comment
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 9
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 11
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 13
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 11
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 5
+column_start = 0
+column_end = 9
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 6
+column_start = 0
+column_end = 19
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 7
+column_start = 0
+column_end = 11
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 8
+column_start = 0
+column_end = 11
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 9
+column_start = 0
+column_end = 17
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 10
+column_start = 0
+column_end = 19
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 11
+column_start = 0
+column_end = 23
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 12
+column_start = 0
+column_end = 27
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 14
+column_start = 0
+column_end = 9
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 15
+column_start = 0
+column_end = 11
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 16
+column_start = 0
+column_end = 13
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 17
+column_start = 0
+column_end = 11
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 18
+column_start = 0
+column_end = 9
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 19
+column_start = 0
+column_end = 19
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 20
+column_start = 0
+column_end = 11
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 21
+column_start = 0
+column_end = 11
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 22
+column_start = 0
+column_end = 17
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 23
+column_start = 0
+column_end = 19
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 24
+column_start = 0
+column_end = 23
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 25
+column_start = 0
+column_end = 27
+message = "Self-assignment detected."
+
+[tests.config]
+AllowRBSInlineAnnotation = false
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_rbs_inline_annotation_when_config_option_is_enabled_does_not_register_an_offense_and_it_has_a_comment"
+source = '''
+foo = foo #: Integer
+@foo = @foo #: Integer
+@@foo = @@foo #: Integer
+$foo = $foo #: Integer
+Foo = Foo #: Integer
+foo, bar = foo, bar #: Integer
+foo ||= foo #: Integer
+foo &&= foo #: Integer
+foo.bar = foo.bar #: Integer
+foo&.bar = foo&.bar #: Integer
+foo["bar"] = foo["bar"] #: Integer
+foo&.[]=("bar", foo["bar"]) #: Integer
+'''
+offenses = []
+
+[tests.config]
+AllowRBSInlineAnnotation = true
+
+[[tests]]
+name = "rubocop_cop_lint_selfassignment_rbs_inline_annotation_when_config_option_is_enabled_registers_an_offense_and_it_has_a_no_comment"
+source = '''
+foo = foo
+@foo = @foo
+@@foo = @@foo
+$foo = $foo
+Foo = Foo
+foo, bar = foo, bar
+foo ||= foo
+foo &&= foo
+foo.bar = foo.bar
+foo&.bar = foo&.bar
+foo["bar"] = foo["bar"]
+foo&.[]=("bar", foo["bar"])
+
+foo = foo # comment
+@foo = @foo # comment
+@@foo = @@foo # comment
+$foo = $foo # comment
+Foo = Foo # comment
+foo, bar = foo, bar # comment
+foo ||= foo # comment
+foo &&= foo # comment
+foo.bar = foo.bar # comment
+foo&.bar = foo&.bar # comment
+foo["bar"] = foo["bar"] # comment
+foo&.[]=("bar", foo["bar"]) # comment
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 9
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 11
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 13
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 11
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 5
+column_start = 0
+column_end = 9
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 6
+column_start = 0
+column_end = 19
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 7
+column_start = 0
+column_end = 11
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 8
+column_start = 0
+column_end = 11
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 9
+column_start = 0
+column_end = 17
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 10
+column_start = 0
+column_end = 19
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 11
+column_start = 0
+column_end = 23
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 12
+column_start = 0
+column_end = 27
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 14
+column_start = 0
+column_end = 9
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 15
+column_start = 0
+column_end = 11
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 16
+column_start = 0
+column_end = 13
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 17
+column_start = 0
+column_end = 11
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 18
+column_start = 0
+column_end = 9
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 19
+column_start = 0
+column_end = 19
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 20
+column_start = 0
+column_end = 11
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 21
+column_start = 0
+column_end = 11
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 22
+column_start = 0
+column_end = 17
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 23
+column_start = 0
+column_end = 19
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 24
+column_start = 0
+column_end = 23
+message = "Self-assignment detected."
+
+[[tests.offenses]]
+line = 25
+column_start = 0
+column_end = 27
+message = "Self-assignment detected."
+
+[tests.config]
+AllowRBSInlineAnnotation = true

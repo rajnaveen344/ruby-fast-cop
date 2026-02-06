@@ -1,0 +1,113 @@
+cop = "InternalAffairs/EmptyLineBetweenExpectOffenseAndCorrection"
+department = "internal_affairs"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_emptylinebetweenexpectoffenseandcorrection"
+source = '''
+expect_offense(<<~CODE)
+  bad_method
+CODE
+expect_correction(<<~CODE)
+  good_good
+CODE
+'''
+corrected = '''
+expect_offense(<<~CODE)
+  bad_method
+CODE
+
+expect_correction(<<~CODE)
+  good_good
+CODE
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 4
+message = "Add empty line between `expect_offense` and `expect_correction`."
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_emptylinebetweenexpectoffenseandcorrection"
+source = '''
+expect_offense(code)
+expect_correction(code)
+'''
+corrected = '''
+expect_offense(code)
+
+expect_correction(code)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 20
+message = "Add empty line between `expect_offense` and `expect_correction`."
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_emptylinebetweenexpectoffenseandcorrection_registers_and_corrects_an_offense_when_using_no_empty_line_between_expect_offense_and_expect_no_corrections"
+source = '''
+expect_offense('bad_method')
+expect_no_corrections
+'''
+corrected = '''
+expect_offense('bad_method')
+
+expect_no_corrections
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 28
+message = "Add empty line between `expect_offense` and `expect_no_corrections`."
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_emptylinebetweenexpectoffenseandcorrection_does_not_register_an_offense_when_using_only_expect_offense"
+source = '''
+expect_offense(<<~CODE)
+  bad_method
+CODE
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_emptylinebetweenexpectoffenseandcorrection"
+source = '''
+expect_offense(<<~CODE)
+  bad_method
+CODE
+
+expect_correction(<<~CODE)
+  good_method
+CODE
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_emptylinebetweenexpectoffenseandcorrection"
+source = '''
+expect_offense(bad_method)
+
+expect_correction(good_method)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_emptylinebetweenexpectoffenseandcorrection_does_not_register_an_offense_when_using_empty_line_between_expect_offense_and_expect_no_corrections"
+source = '''
+expect_offense('bad_method')
+
+expect_no_corrections
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_emptylinebetweenexpectoffenseandcorrection_does_not_register_an_offense_for_expect_offense_with_unexpected_syntax"
+source = '''
+expect_offense << a
+'''
+offenses = []

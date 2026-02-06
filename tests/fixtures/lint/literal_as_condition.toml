@@ -1,0 +1,1074 @@
+cop = "Lint/LiteralAsCondition"
+department = "lint"
+severity = "warning"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition"
+source = '''
+if %{lit}
+  top
+end
+'''
+corrected = '''
+top
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 9
+message = "Literal `#{lit}` appeared as a condition."
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition"
+source = '''
+if %{lit}
+  top
+else
+  foo
+end
+'''
+corrected = '''
+top
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 9
+message = "Literal `#{lit}` appeared as a condition."
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition"
+source = '''
+if condition
+  top
+elsif %{lit}
+  foo
+end
+'''
+corrected = '''
+if condition
+  top
+else
+  foo
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 3
+column_start = 6
+column_end = 12
+message = "Literal `#{lit}` appeared as a condition."
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition_registers_offenses_for_truthy_literals_in_both_the_branches_in_if"
+source = '''
+if %{lit}
+  x = 1
+elsif %{lit}
+  x = 2
+end
+'''
+corrected = '''
+x = 1
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 9
+message = "Literal `#{lit}` appeared as a condition."
+
+[[tests.offenses]]
+line = 3
+column_start = 6
+column_end = 12
+message = "Literal `#{lit}` appeared as a condition."
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition"
+source = '''
+if condition
+  top
+elsif %{lit}
+  foo
+else
+  bar
+end
+'''
+corrected = '''
+if condition
+  top
+else
+  foo
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 3
+column_start = 6
+column_end = 12
+message = "Literal `#{lit}` appeared as a condition."
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition"
+source = '''
+if condition
+  top # comment 1
+elsif %{lit}
+  foo # comment 2
+else
+  bar
+end
+'''
+corrected = '''
+if condition
+  top # comment 1
+else
+  foo # comment 2
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 3
+column_start = 6
+column_end = 12
+message = "Literal `#{lit}` appeared as a condition."
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition"
+source = '''
+top if %{lit}
+'''
+corrected = '''
+top
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 13
+message = "Literal `#{lit}` appeared as a condition."
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition"
+source = '''
+%{lit} ? top : bar
+'''
+corrected = '''
+top
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 18
+message = "Literal `#{lit}` appeared as a condition."
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition"
+source = '''
+unless %{lit}
+  top
+end
+'''
+corrected = '''
+
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 13
+message = "Literal `#{lit}` appeared as a condition."
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition"
+source = '''
+top unless %{lit}
+'''
+corrected = '''
+
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 17
+message = "Literal `#{lit}` appeared as a condition."
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition"
+source = '''
+while %{lit}
+  top
+end
+'''
+corrected = '''
+while true
+  top
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 12
+message = "Literal `#{lit}` appeared as a condition."
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition"
+source = '''
+begin
+  top
+end while %{lit}
+'''
+corrected = '''
+begin
+  top
+end while true
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 3
+column_start = 10
+column_end = 16
+message = "Literal `#{lit}` appeared as a condition."
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition"
+source = '''
+until %{lit}
+  top
+end
+'''
+corrected = '''
+
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 12
+message = "Literal `#{lit}` appeared as a condition."
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition"
+source = '''
+begin
+  top
+end until %{lit}
+'''
+corrected = '''
+top
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 3
+column_start = 10
+column_end = 16
+message = "Literal `#{lit}` appeared as a condition."
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition"
+source = '''
+case %{lit}
+when x then top
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 11
+message = "Literal `#{lit}` appeared as a condition."
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition"
+source = '''
+case
+when %{lit} then top
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 5
+column_end = 20
+message = "Literal `#{lit}` appeared as a condition."
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition"
+source = '''
+case x
+when #{lit} then top
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition_ruby_2_7"
+source = '''
+case %{lit}
+in x then top
+end
+'''
+ruby_version = ">= 2.7"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition_ruby_2_7"
+source = '''
+case %{lit}
+in CONST then top
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 11
+message = "Literal `#{lit}` appeared as a condition."
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition_ruby_2_7"
+source = '''
+case x
+in #{lit} then top
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition"
+source = '''
+if %{lit} && x
+  top
+end
+'''
+corrected = '''
+if x
+  top
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 14
+message = "Literal `#{lit}` appeared as a condition."
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition"
+source = '''
+if %{lit} && true
+  top
+end
+'''
+corrected = '''
+top
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 17
+message = "Literal `#{lit}` appeared as a condition."
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition"
+source = '''
+if x && %{lit}
+  top
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition"
+source = '''
+if x && !(%{lit} && a) && y && z
+  top
+end
+'''
+corrected = '''
+if x && !(a) && y && z
+  top
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 32
+message = "Literal `#{lit}` appeared as a condition."
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition"
+source = '''
+if !%{lit}
+  top
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 10
+message = "Literal `#{lit}` appeared as a condition."
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition"
+source = '''
+if test(#{lit})
+  top
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition"
+source = '''
+if (a || #{lit}).something
+  top
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition"
+source = '''
+case a || #{lit}
+when b
+  top
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition"
+source = '''
+!%{lit}
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 1
+column_end = 7
+message = "Literal `#{lit}` appeared as a condition."
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition"
+source = '''
+not(%{lit})
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 11
+message = "Literal `#{lit}` appeared as a condition."
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition_accepts_array_literal_in_case_if_it_has_non_literal_elements"
+source = '''
+case [1, 2, x]
+when [1, 2, 5] then top
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition_accepts_array_literal_in_case_if_it_has_nested_non_literal_element"
+source = '''
+case [1, 2, [x, 1]]
+when [1, 2, 5] then top
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition_registers_an_offense_for_case_with_a_primitive_array_condition"
+source = '''
+case [1, 2, [3, 4]]
+when [1, 2, 5] then top
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 19
+message = "Literal `[1, 2, [3, 4]]` appeared as a condition."
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition_accepts_dstr_literal_in_case"
+source = '''
+case "#{x}"
+when [1, 2, 5] then top
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition_ruby_2_7_accepts_array_literal_in_case_match_if_it_has_non_literal_elements"
+source = '''
+case [1, 2, x]
+in [1, 2, 5] then top
+end
+'''
+ruby_version = ">= 2.7"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition_ruby_2_7_accepts_array_literal_in_case_match_if_it_has_nested_non_literal_element"
+source = '''
+case [1, 2, [x, 1]]
+in [1, 2, 5] then top
+end
+'''
+ruby_version = ">= 2.7"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition_ruby_2_7_registers_an_offense_for_case_match_with_a_primitive_array_condition"
+source = '''
+case [1, 2, [3, 4]]
+in [1, 2, 5] then top
+end
+'''
+ruby_version = ">= 2.7"
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 19
+message = "Literal `[1, 2, [3, 4]]` appeared as a condition."
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition_ruby_2_7_accepts_an_offense_for_case_match_with_a_match_var"
+source = '''
+case { a: 1, b: 2, c: 3 }
+in a: Integer => m
+end
+'''
+ruby_version = ">= 2.7"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition_ruby_2_7_accepts_dstr_literal_in_case_match"
+source = '''
+case "#{x}"
+in [1, 2, 5] then top
+end
+'''
+ruby_version = ">= 2.7"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition_accepts_true_literal_in_while"
+source = '''
+while true
+  break if condition
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition_accepts_true_literal_in_post_loop_while"
+source = '''
+begin
+  break if condition
+end while true
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition_accepts_false_literal_in_until"
+source = '''
+until false
+  break if condition
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition_accepts_false_literal_in_post_loop_until"
+source = '''
+begin
+  break if condition
+end until false
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition"
+source = '''
+if %{lit}
+  top
+end
+'''
+corrected = '''
+
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 9
+message = "Literal `#{lit}` appeared as a condition."
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition"
+source = '''
+if %{lit}
+  top
+else
+  foo
+end
+'''
+corrected = '''
+foo
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 9
+message = "Literal `#{lit}` appeared as a condition."
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition"
+source = '''
+if %{lit}
+  top
+elsif condition
+  foo
+end
+'''
+corrected = '''
+if condition
+  foo
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 9
+message = "Literal `#{lit}` appeared as a condition."
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition"
+source = '''
+if condition
+  top
+elsif %{lit}
+  foo
+else
+  bar
+end
+'''
+corrected = '''
+if condition
+  top
+else
+  bar
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 3
+column_start = 6
+column_end = 12
+message = "Literal `#{lit}` appeared as a condition."
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition"
+source = '''
+if condition
+  top # comment 1
+elsif %{lit}
+  foo # comment 2
+else
+  bar # comment 3
+end
+'''
+corrected = '''
+if condition
+  top # comment 1
+else
+  bar # comment 3
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 3
+column_start = 6
+column_end = 12
+message = "Literal `#{lit}` appeared as a condition."
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition"
+source = '''
+top if %{lit}
+'''
+corrected = '''
+
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 13
+message = "Literal `#{lit}` appeared as a condition."
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition"
+source = '''
+%{lit} ? top : bar
+'''
+corrected = '''
+bar
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 18
+message = "Literal `#{lit}` appeared as a condition."
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition"
+source = '''
+unless %{lit}
+  top
+end
+'''
+corrected = '''
+top
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 13
+message = "Literal `#{lit}` appeared as a condition."
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition"
+source = '''
+top unless %{lit}
+'''
+corrected = '''
+top
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 17
+message = "Literal `#{lit}` appeared as a condition."
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition"
+source = '''
+while %{lit}
+  top
+end
+'''
+corrected = '''
+
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 12
+message = "Literal `#{lit}` appeared as a condition."
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition"
+source = '''
+begin
+  top
+end while %{lit}
+'''
+corrected = '''
+top
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 3
+column_start = 10
+column_end = 16
+message = "Literal `#{lit}` appeared as a condition."
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition"
+source = '''
+begin
+  top
+  foo
+end while %{lit}
+'''
+corrected = '''
+top
+foo
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 4
+column_start = 10
+column_end = 16
+message = "Literal `#{lit}` appeared as a condition."
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition"
+source = '''
+case %{lit}
+when x
+  top
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 11
+message = "Literal `#{lit}` appeared as a condition."
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition"
+source = '''
+if %{lit} || x
+  top
+end
+'''
+corrected = '''
+if x
+  top
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 14
+message = "Literal `#{lit}` appeared as a condition."
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition_registers_an_offense_for_nil_literal_in_until"
+source = '''
+until nil
+  top
+end
+'''
+corrected = '''
+until false
+  top
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 9
+message = "Literal `nil` appeared as a condition."
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition_registers_an_offense_for_nil_literal_in_post_loop_until"
+source = '''
+begin
+  top
+end until nil
+'''
+corrected = '''
+begin
+  top
+end until false
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 10
+column_end = 13
+message = "Literal `nil` appeared as a condition."
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition_void_value_expressions_after_autocorrect_registers_an_offense_but_does_not_autocorrect_when_return_is_used_after"
+source = '''
+def foo
+  puts 123 && return if bar?
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 7
+column_end = 10
+message = "Literal `123` appeared as a condition."
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition_void_value_expressions_after_autocorrect_registers_an_offense_but_does_not_autocorrect_when_return_is_used_after"
+source = '''
+def foo
+  puts nil || return if bar?
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 7
+column_end = 10
+message = "Literal `nil` appeared as a condition."
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition_void_value_expressions_after_autocorrect_registers_an_offense_but_does_not_autocorrect_when_inside_if_and_return_is_used_after"
+source = '''
+def foo
+  baz? if 123 && return
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 10
+column_end = 13
+message = "Literal `123` appeared as a condition."
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition_void_value_expressions_after_autocorrect_registers_an_offense_but_does_not_autocorrect_when_break_is_used_after"
+source = '''
+def foo
+  bar do
+    puts 123 && break if baz?
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 9
+column_end = 12
+message = "Literal `123` appeared as a condition."
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition_void_value_expressions_after_autocorrect_registers_an_offense_but_does_not_autocorrect_when_next_is_used_after"
+source = '''
+def foo
+  bar do
+    puts 123 && next if baz?
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 9
+column_end = 12
+message = "Literal `123` appeared as a condition."
+
+[[tests]]
+name = "rubocop_cop_lint_literalascondition_void_value_expressions_after_autocorrect_registers_an_offense_when_there_is_no_body_for_if_node"
+source = '''
+if 42
+end
+'''
+corrected = '''
+
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 5
+message = "Literal `42` appeared as a condition."

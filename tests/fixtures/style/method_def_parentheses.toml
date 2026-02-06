@@ -1,0 +1,386 @@
+cop = "Style/MethodDefParentheses"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_methoddefparentheses_reports_an_offense_for_def_with_parameters_with_parens"
+source = '''
+def func(a, b)
+end
+'''
+corrected = '''
+def func a, b
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 14
+message = "Use def without parentheses."
+
+[[tests]]
+name = "rubocop_cop_style_methoddefparentheses_accepts_a_def_with_parameters_but_no_parens"
+source = '''
+def func a, b
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_methoddefparentheses_reports_an_offense_for_opposite_correct"
+source = '''
+def func(a, b)
+end
+def func a, b
+end
+'''
+corrected = '''
+def func a, b
+end
+def func a, b
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 14
+message = "Use def without parentheses."
+
+[[tests]]
+name = "rubocop_cop_style_methoddefparentheses_reports_an_offense_for_class_def_with_parameters_with_parens"
+source = '''
+def Test.func(a, b)
+end
+'''
+corrected = '''
+def Test.func a, b
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 19
+message = "Use def without parentheses."
+
+[[tests]]
+name = "rubocop_cop_style_methoddefparentheses_accepts_a_class_def_with_parameters_with_parens"
+source = '''
+def Test.func a, b
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_methoddefparentheses_reports_an_offense_for_def_with_no_args_and_parens"
+source = '''
+def func()
+end
+'''
+corrected = '''
+def func#{trailing_whitespace}
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 10
+message = "Use def without parentheses."
+
+[[tests]]
+name = "rubocop_cop_style_methoddefparentheses_accepts_def_with_no_args_and_no_parens"
+source = '''
+def func
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_methoddefparentheses_auto_removes_the_parens_for_defs"
+source = '''
+def self.test(param); end
+'''
+corrected = '''
+def self.test param; end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 20
+message = "Use def without parentheses."
+
+[[tests]]
+name = "rubocop_cop_style_methoddefparentheses_requires_parens_for_forwarding"
+source = '''
+def foo(...)
+  bar(...)
+end
+'''
+ruby_version = ">= 2.7"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_methoddefparentheses_requires_parens_for_anonymous_block_forwarding"
+source = '''
+def foo(&)
+  bar(&)
+end
+'''
+ruby_version = ">= 3.1"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_methoddefparentheses_requires_parens_for_anonymous_rest_arguments_forwarding"
+source = '''
+def foo(*)
+  bar(*)
+end
+'''
+ruby_version = ">= 3.2"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_methoddefparentheses_requires_parens_for_anonymous_keyword_rest_arguments_forwarding"
+source = '''
+def foo(**)
+  bar(**)
+end
+'''
+ruby_version = ">= 3.2"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_methoddefparentheses_endless_methods_accepts_parens_without_args"
+source = '''
+def foo() = x
+'''
+ruby_version = ">= 3.0"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_methoddefparentheses_endless_methods_accepts_parens_with_args"
+source = '''
+def foo(x) = x
+'''
+ruby_version = ">= 3.0"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_methoddefparentheses_endless_methods_accepts_parens_for_method_calls_inside_an_endless_method"
+source = '''
+def foo(x) = bar(x)
+'''
+ruby_version = ">= 3.0"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_methoddefparentheses_endless_methods_accepts_parens_with_forward_arg"
+source = '''
+def foo(...)= bar(...)
+'''
+ruby_version = ">= 3.0"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_methoddefparentheses_require_parentheses_reports_an_offense_for_def_with_parameters_but_no_parens"
+source = '''
+def func a, b
+end
+'''
+corrected = '''
+def func(a, b)
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 13
+message = "Use def with parentheses when there are parameters."
+
+[tests.config]
+EnforcedStyle = "require_parentheses"
+
+[[tests]]
+name = "rubocop_cop_style_methoddefparentheses_require_parentheses_reports_an_offense_for_correct_opposite"
+source = '''
+def func(a, b)
+end
+def func a, b
+end
+'''
+corrected = '''
+def func(a, b)
+end
+def func(a, b)
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 9
+column_end = 13
+message = "Use def with parentheses when there are parameters."
+
+[tests.config]
+EnforcedStyle = "require_parentheses"
+
+[[tests]]
+name = "rubocop_cop_style_methoddefparentheses_require_parentheses_reports_an_offense_for_class_def_with_parameters_but_no_parens"
+source = '''
+def Test.func a, b
+end
+'''
+corrected = '''
+def Test.func(a, b)
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 14
+column_end = 18
+message = "Use def with parentheses when there are parameters."
+
+[tests.config]
+EnforcedStyle = "require_parentheses"
+
+[[tests]]
+name = "rubocop_cop_style_methoddefparentheses_require_parentheses_accepts_def_with_no_args_and_no_parens"
+source = '''
+def func
+end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "require_parentheses"
+
+[[tests]]
+name = "rubocop_cop_style_methoddefparentheses_require_parentheses_auto_adds_required_parens_for_a_defs"
+source = '''
+def self.test param; end
+'''
+corrected = '''
+def self.test(param); end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 14
+column_end = 19
+message = "Use def with parentheses when there are parameters."
+
+[tests.config]
+EnforcedStyle = "require_parentheses"
+
+[[tests]]
+name = "rubocop_cop_style_methoddefparentheses_require_parentheses_auto_adds_required_parens_for_a_defs_after_a_passing_method"
+source = '''
+def self.fine; end
+
+def self.test param; end
+
+def self.test2 param; end
+'''
+corrected = '''
+def self.fine; end
+
+def self.test(param); end
+
+def self.test2(param); end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 14
+column_end = 19
+message = "Use def with parentheses when there are parameters."
+
+[[tests.offenses]]
+line = 5
+column_start = 15
+column_end = 20
+message = "Use def with parentheses when there are parameters."
+
+[tests.config]
+EnforcedStyle = "require_parentheses"
+
+[[tests]]
+name = "rubocop_cop_style_methoddefparentheses_require_parentheses_auto_adds_required_parens_to_argument_lists_on_multiple_lines"
+source = '''
+def test one,
+two
+end
+'''
+corrected = '''
+def test(one,
+two)
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 13
+message = "Use def with parentheses when there are parameters."
+
+[tests.config]
+EnforcedStyle = "require_parentheses"
+
+[[tests]]
+name = "rubocop_cop_style_methoddefparentheses_require_no_parentheses_except_multiline_when_args_span_multiple_lines_auto_adds_required_parens_to_argument_lists_on_multiple_lines"
+source = '''
+def test one,
+two
+end
+'''
+corrected = '''
+def test(one,
+two)
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 13
+message = "Use def with parentheses when there are parameters."
+
+[tests.config]
+EnforcedStyle = "require_no_parentheses_except_multiline"
+
+[[tests]]
+name = "rubocop_cop_style_methoddefparentheses_require_no_parentheses_except_multiline_when_args_span_multiple_lines_reports_an_offense_for_correct_opposite"
+source = '''
+def func(a,
+         b)
+end
+def func a,
+         b
+end
+'''
+corrected = '''
+def func(a,
+         b)
+end
+def func(a,
+         b)
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 9
+column_end = 11
+message = "Use def with parentheses when there are parameters."
+
+[tests.config]
+EnforcedStyle = "require_no_parentheses_except_multiline"

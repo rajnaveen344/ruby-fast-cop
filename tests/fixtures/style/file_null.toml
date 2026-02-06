@@ -1,0 +1,157 @@
+cop = "Style/FileNull"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_filenull_does_not_register_an_offense_for_an_empty_string"
+source = '''
+""
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_filenull_does_not_register_an_offense_when_there_is_an_invalid_byte_sequence_error"
+source = '''
+"\xa4"
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_filenull_registers_an_offense_and_corrects_when_the_entire_string_is_dev_null"
+source = '''
+path = '/dev/null'
+'''
+corrected = '''
+path = File::NULL
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 18
+message = "Use `File::NULL` instead of `/dev/null`."
+
+[[tests]]
+name = "rubocop_cop_style_filenull_registers_an_offense_and_corrects_when_the_entire_string_is_nul_or_dev_null"
+source = '''
+CONST = '/dev/null'
+path = 'NUL'
+'''
+corrected = '''
+CONST = File::NULL
+path = File::NULL
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 19
+message = "Use `File::NULL` instead of `/dev/null`."
+
+[[tests.offenses]]
+line = 2
+column_start = 7
+column_end = 12
+message = "Use `File::NULL` instead of `NUL`."
+
+[[tests]]
+name = "rubocop_cop_style_filenull_does_not_register_an_offense_when_the_entire_string_is_nul_without_dev_null"
+source = '''
+path = 'NUL'
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_filenull_registers_an_offense_and_corrects_when_the_entire_string_is_nul_or_dev_null"
+source = '''
+path = cond ? '/dev/null' : 'NUL:'
+'''
+corrected = '''
+path = cond ? File::NULL : File::NULL
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 14
+column_end = 25
+message = "Use `File::NULL` instead of `/dev/null`."
+
+[[tests.offenses]]
+line = 1
+column_start = 28
+column_end = 34
+message = "Use `File::NULL` instead of `NUL:`."
+
+[[tests]]
+name = "rubocop_cop_style_filenull_registers_an_offense_when_the_entire_string_is_nul_without_dev_null"
+source = '''
+path = 'NUL:'
+'''
+corrected = '''
+path = File::NULL
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 13
+message = "Use `File::NULL` instead of `NUL:`."
+
+[[tests]]
+name = "rubocop_cop_style_filenull_is_case_insensitive"
+source = '''
+file = "nul"
+path = "/DEV/NULL"
+'''
+corrected = '''
+file = File::NULL
+path = File::NULL
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 12
+message = "Use `File::NULL` instead of `nul`."
+
+[[tests.offenses]]
+line = 2
+column_start = 7
+column_end = 18
+message = "Use `File::NULL` instead of `/DEV/NULL`."
+
+[[tests]]
+name = "rubocop_cop_style_filenull_does_not_register_an_offense_for_a_substring"
+source = '''
+'the null devices are /dev/null on Unix and NUL on Windows'
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_filenull_does_not_register_an_offense_for_a_string_within_an_array"
+source = '''
+['/dev/null', 'NUL']
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_filenull_does_not_register_an_offense_for_a_string_within_w"
+source = '''
+%w[/dev/null NUL]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_filenull_does_not_register_an_offense_for_a_hash_key"
+source = '''
+{ "/dev/null" => true, "nul" => false }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_filenull_does_not_register_an_offense_for_a_hash_value"
+source = '''
+{ unix: "/dev/null", windows: "nul" }
+'''
+offenses = []

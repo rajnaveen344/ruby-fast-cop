@@ -1,0 +1,106 @@
+cop = "Style/RedundantArrayFlatten"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_redundantarrayflatten_registers_an_offense_for_x_flatten_join"
+source = '''
+x.flatten.join
+'''
+corrected = '''
+x.join
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 1
+column_end = 9
+message = "Remove the redundant `flatten`."
+
+[[tests]]
+name = "rubocop_cop_style_redundantarrayflatten_registers_an_offense_for_x_flatten_join_nil"
+source = '''
+x.flatten.join(nil)
+'''
+corrected = '''
+x.join(nil)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 1
+column_end = 9
+message = "Remove the redundant `flatten`."
+
+[[tests]]
+name = "rubocop_cop_style_redundantarrayflatten_registers_an_offense_for_x_flatten_depth_join"
+source = '''
+x.flatten(depth).join
+'''
+corrected = '''
+x.join
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 1
+column_end = 16
+message = "Remove the redundant `flatten`."
+
+[[tests]]
+name = "rubocop_cop_style_redundantarrayflatten_registers_an_offense_for_x_flatten_join"
+source = '''
+x&.flatten&.join
+'''
+corrected = '''
+x&.join
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 1
+column_end = 10
+message = "Remove the redundant `flatten`."
+
+[[tests]]
+name = "rubocop_cop_style_redundantarrayflatten_does_not_register_an_offense_for_x_flatten_foo"
+source = '''
+x.flatten.foo
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantarrayflatten_does_not_register_an_offense_for_x_flatten"
+source = '''
+x.flatten
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantarrayflatten_does_not_register_an_offense_for_x_flatten_join_separator"
+source = '''
+x.flatten.join(separator)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantarrayflatten_does_not_register_an_offense_for_flatten_join_without_an_explicit_receiver"
+source = '''
+flatten.join
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantarrayflatten_does_not_register_an_offense_for_x_flatten_depth_extra_arg_join"
+source = '''
+x.flatten(depth, extra_arg).join
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantarrayflatten_does_not_register_an_offense_for_x_flatten_join_separator_extra_arg"
+source = '''
+x.flatten.join(separator, extra_arg)
+'''
+offenses = []

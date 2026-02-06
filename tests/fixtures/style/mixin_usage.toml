@@ -1,0 +1,209 @@
+cop = "Style/MixinUsage"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_mixinusage_include_registers_an_offense_when_using_outside_class_used_above"
+source = '''
+include M
+class C
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 9
+message = "`include` is used at the top level. Use inside `class` or `module`."
+
+[[tests]]
+name = "rubocop_cop_style_mixinusage_include_registers_an_offense_when_using_outside_class_used_below"
+source = '''
+class C
+end
+include M
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 9
+message = "`include` is used at the top level. Use inside `class` or `module`."
+
+[[tests]]
+name = "rubocop_cop_style_mixinusage_include_registers_an_offense_when_using_only_include_statement"
+source = '''
+include M
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 9
+message = "`include` is used at the top level. Use inside `class` or `module`."
+
+[[tests]]
+name = "rubocop_cop_style_mixinusage_include_registers_an_offense_when_using_include_in_method_definition_outside_class_or_module"
+source = '''
+def foo
+  include M
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 11
+message = "`include` is used at the top level. Use inside `class` or `module`."
+
+[[tests]]
+name = "rubocop_cop_style_mixinusage_include_does_not_register_an_offense_when_using_outside_class"
+source = '''
+Foo.include M
+class C; end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_mixinusage_include_does_not_register_an_offense_when_using_inside_class"
+source = '''
+class C
+  include M
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_mixinusage_include_does_not_register_an_offense_when_using_inside_block"
+source = '''
+Class.new do
+  include M
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_mixinusage_include"
+source = '''
+klass.class_eval do
+  include M1
+  include M2 if defined?(M)
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_mixinusage_include_doesn_t_register_an_offense_when_include_call_is_a_method_argument"
+source = '''
+do_something(include(M))
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_mixinusage_include_does_not_register_an_offense_when_using_include_in_method_definition_inside_class"
+source = '''
+class X
+  def foo
+    include M
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_mixinusage_include_does_not_register_an_offense_when_using_include_in_method_definition_inside_module"
+source = '''
+module X
+  def foo
+    include M
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_mixinusage_include_multiple_definition_classes_in_one_does_not_register_an_offense_when_using_inside_class"
+source = '''
+class C1
+  include M
+end
+
+class C2
+  include M
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_mixinusage_include_nested_module_registers_an_offense_when_using_outside_class"
+source = '''
+include M1::M2::M3
+class C
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 18
+message = "`include` is used at the top level. Use inside `class` or `module`."
+
+[[tests]]
+name = "rubocop_cop_style_mixinusage_extend_registers_an_offense_when_using_outside_class"
+source = '''
+extend M
+class C
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 8
+message = "`extend` is used at the top level. Use inside `class` or `module`."
+
+[[tests]]
+name = "rubocop_cop_style_mixinusage_extend_does_not_register_an_offense_when_using_inside_class"
+source = '''
+class C
+  extend M
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_mixinusage_prepend_registers_an_offense_when_using_outside_class"
+source = '''
+prepend M
+class C
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 9
+message = "`prepend` is used at the top level. Use inside `class` or `module`."
+
+[[tests]]
+name = "rubocop_cop_style_mixinusage_prepend_does_not_register_an_offense_when_using_inside_class"
+source = '''
+class C
+  prepend M
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_mixinusage_does_not_register_an_offense_when_using_inside_nested_module"
+source = '''
+module M1
+  include M2
+
+  class C
+    include M3
+  end
+end
+'''
+offenses = []

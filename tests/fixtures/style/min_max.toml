@@ -1,0 +1,112 @@
+cop = "Style/MinMax"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_minmax_with_an_array_literal_containing_calls_to_min_and_max_when_the_expression_stands_alone_registers_an_offense_if_the_receivers_match"
+source = '''
+[foo.min, foo.max]
+'''
+corrected = '''
+foo.minmax
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 18
+message = "Use `foo.minmax` instead of `[foo.min, foo.max]`."
+
+[[tests]]
+name = "rubocop_cop_style_minmax_with_an_array_literal_containing_calls_to_min_and_max_when_the_expression_stands_alone_does_not_register_an_offense_if_the_receivers_do_not_match"
+source = '''
+[foo.min, bar.max]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_minmax_with_an_array_literal_containing_calls_to_min_and_max_when_the_expression_stands_alone_does_not_register_an_offense_if_there_are_additional_elements"
+source = '''
+[foo.min, foo.baz, foo.max]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_minmax_with_an_array_literal_containing_calls_to_min_and_max_when_the_expression_stands_alone_does_not_register_an_offense_if_the_receiver_is_implicit"
+source = '''
+[min, max]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_minmax_with_an_array_literal_containing_calls_to_min_and_max_when_the_expression_is_used_in_a_parallel_assignment_registers_an_offense_if_the_receivers_match"
+source = '''
+bar = foo.min, foo.max
+'''
+corrected = '''
+bar = foo.minmax
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 22
+message = "Use `foo.minmax` instead of `foo.min, foo.max`."
+
+[[tests]]
+name = "rubocop_cop_style_minmax_with_an_array_literal_containing_calls_to_min_and_max_when_the_expression_is_used_in_a_parallel_assignment_does_not_register_an_offense_if_the_receivers_do_not_match"
+source = '''
+baz = foo.min, bar.max
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_minmax_with_an_array_literal_containing_calls_to_min_and_max_when_the_expression_is_used_in_a_parallel_assignment_does_not_register_an_offense_if_there_are_additional_elements"
+source = '''
+bar = foo.min, foo.baz, foo.max
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_minmax_with_an_array_literal_containing_calls_to_min_and_max_when_the_expression_is_used_in_a_parallel_assignment_does_not_register_an_offense_if_the_receiver_is_implicit"
+source = '''
+bar = min, max
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_minmax_with_an_array_literal_containing_calls_to_min_and_max_when_the_expression_is_used_as_a_return_value_registers_an_offense_if_the_receivers_match"
+source = '''
+return foo.min, foo.max
+'''
+corrected = '''
+return foo.minmax
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 23
+message = "Use `foo.minmax` instead of `foo.min, foo.max`."
+
+[[tests]]
+name = "rubocop_cop_style_minmax_with_an_array_literal_containing_calls_to_min_and_max_when_the_expression_is_used_as_a_return_value_does_not_register_an_offense_if_the_receivers_do_not_match"
+source = '''
+return foo.min, bar.max
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_minmax_with_an_array_literal_containing_calls_to_min_and_max_when_the_expression_is_used_as_a_return_value_does_not_register_an_offense_if_there_are_additional_elements"
+source = '''
+return foo.min, foo.baz, foo.max
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_minmax_with_an_array_literal_containing_calls_to_min_and_max_when_the_expression_is_used_as_a_return_value_does_not_register_an_offense_if_the_receiver_is_implicit"
+source = '''
+return min, max
+'''
+offenses = []

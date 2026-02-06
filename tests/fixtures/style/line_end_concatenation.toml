@@ -1,0 +1,326 @@
+cop = "Style/LineEndConcatenation"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_lineendconcatenation_registers_an_offense_for_string_concat_at_line_end"
+source = '''
+top = "test" +
+"top"
+'''
+corrected = '''
+top = "test" \
+"top"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 14
+message = "Use `\\` instead of `+` to concatenate multiline strings."
+
+[[tests]]
+name = "rubocop_cop_style_lineendconcatenation_registers_an_offense_for_string_concat_with_at_line_end"
+source = '''
+top = "test" <<
+"top"
+'''
+corrected = '''
+top = "test" \
+"top"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 15
+message = "Use `\\` instead of `<<` to concatenate multiline strings."
+
+[[tests]]
+name = "rubocop_cop_style_lineendconcatenation_registers_an_offense_for_string_concat_with_and_at_line_ends"
+source = '''
+top = "test " \
+"foo" <<
+"bar"
+'''
+corrected = '''
+top = "test " \
+"foo" \
+"bar"
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 8
+message = "Use `\\` instead of `<<` to concatenate multiline strings."
+
+[[tests]]
+name = "rubocop_cop_style_lineendconcatenation_registers_an_offense_for_dynamic_string_concat_at_line_end"
+source = '''
+top = "test#{x}" +
+"top"
+'''
+corrected = '''
+top = "test#{x}" \
+"top"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 18
+message = "Use `\\` instead of `+` to concatenate multiline strings."
+
+[[tests]]
+name = "rubocop_cop_style_lineendconcatenation_registers_an_offense_for_dynamic_string_concat_with_at_line_end"
+source = '''
+top = "test#{x}" <<
+"top"
+'''
+corrected = '''
+top = "test#{x}" \
+"top"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 19
+message = "Use `\\` instead of `<<` to concatenate multiline strings."
+
+[[tests]]
+name = "rubocop_cop_style_lineendconcatenation_registers_multiple_offenses_when_there_are_chained_methods"
+source = '''
+top = "test#{x}" <<
+"top" <<
+"ubertop"
+'''
+corrected = '''
+top = "test#{x}" \
+"top" \
+"ubertop"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 19
+message = "Use `\\` instead of `<<` to concatenate multiline strings."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 8
+message = "Use `\\` instead of `<<` to concatenate multiline strings."
+
+[[tests]]
+name = "rubocop_cop_style_lineendconcatenation_registers_multiple_offenses_when_there_are_chained_concatenations"
+source = '''
+top = "test#{x}" +
+"top" +
+"foo"
+'''
+corrected = '''
+top = "test#{x}" \
+"top" \
+"foo"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 18
+message = "Use `\\` instead of `+` to concatenate multiline strings."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 7
+message = "Use `\\` instead of `+` to concatenate multiline strings."
+
+[[tests]]
+name = "rubocop_cop_style_lineendconcatenation_registers_multiple_offenses_when_there_are_chained_concatenations_combined_with_calls"
+source = '''
+top = "test#{x}" <<
+"top" +
+"foo" <<
+"bar"
+'''
+corrected = '''
+top = "test#{x}" \
+"top" \
+"foo" \
+"bar"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 19
+message = "Use `\\` instead of `<<` to concatenate multiline strings."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 7
+message = "Use `\\` instead of `+` to concatenate multiline strings."
+
+[[tests.offenses]]
+line = 3
+column_start = 6
+column_end = 8
+message = "Use `\\` instead of `<<` to concatenate multiline strings."
+
+[[tests]]
+name = "rubocop_cop_style_lineendconcatenation_accepts_string_concat_on_the_same_line"
+source = '''
+top = "test" + "top"
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_lineendconcatenation_accepts_string_concat_with_a_return_value_of_method_on_a_string"
+source = '''
+content_and_three_spaces = "content" +
+  " " * 3
+a_thing = 'a ' +
+  'gniht'.reverse
+output = 'value: ' +
+  '%d' % value
+'letter: ' +
+  'abcdefghij'[ix]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_lineendconcatenation_accepts_string_concat_with_a_return_value_of_method_on_an_interpolated_string"
+source = '''
+x3a = 'x' +
+  "#{'a' + "#{3}"}".reverse
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_lineendconcatenation_accepts_string_concat_at_line_end_when_followed_by_comment"
+source = '''
+top = "test" + # something
+"top"
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_lineendconcatenation_accepts_string_concat_at_line_end_when_followed_by_a_comment_line"
+source = '''
+top = "test" +
+# something
+"top"
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_lineendconcatenation_accepts_string_concat_at_line_end_when_literals_are_involved"
+source = '''
+top = %(test) +
+"top"
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_lineendconcatenation_accepts_string_concat_at_line_end_for_special_strings_like_file"
+source = '''
+top = __FILE__ +
+"top"
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_lineendconcatenation_registers_offenses_only_for_the_appropriate_lines_in_chained_concats"
+source = '''
+top = "test#{x}" + # comment
+"foo" +
+%(bar) +
+"baz" +
+"qux"
+'''
+corrected = '''
+top = "test#{x}" + # comment
+"foo" +
+%(bar) +
+"baz" \
+"qux"
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 6
+column_end = 7
+message = "Use `\\` instead of `+` to concatenate multiline strings."
+
+[[tests]]
+name = "rubocop_cop_style_lineendconcatenation_autocorrects_a_with_trailing_whitespace_to"
+source = '''
+top = "test" +#{trailing_whitespace}
+"top"
+'''
+corrected = '''
+top = "test" \
+"top"
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 14
+message = "Use `\\` instead of `+` to concatenate multiline strings."
+
+[[tests]]
+name = "rubocop_cop_style_lineendconcatenation_autocorrects_a_with_to_just"
+source = '''
+top = "test" + \
+"top"
+'''
+corrected = '''
+top = "test" \
+"top"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 14
+message = "Use `\\` instead of `+` to concatenate multiline strings."
+
+[[tests]]
+name = "rubocop_cop_style_lineendconcatenation_autocorrects_only_the_lines_that_should_be_autocorrected"
+source = '''
+top = "test#{x}" <<
+"top" + # comment
+"foo" +
+"bar" +
+%(baz) +
+"qux"
+'''
+corrected = '''
+top = "test#{x}" \
+"top" + # comment
+"foo" \
+"bar" +
+%(baz) +
+"qux"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 19
+message = "Use `\\` instead of `<<` to concatenate multiline strings."
+
+[[tests.offenses]]
+line = 3
+column_start = 6
+column_end = 7
+message = "Use `\\` instead of `+` to concatenate multiline strings."

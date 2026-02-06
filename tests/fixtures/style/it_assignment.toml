@@ -1,0 +1,243 @@
+cop = "Style/ItAssignment"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_itassignment_registers_an_offense_when_assigning_a_local_it_variable"
+source = '''
+it = 5
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 2
+message = "`it` is the default block parameter; consider another name."
+
+[[tests]]
+name = "rubocop_cop_style_itassignment_registers_an_offense_when_naming_a_method_parameter_it"
+source = '''
+def foo(it)
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 10
+message = "`it` is the default block parameter; consider another name."
+
+[[tests]]
+name = "rubocop_cop_style_itassignment_registers_an_offense_when_naming_a_kwarg_it"
+source = '''
+def foo(it:)
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 10
+message = "`it` is the default block parameter; consider another name."
+
+[[tests]]
+name = "rubocop_cop_style_itassignment_registers_an_offense_when_naming_a_method_parameter_it_with_a_default_value"
+source = '''
+def foo(it = 5)
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 10
+message = "`it` is the default block parameter; consider another name."
+
+[[tests]]
+name = "rubocop_cop_style_itassignment_registers_an_offense_when_naming_a_kwarg_it_with_a_default_value"
+source = '''
+def foo(it: 5)
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 10
+message = "`it` is the default block parameter; consider another name."
+
+[[tests]]
+name = "rubocop_cop_style_itassignment_registers_an_offense_when_naming_a_method_parameter_it"
+source = '''
+def foo(*it)
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 11
+message = "`it` is the default block parameter; consider another name."
+
+[[tests]]
+name = "rubocop_cop_style_itassignment_registers_an_offense_when_naming_a_kwarg_splat_it"
+source = '''
+def foo(**it)
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 12
+message = "`it` is the default block parameter; consider another name."
+
+[[tests]]
+name = "rubocop_cop_style_itassignment_registers_an_offense_when_naming_a_block_argument_it"
+source = '''
+def foo(&it)
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 11
+message = "`it` is the default block parameter; consider another name."
+
+[[tests]]
+name = "rubocop_cop_style_itassignment_registers_an_offense_when_assigning_a_local_it_variable_inside_a_block"
+source = '''
+foo { it = 5 }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 8
+message = "`it` is the default block parameter; consider another name."
+
+[[tests]]
+name = "rubocop_cop_style_itassignment_registers_an_offense_when_assigning_a_local_it_variable_inside_a_multiline_block"
+source = '''
+foo do
+  it = 5
+  bar(it)
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 4
+message = "`it` is the default block parameter; consider another name."
+
+[[tests]]
+name = "rubocop_cop_style_itassignment_registers_an_offense_when_assigning_a_local_it_variable_inside_a_block_with_parameters"
+source = '''
+foo { |x| it = x }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 12
+message = "`it` is the default block parameter; consider another name."
+
+[[tests]]
+name = "rubocop_cop_style_itassignment_registers_an_offense_when_assigning_a_local_it_variable_inside_a_numblock"
+source = '''
+foo { it = _2 }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 8
+message = "`it` is the default block parameter; consider another name."
+
+[[tests]]
+name = "rubocop_cop_style_itassignment_registers_an_offense_inside_a_lambda"
+source = '''
+-> { it = 5 }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 7
+message = "`it` is the default block parameter; consider another name."
+
+[[tests]]
+name = "rubocop_cop_style_itassignment_does_not_register_an_offense_when_assigning_self_it"
+source = '''
+self.it = 5
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_itassignment_does_not_register_an_offense_when_assigning_self_it_inside_a_block"
+source = '''
+foo { self.it = 5 }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_itassignment_does_not_register_an_offense_when_assigning_it"
+source = '''
+@it = 5
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_itassignment_does_not_register_an_offense_when_assigning_it_inside_a_block"
+source = '''
+foo { @it = 5 }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_itassignment_does_not_register_an_offense_when_assigning_it"
+source = '''
+$it = 5
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_itassignment_does_not_register_an_offense_when_assigning_it_inside_a_block"
+source = '''
+foo { $it = 5 }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_itassignment_does_not_register_an_offense_when_assigning_a_constant_it"
+source = '''
+IT = 5
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_itassignment_does_not_register_an_offense_when_naming_a_method_it"
+source = '''
+def it
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_itassignment_ruby_3_4_does_not_register_an_offense_when_calling_it_in_a_block"
+source = '''
+foo { puts it }
+'''
+ruby_version = ">= 3.3"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_itassignment_ruby_3_4_does_not_register_an_offense_when_calling_it_in_a_block"
+source = '''
+foo { puts it }
+'''
+ruby_version = ">= 3.4"
+offenses = []

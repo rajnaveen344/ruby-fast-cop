@@ -1,0 +1,608 @@
+cop = "Lint/UnmodifiedReduceAccumulator"
+department = "lint"
+severity = "warning"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_lint_unmodifiedreduceaccumulator"
+source = '''
+values.#{method} do
+  do_something
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_unmodifiedreduceaccumulator"
+source = '''
+values.#{method}(:+)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_unmodifiedreduceaccumulator"
+source = '''
+values.#{method}(:+) { |result, value| }
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_unmodifiedreduceaccumulator_does_not_register_an_offense_when_returning_a_literal"
+source = '''
+values.reduce(true) do |result, value|
+  next false if something?
+  true
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_unmodifiedreduceaccumulator_registers_an_offense_when_returning_the_element"
+source = '''
+values.#{method}({}) do |acc, el|
+  acc[el] = true
+  el
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 4
+message = "Ensure the accumulator `acc` will be modified by `#{method}`."
+
+[[tests]]
+name = "rubocop_cop_lint_unmodifiedreduceaccumulator_registers_an_offense_when_returning_the_element_in_the_block_of_safe_navigation_method_call"
+source = '''
+values&.#{method}({}) do |acc, el|
+  acc[el] = true
+  el
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 4
+message = "Ensure the accumulator `acc` will be modified by `#{method}`."
+
+[[tests]]
+name = "rubocop_cop_lint_unmodifiedreduceaccumulator_registers_an_offense_when_called_with_no_argument"
+source = '''
+(1..4).#{method} do |acc, el|
+  el
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 4
+message = "Ensure the accumulator `acc` will be modified by `#{method}`."
+
+[[tests]]
+name = "rubocop_cop_lint_unmodifiedreduceaccumulator_does_not_register_an_offense_when_comparing"
+source = '''
+values.#{method}(false) do |acc, el|
+  el == acc
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_unmodifiedreduceaccumulator_does_not_register_an_offense_when_returning_the_accumulator"
+source = '''
+(1..4).#{method}(0) do |acc, el|
+  acc
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_unmodifiedreduceaccumulator_does_not_register_an_offense_when_assigning_the_accumulator"
+source = '''
+(1..4).#{method}(0) do |acc, el|
+  acc = el
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_unmodifiedreduceaccumulator_does_not_register_an_offense_when_op_assigning_the_accumulator"
+source = '''
+(1..4).#{method}(0) do |acc, el|
+  el += acc
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_unmodifiedreduceaccumulator_does_not_register_an_offense_when_or_assigning_the_accumulator"
+source = '''
+(1..4).#{method}(0) do |acc, el|
+  el ||= acc
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_unmodifiedreduceaccumulator_does_not_register_an_offense_when_returning_the_accumulator_in_a_boolean_statement"
+source = '''
+(1..4).#{method}(0) do |acc, el|
+  el || acc
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_unmodifiedreduceaccumulator_does_not_register_an_offense_when_and_assigning_the_accumulator"
+source = '''
+(1..4).#{method}(0) do |acc, el|
+  el &&= acc
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_unmodifiedreduceaccumulator_does_not_register_an_offense_when_shovelling_the_accumulator"
+source = '''
+(1..4).#{method}(0) do |acc, el|
+  el << acc
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_unmodifiedreduceaccumulator_does_not_register_an_offense_when_mutating_the_element_with_the_accumulator"
+source = '''
+values.#{method} do |acc, el|
+  x = acc
+  el << x
+  el
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_unmodifiedreduceaccumulator_does_not_register_an_offense_when_mutating_the_element_with_the_another_value"
+source = '''
+values.#{method} do |acc, el|
+  el = x = acc
+  el
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_unmodifiedreduceaccumulator_registers_an_offense_when_mutating_the_accumulator_with_the_element_but_not_returning_it"
+source = '''
+values.#{method} do |acc, el|
+  acc = el
+  acc += el
+  acc << el
+  acc &&= el
+  acc.method!(el)
+  el
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 7
+column_start = 2
+column_end = 4
+message = "Ensure the accumulator `acc` will be modified by `#{method}`."
+
+[[tests]]
+name = "rubocop_cop_lint_unmodifiedreduceaccumulator_does_not_register_an_offense_with_the_accumulator_in_interpolation"
+source = '''
+(1..4).#{method}(0) do |acc, el|
+  "#{acc}#{el}"
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_unmodifiedreduceaccumulator_registers_an_offense_with_the_element_in_interpolation"
+source = '''
+(1..4).#{method}(0) do |acc, el|
+  "#{el}"
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 9
+message = "Ensure the accumulator `acc` will be modified by `#{method}`."
+
+[[tests]]
+name = "rubocop_cop_lint_unmodifiedreduceaccumulator_does_not_register_an_offense_with_the_accumulator_in_heredoc"
+source = '''
+(1..4).#{method}(0) do |acc, el|
+  <<~RESULT
+    #{acc}#{el}
+  RESULT
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_unmodifiedreduceaccumulator_registers_an_offense_with_the_element_in_heredoc"
+source = '''
+(1..4).#{method}(0) do |acc, el|
+  <<~RESULT
+    #{el}
+  RESULT
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 11
+message = "Ensure the accumulator `acc` will be modified by `#{method}`."
+
+[[tests]]
+name = "rubocop_cop_lint_unmodifiedreduceaccumulator_does_not_register_an_offense_when_returning_the_accumulator_in_an_expression"
+source = '''
+(1..4).#{method}(0) do |acc, el|
+  el + acc
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_unmodifiedreduceaccumulator_does_not_register_an_offense_when_returning_a_method_called_on_the_accumulator"
+source = '''
+(1..4).#{method}(0) do |acc, el|
+  acc.method
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_unmodifiedreduceaccumulator_does_not_register_an_offense_when_returning_a_method_called_with_the_accumulator"
+source = '''
+(1..4).#{method}(0) do |acc, el|
+  method(acc)
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_unmodifiedreduceaccumulator_does_not_register_an_offense_when_calling_a_method_on_the_accumulator_with_the_element"
+source = '''
+foo.#{method} { |result, key| result.method(key) }
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_unmodifiedreduceaccumulator_registers_an_offense_when_returning_an_index_of_the_accumulator"
+source = '''
+%w(a b c).#{method}({}) do |acc, letter|
+  acc[foo]
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 10
+message = "Do not return an element of the accumulator in `#{method}`."
+
+[[tests]]
+name = "rubocop_cop_lint_unmodifiedreduceaccumulator_registers_an_offense_when_returning_an_index_setter_on_the_accumulator"
+source = '''
+%w(a b c).#{method}({}) do |acc, letter|
+  acc[foo] = bar
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 16
+message = "Do not return an element of the accumulator in `#{method}`."
+
+[[tests]]
+name = "rubocop_cop_lint_unmodifiedreduceaccumulator_does_not_register_an_offense_when_returning_accumulator_element"
+source = '''
+foo.#{method} { |result, key| result[key] }
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_unmodifiedreduceaccumulator_registers_an_offense_when_returning_accumulator_element"
+source = '''
+foo.#{method} { |result, key| result[key] = foo }
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 49
+message = "Do not return an element of the accumulator in `#{method}`."
+
+[[tests]]
+name = "rubocop_cop_lint_unmodifiedreduceaccumulator_registers_an_offense_when_returning_an_expression_with_the_element"
+source = '''
+(1..4).#{method}(0) do |acc, el|
+  el + 2
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 8
+message = "Ensure the accumulator `acc` will be modified by `#{method}`."
+
+[[tests]]
+name = "rubocop_cop_lint_unmodifiedreduceaccumulator_registers_an_offense_for_values_returned_with_next"
+source = '''
+(1..4).#{method}(0) do |acc, el|
+  next el if el.even?
+  acc += 1
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 7
+column_end = 9
+message = "Ensure the accumulator `acc` will be modified by `#{method}`."
+
+[[tests]]
+name = "rubocop_cop_lint_unmodifiedreduceaccumulator_registers_an_offense_for_values_returned_with_break"
+source = '''
+(1..4).#{method}(0) do |acc, el|
+  break el if el.even?
+  acc += 1
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 8
+column_end = 10
+message = "Ensure the accumulator `acc` will be modified by `#{method}`."
+
+[[tests]]
+name = "rubocop_cop_lint_unmodifiedreduceaccumulator_registers_an_offense_for_every_violating_return_value"
+source = '''
+(1..4).#{method}(0) do |acc, el|
+  next el if el.even?
+  el * 2
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 7
+column_end = 9
+message = "Ensure the accumulator `acc` will be modified by `#{method}`."
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 8
+message = "Ensure the accumulator `acc` will be modified by `#{method}`."
+
+[[tests]]
+name = "rubocop_cop_lint_unmodifiedreduceaccumulator_does_not_register_an_offense_if_the_return_value_cannot_be_determined"
+source = '''
+(1..4).#{method}(0) do |acc, el|
+  "#{self.el}#{el}"
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_unmodifiedreduceaccumulator_does_not_look_inside_inner_blocks"
+source = '''
+foo.#{method}(bar) do |acc, el|
+  values.map do |v|
+    next el if something?
+    el
+  end
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_unmodifiedreduceaccumulator_does_not_look_inside_inner_numblocks"
+source = '''
+foo.#{method}(bar) do |acc, el|
+  values.map do
+    next el if something?
+    _1
+  end
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_unmodifiedreduceaccumulator_does_not_look_inside_inner_itblocks"
+source = '''
+foo.#{method}(bar) do |acc, el|
+  values.map do
+    next el if something?
+    it
+  end
+end
+'''
+ruby_version = ">= 3.4"
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_unmodifiedreduceaccumulator_allows_break_with_no_value"
+source = '''
+foo.#{method}([]) do |acc, el|
+  break if something?
+  acc << el
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_unmodifiedreduceaccumulator_allows_the_element_to_be_the_return_value_if_the_accumulator_is_returned_in_any_branch"
+source = '''
+values.#{method}(nil) do |result, value|
+  next value if something?
+  result
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_unmodifiedreduceaccumulator_argument_count_ignores_when_there_are_not_enough_block_arguments"
+source = '''
+(1..4).#{method}(0) { |acc| acc.foo }
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_unmodifiedreduceaccumulator_argument_count_ignores_when_there_is_a_splat_argument"
+source = '''
+values.#{method}(0) { |*x| x[0] + x[1] }
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_unmodifiedreduceaccumulator_argument_count_registers_an_offense_when_there_are_more_than_two_arguments_but_the_element_is_returned"
+source = '''
+(1..4).each_with_index.#{method}([]) do |acc, (el, index)|
+  acc[el] = method(index)
+  el
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 4
+message = "Ensure the accumulator `acc` will be modified by `#{method}`."
+
+[[tests]]
+name = "rubocop_cop_lint_unmodifiedreduceaccumulator_numblocks_registers_an_offense_when_returning_the_element"
+source = '''
+(1..4).#{method}(0) { _2 }
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 26
+message = "Ensure the accumulator `_1` will be modified by `#{method}`."
+
+[[tests]]
+name = "rubocop_cop_lint_unmodifiedreduceaccumulator_numblocks_registers_an_offense_when_returning_the_element_in_the_block_of_safe_navigation_method_call"
+source = '''
+(1..4)&.#{method}(0) { _2 }
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 27
+message = "Ensure the accumulator `_1` will be modified by `#{method}`."
+
+[[tests]]
+name = "rubocop_cop_lint_unmodifiedreduceaccumulator_numblocks_does_not_register_an_offense_when_returning_the_accumulator"
+source = '''
+values.#{method}(0) { _1 + _2 }
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+offenses = []

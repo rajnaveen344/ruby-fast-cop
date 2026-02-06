@@ -1,0 +1,174 @@
+cop = "Style/ConcatArrayLiterals"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_concatarrayliterals_registers_an_offense_when_using_concat_with_single_element_array_literal_argument"
+source = '''
+arr.concat([item])
+'''
+corrected = '''
+arr.push(item)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 18
+message = "Use `push(item)` instead of `concat([item])`."
+
+[[tests]]
+name = "rubocop_cop_style_concatarrayliterals_registers_an_offense_when_using_safe_navigation_concat_with_single_element_array_literal_argument"
+source = '''
+arr&.concat([item])
+'''
+corrected = '''
+arr&.push(item)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 19
+message = "Use `push(item)` instead of `concat([item])`."
+
+[[tests]]
+name = "rubocop_cop_style_concatarrayliterals_registers_an_offense_when_using_concat_with_multiple_elements_array_literal_argument"
+source = '''
+arr.concat([foo, bar])
+'''
+corrected = '''
+arr.push(foo, bar)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 22
+message = "Use `push(foo, bar)` instead of `concat([foo, bar])`."
+
+[[tests]]
+name = "rubocop_cop_style_concatarrayliterals_registers_an_offense_when_using_concat_with_multiline_multiple_elements_array_literal_argument"
+source = '''
+arr.concat([
+  foo,
+  bar
+])
+'''
+corrected = '''
+arr.push(
+  foo,
+  bar
+)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 12
+message = "Use `push(foo, bar)` instead of `concat([[...]"
+
+[[tests]]
+name = "rubocop_cop_style_concatarrayliterals_registers_an_offense_when_using_concat_with_multiple_array_literal_arguments"
+source = '''
+arr.concat([foo, bar], [baz])
+'''
+corrected = '''
+arr.push(foo, bar, baz)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 29
+message = "Use `push(foo, bar, baz)` instead of `concat([foo, bar], [baz])`."
+
+[[tests]]
+name = "rubocop_cop_style_concatarrayliterals_registers_an_offense_when_using_concat_with_single_element_i_array_literal_argument"
+source = '''
+arr.concat(%i[item])
+'''
+corrected = '''
+arr.push(:item)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 20
+message = "Use `push(:item)` instead of `concat(%i[item])`."
+
+[[tests]]
+name = "rubocop_cop_style_concatarrayliterals_registers_an_offense_when_using_concat_with_i_array_literal_argument_consisting_of_non_basic_literals"
+source = '''
+arr.concat(%I[item #{foo}])
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 27
+message = "Use `push` with elements as arguments without array brackets instead of `concat(%I[item #{foo}])`."
+
+[[tests]]
+name = "rubocop_cop_style_concatarrayliterals_registers_an_offense_when_using_concat_with_w_array_literal_argument_consisting_of_non_basic_literals"
+source = '''
+arr.concat(%W[item #{foo}])
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 27
+message = "Use `push` with elements as arguments without array brackets instead of `concat(%W[item #{foo}])`."
+
+[[tests]]
+name = "rubocop_cop_style_concatarrayliterals_registers_an_offense_when_using_concat_with_single_element_w_array_literal_argument"
+source = '''
+arr.concat(%w[item])
+'''
+corrected = '''
+arr.push("item")
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 20
+message = "Use `push(\"item\")` instead of `concat(%w[item])`."
+
+[[tests]]
+name = "rubocop_cop_style_concatarrayliterals_does_not_register_an_offense_when_using_concat_with_variable_argument"
+source = '''
+arr.concat(items)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_concatarrayliterals_does_not_register_an_offense_when_using_concat_with_array_literal_and_variable_arguments"
+source = '''
+arr.concat([foo, bar], baz)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_concatarrayliterals_does_not_register_an_offense_when_using_concat_with_no_arguments"
+source = '''
+arr.concat
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_concatarrayliterals_does_not_register_an_offense_when_using_push"
+source = '''
+arr.push(item)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_concatarrayliterals_does_not_register_an_offense_when_using"
+source = '''
+arr << item
+'''
+offenses = []

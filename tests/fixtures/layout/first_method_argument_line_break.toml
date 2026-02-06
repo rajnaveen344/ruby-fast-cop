@@ -1,0 +1,203 @@
+cop = "Layout/FirstMethodArgumentLineBreak"
+department = "layout"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_layout_firstmethodargumentlinebreak_args_listed_on_the_first_line_registers_an_offense_and_corrects"
+source = '''
+foo(bar,
+  baz)
+'''
+corrected = '''
+foo(
+bar,
+  baz)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 7
+message = "Add a line break before the first argument of a multi-line method argument list."
+
+[[tests]]
+name = ""
+source = '''
+super(bar,
+  baz)
+'''
+corrected = '''
+super(
+bar,
+  baz)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 9
+message = "Add a line break before the first argument of a multi-line method argument list."
+
+[[tests]]
+name = ""
+source = '''
+receiver&.foo(bar,
+  baz)
+'''
+corrected = '''
+receiver&.foo(
+bar,
+  baz)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 14
+column_end = 17
+message = "Add a line break before the first argument of a multi-line method argument list."
+
+[[tests]]
+name = ""
+source = '''
+something(3, bar: 1,
+baz: 2)
+'''
+corrected = '''
+something(
+3, bar: 1,
+baz: 2)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 11
+message = "Add a line break before the first argument of a multi-line method argument list."
+
+[[tests]]
+name = ""
+source = '''
+something(bar: 1,
+baz: 2)
+'''
+corrected = '''
+something(
+bar: 1,
+baz: 2)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 16
+message = "Add a line break before the first argument of a multi-line method argument list."
+
+[[tests]]
+name = ""
+source = '''
+foo(bar, baz, bing)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_firstmethodargumentlinebreak_ignores_kwargs_listed_on_a_single_line_when_the_arguments_are_used_in_super"
+source = '''
+super(foo: 1, bar: 2)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_firstmethodargumentlinebreak_ignores_arguments_without_parens"
+source = '''
+foo bar,
+  baz
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_firstmethodargumentlinebreak_ignores_methods_without_arguments"
+source = '''
+foo
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_firstmethodargumentlinebreak_last_element_can_be_multiline_ignores_last_argument_that_is_a_multiline_hash"
+source = '''
+foo(bar, {
+  a: b
+})
+'''
+offenses = []
+
+[tests.config]
+AllowMultilineFinalElement = true
+
+[[tests]]
+name = "rubocop_cop_layout_firstmethodargumentlinebreak_last_element_can_be_multiline_ignores_single_argument_that_is_a_multiline_hash"
+source = '''
+foo({
+  a: b
+})
+'''
+offenses = []
+
+[tests.config]
+AllowMultilineFinalElement = true
+
+[[tests]]
+name = "rubocop_cop_layout_firstmethodargumentlinebreak_last_element_can_be_multiline_registers_and_corrects_values_that_are_multiline_hashes_and_not_the_last_value"
+source = '''
+foo(bar, {
+  a: b
+}, baz)
+'''
+corrected = '''
+foo(
+bar, {
+  a: b
+}, baz)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 7
+message = "Add a line break before the first argument of a multi-line method argument list."
+
+[tests.config]
+AllowMultilineFinalElement = true
+
+[[tests]]
+name = "rubocop_cop_layout_firstmethodargumentlinebreak_last_element_can_be_multiline_registers_and_corrects_last_argument_that_starts_on_another_line"
+source = '''
+foo(bar,
+baz)
+'''
+corrected = '''
+foo(
+bar,
+baz)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 7
+message = "Add a line break before the first argument of a multi-line method argument list."
+
+[tests.config]
+AllowMultilineFinalElement = true
+
+[[tests]]
+name = "rubocop_cop_layout_firstmethodargumentlinebreak_allowedmethods_does_not_register_an_offense_for_an_allowed_method"
+source = '''
+something(3, bar: 1,
+baz: 2)
+'''
+offenses = []
+
+[tests.config]
+AllowMultilineFinalElement = true
+AllowedMethods = ["$UNRESOLVED:something"]

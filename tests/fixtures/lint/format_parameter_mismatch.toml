@@ -1,0 +1,583 @@
+cop = "Lint/FormatParameterMismatch"
+department = "lint"
+severity = "warning"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_does_not_register_an_offense_for_called_on_a_variable"
+source = '''
+#{variable} = '%s'
+#{variable} % [foo]
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_does_not_register_an_offense_for_format_called_on_a_variable"
+source = '''
+#{variable} = '%s'
+format(#{variable}, foo)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_does_not_register_an_offense_for_format_called_on_a_variable"
+source = '''
+#{variable} = '%s'
+sprintf(#{variable}, foo)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_variables_const"
+source = '''
+CONST
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_variables_var"
+source = '''
+var
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_variables_var"
+source = '''
+@var
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_variables_var"
+source = '''
+@@var
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_variables_var"
+source = '''
+$var
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_registers_an_offense_when_calling_kernel_format_and_the_fields_do_not_match"
+source = '''
+Kernel.format("%s %s", 1)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 13
+message = "Number of arguments (1) to `format` doesn't match the number of fields (2)."
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_registers_an_offense_when_calling_kernel_sprintf_and_the_fields_do_not_match"
+source = '''
+Kernel.sprintf("%s %s", 1)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 14
+message = "Number of arguments (1) to `sprintf` doesn't match the number of fields (2)."
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_registers_an_offense_when_there_are_less_arguments_than_expected"
+source = '''
+format("%s %s", 1)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Number of arguments (1) to `format` doesn't match the number of fields (2)."
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_registers_an_offense_when_there_are_no_expected_format_string"
+source = '''
+format("something", 1)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Number of arguments (1) to `format` doesn't match the number of fields (0)."
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_registers_an_offense_when_there_are_more_arguments_than_expected"
+source = '''
+format("%s %s", 1, 2, 3)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Number of arguments (3) to `format` doesn't match the number of fields (2)."
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_does_not_register_an_offense_when_arguments_and_fields_match"
+source = '''
+format("%s %d %i", 1, 2, 3)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_correctly_ignores_double_percent"
+source = '''
+format('%s %s %% %s %%%% %%%%%% %%5B', 1, 2, 3)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_constants_do_not_register_offenses"
+source = '''
+format(A_CONST, 1, 2, 3)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_registers_an_offense_with_sprintf"
+source = '''
+sprintf("%s %s", 1, 2, 3)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 7
+message = "Number of arguments (3) to `sprintf` doesn't match the number of fields (2)."
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_correctly_parses_different_sprintf_formats"
+source = '''
+sprintf("%020x%+g:% g %%%#20.8x %#.0e", 1, 2, 3, 4, 5)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_registers_an_offense_for_string"
+source = '''
+"%s %s" % [1, 2, 3]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 9
+message = "Number of arguments (3) to `String#%` doesn't match the number of fields (2)."
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_does_not_register_offense_for_string_when_arguments_fields_match"
+source = '''
+"%s %s" % [1, 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_does_not_register_an_offense_when_single_argument_is_a_hash"
+source = '''
+puts "%s" % {"a" => 1}
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_does_not_register_an_offense_when_single_argument_is_not_an_array"
+source = '''
+puts "%s" % CONST
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_when_splat_argument_is_present_does_not_register_an_offense_when_args_count_is_less_than_expected"
+source = '''
+sprintf("%s, %s, %s", 1, *arr)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_when_splat_argument_is_present_when_args_count_is_more_than_expected_registers_an_offense_for"
+source = '''
+puts "%s, %s, %s" % [1, 2, 3, 4, *arr]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 18
+column_end = 19
+message = "Number of arguments (5) to `String#%` doesn't match the number of fields (3)."
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_when_splat_argument_is_present_when_args_count_is_more_than_expected_does_not_register_an_offense_for_format"
+source = '''
+puts format("%s, %s, %s", 1, 2, 3, 4, *arr)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_when_splat_argument_is_present_when_args_count_is_more_than_expected_does_not_register_an_offense_for_sprintf"
+source = '''
+puts sprintf("%s, %s, %s", 1, 2, 3, 4, *arr)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_when_multiple_arguments_are_called_for_and_a_single_variable_argument_is_passed_does_not_register_an_offense"
+source = '''
+puts "%s %s" % var
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_when_multiple_arguments_are_called_for_and_a_single_send_node_is_passed_does_not_register_an_offense"
+source = '''
+puts "%s %s" % ("ab".chars)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_when_using_digit_flag_does_not_register_an_offense"
+source = '''
+format('%1$s %2$s', 'foo', 'bar')
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_when_using_digit_flag"
+source = '''
+format('%1$s %1$s', 'foo')
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_when_using_digit_flag"
+source = '''
+format('%1$s %2$s', 'foo', 'bar', 'baz')
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Number of arguments (3) to `format` doesn't match the number of fields (2)."
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_when_format_is_not_a_string_literal_does_not_register_an_offense"
+source = '''
+puts str % [1, 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_when_format_is_invalid_registers_an_offense"
+source = '''
+format('%s %2$s', 'foo', 'bar')
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Format string is invalid because formatting sequence types (numbered, named or unnumbered) are mixed."
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_when_passed_an_empty_array_does_not_register_an_offense"
+source = '''
+'%' % []
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_ignores_argument_formatting"
+source = '''
+format('%<t>s', t: '%d')
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_ignores_percent_right_next_to_format_string"
+source = '''
+format("%0.1f%% percent", 22.5)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_accepts_an_extra_argument_for_dynamic_width"
+source = '''
+format("%*d", max_width, id)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_registers_an_offense_if_extra_argument_for_dynamic_width_not_given"
+source = '''
+format("%*d", id)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Number of arguments (1) to `format` doesn't match the number of fields (2)."
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_accepts_an_extra_arg_for_dynamic_width_with_other_preceding_flags"
+source = '''
+format("%0*x", max_width, id)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_does_not_register_an_offense_argument_is_the_result_of_a_message_send"
+source = '''
+format("%s", "a b c".gsub(" ", "_"))
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_does_not_register_an_offense_when_using_named_parameters"
+source = '''
+"foo %{bar} baz" % { bar: 42 }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_does_not_register_an_offense_when_using_named_parameters_with_escaped"
+source = '''
+format("%%%<hex>02X", hex: 10)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_identifies_correctly_digits_for_spacing_in_format"
+source = '''
+"duration: %10.fms" % 42
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_finds_faults_even_when_the_string_looks_like_a_heredoc"
+source = '''
+format("<< %s bleh", 1, 2)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Number of arguments (2) to `format` doesn't match the number of fields (1)."
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_does_not_register_an_offense_for_sprintf_with_splat_argument"
+source = '''
+sprintf("%d%d", *test)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_does_not_register_an_offense_for_format_with_splat_argument"
+source = '''
+format("%d%d", *test)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_does_not_register_an_offense_for_precision_with_no_number"
+source = '''
+format("%.d", 0)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_on_format_with_interpolations_and_1_argument_does_not_register_an_offense"
+source = '''
+params = { y: '2015', m: '01', d: '01' }
+puts format('%{y}-%{m}-%{d}', params)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_on_format_with_interpolations_and_multiple_arguments_registers_an_offense"
+source = '''
+params = { y: '2015', m: '01', d: '01' }
+puts format('%{y}-%{m}-%{d}', 2015, 1, 1)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 5
+column_end = 11
+message = "Number of arguments (3) to `format` doesn't match the number of fields (1)."
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_on_format_with_interpolations_and_1_argument_does_not_register_an_offense"
+source = '''
+params = { y: '2015', m: '01', d: '01' }
+puts format('%<y>d-%<m>d-%<d>d', params)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_on_format_with_interpolations_and_multiple_arguments_registers_an_offense"
+source = '''
+params = { y: '2015', m: '01', d: '01' }
+puts format('%<y>d-%<m>d-%<d>d', 2015, 1, 1)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 5
+column_end = 11
+message = "Number of arguments (3) to `format` doesn't match the number of fields (1)."
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_with_wildcard_does_not_register_an_offense_for_width"
+source = '''
+format("%*d", 10, 3)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_with_wildcard_does_not_register_an_offense_for_precision"
+source = '''
+format("%.*f", 2, 20.19)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_with_wildcard_does_not_register_an_offense_for_width_and_precision"
+source = '''
+format("%*.*f", 10, 3, 20.19)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_with_wildcard_does_not_register_an_offense_for_multiple_wildcards"
+source = '''
+format("%*.*f %*.*f", 10, 2, 20.19, 5, 1, 11.22)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_with_interpolated_string_in_format_string_registers_an_offense_when_the_fields_do_not_match"
+source = '''
+format("#{foo} %s %s", "bar")
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Number of arguments (1) to `format` doesn't match the number of fields (2)."
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_with_interpolated_string_in_format_string_does_not_register_an_offense_when_the_fields_match"
+source = '''
+format("#{foo} %s", "bar")
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_with_interpolated_string_in_format_string_does_not_register_an_offense_when_only_interpolated_string"
+source = '''
+format("#{foo}", "bar", "baz")
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_with_interpolated_string_in_format_string_does_not_register_an_offense_when_using_kernel_format_with_the_interpolated_number_of_decimal_places_fields_match"
+source = '''
+Kernel.format("%.#{number_of_decimal_places}f", num)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_with_interpolated_string_in_format_string_registers_an_offense_for_string_when_the_fields_do_not_match"
+source = '''
+"%s %s" % ["#{foo}", 1, 2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 9
+message = "Number of arguments (3) to `String#%` doesn't match the number of fields (2)."
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_with_interpolated_string_in_format_string_does_not_register_an_offense_for_string_when_the_fields_match"
+source = '''
+"%s %s" % ["#{foo}", 1]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_with_interpolated_string_in_format_string_does_not_register_an_offense_for_string_when_only_interpolated_string"
+source = '''
+"#{foo}" % [1, 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_with_interpolated_string_in_format_string_does_not_register_an_offense_when_an_interpolated_width"
+source = '''
+format("%#{padding}s: %s", prefix, message)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_with_interpolated_string_in_format_string_does_not_register_an_offense_with_a_negative_interpolated_width"
+source = '''
+sprintf("| %-#{key_offset}s | %-#{val_offset}s |", key, value)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_with_interpolated_string_in_argument_registers_an_offense_when_the_fields_do_not_match"
+source = '''
+format("%s %s", "#{foo}")
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Number of arguments (1) to `format` doesn't match the number of fields (2)."
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_with_interpolated_string_in_argument_does_not_register_an_offense_when_the_fields_match"
+source = '''
+format("%s", "#{foo}")
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_with_interpolated_string_in_argument_registers_an_offense_for_string_when_the_fields_do_not_match"
+source = '''
+"#{foo} %s %s" % [1, 2, 3]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 16
+message = "Number of arguments (3) to `String#%` doesn't match the number of fields (2)."
+
+[[tests]]
+name = "rubocop_cop_lint_formatparametermismatch_with_interpolated_string_in_argument_does_not_register_an_offense_for_string_when_the_fields_match"
+source = '''
+"#{foo} %s %s" % [1, 2]
+'''
+offenses = []

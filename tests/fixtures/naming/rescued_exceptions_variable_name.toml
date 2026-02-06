@@ -1,0 +1,711 @@
+cop = "Naming/RescuedExceptionsVariableName"
+department = "naming"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_naming_rescuedexceptionsvariablename_with_default_config_with_explicit_rescue_with_exception_variable_registers_an_offense_when_using_exc"
+source = '''
+begin
+  something
+rescue MyException => exc
+  # do something
+end
+'''
+corrected = '''
+begin
+  something
+rescue MyException => e
+  # do something
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 22
+column_end = 25
+message = "Use `e` instead of `exc`."
+
+[[tests]]
+name = "rubocop_cop_naming_rescuedexceptionsvariablename_with_default_config_with_explicit_rescue_with_exception_variable_registers_an_offense_when_using_exc"
+source = '''
+begin
+  something
+rescue MyException => _exc
+  # do something
+end
+'''
+corrected = '''
+begin
+  something
+rescue MyException => _e
+  # do something
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 22
+column_end = 26
+message = "Use `_e` instead of `_exc`."
+
+[[tests]]
+name = "rubocop_cop_naming_rescuedexceptionsvariablename_with_default_config_with_explicit_rescue_with_exception_variable_registers_an_offense_when_using_exc_and_renames_its_usage"
+source = '''
+begin
+  something
+rescue MyException => exc
+  exc
+end
+'''
+corrected = '''
+begin
+  something
+rescue MyException => e
+  e
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 22
+column_end = 25
+message = "Use `e` instead of `exc`."
+
+[[tests]]
+name = "rubocop_cop_naming_rescuedexceptionsvariablename_with_default_config_with_explicit_rescue_with_exception_variable_registers_offenses_when_using_foo_and_bar_in_multiple_rescues"
+source = '''
+begin
+  something
+rescue FooException => foo
+  # do something
+rescue BarException => bar
+  # do something
+end
+'''
+corrected = '''
+begin
+  something
+rescue FooException => e
+  # do something
+rescue BarException => e
+  # do something
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 23
+column_end = 26
+message = "Use `e` instead of `foo`."
+
+[[tests.offenses]]
+line = 5
+column_start = 23
+column_end = 26
+message = "Use `e` instead of `bar`."
+
+[[tests]]
+name = "rubocop_cop_naming_rescuedexceptionsvariablename_with_default_config_with_explicit_rescue_with_exception_variable_registers_an_offense_when_using_error_for_an_explicit_hash_value"
+source = '''
+begin
+rescue => error
+  do_something(error: error)
+end
+'''
+corrected = '''
+begin
+rescue => e
+  do_something(error: e)
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 10
+column_end = 15
+message = "Use `e` instead of `error`."
+
+[[tests]]
+name = "rubocop_cop_naming_rescuedexceptionsvariablename_with_default_config_with_explicit_rescue_with_exception_variable_registers_an_offense_when_using_error_for_an_omitted_hash_value"
+source = '''
+begin
+rescue => error
+  do_something(error:)
+end
+'''
+corrected = '''
+begin
+rescue => e
+  do_something(error: e)
+end
+'''
+ruby_version = ">= 3.1"
+
+[[tests.offenses]]
+line = 2
+column_start = 10
+column_end = 15
+message = "Use `e` instead of `error`."
+
+[[tests]]
+name = "rubocop_cop_naming_rescuedexceptionsvariablename_with_default_config_with_explicit_rescue_with_exception_variable_does_not_register_an_offense_when_using_e"
+source = '''
+begin
+  something
+rescue MyException => e
+  # do something
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_naming_rescuedexceptionsvariablename_with_default_config_with_explicit_rescue_with_exception_variable_does_not_register_an_offense_when_using_e"
+source = '''
+begin
+  something
+rescue MyException => _e
+  # do something
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_naming_rescuedexceptionsvariablename_with_default_config_with_explicit_rescue_with_exception_variable_does_not_register_an_offense_when_using_e_followed_by_e"
+source = '''
+begin
+  something
+rescue MyException => _e
+  # do something
+rescue AnotherException => e
+  # do something
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_naming_rescuedexceptionsvariablename_with_default_config_with_explicit_rescue_without_exception_variable_does_not_register_an_offense"
+source = '''
+begin
+  something
+rescue MyException
+  # do something
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_naming_rescuedexceptionsvariablename_with_default_config_with_explicit_rescue_shadowing_an_external_variable_does_not_register_an_offense"
+source = '''
+e = 'error message'
+begin
+  something
+rescue StandardError => e1
+  log(e, e1)
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_naming_rescuedexceptionsvariablename_with_default_config_with_explicit_rescue_with_lower_letters_class_name_does_not_register_an_offense"
+source = '''
+begin
+  something
+rescue my_exception
+  # do something
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_naming_rescuedexceptionsvariablename_with_default_config_with_explicit_rescue_with_method_as_exception_does_not_register_an_offense_without_variable_name"
+source = '''
+begin
+  something
+rescue ActiveSupport::JSON.my_method
+  # do something
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_naming_rescuedexceptionsvariablename_with_default_config_with_explicit_rescue_with_method_as_exception_does_not_register_an_offense_with_expected_variable_name"
+source = '''
+begin
+  something
+rescue ActiveSupport::JSON.my_method => e
+  # do something
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_naming_rescuedexceptionsvariablename_with_default_config_with_explicit_rescue_with_method_as_exception_registers_an_offense_with_unexpected_variable_name"
+source = '''
+begin
+  something
+rescue ActiveSupport::JSON.my_method => exc
+  # do something
+end
+'''
+corrected = '''
+begin
+  something
+rescue ActiveSupport::JSON.my_method => e
+  # do something
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 40
+column_end = 43
+message = "Use `e` instead of `exc`."
+
+[[tests]]
+name = "rubocop_cop_naming_rescuedexceptionsvariablename_with_default_config_with_explicit_rescue_with_splat_operator_as_exception_list_does_not_register_an_offense_without_variable_name"
+source = '''
+begin
+  something
+rescue *handled
+  # do something
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_naming_rescuedexceptionsvariablename_with_default_config_with_explicit_rescue_with_splat_operator_as_exception_list_does_not_register_an_offense_with_expected_variable_name"
+source = '''
+begin
+  something
+rescue *handled => e
+  # do something
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_naming_rescuedexceptionsvariablename_with_default_config_with_explicit_rescue_with_splat_operator_as_exception_list_registers_an_offense_with_unexpected_variable_name"
+source = '''
+begin
+  something
+rescue *handled => exc
+  # do something
+end
+'''
+corrected = '''
+begin
+  something
+rescue *handled => e
+  # do something
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 19
+column_end = 22
+message = "Use `e` instead of `exc`."
+
+[[tests]]
+name = "rubocop_cop_naming_rescuedexceptionsvariablename_with_default_config_with_implicit_rescue_with_exception_variable_registers_an_offense_when_using_exc"
+source = '''
+begin
+  something
+rescue => exc
+  # do something
+end
+'''
+corrected = '''
+begin
+  something
+rescue => e
+  # do something
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 10
+column_end = 13
+message = "Use `e` instead of `exc`."
+
+[[tests]]
+name = "rubocop_cop_naming_rescuedexceptionsvariablename_with_default_config_with_implicit_rescue_with_exception_variable_registers_an_offense_when_using_exc"
+source = '''
+begin
+  something
+rescue => _exc
+  # do something
+end
+'''
+corrected = '''
+begin
+  something
+rescue => _e
+  # do something
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 10
+column_end = 14
+message = "Use `_e` instead of `_exc`."
+
+[[tests]]
+name = "rubocop_cop_naming_rescuedexceptionsvariablename_with_default_config_with_implicit_rescue_with_exception_variable_does_not_register_an_offense_when_using_e"
+source = '''
+begin
+  something
+rescue => e
+  # do something
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_naming_rescuedexceptionsvariablename_with_default_config_with_implicit_rescue_with_exception_variable_does_not_register_an_offense_when_using_e"
+source = '''
+begin
+  something
+rescue => _e
+  # do something
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_naming_rescuedexceptionsvariablename_with_default_config_with_implicit_rescue_without_exception_variable_does_not_register_an_offense"
+source = '''
+begin
+  something
+rescue
+  # do something
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_naming_rescuedexceptionsvariablename_with_default_config_with_variable_being_referenced_renames_the_variable_references_when_autocorrecting"
+source = '''
+begin
+  get something
+rescue ActiveResource::Redirection => redirection
+  redirect_to redirection.response['Location']
+end
+'''
+corrected = '''
+begin
+  get something
+rescue ActiveResource::Redirection => e
+  redirect_to e.response['Location']
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 38
+column_end = 49
+message = "Use `e` instead of `redirection`."
+
+[[tests]]
+name = "rubocop_cop_naming_rescuedexceptionsvariablename_with_default_config_when_the_variable_is_reassigned_only_corrects_uses_of_the_exception"
+source = '''
+def main
+  raise
+rescue StandardError => error
+  error = {
+    error_message: error.message
+  }
+  puts error
+end
+'''
+corrected = '''
+def main
+  raise
+rescue StandardError => e
+  error = {
+    error_message: e.message
+  }
+  puts error
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 24
+column_end = 29
+message = "Use `e` instead of `error`."
+
+[[tests]]
+name = "rubocop_cop_naming_rescuedexceptionsvariablename_with_default_config_when_the_variable_is_reassigned_only_corrects_the_exception_variable"
+source = '''
+def main
+  raise
+rescue StandardError => error
+  message = error.message
+  puts message
+end
+'''
+corrected = '''
+def main
+  raise
+rescue StandardError => e
+  message = e.message
+  puts message
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 24
+column_end = 29
+message = "Use `e` instead of `error`."
+
+[[tests]]
+name = "rubocop_cop_naming_rescuedexceptionsvariablename_with_default_config_when_the_variable_is_reassigned_using_multiple_assignment_only_corrects_uses_of_the_exception"
+source = '''
+def main
+  raise
+rescue StandardError => error
+  error, foo = 1, error
+  puts error
+end
+'''
+corrected = '''
+def main
+  raise
+rescue StandardError => e
+  error, foo = 1, e
+  puts error
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 24
+column_end = 29
+message = "Use `e` instead of `error`."
+
+[[tests]]
+name = "rubocop_cop_naming_rescuedexceptionsvariablename_with_default_config_with_multiple_branches_registers_and_corrects_each_offense"
+source = '''
+begin
+  something
+rescue MyException => exc
+  # do something
+rescue OtherException => exc
+  # do something else
+end
+'''
+corrected = '''
+begin
+  something
+rescue MyException => e
+  # do something
+rescue OtherException => e
+  # do something else
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 22
+column_end = 25
+message = "Use `e` instead of `exc`."
+
+[[tests.offenses]]
+line = 5
+column_start = 25
+column_end = 28
+message = "Use `e` instead of `exc`."
+
+[[tests]]
+name = "rubocop_cop_naming_rescuedexceptionsvariablename_with_default_config_with_nested_rescues_handles_it"
+source = '''
+begin
+rescue StandardError => e1
+  begin
+    log(e1)
+  rescue StandardError => e2
+    log(e1, e2)
+  end
+end
+'''
+corrected = '''
+begin
+rescue StandardError => e
+  begin
+    log(e)
+  rescue StandardError => e2
+    log(e, e2)
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 24
+column_end = 26
+message = "Use `e` instead of `e1`."
+
+[[tests]]
+name = "rubocop_cop_naming_rescuedexceptionsvariablename_with_default_config_when_the_variable_is_referenced_after_rescue_statement_handles_it"
+source = '''
+begin
+  something
+rescue StandardError => e1
+end
+foo(e1)
+'''
+corrected = '''
+begin
+  something
+rescue StandardError => e
+end
+foo(e)
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 24
+column_end = 26
+message = "Use `e` instead of `e1`."
+
+[[tests]]
+name = "rubocop_cop_naming_rescuedexceptionsvariablename_with_default_config_when_exception_is_assigned_with_writer_method_does_not_register_an_offense"
+source = '''
+begin
+  something
+rescue => storage.exception
+  # do something
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_naming_rescuedexceptionsvariablename_with_the_preferredname_setup_registers_an_offense_when_using_e"
+source = '''
+begin
+  something
+rescue MyException => e
+  # do something
+end
+'''
+corrected = '''
+begin
+  something
+rescue MyException => exception
+  # do something
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 3
+column_start = 22
+column_end = 23
+message = "Use `exception` instead of `e`."
+
+[tests.config]
+PreferredName = "$UNRESOLVED:exception"
+
+[[tests]]
+name = "rubocop_cop_naming_rescuedexceptionsvariablename_with_the_preferredname_setup_registers_an_offense_when_using_e"
+source = '''
+begin
+  something
+rescue MyException => _e
+  # do something
+end
+'''
+corrected = '''
+begin
+  something
+rescue MyException => _exception
+  # do something
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 3
+column_start = 22
+column_end = 24
+message = "Use `_exception` instead of `_e`."
+
+[tests.config]
+PreferredName = "$UNRESOLVED:exception"
+
+[[tests]]
+name = "rubocop_cop_naming_rescuedexceptionsvariablename_with_the_preferredname_setup_registers_offenses_when_using_foo_and_bar_in_multiple_rescues"
+source = '''
+begin
+  something
+rescue FooException => foo
+  # do something
+rescue BarException => bar
+  # do something
+end
+'''
+corrected = '''
+begin
+  something
+rescue FooException => exception
+  # do something
+rescue BarException => exception
+  # do something
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 3
+column_start = 23
+column_end = 26
+message = "Use `exception` instead of `foo`."
+
+[[tests.offenses]]
+line = 5
+column_start = 23
+column_end = 26
+message = "Use `exception` instead of `bar`."
+
+[tests.config]
+PreferredName = "$UNRESOLVED:exception"
+
+[[tests]]
+name = "rubocop_cop_naming_rescuedexceptionsvariablename_with_the_preferredname_setup_does_not_register_an_offense_when_using_exception"
+source = '''
+begin
+  something
+rescue MyException => exception
+  # do something
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+PreferredName = "$UNRESOLVED:exception"
+
+[[tests]]
+name = "rubocop_cop_naming_rescuedexceptionsvariablename_with_the_preferredname_setup_does_not_register_an_offense_when_using_exception"
+source = '''
+begin
+  something
+rescue MyException => _exception
+  # do something
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+PreferredName = "$UNRESOLVED:exception"

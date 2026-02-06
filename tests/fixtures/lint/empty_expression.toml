@@ -1,0 +1,162 @@
+cop = "Lint/EmptyExpression"
+department = "lint"
+severity = "warning"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_lint_emptyexpression_when_used_as_a_standalone_expression_registers_an_offense"
+source = '''
+()
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 2
+message = "Avoid empty expressions."
+
+[[tests]]
+name = "rubocop_cop_lint_emptyexpression_when_used_as_a_standalone_expression_with_nested_empty_expressions_registers_an_offense"
+source = '''
+(())
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 1
+column_end = 3
+message = "Avoid empty expressions."
+
+[[tests]]
+name = "rubocop_cop_lint_emptyexpression_when_used_in_a_condition_registers_an_offense_inside_if"
+source = '''
+if (); end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 5
+message = "Avoid empty expressions."
+
+[[tests]]
+name = "rubocop_cop_lint_emptyexpression_when_used_in_a_condition_registers_an_offense_inside_elsif"
+source = '''
+if foo
+  1
+elsif ()
+  2
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 6
+column_end = 8
+message = "Avoid empty expressions."
+
+[[tests]]
+name = "rubocop_cop_lint_emptyexpression_when_used_in_a_condition_registers_an_offense_inside_case"
+source = '''
+case ()
+when :foo then 1
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 7
+message = "Avoid empty expressions."
+
+[[tests]]
+name = "rubocop_cop_lint_emptyexpression_when_used_in_a_condition_registers_an_offense_inside_when"
+source = '''
+case foo
+when () then 1
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 5
+column_end = 7
+message = "Avoid empty expressions."
+
+[[tests]]
+name = "rubocop_cop_lint_emptyexpression_when_used_in_a_condition_registers_an_offense_in_the_condition_of_a_ternary_operator"
+source = '''
+() ? true : false
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 2
+message = "Avoid empty expressions."
+
+[[tests]]
+name = "rubocop_cop_lint_emptyexpression_when_used_in_a_condition_registers_an_offense_in_the_return_value_of_a_ternary_operator"
+source = '''
+foo ? () : bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 8
+message = "Avoid empty expressions."
+
+[[tests]]
+name = "rubocop_cop_lint_emptyexpression_when_used_as_a_return_value_registers_an_offense_in_the_return_value_of_a_method"
+source = '''
+def foo
+  ()
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 4
+message = "Avoid empty expressions."
+
+[[tests]]
+name = "rubocop_cop_lint_emptyexpression_when_used_as_a_return_value_registers_an_offense_in_the_return_value_of_a_condition"
+source = '''
+if foo
+  ()
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 4
+message = "Avoid empty expressions."
+
+[[tests]]
+name = "rubocop_cop_lint_emptyexpression_when_used_as_a_return_value_registers_an_offense_in_the_return_value_of_a_case_statement"
+source = '''
+case foo
+when :bar then ()
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 15
+column_end = 17
+message = "Avoid empty expressions."
+
+[[tests]]
+name = "rubocop_cop_lint_emptyexpression_when_used_as_an_assignment_registers_an_offense_for_the_assigned_value"
+source = '''
+foo = ()
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 8
+message = "Avoid empty expressions."

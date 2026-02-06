@@ -1,0 +1,295 @@
+cop = "Lint/MissingSuper"
+department = "lint"
+severity = "warning"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_lint_missingsuper_constructor_registers_an_offense_and_does_not_autocorrect_when_no_super_call"
+source = '''
+class Child < Parent
+  def initialize
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 16
+message = "Call `super` to initialize state of the parent class."
+
+[[tests]]
+name = "rubocop_cop_lint_missingsuper_constructor_registers_an_offense_and_does_not_autocorrect_when_no_super_call_and_when_defining_some_method"
+source = '''
+class Child < Parent
+  def initialize
+  end
+
+  def do_something
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 16
+message = "Call `super` to initialize state of the parent class."
+
+[[tests]]
+name = "rubocop_cop_lint_missingsuper_constructor_does_not_register_an_offense_for_the_class_without_parent_class"
+source = '''
+class Child
+  def initialize
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_missingsuper_constructor_does_not_register_an_offense_for_the_class_with_stateless_parent_class"
+source = '''
+class Child < Object
+  def initialize
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_missingsuper_constructor_does_not_register_an_offense_for_the_class_new_without_parent_class_argument"
+source = '''
+class Child < Parent
+  Class.new do
+    def initialize
+    end
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_missingsuper_constructor_does_not_register_an_offense_for_the_constructor_like_method_defined_outside_of_a_class"
+source = '''
+module M
+  def initialize
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_missingsuper_constructor_does_not_register_an_offense_when_there_is_a_super_call"
+source = '''
+class Child < Parent
+  def initialize
+    super
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_missingsuper_class_new_block_registers_an_offense_and_does_not_autocorrect_when_no_super_call"
+source = '''
+Class.new(Parent) do
+  def initialize
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 16
+message = "Call `super` to initialize state of the parent class."
+
+[[tests]]
+name = "rubocop_cop_lint_missingsuper_class_new_block_does_not_register_an_offense_for_the_class_new_without_parent_class_argument"
+source = '''
+Class.new do
+  def initialize
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_missingsuper_class_new_block_does_not_register_an_offense_for_the_class_new_with_stateless_parent_class_argument"
+source = '''
+Class.new(Object) do
+  def initialize
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_missingsuper_class_new_numbered_block_registers_an_offense_and_does_not_autocorrect_when_no_super_call"
+source = '''
+Class.new(Parent) do
+  def initialize
+  end
+
+  do_something(_1)
+end
+'''
+ruby_version = ">= 2.7"
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 16
+message = "Call `super` to initialize state of the parent class."
+
+[[tests]]
+name = "rubocop_cop_lint_missingsuper_class_new_numbered_block_does_not_register_an_offense_for_the_class_new_without_parent_class_argument"
+source = '''
+Class.new do
+  def initialize
+  end
+
+  do_something(_1)
+end
+'''
+ruby_version = ">= 2.7"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_missingsuper_class_new_numbered_block_does_not_register_an_offense_for_the_class_new_with_stateless_parent_class_argument"
+source = '''
+Class.new(Object) do
+  def initialize
+  end
+
+  do_something(_1)
+end
+'''
+ruby_version = ">= 2.7"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_missingsuper_class_new_it_block_registers_an_offense_and_does_not_autocorrect_when_no_super_call"
+source = '''
+Class.new(Parent) do
+  def initialize
+  end
+
+  do_something(it)
+end
+'''
+ruby_version = ">= 3.4"
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 16
+message = "Call `super` to initialize state of the parent class."
+
+[[tests]]
+name = "rubocop_cop_lint_missingsuper_class_new_it_block_does_not_register_an_offense_for_the_class_new_without_parent_class_argument"
+source = '''
+Class.new do
+  def initialize
+  end
+
+  do_something(it)
+end
+'''
+ruby_version = ">= 3.4"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_missingsuper_class_new_it_block_does_not_register_an_offense_for_the_class_new_with_stateless_parent_class_argument"
+source = '''
+Class.new(Object) do
+  def initialize
+  end
+
+  do_something(it)
+end
+'''
+ruby_version = ">= 3.4"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_missingsuper_callbacks_registers_no_offense_when_module_callback_without_super_call"
+source = '''
+module M
+  def self.included(base)
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_missingsuper_callbacks_registers_an_offense_and_does_not_autocorrect_when_class_callback_without_super_call"
+source = '''
+class Foo
+  def self.inherited(base)
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 26
+message = "Call `super` to invoke callback defined in the parent class."
+
+[[tests]]
+name = "rubocop_cop_lint_missingsuper_callbacks_registers_an_offense_and_does_not_autocorrect_when_class_callback_within_self_class_and_without_super_call"
+source = '''
+class Foo
+  class << self
+    def inherited(base)
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 4
+column_end = 23
+message = "Call `super` to invoke callback defined in the parent class."
+
+[[tests]]
+name = "rubocop_cop_lint_missingsuper_callbacks_registers_an_offense_and_does_not_autocorrect_when_method_callback_is_without_super_call"
+source = '''
+class Foo
+  def method_added(*)
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 21
+message = "Call `super` to invoke callback defined in the parent class."
+
+[[tests]]
+name = "rubocop_cop_lint_missingsuper_callbacks_does_not_register_an_offense_when_callback_has_a_super_call"
+source = '''
+class Foo
+  def self.inherited(base)
+    do_something
+    super
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_missingsuper_with_custom_allowedparentclasses_config_does_not_register_an_offense_for_a_class_with_custom_stateless_parent_class"
+source = '''
+class Child < Array
+  def initialize
+  end
+end
+'''
+offenses = []
+
+[tests.config]
+AllowedParentClasses = ["Array"]

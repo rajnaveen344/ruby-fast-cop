@@ -1,0 +1,98 @@
+cop = "InternalAffairs/OnSendWithoutOnCsend"
+department = "internal_affairs"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_onsendwithoutoncsend_registers_an_offense_when_on_send_is_defined_without_on_csend"
+source = '''
+class MyCop < RuboCop::Cop:Base
+  def on_send(node)
+    # ...
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 19
+message = "Cop defines `on_send` but not `on_csend`."
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_onsendwithoutoncsend_does_not_register_an_offense_when_on_send_is_not_defined"
+source = '''
+class MyCop < RuboCop::Cop:Base
+  def on_def(node)
+    # ...
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_onsendwithoutoncsend_does_not_register_an_offense_when_on_csend_is_defined_but_on_send_is_not"
+source = '''
+class MyCop < RuboCop::Cop:Base
+  def on_csend(node)
+    # ...
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_onsendwithoutoncsend_does_not_register_an_offense_when_on_csend_is_defined_explicitly"
+source = '''
+class MyCop < RuboCop::Cop:Base
+  def on_send(node)
+    # ...
+  end
+
+  def on_csend(node)
+    # ...
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_onsendwithoutoncsend_does_not_register_an_offense_when_on_csend_is_defined_with_alias"
+source = '''
+class MyCop < RuboCop::Cop:Base
+  def on_send(node)
+    # ...
+  end
+  alias on_csend on_send
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_onsendwithoutoncsend_does_not_register_an_offense_when_on_csend_is_defined_with_alias_method"
+source = '''
+class MyCop < RuboCop::Cop:Base
+  def on_send(node)
+    # ...
+  end
+  alias_method :on_csend, :on_send
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_onsendwithoutoncsend_registers_an_offense_when_alias_method_takes_no_arguments"
+source = '''
+class MyCop < RuboCop::Cop:Base
+  def on_send(node)
+    # ...
+  end
+  alias_method
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 19
+message = "Cop defines `on_send` but not `on_csend`."

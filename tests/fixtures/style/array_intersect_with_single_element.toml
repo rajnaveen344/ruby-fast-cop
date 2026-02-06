@@ -1,0 +1,41 @@
+cop = "Style/ArrayIntersectWithSingleElement"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_arrayintersectwithsingleelement_with_include_element_does_not_register_an_offense"
+source = '''
+array.include?(element)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_arrayintersectwithsingleelement_with_intersect_element_registers_an_offense"
+source = '''
+array.intersect?([element])
+'''
+corrected = '''
+array.include?(element)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 27
+message = "Use `include?(element)` instead of `intersect?([element])`."
+
+[[tests]]
+name = "rubocop_cop_style_arrayintersectwithsingleelement_with_intersect_i_element_registers_an_offense"
+source = '''
+array.intersect?(%i[element])
+'''
+corrected = '''
+array.include?(:element)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 29
+message = "Use `include?(element)` instead of `intersect?([element])`."

@@ -1,0 +1,117 @@
+cop = "Layout/SingleLineBlockChain"
+department = "layout"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_layout_singlelineblockchain_registers_an_offense_for_method_call_chained_on_the_same_line_as_a_block"
+source = '''
+example.select { |item| item.cond? }.join('-')
+'''
+corrected = '''
+example.select { |item| item.cond? }
+.join('-')
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 36
+column_end = 41
+message = "Put method call on a separate line if chained to a single line block."
+
+[[tests]]
+name = "rubocop_cop_layout_singlelineblockchain_registers_an_offense_for_method_call_chained_on_the_same_line_as_a_numblock"
+source = '''
+example.select { _1.cond? }.join('-')
+'''
+corrected = '''
+example.select { _1.cond? }
+.join('-')
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 27
+column_end = 32
+message = "Put method call on a separate line if chained to a single line block."
+
+[[tests]]
+name = "rubocop_cop_layout_singlelineblockchain_registers_an_offense_for_method_call_chained_on_the_same_line_as_a_itblock"
+source = '''
+example.select { it.cond? }.join('-')
+'''
+corrected = '''
+example.select { it.cond? }
+.join('-')
+'''
+ruby_version = ">= 3.4"
+
+[[tests.offenses]]
+line = 1
+column_start = 27
+column_end = 32
+message = "Put method call on a separate line if chained to a single line block."
+
+[[tests]]
+name = "rubocop_cop_layout_singlelineblockchain_registers_an_offense_for_safe_navigation_method_call_chained_on_the_same_line_as_a_block"
+source = '''
+example.select { |item| item.cond? }&.join('-')
+'''
+corrected = '''
+example.select { |item| item.cond? }
+&.join('-')
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 36
+column_end = 42
+message = "Put method call on a separate line if chained to a single line block."
+
+[[tests]]
+name = "rubocop_cop_layout_singlelineblockchain_registers_an_offense_for_no_selector_method_call_chained_on_the_same_line_as_a_block"
+source = '''
+example.select { |item| item.cond? }.(42)
+'''
+corrected = '''
+example.select { |item| item.cond? }
+.(42)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 36
+column_end = 38
+message = "Put method call on a separate line if chained to a single line block."
+
+[[tests]]
+name = "rubocop_cop_layout_singlelineblockchain_does_not_register_an_offense_for_method_call_chained_on_a_new_line_after_a_single_line_block"
+source = '''
+example.select { |item| item.cond? }
+       .join('-')
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_singlelineblockchain_does_not_register_an_offense_for_method_call_chained_on_a_new_line_after_a_single_line_block_with_trailing_dot"
+source = '''
+example.select { |item| item.cond? }.
+        join('-')
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_singlelineblockchain_does_not_register_an_offense_for_method_call_chained_without_a_dot"
+source = '''
+example.select { |item| item.cond? } + 2
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_singlelineblockchain_does_not_register_an_offense_for_method_call_chained_on_the_same_line_as_a_multiline_block"
+source = '''
+example.select do |item|
+  item.cond?
+end.join('-')
+'''
+offenses = []

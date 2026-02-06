@@ -1,0 +1,804 @@
+cop = "Style/AndOr"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_andor_when_style_is_conditionals"
+source = '''
+x = a + b #{operator} return x
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_andor_when_style_is_conditionals"
+source = '''
+if a %{operator} b
+  do_something
+end
+'''
+corrected = '''
+if a #{prefer} b
+  do_something
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 18
+message = "Use `#{prefer}` instead of `#{operator}`."
+
+[[tests]]
+name = "rubocop_cop_style_andor_when_style_is_conditionals"
+source = '''
+if some_condition
+  do_something #{operator} return
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_andor_when_style_is_conditionals"
+source = '''
+while a %{operator} b
+  do_something
+end
+'''
+corrected = '''
+while a #{prefer} b
+  do_something
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 21
+message = "Use `#{prefer}` instead of `#{operator}`."
+
+[[tests]]
+name = "rubocop_cop_style_andor_when_style_is_conditionals"
+source = '''
+while some_condition
+  do_something #{operator} return
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_andor_when_style_is_conditionals"
+source = '''
+until a %{operator} b
+  do_something
+end
+'''
+corrected = '''
+until a #{prefer} b
+  do_something
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 21
+message = "Use `#{prefer}` instead of `#{operator}`."
+
+[[tests]]
+name = "rubocop_cop_style_andor_when_style_is_conditionals"
+source = '''
+until some_condition
+  do_something #{operator} return
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_andor_when_style_is_conditionals"
+source = '''
+begin
+  do_something
+end while a %{operator} b
+'''
+corrected = '''
+begin
+  do_something
+end while a #{prefer} b
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 3
+column_start = 12
+column_end = 25
+message = "Use `#{prefer}` instead of `#{operator}`."
+
+[[tests]]
+name = "rubocop_cop_style_andor_when_style_is_conditionals"
+source = '''
+begin
+  do_something #{operator} return
+end while some_condition
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_andor_when_style_is_conditionals"
+source = '''
+begin
+  do_something
+end until a %{operator} b
+'''
+corrected = '''
+begin
+  do_something
+end until a #{prefer} b
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 3
+column_start = 12
+column_end = 25
+message = "Use `#{prefer}` instead of `#{operator}`."
+
+[[tests]]
+name = "rubocop_cop_style_andor_when_style_is_conditionals"
+source = '''
+begin
+  do_something #{operator} return
+end until some_condition
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_andor_when_style_is_conditionals"
+source = '''
+test if a #{operator} b
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_andor_when_style_is_conditionals"
+source = '''
+x = a #{operator} b
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_andor_when_style_is_always"
+source = '''
+test if a %{operator} b
+'''
+corrected = '''
+test if a #{prefer} b
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 23
+message = "Use `#{prefer}` instead of `#{operator}`."
+
+[[tests]]
+name = "rubocop_cop_style_andor_when_style_is_always"
+source = '''
+def z(a, b)
+  return true if a %{operator} b
+end
+'''
+corrected = '''
+def z(a, b)
+  return true if a #{prefer} b
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 19
+column_end = 32
+message = "Use `#{prefer}` instead of `#{operator}`."
+
+[[tests]]
+name = "rubocop_cop_style_andor_when_style_is_always_autocorrects_or_with_an_assignment_on_the_left"
+source = '''
+x = y or teststring.include? 'b'
+'''
+corrected = '''
+(x = y) || teststring.include?('b')
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 8
+message = "Use `||` instead of `or`."
+
+[[tests]]
+name = "rubocop_cop_style_andor_when_style_is_always_autocorrects_or_with_an_assignment_on_the_right"
+source = '''
+teststring.include? 'b' or x = y
+'''
+corrected = '''
+teststring.include?('b') || (x = y)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 24
+column_end = 26
+message = "Use `||` instead of `or`."
+
+[[tests]]
+name = "rubocop_cop_style_andor_when_style_is_always_autocorrects_and_with_an_enumerable_accessor_on_either_side"
+source = '''
+foo[:bar] and foo[:baz]
+'''
+corrected = '''
+foo[:bar] && foo[:baz]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 13
+message = "Use `&&` instead of `and`."
+
+[[tests]]
+name = "rubocop_cop_style_andor_when_style_is_always"
+source = '''
+x = a + b %{operator} return x
+'''
+corrected = '''
+(x = a + b) #{prefer} (return x)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 30
+message = "Use `#{prefer}` instead of `#{operator}`."
+
+[[tests]]
+name = "rubocop_cop_style_andor_when_style_is_always"
+source = '''
+x = a + b if a %{operator} b
+'''
+corrected = '''
+x = a + b if a #{prefer} b
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 28
+message = "Use `#{prefer}` instead of `#{operator}`."
+
+[[tests]]
+name = "rubocop_cop_style_andor_when_style_is_always"
+source = '''
+x = a + b unless a %{operator} b
+'''
+corrected = '''
+x = a + b unless a #{prefer} b
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 19
+column_end = 32
+message = "Use `#{prefer}` instead of `#{operator}`."
+
+[[tests]]
+name = "rubocop_cop_style_andor_when_style_is_always"
+source = '''
+x = a + b while a %{operator} b
+'''
+corrected = '''
+x = a + b while a #{prefer} b
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 18
+column_end = 31
+message = "Use `#{prefer}` instead of `#{operator}`."
+
+[[tests]]
+name = "rubocop_cop_style_andor_when_style_is_always"
+source = '''
+x = a + b until a %{operator} b
+'''
+corrected = '''
+x = a + b until a #{prefer} b
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 18
+column_end = 31
+message = "Use `#{prefer}` instead of `#{operator}`."
+
+[[tests]]
+name = "rubocop_cop_style_andor_when_style_is_always"
+source = '''
+method a %{operator} b
+'''
+corrected = '''
+method(a) #{prefer} b
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 22
+message = "Use `#{prefer}` instead of `#{operator}`."
+
+[[tests]]
+name = "rubocop_cop_style_andor_when_style_is_always"
+source = '''
+method a,b %{operator} b
+'''
+corrected = '''
+method(a,b) #{prefer} b
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 24
+message = "Use `#{prefer}` instead of `#{operator}`."
+
+[[tests]]
+name = "rubocop_cop_style_andor_when_style_is_always"
+source = '''
+obj.method a %{operator} b
+'''
+corrected = '''
+obj.method(a) #{prefer} b
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 26
+message = "Use `#{prefer}` instead of `#{operator}`."
+
+[[tests]]
+name = "rubocop_cop_style_andor_when_style_is_always"
+source = '''
+obj.method a,b %{operator} b
+'''
+corrected = '''
+obj.method(a,b) #{prefer} b
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 28
+message = "Use `#{prefer}` instead of `#{operator}`."
+
+[[tests]]
+name = "rubocop_cop_style_andor_when_style_is_always"
+source = '''
+method(a, b) %{operator} b
+'''
+corrected = '''
+method(a, b) #{prefer} b
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 26
+message = "Use `#{prefer}` instead of `#{operator}`."
+
+[[tests]]
+name = "rubocop_cop_style_andor_when_style_is_always"
+source = '''
+b %{operator} method a,b
+'''
+corrected = '''
+b #{prefer} method(a,b)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 24
+message = "Use `#{prefer}` instead of `#{operator}`."
+
+[[tests]]
+name = "rubocop_cop_style_andor_when_style_is_always_with_obj_method_arg_on_right_autocorrects_and_with_and_adds_parens"
+source = '''
+x and !obj.method arg
+'''
+corrected = '''
+x && !obj.method(arg)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 5
+message = "Use `&&` instead of `and`."
+
+[[tests]]
+name = "rubocop_cop_style_andor_when_style_is_always_with_obj_method_arg_on_left_autocorrects_and_with_and_adds_parens"
+source = '''
+!obj.method arg and x
+'''
+corrected = '''
+!obj.method(arg) && x
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 16
+column_end = 19
+message = "Use `&&` instead of `and`."
+
+[[tests]]
+name = "rubocop_cop_style_andor_when_style_is_always_with_obj_method_arg_on_left_autocorrects_and_with_and_adds_parens"
+source = '''
+obj.method = arg and x
+'''
+corrected = '''
+(obj.method = arg) && x
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 20
+message = "Use `&&` instead of `and`."
+
+[[tests]]
+name = "rubocop_cop_style_andor_when_style_is_always_with_obj_method_arg_on_left_autocorrects_and_with_and_adds_parens"
+source = '''
+obj.method= arg and x
+'''
+corrected = '''
+(obj.method= arg) && x
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 16
+column_end = 19
+message = "Use `&&` instead of `and`."
+
+[[tests]]
+name = "rubocop_cop_style_andor_when_style_is_always_with_predicate_method_with_arg_without_space_on_right_autocorrects_or_with_and_adds_parens"
+source = '''
+false or 3.is_a?Integer
+'''
+corrected = '''
+false || 3.is_a?(Integer)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 8
+message = "Use `||` instead of `or`."
+
+[[tests]]
+name = "rubocop_cop_style_andor_when_style_is_always_with_predicate_method_with_arg_without_space_on_right_autocorrects_and_with_and_adds_parens"
+source = '''
+false and 3.is_a?Integer
+'''
+corrected = '''
+false && 3.is_a?(Integer)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 9
+message = "Use `&&` instead of `and`."
+
+[[tests]]
+name = "rubocop_cop_style_andor_when_style_is_always_with_two_predicate_methods_with_args_without_spaces_on_right_autocorrects_or_with_and_adds_parens"
+source = '''
+'1'.is_a?Integer or 1.is_a?Integer
+'''
+corrected = '''
+'1'.is_a?(Integer) || 1.is_a?(Integer)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 19
+message = "Use `||` instead of `or`."
+
+[[tests]]
+name = "rubocop_cop_style_andor_when_style_is_always_with_two_predicate_methods_with_args_without_spaces_on_right_autocorrects_and_with_and_adds_parens"
+source = '''
+'1'.is_a?Integer and 1.is_a?Integer
+'''
+corrected = '''
+'1'.is_a?(Integer) && 1.is_a?(Integer)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 20
+message = "Use `&&` instead of `and`."
+
+[[tests]]
+name = "rubocop_cop_style_andor_when_style_is_always_with_one_predicate_method_without_space_on_right_and_another_method_autocorrects_or_with_and_adds_parens"
+source = '''
+'1'.is_a?Integer or 1.is_a? Integer
+'''
+corrected = '''
+'1'.is_a?(Integer) || 1.is_a?(Integer)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 19
+message = "Use `||` instead of `or`."
+
+[[tests]]
+name = "rubocop_cop_style_andor_when_style_is_always_with_one_predicate_method_without_space_on_right_and_another_method_autocorrects_and_with_and_adds_parens"
+source = '''
+'1'.is_a?Integer and 1.is_a? Integer
+'''
+corrected = '''
+'1'.is_a?(Integer) && 1.is_a?(Integer)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 20
+message = "Use `&&` instead of `and`."
+
+[[tests]]
+name = "rubocop_cop_style_andor_when_style_is_always_with_not_expression_on_right_autocorrects_and_with_and_adds_parens"
+source = '''
+x and not arg
+'''
+corrected = '''
+x && (not arg)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 5
+message = "Use `&&` instead of `and`."
+
+[[tests]]
+name = "rubocop_cop_style_andor_when_style_is_always_with_not_expression_on_left_autocorrects_and_with_and_adds_parens"
+source = '''
+not arg and x
+'''
+corrected = '''
+(not arg) && x
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 11
+message = "Use `&&` instead of `and`."
+
+[[tests]]
+name = "rubocop_cop_style_andor_when_style_is_always_with_variable_on_left_doesn_t_crash_and_burn"
+source = '''
+!var or var.empty?
+'''
+corrected = '''
+!var || var.empty?
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 7
+message = "Use `||` instead of `or`."
+
+[[tests]]
+name = "rubocop_cop_style_andor_when_style_is_always_within_a_nested_begin_node_autocorrects_and_with_and_adds_parens"
+source = '''
+def x
+end
+
+def y
+  a = b and a.c
+end
+'''
+corrected = '''
+def x
+end
+
+def y
+  (a = b) && a.c
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 8
+column_end = 11
+message = "Use `&&` instead of `and`."
+
+[[tests]]
+name = "rubocop_cop_style_andor_when_style_is_always_when_left_hand_side_is_a_comparison_method_autocorrects_and_with_and_adds_parens"
+source = '''
+foo == bar and baz
+'''
+corrected = '''
+(foo == bar) && baz
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 14
+message = "Use `&&` instead of `and`."
+
+[[tests]]
+name = "rubocop_cop_style_andor_when_style_is_always_when_or_precedes_and_registers_an_offense_and_corrects"
+source = '''
+foo or bar and baz
+'''
+corrected = '''
+(foo || bar) && baz
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 6
+message = "Use `||` instead of `or`."
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 14
+message = "Use `&&` instead of `and`."
+
+[[tests]]
+name = "rubocop_cop_style_andor_when_style_is_always_when_or_precedes_registers_an_offense_and_corrects"
+source = '''
+foo or bar && baz
+'''
+corrected = '''
+foo || bar && baz
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 6
+message = "Use `||` instead of `or`."
+
+[[tests]]
+name = "rubocop_cop_style_andor_when_style_is_always_when_and_precedes_or_registers_an_offense_and_corrects"
+source = '''
+foo and bar or baz
+'''
+corrected = '''
+foo && bar || baz
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 7
+message = "Use `&&` instead of `and`."
+
+[[tests.offenses]]
+line = 1
+column_start = 12
+column_end = 14
+message = "Use `||` instead of `or`."
+
+[[tests]]
+name = "rubocop_cop_style_andor_when_style_is_always_when_and_precedes_registers_an_offense_and_corrects"
+source = '''
+foo and bar || baz
+'''
+corrected = '''
+foo && (bar || baz)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 7
+message = "Use `&&` instead of `and`."
+
+[[tests]]
+name = "rubocop_cop_style_andor_when_style_is_always_within_a_nested_begin_node_with_one_child_only_autocorrects_and_with_and_adds_parens"
+source = '''
+(def y
+  a = b and a.c
+end)
+'''
+corrected = '''
+(def y
+  (a = b) && a.c
+end)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 8
+column_end = 11
+message = "Use `&&` instead of `and`."
+
+[[tests]]
+name = "rubocop_cop_style_andor_when_style_is_always_with_a_file_which_contains_file_autocorrects_or_with"
+source = '''
+APP_ROOT = Pathname.new File.expand_path('../../', __FILE__)
+system('bundle check') or system!('bundle install')
+'''
+corrected = '''
+APP_ROOT = Pathname.new File.expand_path('../../', __FILE__)
+system('bundle check') || system!('bundle install')
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 23
+column_end = 25
+message = "Use `||` instead of `or`."

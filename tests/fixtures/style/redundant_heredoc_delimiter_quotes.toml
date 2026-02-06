@@ -1,0 +1,200 @@
+cop = "Style/RedundantHeredocDelimiterQuotes"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_redundantheredocdelimiterquotes_registers_an_offense_when_using_the_redundant_heredoc_delimiter_single_quotes_with"
+source = '''
+do_something(<<~'EOS')
+  no string interpolation style text
+EOS
+'''
+corrected = '''
+do_something(<<~EOS)
+  no string interpolation style text
+EOS
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 21
+message = "Remove the redundant heredoc delimiter quotes, use `<<~EOS` instead."
+
+[[tests]]
+name = "rubocop_cop_style_redundantheredocdelimiterquotes_registers_an_offense_when_using_the_redundant_heredoc_delimiter_single_quotes_with"
+source = '''
+do_something(<<-'EOS')
+  no string interpolation style text
+EOS
+'''
+corrected = '''
+do_something(<<-EOS)
+  no string interpolation style text
+EOS
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 21
+message = "Remove the redundant heredoc delimiter quotes, use `<<-EOS` instead."
+
+[[tests]]
+name = "rubocop_cop_style_redundantheredocdelimiterquotes_registers_an_offense_when_using_the_redundant_heredoc_delimiter_single_quotes_with"
+source = '''
+do_something(<<'EOS')
+  no string interpolation style text
+EOS
+'''
+corrected = '''
+do_something(<<EOS)
+  no string interpolation style text
+EOS
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 20
+message = "Remove the redundant heredoc delimiter quotes, use `<<EOS` instead."
+
+[[tests]]
+name = "rubocop_cop_style_redundantheredocdelimiterquotes_registers_an_offense_when_using_the_redundant_heredoc_delimiter_double_quotes"
+source = '''
+do_something(<<~"EOS")
+  no string interpolation style text
+EOS
+'''
+corrected = '''
+do_something(<<~EOS)
+  no string interpolation style text
+EOS
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 21
+message = "Remove the redundant heredoc delimiter quotes, use `<<~EOS` instead."
+
+[[tests]]
+name = "rubocop_cop_style_redundantheredocdelimiterquotes_does_not_register_an_offense_when_using_the_redundant_heredoc_delimiter_backquotes"
+source = '''
+do_something(<<~`EOS`)
+  command
+EOS
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantheredocdelimiterquotes_does_not_register_an_offense_when_not_using_the_redundant_heredoc_delimiter_quotes"
+source = '''
+do_something(<<~EOS)
+  no string interpolation style text
+EOS
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantheredocdelimiterquotes_does_not_register_an_offense_when_using_the_quoted_heredoc_with_string_interpolation_style_text"
+source = '''
+do_something(<<~'EOS')
+  #{string} #{interpolation}
+EOS
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantheredocdelimiterquotes_does_not_register_an_offense_when_using_the_quoted_heredoc_with_multiline_string_interpolation_style_text"
+source = '''
+do_something(<<~'EOS')
+  #{
+    string
+  } #{
+    interpolation
+  }
+EOS
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantheredocdelimiterquotes_does_not_register_an_offense_when_using_the_quoted_heredoc_with_instance_variable_string_interpolation"
+source = '''
+do_something(<<~'EOS')
+  #@foo
+EOS
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantheredocdelimiterquotes_does_not_register_an_offense_when_using_the_quoted_heredoc_with_class_variable_string_interpolation"
+source = '''
+do_something(<<~'EOS')
+  #@@foo
+EOS
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantheredocdelimiterquotes_does_not_register_an_offense_when_using_the_quoted_heredoc_with_global_variable_string_interpolation"
+source = '''
+do_something(<<~'EOS')
+  #$foo
+EOS
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantheredocdelimiterquotes_does_not_register_an_offense_when_using_the_heredoc_delimiter_with_double_quote"
+source = '''
+do_something(<<~'EDGE"CASE')
+  no string interpolation style text
+EDGE"CASE
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantheredocdelimiterquotes_does_not_register_an_offense_when_using_the_heredoc_delimiter_with_single_quote"
+source = '''
+do_something(<<~"EDGE'CASE")
+  no string interpolation style text
+EDGE'CASE
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantheredocdelimiterquotes_does_not_register_an_offense_when_using_the_heredoc_delimiter_with_space"
+source = '''
+do_something(<<~'EDGE CASE')
+  no string interpolation style text
+EDGE CASE
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantheredocdelimiterquotes_does_not_register_an_offense_when_using_the_heredoc_delimiter_with_multibyte_space"
+source = '''
+do_something(<<~'EDGE　CASE')
+  no string interpolation style text
+EDGE　CASE
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantheredocdelimiterquotes_does_not_register_an_offense_when_using_the_heredoc_delimiter_with_backslash"
+source = '''
+do_something(<<~'EOS')
+  Preserve \
+  newlines
+EOS
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantheredocdelimiterquotes_does_not_register_an_offense_when_using_the_blank_heredoc_delimiter"
+source = '''
+<<''
+'''
+offenses = []

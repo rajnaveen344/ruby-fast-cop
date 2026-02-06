@@ -1,0 +1,41 @@
+cop = "Lint/BigDecimalNew"
+department = "lint"
+severity = "warning"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_lint_bigdecimalnew_registers_an_offense_and_corrects_using_bigdecimal_new"
+source = '''
+BigDecimal.new(123.456, 3)
+'''
+corrected = '''
+BigDecimal(123.456, 3)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 14
+message = "`BigDecimal.new()` is deprecated. Use `BigDecimal()` instead."
+
+[[tests]]
+name = "rubocop_cop_lint_bigdecimalnew_registers_an_offense_and_corrects_using_bigdecimal_new"
+source = '''
+::BigDecimal.new(123.456, 3)
+'''
+corrected = '''
+BigDecimal(123.456, 3)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 16
+message = "`BigDecimal.new()` is deprecated. Use `BigDecimal()` instead."
+
+[[tests]]
+name = "rubocop_cop_lint_bigdecimalnew_does_not_register_an_offense_when_using_bigdecimal"
+source = '''
+BigDecimal(123.456, 3)
+'''
+offenses = []

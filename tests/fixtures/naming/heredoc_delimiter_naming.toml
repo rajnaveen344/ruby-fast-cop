@@ -1,0 +1,286 @@
+cop = "Naming/HeredocDelimiterNaming"
+department = "naming"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_naming_heredocdelimiternaming_with_an_interpolated_heredoc_registers_an_offense_with_a_non_meaningful_delimiter"
+source = '''
+<<-END
+  foo
+END
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 3
+message = "Use meaningful heredoc delimiters."
+
+[tests.config]
+ForbiddenDelimiters = ["END"]
+
+[[tests]]
+name = "rubocop_cop_naming_heredocdelimiternaming_with_an_interpolated_heredoc_does_not_register_an_offense_with_a_meaningful_delimiter"
+source = '''
+<<-SQL
+  foo
+SQL
+'''
+offenses = []
+
+[tests.config]
+ForbiddenDelimiters = ["END"]
+
+[[tests]]
+name = "rubocop_cop_naming_heredocdelimiternaming_with_a_non_interpolated_heredoc_when_using_single_quoted_delimiters_registers_an_offense_with_a_non_meaningful_delimiter"
+source = '''
+<<-'END'
+  foo
+END
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 3
+message = "Use meaningful heredoc delimiters."
+
+[tests.config]
+ForbiddenDelimiters = ["END"]
+
+[[tests]]
+name = "rubocop_cop_naming_heredocdelimiternaming_with_a_non_interpolated_heredoc_when_using_single_quoted_delimiters_does_not_register_an_offense_with_a_meaningful_delimiter"
+source = '''
+<<-'SQL'
+  foo
+SQL
+'''
+offenses = []
+
+[tests.config]
+ForbiddenDelimiters = ["END"]
+
+[[tests]]
+name = "rubocop_cop_naming_heredocdelimiternaming_with_a_non_interpolated_heredoc_when_using_double_quoted_delimiters_registers_an_offense_with_a_non_meaningful_delimiter"
+source = '''
+<<-"END"
+  foo
+END
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 3
+message = "Use meaningful heredoc delimiters."
+
+[tests.config]
+ForbiddenDelimiters = ["END"]
+
+[[tests]]
+name = "rubocop_cop_naming_heredocdelimiternaming_with_a_non_interpolated_heredoc_when_using_double_quoted_delimiters_does_not_register_an_offense_with_a_meaningful_delimiter"
+source = '''
+<<-'SQL'
+  foo
+SQL
+'''
+offenses = []
+
+[tests.config]
+ForbiddenDelimiters = ["END"]
+
+[[tests]]
+name = "rubocop_cop_naming_heredocdelimiternaming_with_a_non_interpolated_heredoc_when_using_back_tick_delimiters_registers_an_offense_with_a_non_meaningful_delimiter"
+source = '''
+<<-`END`
+  foo
+END
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 3
+message = "Use meaningful heredoc delimiters."
+
+[tests.config]
+ForbiddenDelimiters = ["END"]
+
+[[tests]]
+name = "rubocop_cop_naming_heredocdelimiternaming_with_a_non_interpolated_heredoc_when_using_back_tick_delimiters_does_not_register_an_offense_with_a_meaningful_delimiter"
+source = '''
+<<-`SQL`
+  foo
+SQL
+'''
+offenses = []
+
+[tests.config]
+ForbiddenDelimiters = ["END"]
+
+[[tests]]
+name = "rubocop_cop_naming_heredocdelimiternaming_with_a_non_interpolated_heredoc_when_using_non_word_delimiters_registers_an_offense"
+source = '''
+<<-'+'
+  foo
++
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 1
+message = "Use meaningful heredoc delimiters."
+
+[tests.config]
+ForbiddenDelimiters = ["END"]
+
+[[tests]]
+name = "rubocop_cop_naming_heredocdelimiternaming_with_a_non_interpolated_heredoc_when_using_blank_heredoc_delimiters_registers_an_offense_with_a_non_meaningful_delimiter"
+source = '''
+<<~''
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 5
+message = "Use meaningful heredoc delimiters."
+
+[tests.config]
+ForbiddenDelimiters = ["END"]
+
+[[tests]]
+name = "rubocop_cop_naming_heredocdelimiternaming_with_a_squiggly_heredoc_registers_an_offense_with_a_non_meaningful_delimiter"
+source = '''
+<<~END
+  foo
+END
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 3
+message = "Use meaningful heredoc delimiters."
+
+[tests.config]
+ForbiddenDelimiters = ["END"]
+
+[[tests]]
+name = "rubocop_cop_naming_heredocdelimiternaming_with_a_squiggly_heredoc_does_not_register_an_offense_with_a_meaningful_delimiter"
+source = '''
+<<~SQL
+  foo
+SQL
+'''
+offenses = []
+
+[tests.config]
+ForbiddenDelimiters = ["END"]
+
+[[tests]]
+name = "rubocop_cop_naming_heredocdelimiternaming_with_a_naked_heredoc_registers_an_offense_with_a_non_meaningful_delimiter"
+source = '''
+<<END
+  foo
+END
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 3
+message = "Use meaningful heredoc delimiters."
+
+[tests.config]
+ForbiddenDelimiters = ["END"]
+
+[[tests]]
+name = "rubocop_cop_naming_heredocdelimiternaming_with_a_naked_heredoc_does_not_register_an_offense_with_a_meaningful_delimiter"
+source = '''
+<<SQL
+  foo
+SQL
+'''
+offenses = []
+
+[tests.config]
+ForbiddenDelimiters = ["END"]
+
+[[tests]]
+name = "rubocop_cop_naming_heredocdelimiternaming_when_the_delimiter_contains_non_letter_characters_does_not_register_an_offense_when_delimiter_contains_an_underscore"
+source = '''
+<<-SQL_CODE
+  foo
+SQL_CODE
+'''
+offenses = []
+
+[tests.config]
+ForbiddenDelimiters = ["END"]
+
+[[tests]]
+name = "rubocop_cop_naming_heredocdelimiternaming_when_the_delimiter_contains_non_letter_characters_does_not_register_an_offense_when_delimiter_contains_a_number"
+source = '''
+<<-BASE64
+  foo
+BASE64
+'''
+offenses = []
+
+[tests.config]
+ForbiddenDelimiters = ["END"]
+
+[[tests]]
+name = "rubocop_cop_naming_heredocdelimiternaming_with_multiple_heredocs_starting_on_the_same_line_registers_an_offense_with_a_leading_non_meaningful_delimiter"
+source = '''
+foo(<<-END, <<-SQL)
+  foo
+END
+  bar
+SQL
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 3
+message = "Use meaningful heredoc delimiters."
+
+[tests.config]
+ForbiddenDelimiters = ["END"]
+
+[[tests]]
+name = "rubocop_cop_naming_heredocdelimiternaming_with_multiple_heredocs_starting_on_the_same_line_registers_an_offense_with_a_trailing_non_meaningful_delimiter"
+source = '''
+foo(<<-SQL, <<-END)
+  foo
+SQL
+  bar
+END
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 0
+column_end = 3
+message = "Use meaningful heredoc delimiters."
+
+[tests.config]
+ForbiddenDelimiters = ["END"]
+
+[[tests]]
+name = "rubocop_cop_naming_heredocdelimiternaming_with_multiple_heredocs_starting_on_the_same_line_does_not_register_an_offense_with_meaningful_delimiters"
+source = '''
+foo(<<-SQL, <<-JS)
+  foo
+SQL
+  bar
+JS
+'''
+offenses = []
+
+[tests.config]
+ForbiddenDelimiters = ["END"]

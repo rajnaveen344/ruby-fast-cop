@@ -1,0 +1,84 @@
+cop = "Bundler/InsecureProtocolSource"
+department = "bundler"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_bundler_insecureprotocolsource_registers_an_offense_when_using_source_gemcutter"
+source = '''
+source :gemcutter
+'''
+corrected = '''
+source 'https://rubygems.org'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 17
+message = "The source `:gemcutter` is deprecated [...]"
+
+[[tests]]
+name = "rubocop_cop_bundler_insecureprotocolsource_registers_an_offense_when_using_source_rubygems"
+source = '''
+source :rubygems
+'''
+corrected = '''
+source 'https://rubygems.org'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 16
+message = "The source `:rubygems` is deprecated [...]"
+
+[[tests]]
+name = "rubocop_cop_bundler_insecureprotocolsource_registers_an_offense_when_using_source_rubyforge"
+source = '''
+source :rubyforge
+'''
+corrected = '''
+source 'https://rubygems.org'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 17
+message = "The source `:rubyforge` is deprecated [...]"
+
+[[tests]]
+name = "rubocop_cop_bundler_insecureprotocolsource_does_not_register_an_offense_when_using_source_https_rubygems_org"
+source = '''
+source 'https://rubygems.org'
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_bundler_insecureprotocolsource_when_allowhttpprotocol_true_does_not_register_an_offense_when_using_source_http_rubygems_org"
+source = '''
+source 'http://rubygems.org'
+'''
+offenses = []
+
+[tests.config]
+AllowHttpProtocol = true
+
+[[tests]]
+name = "rubocop_cop_bundler_insecureprotocolsource_when_allowhttpprotocol_false_registers_an_offense_when_using_source_http_rubygems_org"
+source = '''
+source 'http://rubygems.org'
+'''
+corrected = '''
+source 'https://rubygems.org'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 28
+message = "Use `https://rubygems.org` instead of `http://rubygems.org`."
+
+[tests.config]
+AllowHttpProtocol = false

@@ -1,0 +1,599 @@
+cop = "Style/CommandLiteral"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_commandliteral_x_commands_with_other_delimiters_than_parentheses_registers_an_offense"
+source = '''
+%x$ls$
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Use backticks around command string."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:backticks"
+
+[[tests]]
+name = "rubocop_cop_style_commandliteral_when_percentliteraldelimiters_is_configured_with_curly_braces_respects_the_configuration_when_autocorrecting"
+source = '''
+`ls`
+'''
+corrected = '''
+%x[ls]
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 4
+message = "Use `%x` around command string."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:percent_x"
+
+[[tests]]
+name = "rubocop_cop_style_commandliteral_when_percentliteraldelimiters_only_has_a_default_respects_the_configuration_when_autocorrecting"
+source = '''
+`ls`
+'''
+corrected = '''
+%x(ls)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 4
+message = "Use `%x` around command string."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:percent_x"
+
+[[tests]]
+name = "rubocop_cop_style_commandliteral_when_percentliteraldelimiters_is_configured_and_a_default_exists_ignores_the_default_when_autocorrecting"
+source = '''
+`ls`
+'''
+corrected = '''
+%x[ls]
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 4
+message = "Use `%x` around command string."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:percent_x"
+
+[[tests]]
+name = "rubocop_cop_style_commandliteral_heredoc_commands_is_ignored"
+source = '''
+<<`COMMAND`
+  ls
+COMMAND
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:backticks"
+
+[[tests]]
+name = "rubocop_cop_style_commandliteral_when_enforcedstyle_is_set_to_backticks_a_single_line_string_without_backticks_is_accepted"
+source = '''
+foo = `ls`
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:backticks"
+
+[[tests]]
+name = "rubocop_cop_style_commandliteral_when_enforcedstyle_is_set_to_backticks_a_single_line_string_with_backticks_registers_an_offense_without_autocorrection"
+source = '''
+foo = `echo \`ls\``
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 19
+message = "Use `%x` around command string."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:backticks"
+
+[[tests]]
+name = "rubocop_cop_style_commandliteral_when_enforcedstyle_is_set_to_backticks_a_single_line_string_with_backticks_when_configured_to_allow_inner_backticks_is_accepted"
+source = '''
+foo = `echo \`ls\``
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:backticks"
+
+[[tests]]
+name = "rubocop_cop_style_commandliteral_when_enforcedstyle_is_set_to_backticks_a_multi_line_string_without_backticks_is_accepted"
+source = '''
+foo = `
+  ls
+  ls -l
+`
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:backticks"
+
+[[tests]]
+name = "rubocop_cop_style_commandliteral_when_enforcedstyle_is_set_to_backticks_a_multi_line_string_with_backticks_registers_an_offense_without_autocorrection"
+source = '''
+foo = `
+  echo \`ls\`
+  echo \`ls -l\`
+`
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 7
+message = "Use `%x` around command string."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:backticks"
+
+[[tests]]
+name = "rubocop_cop_style_commandliteral_when_enforcedstyle_is_set_to_backticks_a_multi_line_string_with_backticks_when_configured_to_allow_inner_backticks_is_accepted"
+source = '''
+foo = `
+  echo \`ls\`
+  echo \`ls -l\`
+`
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:backticks"
+
+[[tests]]
+name = "rubocop_cop_style_commandliteral_when_enforcedstyle_is_set_to_backticks_a_single_line_x_string_without_backticks_registers_an_offense_and_corrects_to_backticks"
+source = '''
+foo = %x(ls)
+'''
+corrected = '''
+foo = `ls`
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 12
+message = "Use backticks around command string."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:backticks"
+
+[[tests]]
+name = "rubocop_cop_style_commandliteral_when_enforcedstyle_is_set_to_backticks_a_single_line_x_string_with_backticks_is_accepted"
+source = '''
+foo = %x(echo `ls`)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:backticks"
+
+[[tests]]
+name = "rubocop_cop_style_commandliteral_when_enforcedstyle_is_set_to_backticks_a_single_line_x_string_with_backticks_when_configured_to_allow_inner_backticks_registers_an_offense_without_autocorrection"
+source = '''
+foo = %x(echo `ls`)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 19
+message = "Use backticks around command string."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:backticks"
+
+[[tests]]
+name = "rubocop_cop_style_commandliteral_when_enforcedstyle_is_set_to_backticks_a_multi_line_x_string_without_backticks_registers_an_offense_and_corrects_to_backticks"
+source = '''
+foo = %x(
+  ls
+  ls -l
+)
+'''
+corrected = '''
+foo = `
+  ls
+  ls -l
+`
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 9
+message = "Use backticks around command string."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:backticks"
+
+[[tests]]
+name = "rubocop_cop_style_commandliteral_when_enforcedstyle_is_set_to_backticks_a_multi_line_x_string_with_backticks_is_accepted"
+source = '''
+foo = %x(
+  echo `ls`
+  echo `ls -l`
+)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:backticks"
+
+[[tests]]
+name = "rubocop_cop_style_commandliteral_when_enforcedstyle_is_set_to_backticks_a_multi_line_x_string_with_backticks_when_configured_to_allow_inner_backticks_registers_an_offense_without_autocorrection"
+source = '''
+foo = %x(
+  echo `ls`
+  echo `ls -l`
+)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 9
+message = "Use backticks around command string."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:backticks"
+
+[[tests]]
+name = "rubocop_cop_style_commandliteral_when_enforcedstyle_is_set_to_percent_x_a_single_line_string_without_backticks_registers_an_offense_and_corrects_to_x"
+source = '''
+foo = `ls`
+'''
+corrected = '''
+foo = %x(ls)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 10
+message = "Use `%x` around command string."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:percent_x"
+
+[[tests]]
+name = "rubocop_cop_style_commandliteral_when_enforcedstyle_is_set_to_percent_x_a_single_line_string_with_backticks_registers_an_offense_without_autocorrection"
+source = '''
+foo = `echo \`ls\``
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 19
+message = "Use `%x` around command string."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:percent_x"
+
+[[tests]]
+name = "rubocop_cop_style_commandliteral_when_enforcedstyle_is_set_to_percent_x_a_multi_line_string_without_backticks_registers_an_offense_and_corrects_to_x"
+source = '''
+foo = `
+  ls
+  ls -l
+`
+'''
+corrected = '''
+foo = %x(
+  ls
+  ls -l
+)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 7
+message = "Use `%x` around command string."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:percent_x"
+
+[[tests]]
+name = "rubocop_cop_style_commandliteral_when_enforcedstyle_is_set_to_percent_x_a_multi_line_string_with_backticks_registers_an_offense_without_autocorrection"
+source = '''
+foo = `
+  echo \`ls\`
+  echo \`ls -l\`
+`
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 7
+message = "Use `%x` around command string."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:percent_x"
+
+[[tests]]
+name = "rubocop_cop_style_commandliteral_when_enforcedstyle_is_set_to_percent_x_a_single_line_x_string_without_backticks_is_accepted"
+source = '''
+foo = %x(ls)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:percent_x"
+
+[[tests]]
+name = "rubocop_cop_style_commandliteral_when_enforcedstyle_is_set_to_percent_x_a_single_line_x_string_with_backticks_is_accepted"
+source = '''
+foo = %x(echo `ls`)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:percent_x"
+
+[[tests]]
+name = "rubocop_cop_style_commandliteral_when_enforcedstyle_is_set_to_percent_x_a_multi_line_x_string_without_backticks_is_accepted"
+source = '''
+foo = %x(
+  ls
+  ls -l
+)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:percent_x"
+
+[[tests]]
+name = "rubocop_cop_style_commandliteral_when_enforcedstyle_is_set_to_percent_x_a_multi_line_x_string_with_backticks_is_accepted"
+source = '''
+foo = %x(
+  echo `ls`
+  echo `ls -l`
+)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:percent_x"
+
+[[tests]]
+name = "rubocop_cop_style_commandliteral_when_enforcedstyle_is_set_to_mixed_a_single_line_string_without_backticks_is_accepted"
+source = '''
+foo = `ls`
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:mixed"
+
+[[tests]]
+name = "rubocop_cop_style_commandliteral_when_enforcedstyle_is_set_to_mixed_a_single_line_string_with_backticks_registers_an_offense_without_autocorrection"
+source = '''
+foo = `echo \`ls\``
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 19
+message = "Use `%x` around command string."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:mixed"
+
+[[tests]]
+name = "rubocop_cop_style_commandliteral_when_enforcedstyle_is_set_to_mixed_a_single_line_string_with_backticks_when_configured_to_allow_inner_backticks_is_accepted"
+source = '''
+foo = `echo \`ls\``
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:mixed"
+
+[[tests]]
+name = "rubocop_cop_style_commandliteral_when_enforcedstyle_is_set_to_mixed_a_multi_line_string_without_backticks_registers_an_offense_and_corrects_to_x"
+source = '''
+foo = `
+  ls
+  ls -l
+`
+'''
+corrected = '''
+foo = %x(
+  ls
+  ls -l
+)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 7
+message = "Use `%x` around command string."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:mixed"
+
+[[tests]]
+name = "rubocop_cop_style_commandliteral_when_enforcedstyle_is_set_to_mixed_a_multi_line_string_with_backticks_registers_an_offense_without_autocorrection"
+source = '''
+foo = `
+  echo \`ls\`
+  echo \`ls -l\`
+`
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 7
+message = "Use `%x` around command string."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:mixed"
+
+[[tests]]
+name = "rubocop_cop_style_commandliteral_when_enforcedstyle_is_set_to_mixed_a_single_line_x_string_without_backticks_registers_an_offense_and_corrects_to_backticks"
+source = '''
+foo = %x(ls)
+'''
+corrected = '''
+foo = `ls`
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 12
+message = "Use backticks around command string."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:mixed"
+
+[[tests]]
+name = "rubocop_cop_style_commandliteral_when_enforcedstyle_is_set_to_mixed_a_single_line_x_string_with_backticks_is_accepted"
+source = '''
+foo = %x(echo `ls`)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:mixed"
+
+[[tests]]
+name = "rubocop_cop_style_commandliteral_when_enforcedstyle_is_set_to_mixed_a_single_line_x_string_with_backticks_when_configured_to_allow_inner_backticks_registers_an_offense_without_autocorrection"
+source = '''
+foo = %x(echo `ls`)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 19
+message = "Use backticks around command string."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:mixed"
+
+[[tests]]
+name = "rubocop_cop_style_commandliteral_when_enforcedstyle_is_set_to_mixed_a_multi_line_x_string_without_backticks_is_accepted"
+source = '''
+foo = %x(
+  ls
+  ls -l
+)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:mixed"
+
+[[tests]]
+name = "rubocop_cop_style_commandliteral_when_enforcedstyle_is_set_to_mixed_a_multi_line_x_string_with_backticks_is_accepted"
+source = '''
+foo = %x(
+  echo `ls`
+  echo `ls -l`
+)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:mixed"

@@ -1,0 +1,6158 @@
+cop = "Style/ArgumentsForwarding"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_6_does_not_register_an_offense_when_using_restarg_with_block_arg"
+source = '''
+def foo(*args, &block)
+  bar(*args, &block)
+end
+'''
+ruby_version = ">= 2.6"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_registers_an_offense_when_using_restarg_and_block_arg"
+source = '''
+def foo(*args, &block)
+  bar(*args, &block)
+end
+'''
+corrected = '''
+def foo(...)
+  bar(...)
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 21
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 19
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[tests.config]
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_registers_an_offense_when_using_restarg_kwargs_and_block_arg"
+source = '''
+def foo(*args, **kwargs, &block)
+  bar(*args, **kwargs, &block)
+end
+'''
+corrected = '''
+def foo(...)
+  bar(...)
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 31
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 29
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[tests.config]
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_registers_an_offense_when_using_restarg_kwargs_and_block_arg_with_another_method_call"
+source = '''
+def foo(*args, **kwargs, &block)
+  bar(*args, **kwargs, &block)
+  baz(1, 2, 3)
+end
+'''
+corrected = '''
+def foo(...)
+  bar(...)
+  baz(1, 2, 3)
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 31
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 29
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[tests.config]
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_registers_an_offense_when_using_restarg_kwargs_and_block_arg_twice"
+source = '''
+def foo(*args, **kwargs, &block)
+  bar(*args, **kwargs, &block)
+  baz(*args, **kwargs, &block)
+end
+'''
+corrected = '''
+def foo(...)
+  bar(...)
+  baz(...)
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 31
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 29
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[[tests.offenses]]
+line = 3
+column_start = 6
+column_end = 29
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[tests.config]
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_registers_an_offense_when_passing_restarg_and_block_arg_in_defs"
+source = '''
+def self.foo(*args, &block)
+  bar(*args, &block)
+end
+'''
+corrected = '''
+def self.foo(...)
+  bar(...)
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 26
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 19
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[tests.config]
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_registers_an_offense_when_the_parentheses_of_arguments_are_omitted"
+source = '''
+def foo *args, &block
+  bar *args, &block
+end
+'''
+corrected = '''
+def foo(...)
+  bar(...)
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 21
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 19
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[tests.config]
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_registers_an_offense_when_forwarding_to_a_method_in_block"
+source = '''
+def foo(*args, &block)
+  do_something do
+    bar(*args, &block)
+  end
+end
+'''
+corrected = '''
+def foo(...)
+  do_something do
+    bar(...)
+  end
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 21
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[[tests.offenses]]
+line = 3
+column_start = 8
+column_end = 21
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[tests.config]
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_registers_an_offense_when_delegating"
+source = '''
+def foo(*args, &block)
+  obj.bar(*args, &block)
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 21
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[[tests.offenses]]
+line = 2
+column_start = 10
+column_end = 23
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[tests.config]
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_registers_an_offense_when_using_restarg_and_block_arg_for_call"
+source = '''
+def foo(*args, &block)
+  bar.(*args, &block)
+end
+'''
+corrected = '''
+def foo(...)
+  bar.(...)
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 21
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[[tests.offenses]]
+line = 2
+column_start = 7
+column_end = 20
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[tests.config]
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_does_not_register_an_offense_when_using_block_arg"
+source = '''
+def foo(&block)
+  bar(&block)
+end
+'''
+ruby_version = ">= 3.0"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_registers_an_offense_when_using_default_positional_arg_keyword_arg_and_block_arg"
+source = '''
+def foo(arg = {}, **kwargs, &block)
+  bar(arg, **kwargs, &block)
+end
+'''
+corrected = '''
+def foo(arg = {}, ...)
+  bar(arg, ...)
+end
+'''
+ruby_version = ">= 3.1"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 18
+column_end = 34
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[[tests.offenses]]
+line = 2
+column_start = 11
+column_end = 27
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[tests.config]
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_registers_an_offense_when_using_block_arg"
+source = '''
+def foo(&block)
+  bar(&block)
+end
+'''
+corrected = '''
+def foo(&)
+  bar(&)
+end
+'''
+ruby_version = ">= 3.1"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 14
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 12
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[tests.config]
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_does_not_register_an_offense_when_naming_block_arg"
+source = '''
+def foo(&)
+  bar(&)
+end
+'''
+ruby_version = ">= 3.1"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_does_not_register_an_offense_when_using_block_arg_in_nested_method_definitions"
+source = '''
+def foo(x)
+  class << x
+    def bar(y, &)
+      baz.qux(&)
+    end
+  end
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_when_redundantblockargumentnames_meaningless_block_name_registers_an_offense_when_using_restarg_and_block_arg"
+source = '''
+def foo(*args, &meaningless_block_name)
+  bar(*args, &meaningless_block_name)
+end
+'''
+corrected = '''
+def foo(...)
+  bar(...)
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 38
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 36
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[tests.config]
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_when_redundantblockargumentnames_meaningless_block_name_does_not_register_an_offense_when_using_restarg_and_unconfigured_block_arg"
+source = '''
+def foo(*args, &block)
+  bar(*args, &block)
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_when_redundantblockargumentnames_meaningless_block_name_registers_an_offense_when_using_restarg_and_block_arg"
+source = '''
+def foo(*args, &meaningless_block_name)
+  bar(*args, &meaningless_block_name)
+end
+'''
+corrected = '''
+def foo(*, &)
+  bar(*, &)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 13
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 38
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 11
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 13
+column_end = 36
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[tests.config]
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_when_redundantblockargumentnames_meaningless_block_name_registers_an_offense_when_using_restarg_and_unconfigured_block_arg"
+source = '''
+def foo(*args, &block)
+  bar(*args, &block)
+end
+'''
+corrected = '''
+def foo(*, &block)
+  bar(*, &block)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 13
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 11
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[tests.config]
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_does_not_register_an_offense_when_using_arguments_forwarding"
+source = '''
+def foo(...)
+  bar(...)
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_does_not_register_an_offense_when_different_arguments_are_used"
+source = '''
+def foo(*args, &block)
+  bar(*args)
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_does_not_register_an_offense_when_different_argument_names_are_used"
+source = '''
+def foo(arg)
+  bar(argument)
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_does_not_register_an_offense_when_different_splat_argument_names_are_used"
+source = '''
+def foo(*args, &block)
+  bar(*arguments, &block)
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_does_not_register_an_offense_when_different_kwrest_argument_names_are_used"
+source = '''
+def foo(**kwargs, &block)
+  bar(**kwarguments, &block)
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_does_not_register_an_offense_when_the_restarg_is_overwritten"
+source = '''
+def foo(*args, **kwargs, &block)
+  args = new_args
+  bar(*args, **kwargs, &block)
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_does_not_register_an_offense_when_the_kwarg_is_overwritten"
+source = '''
+def foo(*args, **kwargs, &block)
+  kwargs = new_kwargs
+  bar(*args, **kwargs, &block)
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_does_not_register_an_offense_when_the_block_arg_is_overwritten"
+source = '''
+def foo(*args, **kwargs, &block)
+  block = new_block
+  bar(*args, **kwargs, &block)
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_does_not_register_an_offense_when_using_the_restarg_outside_forwarding_method_arguments"
+source = '''
+def foo(*args, **kwargs, &block)
+  args.do_something
+  bar(*args, **kwargs, &block)
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_does_not_register_an_offense_when_assigning_the_restarg_outside_forwarding_method_arguments"
+source = '''
+def foo(*args, &block)
+  var = args
+  foo(*args, &block)
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_does_not_register_an_offense_when_referencing_the_restarg_outside_forwarding_method_arguments"
+source = '''
+def foo(*args, &block)
+  args
+  foo(*args, &block)
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_does_not_register_an_offense_when_not_always_passing_the_block_as_well_as_restarg"
+source = '''
+def foo(*args, &block)
+  bar(*args, &block)
+  baz(*args)
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_does_not_register_an_offense_when_not_always_passing_the_block_as_well_as_kwrestarg"
+source = '''
+def foo(**kwargs, &block)
+  bar(**kwargs, &block)
+  baz(**kwargs)
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_does_not_register_an_offense_when_not_always_forwarding_all"
+source = '''
+def foo(*args, **kwargs, &block)
+  bar(*args, **kwargs, &block)
+  bar(*args, &block)
+  bar(**kwargs, &block)
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_does_not_register_an_offense_when_always_forwarding_the_block_but_not_other_args"
+source = '''
+def foo(*args, &block)
+  bar(*args, &block)
+  bar(&block)
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_does_not_register_an_offense_when_body_of_method_definition_is_empty"
+source = '''
+def foo(*args, &block)
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_does_not_register_an_offense_with_arg_destructuring"
+source = '''
+def foo((bar, baz), **kwargs)
+  forwarded(bar, baz, **kwargs)
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_does_not_register_an_offense_with_an_additional_kwarg"
+source = '''
+def foo(first:, **kwargs, &block)
+  forwarded(**kwargs, &block)
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_allowonlyrestargument_true_does_not_register_an_offense_when_using_only_rest_arg"
+source = '''
+def foo(*args)
+  bar(*args)
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowOnlyRestArgument = true
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_allowonlyrestargument_true_does_not_register_an_offense_when_using_only_kwrest_arg"
+source = '''
+def foo(**kwargs)
+  bar(**kwargs)
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowOnlyRestArgument = true
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_allowonlyrestargument_true_registers_an_offense_when_using_only_rest_arg"
+source = '''
+def foo(*args)
+  bar(*args)
+end
+'''
+corrected = '''
+def foo(*)
+  bar(*)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 13
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 11
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[tests.config]
+AllowOnlyRestArgument = true
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_allowonlyrestargument_true_registers_an_offense_when_using_only_kwrest_arg"
+source = '''
+def foo(**kwargs)
+  bar(**kwargs)
+end
+'''
+corrected = '''
+def foo(**)
+  bar(**)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 16
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 14
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[tests.config]
+AllowOnlyRestArgument = true
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_allowonlyrestargument_false_registers_an_offense_when_using_only_rest_arg"
+source = '''
+def foo(*args)
+  bar(*args)
+end
+'''
+corrected = '''
+def foo(...)
+  bar(...)
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 13
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 11
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_allowonlyrestargument_false_registers_an_offense_when_using_only_kwrest_arg"
+source = '''
+def foo(**kwargs)
+  bar(**kwargs)
+end
+'''
+corrected = '''
+def foo(...)
+  bar(...)
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 16
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 14
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_allowonlyrestargument_false_does_not_register_an_offense_with_default_positional_arguments"
+source = '''
+def foo(arg=1, *args)
+  bar(*args)
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_allowonlyrestargument_false_does_not_register_an_offense_with_default_keyword_arguments"
+source = '''
+def foo(*args, arg: 1)
+  bar(*args)
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_allowonlyrestargument_false_registers_an_offense_when_using_only_rest_arg"
+source = '''
+def foo(*args)
+  bar(*args)
+end
+'''
+corrected = '''
+def foo(*)
+  bar(*)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 13
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 11
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_allowonlyrestargument_false_registers_an_offense_when_using_only_rest_arg_in_yield"
+source = '''
+def foo(*args)
+  yield(*args)
+end
+'''
+corrected = '''
+def foo(*)
+  yield(*)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 13
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 8
+column_end = 13
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_allowonlyrestargument_false_registers_an_offense_when_using_only_rest_arg_in_brackets"
+source = '''
+def foo(*args)
+  bar[*args]
+end
+'''
+corrected = '''
+def foo(*)
+  bar[*]
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 13
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 11
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_allowonlyrestargument_false_registers_an_offense_when_using_only_kwrest_arg"
+source = '''
+def foo(**kwargs)
+  bar(**kwargs)
+end
+'''
+corrected = '''
+def foo(**)
+  bar(**)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 16
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 14
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_allowonlyrestargument_false_registers_an_offense_with_default_positional_arguments"
+source = '''
+def foo(arg=1, *args)
+  bar(*args)
+end
+'''
+corrected = '''
+def foo(arg=1, *)
+  bar(*)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 20
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 11
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_allowonlyrestargument_false_registers_an_offense_with_default_keyword_arguments"
+source = '''
+def foo(*args, arg: 1)
+  bar(*args)
+end
+'''
+corrected = '''
+def foo(*, arg: 1)
+  bar(*)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 13
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 11
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_does_not_register_an_offense_for_restarg_when_passing_block_to_separate_call"
+source = '''
+def foo(*args, &block)
+  bar(*args).baz(&block)
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_does_not_register_an_offense_for_restarg_and_kwrestarg_when_passing_block_to_separate_call"
+source = '''
+def foo(*args, **kwargs, &block)
+  bar(*args, **kwargs).baz(&block)
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_does_not_register_an_offense_for_restarg_kwrestarg_block_passed_to_separate_methods"
+source = '''
+def foo(*args, **kwargs, &block)
+  bar(first(*args), second(**kwargs), third(&block))
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_does_not_register_an_offense_if_an_additional_positional_parameter_is_present"
+source = '''
+def method_missing(m, *args, **kwargs, &block)
+  if @template.respond_to?(m)
+    @template.send(m, *args, **kwargs, &block)
+  else
+    super
+  end
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_registers_an_offense_if_an_additional_positional_parameter_is_present"
+source = '''
+def method_missing(m, *args, **kwargs, &block)
+  if @template.respond_to?(m)
+    @template.send(m, *args, **kwargs, &block)
+  else
+    super
+  end
+end
+'''
+corrected = '''
+def method_missing(m, ...)
+  if @template.respond_to?(m)
+    @template.send(m, ...)
+  else
+    super
+  end
+end
+'''
+ruby_version = ">= 3.0"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 22
+column_end = 45
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[[tests.offenses]]
+line = 3
+column_start = 22
+column_end = 45
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_registers_an_offense_if_an_additional_positional_parameter_is_present_in_method_forwarding_with_safe_navigation"
+source = '''
+def method_missing(m, *args, **kwargs, &block)
+  obj.foo(m, *args, **kwargs, &block)
+end
+'''
+corrected = '''
+def method_missing(m, ...)
+  obj.foo(m, ...)
+end
+'''
+ruby_version = ">= 3.0"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 22
+column_end = 45
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[[tests.offenses]]
+line = 2
+column_start = 13
+column_end = 36
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_registers_an_offense_if_an_additional_positional_parameter_is_present_in_super"
+source = '''
+def method_missing(m, *args, **kwargs, &block)
+  super(m, *args, **kwargs, &block)
+end
+'''
+corrected = '''
+def method_missing(m, ...)
+  super(m, ...)
+end
+'''
+ruby_version = ">= 3.0"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 22
+column_end = 45
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[[tests.offenses]]
+line = 2
+column_start = 11
+column_end = 34
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_does_not_register_an_offense_if_kwargs_are_forwarded_with_a_positional_parameter"
+source = '''
+def foo(m, **kwargs, &block)
+  bar(m, **kwargs, &block)
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_does_not_register_an_offense_if_args_are_forwarded_with_a_positional_parameter_last"
+source = '''
+def foo(m, *args, &block)
+  bar(*args, m, &block)
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_does_not_register_an_offense_if_args_kwargs_are_forwarded_with_a_positional_parameter"
+source = '''
+def foo(m, *args, **kwargs, &block)
+  bar(m, *args, **kwargs, &block)
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_registers_an_offense_if_args_kwargs_are_forwarded_with_a_positional_parameter"
+source = '''
+def foo(m, *args, **kwargs, &block)
+  bar(m, *args, **kwargs, &block)
+end
+'''
+corrected = '''
+def foo(m, ...)
+  bar(m, ...)
+end
+'''
+ruby_version = ">= 3.0"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 34
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[[tests.offenses]]
+line = 2
+column_start = 9
+column_end = 32
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_does_not_register_an_offense_when_forwarding_args_kwargs_with_an_additional_arg"
+source = '''
+def self.get(*args, **kwargs, &block)
+  CanvasHttp.request(Net::HTTP::Get, *args, **kwargs, &block)
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_registers_an_offense_when_forwarding_args_kwargs_with_an_additional_arg"
+source = '''
+def self.get(*args, **kwargs, &block)
+  CanvasHttp.request(Net::HTTP::Get, *args, **kwargs, &block)
+end
+'''
+corrected = '''
+def self.get(...)
+  CanvasHttp.request(Net::HTTP::Get, ...)
+end
+'''
+ruby_version = ">= 3.0"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 36
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[[tests.offenses]]
+line = 2
+column_start = 37
+column_end = 60
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_does_not_register_an_offense_when_forwarding_args_with_an_additional_arg"
+source = '''
+def post(*args, &block)
+  future_on(executor, *args, &block)
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_2_7_registers_an_offense_when_args_are_forwarded_at_several_call_sites"
+source = '''
+def foo(*args, **kwargs, &block)
+  baz(*args, **kwargs, &block)
+
+  if something?
+    baz(*args, **kwargs, &block)
+  end
+end
+'''
+corrected = '''
+def foo(...)
+  baz(...)
+
+  if something?
+    baz(...)
+  end
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 31
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 29
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[[tests.offenses]]
+line = 5
+column_start = 8
+column_end = 31
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_0_does_not_register_an_offense_if_args_are_forwarded_with_a_positional_parameter_last"
+source = '''
+def foo(m, *args, &block)
+  bar(*args, m, &block)
+end
+'''
+ruby_version = ">= 3.0"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_0_does_not_register_an_offense_with_an_additional_required_kwarg_that_is_not_forwarded"
+source = '''
+def foo(first:, **kwargs, &block)
+  forwarded(**kwargs, &block)
+end
+'''
+ruby_version = ">= 3.0"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_0_does_not_register_an_offense_with_an_additional_required_kwarg_that_is_forwarded"
+source = '''
+def foo(first:, **kwargs, &block)
+  forwarded(first: first, **kwargs, &block)
+end
+'''
+ruby_version = ">= 3.0"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_0_does_not_register_an_offense_with_an_additional_optional_kwarg_that_is_not_forwarded"
+source = '''
+def foo(first: nil, **kwargs, &block)
+  forwarded(**kwargs, &block)
+end
+'''
+ruby_version = ">= 3.0"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_0_does_not_register_an_offense_with_an_additional_optional_kwarg_that_is_forwarded"
+source = '''
+def foo(first: nil, **kwargs, &block)
+  forwarded(first: first, **kwargs, &block)
+end
+'''
+ruby_version = ">= 3.0"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_0_does_not_register_an_offense_if_args_kwargs_are_forwarded_with_a_positional_parameter_last"
+source = '''
+def foo(m, *args, **kwargs, &block)
+  bar(*args, m, **kwargs, &block)
+end
+'''
+ruby_version = ">= 3.0"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_0_registers_an_offense_if_args_kwargs_are_forwarded_with_a_positional_parameter"
+source = '''
+def foo(m, *args, **kwargs, &block)
+  bar(m, *args, **kwargs, &block)
+end
+'''
+corrected = '''
+def foo(m, ...)
+  bar(m, ...)
+end
+'''
+ruby_version = ">= 3.0"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 34
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[[tests.offenses]]
+line = 2
+column_start = 9
+column_end = 32
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_0_registers_an_offense_when_args_are_forwarded_at_several_call_sites"
+source = '''
+def foo(m, *args, **kwargs, &block)
+  baz(m, *args, **kwargs, &block)
+
+  if something?
+    baz(m, *args, **kwargs, &block)
+  end
+end
+'''
+corrected = '''
+def foo(m, ...)
+  baz(m, ...)
+
+  if something?
+    baz(m, ...)
+  end
+end
+'''
+ruby_version = ">= 3.0"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 34
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[[tests.offenses]]
+line = 2
+column_start = 9
+column_end = 32
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[[tests.offenses]]
+line = 5
+column_start = 11
+column_end = 34
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_0_does_not_register_an_offense_if_args_kwargs_are_forwarded_with_additional_pre_kwarg"
+source = '''
+def foo(m, *args, **kwargs, &block)
+  bar(m, *args, extra: :kwarg, **kwargs, &block)
+end
+'''
+ruby_version = ">= 3.0"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_0_does_not_register_an_offense_if_args_kwargs_are_forwarded_with_additional_post_kwarg"
+source = '''
+def foo(m, *args, **kwargs, &block)
+  bar(m, *args, **kwargs, extra: :kwarg, &block)
+end
+'''
+ruby_version = ">= 3.0"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_0_registers_an_offense_when_forwarding_args_after_dropping_an_additional_arg"
+source = '''
+def foo(x, *args, &block)
+  bar(*args, &block)
+end
+'''
+corrected = '''
+def foo(x, ...)
+  bar(...)
+end
+'''
+ruby_version = ">= 3.0"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 24
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 19
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_0_registers_no_offense_when_forwarding_args_with_a_leading_default_arg"
+source = '''
+def foo(x, y = 42, *args, &block)
+  bar(x, y, *args, &block)
+end
+'''
+ruby_version = ">= 3.0"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_0_registers_an_offense_when_forwarding_args_with_an_additional_arg"
+source = '''
+def post(*args, &block)
+  future_on(executor, *args, &block)
+end
+'''
+corrected = '''
+def post(...)
+  future_on(executor, ...)
+end
+'''
+ruby_version = ">= 3.0"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 22
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[[tests.offenses]]
+line = 2
+column_start = 22
+column_end = 35
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_0_registers_an_offense_when_forwarding_args_kwargs_with_an_additional_arg"
+source = '''
+def self.get(*args, **kwargs, &block)
+  CanvasHttp.request(Net::HTTP::Get, *args, **kwargs, &block)
+end
+'''
+corrected = '''
+def self.get(...)
+  CanvasHttp.request(Net::HTTP::Get, ...)
+end
+'''
+ruby_version = ">= 3.0"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 36
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[[tests.offenses]]
+line = 2
+column_start = 37
+column_end = 60
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_0_registers_an_offense_when_forwarding_kwargs_block_arg"
+source = '''
+def foo(**kwargs, &block)
+  baz(**kwargs, &block)
+end
+'''
+corrected = '''
+def foo(...)
+  baz(...)
+end
+'''
+ruby_version = ">= 3.0"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 24
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 22
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_0_registers_an_offense_when_forwarding_kwargs_block_arg_and_an_additional_arg"
+source = '''
+def foo(x, **kwargs, &block)
+  baz(x, **kwargs, &block)
+end
+'''
+corrected = '''
+def foo(x, ...)
+  baz(x, ...)
+end
+'''
+ruby_version = ">= 3.0"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 27
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[[tests.offenses]]
+line = 2
+column_start = 9
+column_end = 25
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_0_registers_an_offense_when_forwarding_kwargs_block_arg_with_non_matching_additional_args"
+source = '''
+def foo(**kwargs, &block)
+  bar(baz, 'qux', quux&.corge, @grault, 42, **kwargs, &block)
+end
+'''
+corrected = '''
+def foo(...)
+  bar(baz, 'qux', quux&.corge, @grault, 42, ...)
+end
+'''
+ruby_version = ">= 3.0"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 24
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[[tests.offenses]]
+line = 2
+column_start = 44
+column_end = 60
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_0_allowonlyrestargument_false_registers_an_offense_when_using_only_rest_arg"
+source = '''
+def foo(*args)
+  bar(*args)
+end
+'''
+corrected = '''
+def foo(...)
+  bar(...)
+end
+'''
+ruby_version = ">= 3.0"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 13
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 11
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_0_allowonlyrestargument_false_registers_an_offense_when_using_only_rest_arg"
+source = '''
+def foo(*args)
+  bar(*args)
+end
+'''
+corrected = '''
+def foo(*)
+  bar(*)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 13
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 11
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_1_registers_an_offense_when_using_restarg_and_anonymous_block_arg"
+source = '''
+def foo(*args, &)
+  bar(*args, &)
+end
+'''
+corrected = '''
+def foo(...)
+  bar(...)
+end
+'''
+ruby_version = ">= 3.1"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 16
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 14
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_1_registers_an_offense_when_using_restarg_kwargs_and_anonymous_block_arg"
+source = '''
+def foo(*args, **kwargs, &)
+  bar(*args, **kwargs, &)
+end
+'''
+corrected = '''
+def foo(...)
+  bar(...)
+end
+'''
+ruby_version = ">= 3.1"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 26
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 24
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_1_registers_an_offense_when_using_block_arg_forwarding_with_positional_arguments_forwarding"
+source = '''
+def baz(qux, quuz, &block)
+  bar(qux, quuz, &block)
+end
+'''
+corrected = '''
+def baz(qux, quuz, &)
+  bar(qux, quuz, &)
+end
+'''
+ruby_version = ">= 3.1"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 19
+column_end = 25
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 17
+column_end = 23
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_1_registers_an_offense_when_forwarding_args_with_a_leading_default_arg"
+source = '''
+def foo(x, y = 42, *args, &block)
+  bar(x, y, *args, &block)
+end
+'''
+corrected = '''
+def foo(x, y = 42, ...)
+  bar(x, y, ...)
+end
+'''
+ruby_version = ">= 3.1"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 19
+column_end = 32
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[[tests.offenses]]
+line = 2
+column_start = 12
+column_end = 25
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_1_does_not_register_an_offense_when_using_block_arg_forwarding_with_positional_arguments_forwarding_to_within_block"
+source = '''
+def baz(qux, quuz, &block)
+  with_block do
+    bar(qux, quuz, &block)
+  end
+end
+'''
+ruby_version = ">= 3.1"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_1_does_not_register_an_offense_when_using_anonymous_block_argument_forwarding_to_a_method_with_a_block"
+source = '''
+def foo(*, **, &)
+  with_block(*, **) do
+    bar(baz(*, **, &))
+  end
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_1_does_not_register_an_offense_when_using_anonymous_block_argument_forwarding_to_a_method_with_a_numbered_block"
+source = '''
+def foo(*, **, &)
+  with_block(*, **) do
+    bar(baz(*, **, &), _1)
+  end
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_1_does_not_register_an_offense_when_using_anonymous_block_argument_forwarding_to_a_method_with_an_it_block"
+source = '''
+def foo(*, **, &)
+  with_block(*, **) do
+    bar(baz(*, **, &), it)
+  end
+end
+'''
+ruby_version = ">= 3.4"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_1_registers_an_offense_when_using_block_arg_forwarding_with_no_forwarding_arguments"
+source = '''
+def before_transition(options = {}, &block)
+  add_callback(type: :before, callback_class: Callback, from: options[:from], to: options[:to], &block)
+end
+'''
+corrected = '''
+def before_transition(options = {}, &)
+  add_callback(type: :before, callback_class: Callback, from: options[:from], to: options[:to], &)
+end
+'''
+ruby_version = ">= 3.1"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 36
+column_end = 42
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 96
+column_end = 102
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_when_the_parentheses_of_arguments_are_omitted"
+source = '''
+def foo *args, &block
+  bar *args, &block
+end
+'''
+corrected = '''
+def foo(*, &)
+  bar(*, &)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 13
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 21
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 11
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 13
+column_end = 19
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_when_using_block_arg"
+source = '''
+def foo(&block)
+  bar(&block)
+end
+'''
+corrected = '''
+def foo(&)
+  bar(&)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 14
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 12
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_when_the_restarg_is_overwritten"
+source = '''
+def foo(*args, **kwargs, &block)
+  args = new_args
+  bar(*args, **kwargs, &block)
+end
+'''
+corrected = '''
+def foo(*args, **, &)
+  args = new_args
+  bar(*args, **, &)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 23
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[[tests.offenses]]
+line = 1
+column_start = 25
+column_end = 31
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 3
+column_start = 13
+column_end = 21
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[[tests.offenses]]
+line = 3
+column_start = 23
+column_end = 29
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_when_the_kwarg_is_overwritten"
+source = '''
+def foo(*args, **kwargs, &block)
+  kwargs = new_kwargs
+  bar(*args, **kwargs, &block)
+end
+'''
+corrected = '''
+def foo(*, **kwargs, &)
+  kwargs = new_kwargs
+  bar(*, **kwargs, &)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 13
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 1
+column_start = 25
+column_end = 31
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 3
+column_start = 6
+column_end = 11
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 3
+column_start = 23
+column_end = 29
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_when_using_the_restarg_outside_forwarding_method_arguments"
+source = '''
+def foo(*args, **kwargs, &block)
+  args.do_something
+  bar(*args, **kwargs, &block)
+end
+'''
+corrected = '''
+def foo(*args, **, &)
+  args.do_something
+  bar(*args, **, &)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 23
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[[tests.offenses]]
+line = 1
+column_start = 25
+column_end = 31
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 3
+column_start = 13
+column_end = 21
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[[tests.offenses]]
+line = 3
+column_start = 23
+column_end = 29
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_if_kwargs_are_forwarded_with_a_positional_parameter"
+source = '''
+def foo(m, **kwargs, &block)
+  bar(m, **kwargs, &block)
+end
+'''
+corrected = '''
+def foo(m, **, &)
+  bar(m, **, &)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 19
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[[tests.offenses]]
+line = 1
+column_start = 21
+column_end = 27
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 9
+column_end = 17
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 19
+column_end = 25
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_if_args_kwargs_are_forwarded_with_a_positional_parameter_last"
+source = '''
+def foo(m, *args, **kwargs, &block)
+                  ^^^^^^^^ Use anonymous keyword arguments forwarding (`**`).
+  bar(*args, m, **kwargs, &block)
+                ^^^^^^^^ Use anonymous keyword arguments forwarding (`**`).
+end
+'''
+corrected = '''
+def foo(m, *, **, &)
+  bar(*, m, **, &)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 16
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 28
+column_end = 34
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 3
+column_start = 6
+column_end = 11
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 4
+column_start = 26
+column_end = 32
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_if_args_kwargs_are_forwarded_with_additional_pre_kwarg"
+source = '''
+def foo(m, *args, **kwargs, &block)
+                  ^^^^^^^^ Use anonymous keyword arguments forwarding (`**`).
+  bar(m, *args, extra: :kwarg, **kwargs, &block)
+                               ^^^^^^^^ Use anonymous keyword arguments forwarding (`**`).
+end
+'''
+corrected = '''
+def foo(m, *, **, &)
+  bar(m, *, extra: :kwarg, **, &)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 16
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 28
+column_end = 34
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 3
+column_start = 9
+column_end = 14
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 4
+column_start = 41
+column_end = 47
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_if_args_kwargs_are_forwarded_with_additional_post_kwarg"
+source = '''
+def foo(m, *args, **kwargs, &block)
+                  ^^^^^^^^ Use anonymous keyword arguments forwarding (`**`).
+  bar(m, *args, **kwargs, extra: :kwarg, &block)
+                ^^^^^^^^ Use anonymous keyword arguments forwarding (`**`).
+end
+'''
+corrected = '''
+def foo(m, *, **, &)
+  bar(m, *, **, extra: :kwarg, &)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 16
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 28
+column_end = 34
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 3
+column_start = 9
+column_end = 14
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 4
+column_start = 41
+column_end = 47
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_when_forwarding_args_after_dropping_an_additional_arg"
+source = '''
+def foo(x, *args, &block)
+  bar(*args, &block)
+end
+'''
+corrected = '''
+def foo(x, *, &)
+  bar(*, &)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 16
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 1
+column_start = 18
+column_end = 24
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 11
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 13
+column_end = 19
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_when_forwarding_args_with_a_leading_default_arg"
+source = '''
+def foo(x, y = 42, *args, &block)
+  bar(x, y, *args, &block)
+end
+'''
+corrected = '''
+def foo(x, y = 42, *, &)
+  bar(x, y, *, &)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 19
+column_end = 24
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 1
+column_start = 26
+column_end = 32
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 12
+column_end = 17
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 19
+column_end = 25
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_when_forwarding_kwargs_block_arg"
+source = '''
+def foo(**kwargs, &block)
+  baz(**kwargs, &block)
+end
+'''
+corrected = '''
+def foo(**, &)
+  baz(**, &)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 16
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[[tests.offenses]]
+line = 1
+column_start = 18
+column_end = 24
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 14
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 16
+column_end = 22
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_when_forwarding_kwargs_block_arg_and_an_additional_arg"
+source = '''
+def foo(x, **kwargs, &block)
+  baz(x, **kwargs, &block)
+end
+'''
+corrected = '''
+def foo(x, **, &)
+  baz(x, **, &)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 19
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[[tests.offenses]]
+line = 1
+column_start = 21
+column_end = 27
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 9
+column_end = 17
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 19
+column_end = 25
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_when_using_restarg_kwrestarg_forwarding_without_block_arg"
+source = '''
+def foo(*args, **kwargs)
+  bar(*args, **kwargs)
+end
+'''
+corrected = '''
+def foo(*, **)
+  bar(*, **)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 13
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 23
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 11
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 13
+column_end = 21
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_when_using_separate_arg_kwarg_forwarding"
+source = '''
+def foo(*args, **kwargs)
+  args_only(*args)
+  kwargs_only(**kwargs)
+end
+'''
+corrected = '''
+def foo(*, **)
+  args_only(*)
+  kwargs_only(**)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 13
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 23
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 12
+column_end = 17
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 3
+column_start = 14
+column_end = 22
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_when_using_restarg_and_anonymous_block_arg"
+source = '''
+def foo(*args, &)
+  bar(*args, &)
+end
+'''
+corrected = '''
+def foo(*, &)
+  bar(*, &)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 13
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 11
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_when_using_arg_kwarg_forwarding_with_an_additional_arg_kwarg"
+source = '''
+def foo(arg, *args, kwarg:, **kwargs)
+  args_only(*args)
+  kwargs_only(**kwargs)
+end
+'''
+corrected = '''
+def foo(arg, *, kwarg:, **)
+  args_only(*)
+  kwargs_only(**)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 18
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 1
+column_start = 28
+column_end = 36
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 12
+column_end = 17
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 3
+column_start = 14
+column_end = 22
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_when_an_additional_positional_parameter_is_present_without_block"
+source = '''
+def method_missing(m, *args, **kwargs)
+  if @template.respond_to?(m)
+    @template.send(m, *args, **kwargs)
+  else
+    super
+  end
+end
+'''
+corrected = '''
+def method_missing(m, *, **)
+  if @template.respond_to?(m)
+    @template.send(m, *, **)
+  else
+    super
+  end
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 22
+column_end = 27
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 1
+column_start = 29
+column_end = 37
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[[tests.offenses]]
+line = 3
+column_start = 22
+column_end = 27
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 3
+column_start = 29
+column_end = 37
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_when_an_additional_positional_parameter_is_present"
+source = '''
+def method_missing(m, *args, **kwargs, &block)
+  if @template.respond_to?(m)
+    @template.send(m, *args, **kwargs, &block)
+  else
+    super
+  end
+end
+'''
+corrected = '''
+def method_missing(m, ...)
+  if @template.respond_to?(m)
+    @template.send(m, ...)
+  else
+    super
+  end
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 22
+column_end = 45
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[[tests.offenses]]
+line = 3
+column_start = 22
+column_end = 45
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_when_args_are_forwarded_with_a_positional_parameter_last"
+source = '''
+def foo(m, *args, &block)
+  bar(*args, m, &block)
+end
+'''
+corrected = '''
+def foo(m, *, &)
+  bar(*, m, &)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 16
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 1
+column_start = 18
+column_end = 24
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 11
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 16
+column_end = 22
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_when_args_are_forwarded_with_a_positional_parameter_last_in_method_forwarding_with_safe_navigation"
+source = '''
+def foo(m, *args, &block)
+  obj&.bar(*args, m, &block)
+end
+'''
+corrected = '''
+def foo(m, *, &)
+  obj&.bar(*, m, &)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 16
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 1
+column_start = 18
+column_end = 24
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 11
+column_end = 16
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 21
+column_end = 27
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_when_args_are_forwarded_with_a_positional_parameter_last_in_super"
+source = '''
+def foo(m, *args, &block)
+  super(*args, m, &block)
+end
+'''
+corrected = '''
+def foo(m, *, &)
+  super(*, m, &)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 16
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 1
+column_start = 18
+column_end = 24
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 8
+column_end = 13
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 18
+column_end = 24
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_when_forwarding_args_with_an_additional_arg"
+source = '''
+def post(*args, &block)
+  future_on(executor, *args, &block)
+end
+'''
+corrected = '''
+def post(*, &)
+  future_on(executor, *, &)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 14
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 1
+column_start = 16
+column_end = 22
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 22
+column_end = 27
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 29
+column_end = 35
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_when_forwarding_args_kwargs_with_an_additional_arg"
+source = '''
+def self.get(*args, **kwargs, &block)
+  CanvasHttp.request(Net::HTTP::Get, *args, **kwargs, &block)
+end
+'''
+corrected = '''
+def self.get(...)
+  CanvasHttp.request(Net::HTTP::Get, ...)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 36
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[[tests.offenses]]
+line = 2
+column_start = 37
+column_end = 60
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_if_args_kwargs_are_forwarded_with_additional_arg_kwarg"
+source = '''
+def foo(m, *args, foo:, **kwargs, &block)
+                        ^^^^^^^^ Use anonymous keyword arguments forwarding (`**`).
+  bar(m, *args, foo:, extra: :kwarg, **kwargs, &block)
+                                     ^^^^^^^^ Use anonymous keyword arguments forwarding (`**`).
+end
+'''
+corrected = '''
+def foo(m, *, foo:, **, &)
+  bar(m, *, foo:, extra: :kwarg, **, &)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 16
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 34
+column_end = 40
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 3
+column_start = 9
+column_end = 14
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 4
+column_start = 47
+column_end = 53
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_when_using_arg_kwarg_forwarding_with_additional_forwarded_arg_kwarg"
+source = '''
+def foo(*args, **kwargs)
+  args_only(:another_arg, *args)
+  args_only(*args, :another_arg)
+  kwargs_only(another: :kwarg, **kwargs)
+  kwargs_only(**kwargs, another: :kwarg)
+end
+'''
+corrected = '''
+def foo(*, **)
+  args_only(:another_arg, *)
+  args_only(*, :another_arg)
+  kwargs_only(another: :kwarg, **)
+  kwargs_only(**, another: :kwarg)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 13
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 23
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 26
+column_end = 31
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 3
+column_start = 12
+column_end = 17
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 4
+column_start = 31
+column_end = 39
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[[tests.offenses]]
+line = 5
+column_start = 14
+column_end = 22
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_when_using_arg_kwarg_forwarding_when_leading_extra_arg_kwarg"
+source = '''
+def foo(*args, **kwargs)
+  args_only(1, *args)
+  kwargs_only(foo: :bar, **kwargs)
+end
+'''
+corrected = '''
+def foo(*, **)
+  args_only(1, *)
+  kwargs_only(foo: :bar, **)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 13
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 23
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 15
+column_end = 20
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 3
+column_start = 25
+column_end = 33
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_when_using_arg_kwarg_forwarding_with_trailing_extra_arg_kwarg"
+source = '''
+def foo(*args, **kwargs)
+  args_only(*args, 1)
+  kwargs_only(**kwargs, foo: :bar)
+end
+'''
+corrected = '''
+def foo(*, **)
+  args_only(*, 1)
+  kwargs_only(**, foo: :bar)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 13
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 23
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 12
+column_end = 17
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 3
+column_start = 14
+column_end = 22
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_when_using_arg_kwarg_forwarding_with_surrounding_extra_arg_kwarg"
+source = '''
+def foo(*args, **kwargs)
+  args_only(1, *args, 2)
+  kwargs_only(foo: :bar, **kwargs, bar: :baz)
+end
+'''
+corrected = '''
+def foo(*, **)
+  args_only(1, *, 2)
+  kwargs_only(foo: :bar, **, bar: :baz)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 13
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 23
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 15
+column_end = 20
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 3
+column_start = 25
+column_end = 33
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_for_kwarg_forwarding_with_arg_destructuring"
+source = '''
+def foo((bar, baz), **kwargs)
+  forwarded(bar, baz, **kwargs)
+end
+'''
+corrected = '''
+def foo((bar, baz), **)
+  forwarded(bar, baz, **)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 20
+column_end = 28
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 22
+column_end = 30
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_only_for_kwrestarg_when_using_the_restarg_outside_forwarding"
+source = '''
+def foo(*args, **kwargs)
+  args.do_something
+  bar(*args, **kwargs)
+end
+'''
+corrected = '''
+def foo(*args, **)
+  args.do_something
+  bar(*args, **)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 23
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[[tests.offenses]]
+line = 3
+column_start = 13
+column_end = 21
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_only_for_kwrestarg_when_restarg_is_overwritten"
+source = '''
+def foo(*args, **kwargs)
+  args = new_args
+  bar(*args, **kwargs)
+end
+'''
+corrected = '''
+def foo(*args, **)
+  args = new_args
+  bar(*args, **)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 23
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[[tests.offenses]]
+line = 3
+column_start = 13
+column_end = 21
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_only_for_restarg_when_using_the_kwrestarg_outside_forwarding"
+source = '''
+def foo(*args, **kwargs)
+  kwargs.do_something
+  bar(*args, **kwargs)
+end
+'''
+corrected = '''
+def foo(*, **kwargs)
+  kwargs.do_something
+  bar(*, **kwargs)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 13
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 3
+column_start = 6
+column_end = 11
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_only_for_restarg_when_kwrestarg_is_overwritten"
+source = '''
+def foo(*args, **kwargs)
+  kwargs = new_kwargs
+  bar(*args, **kwargs)
+end
+'''
+corrected = '''
+def foo(*, **kwargs)
+  kwargs = new_kwargs
+  bar(*, **kwargs)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 13
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 3
+column_start = 6
+column_end = 11
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_for_restarg_and_kwrestarg_when_using_block_outside_forwarding"
+source = '''
+def foo(*args, **kwargs, &block)
+  block = new_block
+  bar(*args, **kwargs, &block)
+end
+'''
+corrected = '''
+def foo(*, **, &block)
+  block = new_block
+  bar(*, **, &block)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 13
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 23
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[[tests.offenses]]
+line = 3
+column_start = 6
+column_end = 11
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 3
+column_start = 13
+column_end = 21
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_when_not_always_passing_the_block_as_well_as_restarg"
+source = '''
+def foo(*args, &block)
+  bar(*args, &block)
+  baz(*args)
+end
+'''
+corrected = '''
+def foo(*, &)
+  bar(*, &)
+  baz(*)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 13
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 21
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 11
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 13
+column_end = 19
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 3
+column_start = 6
+column_end = 11
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_when_not_always_passing_the_block_as_well_as_kwrestarg"
+source = '''
+def foo(**kwargs, &block)
+  bar(**kwargs, &block)
+  baz(**kwargs)
+end
+'''
+corrected = '''
+def foo(**, &)
+  bar(**, &)
+  baz(**)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 18
+column_end = 24
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 16
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 16
+column_end = 22
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 14
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[[tests.offenses]]
+line = 3
+column_start = 6
+column_end = 14
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_when_not_always_forwarding_all"
+source = '''
+def foo(*args, **kwargs, &block)
+               ^^^^^^^^ Use anonymous keyword arguments forwarding (`**`).
+  bar(*args, **kwargs, &block)
+             ^^^^^^^^ Use anonymous keyword arguments forwarding (`**`).
+  bar(*args, &block)
+  bar(**kwargs, &block)
+end
+'''
+corrected = '''
+def foo(*, **, &)
+  bar(*, **, &)
+  bar(*, &)
+  bar(**, &)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 13
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 25
+column_end = 31
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 3
+column_start = 6
+column_end = 11
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 4
+column_start = 23
+column_end = 29
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 5
+column_start = 6
+column_end = 11
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 5
+column_start = 13
+column_end = 19
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 6
+column_start = 6
+column_end = 14
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[[tests.offenses]]
+line = 6
+column_start = 16
+column_end = 22
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_when_always_forwarding_the_block_but_not_other_args"
+source = '''
+def foo(*, &block)
+  bar(*, &block)
+  bar(&block)
+end
+'''
+corrected = '''
+def foo(*, &)
+  bar(*, &)
+  bar(&)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 17
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 9
+column_end = 15
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 3
+column_start = 6
+column_end = 12
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_when_args_are_forwarded_at_several_call_sites"
+source = '''
+def foo(bar, *args)
+  baz(*args)
+
+  if something?
+    baz(*args)
+  end
+end
+'''
+corrected = '''
+def foo(bar, *)
+  baz(*)
+
+  if something?
+    baz(*)
+  end
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 18
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 11
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 5
+column_start = 8
+column_end = 13
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_when_kwargs_are_forwarded_at_several_call_sites"
+source = '''
+def foo(bar, **kwargs)
+  baz(**kwargs)
+
+  if something?
+    baz(**kwargs)
+  end
+end
+'''
+corrected = '''
+def foo(bar, **)
+  baz(**)
+
+  if something?
+    baz(**)
+  end
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 21
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 14
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[[tests.offenses]]
+line = 5
+column_start = 8
+column_end = 16
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_for_restarg_when_passing_block_to_separate_call"
+source = '''
+def foo(*args, &block)
+  bar(*args).baz(&block)
+end
+'''
+corrected = '''
+def foo(*, &)
+  bar(*).baz(&)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 13
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 21
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 11
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 17
+column_end = 23
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_for_restarg_and_kwrestarg_when_passing_block_to_separate_call"
+source = '''
+def foo(*args, **kwargs, &block)
+               ^^^^^^^^ Use anonymous keyword arguments forwarding (`**`).
+  bar(*args, **kwargs).baz(&block)
+             ^^^^^^^^ Use anonymous keyword arguments forwarding (`**`).
+end
+'''
+corrected = '''
+def foo(*, **, &)
+  bar(*, **).baz(&)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 13
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 25
+column_end = 31
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 3
+column_start = 6
+column_end = 11
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 4
+column_start = 27
+column_end = 33
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_for_restarg_and_kwrestarg_when_passing_to_separate_calls"
+source = '''
+def foo(*args, **kwargs, &block)
+               ^^^^^^^^ Use anonymous keyword arguments forwarding (`**`).
+  bar(first(*args), second(**kwargs), third(&block))
+                           ^^^^^^^^ Use anonymous keyword arguments forwarding (`**`).
+end
+'''
+corrected = '''
+def foo(*, **, &)
+  bar(first(*), second(**), third(&))
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 13
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 25
+column_end = 31
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 3
+column_start = 12
+column_end = 17
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 4
+column_start = 44
+column_end = 50
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_with_an_additional_required_kwarg_that_is_not_forwarded"
+source = '''
+def foo(first:, **kwargs, &block)
+  forwarded(**kwargs, &block)
+end
+'''
+corrected = '''
+def foo(first:, **, &)
+  forwarded(**, &)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 16
+column_end = 24
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[[tests.offenses]]
+line = 1
+column_start = 26
+column_end = 32
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 12
+column_end = 20
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 22
+column_end = 28
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_with_an_additional_required_kwarg_that_is_forwarded"
+source = '''
+def foo(first:, **kwargs, &block)
+  forwarded(first: first, **kwargs, &block)
+end
+'''
+corrected = '''
+def foo(first:, **, &)
+  forwarded(first: first, **, &)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 16
+column_end = 24
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[[tests.offenses]]
+line = 1
+column_start = 26
+column_end = 32
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 26
+column_end = 34
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 36
+column_end = 42
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_with_an_additional_optional_kwarg_that_is_not_forwarded"
+source = '''
+def foo(first: nil, **kwargs, &block)
+  forwarded(first:, **kwargs, &block)
+end
+'''
+corrected = '''
+def foo(first: nil, **, &)
+  forwarded(first:, **, &)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 20
+column_end = 28
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[[tests.offenses]]
+line = 1
+column_start = 30
+column_end = 36
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 20
+column_end = 28
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 30
+column_end = 36
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_with_an_additional_optional_kwarg_that_is_forwarded"
+source = '''
+def foo(first: nil, **kwargs, &block)
+  forwarded(first: first, **kwargs, &block)
+end
+'''
+corrected = '''
+def foo(first: nil, **, &)
+  forwarded(first: first, **, &)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 20
+column_end = 28
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[[tests.offenses]]
+line = 1
+column_start = 30
+column_end = 36
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 26
+column_end = 34
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 36
+column_end = 42
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_with_an_arg_and_additional_optional_kwarg_that_is_forwarded"
+source = '''
+def foo(*args, first: nil, **kwargs, &block)
+                           ^^^^^^^^ Use anonymous keyword arguments forwarding (`**`).
+  forwarded(*args, first: first, **kwargs, &block)
+                                 ^^^^^^^^ Use anonymous keyword arguments forwarding (`**`).
+end
+'''
+corrected = '''
+def foo(*, first: nil, **, &)
+  forwarded(*, first: first, **, &)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 13
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 37
+column_end = 43
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 3
+column_start = 12
+column_end = 17
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 4
+column_start = 43
+column_end = 49
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_when_using_restarg_and_block_arg"
+source = '''
+def foo(*args, &block)
+  bar(*args, &block)
+end
+'''
+corrected = '''
+def foo(*, &)
+  bar(*, &)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 13
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 21
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 11
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 13
+column_end = 19
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_when_using_restarg_kwrestarg_and_block_arg"
+source = '''
+def foo(*args, **kwargs, &block)
+  bar(*args, **kwargs, &block)
+end
+'''
+corrected = '''
+def foo(...)
+  bar(...)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 31
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 29
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_when_using_restarg_kwargs_and_block_arg_with_another_method_call"
+source = '''
+def foo(*args, **kwargs, &block)
+  bar(*args, **kwargs, &block)
+  baz(1, 2, 3)
+end
+'''
+corrected = '''
+def foo(...)
+  bar(...)
+  baz(1, 2, 3)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 31
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 29
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_when_using_restarg_kwargs_and_block_arg_twice"
+source = '''
+def foo(*args, **kwargs, &block)
+  bar(*args, **kwargs, &block)
+  baz(*args, **kwargs, &block)
+end
+'''
+corrected = '''
+def foo(...)
+  bar(...)
+  baz(...)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 31
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 29
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[[tests.offenses]]
+line = 3
+column_start = 6
+column_end = 29
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_when_passing_restarg_and_block_arg_in_defs"
+source = '''
+def self.foo(*args, &block)
+  bar(*args, &block)
+end
+'''
+corrected = '''
+def self.foo(*, &)
+  bar(*, &)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 18
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 1
+column_start = 20
+column_end = 26
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 11
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 13
+column_end = 19
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_when_the_parentheses_of_restarg_arguments_are_omitted"
+source = '''
+def foo *args
+  bar *args
+end
+'''
+corrected = '''
+def foo(*)
+  bar(*)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 13
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 11
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_when_the_parentheses_of_kwrestarg_arguments_are_omitted"
+source = '''
+def foo **kwargs
+  bar **kwargs
+end
+'''
+corrected = '''
+def foo(**)
+  bar(**)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 16
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 14
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_when_the_parentheses_of_restarg_kwrestarg_arguments_are_omitted"
+source = '''
+def foo *args, **kwargs
+  bar *args, **kwargs
+end
+'''
+corrected = '''
+def foo(*, **)
+  bar(*, **)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 13
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 23
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 11
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 13
+column_end = 21
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_when_forwarding_anonymous_arguments"
+source = '''
+def foo(*, **, &)
+  bar(*, **, &)
+end
+'''
+corrected = '''
+def foo(...)
+  bar(...)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 16
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 14
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_if_an_additional_positional_parameter_is_present_with_anonymous_arguments"
+source = '''
+def foo(m, *, **, &)
+  bar(m, *, **, &)
+end
+'''
+corrected = '''
+def foo(m, ...)
+  bar(m, ...)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 19
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[[tests.offenses]]
+line = 2
+column_start = 9
+column_end = 17
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_if_an_additional_positional_parameter_self_is_present_with_anonymous_arguments"
+source = '''
+def foo(m, *, **, &)
+  bar(self, *, **, &)
+end
+'''
+corrected = '''
+def foo(m, ...)
+  bar(self, ...)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 19
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[[tests.offenses]]
+line = 2
+column_start = 12
+column_end = 20
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_does_not_register_an_offense_when_forwarding_partial_anonymous_arguments"
+source = '''
+def foo(*, &)
+  bar(*, &)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_does_not_register_an_offense_when_forwarding_non_block_anonymous_arguments"
+source = '''
+def foo(*, **)
+  bar(*, **)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_does_not_register_an_offense_when_rest_arguments_forwarding_to_a_method_in_block"
+source = '''
+def foo(*args, &block)
+  do_something do
+    bar(*args, &block)
+  end
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_does_not_register_an_offense_when_rest_arguments_forwarding_to_a_method_in_numbered_block"
+source = '''
+def foo(*args, &block)
+  do_something do
+    bar(*args, &block)
+    baz(_1)
+  end
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_does_not_register_an_offense_when_keyword_rest_arguments_forwarding_to_a_method_in_block"
+source = '''
+def foo(**kwargs, &block)
+  do_something do
+    bar(**kwargs, &block)
+  end
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_does_not_register_an_offense_when_keyword_rest_arguments_forwarding_to_a_method_in_numbered_block"
+source = '''
+def foo(**kwargs, &block)
+  do_something do
+    bar(**kwargs, &block)
+    baz(_1)
+  end
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_does_not_register_an_offense_when_rest_arguments_and_keyword_rest_arguments_forwarding_to_a_method_in_block"
+source = '''
+def foo(*args, **kwargs)
+  block_method do
+    bar(*args, **kwargs)
+  end
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_when_delegating"
+source = '''
+def foo(*args, &block)
+  obj.bar(*args, &block)
+end
+'''
+corrected = '''
+def foo(*, &)
+  obj.bar(*, &)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 13
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 21
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 10
+column_end = 15
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 17
+column_end = 23
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_when_using_restarg_and_block_arg_for_call"
+source = '''
+def foo(*args, &block)
+  bar.(*args, &block)
+end
+'''
+corrected = '''
+def foo(*, &)
+  bar.(*, &)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 13
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 21
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 7
+column_end = 12
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 14
+column_end = 20
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_when_only_forwarding_a_restarg"
+source = '''
+def foo(*args, &block)
+  bar(*args)
+end
+'''
+corrected = '''
+def foo(*, &block)
+  bar(*)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 13
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 11
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_does_not_register_an_offense_when_using_arguments_forwarding"
+source = '''
+def foo(...)
+  bar(...)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_does_not_register_an_offense_when_different_argument_names_are_used"
+source = '''
+def foo(arg)
+  bar(argument)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_when_different_splat_argument_names_are_used"
+source = '''
+def foo(*args, &block)
+  bar(*arguments, &block)
+end
+'''
+corrected = '''
+def foo(*args, &)
+  bar(*arguments, &)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 21
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 18
+column_end = 24
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_when_different_kwrest_argument_names_are_used"
+source = '''
+def foo(**kwargs, &block)
+  bar(**kwarguments, &block)
+end
+'''
+corrected = '''
+def foo(**kwargs, &)
+  bar(**kwarguments, &)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 18
+column_end = 24
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 21
+column_end = 27
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_when_assigning_the_restarg_outside_forwarding_method_arguments"
+source = '''
+def foo(*args, &block)
+  var = args
+  foo(*args, &block)
+end
+'''
+corrected = '''
+def foo(*args, &)
+  var = args
+  foo(*args, &)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 21
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 3
+column_start = 13
+column_end = 19
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_registers_an_offense_when_referencing_the_restarg_outside_forwarding_method_arguments"
+source = '''
+def foo(*args, &block)
+  args
+  foo(*args, &block)
+end
+'''
+corrected = '''
+def foo(*args, &)
+  args
+  foo(*args, &)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 21
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 3
+column_start = 13
+column_end = 19
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_does_not_register_an_offense_when_body_of_method_definition_is_empty"
+source = '''
+def foo(*args, &block)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_useanonymousforwarding_true_does_not_register_an_offense_when_a_forwarded_argument_is_used_within_a_block"
+source = '''
+def foo(*args)
+  bar(*args)
+  baz do |x|
+    x.foo(*args)
+  end
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+UseAnonymousForwarding = true
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_useanonymousforwarding_false_does_not_register_an_offense_when_using_only_rest_arg"
+source = '''
+def foo(*args)
+  bar(*args)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+UseAnonymousForwarding = false
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_useanonymousforwarding_false_does_not_register_an_offense_when_using_rest_and_block_arg"
+source = '''
+def foo(*args, &block)
+  bar(*args, &block)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+UseAnonymousForwarding = false
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_useanonymousforwarding_false_does_not_register_an_offense_when_using_only_kwrest_arg"
+source = '''
+def foo(**kwargs)
+  bar(**kwargs)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+UseAnonymousForwarding = false
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_useanonymousforwarding_false_does_not_register_an_offense_when_using_only_block_arg"
+source = '''
+def foo(&block)
+  bar(&block)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+UseAnonymousForwarding = false
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_useanonymousforwarding_false_does_not_register_an_offense_when_using_kwrest_and_block_arg"
+source = '''
+def foo(**kwargs, &block)
+  bar(**kwargs, &block)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+UseAnonymousForwarding = false
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_useanonymousforwarding_false_does_not_register_an_offense_when_using_restarg_kwrestarg_and_block_arg"
+source = '''
+def foo(*args, **kwargs, &block)
+  args_nly(*args)
+  kwargs_nly(**kwargs)
+  block_nly(&block)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+UseAnonymousForwarding = false
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_useanonymousforwarding_false_registers_an_offense_when_using_restarg_kwrestarg_and_block_arg"
+source = '''
+def foo(*args, **kwargs, &block)
+  bar(*args, **kwargs, &block)
+end
+'''
+corrected = '''
+def foo(...)
+  bar(...)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 31
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 29
+message = "Use shorthand syntax `...` for arguments forwarding."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+UseAnonymousForwarding = false
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_when_redundantrestargumentnames_meaningless_restarg_name_registers_an_offense_when_using_separate_arg_kwarg_forwarding"
+source = '''
+def foo(*meaningless_restarg_name, **options)
+  args_only(*meaningless_restarg_name)
+  kwargs_only(**options)
+end
+'''
+corrected = '''
+def foo(*, **)
+  args_only(*)
+  kwargs_only(**)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 33
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 1
+column_start = 35
+column_end = 44
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 12
+column_end = 37
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 3
+column_start = 14
+column_end = 23
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+UseAnonymousForwarding = false
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_when_redundantrestargumentnames_meaningless_restarg_name_registers_an_offense_when_using_separate_unconfigured_arg_kwarg_forwarding"
+source = '''
+def foo(*args, **options)
+  args_only(*args)
+  kwargs_only(**options)
+end
+'''
+corrected = '''
+def foo(*args, **)
+  args_only(*args)
+  kwargs_only(**)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 24
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[[tests.offenses]]
+line = 3
+column_start = 14
+column_end = 23
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+UseAnonymousForwarding = false
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_when_redundantkeywordrestargumentnames_meaningless_kwrestarg_name_registers_an_offense_when_using_separate_arg_kwarg_forwarding"
+source = '''
+def foo(*args, **meaningless_kwrestarg_name)
+  args_only(*args)
+  kwargs_only(**meaningless_kwrestarg_name)
+end
+'''
+corrected = '''
+def foo(*, **)
+  args_only(*)
+  kwargs_only(**)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 13
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 43
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 12
+column_end = 17
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 3
+column_start = 14
+column_end = 42
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+UseAnonymousForwarding = false
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_2_when_redundantkeywordrestargumentnames_meaningless_kwrestarg_name_registers_an_offense_when_using_separate_arg_unconfigured_kwarg_forwarding"
+source = '''
+def foo(*args, **options)
+  args_only(*args)
+  kwargs_only(**options)
+end
+'''
+corrected = '''
+def foo(*, **options)
+  args_only(*)
+  kwargs_only(**options)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 13
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 2
+column_start = 12
+column_end = 17
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+UseAnonymousForwarding = false
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_4_registers_an_offense_when_rest_arguments_forwarding_to_a_method_in_numbered_block"
+source = '''
+def foo(*args, &block)
+  do_something do
+    bar(*args, &block)
+    baz(_1)
+  end
+end
+'''
+corrected = '''
+def foo(*, &)
+  do_something do
+    bar(*, &)
+    baz(_1)
+  end
+end
+'''
+ruby_version = ">= 3.4"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 21
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 13
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 3
+column_start = 15
+column_end = 21
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 3
+column_start = 8
+column_end = 13
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+UseAnonymousForwarding = false
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_4_registers_an_offense_when_keyword_rest_arguments_forwarding_to_a_method_in_block"
+source = '''
+def foo(**kwargs, &block)
+  do_something do
+    bar(**kwargs, &block)
+  end
+end
+'''
+corrected = '''
+def foo(**, &)
+  do_something do
+    bar(**, &)
+  end
+end
+'''
+ruby_version = ">= 3.4"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 18
+column_end = 24
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 16
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[[tests.offenses]]
+line = 3
+column_start = 18
+column_end = 24
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 3
+column_start = 8
+column_end = 16
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+UseAnonymousForwarding = false
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_4_registers_an_offense_when_keyword_rest_arguments_forwarding_to_a_method_in_numbered_block"
+source = '''
+def foo(**kwargs, &block)
+  do_something do
+    bar(**kwargs, &block)
+    baz(_1)
+  end
+end
+'''
+corrected = '''
+def foo(**, &)
+  do_something do
+    bar(**, &)
+    baz(_1)
+  end
+end
+'''
+ruby_version = ">= 3.4"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 18
+column_end = 24
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 16
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[[tests.offenses]]
+line = 3
+column_start = 18
+column_end = 24
+message = "Use anonymous block arguments forwarding (`&`)."
+
+[[tests.offenses]]
+line = 3
+column_start = 8
+column_end = 16
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+UseAnonymousForwarding = false
+
+[[tests]]
+name = "rubocop_cop_style_argumentsforwarding_targetrubyversion_3_4_registers_an_offense_when_rest_arguments_and_keyword_rest_arguments_forwarding_to_a_method_in_block"
+source = '''
+def foo(*args, **kwargs)
+  block_method do
+    bar(*args, **kwargs)
+  end
+end
+'''
+corrected = '''
+def foo(*, **)
+  block_method do
+    bar(*, **)
+  end
+end
+'''
+ruby_version = ">= 3.4"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 23
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 13
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[[tests.offenses]]
+line = 3
+column_start = 15
+column_end = 23
+message = "Use anonymous keyword arguments forwarding (`**`)."
+
+[[tests.offenses]]
+line = 3
+column_start = 8
+column_end = 13
+message = "Use anonymous positional arguments forwarding (`*`)."
+
+[tests.config]
+AllowOnlyRestArgument = false
+RedundantBlockArgumentNames = "$UNRESOLVED:redundant_block_argument_names"
+RedundantKeywordRestArgumentNames = "$UNRESOLVED:redundant_keyword_rest_argument_names"
+RedundantRestArgumentNames = "$UNRESOLVED:redundant_rest_argument_names"
+UseAnonymousForwarding = false

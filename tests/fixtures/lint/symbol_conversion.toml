@@ -1,0 +1,510 @@
+cop = "Lint/SymbolConversion"
+department = "lint"
+severity = "warning"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion"
+source = '''
+#{from}
+'''
+corrected = '''
+#{to}
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 7
+message = "Unnecessary symbol conversion; use `#{to}` instead."
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_offense_foo_to_sym"
+source = '''
+:foo.to_sym
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_offense_foo"
+source = '''
+:foo
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_offense_foo_to_sym"
+source = '''
+"foo".to_sym
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_offense_foo"
+source = '''
+:foo
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_offense_foo_bar_to_sym"
+source = '''
+"foo_bar".to_sym
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_offense_foo_bar"
+source = '''
+:foo_bar
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_offense_foo_bar_to_sym"
+source = '''
+"foo-bar".to_sym
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_offense_foo_bar"
+source = '''
+:"foo-bar"
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_offense_foo_bar_to_sym"
+source = '''
+"foo-#{bar}".to_sym
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_offense_foo_bar"
+source = '''
+:"foo-#{bar}"
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_offense_foo_intern"
+source = '''
+:foo.intern
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_offense_foo"
+source = '''
+:foo
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_offense_foo_intern"
+source = '''
+"foo".intern
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_offense_foo"
+source = '''
+:foo
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_offense_foo_bar_intern"
+source = '''
+"foo_bar".intern
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_offense_foo_bar"
+source = '''
+:foo_bar
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_offense_foo_bar_intern"
+source = '''
+"foo-bar".intern
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_offense_foo_bar"
+source = '''
+:"foo-bar"
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_offense_foo_bar_intern"
+source = '''
+"foo-#{bar}".intern
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_offense_foo_bar"
+source = '''
+:"foo-#{bar}"
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_offense_foo"
+source = '''
+:"foo"
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_offense_foo"
+source = '''
+:foo
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_offense_foo_bar"
+source = '''
+:"foo_bar"
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_offense_foo_bar"
+source = '''
+:foo_bar
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_does_not_register_an_offense_for_a_normal_symbol"
+source = '''
+:foo
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_does_not_register_an_offense_for_a_symbol_that_requires_double_quotes"
+source = '''
+:"foo-bar"
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_does_not_register_an_offense_for_a_symbol_that_requires_single_quotes"
+source = '''
+:'foo-bar'
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_does_not_register_an_offense_for_a_symbol_that_requires_single_quotes_when_it_includes_double_quotes"
+source = '''
+:'foo-bar""'
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_in_a_hash_keys_does_not_register_an_offense_for_a_normal_symbol"
+source = '''
+{ foo: 'bar' }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_in_a_hash_keys_does_not_register_an_offense_for_a_require_quoted_symbol"
+source = '''
+{ 'foo-bar': 'bar' }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_in_a_hash_keys_does_not_register_an_offense_for_a_require_quoted_symbol_that_contains"
+source = '''
+{ 'foo:bar': 'bar' }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_in_a_hash_keys_does_not_register_an_offense_for_a_require_quoted_symbol_that_ends_with"
+source = '''
+{ 'foo=': 'bar' }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_in_a_hash_keys_registers_an_offense_for_a_quoted_symbol"
+source = '''
+{ 'foo': 'bar' }
+'''
+corrected = '''
+{ foo: 'bar' }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 7
+message = "Unnecessary symbol conversion; use `foo:` instead."
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_in_a_hash_keys_registers_and_corrects_an_offense_for_a_quoted_symbol_that_ends_with"
+source = '''
+{ 'foo!': 'bar' }
+'''
+corrected = '''
+{ foo!: 'bar' }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 8
+message = "Unnecessary symbol conversion; use `foo!:` instead."
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_in_a_hash_keys_registers_and_corrects_an_offense_for_a_quoted_symbol_that_ends_with"
+source = '''
+{ 'foo?': 'bar' }
+'''
+corrected = '''
+{ foo?: 'bar' }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 8
+message = "Unnecessary symbol conversion; use `foo?:` instead."
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_in_a_hash_keys_does_not_register_an_offense_for_operators"
+source = '''
+{ '==': 'bar' }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_in_a_hash_keys_does_not_register_an_offense_for_dstr"
+source = '''
+{ "foo-#{'bar'}": 'baz' }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_in_a_hash_values_does_not_register_an_offense_for_a_normal_symbol"
+source = '''
+{ foo: :bar }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_in_a_hash_values_registers_an_offense_for_a_quoted_symbol_key"
+source = '''
+{ :'foo' => :bar }
+'''
+corrected = '''
+{ :foo => :bar }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 8
+message = "Unnecessary symbol conversion; use `:foo` instead."
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_in_a_hash_values_registers_an_offense_for_a_quoted_symbol_value"
+source = '''
+{ foo: :'bar' }
+'''
+corrected = '''
+{ foo: :bar }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 13
+message = "Unnecessary symbol conversion; use `:bar` instead."
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_in_a_hash_values_registers_an_offense_for_dstr"
+source = '''
+{ foo: "bar-#{'baz'}".to_sym }
+'''
+corrected = '''
+{ foo: :"bar-#{'baz'}" }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 28
+message = "Unnecessary symbol conversion; use `:\"bar-#{'baz'}\"` instead."
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_in_an_alias_does_not_register_an_offense"
+source = '''
+alias foo bar
+alias == equal
+alias eq? ==
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_inside_a_percent_literal_array_does_not_register_an_offense"
+source = '''
+%i(foo bar foo-bar)
+%I(foo bar foo-bar)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_single_quoted_symbol_does_not_register_an_offense"
+source = '''
+:'Foo/Bar/Baz'
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_implicit_to_sym_call_does_not_register_an_offense"
+source = '''
+to_sym == other
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_enforcedstyle_consistent_hash_where_no_keys_need_to_be_quoted_does_not_register_an_offense"
+source = '''
+{
+  a: 1,
+  b: 2
+}
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "consistent"
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_enforcedstyle_consistent_hash_where_keys_are_quoted_but_do_not_need_to_be_registers_an_offense"
+source = '''
+{
+  a: 1,
+  'b': 2
+}
+'''
+corrected = '''
+{
+  a: 1,
+  b: 2
+}
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 5
+message = "Unnecessary symbol conversion; use `b:` instead."
+
+[tests.config]
+EnforcedStyle = "consistent"
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_enforcedstyle_consistent_hash_where_there_are_keys_needing_quoting_registers_an_offense_for_unquoted_keys"
+source = '''
+{
+  a: 1,
+  b: 2,
+  'c': 3,
+  'd-e': 4
+}
+'''
+corrected = '''
+{
+  "a": 1,
+  "b": 2,
+  'c': 3,
+  'd-e': 4
+}
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 3
+message = "Symbol hash key should be quoted for consistency; use `\"a\":` instead."
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 3
+message = "Symbol hash key should be quoted for consistency; use `\"b\":` instead."
+
+[tests.config]
+EnforcedStyle = "consistent"
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_enforcedstyle_consistent_with_a_key_with_requires_symbols_to_be_quoted"
+source = '''
+{
+  'a=': 1,
+  b: 2
+}
+'''
+corrected = '''
+{
+  'a=': 1,
+  "b": 2
+}
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 3
+message = "Symbol hash key should be quoted for consistency; use `\"b\":` instead."
+
+[tests.config]
+EnforcedStyle = "consistent"
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_enforcedstyle_consistent_with_different_quote_styles_does_not_register_an_offense"
+source = '''
+{
+  'a': 1,
+  "b": 2,
+  "c-d": 3,
+  'e-f': 4
+}
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "consistent"
+
+[[tests]]
+name = "rubocop_cop_lint_symbolconversion_enforcedstyle_consistent_with_a_mix_of_string_and_symbol_keys_does_not_register_an_offense"
+source = '''
+{
+  'a' => 1,
+  'b-c': 2
+}
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "consistent"

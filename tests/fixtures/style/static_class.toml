@@ -1,0 +1,180 @@
+cop = "Style/StaticClass"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_staticclass_registers_an_offense_when_class_has_only_class_method"
+source = '''
+class C
+  def self.class_method; end
+end
+'''
+corrected = '''
+module C
+module_function
+
+  def class_method; end
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 7
+message = "Prefer modules to classes with only class methods."
+
+[[tests]]
+name = "rubocop_cop_style_staticclass_registers_an_offense_when_class_has_class_self_with_class_methods"
+source = '''
+class C
+  def self.class_method; end
+
+  class << self
+    def other_class_method; end
+  end
+end
+'''
+corrected = '''
+module C
+module_function
+
+  def class_method; end
+
+ #{trailing_whitespace}
+    def other_class_method; end
+ #{trailing_whitespace}
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 7
+message = "Prefer modules to classes with only class methods."
+
+[[tests]]
+name = "rubocop_cop_style_staticclass_does_not_register_an_offense_when_class_has_class_self_with_macro_calls"
+source = '''
+class C
+  def self.class_method; end
+
+  class << self
+    macro_method
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_staticclass_registers_an_offense_when_class_has_assignments_along_with_class_methods"
+source = '''
+class C
+  CONST = 1
+
+  def self.class_method; end
+end
+'''
+corrected = '''
+module C
+module_function
+
+  CONST = 1
+
+  def class_method; end
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 7
+message = "Prefer modules to classes with only class methods."
+
+[[tests]]
+name = "rubocop_cop_style_staticclass_does_not_register_an_offense_when_class_has_instance_method"
+source = '''
+class C
+  def self.class_method; end
+
+  def instance_method; end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_staticclass_does_not_register_an_offense_when_class_has_macro_like_method"
+source = '''
+class C
+  def self.class_method; end
+
+  macro_method
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_staticclass_does_not_register_an_offense_when_class_is_empty"
+source = '''
+class C
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_staticclass_does_not_register_an_offense_when_class_has_a_parent"
+source = '''
+class C < B
+  def self.class_method; end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_staticclass_does_not_register_an_offense_when_class_includes_prepends_a_module"
+source = '''
+class C
+  include M
+  def self.class_method; end
+end
+
+class C
+  prepend M
+  def self.class_method; end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_staticclass_registers_an_offense_when_class_extends_a_module"
+source = '''
+class C
+  extend M
+  def self.class_method; end
+end
+'''
+corrected = '''
+module C
+module_function
+
+  extend M
+  def class_method; end
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 7
+message = "Prefer modules to classes with only class methods."
+
+[[tests]]
+name = "rubocop_cop_style_staticclass_does_not_register_an_offense_for_modules"
+source = '''
+module C
+  def self.class_method; end
+end
+'''
+offenses = []

@@ -1,0 +1,254 @@
+cop = "Lint/ParenthesesAsGroupedExpression"
+department = "lint"
+severity = "warning"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_lint_parenthesesasgroupedexpression_registers_an_offense_and_corrects_for_method_call_with_space_before_the_parenthesis"
+source = '''
+a.func (x)
+'''
+corrected = '''
+a.func(x)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 7
+message = "`(x)` interpreted as grouped expression."
+
+[[tests]]
+name = "rubocop_cop_lint_parenthesesasgroupedexpression_registers_an_offense_and_corrects_for_predicate_method_call_with_space_before_the_parenthesis"
+source = '''
+is? (x)
+'''
+corrected = '''
+is?(x)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 4
+message = "`(x)` interpreted as grouped expression."
+
+[[tests]]
+name = "rubocop_cop_lint_parenthesesasgroupedexpression_registers_an_offense_and_corrects_for_method_call_with_space_before_the_parenthesis_when_block_argument_and_parenthesis"
+source = '''
+a.concat ((1..1).map { |i| i * 10 })
+'''
+corrected = '''
+a.concat((1..1).map { |i| i * 10 })
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 9
+message = "`((1..1).map { |i| i * 10 })` interpreted as grouped expression."
+
+[[tests]]
+name = "rubocop_cop_lint_parenthesesasgroupedexpression_does_not_register_an_offense_method_call_with_space_before_the_parenthesis_when_block_argument_is_no_parenthesis"
+source = '''
+a.concat (1..1).map { |i| i * 10 }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_parenthesesasgroupedexpression_when_using_numbered_parameter_registers_an_offense_and_corrects_for_method_call_with_space_before_the_parenthesis_when_block_argument_and_parenthesis"
+source = '''
+a.concat ((1..1).map { _1 * 10 })
+'''
+corrected = '''
+a.concat((1..1).map { _1 * 10 })
+'''
+ruby_version = ">= 2.7"
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 9
+message = "`((1..1).map { _1 * 10 })` interpreted as grouped expression."
+
+[[tests]]
+name = "rubocop_cop_lint_parenthesesasgroupedexpression_when_using_numbered_parameter_does_not_register_an_offense_for_method_call_with_space_before_the_parenthesis_when_block_argument_is_no_parenthesis"
+source = '''
+a.concat (1..1).map { _1 * 10 }
+'''
+ruby_version = ">= 2.7"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_parenthesesasgroupedexpression_when_using_it_parameter_registers_an_offense_and_corrects_for_method_call_with_space_before_the_parenthesis_when_block_argument_and_parenthesis"
+source = '''
+a.concat ((1..1).map { it * 10 })
+'''
+corrected = '''
+a.concat((1..1).map { it * 10 })
+'''
+ruby_version = ">= 3.4"
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 9
+message = "`((1..1).map { it * 10 })` interpreted as grouped expression."
+
+[[tests]]
+name = "rubocop_cop_lint_parenthesesasgroupedexpression_when_using_it_parameter_does_not_register_an_offense_for_method_call_with_space_before_the_parenthesis_when_block_argument_is_no_parenthesis"
+source = '''
+a.concat (1..1).map { it * 10 }
+'''
+ruby_version = ">= 3.4"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_parenthesesasgroupedexpression_does_not_register_an_offense_for_expression_followed_by_an_operator"
+source = '''
+func (x) || y
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_parenthesesasgroupedexpression_does_not_register_an_offense_for_expression_followed_by_chained_expression"
+source = '''
+func (x).func.func.func.func.func
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_parenthesesasgroupedexpression_does_not_register_an_offense_for_expression_followed_by_chained_expression_with_safe_navigation_operator"
+source = '''
+func (x).func.func.func.func&.func
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_parenthesesasgroupedexpression_does_not_register_an_offense_for_math_expression"
+source = '''
+puts (2 + 3) * 4
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_parenthesesasgroupedexpression_does_not_register_an_offense_for_math_expression_with_to_i"
+source = '''
+do_something.eq (foo * bar).to_i
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_parenthesesasgroupedexpression"
+source = '''
+transition (foo - bar) => value
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_parenthesesasgroupedexpression_does_not_register_an_offense_for_ternary_operator"
+source = '''
+foo (cond) ? 1 : 2
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_parenthesesasgroupedexpression_accepts_a_method_call_without_arguments"
+source = '''
+func
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_parenthesesasgroupedexpression_accepts_a_method_call_with_arguments_but_no_parentheses"
+source = '''
+puts x
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_parenthesesasgroupedexpression_accepts_a_chain_of_method_calls"
+source = '''
+a.b
+a.b 1
+a.b(1)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_parenthesesasgroupedexpression_accepts_method_with_parens_as_arg_to_method_without"
+source = '''
+a b(c)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_parenthesesasgroupedexpression_accepts_an_operator_call_with_argument_in_parentheses"
+source = '''
+a % (b + c)
+a.b = (c == d)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_parenthesesasgroupedexpression_accepts_a_space_inside_opening_paren_followed_by_left_paren"
+source = '''
+a( (b) )
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_parenthesesasgroupedexpression_accepts_parenthesis_for_compound_range_literals"
+source = '''
+rand (a - b)..(c - d)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_parenthesesasgroupedexpression_does_not_accepts_parenthesis_for_simple_range_literals"
+source = '''
+rand (1..10)
+'''
+corrected = '''
+rand(1..10)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 5
+message = "`(1..10)` interpreted as grouped expression."
+
+[[tests]]
+name = "rubocop_cop_lint_parenthesesasgroupedexpression_does_not_register_an_offense_for_a_call_with_multiple_arguments"
+source = '''
+assert_equal (0..1.9), acceleration.domain
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_parenthesesasgroupedexpression_does_not_register_an_offense_when_heredoc_has_a_space_between_the_same_string_as_the_method_name_and"
+source = '''
+foo(
+  <<~EOS
+    foo (
+    )
+  EOS
+)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_parenthesesasgroupedexpression_when_using_safe_navigation_operator_registers_an_offense_and_corrects_for_method_call_with_space_before_the_parenthesis"
+source = '''
+a&.func (x)
+'''
+corrected = '''
+a&.func(x)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 8
+message = "`(x)` interpreted as grouped expression."

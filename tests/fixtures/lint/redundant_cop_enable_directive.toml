@@ -1,0 +1,469 @@
+cop = "Lint/RedundantCopEnableDirective"
+department = "lint"
+severity = "warning"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopenabledirective_when_cop_is_disabled_in_the_configuration_registers_no_offense_when_enabling_the_cop"
+source = '''
+foo
+# rubocop:enable Layout/LineLength
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopenabledirective_when_cop_is_disabled_in_the_configuration_registers_an_offense_if_enabling_it_twice"
+source = '''
+foo
+# rubocop:enable Layout/LineLength
+# rubocop:enable Layout/LineLength
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 17
+column_end = 34
+message = "Unnecessary enabling of Layout/LineLength."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopenabledirective_registers_an_offense_and_corrects_unnecessary_enable"
+source = '''
+foo
+# rubocop:enable Layout/LineLength
+'''
+corrected = '''
+foo
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 17
+column_end = 34
+message = "Unnecessary enabling of Layout/LineLength."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopenabledirective_registers_an_offense_and_corrects_when_the_first_cop_is_unnecessarily_enabled"
+source = '''
+# rubocop:disable Layout/LineLength
+foo
+# rubocop:enable Metrics/AbcSize, Layout/LineLength
+'''
+corrected = '''
+# rubocop:disable Layout/LineLength
+foo
+# rubocop:enable Layout/LineLength
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 17
+column_end = 32
+message = "Unnecessary enabling of Metrics/AbcSize."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopenabledirective_registers_multiple_offenses_and_corrects_the_same_comment"
+source = '''
+foo
+# rubocop:enable Metrics/ModuleLength, Metrics/AbcSize
+bar
+'''
+corrected = '''
+foo
+bar
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 39
+column_end = 54
+message = "Unnecessary enabling of Metrics/AbcSize."
+
+[[tests.offenses]]
+line = 2
+column_start = 17
+column_end = 37
+message = "Unnecessary enabling of Metrics/ModuleLength."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopenabledirective_registers_correct_offense_when_combined_with_necessary_enable"
+source = '''
+# rubocop:disable Layout/LineLength
+fooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo = barrrrrrrrrrrrrrrrrrrrrrrrrr
+# rubocop:enable Metrics/AbcSize, Layout/LineLength
+bar
+'''
+corrected = '''
+# rubocop:disable Layout/LineLength
+fooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo = barrrrrrrrrrrrrrrrrrrrrrrrrr
+# rubocop:enable Layout/LineLength
+bar
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 17
+column_end = 32
+message = "Unnecessary enabling of Metrics/AbcSize."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopenabledirective_registers_correct_offense_when_combined_with_necessary_enable_no_white_space_after_comma"
+source = '''
+# rubocop:disable Layout/LineLength
+fooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo = barrrrrrrrrrrrrrrrrrrrrrrrrr
+# rubocop:enable Metrics/AbcSize,Layout/LineLength
+bar
+'''
+corrected = '''
+# rubocop:disable Layout/LineLength
+fooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo = barrrrrrrrrrrrrrrrrrrrrrrrrr
+# rubocop:enable Layout/LineLength
+bar
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 17
+column_end = 32
+message = "Unnecessary enabling of Metrics/AbcSize."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopenabledirective_registers_an_offense_and_corrects_redundant_enabling_of_same_cop"
+source = '''
+# rubocop:disable Layout/LineLength
+fooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo = barrrrrrrrrrrrrrrrrrrrrrrrrr
+# rubocop:enable Layout/LineLength
+
+bar
+
+# rubocop:enable Layout/LineLength
+bar
+'''
+corrected = '''
+# rubocop:disable Layout/LineLength
+fooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo = barrrrrrrrrrrrrrrrrrrrrrrrrr
+# rubocop:enable Layout/LineLength
+
+bar
+
+bar
+'''
+
+[[tests.offenses]]
+line = 7
+column_start = 17
+column_end = 34
+message = "Unnecessary enabling of Layout/LineLength."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopenabledirective_all_switch_registers_an_offense_and_corrects_unnecessary_enable_all"
+source = '''
+foo
+# rubocop:enable all
+'''
+corrected = '''
+foo
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 17
+column_end = 20
+message = "Unnecessary enabling of all cops."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopenabledirective_all_switch_when_at_least_one_cop_was_disabled_does_not_register_offense"
+source = '''
+# rubocop:disable Layout/LineLength
+foooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+# rubocop:enable all
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopenabledirective_when_last_cop_is_unnecessarily_enabled_registers_an_offense_and_corrects"
+source = '''
+# rubocop:disable Layout/LineLength
+foo
+# rubocop:enable Layout/LineLength, Metrics/AbcSize
+'''
+corrected = '''
+# rubocop:disable Layout/LineLength
+foo
+# rubocop:enable Layout/LineLength
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 36
+column_end = 51
+message = "Unnecessary enabling of Metrics/AbcSize."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopenabledirective_when_last_cop_is_unnecessarily_enabled_registers_an_offense_and_corrects_when_there_is_no_space_between_the_cops_and_the_comma"
+source = '''
+# rubocop:disable Layout/LineLength
+foo
+# rubocop:enable Layout/LineLength,Metrics/AbcSize
+'''
+corrected = '''
+# rubocop:disable Layout/LineLength
+foo
+# rubocop:enable Layout/LineLength
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 35
+column_end = 50
+message = "Unnecessary enabling of Metrics/AbcSize."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopenabledirective_when_middle_cop_is_unnecessarily_enabled_registers_an_offense_and_corrects"
+source = '''
+# rubocop:disable Layout/LineLength, Lint/Debugger
+foo
+# rubocop:enable Layout/LineLength, Metrics/AbcSize, Lint/Debugger
+'''
+corrected = '''
+# rubocop:disable Layout/LineLength, Lint/Debugger
+foo
+# rubocop:enable Layout/LineLength, Lint/Debugger
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 36
+column_end = 51
+message = "Unnecessary enabling of Metrics/AbcSize."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopenabledirective_when_middle_cop_is_unnecessarily_enabled_registers_an_offense_and_corrects_when_there_is_extra_white_space"
+source = '''
+# rubocop:disable Layout/LineLength,  Lint/Debugger
+foo
+# rubocop:enable Layout/LineLength,  Metrics/AbcSize,  Lint/Debugger
+'''
+corrected = '''
+# rubocop:disable Layout/LineLength,  Lint/Debugger
+foo
+# rubocop:enable Layout/LineLength,  Lint/Debugger
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 37
+column_end = 52
+message = "Unnecessary enabling of Metrics/AbcSize."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopenabledirective_when_all_cops_are_unnecessarily_enabled_on_the_same_line_registers_an_offense_and_corrects"
+source = '''
+foo
+# rubocop:enable Layout/LineLength, Metrics/AbcSize, Lint/Debugger
+                                    ^^^^^^^^^^^^^^^ Unnecessary enabling of Metrics/AbcSize.
+'''
+corrected = '''
+foo
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 53
+column_end = 66
+message = "Unnecessary enabling of Lint/Debugger."
+
+[[tests.offenses]]
+line = 3
+column_start = 17
+column_end = 34
+message = "Unnecessary enabling of Layout/LineLength."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopenabledirective_when_all_cops_are_unnecessarily_enabled_on_separate_lines_registers_an_offense_and_corrects_when_there_is_extra_white_space"
+source = '''
+foo
+# rubocop:enable Metrics/ModuleSize
+# rubocop:enable Layout/LineLength, Metrics/ClassSize
+# rubocop:enable Metrics/AbcSize, Lint/Debugger
+'''
+corrected = '''
+foo
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 17
+column_end = 35
+message = "Unnecessary enabling of Metrics/ModuleSize."
+
+[[tests.offenses]]
+line = 3
+column_start = 17
+column_end = 34
+message = "Unnecessary enabling of Layout/LineLength."
+
+[[tests.offenses]]
+line = 3
+column_start = 36
+column_end = 53
+message = "Unnecessary enabling of Metrics/ClassSize."
+
+[[tests.offenses]]
+line = 4
+column_start = 34
+column_end = 47
+message = "Unnecessary enabling of Lint/Debugger."
+
+[[tests.offenses]]
+line = 4
+column_start = 17
+column_end = 32
+message = "Unnecessary enabling of Metrics/AbcSize."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopenabledirective_when_all_department_enabled_registers_an_offense_and_corrects_unnecessary_enable"
+source = '''
+foo
+# rubocop:enable Layout
+'''
+corrected = '''
+foo
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 17
+column_end = 23
+message = "Unnecessary enabling of Layout."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopenabledirective_when_all_department_enabled_registers_an_offense_and_corrects_when_the_first_department_is_unnecessarily_enabled"
+source = '''
+# rubocop:disable Layout/LineLength
+foo
+# rubocop:enable Metrics, Layout/LineLength
+'''
+corrected = '''
+# rubocop:disable Layout/LineLength
+foo
+# rubocop:enable Layout/LineLength
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 17
+column_end = 24
+message = "Unnecessary enabling of Metrics."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopenabledirective_when_all_department_enabled_registers_multiple_offenses_and_corrects_the_same_comment"
+source = '''
+foo
+# rubocop:enable Metrics, Layout
+bar
+'''
+corrected = '''
+foo
+bar
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 26
+column_end = 32
+message = "Unnecessary enabling of Layout."
+
+[[tests.offenses]]
+line = 2
+column_start = 17
+column_end = 24
+message = "Unnecessary enabling of Metrics."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopenabledirective_when_all_department_enabled_registers_correct_offense_when_combined_with_necessary_enable"
+source = '''
+# rubocop:disable Layout/LineLength
+fooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo = barrrrrrrrrrrrrrrrrrrrrrrrrr
+# rubocop:enable Metrics, Layout/LineLength
+bar
+'''
+corrected = '''
+# rubocop:disable Layout/LineLength
+fooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo = barrrrrrrrrrrrrrrrrrrrrrrrrr
+# rubocop:enable Layout/LineLength
+bar
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 17
+column_end = 24
+message = "Unnecessary enabling of Metrics."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopenabledirective_when_all_department_enabled_registers_an_offense_and_corrects_redundant_enabling_of_same_department"
+source = '''
+# rubocop:disable Layout
+fooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo = barrrrrrrrrrrrrrrrrrrrrrrrrr
+# rubocop:enable Layout
+
+bar
+
+# rubocop:enable Layout
+bar
+'''
+corrected = '''
+# rubocop:disable Layout
+fooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo = barrrrrrrrrrrrrrrrrrrrrrrrrr
+# rubocop:enable Layout
+
+bar
+
+bar
+'''
+
+[[tests.offenses]]
+line = 7
+column_start = 17
+column_end = 23
+message = "Unnecessary enabling of Layout."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopenabledirective_when_all_department_enabled_registers_an_offense_and_corrects_redundant_enabling_of_cop_of_same_department"
+source = '''
+# rubocop:disable Layout
+fooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo = barrrrrrrrrrrrrrrrrrrrrrrrrr
+# rubocop:enable Layout, Layout/LineLength
+'''
+corrected = '''
+# rubocop:disable Layout
+fooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo = barrrrrrrrrrrrrrrrrrrrrrrrrr
+# rubocop:enable Layout
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 25
+column_end = 42
+message = "Unnecessary enabling of Layout/LineLength."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopenabledirective_when_all_department_enabled_registers_an_offense_and_corrects_redundant_enabling_of_department_of_same_cop"
+source = '''
+# rubocop:disable Layout/LineLength
+fooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo = barrrrrrrrrrrrrrrrrrrrrrrrrr
+# rubocop:enable Layout
+some_code
+'''
+corrected = '''
+# rubocop:disable Layout/LineLength
+fooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo = barrrrrrrrrrrrrrrrrrrrrrrrrr
+
+some_code
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 17
+column_end = 23
+message = "Unnecessary enabling of Layout."

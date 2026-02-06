@@ -1,0 +1,2599 @@
+cop = "Layout/HashAlignment"
+department = "layout"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_accepts_single_line_hash"
+source = '''
+func(a: 0, bb: 1)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_accepts_several_pairs_per_line"
+source = '''
+func(a: 1, bb: 2,
+     ccc: 3, dddd: 4)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_accepts_pairs_that_don_t_start_a_line"
+source = '''
+render :json => {:a => messages,
+                 :b => :json}, :status => 404
+def example
+  a(
+    b: :c,
+    d: e(
+      f: g
+    ), h: :i)
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_when_using_hash_value_omission_accepts_single_line_hash"
+source = '''
+func(a:, bb:)
+'''
+ruby_version = ">= 3.1"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_when_using_hash_value_omission_accepts_several_pairs_per_line"
+source = '''
+func(a:, bb:,
+     ccc:, dddd:)
+'''
+ruby_version = ">= 3.1"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_when_using_hash_value_omission_accepts_pairs_that_don_t_start_a_line"
+source = '''
+render :json => {a:,
+                 b:}, :status => 404
+def example
+  a(
+    b:,
+    c: d(
+      e:
+    ), f:)
+end
+'''
+ruby_version = ">= 3.1"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_always_inspect_last_argument_hash_registers_an_offense_and_corrects_misaligned_keys_in_implicit_hash"
+source = '''
+func(a: 0,
+  b: 1)
+'''
+corrected = '''
+func(a: 0,
+     b: 1)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 6
+message = "Align the keys of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:always_inspect"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_always_inspect_last_argument_hash_registers_an_offense_and_corrects_misaligned_keys_in_explicit_hash"
+source = '''
+func({a: 0,
+  b: 1})
+'''
+corrected = '''
+func({a: 0,
+      b: 1})
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 6
+message = "Align the keys of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:always_inspect"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_always_inspect_last_argument_hash_registers_an_offense_and_corrects_misaligned_keys_in_implicit_hash_for_super"
+source = '''
+super(a: 0,
+  b: 1)
+'''
+corrected = '''
+super(a: 0,
+      b: 1)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 6
+message = "Align the keys of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:always_inspect"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_always_inspect_last_argument_hash_registers_an_offense_and_corrects_misaligned_keys_in_explicit_hash_for_super"
+source = '''
+super({a: 0,
+  b: 1})
+'''
+corrected = '''
+super({a: 0,
+       b: 1})
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 6
+message = "Align the keys of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:always_inspect"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_always_inspect_last_argument_hash_registers_an_offense_and_corrects_misaligned_keys_in_implicit_hash_for_yield"
+source = '''
+yield(a: 0,
+  b: 1)
+'''
+corrected = '''
+yield(a: 0,
+      b: 1)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 6
+message = "Align the keys of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:always_inspect"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_always_inspect_last_argument_hash_registers_an_offense_and_corrects_misaligned_keys_in_explicit_hash_for_yield"
+source = '''
+yield({a: 0,
+  b: 1})
+'''
+corrected = '''
+yield({a: 0,
+       b: 1})
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 6
+message = "Align the keys of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:always_inspect"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_always_inspect_last_argument_hash_registers_an_offense_and_corrects_misaligned_keys_in_implicit_hash_for_safe_navigation"
+source = '''
+foo&.bar(a: 0,
+  b: 1)
+'''
+corrected = '''
+foo&.bar(a: 0,
+         b: 1)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 6
+message = "Align the keys of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:always_inspect"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_always_inspect_last_argument_hash_registers_an_offense_and_corrects_misaligned_keys_in_explicit_hash_for_safe_navigation"
+source = '''
+foo&.bar({a: 0,
+  b: 1})
+'''
+corrected = '''
+foo&.bar({a: 0,
+          b: 1})
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 6
+message = "Align the keys of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:always_inspect"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_always_inspect_last_argument_hash_when_using_hash_value_omission_registers_an_offense_and_corrects_misaligned_keys_in_implicit_hash"
+source = '''
+func(a:,
+  b:)
+'''
+corrected = '''
+func(a:,
+     b:)
+'''
+ruby_version = ">= 3.1"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 4
+message = "Align the keys of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:always_inspect"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_always_inspect_last_argument_hash_when_using_hash_value_omission_registers_an_offense_and_corrects_misaligned_keys_in_explicit_hash"
+source = '''
+func({a:,
+  b:})
+'''
+corrected = '''
+func({a:,
+      b:})
+'''
+ruby_version = ">= 3.1"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 4
+message = "Align the keys of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:always_inspect"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_when_enforcedstyle_with_fixed_indentation_of_argumentalignment_registers_and_corrects_an_offense"
+source = '''
+THINGS = {
+  oh: :io,
+    hi: 'neat'
+    }
+'''
+corrected = '''
+THINGS = {
+  oh: :io,
+  hi: 'neat'
+    }
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 3
+column_start = 4
+column_end = 14
+message = "Align the keys of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:always_inspect"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_when_enforcedstyle_with_fixed_indentation_of_argumentalignment_registers_and_corrects_an_offense_when_using_misaligned_keyword_arguments"
+source = '''
+config.fog_credentials_as_kwargs(
+  provider:              'AWS',
+  aws_access_key_id:     ENV['S3_ACCESS_KEY'],
+  aws_secret_access_key: ENV['S3_SECRET'],
+  region:                ENV['S3_REGION'],
+)
+'''
+corrected = '''
+config.fog_credentials_as_kwargs(
+  provider: 'AWS',
+  aws_access_key_id: ENV['S3_ACCESS_KEY'],
+  aws_secret_access_key: ENV['S3_SECRET'],
+  region: ENV['S3_REGION'],
+)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 30
+message = "Align the keys of a hash literal if they span more than one line."
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 45
+message = "Align the keys of a hash literal if they span more than one line."
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 41
+message = "Align the keys of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:always_inspect"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_when_enforcedstyle_with_fixed_indentation_of_argumentalignment_when_using_hash_value_omission_registers_and_corrects_an_offense"
+source = '''
+THINGS = {
+  oh:,
+    hi:
+    }
+'''
+corrected = '''
+THINGS = {
+  oh:,
+  hi:
+    }
+'''
+ruby_version = ">= 3.1"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 3
+column_start = 4
+column_end = 7
+message = "Align the keys of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:always_inspect"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_when_enforcedstyle_with_fixed_indentation_of_argumentalignment_when_using_hash_value_omission_does_not_register_an_offense_when_using_aligned_keyword_arguments"
+source = '''
+config.fog_credentials_as_kwargs(
+  provider:,
+  aws_access_key_id:,
+  aws_secret_access_key:,
+  region:
+)
+'''
+ruby_version = ">= 3.1"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:always_inspect"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_when_enforcedstyle_with_fixed_indentation_of_argumentalignment_does_not_register_an_offense_using_aligned_hash_literal"
+source = '''
+{
+  oh: :io,
+  hi: 'neat'
+}
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:always_inspect"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_when_enforcedstyle_with_fixed_indentation_of_argumentalignment_does_not_register_an_offense_for_an_empty_hash_literal"
+source = '''
+foo({})
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:always_inspect"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_when_enforcedstyle_with_fixed_indentation_of_argumentalignment_does_not_register_an_offense_using_aligned_hash_argument_for_proc"
+source = '''
+proc.(key: value)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:always_inspect"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_when_enforcedstyle_with_fixed_indentation_of_argumentalignment_does_not_register_an_offense_for_a_method_with_a_positional_argument"
+source = '''
+do_something(
+  foo, baz: true,
+  quux: false
+)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:always_inspect"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_when_enforcedstyle_with_fixed_indentation_of_argumentalignment_does_not_register_an_offense_for_a_method_with_a_positional_argument_that_spans_multiple_lines"
+source = '''
+do_something(
+  foo(
+    bar
+  ), baz: true,
+  quux: false
+)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:always_inspect"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_when_enforcedstyle_with_fixed_indentation_of_argumentalignment_does_not_register_an_offense_when_a_multiline_hash_starts_on_the_same_line_as_an_implicit_call"
+source = '''
+do_something.(foo: bar, baz: qux,
+  quux: corge)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:always_inspect"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_always_ignore_last_argument_hash_accepts_misaligned_keys_in_implicit_hash"
+source = '''
+func(a: 0,
+  b: 1)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:always_ignore"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_always_ignore_last_argument_hash_accepts_misaligned_keys_in_explicit_hash"
+source = '''
+func({a: 0,
+  b: 1})
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:always_ignore"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_always_ignore_last_argument_hash_accepts_misaligned_keys_in_implicit_hash_for_super"
+source = '''
+super(a: 0,
+  b: 1)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:always_ignore"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_always_ignore_last_argument_hash_accepts_misaligned_keys_in_explicit_hash_for_super"
+source = '''
+super({a: 0,
+  b: 1})
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:always_ignore"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_always_ignore_last_argument_hash_accepts_misaligned_keys_in_implicit_hash_for_yield"
+source = '''
+yield(a: 0,
+  b: 1)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:always_ignore"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_always_ignore_last_argument_hash_accepts_misaligned_keys_in_explicit_hash_for_yield"
+source = '''
+yield({a: 0,
+  b: 1})
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:always_ignore"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_always_ignore_last_argument_hash_accepts_misaligned_keys_in_implicit_hash_for_safe_navigation"
+source = '''
+foo&.bar(a: 0,
+  b: 1)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:always_ignore"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_always_ignore_last_argument_hash_accepts_misaligned_keys_in_explicit_hash_for_safe_navigation"
+source = '''
+foo&.bar({a: 0,
+  b: 1})
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:always_ignore"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_ignore_implicit_last_argument_hash_accepts_misaligned_keys_in_implicit_hash"
+source = '''
+func(a: 0,
+  b: 1)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_implicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_ignore_implicit_last_argument_hash_registers_an_offense_and_corrects_misaligned_keys_in_explicit_hash"
+source = '''
+func({a: 0,
+  b: 1})
+'''
+corrected = '''
+func({a: 0,
+      b: 1})
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 6
+message = "Align the keys of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_implicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_ignore_implicit_last_argument_hash_accepts_misaligned_keys_in_implicit_hash_for_super"
+source = '''
+super(a: 0,
+  b: 1)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_implicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_ignore_implicit_last_argument_hash_registers_an_offense_and_corrects_misaligned_keys_in_explicit_hash_for_super"
+source = '''
+super({a: 0,
+  b: 1})
+'''
+corrected = '''
+super({a: 0,
+       b: 1})
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 6
+message = "Align the keys of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_implicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_ignore_implicit_last_argument_hash_accepts_misaligned_keys_in_implicit_hash_for_yield"
+source = '''
+yield(a: 0,
+  b: 1)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_implicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_ignore_implicit_last_argument_hash_registers_an_offense_and_corrects_misaligned_keys_in_explicit_hash_for_yield"
+source = '''
+yield({a: 0,
+  b: 1})
+'''
+corrected = '''
+yield({a: 0,
+       b: 1})
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 6
+message = "Align the keys of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_implicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_ignore_implicit_last_argument_hash_accepts_misaligned_keys_in_implicit_hash_for_safe_navigation"
+source = '''
+foo&.bar(a: 0,
+  b: 1)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_implicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_ignore_implicit_last_argument_hash_registers_an_offense_and_corrects_misaligned_keys_in_explicit_hash_for_safe_navigation"
+source = '''
+foo&.bar({a: 0,
+  b: 1})
+'''
+corrected = '''
+foo&.bar({a: 0,
+          b: 1})
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 6
+message = "Align the keys of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_implicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_ignore_explicit_last_argument_hash_registers_an_offense_and_corrects_misaligned_keys_in_implicit_hash"
+source = '''
+func(a: 0,
+  b: 1)
+'''
+corrected = '''
+func(a: 0,
+     b: 1)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 6
+message = "Align the keys of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_ignore_explicit_last_argument_hash_accepts_misaligned_keys_in_explicit_hash"
+source = '''
+func({a: 0,
+  b: 1})
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_ignore_explicit_last_argument_hash_when_using_hash_value_omission_registers_an_offense_and_corrects_misaligned_keys_in_implicit_hash"
+source = '''
+func(a:,
+  b:)
+'''
+corrected = '''
+func(a:,
+     b:)
+'''
+ruby_version = ">= 3.1"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 4
+message = "Align the keys of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_ignore_explicit_last_argument_hash_when_using_hash_value_omission_accepts_misaligned_keys_in_explicit_hash"
+source = '''
+func({a:,
+  b:})
+'''
+ruby_version = ">= 3.1"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_ignore_explicit_last_argument_hash_registers_an_offense_and_corrects_misaligned_keys_in_implicit_hash_for_super"
+source = '''
+super(a: 0,
+  b: 1)
+'''
+corrected = '''
+super(a: 0,
+      b: 1)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 6
+message = "Align the keys of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_ignore_explicit_last_argument_hash_accepts_misaligned_keys_in_explicit_hash_for_super"
+source = '''
+super({a: 0,
+  b: 1})
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_ignore_explicit_last_argument_hash_registers_an_offense_and_corrects_misaligned_keys_in_implicit_hash_for_yield"
+source = '''
+yield(a: 0,
+  b: 1)
+'''
+corrected = '''
+yield(a: 0,
+      b: 1)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 6
+message = "Align the keys of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_ignore_explicit_last_argument_hash_accepts_misaligned_keys_in_explicit_hash_for_yield"
+source = '''
+yield({a: 0,
+  b: 1})
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_ignore_explicit_last_argument_hash_registers_an_offense_and_corrects_misaligned_keys_in_implicit_hash_for_safe_navigation"
+source = '''
+foo&.bar(a: 0,
+  b: 1)
+'''
+corrected = '''
+foo&.bar(a: 0,
+         b: 1)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 6
+message = "Align the keys of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_ignore_explicit_last_argument_hash_accepts_misaligned_keys_in_explicit_hash_for_safe_navigation"
+source = '''
+foo&.bar({a: 0,
+  b: 1})
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_default_configuration_registers_an_offense_and_corrects_misaligned_hash_keys"
+source = '''
+hash1 = {
+  a: 0,
+   bb: 1
+}
+hash2 = {
+  'ccc' => 2,
+ 'dddd'  =>  2
+}
+'''
+corrected = '''
+hash1 = {
+  a: 0,
+  bb: 1
+}
+hash2 = {
+  'ccc' => 2,
+  'dddd' => 2
+}
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 3
+column_start = 3
+column_end = 8
+message = "Align the keys of a hash literal if they span more than one line."
+
+[[tests.offenses]]
+line = 7
+column_start = 1
+column_end = 14
+message = "Align the keys of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_default_configuration_registers_an_offense_and_corrects_misaligned_mixed_multiline_hash_keys"
+source = '''
+hash = { a: 1, b: 2,
+        c: 3 }
+'''
+corrected = '''
+hash = { a: 1, b: 2,
+         c: 3 }
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 8
+column_end = 12
+message = "Align the keys of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_default_configuration_accepts_left_aligned_hash_keys_with_single_spaces"
+source = '''
+hash1 = {
+  aa: 0,
+  b: 1,
+}
+hash2 = {
+  :a => 0,
+  :bb => 1
+}
+hash3 = {
+  'a' => 0,
+  'bb' => 1
+}
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_default_configuration_registers_an_offense_and_corrects_zero_or_multiple_spaces"
+source = '''
+hash1 = {
+  a:   0,
+  bb:1,
+}
+hash2 = {
+  'ccc'=> 2,
+  'dddd' =>  3
+}
+'''
+corrected = '''
+hash1 = {
+  a: 0,
+  bb: 1,
+}
+hash2 = {
+  'ccc' => 2,
+  'dddd' => 3
+}
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 8
+message = "Align the keys of a hash literal if they span more than one line."
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 6
+message = "Align the keys of a hash literal if they span more than one line."
+
+[[tests.offenses]]
+line = 6
+column_start = 2
+column_end = 11
+message = "Align the keys of a hash literal if they span more than one line."
+
+[[tests.offenses]]
+line = 7
+column_start = 2
+column_end = 14
+message = "Align the keys of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_default_configuration_registers_an_offense_and_corrects_separator_alignment"
+source = '''
+hash = {
+    'a' => 0,
+  'bbb' => 1
+}
+'''
+corrected = '''
+hash = {
+    'a' => 0,
+    'bbb' => 1
+}
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 12
+message = "Align the keys of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_default_configuration_registers_an_offense_and_corrects_table_alignment"
+source = '''
+hash = {
+  'a'   => 0,
+  'bbb' => 1
+}
+'''
+corrected = '''
+hash = {
+  'a' => 0,
+  'bbb' => 1
+}
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 12
+message = "Align the keys of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_default_configuration_registers_an_offense_and_corrects_multiline_value_starts_in_wrong_place"
+source = '''
+hash = {
+  'a' =>  (
+    ),
+  'bbb' => 1
+}
+'''
+corrected = '''
+hash = {
+  'a' => (
+    ),
+  'bbb' => 1
+}
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 11
+message = "Align the keys of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_default_configuration_does_not_register_an_offense_when_value_starts_on_next_line"
+source = '''
+hash = {
+  'a' =>
+    0,
+  'bbb' => 1
+}
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_default_configuration_with_implicit_hash_as_last_argument_registers_an_offense_and_corrects_misaligned_hash_keys"
+source = '''
+func(a: 0,
+  b: 1)
+'''
+corrected = '''
+func(a: 0,
+     b: 1)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 6
+message = "Align the keys of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_default_configuration_with_implicit_hash_as_last_argument_registers_an_offense_and_corrects_right_alignment_of_keys"
+source = '''
+func(a: 0,
+   bbb: 1)
+'''
+corrected = '''
+func(a: 0,
+     bbb: 1)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 3
+column_end = 9
+message = "Align the keys of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_default_configuration_with_implicit_hash_as_last_argument_accepts_aligned_hash_keys"
+source = '''
+func(a: 0,
+     b: 1)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_default_configuration_with_implicit_hash_as_last_argument_accepts_an_empty_hash"
+source = '''
+h = {}
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_default_configuration_registers_an_offense_and_corrects_mixed_hash_styles"
+source = '''
+hash1 = { a: 0,
+     bb: 1,
+           ccc: 2 }
+hash2 = { :a   => 0,
+  :bb  => 1,
+            :ccc  =>2 }
+hash3 = { 'a'   =>   0,
+               'bb'  => 1,
+    'ccc'  =>2 }
+'''
+corrected = '''
+hash1 = { a: 0,
+          bb: 1,
+          ccc: 2 }
+hash2 = { :a => 0,
+          :bb => 1,
+          :ccc => 2 }
+hash3 = { 'a' => 0,
+          'bb' => 1,
+          'ccc' => 2 }
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 5
+column_end = 10
+message = "Align the keys of a hash literal if they span more than one line."
+
+[[tests.offenses]]
+line = 3
+column_start = 11
+column_end = 17
+message = "Align the keys of a hash literal if they span more than one line."
+
+[[tests.offenses]]
+line = 4
+column_start = 10
+column_end = 19
+message = "Align the keys of a hash literal if they span more than one line."
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 11
+message = "Align the keys of a hash literal if they span more than one line."
+
+[[tests.offenses]]
+line = 6
+column_start = 12
+column_end = 21
+message = "Align the keys of a hash literal if they span more than one line."
+
+[[tests.offenses]]
+line = 7
+column_start = 10
+column_end = 22
+message = "Align the keys of a hash literal if they span more than one line."
+
+[[tests.offenses]]
+line = 8
+column_start = 15
+column_end = 25
+message = "Align the keys of a hash literal if they span more than one line."
+
+[[tests.offenses]]
+line = 9
+column_start = 4
+column_end = 14
+message = "Align the keys of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_default_configuration_registers_an_offense_and_corrects_alignment_when_using_double_splat_in_an_explicit_hash"
+source = '''
+Hash(foo: 'bar',
+       **extra_params
+)
+'''
+corrected = '''
+Hash(foo: 'bar',
+     **extra_params
+)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 7
+column_end = 21
+message = "Align keyword splats with the rest of the hash if it spans more than one line."
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_default_configuration_registers_an_offense_and_corrects_alignment_when_using_double_splat_in_braces"
+source = '''
+{foo: 'bar',
+       **extra_params
+}
+'''
+corrected = '''
+{foo: 'bar',
+ **extra_params
+}
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 7
+column_end = 21
+message = "Align keyword splats with the rest of the hash if it spans more than one line."
+
+[tests.config]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_table_alignment_configuration_accepts_aligned_hash_keys_and_values"
+source = '''
+hash1 = {
+  'a'   => 0,
+  'bbb' => 1
+}
+hash2 = {
+  a:   0,
+  bbb: 1
+}
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedColonStyle = "$UNRESOLVED:table"
+EnforcedHashRocketStyle = "$UNRESOLVED:table"
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_table_alignment_configuration_accepts_an_empty_hash"
+source = '''
+h = {}
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedColonStyle = "$UNRESOLVED:table"
+EnforcedHashRocketStyle = "$UNRESOLVED:table"
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_table_alignment_configuration_when_using_hash_value_omission_accepts_aligned_hash_keys_and_values"
+source = '''
+hash1 = {
+  'a'   => 0,
+  'bbb' => 1
+}
+hash2 = {
+  a:   0,
+  bbb: 1,
+  ccc:
+}
+'''
+ruby_version = ">= 3.1"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedColonStyle = "$UNRESOLVED:table"
+EnforcedHashRocketStyle = "$UNRESOLVED:table"
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_table_alignment_configuration_accepts_a_multiline_array_of_single_line_hashes"
+source = '''
+def self.scenarios_order
+    [
+      { before:   %w( l k ) },
+      { ending:   %w( m l ) },
+      { starting: %w( m n ) },
+      { after:    %w( n o ) }
+    ]
+  end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedColonStyle = "$UNRESOLVED:table"
+EnforcedHashRocketStyle = "$UNRESOLVED:table"
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_table_alignment_configuration_accepts_hashes_that_use_different_separators"
+source = '''
+hash = {
+  a: 1,
+  'bbb' => 2
+}
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedColonStyle = "$UNRESOLVED:table"
+EnforcedHashRocketStyle = "$UNRESOLVED:table"
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_table_alignment_configuration_accepts_hashes_that_use_different_separators_and_double_splats"
+source = '''
+hash = {
+  a: 1,
+  'bbb' => 2,
+  **foo
+}
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedColonStyle = "$UNRESOLVED:table"
+EnforcedHashRocketStyle = "$UNRESOLVED:table"
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_table_alignment_configuration_accepts_a_symbol_only_hash_followed_by_a_keyword_splat"
+source = '''
+hash = {
+  a: 1,
+  **kw
+}
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedColonStyle = "$UNRESOLVED:table"
+EnforcedHashRocketStyle = "$UNRESOLVED:table"
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_table_alignment_configuration_accepts_a_keyword_splat_only_hash"
+source = '''
+hash = {
+  **kw
+}
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedColonStyle = "$UNRESOLVED:table"
+EnforcedHashRocketStyle = "$UNRESOLVED:table"
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_table_alignment_configuration_registers_an_offense_for_misaligned_hash_values"
+source = '''
+hash1 = {
+  'a'   =>  0,
+  'bbb' => 1
+}
+hash2 = {
+  a:   0,
+  bbb:1
+}
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 13
+message = "Align the keys and values of a hash literal if they span more than one line."
+
+[[tests.offenses]]
+line = 7
+column_start = 2
+column_end = 7
+message = "Align the keys and values of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedColonStyle = "$UNRESOLVED:table"
+EnforcedHashRocketStyle = "$UNRESOLVED:table"
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_table_alignment_configuration_registers_an_offense_and_corrects_for_misaligned_hash_keys"
+source = '''
+hash1 = {
+  'a'   =>  0,
+ 'bbb'  =>  1
+}
+hash2 = {
+   a:  0,
+  bbb: 1
+}
+'''
+corrected = '''
+hash1 = {
+  'a'   => 0,
+  'bbb' => 1
+}
+hash2 = {
+   a:   0,
+   bbb: 1
+}
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 13
+message = "Align the keys and values of a hash literal if they span more than one line."
+
+[[tests.offenses]]
+line = 3
+column_start = 1
+column_end = 13
+message = "Align the keys and values of a hash literal if they span more than one line."
+
+[[tests.offenses]]
+line = 6
+column_start = 3
+column_end = 8
+message = "Align the keys and values of a hash literal if they span more than one line."
+
+[[tests.offenses]]
+line = 7
+column_start = 2
+column_end = 8
+message = "Align the keys and values of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedColonStyle = "$UNRESOLVED:table"
+EnforcedHashRocketStyle = "$UNRESOLVED:table"
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_table_alignment_configuration_registers_an_offense_and_corrects_misaligned_hash_rockets"
+source = '''
+hash = {
+  'a'   => 0,
+  'bbb'  => 1
+}
+'''
+corrected = '''
+hash = {
+  'a'   => 0,
+  'bbb' => 1
+}
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 13
+message = "Align the keys and values of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedColonStyle = "$UNRESOLVED:table"
+EnforcedHashRocketStyle = "$UNRESOLVED:table"
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_table_separator_alignment_configuration_accepts_a_single_method_argument_entry_with_colon"
+source = '''
+merge(parent: nil)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedColonStyle = "$UNRESOLVED:separator"
+EnforcedHashRocketStyle = "$UNRESOLVED:table"
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_invalid_configuration_fails"
+source = '''
+hash = {
+  a: 0,
+  bb: 1
+}
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedColonStyle = "$UNRESOLVED:junk"
+EnforcedHashRocketStyle = "$UNRESOLVED:junk"
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_separator_alignment_configuration_accepts_aligned_hash_keys"
+source = '''
+hash1 = {
+    a: 0,
+  bbb: 1
+}
+hash2 = {
+    'a' => 0,
+  'bbb' => 1
+}
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedColonStyle = "$UNRESOLVED:separator"
+EnforcedHashRocketStyle = "$UNRESOLVED:separator"
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_separator_alignment_configuration_when_using_hash_value_omission_accepts_aligned_hash_keys"
+source = '''
+hash1 = {
+    a: 0,
+  bbb: 1,
+  ccc:
+}
+hash2 = {
+    'a' => 0,
+  'bbb' => 1
+}
+'''
+ruby_version = ">= 3.1"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedColonStyle = "$UNRESOLVED:separator"
+EnforcedHashRocketStyle = "$UNRESOLVED:separator"
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_separator_alignment_configuration_when_using_hash_value_omission_registers_an_offense_and_corrects_mixed_indentation_and_spacing"
+source = '''
+hash1 = { a: 0,
+     bb:,
+           ccc: 2 }
+'''
+corrected = '''
+hash1 = { a: 0,
+         bb:,
+        ccc: 2 }
+'''
+ruby_version = ">= 3.1"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 5
+column_end = 8
+message = "Align the separators of a hash literal if they span more than one line."
+
+[[tests.offenses]]
+line = 3
+column_start = 11
+column_end = 17
+message = "Align the separators of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedColonStyle = "$UNRESOLVED:separator"
+EnforcedHashRocketStyle = "$UNRESOLVED:separator"
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_separator_alignment_configuration_accepts_an_empty_hash"
+source = '''
+h = {}
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedColonStyle = "$UNRESOLVED:separator"
+EnforcedHashRocketStyle = "$UNRESOLVED:separator"
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_separator_alignment_configuration_registers_an_offense_and_corrects_misaligned_hash_values"
+source = '''
+hash = {
+    'a' =>  0,
+  'bbb' => 1
+}
+'''
+corrected = '''
+hash = {
+    'a' =>  0,
+  'bbb' =>  1
+}
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 12
+message = "Align the separators of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedColonStyle = "$UNRESOLVED:separator"
+EnforcedHashRocketStyle = "$UNRESOLVED:separator"
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_separator_alignment_configuration_registers_an_offense_and_corrects_misaligned_hash_rockets"
+source = '''
+hash = {
+    'a'  => 0,
+  'bbb' =>  1
+}
+'''
+corrected = '''
+hash = {
+    'a'  => 0,
+  'bbb'  => 1
+}
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 13
+message = "Align the separators of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedColonStyle = "$UNRESOLVED:separator"
+EnforcedHashRocketStyle = "$UNRESOLVED:separator"
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_separator_alignment_configuration_accepts_hashes_with_different_separators"
+source = '''
+{a: 1,
+  'b' => 2,
+   **params}
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedColonStyle = "$UNRESOLVED:separator"
+EnforcedHashRocketStyle = "$UNRESOLVED:separator"
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_separator_alignment_configuration_registers_an_offense_and_corrects_mixed_indentation_and_spacing"
+source = '''
+hash1 = { a: 0,
+     bb:    1,
+           ccc: 2 }
+hash2 = { a => 0,
+     bb =>    1,
+           ccc  =>2 }
+'''
+corrected = '''
+hash1 = { a: 0,
+         bb: 1,
+        ccc: 2 }
+hash2 = { a => 0,
+         bb => 1,
+        ccc => 2 }
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 5
+column_end = 13
+message = "Align the separators of a hash literal if they span more than one line."
+
+[[tests.offenses]]
+line = 3
+column_start = 11
+column_end = 17
+message = "Align the separators of a hash literal if they span more than one line."
+
+[[tests.offenses]]
+line = 5
+column_start = 5
+column_end = 15
+message = "Align the separators of a hash literal if they span more than one line."
+
+[[tests.offenses]]
+line = 6
+column_start = 11
+column_end = 19
+message = "Align the separators of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedColonStyle = "$UNRESOLVED:separator"
+EnforcedHashRocketStyle = "$UNRESOLVED:separator"
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_separator_alignment_configuration_doesn_t_break_code_by_moving_long_keys_too_far_left"
+source = '''
+{
+  sjtjo: sjtjo,
+  too_ono_ilitjion_tofotono_o: too_ono_ilitjion_tofotono_o,
+}
+'''
+corrected = '''
+{
+  sjtjo: sjtjo,
+too_ono_ilitjion_tofotono_o: too_ono_ilitjion_tofotono_o,
+}
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 58
+message = "Align the separators of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedColonStyle = "$UNRESOLVED:separator"
+EnforcedHashRocketStyle = "$UNRESOLVED:separator"
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_multiple_preferred_key_and_table_alignment_configuration_accepts_aligned_hash_keys_by_keys"
+source = '''
+hash1 = {
+  a: 0,
+  bbb: 1
+}
+hash2 = {
+  'a' => 0,
+  'bbb' => 1
+}
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedColonStyle = ["$UNRESOLVED:key", "$UNRESOLVED:table"]
+EnforcedHashRocketStyle = ["$UNRESOLVED:key", "$UNRESOLVED:table"]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_multiple_preferred_key_and_table_alignment_configuration_accepts_aligned_hash_keys_by_table"
+source = '''
+hash1 = {
+  a:   0,
+  bbb: 1
+}
+hash2 = {
+  'a'   => 0,
+  'bbb' => 1
+}
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedColonStyle = ["$UNRESOLVED:key", "$UNRESOLVED:table"]
+EnforcedHashRocketStyle = ["$UNRESOLVED:key", "$UNRESOLVED:table"]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_multiple_preferred_key_and_table_alignment_configuration_accepts_aligned_hash_keys_by_both"
+source = '''
+hash1 = {
+  a:   0,
+  bbb: 1
+}
+hash2 = {
+  a: 0,
+  bbb: 1
+}
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedColonStyle = ["$UNRESOLVED:key", "$UNRESOLVED:table"]
+EnforcedHashRocketStyle = ["$UNRESOLVED:key", "$UNRESOLVED:table"]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_multiple_preferred_key_and_table_alignment_configuration_accepts_aligned_hash_keys_with_mixed_hash_style"
+source = '''
+headers = {
+  "Content-Type" => 0,
+  Authorization: 1
+}
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedColonStyle = ["$UNRESOLVED:key", "$UNRESOLVED:table"]
+EnforcedHashRocketStyle = ["$UNRESOLVED:key", "$UNRESOLVED:table"]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_multiple_preferred_key_and_table_alignment_configuration_accepts_an_empty_hash"
+source = '''
+h = {}
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedColonStyle = ["$UNRESOLVED:key", "$UNRESOLVED:table"]
+EnforcedHashRocketStyle = ["$UNRESOLVED:key", "$UNRESOLVED:table"]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_multiple_preferred_key_and_table_alignment_configuration_registers_an_offense_and_corrects_misaligned_hash_values"
+source = '''
+hash = {
+    'a' =>  0,
+  'bbb' => 1
+}
+'''
+corrected = '''
+hash = {
+    'a' => 0,
+    'bbb' => 1
+}
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 4
+column_end = 13
+message = "Align the keys of a hash literal if they span more than one line."
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 12
+message = "Align the keys of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedColonStyle = ["$UNRESOLVED:key", "$UNRESOLVED:table"]
+EnforcedHashRocketStyle = ["$UNRESOLVED:key", "$UNRESOLVED:table"]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_multiple_preferred_key_and_table_alignment_configuration"
+source = '''
+hash = {
+  'abcdefg' => 0,
+  'abcdef'  => 0,
+  'gijk'    => 0,
+  'a'       => 0,
+  'b' => 1,
+        'c' => 1
+}
+'''
+corrected = '''
+hash = {
+  'abcdefg' => 0,
+  'abcdef'  => 0,
+  'gijk'    => 0,
+  'a'       => 0,
+  'b' => 1,
+  'c' => 1
+}
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 6
+column_start = 2
+column_end = 10
+message = "Align the keys and values of a hash literal if they span more than one line."
+
+[[tests.offenses]]
+line = 7
+column_start = 8
+column_end = 16
+message = "Align the keys and values of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedColonStyle = ["$UNRESOLVED:key", "$UNRESOLVED:table"]
+EnforcedHashRocketStyle = ["$UNRESOLVED:key", "$UNRESOLVED:table"]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_multiple_preferred_key_and_table_alignment_configuration_registers_an_offense_and_corrects_misaligned_hash_values_prefer_key_when_least_offenses"
+source = '''
+hash = {
+  'abcdefg' => 0,
+  'abcdef'  => 0,
+  'gijk' => 0,
+  'a' => 0,
+  'b' => 1,
+        'c' => 1
+}
+'''
+corrected = '''
+hash = {
+  'abcdefg' => 0,
+  'abcdef' => 0,
+  'gijk' => 0,
+  'a' => 0,
+  'b' => 1,
+  'c' => 1
+}
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 16
+message = "Align the keys of a hash literal if they span more than one line."
+
+[[tests.offenses]]
+line = 7
+column_start = 8
+column_end = 16
+message = "Align the keys of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedColonStyle = ["$UNRESOLVED:key", "$UNRESOLVED:table"]
+EnforcedHashRocketStyle = ["$UNRESOLVED:key", "$UNRESOLVED:table"]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_multiple_preferred_key_and_table_alignment_configuration_registers_an_offense_and_corrects_misaligned_hash_keys_with_mixed_hash_style"
+source = '''
+headers = {
+  "Content-Type" => 0,
+   Authorization: 1
+}
+'''
+corrected = '''
+headers = {
+  "Content-Type" => 0,
+  Authorization: 1
+}
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 3
+column_start = 3
+column_end = 19
+message = "Align the keys of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedColonStyle = ["$UNRESOLVED:key", "$UNRESOLVED:table"]
+EnforcedHashRocketStyle = ["$UNRESOLVED:key", "$UNRESOLVED:table"]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_multiple_preferred_key_and_table_alignment_configuration_registers_an_offense_and_corrects_misaligned_hash_values_works_separate_for_each_hash"
+source = '''
+hash = {
+  'abcdefg' => 0,
+  'abcdef'  => 0,
+  'gijk' => 0
+}
+'''
+corrected = '''
+hash = {
+  'abcdefg' => 0,
+  'abcdef' => 0,
+  'gijk' => 0
+}
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 16
+message = "Align the keys of a hash literal if they span more than one line."
+
+[[tests.offenses]]
+line = 9
+column_start = 2
+column_end = 21
+message = "Align the keys of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedColonStyle = ["$UNRESOLVED:key", "$UNRESOLVED:table"]
+EnforcedHashRocketStyle = ["$UNRESOLVED:key", "$UNRESOLVED:table"]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_multiple_preferred_key_and_table_alignment_configuration_table_and_key_config"
+source = '''
+hash = {
+  'abcdefg' => 0,
+  'abcdef'  => 0,
+  'gijk'    => 0,
+  'a'       => 0,
+  'b' => 1,
+        'c' => 1
+}
+'''
+corrected = '''
+hash = {
+  'abcdefg' => 0,
+  'abcdef'  => 0,
+  'gijk'    => 0,
+  'a'       => 0,
+  'b'       => 1,
+  'c'       => 1
+}
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 6
+column_start = 2
+column_end = 10
+message = "Align the keys and values of a hash literal if they span more than one line."
+
+[[tests.offenses]]
+line = 7
+column_start = 8
+column_end = 16
+message = "Align the keys and values of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedColonStyle = ["$UNRESOLVED:table", "$UNRESOLVED:key"]
+EnforcedHashRocketStyle = ["$UNRESOLVED:table", "$UNRESOLVED:key"]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_multiple_preferred_key_and_table_alignment_configuration_table_and_key_config_corrects_a_hash_with_mixed_separators_into_table_alignment"
+source = '''
+other = {
+  foo:  1,
+  'bar' => 2,
+}
+'''
+corrected = '''
+other = {
+  foo:     1,
+  'bar' => 2,
+}
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 9
+message = "Align the keys and values of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedColonStyle = ["$UNRESOLVED:table", "$UNRESOLVED:key"]
+EnforcedHashRocketStyle = ["$UNRESOLVED:table", "$UNRESOLVED:key"]
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_different_settings_for_and_registers_offenses_and_correct_misaligned_entries"
+source = '''
+hash1 = {
+  a:   0,
+  bbb: 1
+}
+hash2 = {
+    'a' => 0,
+  'bbb' => 1
+}
+'''
+corrected = '''
+hash1 = {
+  a:   0,
+bbb:   1
+}
+hash2 = {
+    'a' => 0,
+    'bbb' => 1
+}
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 8
+message = "Align the separators of a hash literal if they span more than one line."
+
+[[tests.offenses]]
+line = 7
+column_start = 2
+column_end = 12
+message = "Align the keys of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedColonStyle = "$UNRESOLVED:separator"
+EnforcedHashRocketStyle = "$UNRESOLVED:key"
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_different_settings_for_and_accepts_aligned_entries"
+source = '''
+hash1 = {
+    a: 0,
+  bbb: 1
+}
+hash2 = {
+  'a' => 0,
+  'bbb' => 1
+}
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedColonStyle = "$UNRESOLVED:separator"
+EnforcedHashRocketStyle = "$UNRESOLVED:key"
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_registers_no_offense_for_superclass_call_without_args"
+source = '''
+super
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedColonStyle = "$UNRESOLVED:separator"
+EnforcedHashRocketStyle = "$UNRESOLVED:key"
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_registers_no_offense_for_yield_without_args"
+source = '''
+yield
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedColonStyle = "$UNRESOLVED:separator"
+EnforcedHashRocketStyle = "$UNRESOLVED:key"
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_enforcedcolonstyle_table_and_misaligned_keys_registers_an_offense_and_corrects"
+source = '''
+foo ab: 1,
+    c: 2
+'''
+corrected = '''
+foo ab: 1,
+    c:  2
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 4
+column_end = 8
+message = "Align the keys and values of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedColonStyle = "$UNRESOLVED:table"
+EnforcedHashRocketStyle = "$UNRESOLVED:key"
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_enforcedcolonstyle_table_when_using_hash_value_omission_and_aligned_keys_does_not_register_an_offense"
+source = '''
+foo ab: 1,
+    c:
+'''
+ruby_version = ">= 3.1"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedColonStyle = "$UNRESOLVED:table"
+EnforcedHashRocketStyle = "$UNRESOLVED:key"
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_enforcedcolonstyle_table_when_using_anonymous_keyword_rest_arguments_and_forwarded_keyword_rest_argument_after_a_hash_key_registers_an_offense_on_the_misaligned_key_and_corrects"
+source = '''
+def foo(**)
+  bar ab: 1,
+      c: 2, **
+end
+'''
+corrected = '''
+def foo(**)
+  bar ab: 1,
+      c:  2, **
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 3
+column_start = 6
+column_end = 10
+message = "Align the keys and values of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedColonStyle = "$UNRESOLVED:table"
+EnforcedHashRocketStyle = "$UNRESOLVED:key"
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_enforcedcolonstyle_table_when_using_anonymous_keyword_rest_arguments_and_aligned_keys_but_forwarded_keyword_rest_argument_after_does_not_register_an_offense_on_the_forwarded_kwrestarg"
+source = '''
+def foo(**)
+  bar a: 1,
+      b: 2, **
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedColonStyle = "$UNRESOLVED:table"
+EnforcedHashRocketStyle = "$UNRESOLVED:key"
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_enforcedcolonstyle_table_when_using_anonymous_keyword_rest_arguments_and_a_misaligned_forwarded_keyword_rest_argument_registers_an_offense_and_corrects"
+source = '''
+def foo(**)
+  bar a: 1,
+        **
+end
+'''
+corrected = '''
+def foo(**)
+  bar a: 1,
+      **
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 3
+column_start = 8
+column_end = 10
+message = "Align keyword splats with the rest of the hash if it spans more than one line."
+
+[tests.config]
+EnforcedColonStyle = "$UNRESOLVED:table"
+EnforcedHashRocketStyle = "$UNRESOLVED:key"
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_enforcedcolonstyle_table_when_the_only_item_is_a_kwsplat_does_not_register_an_offense"
+source = '''
+foo({**rest})
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedColonStyle = "$UNRESOLVED:table"
+EnforcedHashRocketStyle = "$UNRESOLVED:key"
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_enforcedcolonstyle_table_and_a_double_splat_argument_after_a_hash_key_registers_an_offense_on_the_misaligned_key_and_corrects"
+source = '''
+foo ab: 1,
+    c: 2, **rest
+'''
+corrected = '''
+foo ab: 1,
+    c:  2, **rest
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 4
+column_end = 8
+message = "Align the keys and values of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedColonStyle = "$UNRESOLVED:table"
+EnforcedHashRocketStyle = "$UNRESOLVED:key"
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_enforcedcolonstyle_table_and_aligned_keys_but_a_double_splat_argument_after_does_not_register_an_offense_on_the_kwsplat"
+source = '''
+foo a: 1,
+    b: 2, **rest
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedColonStyle = "$UNRESOLVED:table"
+EnforcedHashRocketStyle = "$UNRESOLVED:key"
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_enforcedcolonstyle_table_and_a_misaligned_double_splat_argument_registers_an_offense_and_corrects"
+source = '''
+foo a: 1,
+      **rest
+'''
+corrected = '''
+foo a: 1,
+    **rest
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 12
+message = "Align keyword splats with the rest of the hash if it spans more than one line."
+
+[tests.config]
+EnforcedColonStyle = "$UNRESOLVED:table"
+EnforcedHashRocketStyle = "$UNRESOLVED:key"
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_enforcedhashrocketstyle_table_and_misaligned_keys_registers_an_offense_and_corrects"
+source = '''
+foo :ab => 1,
+    :c => 2
+'''
+corrected = '''
+foo :ab => 1,
+    :c  => 2
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 4
+column_end = 11
+message = "Align the keys and values of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedColonStyle = "$UNRESOLVED:table"
+EnforcedHashRocketStyle = "$UNRESOLVED:table"
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_enforcedhashrocketstyle_table_when_the_only_item_is_a_kwsplat_does_not_register_an_offense"
+source = '''
+foo({**rest})
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedColonStyle = "$UNRESOLVED:table"
+EnforcedHashRocketStyle = "$UNRESOLVED:table"
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_enforcedhashrocketstyle_table_and_a_double_splat_argument_after_a_hash_key_registers_an_offense_on_the_misaligned_key_and_corrects"
+source = '''
+foo :ab => 1,
+    :c => 2, **rest
+'''
+corrected = '''
+foo :ab => 1,
+    :c  => 2, **rest
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 4
+column_end = 11
+message = "Align the keys and values of a hash literal if they span more than one line."
+
+[tests.config]
+EnforcedColonStyle = "$UNRESOLVED:table"
+EnforcedHashRocketStyle = "$UNRESOLVED:table"
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_enforcedhashrocketstyle_table_and_aligned_keys_but_a_double_splat_argument_after_does_not_register_an_offense_on_the_kwsplat"
+source = '''
+foo :a => 1,
+    :b => 2, **rest
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedColonStyle = "$UNRESOLVED:table"
+EnforcedHashRocketStyle = "$UNRESOLVED:table"
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"
+
+[[tests]]
+name = "rubocop_cop_layout_hashalignment_with_enforcedhashrocketstyle_table_and_a_misaligned_double_splat_argument_registers_an_offense_and_corrects"
+source = '''
+foo :a => 1,
+      **rest
+'''
+corrected = '''
+foo :a => 1,
+    **rest
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 12
+message = "Align keyword splats with the rest of the hash if it spans more than one line."
+
+[tests.config]
+EnforcedColonStyle = "$UNRESOLVED:table"
+EnforcedHashRocketStyle = "$UNRESOLVED:table"
+EnforcedLastArgumentHashStyle = "$UNRESOLVED:ignore_explicit"

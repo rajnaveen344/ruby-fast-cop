@@ -1,0 +1,126 @@
+cop = "Style/CaseEquality"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_caseequality_does_not_fail_when_the_receiver_is_implicit"
+source = '''
+puts "No offense"
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_caseequality_does_not_register_an_offense_for_when_the_receiver_is_not_a_camel_cased_constant"
+source = '''
+REGEXP_CONSTANT === var
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_caseequality_does_not_register_an_offense_for_when_the_receiver_is_a_regexp"
+source = '''
+/OMG/ === var
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_caseequality_registers_an_offense_and_corrects_for_when_the_receiver_is_a_range"
+source = '''
+(1..10) === var
+'''
+corrected = '''
+(1..10).include?(var)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 11
+message = "Avoid the use of the case equality operator `===`."
+
+[[tests]]
+name = "rubocop_cop_style_caseequality_registers_an_offense_and_does_not_correct_for_when_receiver_is_of_some_other_type"
+source = '''
+foo === var
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 7
+message = "Avoid the use of the case equality operator `===`."
+
+[[tests]]
+name = "rubocop_cop_style_caseequality_when_allowonconstant_is_false_registers_an_offense_and_corrects_for_when_the_receiver_is_a_constant"
+source = '''
+Array === var
+'''
+corrected = '''
+var.is_a?(Array)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 9
+message = "Avoid the use of the case equality operator `===`."
+
+[tests.config]
+AllowOnConstant = false
+
+[[tests]]
+name = "rubocop_cop_style_caseequality_when_allowonconstant_is_true_does_not_register_an_offense_for_when_the_receiver_is_a_constant"
+source = '''
+Array === var
+'''
+offenses = []
+
+[tests.config]
+AllowOnConstant = true
+
+[[tests]]
+name = "rubocop_cop_style_caseequality_when_allowonselfclass_is_false_registers_an_offense_and_corrects_for_when_the_receiver_is_self_class"
+source = '''
+self.class === var
+'''
+corrected = '''
+var.is_a?(self.class)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 14
+message = "Avoid the use of the case equality operator `===`."
+
+[tests.config]
+AllowOnConstant = true
+AllowOnSelfClass = false
+
+[[tests]]
+name = "rubocop_cop_style_caseequality_when_allowonselfclass_is_true_does_not_register_an_offense_for_when_the_receiver_is_self_class"
+source = '''
+self.class === var
+'''
+offenses = []
+
+[tests.config]
+AllowOnConstant = true
+AllowOnSelfClass = true
+
+[[tests]]
+name = "rubocop_cop_style_caseequality_when_allowonselfclass_is_true_registers_an_offense_but_does_not_correct_for_when_the_receiver_is_self_klass"
+source = '''
+self.klass === var
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 14
+message = "Avoid the use of the case equality operator `===`."
+
+[tests.config]
+AllowOnConstant = true
+AllowOnSelfClass = true

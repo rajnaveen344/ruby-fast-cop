@@ -1,0 +1,238 @@
+cop = "Style/MinMaxComparison"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_minmaxcomparison_registers_and_corrects_an_offense_when_using_a_b_a_b"
+source = '''
+a > b ? a : b
+'''
+corrected = '''
+[a, b].max
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 13
+message = "Use `[a, b].max` instead."
+
+[[tests]]
+name = "rubocop_cop_style_minmaxcomparison_registers_and_corrects_an_offense_when_using_a_b_a_b"
+source = '''
+a >= b ? a : b
+'''
+corrected = '''
+[a, b].max
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 14
+message = "Use `[a, b].max` instead."
+
+[[tests]]
+name = "rubocop_cop_style_minmaxcomparison_registers_and_corrects_an_offense_when_using_a_b_b_a"
+source = '''
+a < b ? b : a
+'''
+corrected = '''
+[a, b].max
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 13
+message = "Use `[a, b].max` instead."
+
+[[tests]]
+name = "rubocop_cop_style_minmaxcomparison_registers_and_corrects_an_offense_when_using_a_b_b_a"
+source = '''
+a <= b ? b : a
+'''
+corrected = '''
+[a, b].max
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 14
+message = "Use `[a, b].max` instead."
+
+[[tests]]
+name = "rubocop_cop_style_minmaxcomparison_registers_and_corrects_an_offense_when_using_a_b_a_b"
+source = '''
+a < b ? a : b
+'''
+corrected = '''
+[a, b].min
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 13
+message = "Use `[a, b].min` instead."
+
+[[tests]]
+name = "rubocop_cop_style_minmaxcomparison_registers_and_corrects_an_offense_when_using_a_b_a_b"
+source = '''
+a <= b ? a : b
+'''
+corrected = '''
+[a, b].min
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 14
+message = "Use `[a, b].min` instead."
+
+[[tests]]
+name = "rubocop_cop_style_minmaxcomparison_registers_and_corrects_an_offense_when_using_a_b_b_a"
+source = '''
+a > b ? b : a
+'''
+corrected = '''
+[a, b].min
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 13
+message = "Use `[a, b].min` instead."
+
+[[tests]]
+name = "rubocop_cop_style_minmaxcomparison_registers_and_corrects_an_offense_when_using_a_b_b_a"
+source = '''
+a >= b ? b : a
+'''
+corrected = '''
+[a, b].min
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 14
+message = "Use `[a, b].min` instead."
+
+[[tests]]
+name = "rubocop_cop_style_minmaxcomparison_registers_and_corrects_an_offense_when_using_a_b_b_a"
+source = '''
+(a >= b) ? b : a
+'''
+corrected = '''
+[a, b].min
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 16
+message = "Use `[a, b].min` instead."
+
+[[tests]]
+name = "rubocop_cop_style_minmaxcomparison_registers_and_corrects_an_offense_when_using_a_b_a_b_with_if_else"
+source = '''
+if a > b
+  a
+else
+  b
+end
+'''
+corrected = '''
+[a, b].max
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 8
+message = "Use `[a, b].max` instead."
+
+[[tests]]
+name = "rubocop_cop_style_minmaxcomparison_registers_and_corrects_an_offense_when_using_a_b_a_b_with_if_else"
+source = '''
+if a < b
+  a
+else
+  b
+end
+'''
+corrected = '''
+[a, b].min
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 8
+message = "Use `[a, b].min` instead."
+
+[[tests]]
+name = "rubocop_cop_style_minmaxcomparison_registers_and_corrects_an_offense_when_using_a_b_a_b_with_elsif_else"
+source = '''
+if x
+elsif a < b
+  a
+else
+  b
+end
+'''
+corrected = '''
+if x
+else
+  [a, b].min
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 11
+message = "Use `[a, b].min` instead."
+
+[[tests]]
+name = "rubocop_cop_style_minmaxcomparison_does_not_register_an_offense_when_using_a_b_c_d"
+source = '''
+a > b ? c : d
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_minmaxcomparison_does_not_register_an_offense_when_using_condition_a_b"
+source = '''
+condition ? a : b
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_minmaxcomparison_does_not_register_an_offense_when_using_elsif"
+source = '''
+if a
+elsif foo(b)
+  b
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_minmaxcomparison_does_not_register_an_offense_when_using_a_b_max"
+source = '''
+[a, b].max
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_minmaxcomparison_does_not_register_an_offense_when_using_a_b_min"
+source = '''
+[a, b].min
+'''
+offenses = []

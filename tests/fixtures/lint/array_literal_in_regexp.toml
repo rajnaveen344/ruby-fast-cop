@@ -1,0 +1,393 @@
+cop = "Lint/ArrayLiteralInRegexp"
+department = "lint"
+severity = "warning"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp"
+source = '''
+/#{%{source}}/
+'''
+corrected = '''
+#{correction}
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 1
+column_end = 14
+message = "Use a character class instead of interpolating an array in a regexp."
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp"
+source = '''
+/#{%{source}}/
+'''
+corrected = '''
+#{correction}
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 1
+column_end = 14
+message = "Use alternation instead of interpolating an array in a regexp."
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp"
+source = '''
+/#{%{source}}/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 1
+column_end = 14
+message = "Use alternation or a character class instead of interpolating an array in a regexp."
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp_character_class_w_a"
+source = '''
+%w[a]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp_character_class_a"
+source = '''
+/[a]/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp_character_class_w_a_b_c"
+source = '''
+%w[a b c]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp_character_class_abc"
+source = '''
+/[abc]/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp_character_class_a_b_c"
+source = '''
+["a", "b", "c"]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp_character_class_abc"
+source = '''
+/[abc]/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp_character_class_i_a_b_c"
+source = '''
+%i[a b c]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp_character_class_abc"
+source = '''
+/[abc]/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp_character_class_a_b_c"
+source = '''
+[:a, :b, :c]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp_character_class_abc"
+source = '''
+/[abc]/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp_character_class_1_2_3"
+source = '''
+[1, 2, 3]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp_character_class_123"
+source = '''
+/[123]/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp_character_class_w"
+source = '''
+%w[^ - $ |]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp_character_class"
+source = '''
+/[\^\-\$\|]/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp_character_class_w_あ_い"
+source = '''
+%w[あ い 🐧]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp_character_class_あい"
+source = '''
+/[あい🐧]/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp_alternation_w_foo"
+source = '''
+%w[foo]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp_alternation_foo"
+source = '''
+/(?:foo)/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp_alternation_w_foo_bar_baz"
+source = '''
+%w[foo bar baz]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp_alternation_foo_bar_baz"
+source = '''
+/(?:foo|bar|baz)/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp_alternation_w_a_b_cat"
+source = '''
+%w[a b cat]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp_alternation_a_b_cat"
+source = '''
+/(?:a|b|cat)/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp_alternation_1_0_2_5_4_7"
+source = '''
+[1.0, 2.5, 4.7]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp_alternation_1_0_2_5_4_7"
+source = '''
+/(?:1\.0|2\.5|4\.7)/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp_alternation_a_5_18_9"
+source = '''
+["a", 5, 18.9]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp_alternation_a_5_18_9"
+source = '''
+/(?:a|5|18\.9)/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp_alternation_w"
+source = '''
+%w[^^ -- $$ || ++ **]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp_alternation"
+source = '''
+/(?:\^\^|\-\-|\$\$|\|\||\+\+|\*\*)/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp_alternation_w_true_false_nil"
+source = '''
+%w[true false nil]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp_alternation_true_false_nil"
+source = '''
+/(?:true|false|nil)/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp_alternation_true_false_nil"
+source = '''
+[true, false, nil]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp_alternation_true_false_nil"
+source = '''
+/(?:true|false|nil)/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp_alternation_w"
+source = '''
+%w[❤️ 💚 💙]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp_alternation"
+source = '''
+/(?:❤️|💚|💙)/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp_offense_foo"
+source = '''
+[foo]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp_offense_foo"
+source = '''
+["#{foo}"]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp_offense_foo"
+source = '''
+[:"#{foo}"]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp_offense_foo"
+source = '''
+[`foo`]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp_offense_1r"
+source = '''
+[1r]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp_offense_1i"
+source = '''
+[1i]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp_offense_1_2"
+source = '''
+[1..2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp_offense_1_2"
+source = '''
+[1...2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp_offense_abc"
+source = '''
+[/abc/]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp_offense"
+source = '''
+[[]]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp_offense"
+source = '''
+[{}]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp_does_not_register_an_offense_without_interpolation"
+source = '''
+/[abc]/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp_does_not_register_an_offense_when_the_interpolated_value_is_not_an_array"
+source = '''
+/#{foo}/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp_does_not_register_an_offense_when_an_interpolated_array_is_inside_a_string"
+source = '''
+"#{%w[a b c]}"
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_arrayliteralinregexp_does_not_register_an_offense_with_empty_interpolation"
+source = '''
+/#{}/
+'''
+offenses = []

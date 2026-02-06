@@ -1,0 +1,224 @@
+cop = "Style/PerlBackrefs"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_perlbackrefs_autocorrects_puts_1_to_puts_regexp_last_match_1"
+source = '''
+puts $1
+'''
+corrected = '''
+puts Regexp.last_match(1)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 7
+message = "Prefer `Regexp.last_match(1)` over `$1`."
+
+[[tests]]
+name = "rubocop_cop_style_perlbackrefs_autocorrects_9_to_regexp_last_match_9"
+source = '''
+$9
+'''
+corrected = '''
+Regexp.last_match(9)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 2
+message = "Prefer `Regexp.last_match(9)` over `$9`."
+
+[[tests]]
+name = "rubocop_cop_style_perlbackrefs_autocorrects_to_regexp_last_match_0"
+source = '''
+$&
+'''
+corrected = '''
+Regexp.last_match(0)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 2
+message = "Prefer `Regexp.last_match(0)` over `$&`."
+
+[[tests]]
+name = "rubocop_cop_style_perlbackrefs_autocorrects_to_regexp_last_match_pre_match"
+source = '''
+$`
+'''
+corrected = '''
+Regexp.last_match.pre_match
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 2
+message = "Prefer `Regexp.last_match.pre_match` over `$``."
+
+[[tests]]
+name = "rubocop_cop_style_perlbackrefs_autocorrects_to_regexp_last_match_post_match"
+source = '''
+$'
+'''
+corrected = '''
+Regexp.last_match.post_match
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 2
+message = "Prefer `Regexp.last_match.post_match` over `$'`."
+
+[[tests]]
+name = "rubocop_cop_style_perlbackrefs_autocorrects_to_regexp_last_match_1"
+source = '''
+$+
+'''
+corrected = '''
+Regexp.last_match(-1)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 2
+message = "Prefer `Regexp.last_match(-1)` over `$+`."
+
+[[tests]]
+name = "rubocop_cop_style_perlbackrefs_autocorrects_match_to_regexp_last_match_0"
+source = '''
+$MATCH
+'''
+corrected = '''
+Regexp.last_match(0)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Prefer `Regexp.last_match(0)` over `$MATCH`."
+
+[[tests]]
+name = "rubocop_cop_style_perlbackrefs_autocorrects_prematch_to_regexp_last_match_pre_match"
+source = '''
+$PREMATCH
+'''
+corrected = '''
+Regexp.last_match.pre_match
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 9
+message = "Prefer `Regexp.last_match.pre_match` over `$PREMATCH`."
+
+[[tests]]
+name = "rubocop_cop_style_perlbackrefs_autocorrects_postmatch_to_regexp_last_match_post_match"
+source = '''
+$POSTMATCH
+'''
+corrected = '''
+Regexp.last_match.post_match
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 10
+message = "Prefer `Regexp.last_match.post_match` over `$POSTMATCH`."
+
+[[tests]]
+name = "rubocop_cop_style_perlbackrefs_autocorrects_last_paren_match_to_regexp_last_match_1"
+source = '''
+$LAST_PAREN_MATCH
+'''
+corrected = '''
+Regexp.last_match(-1)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 17
+message = "Prefer `Regexp.last_match(-1)` over `$LAST_PAREN_MATCH`."
+
+[[tests]]
+name = "rubocop_cop_style_perlbackrefs_autocorrects_1_to_regexp_last_match_1"
+source = '''
+"#$1"
+'''
+corrected = '''
+"#{Regexp.last_match(1)}"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 4
+message = "Prefer `Regexp.last_match(1)` over `$1`."
+
+[[tests]]
+name = "rubocop_cop_style_perlbackrefs_autocorrects_1_to_regexp_last_match_1"
+source = '''
+`#$1`
+'''
+corrected = '''
+`#{Regexp.last_match(1)}`
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 4
+message = "Prefer `Regexp.last_match(1)` over `$1`."
+
+[[tests]]
+name = "rubocop_cop_style_perlbackrefs_autocorrects_1_to_regexp_last_match_1"
+source = '''
+/#$1/
+'''
+corrected = '''
+/#{Regexp.last_match(1)}/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 4
+message = "Prefer `Regexp.last_match(1)` over `$1`."
+
+[[tests]]
+name = "rubocop_cop_style_perlbackrefs_autocorrects_1_to_regexp_last_match_1_in_namespace"
+source = '''
+module Foo
+  class Regexp
+  end
+
+  puts $1
+end
+'''
+corrected = '''
+module Foo
+  class Regexp
+  end
+
+  puts ::Regexp.last_match(1)
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 7
+column_end = 9
+message = "Prefer `::Regexp.last_match(1)` over `$1`."

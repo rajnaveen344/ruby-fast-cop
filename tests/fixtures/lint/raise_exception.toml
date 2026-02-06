@@ -1,0 +1,254 @@
+cop = "Lint/RaiseException"
+department = "lint"
+severity = "warning"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_lint_raiseexception_registers_an_offense_and_corrects_for_raise_with_exception"
+source = '''
+raise ::Exception
+'''
+corrected = '''
+raise ::StandardError
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 17
+message = "Use `StandardError` over `Exception`."
+
+[tests.config]
+AllowedImplicitNamespaces = ["Gem"]
+
+[[tests]]
+name = "rubocop_cop_lint_raiseexception_registers_an_offense_and_corrects_for_raise_with_exception_new"
+source = '''
+raise ::Exception.new 'Error with exception'
+'''
+corrected = '''
+raise ::StandardError.new 'Error with exception'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 17
+message = "Use `StandardError` over `Exception`."
+
+[tests.config]
+AllowedImplicitNamespaces = ["Gem"]
+
+[[tests]]
+name = "rubocop_cop_lint_raiseexception_registers_an_offense_and_corrects_for_raise_with_exception_and_message"
+source = '''
+raise ::Exception, 'Error with exception'
+'''
+corrected = '''
+raise ::StandardError, 'Error with exception'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 17
+message = "Use `StandardError` over `Exception`."
+
+[tests.config]
+AllowedImplicitNamespaces = ["Gem"]
+
+[[tests]]
+name = "rubocop_cop_lint_raiseexception_registers_an_offense_and_corrects_for_raise_with_exception"
+source = '''
+raise Exception
+'''
+corrected = '''
+raise StandardError
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 15
+message = "Use `StandardError` over `Exception`."
+
+[tests.config]
+AllowedImplicitNamespaces = ["Gem"]
+
+[[tests]]
+name = "rubocop_cop_lint_raiseexception_registers_an_offense_and_corrects_for_raise_with_exception_and_message"
+source = '''
+raise Exception, 'Error with exception'
+'''
+corrected = '''
+raise StandardError, 'Error with exception'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 15
+message = "Use `StandardError` over `Exception`."
+
+[tests.config]
+AllowedImplicitNamespaces = ["Gem"]
+
+[[tests]]
+name = "rubocop_cop_lint_raiseexception_registers_an_offense_and_corrects_for_raise_with_exception_new_and_message"
+source = '''
+raise Exception.new 'Error with exception'
+'''
+corrected = '''
+raise StandardError.new 'Error with exception'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 15
+message = "Use `StandardError` over `Exception`."
+
+[tests.config]
+AllowedImplicitNamespaces = ["Gem"]
+
+[[tests]]
+name = "rubocop_cop_lint_raiseexception_registers_an_offense_and_corrects_for_raise_with_exception_new_args"
+source = '''
+raise Exception.new('arg1', 'arg2')
+'''
+corrected = '''
+raise StandardError.new('arg1', 'arg2')
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 15
+message = "Use `StandardError` over `Exception`."
+
+[tests.config]
+AllowedImplicitNamespaces = ["Gem"]
+
+[[tests]]
+name = "rubocop_cop_lint_raiseexception_registers_an_offense_and_corrects_for_fail_with_exception"
+source = '''
+fail Exception
+'''
+corrected = '''
+fail StandardError
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 14
+message = "Use `StandardError` over `Exception`."
+
+[tests.config]
+AllowedImplicitNamespaces = ["Gem"]
+
+[[tests]]
+name = "rubocop_cop_lint_raiseexception_registers_an_offense_and_corrects_for_fail_with_exception_and_message"
+source = '''
+fail Exception, 'Error with exception'
+'''
+corrected = '''
+fail StandardError, 'Error with exception'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 14
+message = "Use `StandardError` over `Exception`."
+
+[tests.config]
+AllowedImplicitNamespaces = ["Gem"]
+
+[[tests]]
+name = "rubocop_cop_lint_raiseexception_registers_an_offense_and_corrects_for_fail_with_exception_new_and_message"
+source = '''
+fail Exception.new 'Error with exception'
+'''
+corrected = '''
+fail StandardError.new 'Error with exception'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 14
+message = "Use `StandardError` over `Exception`."
+
+[tests.config]
+AllowedImplicitNamespaces = ["Gem"]
+
+[[tests]]
+name = "rubocop_cop_lint_raiseexception_does_not_register_an_offense_for_raise_without_arguments"
+source = '''
+raise
+'''
+offenses = []
+
+[tests.config]
+AllowedImplicitNamespaces = ["Gem"]
+
+[[tests]]
+name = "rubocop_cop_lint_raiseexception_does_not_register_an_offense_for_fail_without_arguments"
+source = '''
+fail
+'''
+offenses = []
+
+[tests.config]
+AllowedImplicitNamespaces = ["Gem"]
+
+[[tests]]
+name = "rubocop_cop_lint_raiseexception_does_not_register_an_offense_when_raising_exception_with_explicit_namespace"
+source = '''
+raise Foo::Exception
+'''
+offenses = []
+
+[tests.config]
+AllowedImplicitNamespaces = ["Gem"]
+
+[[tests]]
+name = "rubocop_cop_lint_raiseexception_when_under_namespace_does_not_register_an_offense_when_exception_without_cbase_specified"
+source = '''
+module Gem
+  def self.foo
+    raise Exception
+  end
+end
+'''
+offenses = []
+
+[tests.config]
+AllowedImplicitNamespaces = ["Gem"]
+
+[[tests]]
+name = "rubocop_cop_lint_raiseexception_when_under_namespace_registers_an_offense_and_corrects_when_exception_with_cbase_specified"
+source = '''
+module Gem
+  def self.foo
+    raise ::Exception
+  end
+end
+'''
+corrected = '''
+module Gem
+  def self.foo
+    raise ::StandardError
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 10
+column_end = 21
+message = "Use `StandardError` over `Exception`."
+
+[tests.config]
+AllowedImplicitNamespaces = ["Gem"]

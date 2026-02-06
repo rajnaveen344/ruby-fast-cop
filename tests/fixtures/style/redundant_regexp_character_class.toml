@@ -1,0 +1,561 @@
+cop = "Style/RedundantRegexpCharacterClass"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpcharacterclass_with_a_character_class_containing_a_single_character_registers_an_offense_and_corrects"
+source = '''
+foo = /[a]/
+'''
+corrected = '''
+foo = /a/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 10
+message = "Redundant single-element character class, `[a]` can be replaced with `a`."
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpcharacterclass_with_multiple_character_classes_containing_single_characters_registers_an_offense_and_corrects"
+source = '''
+foo = /[a]b[c]d/
+'''
+corrected = '''
+foo = /abcd/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 10
+message = "Redundant single-element character class, `[a]` can be replaced with `a`."
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 14
+message = "Redundant single-element character class, `[c]` can be replaced with `c`."
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpcharacterclass_with_a_character_class_containing_a_single_character_inside_a_group_registers_an_offense_and_corrects"
+source = '''
+foo = /([a])/
+'''
+corrected = '''
+foo = /(a)/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 11
+message = "Redundant single-element character class, `[a]` can be replaced with `a`."
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpcharacterclass_with_a_character_class_containing_a_single_character_before_quantifier_registers_an_offense_and_corrects"
+source = '''
+foo = /[a]+/
+'''
+corrected = '''
+foo = /a+/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 10
+message = "Redundant single-element character class, `[a]` can be replaced with `a`."
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpcharacterclass_with_a_character_class_containing_a_single_character_before_n_m_quantifier_registers_an_offense_and_corrects"
+source = '''
+foo = /[a]{2,10}/
+'''
+corrected = '''
+foo = /a{2,10}/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 10
+message = "Redundant single-element character class, `[a]` can be replaced with `a`."
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpcharacterclass_with_r_regexp_with_a_character_class_containing_a_single_character_registers_an_offense_and_corrects"
+source = '''
+foo = %r{[a]}
+'''
+corrected = '''
+foo = %r{a}
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 12
+message = "Redundant single-element character class, `[a]` can be replaced with `a`."
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpcharacterclass_with_r_regexp_with_multiple_character_classes_containing_single_characters_registers_an_offense_and_corrects"
+source = '''
+foo = %r{[a]b[c]d}
+'''
+corrected = '''
+foo = %r{abcd}
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 12
+message = "Redundant single-element character class, `[a]` can be replaced with `a`."
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 16
+message = "Redundant single-element character class, `[c]` can be replaced with `c`."
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpcharacterclass_with_r_regexp_with_a_character_class_containing_a_single_character_inside_a_group_registers_an_offense_and_corrects"
+source = '''
+foo = %r{([a])}
+'''
+corrected = '''
+foo = %r{(a)}
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 13
+message = "Redundant single-element character class, `[a]` can be replaced with `a`."
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpcharacterclass_with_r_regexp_with_a_character_class_containing_a_single_character_before_quantifier_registers_an_offense_and_corrects"
+source = '''
+foo = %r{[a]+}
+'''
+corrected = '''
+foo = %r{a+}
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 12
+message = "Redundant single-element character class, `[a]` can be replaced with `a`."
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpcharacterclass_with_r_regexp_with_a_character_class_containing_a_single_character_before_n_m_quantifier_registers_an_offense_and_corrects"
+source = '''
+foo = %r{[a]{2,10}}
+'''
+corrected = '''
+foo = %r{a{2,10}}
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 12
+message = "Redundant single-element character class, `[a]` can be replaced with `a`."
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpcharacterclass_with_a_character_class_containing_a_single_range_does_not_register_an_offense"
+source = '''
+foo = /[a-z]/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpcharacterclass_with_a_character_class_containing_a_posix_bracket_expression_does_not_register_an_offense"
+source = '''
+foo = /[[:alnum:]]/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpcharacterclass_with_a_character_class_containing_a_negated_posix_bracket_expression_does_not_register_an_offense"
+source = '''
+foo = /[[:^alnum:]]/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpcharacterclass_with_a_character_class_containing_set_intersection_does_not_register_an_offense"
+source = '''
+foo = /[[:alnum:]&&a-d]/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpcharacterclass_with_a_regexp_containing_invalid_g_escape_registers_an_offense_and_corrects"
+source = '''
+foo = /[a]\g/
+'''
+corrected = '''
+foo = /a\g/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 10
+message = "Redundant single-element character class, `[a]` can be replaced with `a`."
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpcharacterclass_with_a_character_class_containing_an_escaped_registers_an_offense_and_corrects"
+source = '''
+foo = /[\]]/
+'''
+corrected = '''
+foo = /\]/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 11
+message = "Redundant single-element character class, `[\\]]` can be replaced with `\\]`."
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpcharacterclass_with_a_character_class_containing_an_escaped_registers_an_offense_and_corrects"
+source = '''
+foo = /[\[]/
+'''
+corrected = '''
+foo = /\[/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 11
+message = "Redundant single-element character class, `[\\[]` can be replaced with `\\[`."
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpcharacterclass_with_a_character_class_containing_a_space_meta_character_registers_an_offense_and_corrects"
+source = '''
+foo = /[\s]/
+'''
+corrected = '''
+foo = /\s/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 11
+message = "Redundant single-element character class, `[\\s]` can be replaced with `\\s`."
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpcharacterclass_with_a_character_class_containing_a_negated_space_meta_character_registers_an_offense_and_corrects"
+source = '''
+foo = /[\S]/
+'''
+corrected = '''
+foo = /\S/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 11
+message = "Redundant single-element character class, `[\\S]` can be replaced with `\\S`."
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpcharacterclass_with_a_character_class_containing_a_single_unicode_code_point_registers_an_offense_and_corrects"
+source = '''
+foo = /[\u{06F2}]/
+'''
+corrected = '''
+foo = /\u{06F2}/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 17
+message = "Redundant single-element character class, `[\\u{06F2}]` can be replaced with `\\u{06F2}`."
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpcharacterclass_with_a_character_class_containing_multiple_unicode_code_points_does_not_register_an_offense"
+source = '''
+foo = /[\u{0061 0062}]/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpcharacterclass_with_a_character_class_containing_a_single_unicode_character_property_registers_an_offense_and_corrects"
+source = '''
+foo = /[\p{Digit}]/
+'''
+corrected = '''
+foo = /\p{Digit}/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 18
+message = "Redundant single-element character class, `[\\p{Digit}]` can be replaced with `\\p{Digit}`."
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpcharacterclass_with_a_character_class_containing_a_single_negated_unicode_character_property_registers_an_offense_and_corrects"
+source = '''
+foo = /[\P{Digit}]/
+'''
+corrected = '''
+foo = /\P{Digit}/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 18
+message = "Redundant single-element character class, `[\\P{Digit}]` can be replaced with `\\P{Digit}`."
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpcharacterclass_with_a_character_class_containing_an_escaped_registers_an_offense_and_corrects"
+source = '''
+foo = /[\#]/
+'''
+corrected = '''
+foo = /\#/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 11
+message = "Redundant single-element character class, `[\\#]` can be replaced with `\\#`."
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpcharacterclass_with_a_character_class_containing_an_unescaped_registers_an_offense_and_corrects"
+source = '''
+foo = /[#]{0}/
+'''
+corrected = '''
+foo = /\#{0}/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 10
+message = "Redundant single-element character class, `[#]` can be replaced with `\\#`."
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpcharacterclass_with_a_character_class_containing_an_escaped_b_does_not_register_an_offense"
+source = '''
+foo = /[\b]/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpcharacterclass_with_a_character_class_containing_an_octal_escape_sequence_that_also_works_outside_registers_an_offense_for_escapes_that_would_work_outside_the_class"
+source = '''
+foo = /[\032]/
+'''
+corrected = '''
+foo = /\032/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 13
+message = "Redundant single-element character class, `[\\032]` can be replaced with `\\032`."
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpcharacterclass_with_a_character_class_containing_an_octal_escape_sequence_that_does_not_work_outside_does_not_register_an_offense"
+source = '''
+foo = /[\1]/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpcharacterclass_with_a_character_class_containing_a_character_requiring_escape_outside_does_not_register_an_offense"
+source = '''
+foo = /[+]/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpcharacterclass_with_a_character_class_containing_escaped_character_requiring_escape_outside_registers_an_offense_and_corrects"
+source = '''
+foo = /[\+]/
+'''
+corrected = '''
+foo = /\+/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 11
+message = "Redundant single-element character class, `[\\+]` can be replaced with `\\+`."
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpcharacterclass_with_an_interpolated_unnecessary_character_class_regexp_registers_an_offense_and_corrects"
+source = '''
+foo = /a#{/[b]/}c/
+'''
+corrected = '''
+foo = /a#{/b/}c/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 14
+message = "Redundant single-element character class, `[b]` can be replaced with `b`."
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpcharacterclass_with_a_character_class_with_first_element_an_escaped_does_not_register_an_offense"
+source = '''
+foo = /[\])]/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpcharacterclass_with_a_negated_character_class_with_a_single_element_does_not_register_an_offense"
+source = '''
+foo = /[^x]/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpcharacterclass_with_a_character_class_containing_an_interpolation_does_not_register_an_offense"
+source = '''
+foo = /[#{foo}]/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpcharacterclass_with_consecutive_escaped_square_brackets_does_not_register_an_offense"
+source = '''
+foo = /\[\]/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpcharacterclass_with_consecutive_escaped_square_brackets_inside_a_character_class_does_not_register_an_offense"
+source = '''
+foo = /[\[\]]/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpcharacterclass_with_escaped_square_brackets_surrounding_a_single_character_does_not_register_an_offense"
+source = '''
+foo = /\[x\]/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpcharacterclass_with_a_character_class_containing_two_characters_does_not_register_an_offense"
+source = '''
+foo = /[ab]/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpcharacterclass_with_an_array_index_inside_an_interpolation_does_not_register_an_offense"
+source = '''
+foo = /a#{b[0]}c/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpcharacterclass_with_a_redundant_character_class_after_an_interpolation_registers_an_offense_and_corrects"
+source = '''
+foo = /#{x}[a]/
+'''
+corrected = '''
+foo = /#{x}a/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 14
+message = "Redundant single-element character class, `[a]` can be replaced with `a`."
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpcharacterclass_with_a_multi_line_interpolation_ignores_offenses_in_the_interpolated_expression"
+source = '''
+/#{Regexp.union(
+  %w"( ) { } [ ] < > $ ! ^ ` ... + * ? ,"
+)}/o
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpcharacterclass_with_a_character_class_containing_a_space_when_not_using_free_spaced_mode_registers_an_offense_and_corrects"
+source = '''
+foo = /[ ]/
+'''
+corrected = '''
+foo = / /
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 10
+message = "Redundant single-element character class, `[ ]` can be replaced with ` `."
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpcharacterclass_with_a_character_class_containing_a_space_with_an_unnecessary_character_class_after_a_comment_registers_an_offense_and_corrects"
+source = '''
+foo = /
+  a # This comment shouldn't affect the position of the offense
+  [b]
+/x
+'''
+corrected = '''
+foo = /
+  a # This comment shouldn't affect the position of the offense
+  b
+/x
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 5
+message = "Redundant single-element character class, `[b]` can be replaced with `b`."
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpcharacterclass_with_a_character_class_containing_a_space_when_using_free_spaced_mode_with_a_commented_single_element_character_class_does_not_register_an_offense"
+source = '''
+foo = /foo # [a]/x
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpcharacterclass_with_a_character_class_containing_a_space_when_using_free_spaced_mode_with_a_single_space_character_class_does_not_register_an_offense_with_only_x"
+source = '''
+foo = /[ ]/x
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpcharacterclass_with_a_character_class_containing_a_space_when_using_free_spaced_mode_with_a_single_space_character_class_does_not_register_an_offense_with_ix"
+source = '''
+foo = /[ ]/ix
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpcharacterclass_with_a_character_class_containing_a_space_when_using_free_spaced_mode_with_a_single_space_character_class_does_not_register_an_offense_with_iux"
+source = '''
+foo = /[ ]/iux
+'''
+offenses = []

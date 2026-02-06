@@ -1,0 +1,84 @@
+cop = "Lint/TripleQuotes"
+department = "lint"
+severity = "warning"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_lint_triplequotes_triple_quotes_on_one_line_registers_an_offense_and_corrects"
+source = "\"\"\"a string\"\"\"\n"
+corrected = "\"a string\"\n"
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 14
+message = "Delimiting a string with multiple quotes has no effect, use a single quote instead."
+
+[[tests]]
+name = "rubocop_cop_lint_triplequotes_triple_quotes_on_multiple_lines_registers_an_offense_and_corrects"
+source = "\"\"\"\n  a string\n\"\"\"\n"
+corrected = "\"\n  a string\n\"\n"
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 3
+message = "Delimiting a string with multiple quotes has no effect, use a single quote instead."
+
+[[tests]]
+name = "rubocop_cop_lint_triplequotes_triple_quotes_when_only_quotes_registers_an_offense_and_corrects_to_a_single_empty_quote"
+source = "\"\"\"\"\"\"\n"
+corrected = "\"\"\n"
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Delimiting a string with multiple quotes has no effect, use a single quote instead."
+
+[[tests]]
+name = "rubocop_cop_lint_triplequotes_triple_quotes_with_only_whitespace_does_not_register"
+source = "\" \" \" \" \" \"\n"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_triplequotes_quintuple_quotes_registers_an_offense_and_corrects"
+source = "\"\"\"\"\"\n  a string\n\"\"\"\"\"\n"
+corrected = "\"\n  a string\n\"\n"
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 5
+message = "Delimiting a string with multiple quotes has no effect, use a single quote instead."
+
+[[tests]]
+name = "rubocop_cop_lint_triplequotes_string_interpolation_does_not_register_an_offense"
+source = "str = \"#{abc}\"\n"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_triplequotes_string_interpolation_with_nested_extra_quotes_registers_an_offense_and_corrects"
+source = "str = \"#{'''abc'''}\"\n"
+corrected = "str = \"#{'abc'}\"\n"
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 18
+message = "Delimiting a string with multiple quotes has no effect, use a single quote instead."
+
+[[tests]]
+name = "rubocop_cop_lint_triplequotes_heredocs_does_not_register_an_offense"
+source = '''
+str = <<~STRING
+  a string
+  #{interpolation}
+STRING
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_triplequotes_does_not_register_an_offense_for_implicit_concatenation"
+source = "'' ''\n'a''b''c'\n'a''''b'\n"
+offenses = []

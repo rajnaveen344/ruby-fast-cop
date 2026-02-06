@@ -1,0 +1,26 @@
+cop = "Lint/AmbiguousAssignment"
+department = "lint"
+severity = "warning"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_lint_ambiguousassignment"
+source = '''
+%{lhs} =%{operator} y
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 21
+message = "Suspicious assignment detected. Did you mean `%{operator}=`?"
+
+[[tests]]
+name = "rubocop_cop_lint_ambiguousassignment_does_not_register_an_offense_when_no_mistype_assignments"
+source = '''
+x #{operator}= y
+x = #{operator}y
+'''
+interpolated = true
+verified = false
+offenses = []

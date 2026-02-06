@@ -1,0 +1,165 @@
+cop = "Security/Open"
+department = "security"
+severity = "warning"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_security_open_registers_an_offense_for_open"
+source = '''
+open(something)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 4
+message = "The use of `Kernel#open` is a serious security risk."
+
+[[tests]]
+name = "rubocop_cop_security_open_registers_an_offense_for_open_with_mode_argument"
+source = '''
+open(something, "r")
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 4
+message = "The use of `Kernel#open` is a serious security risk."
+
+[[tests]]
+name = "rubocop_cop_security_open_registers_an_offense_for_open_with_dynamic_string_that_is_not_prefixed"
+source = '''
+open("#{foo}.txt")
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 4
+message = "The use of `Kernel#open` is a serious security risk."
+
+[[tests]]
+name = "rubocop_cop_security_open_registers_an_offense_for_open_with_string_that_starts_with_a_pipe"
+source = '''
+open("| #{foo}")
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 4
+message = "The use of `Kernel#open` is a serious security risk."
+
+[[tests]]
+name = "rubocop_cop_security_open_registers_an_offense_for_open_with_a_literal_string_starting_with_a_pipe"
+source = '''
+open('| foo')
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 4
+message = "The use of `Kernel#open` is a serious security risk."
+
+[[tests]]
+name = "rubocop_cop_security_open_registers_an_offense_for_open_with_a_block"
+source = '''
+open("#{foo}.txt") do |f|
+  f.gets
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 4
+message = "The use of `Kernel#open` is a serious security risk."
+
+[[tests]]
+name = "rubocop_cop_security_open_registers_an_offense_for_uri_open_with_string_that_starts_with_a_pipe"
+source = '''
+URI.open("| #{foo}")
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 8
+message = "The use of `URI.open` is a serious security risk."
+
+[[tests]]
+name = "rubocop_cop_security_open_registers_an_offense_for_uri_open_with_string_that_starts_with_a_pipe"
+source = '''
+::URI.open("| #{foo}")
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 10
+message = "The use of `::URI.open` is a serious security risk."
+
+[[tests]]
+name = "rubocop_cop_security_open_registers_an_offense_for_uri_open_with_a_block"
+source = '''
+::URI.open("| #{foo}") do |f|
+  f.gets
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 10
+message = "The use of `::URI.open` is a serious security risk."
+
+[[tests]]
+name = "rubocop_cop_security_open_accepts_open_as_variable"
+source = '''
+open = something
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_security_open_accepts_file_open_as_method"
+source = '''
+File.open(something)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_security_open_accepts_open_on_a_literal_string"
+source = '''
+open("foo.txt")
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_security_open_accepts_open_with_no_arguments"
+source = '''
+open
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_security_open_accepts_open_with_string_that_has_a_prefixed_interpolation"
+source = '''
+open "prefix_#{foo}"
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_security_open_accepts_open_with_prefix_string_literal_plus_something"
+source = '''
+open "prefix" + foo
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_security_open_accepts_open_with_a_string_that_interpolates_a_literal"
+source = '''
+open "foo#{2}.txt"
+'''
+offenses = []

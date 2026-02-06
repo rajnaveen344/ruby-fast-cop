@@ -1,0 +1,65 @@
+cop = "Layout/EmptyLines"
+department = "layout"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_layout_emptylines_registers_an_offense_for_consecutive_empty_lines"
+source = '''
+test = 5
+
+
+top
+'''
+corrected = '''
+test = 5
+
+top
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 0
+message = "Extra blank line detected."
+
+[[tests]]
+name = "rubocop_cop_layout_emptylines_does_not_register_an_offense_when_there_are_no_tokens"
+source = '''
+#comment
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_emptylines_does_not_register_an_offense_for_comments"
+source = '''
+test
+
+#comment
+top
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_emptylines_does_not_register_an_offense_for_empty_lines_in_a_string"
+source = '''
+result = "test
+
+
+
+                                  string"
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_emptylines_does_not_register_an_offense_for_heredocs_with_empty_lines_inside"
+source = '''
+str = <<-TEXT
+line 1
+
+
+line 2
+TEXT
+puts str
+'''
+offenses = []

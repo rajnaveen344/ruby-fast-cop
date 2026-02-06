@@ -1,0 +1,1374 @@
+cop = "Lint/RedundantSafeNavigation"
+department = "lint"
+severity = "warning"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_registers_an_offense_and_corrects_when_is_used_for_camel_case_const_receiver"
+source = '''
+Const&.do_something
+ConstName&.do_something
+Const_name&.do_something # It is treated as camel case, similar to the `Naming/ConstantName` cop.
+'''
+corrected = '''
+Const.do_something
+ConstName.do_something
+Const_name.do_something # It is treated as camel case, similar to the `Naming/ConstantName` cop.
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 7
+message = "Redundant safe navigation detected, use `.` instead."
+
+[[tests.offenses]]
+line = 2
+column_start = 9
+column_end = 11
+message = "Redundant safe navigation detected, use `.` instead."
+
+[[tests.offenses]]
+line = 3
+column_start = 10
+column_end = 12
+message = "Redundant safe navigation detected, use `.` instead."
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_does_not_register_an_offense_when_is_used_for_snake_case_const_receiver"
+source = '''
+CONST&.do_something
+CONST_NAME&.do_something
+'''
+offenses = []
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_registers_an_offense_and_corrects_when_is_used_for_namespaced_camel_case_const_receiver"
+source = '''
+FOO::Const&.do_something
+bar::ConstName&.do_something
+BAZ::Const_name&.do_something # It is treated as camel case, similar to the `Naming/ConstantName` cop.
+'''
+corrected = '''
+FOO::Const.do_something
+bar::ConstName.do_something
+BAZ::Const_name.do_something # It is treated as camel case, similar to the `Naming/ConstantName` cop.
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 12
+message = "Redundant safe navigation detected, use `.` instead."
+
+[[tests.offenses]]
+line = 2
+column_start = 14
+column_end = 16
+message = "Redundant safe navigation detected, use `.` instead."
+
+[[tests.offenses]]
+line = 3
+column_start = 15
+column_end = 17
+message = "Redundant safe navigation detected, use `.` instead."
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_does_not_register_an_offense_when_is_used_for_namespaced_snake_case_const_receiver"
+source = '''
+FOO::CONST&.do_something
+bar::CONST_NAME&.do_something
+'''
+offenses = []
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_registers_an_offense_and_corrects_when_is_used_inside_if_condition"
+source = '''
+if foo&.respond_to?(:bar)
+  do_something
+elsif foo&.respond_to?(:baz)
+  do_something_else
+end
+'''
+corrected = '''
+if foo.respond_to?(:bar)
+  do_something
+elsif foo.respond_to?(:baz)
+  do_something_else
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 8
+message = "Redundant safe navigation detected, use `.` instead."
+
+[[tests.offenses]]
+line = 3
+column_start = 9
+column_end = 11
+message = "Redundant safe navigation detected, use `.` instead."
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_registers_an_offense_and_corrects_when_is_used_inside_unless_condition"
+source = '''
+do_something unless foo&.respond_to?(:bar)
+'''
+corrected = '''
+do_something unless foo.respond_to?(:bar)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 23
+column_end = 25
+message = "Redundant safe navigation detected, use `.` instead."
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_registers_an_offense_and_corrects_when_is_used_for_string_literals"
+source = '''
+'2012-03-02 16:05:37'&.to_time
+'''
+corrected = '''
+'2012-03-02 16:05:37'.to_time
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 21
+column_end = 23
+message = "Redundant safe navigation detected, use `.` instead."
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_registers_an_offense_and_corrects_when_is_used_for_integer_literals"
+source = '''
+42&.minutes
+'''
+corrected = '''
+42.minutes
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 4
+message = "Redundant safe navigation detected, use `.` instead."
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_registers_an_offense_and_corrects_when_is_used_for_array_literals"
+source = '''
+[1, 2, 3]&.join(', ')
+'''
+corrected = '''
+[1, 2, 3].join(', ')
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 11
+message = "Redundant safe navigation detected, use `.` instead."
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_registers_an_offense_and_corrects_when_is_used_for_hash_literals"
+source = '''
+{k: :v}&.count
+'''
+corrected = '''
+{k: :v}.count
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 9
+message = "Redundant safe navigation detected, use `.` instead."
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_does_not_register_an_offense_when_is_used_for_nil_literal"
+source = '''
+nil&.to_i
+'''
+offenses = []
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_registers_an_offense_and_correct_when_is_used_with_self"
+source = '''
+self&.foo
+'''
+corrected = '''
+self.foo
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 6
+message = "Redundant safe navigation detected, use `.` instead."
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_registers_an_offense_and_corrects_when_is_used_inside_loop_type_condition"
+source = '''
+%{loop_type} foo&.respond_to?(:bar)
+  do_something
+end
+'''
+corrected = '''
+#{loop_type} foo.respond_to?(:bar)
+  do_something
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 35
+message = "Redundant safe navigation detected, use `.` instead."
+
+[[tests.offenses]]
+line = 7
+column_start = 0
+column_end = 39
+message = "Redundant safe navigation detected, use `.` instead."
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_registers_an_offense_and_corrects_when_is_used_inside_complex_condition"
+source = '''
+do_something if foo&.respond_to?(:bar) && !foo&.respond_to?(:baz)
+'''
+corrected = '''
+do_something if foo.respond_to?(:bar) && !foo.respond_to?(:baz)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 19
+column_end = 21
+message = "Redundant safe navigation detected, use `.` instead."
+
+[[tests.offenses]]
+line = 1
+column_start = 46
+column_end = 48
+message = "Redundant safe navigation detected, use `.` instead."
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_does_not_register_an_offense_when_using_outside_of_conditions"
+source = '''
+foo&.respond_to?(:bar)
+'''
+offenses = []
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_does_not_register_an_offense_when_using_with_non_allowed_method_in_condition"
+source = '''
+do_something if foo&.bar?
+'''
+offenses = []
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_does_not_register_an_offense_when_using_respond_to_with_nil_specific_method_as_argument_in_condition"
+source = '''
+do_something if foo&.respond_to?(:to_a)
+'''
+offenses = []
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_does_not_register_an_offense_when_is_used_with_coercion_methods"
+source = '''
+foo&.to_s || 'Default string'
+foo&.to_i || 1
+do_something if foo&.to_d
+'''
+offenses = []
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_registers_an_offense_and_corrects_when_is_used_in_to_h_conversion_with_default"
+source = '''
+foo&.to_h || {}
+'''
+corrected = '''
+foo.to_h
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 15
+message = "Redundant safe navigation with default literal detected."
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_registers_an_offense_and_corrects_when_is_used_in_to_h_conversion_having_block_with_default"
+source = '''
+foo&.to_h { |k, v| [k, v] } || {}
+'''
+corrected = '''
+foo.to_h { |k, v| [k, v] }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 33
+message = "Redundant safe navigation with default literal detected."
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_does_not_register_an_offense_when_is_used_in_to_h_conversion_with_incorrect_default"
+source = '''
+foo&.to_h || { a: 1 }
+'''
+offenses = []
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_registers_an_offense_and_corrects_when_is_used_in_to_a_conversion_with_default"
+source = '''
+foo&.to_a || []
+'''
+corrected = '''
+foo.to_a
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 15
+message = "Redundant safe navigation with default literal detected."
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_does_not_register_an_offense_when_is_used_in_to_a_conversion_with_incorrect_default"
+source = '''
+foo&.to_a || [1]
+'''
+offenses = []
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_registers_an_offense_and_corrects_when_is_used_in_to_i_conversion_with_default"
+source = '''
+foo&.to_i || 0
+'''
+corrected = '''
+foo.to_i
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 14
+message = "Redundant safe navigation with default literal detected."
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_does_not_register_an_offense_when_is_used_in_to_i_conversion_with_incorrect_default"
+source = '''
+foo&.to_i || 1
+'''
+offenses = []
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_registers_an_offense_and_corrects_when_is_used_in_to_f_conversion_with_default"
+source = '''
+foo&.to_f || 0.0
+'''
+corrected = '''
+foo.to_f
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 16
+message = "Redundant safe navigation with default literal detected."
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_does_not_register_an_offense_when_is_used_in_to_f_conversion_with_incorrect_default"
+source = '''
+foo&.to_f || 1.0
+'''
+offenses = []
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_registers_an_offense_and_corrects_when_is_used_in_to_s_conversion_with_default"
+source = '''
+foo&.to_s || ''
+'''
+corrected = '''
+foo.to_s
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 15
+message = "Redundant safe navigation with default literal detected."
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_does_not_register_an_offense_when_is_used_in_to_s_conversion_with_incorrect_default"
+source = '''
+foo&.to_s || 'default'
+'''
+offenses = []
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_when_infernonnilreceiver_is_disabled_does_not_register_an_offense_when_method_is_called_on_receiver_on_preceding_line"
+source = '''
+foo.bar
+foo&.baz
+'''
+offenses = []
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+InferNonNilReceiver = false
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_when_infernonnilreceiver_is_enabled_registers_an_offense_and_corrects_when_method_is_called_on_receiver_on_preceding_line"
+source = '''
+foo.bar
+foo&.baz
+'''
+corrected = '''
+foo.bar
+foo.baz
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 3
+column_end = 5
+message = "Redundant safe navigation on non-nil receiver (detected by analyzing previous code/method invocations)."
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+InferNonNilReceiver = true
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_when_infernonnilreceiver_is_enabled_registers_an_offense_and_corrects_when_method_is_called_on_receiver_on_preceding_line_and_is_a_method_argument"
+source = '''
+zoo(1, foo.bar, 2)
+foo&.baz
+'''
+corrected = '''
+zoo(1, foo.bar, 2)
+foo.baz
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 3
+column_end = 5
+message = "Redundant safe navigation on non-nil receiver (detected by analyzing previous code/method invocations)."
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+InferNonNilReceiver = true
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_when_infernonnilreceiver_is_enabled_registers_an_offense_and_corrects_when_method_is_called_on_a_receiver_in_a_condition"
+source = '''
+if foo.condition?
+  foo&.bar
+end
+'''
+corrected = '''
+if foo.condition?
+  foo.bar
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 5
+column_end = 7
+message = "Redundant safe navigation on non-nil receiver (detected by analyzing previous code/method invocations)."
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+InferNonNilReceiver = true
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_when_infernonnilreceiver_is_enabled_registers_an_offense_and_corrects_when_method_receiver_is_a_sole_condition_of_parent_if"
+source = '''
+if foo
+  foo&.bar
+else
+  foo&.baz
+end
+'''
+corrected = '''
+if foo
+  foo.bar
+else
+  foo&.baz
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 5
+column_end = 7
+message = "Redundant safe navigation on non-nil receiver (detected by analyzing previous code/method invocations)."
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+InferNonNilReceiver = true
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_when_infernonnilreceiver_is_enabled_registers_an_offense_and_corrects_when_method_receiver_is_a_sole_condition_of_parent_elsif"
+source = '''
+if condition?
+  1
+elsif foo
+  foo&.bar
+else
+  foo&.baz
+end
+'''
+corrected = '''
+if condition?
+  1
+elsif foo
+  foo.bar
+else
+  foo&.baz
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 5
+column_end = 7
+message = "Redundant safe navigation on non-nil receiver (detected by analyzing previous code/method invocations)."
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+InferNonNilReceiver = true
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_when_infernonnilreceiver_is_enabled_registers_an_offense_and_corrects_when_method_receiver_is_a_sole_condition_of_parent_ternary"
+source = '''
+foo ? foo&.bar : foo&.baz
+'''
+corrected = '''
+foo ? foo.bar : foo&.baz
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 11
+message = "Redundant safe navigation on non-nil receiver (detected by analyzing previous code/method invocations)."
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+InferNonNilReceiver = true
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_when_infernonnilreceiver_is_enabled_registers_an_offense_and_corrects_when_method_is_called_on_receiver_in_lhs_of_condition"
+source = '''
+if foo.condition? && other_condition
+  foo&.bar
+end
+'''
+corrected = '''
+if foo.condition? && other_condition
+  foo.bar
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 5
+column_end = 7
+message = "Redundant safe navigation on non-nil receiver (detected by analyzing previous code/method invocations)."
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+InferNonNilReceiver = true
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_when_infernonnilreceiver_is_enabled_does_not_register_an_offense_when_method_is_called_on_receiver_in_rhs_of_condition"
+source = '''
+if other_condition && foo.condition?
+  foo&.bar
+end
+'''
+offenses = []
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+InferNonNilReceiver = true
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_when_infernonnilreceiver_is_enabled_registers_an_offense_and_corrects_when_method_is_called_on_receiver_in_if_condition_of_if_else"
+source = '''
+if foo.condition?
+  1
+else
+  foo&.bar
+end
+'''
+corrected = '''
+if foo.condition?
+  1
+else
+  foo.bar
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 5
+column_end = 7
+message = "Redundant safe navigation on non-nil receiver (detected by analyzing previous code/method invocations)."
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+InferNonNilReceiver = true
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_when_infernonnilreceiver_is_enabled_registers_an_offense_and_corrects_when_method_is_called_on_receiver_in_elsif"
+source = '''
+if condition?
+  1
+elsif foo.condition?
+  foo&.bar
+end
+'''
+corrected = '''
+if condition?
+  1
+elsif foo.condition?
+  foo.bar
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 5
+column_end = 7
+message = "Redundant safe navigation on non-nil receiver (detected by analyzing previous code/method invocations)."
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+InferNonNilReceiver = true
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_when_infernonnilreceiver_is_enabled_registers_an_offense_and_corrects_when_method_is_called_on_receiver_in_condition_of_ternary"
+source = '''
+foo.condition? ? foo&.bar : foo&.baz
+'''
+corrected = '''
+foo.condition? ? foo.bar : foo.baz
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 20
+column_end = 22
+message = "Redundant safe navigation on non-nil receiver (detected by analyzing previous code/method invocations)."
+
+[[tests.offenses]]
+line = 1
+column_start = 31
+column_end = 33
+message = "Redundant safe navigation on non-nil receiver (detected by analyzing previous code/method invocations)."
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+InferNonNilReceiver = true
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_when_infernonnilreceiver_is_enabled_does_not_register_an_offense_when_method_is_called_on_receiver_further_in_the_condition"
+source = '''
+if condition1? && (foo.condition? || condition2?)
+  foo&.bar
+end
+'''
+offenses = []
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+InferNonNilReceiver = true
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_when_infernonnilreceiver_is_enabled_does_not_register_an_offense_when_method_is_called_on_receiver_in_a_previous_branch_body"
+source = '''
+if condition?
+  foo.bar
+elsif foo&.bar?
+  2
+end
+'''
+offenses = []
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+InferNonNilReceiver = true
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_when_infernonnilreceiver_is_enabled_does_not_register_an_offense_when_receiver_is_a_sole_condition_in_a_previous_if"
+source = '''
+if foo
+  do_something
+end
+'''
+offenses = []
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+InferNonNilReceiver = true
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_when_infernonnilreceiver_is_enabled_registers_an_offense_and_corrects_when_method_is_called_on_receiver_on_preceding_line_in_array_literal"
+source = '''
+[
+  foo.bar,
+  foo&.baz
+]
+'''
+corrected = '''
+[
+  foo.bar,
+  foo.baz
+]
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 5
+column_end = 7
+message = "Redundant safe navigation on non-nil receiver (detected by analyzing previous code/method invocations)."
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+InferNonNilReceiver = true
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_when_infernonnilreceiver_is_enabled_registers_an_offense_and_corrects_when_method_is_called_on_receiver_on_preceding_line_in_hash_literal"
+source = '''
+{
+  bar: foo.bar,
+  baz: foo&.baz,
+  foo&.zoo => 3
+}
+'''
+corrected = '''
+{
+  bar: foo.bar,
+  baz: foo.baz,
+  foo.zoo => 3
+}
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 10
+column_end = 12
+message = "Redundant safe navigation on non-nil receiver (detected by analyzing previous code/method invocations)."
+
+[[tests.offenses]]
+line = 4
+column_start = 5
+column_end = 7
+message = "Redundant safe navigation on non-nil receiver (detected by analyzing previous code/method invocations)."
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+InferNonNilReceiver = true
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_when_infernonnilreceiver_is_enabled_does_not_register_an_offense_when_nil_s_method_is_called_on_receiver"
+source = '''
+if foo.nil?
+  foo&.bar
+end
+'''
+offenses = []
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+InferNonNilReceiver = true
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_when_infernonnilreceiver_is_enabled_does_not_register_an_offense_when_calling_custom_nil_method"
+source = '''
+foo.present?
+foo&.bar
+'''
+offenses = []
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+InferNonNilReceiver = true
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_when_infernonnilreceiver_is_enabled_registers_an_offense_and_corrects_when_receiver_is_a_case_condition"
+source = '''
+case foo.condition
+when 1
+  foo&.bar
+when foo&.baz
+  2
+else
+  foo&.zoo
+end
+'''
+corrected = '''
+case foo.condition
+when 1
+  foo.bar
+when foo.baz
+  2
+else
+  foo.zoo
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 5
+column_end = 7
+message = "Redundant safe navigation on non-nil receiver (detected by analyzing previous code/method invocations)."
+
+[[tests.offenses]]
+line = 4
+column_start = 8
+column_end = 10
+message = "Redundant safe navigation on non-nil receiver (detected by analyzing previous code/method invocations)."
+
+[[tests.offenses]]
+line = 7
+column_start = 5
+column_end = 7
+message = "Redundant safe navigation on non-nil receiver (detected by analyzing previous code/method invocations)."
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+InferNonNilReceiver = true
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_when_infernonnilreceiver_is_enabled_does_not_register_an_offense_when_method_is_called_on_receiver_in_another_branch"
+source = '''
+case
+when 1
+  foo.bar
+when 2
+  foo&.baz
+else
+  foo&.zoo
+end
+'''
+offenses = []
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+InferNonNilReceiver = true
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_when_infernonnilreceiver_is_enabled_registers_an_offense_and_corrects_when_method_is_called_on_receiver_in_a_branch_condition"
+source = '''
+case
+when 1
+  2
+when foo.bar
+  foo&.bar
+else
+  foo&.baz
+end
+'''
+corrected = '''
+case
+when 1
+  2
+when foo.bar
+  foo.bar
+else
+  foo.baz
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 5
+column_end = 7
+message = "Redundant safe navigation on non-nil receiver (detected by analyzing previous code/method invocations)."
+
+[[tests.offenses]]
+line = 7
+column_start = 5
+column_end = 7
+message = "Redundant safe navigation on non-nil receiver (detected by analyzing previous code/method invocations)."
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+InferNonNilReceiver = true
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_when_infernonnilreceiver_is_enabled_registers_an_offense_and_corrects_when_method_is_called_in_preceding_line_in_assignment_with"
+source = '''
+x = foo.bar || true
+foo&.baz
+'''
+corrected = '''
+x = foo.bar || true
+foo.baz
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 3
+column_end = 5
+message = "Redundant safe navigation on non-nil receiver (detected by analyzing previous code/method invocations)."
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+InferNonNilReceiver = true
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_when_infernonnilreceiver_is_enabled_registers_an_offense_and_corrects_when_method_is_called_in_preceding_line_in_assignment"
+source = '''
+CONST = foo.bar
+foo&.baz
+'''
+corrected = '''
+CONST = foo.bar
+foo.baz
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 3
+column_end = 5
+message = "Redundant safe navigation on non-nil receiver (detected by analyzing previous code/method invocations)."
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+InferNonNilReceiver = true
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_when_infernonnilreceiver_is_enabled_ignores_offenses_outside_of_the_method_definition_scope"
+source = '''
+foo.bar
+'''
+offenses = []
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+InferNonNilReceiver = true
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_when_infernonnilreceiver_is_enabled_ignores_offenses_outside_of_the_singleton_method_definition_scope"
+source = '''
+foo.bar
+'''
+offenses = []
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+InferNonNilReceiver = true
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_when_infernonnilreceiver_is_enabled_correctly_detects_and_corrects_complex_cases"
+source = '''
+x = 1 && foo.bar
+'''
+corrected = '''
+x = 1 && foo.bar
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 20
+column_end = 22
+message = "Redundant safe navigation on non-nil receiver (detected by analyzing previous code/method invocations)."
+
+[[tests.offenses]]
+line = 9
+column_start = 13
+column_end = 15
+message = "Redundant safe navigation on non-nil receiver (detected by analyzing previous code/method invocations)."
+
+[[tests.offenses]]
+line = 14
+column_start = 11
+column_end = 13
+message = "Redundant safe navigation on non-nil receiver (detected by analyzing previous code/method invocations)."
+
+[[tests.offenses]]
+line = 15
+column_start = 17
+column_end = 19
+message = "Redundant safe navigation on non-nil receiver (detected by analyzing previous code/method invocations)."
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+InferNonNilReceiver = true
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_registers_an_offense_when_is_used_for_to_s"
+source = '''
+foo.to_s&.strip
+'''
+corrected = '''
+foo.to_s.strip
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 10
+message = "Redundant safe navigation detected, use `.` instead."
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+InferNonNilReceiver = true
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_does_not_register_an_offense_when_is_used_for_to_s_with_safe_navigation"
+source = '''
+foo&.to_s&.zero?
+'''
+offenses = []
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+InferNonNilReceiver = true
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_registers_an_offense_when_is_used_for_to_i"
+source = '''
+foo.to_i&.zero?
+'''
+corrected = '''
+foo.to_i.zero?
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 10
+message = "Redundant safe navigation detected, use `.` instead."
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+InferNonNilReceiver = true
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_does_not_register_an_offense_when_is_used_for_to_i_with_safe_navigation"
+source = '''
+foo&.to_i&.zero?
+'''
+offenses = []
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+InferNonNilReceiver = true
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_registers_an_offense_when_is_used_for_to_f"
+source = '''
+foo.to_f&.zero?
+'''
+corrected = '''
+foo.to_f.zero?
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 10
+message = "Redundant safe navigation detected, use `.` instead."
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+InferNonNilReceiver = true
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_does_not_register_an_offense_when_is_used_for_to_f_with_safe_navigation"
+source = '''
+foo&.to_f&.zero?
+'''
+offenses = []
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+InferNonNilReceiver = true
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_registers_an_offense_when_is_used_for_to_a"
+source = '''
+foo.to_a&.size
+'''
+corrected = '''
+foo.to_a.size
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 10
+message = "Redundant safe navigation detected, use `.` instead."
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+InferNonNilReceiver = true
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_does_not_register_an_offense_when_is_used_for_to_a_with_safe_navigation"
+source = '''
+foo&.to_a&.zero?
+'''
+offenses = []
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+InferNonNilReceiver = true
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_registers_an_offense_when_is_used_for_to_h"
+source = '''
+foo.to_h&.size
+'''
+corrected = '''
+foo.to_h.size
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 10
+message = "Redundant safe navigation detected, use `.` instead."
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+InferNonNilReceiver = true
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_does_not_register_an_offense_when_is_used_for_to_h_with_safe_navigation"
+source = '''
+foo&.to_h&.zero?
+'''
+offenses = []
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+InferNonNilReceiver = true
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_registers_an_offense_when_is_used_for_to_h_with_block"
+source = '''
+foo.to_h { |entry| do_something(entry) }&.keys
+'''
+corrected = '''
+foo.to_h { |entry| do_something(entry) }.keys
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 42
+message = "Redundant safe navigation detected, use `.` instead."
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+InferNonNilReceiver = true
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_does_not_register_an_offense_when_is_used_for_to_h_with_block_with_safe_navigation"
+source = '''
+foo&.to_h { |entry| do_something(entry) }&.keys
+'''
+offenses = []
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+InferNonNilReceiver = true
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_registers_an_offense_when_is_used_for_to_h_with_numbered_block"
+source = '''
+foo.to_h { do_something(_1) }&.keys
+'''
+corrected = '''
+foo.to_h { do_something(_1) }.keys
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 29
+column_end = 31
+message = "Redundant safe navigation detected, use `.` instead."
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+InferNonNilReceiver = true
+
+[[tests]]
+name = "rubocop_cop_lint_redundantsafenavigation_does_not_register_an_offense_when_is_used_for_to_h_with_numbered_block_with_safe_navigation"
+source = '''
+foo&.to_h { do_something(_1) }&.keys
+'''
+offenses = []
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+InferNonNilReceiver = true

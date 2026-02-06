@@ -1,0 +1,176 @@
+cop = "Style/MultilineIfThen"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_multilineifthen_does_not_get_confused_by_empty_elsif_branch"
+source = '''
+if cond
+elsif cond
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_multilineifthen_registers_an_offense_for_then_in_multiline_if"
+source = '''
+if cond then
+end
+if cond then	
+end
+if cond then
+end
+if cond
+then
+end
+if cond then # bad
+end
+'''
+corrected = '''
+if cond
+end
+if cond	
+end
+if cond
+end
+if cond
+end
+if cond # bad
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 12
+message = "Do not use `then` for multi-line `if`."
+
+[[tests.offenses]]
+line = 3
+column_start = 8
+column_end = 12
+message = "Do not use `then` for multi-line `if`."
+
+[[tests.offenses]]
+line = 5
+column_start = 8
+column_end = 12
+message = "Do not use `then` for multi-line `if`."
+
+[[tests.offenses]]
+line = 8
+column_start = 0
+column_end = 4
+message = "Do not use `then` for multi-line `if`."
+
+[[tests.offenses]]
+line = 10
+column_start = 8
+column_end = 12
+message = "Do not use `then` for multi-line `if`."
+
+[[tests]]
+name = "rubocop_cop_style_multilineifthen_registers_an_offense_for_then_in_multiline_elsif"
+source = '''
+if cond1
+  a
+elsif cond2 then
+  b
+end
+'''
+corrected = '''
+if cond1
+  a
+elsif cond2
+  b
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 12
+column_end = 16
+message = "Do not use `then` for multi-line `elsif`."
+
+[[tests]]
+name = "rubocop_cop_style_multilineifthen_accepts_table_style_if_then_elsif_ends"
+source = '''
+if    @io == $stdout then str << "$stdout"
+elsif @io == $stdin  then str << "$stdin"
+elsif @io == $stderr then str << "$stderr"
+else                      str << @io.class.to_s
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_multilineifthen_does_not_get_confused_by_a_then_in_a_when"
+source = '''
+if a
+  case b
+  when c then
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_multilineifthen_does_not_get_confused_by_a_commented_out_then"
+source = '''
+if a # then
+  b
+end
+if c # then
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_multilineifthen_does_not_raise_an_error_for_an_implicit_match_if"
+source = '''
+if //
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_multilineifthen_registers_an_offense_for_then_in_multiline_unless"
+source = '''
+unless cond then
+end
+'''
+corrected = '''
+unless cond
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 12
+column_end = 16
+message = "Do not use `then` for multi-line `unless`."
+
+[[tests]]
+name = "rubocop_cop_style_multilineifthen_does_not_get_confused_by_a_postfix_unless"
+source = '''
+two unless one
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_multilineifthen_does_not_get_confused_by_a_nested_postfix_unless"
+source = '''
+if two
+  puts 1
+end unless two
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_multilineifthen_does_not_raise_an_error_for_an_implicit_match_unless"
+source = '''
+unless //
+end
+'''
+offenses = []

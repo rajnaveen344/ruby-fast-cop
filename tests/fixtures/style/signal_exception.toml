@@ -1,0 +1,650 @@
+cop = "Style/SignalException"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_signalexception_when_enforced_style_is_semantic_registers_an_offense_for_raise_in_begin_section"
+source = '''
+begin
+  raise
+rescue Exception
+  #do nothing
+end
+'''
+corrected = '''
+begin
+  fail
+rescue Exception
+  #do nothing
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 7
+message = "Use `fail` instead of `raise` to signal exceptions."
+
+[tests.config]
+EnforcedStyle = "semantic"
+
+[[tests]]
+name = "rubocop_cop_style_signalexception_when_enforced_style_is_semantic_registers_an_offense_for_raise_in_def_body"
+source = '''
+def test
+  raise
+rescue Exception
+  #do nothing
+end
+'''
+corrected = '''
+def test
+  fail
+rescue Exception
+  #do nothing
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 7
+message = "Use `fail` instead of `raise` to signal exceptions."
+
+[tests.config]
+EnforcedStyle = "semantic"
+
+[[tests]]
+name = "rubocop_cop_style_signalexception_when_enforced_style_is_semantic_registers_an_offense_for_fail_in_rescue_section"
+source = '''
+begin
+  fail
+rescue Exception
+  fail
+end
+'''
+corrected = '''
+begin
+  fail
+rescue Exception
+  raise
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 6
+message = "Use `raise` instead of `fail` to rethrow exceptions."
+
+[tests.config]
+EnforcedStyle = "semantic"
+
+[[tests]]
+name = "rubocop_cop_style_signalexception_when_enforced_style_is_semantic_accepts_raise_in_rescue_section"
+source = '''
+begin
+  fail
+rescue Exception
+  raise RuntimeError
+end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "semantic"
+
+[[tests]]
+name = "rubocop_cop_style_signalexception_when_enforced_style_is_semantic_accepts_raise_in_def_with_multiple_rescues"
+source = '''
+def test
+  fail
+rescue StandardError
+  # handle error
+rescue Exception
+  raise
+end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "semantic"
+
+[[tests]]
+name = "rubocop_cop_style_signalexception_when_enforced_style_is_semantic_registers_an_offense_for_fail_in_def_rescue_section"
+source = '''
+def test
+  fail
+rescue Exception
+  fail
+end
+'''
+corrected = '''
+def test
+  fail
+rescue Exception
+  raise
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 6
+message = "Use `raise` instead of `fail` to rethrow exceptions."
+
+[tests.config]
+EnforcedStyle = "semantic"
+
+[[tests]]
+name = "rubocop_cop_style_signalexception_when_enforced_style_is_semantic_registers_an_offense_for_fail_in_second_rescue"
+source = '''
+def test
+  fail
+rescue StandardError
+  # handle error
+rescue Exception
+  fail
+end
+'''
+corrected = '''
+def test
+  fail
+rescue StandardError
+  # handle error
+rescue Exception
+  raise
+end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 2
+column_end = 6
+message = "Use `raise` instead of `fail` to rethrow exceptions."
+
+[tests.config]
+EnforcedStyle = "semantic"
+
+[[tests]]
+name = "rubocop_cop_style_signalexception_when_enforced_style_is_semantic_registers_only_offense_for_one_raise_that_should_be_fail"
+source = '''
+map do
+  raise 'I'
+end.flatten.compact
+'''
+corrected = '''
+map do
+  fail 'I'
+end.flatten.compact
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 7
+message = "Use `fail` instead of `raise` to signal exceptions."
+
+[tests.config]
+EnforcedStyle = "semantic"
+
+[[tests]]
+name = "rubocop_cop_style_signalexception_when_enforced_style_is_semantic_accepts_raise_in_def_rescue_section"
+source = '''
+def test
+  fail
+rescue Exception
+  raise
+end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "semantic"
+
+[[tests]]
+name = "rubocop_cop_style_signalexception_when_enforced_style_is_semantic_accepts_raise_and_fail_with_explicit_receiver"
+source = '''
+def test
+  test.raise
+rescue Exception
+  test.fail
+end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "semantic"
+
+[[tests]]
+name = "rubocop_cop_style_signalexception_when_enforced_style_is_semantic_registers_an_offense_for_raise_and_fail_with_kernel_as_explicit_receiver"
+source = '''
+def test
+  Kernel.raise
+rescue Exception
+  Kernel.fail
+end
+'''
+corrected = '''
+def test
+  Kernel.fail
+rescue Exception
+  Kernel.raise
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 9
+column_end = 14
+message = "Use `fail` instead of `raise` to signal exceptions."
+
+[[tests.offenses]]
+line = 4
+column_start = 9
+column_end = 13
+message = "Use `raise` instead of `fail` to rethrow exceptions."
+
+[tests.config]
+EnforcedStyle = "semantic"
+
+[[tests]]
+name = "rubocop_cop_style_signalexception_when_enforced_style_is_semantic_registers_an_offense_for_raise_and_fail_with_kernel_as_explicit_receiver"
+source = '''
+def test
+  ::Kernel.raise
+rescue Exception
+  ::Kernel.fail
+end
+'''
+corrected = '''
+def test
+  ::Kernel.fail
+rescue Exception
+  ::Kernel.raise
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 11
+column_end = 16
+message = "Use `fail` instead of `raise` to signal exceptions."
+
+[[tests.offenses]]
+line = 4
+column_start = 11
+column_end = 15
+message = "Use `raise` instead of `fail` to rethrow exceptions."
+
+[tests.config]
+EnforcedStyle = "semantic"
+
+[[tests]]
+name = "rubocop_cop_style_signalexception_when_enforced_style_is_semantic_registers_an_offense_for_raise_not_in_a_begin_rescue_end"
+source = '''
+case cop_config['EnforcedStyle']
+when 'single_quotes' then true
+when 'double_quotes' then false
+else raise 'Unknown StringLiterals style'
+end
+'''
+corrected = '''
+case cop_config['EnforcedStyle']
+when 'single_quotes' then true
+when 'double_quotes' then false
+else fail 'Unknown StringLiterals style'
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 5
+column_end = 10
+message = "Use `fail` instead of `raise` to signal exceptions."
+
+[tests.config]
+EnforcedStyle = "semantic"
+
+[[tests]]
+name = "rubocop_cop_style_signalexception_when_enforced_style_is_semantic_registers_one_offense_for_each_raise"
+source = '''
+cop.stub(:on_def) { raise RuntimeError }
+cop.stub(:on_def) { raise RuntimeError }
+'''
+corrected = '''
+cop.stub(:on_def) { fail RuntimeError }
+cop.stub(:on_def) { fail RuntimeError }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 20
+column_end = 25
+message = "Use `fail` instead of `raise` to signal exceptions."
+
+[[tests.offenses]]
+line = 2
+column_start = 20
+column_end = 25
+message = "Use `fail` instead of `raise` to signal exceptions."
+
+[tests.config]
+EnforcedStyle = "semantic"
+
+[[tests]]
+name = "rubocop_cop_style_signalexception_when_enforced_style_is_semantic_is_not_confused_by_nested_begin_rescue"
+source = '''
+begin
+  raise
+  begin
+    raise
+  rescue
+    fail
+  end
+rescue Exception
+  #do nothing
+end
+'''
+corrected = '''
+begin
+  fail
+  begin
+    fail
+  rescue
+    raise
+  end
+rescue Exception
+  #do nothing
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 7
+message = "Use `fail` instead of `raise` to signal exceptions."
+
+[[tests.offenses]]
+line = 4
+column_start = 4
+column_end = 9
+message = "Use `fail` instead of `raise` to signal exceptions."
+
+[[tests.offenses]]
+line = 6
+column_start = 4
+column_end = 8
+message = "Use `raise` instead of `fail` to rethrow exceptions."
+
+[tests.config]
+EnforcedStyle = "semantic"
+
+[[tests]]
+name = "rubocop_cop_style_signalexception_when_enforced_style_is_raise_registers_an_offense_for_fail_in_begin_section"
+source = '''
+begin
+  fail
+rescue Exception
+  #do nothing
+end
+'''
+corrected = '''
+begin
+  raise
+rescue Exception
+  #do nothing
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 6
+message = "Always use `raise` to signal exceptions."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:only_raise"
+
+[[tests]]
+name = "rubocop_cop_style_signalexception_when_enforced_style_is_raise_registers_an_offense_for_fail_in_def_body"
+source = '''
+def test
+  fail
+rescue Exception
+  #do nothing
+end
+'''
+corrected = '''
+def test
+  raise
+rescue Exception
+  #do nothing
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 6
+message = "Always use `raise` to signal exceptions."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:only_raise"
+
+[[tests]]
+name = "rubocop_cop_style_signalexception_when_enforced_style_is_raise_registers_an_offense_for_fail_in_rescue_section"
+source = '''
+begin
+  raise
+rescue Exception
+  fail
+end
+'''
+corrected = '''
+begin
+  raise
+rescue Exception
+  raise
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 6
+message = "Always use `raise` to signal exceptions."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:only_raise"
+
+[[tests]]
+name = "rubocop_cop_style_signalexception_when_enforced_style_is_raise_accepts_fail_if_a_custom_fail_instance_method_is_defined"
+source = '''
+class A
+  def fail(arg)
+  end
+  def other_method
+    fail "message"
+  end
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:only_raise"
+
+[[tests]]
+name = "rubocop_cop_style_signalexception_when_enforced_style_is_raise_accepts_fail_if_a_custom_fail_singleton_method_is_defined"
+source = '''
+class A
+  def self.fail(arg)
+  end
+  def self.other_method
+    fail "message"
+  end
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:only_raise"
+
+[[tests]]
+name = "rubocop_cop_style_signalexception_when_enforced_style_is_raise_accepts_fail_with_explicit_receiver"
+source = '''
+test.fail
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:only_raise"
+
+[[tests]]
+name = "rubocop_cop_style_signalexception_when_enforced_style_is_raise_registers_an_offense_for_fail_with_kernel_as_explicit_receiver"
+source = '''
+Kernel.fail
+'''
+corrected = '''
+Kernel.raise
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 11
+message = "Always use `raise` to signal exceptions."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:only_raise"
+
+[[tests]]
+name = "rubocop_cop_style_signalexception_when_enforced_style_is_fail_registers_an_offense_for_raise_in_begin_section"
+source = '''
+begin
+  raise
+rescue Exception
+  #do nothing
+end
+'''
+corrected = '''
+begin
+  fail
+rescue Exception
+  #do nothing
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 7
+message = "Always use `fail` to signal exceptions."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:only_fail"
+
+[[tests]]
+name = "rubocop_cop_style_signalexception_when_enforced_style_is_fail_registers_an_offense_for_raise_in_def_body"
+source = '''
+def test
+  raise
+rescue Exception
+  #do nothing
+end
+'''
+corrected = '''
+def test
+  fail
+rescue Exception
+  #do nothing
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 7
+message = "Always use `fail` to signal exceptions."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:only_fail"
+
+[[tests]]
+name = "rubocop_cop_style_signalexception_when_enforced_style_is_fail_registers_an_offense_for_raise_in_rescue_section"
+source = '''
+begin
+  fail
+rescue Exception
+  raise
+end
+'''
+corrected = '''
+begin
+  fail
+rescue Exception
+  fail
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 7
+message = "Always use `fail` to signal exceptions."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:only_fail"
+
+[[tests]]
+name = "rubocop_cop_style_signalexception_when_enforced_style_is_fail_accepts_raise_with_explicit_receiver"
+source = '''
+test.raise
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:only_fail"
+
+[[tests]]
+name = "rubocop_cop_style_signalexception_when_enforced_style_is_fail_registers_an_offense_for_raise_with_kernel_as_explicit_receiver"
+source = '''
+Kernel.raise
+'''
+corrected = '''
+Kernel.fail
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 12
+message = "Always use `fail` to signal exceptions."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:only_fail"

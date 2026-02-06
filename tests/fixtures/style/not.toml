@@ -1,0 +1,131 @@
+cop = "Style/Not"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_not_registers_an_offense_for_not"
+source = '''
+not test
+'''
+corrected = '''
+!test
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 3
+message = "Use `!` instead of `not`."
+
+[[tests]]
+name = "rubocop_cop_style_not_does_not_register_an_offense_for"
+source = '''
+!test
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_not_autocorrects_not_with"
+source = '''
+x = 10 if not y
+'''
+corrected = '''
+x = 10 if !y
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 13
+message = "Use `!` instead of `not`."
+
+[[tests]]
+name = "rubocop_cop_style_not_autocorrects_not_followed_by_parens_with"
+source = '''
+not(test)
+'''
+corrected = '''
+!(test)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 3
+message = "Use `!` instead of `not`."
+
+[[tests]]
+name = "rubocop_cop_style_not_uses_the_reverse_operator_when_not_is_applied_to_a_comparison"
+source = '''
+not x < y
+'''
+corrected = '''
+x >= y
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 3
+message = "Use `!` instead of `not`."
+
+[[tests]]
+name = "rubocop_cop_style_not_parenthesizes_when_not_would_change_the_meaning_of_a_binary_exp"
+source = '''
+not a >> b
+'''
+corrected = '''
+!(a >> b)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 3
+message = "Use `!` instead of `not`."
+
+[[tests]]
+name = "rubocop_cop_style_not_parenthesizes_when_not_is_applied_to_a_ternary_op"
+source = '''
+not a ? b : c
+'''
+corrected = '''
+!(a ? b : c)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 3
+message = "Use `!` instead of `not`."
+
+[[tests]]
+name = "rubocop_cop_style_not_parenthesizes_when_not_is_applied_to_and"
+source = '''
+not a && b
+'''
+corrected = '''
+!(a && b)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 3
+message = "Use `!` instead of `not`."
+
+[[tests]]
+name = "rubocop_cop_style_not_parenthesizes_when_not_is_applied_to_or"
+source = '''
+not a || b
+'''
+corrected = '''
+!(a || b)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 3
+message = "Use `!` instead of `not`."

@@ -1,0 +1,94 @@
+cop = "Lint/NestedPercentLiteral"
+department = "lint"
+severity = "warning"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_lint_nestedpercentliteral_registers_no_offense_for_empty_array"
+source = '''
+%i[]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_nestedpercentliteral_registers_no_offense_for_array"
+source = '''
+%i[a b c d xyz]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_nestedpercentliteral_registers_no_offense_for_percent_modifier_character_in_isolation"
+source = '''
+%i[% %i %I %q %Q %r %s %w %W %x]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_nestedpercentliteral_registers_no_offense_for_nestings_under_percent"
+source = '''
+%[a b %i[c d] xyz]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_nestedpercentliteral_registers_no_offense_for_percents_in_the_middle_of_literals"
+source = '''
+%w[1%+ 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_nestedpercentliteral_registers_an_offense_for_nested_percent_literals"
+source = '''
+%i[a b %i[c d] xyz]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 19
+message = "Within percent literals, nested percent literals do not function and may be unwanted in the result."
+
+[[tests]]
+name = "rubocop_cop_lint_nestedpercentliteral_registers_an_offense_for_repeated_nested_percent_literals"
+source = '''
+%i[a b %i[c d] %i[xyz]]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 23
+message = "Within percent literals, nested percent literals do not function and may be unwanted in the result."
+
+[[tests]]
+name = "rubocop_cop_lint_nestedpercentliteral_registers_an_offense_for_multiply_nested_percent_literals"
+source = '''
+%i[a %i[b %i[c d]] xyz]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 23
+message = "Within percent literals, nested percent literals do not function and may be unwanted in the result."
+
+[[tests]]
+name = "rubocop_cop_lint_nestedpercentliteral_when_handling_invalid_utf8_byte_sequence_registers_no_offense_for_array"
+source = '''
+%W[\xff]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_nestedpercentliteral_when_handling_invalid_utf8_byte_sequence_registers_an_offense_for_nested_percent_literal"
+source = '''
+%W[\xff %W[]]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 13
+message = "Within percent literals, nested percent literals do not function and may be unwanted in the result."

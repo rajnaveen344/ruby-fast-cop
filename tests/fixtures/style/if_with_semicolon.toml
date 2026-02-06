@@ -1,0 +1,461 @@
+cop = "Style/IfWithSemicolon"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_ifwithsemicolon_registers_an_offense_and_corrects_for_one_line_if_end"
+source = '''
+if cond; run else dont end
+'''
+corrected = '''
+cond ? run : dont
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 26
+message = "Do not use `if cond;` - use a ternary operator instead."
+
+[[tests]]
+name = "rubocop_cop_style_ifwithsemicolon_registers_an_offense_and_corrects_for_one_line_if_end_without_then_body"
+source = '''
+if cond; else dont end
+'''
+corrected = '''
+cond ? nil : dont
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 22
+message = "Do not use `if cond;` - use a ternary operator instead."
+
+[[tests]]
+name = "rubocop_cop_style_ifwithsemicolon_registers_an_offense_when_not_using_else_branch"
+source = '''
+if cond; run end
+'''
+corrected = '''
+cond ? run : nil
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 16
+message = "Do not use `if cond;` - use a ternary operator instead."
+
+[[tests]]
+name = "rubocop_cop_style_ifwithsemicolon_registers_an_offense_and_corrects_a_single_line_if_end_when_the_then_body_contains_a_parenthesized_method_call_with_an_argument"
+source = '''
+if cond;do_something(arg) end
+'''
+corrected = '''
+cond ? do_something(arg) : nil
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 29
+message = "Do not use `if cond;` - use a ternary operator instead."
+
+[[tests]]
+name = "rubocop_cop_style_ifwithsemicolon_registers_an_offense_and_corrects_a_single_line_if_end_when_the_then_body_contains_an_array_literal_with_an_argument"
+source = '''
+if cond;[] end
+'''
+corrected = '''
+cond ? [] : nil
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 14
+message = "Do not use `if cond;` - use a ternary operator instead."
+
+[[tests]]
+name = "rubocop_cop_style_ifwithsemicolon_registers_an_offense_and_corrects_a_single_line_if_end_when_the_then_body_contains_a_method_call_with_an_argument"
+source = '''
+if cond;do_something arg end
+'''
+corrected = '''
+cond ? do_something(arg) : nil
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 28
+message = "Do not use `if cond;` - use a ternary operator instead."
+
+[[tests]]
+name = "rubocop_cop_style_ifwithsemicolon_registers_an_offense_and_corrects_a_single_line_if_end_when_the_then_body_contains_a_safe_navigation_method_call_with_an_argument"
+source = '''
+if cond;obj&.do_something arg end
+'''
+corrected = '''
+cond ? obj&.do_something(arg) : nil
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 33
+message = "Do not use `if cond;` - use a ternary operator instead."
+
+[[tests]]
+name = "rubocop_cop_style_ifwithsemicolon_registers_an_offense_and_corrects_a_single_line_if_else_end_when_the_then_body_contains_a_method_call_with_an_argument"
+source = '''
+if cond;foo foo_arg else bar bar_arg end
+'''
+corrected = '''
+cond ? foo(foo_arg) : bar(bar_arg)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 40
+message = "Do not use `if cond;` - use a ternary operator instead."
+
+[[tests]]
+name = "rubocop_cop_style_ifwithsemicolon_registers_an_offense_and_corrects_a_single_line_if_else_end_when_the_then_body_contains_a_safe_navigation_method_call_with_an_argument"
+source = '''
+if cond;foo obj&.foo_arg else bar obj&.bar_arg end
+'''
+corrected = '''
+cond ? foo(obj&.foo_arg) : bar(obj&.bar_arg)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 50
+message = "Do not use `if cond;` - use a ternary operator instead."
+
+[[tests]]
+name = "rubocop_cop_style_ifwithsemicolon_registers_an_offense_and_corrects_a_single_line_if_end_when_the_then_body_contains_an_arithmetic_operator_method_call"
+source = '''
+if cond;do_something - arg end
+'''
+corrected = '''
+cond ? do_something - arg : nil
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 30
+message = "Do not use `if cond;` - use a ternary operator instead."
+
+[[tests]]
+name = "rubocop_cop_style_ifwithsemicolon_registers_an_offense_and_corrects_a_single_line_if_end_when_the_then_body_contains_a_method_call_with"
+source = '''
+if cond; foo[key] else bar end
+'''
+corrected = '''
+cond ? foo[key] : bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 30
+message = "Do not use `if cond;` - use a ternary operator instead."
+
+[[tests]]
+name = "rubocop_cop_style_ifwithsemicolon_registers_an_offense_and_corrects_a_single_line_if_end_when_the_then_body_contains_a_method_call_with"
+source = '''
+if cond; foo[key] = value else bar end
+'''
+corrected = '''
+cond ? foo[key] = value : bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 38
+message = "Do not use `if cond;` - use a ternary operator instead."
+
+[[tests]]
+name = "rubocop_cop_style_ifwithsemicolon_registers_an_offense_when_using_multiple_expressions_in_the_else_branch"
+source = '''
+if cond; foo else bar'arg'; baz end
+'''
+corrected = '''
+if cond
+ foo else bar'arg'; baz end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 35
+message = "Do not use `if cond;` - use a newline instead."
+
+[[tests]]
+name = "rubocop_cop_style_ifwithsemicolon_can_handle_modifier_conditionals"
+source = '''
+class Hash
+end if RUBY_VERSION < "1.8.7"
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_ifwithsemicolon_when_elsif_is_present_registers_an_offense_when_without_branch_bodies"
+source = '''
+if cond; elsif cond2; end
+'''
+corrected = '''
+if cond
+#{' ' * 2}
+elsif cond2
+#{' ' * 2}
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 25
+message = "Do not use `if cond;` - use `if/else` instead."
+
+[[tests]]
+name = "rubocop_cop_style_ifwithsemicolon_when_elsif_is_present_registers_an_offense_when_without_else_branch"
+source = '''
+if cond; run elsif cond2; run2 end
+'''
+corrected = '''
+if cond
+  run
+elsif cond2
+  run2
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 34
+message = "Do not use `if cond;` - use `if/else` instead."
+
+[[tests]]
+name = "rubocop_cop_style_ifwithsemicolon_when_elsif_is_present_registers_an_offense_when_second_elsif_block"
+source = '''
+if cond; run elsif cond2; run2 elsif cond3; run3 else dont end
+'''
+corrected = '''
+if cond
+  run
+elsif cond2
+  run2
+elsif cond3
+  run3
+else
+  dont
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 62
+message = "Do not use `if cond;` - use `if/else` instead."
+
+[[tests]]
+name = "rubocop_cop_style_ifwithsemicolon_when_elsif_is_present_registers_an_offense_when_with_else_branch"
+source = '''
+if cond; run elsif cond2; run2 else dont end
+'''
+corrected = '''
+if cond
+  run
+elsif cond2
+  run2
+else
+  dont
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 44
+message = "Do not use `if cond;` - use `if/else` instead."
+
+[[tests]]
+name = "rubocop_cop_style_ifwithsemicolon_when_elsif_is_present_registers_an_offense_when_a_nested_if_with_a_semicolon_is_used"
+source = '''
+if cond; run
+  if cond; run
+  end
+end
+'''
+corrected = '''
+if cond
+ run
+  if cond; run
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 12
+message = "Do not use `if cond;` - use a newline instead."
+
+[[tests]]
+name = "rubocop_cop_style_ifwithsemicolon_when_elsif_is_present_registers_an_offense_and_corrects_when_using_nested_single_line_if_end_in_block_of_if_body"
+source = '''
+if foo?; bar { if qux?; quux else end } end
+'''
+corrected = '''
+if foo?
+ bar { if qux?; quux else end } end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 43
+message = "Do not use `if foo?;` - use `if/else` instead."
+
+[[tests]]
+name = "rubocop_cop_style_ifwithsemicolon_when_elsif_is_present_registers_an_offense_and_corrects_when_using_nested_single_line_if_end_in_the_block_of_else_body"
+source = '''
+if foo?; bar else baz { if qux?; quux else end } end
+'''
+corrected = '''
+if foo?
+ bar else baz { if qux?; quux else end } end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 52
+message = "Do not use `if foo?;` - use `if/else` instead."
+
+[[tests]]
+name = "rubocop_cop_style_ifwithsemicolon_when_elsif_is_present_registers_an_offense_and_corrects_when_using_nested_single_line_if_end_in_numblock_of_if_body"
+source = '''
+if foo?; bar { if _1; quux else end } end
+'''
+corrected = '''
+if foo?
+ bar { if _1; quux else end } end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 41
+message = "Do not use `if foo?;` - use `if/else` instead."
+
+[[tests]]
+name = "rubocop_cop_style_ifwithsemicolon_when_elsif_is_present_registers_an_offense_and_corrects_when_using_nested_single_line_if_end_in_the_numblock_of_else_body"
+source = '''
+if foo?; bar else baz { if _1; quux else end } end
+'''
+corrected = '''
+if foo?
+ bar else baz { if _1; quux else end } end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 50
+message = "Do not use `if foo?;` - use `if/else` instead."
+
+[[tests]]
+name = "rubocop_cop_style_ifwithsemicolon_when_elsif_is_present_registers_an_offense_when_using_multi_value_assignment_in_if_with_a_semicolon_is_used"
+source = '''
+if foo; bar, baz = qux else quux end
+'''
+corrected = '''
+if foo
+ bar, baz = qux else quux end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 36
+message = "Do not use `if foo;` - use `if/else` instead."
+
+[[tests]]
+name = "rubocop_cop_style_ifwithsemicolon_when_elsif_is_present_registers_an_offense_when_using_multi_value_assignment_in_else_with_a_semicolon_is_used"
+source = '''
+if foo; bar else baz, qux = quux end
+'''
+corrected = '''
+if foo
+ bar else baz, qux = quux end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 36
+message = "Do not use `if foo;` - use `if/else` instead."
+
+[[tests]]
+name = "rubocop_cop_style_ifwithsemicolon_when_elsif_is_present_registers_an_offense_when_using_return_with_value_in_if_with_a_semicolon_is_used"
+source = '''
+if cond; return value end
+'''
+corrected = '''
+if cond
+ return value end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 25
+message = "Do not use `if cond;` - use a newline instead."
+
+[[tests]]
+name = "rubocop_cop_style_ifwithsemicolon_when_elsif_is_present_registers_an_offense_when_using_return_without_value_in_if_with_a_semicolon_is_used"
+source = '''
+if cond; return end
+'''
+corrected = '''
+cond ? return : nil
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 19
+message = "Do not use `if cond;` - use a ternary operator instead."
+
+[[tests]]
+name = "rubocop_cop_style_ifwithsemicolon_when_elsif_is_present_registers_an_offense_and_corrects_when_using_nested_if_end_in_if_body"
+source = '''
+if cond1; foo + if cond2; bar
+  else
+  end
+end
+'''
+corrected = '''
+cond1 ? foo + if cond2; bar
+  else
+  end : nil
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 29
+message = "Do not use `if cond1;` - use a ternary operator instead."

@@ -1,0 +1,87 @@
+cop = "InternalAffairs/RedundantLocationArgument"
+department = "internal_affairs"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_redundantlocationargument_when_location_argument_is_passed_when_location_argument_is_expression_registers_an_offense"
+source = '''
+add_offense(node, location: :expression)
+'''
+corrected = '''
+add_offense(node)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 18
+column_end = 39
+message = "Redundant location argument to `#add_offense`."
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_redundantlocationargument_when_location_argument_is_passed_when_location_argument_is_expression_when_there_is_a_message_argument_registers_an_offense"
+source = '''
+add_offense(node, location: :expression, message: 'message')
+'''
+corrected = '''
+add_offense(node, message: 'message')
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 18
+column_end = 39
+message = "Redundant location argument to `#add_offense`."
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_redundantlocationargument_when_location_argument_is_passed_when_location_argument_is_expression_removes_default_location_when_preceded_by_another_keyword"
+source = '''
+add_offense(node, message: 'foo', location: :expression)
+'''
+corrected = '''
+add_offense(node, message: 'foo')
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 34
+column_end = 55
+message = "Redundant location argument to `#add_offense`."
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_redundantlocationargument_when_location_argument_is_passed_when_location_argument_is_expression_removes_default_location_surrounded_by_other_keywords"
+source = '''
+add_offense(
+  node,
+  severity: :error,
+  location: :expression,
+  message: 'message'
+)
+'''
+corrected = '''
+add_offense(
+  node,
+  severity: :error,
+  message: 'message'
+)
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 23
+message = "Redundant location argument to `#add_offense`."
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_redundantlocationargument_when_location_argument_is_passed_when_location_argument_does_not_equal_to_expression_does_not_register_an_offense"
+source = '''
+add_offense(node, location: :selector)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_redundantlocationargument_when_location_argument_is_not_passed_does_not_register_an_offense"
+source = '''
+add_offense(node)
+'''
+offenses = []

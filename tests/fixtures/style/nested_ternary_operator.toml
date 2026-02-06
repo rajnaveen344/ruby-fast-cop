@@ -1,0 +1,153 @@
+cop = "Style/NestedTernaryOperator"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_nestedternaryoperator_registers_an_offense_and_corrects_for_a_nested_ternary_operator_expression"
+source = '''
+a ? (b ? b1 : b2) : a2
+'''
+corrected = '''
+if a
+b ? b1 : b2
+else
+a2
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 16
+message = "Ternary operators must not be nested. Prefer `if` or `else` constructs instead."
+
+[[tests]]
+name = "rubocop_cop_style_nestedternaryoperator_registers_an_offense_and_corrects_for_a_nested_ternary_operator_expression_with_block"
+source = '''
+cond ? foo : bar(foo.a ? foo.b : foo) { |e, k| e.nil? ? nil : e[k] }
+'''
+corrected = '''
+if cond
+foo
+else
+bar(foo.a ? foo.b : foo) { |e, k| e.nil? ? nil : e[k] }
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 47
+column_end = 66
+message = "Ternary operators must not be nested. Prefer `if` or `else` constructs instead."
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 36
+message = "Ternary operators must not be nested. Prefer `if` or `else` constructs instead."
+
+[[tests]]
+name = "rubocop_cop_style_nestedternaryoperator_registers_an_offense_and_corrects_for_a_nested_ternary_operator_expression_with_no_parentheses_on_the_outside"
+source = '''
+x ? y + (z ? 1 : 0) : nil
+'''
+corrected = '''
+if x
+y + (z ? 1 : 0)
+else
+nil
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 18
+message = "Ternary operators must not be nested. Prefer `if` or `else` constructs instead."
+
+[[tests]]
+name = "rubocop_cop_style_nestedternaryoperator_registers_an_offense_when_a_ternary_operator_has_a_nested_ternary_operator_within_an_if"
+source = '''
+a ? (
+  if b
+    c ? 1 : 2
+  end
+) : 3
+'''
+corrected = '''
+if a
+
+  if b
+    c ? 1 : 2
+  end
+
+else
+3
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 4
+column_end = 13
+message = "Ternary operators must not be nested. Prefer `if` or `else` constructs instead."
+
+[[tests]]
+name = "rubocop_cop_style_nestedternaryoperator_accepts_a_non_nested_ternary_operator_within_an_if"
+source = '''
+a = if x
+  cond ? b : c
+else
+  d
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_nestedternaryoperator_can_handle_multiple_nested_ternaries"
+source = '''
+a ? b : c ? d : e ? f : g
+'''
+corrected = '''
+if a
+b
+else
+if c
+d
+else
+e ? f : g
+end
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 16
+column_end = 25
+message = "Ternary operators must not be nested. Prefer `if` or `else` constructs instead."
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 25
+message = "Ternary operators must not be nested. Prefer `if` or `else` constructs instead."
+
+[[tests]]
+name = "rubocop_cop_style_nestedternaryoperator_registers_an_offense_and_corrects_when_ternary_operators_are_nested_and_the_inner_condition_is_parenthesized"
+source = '''
+foo ? (bar && baz) ? qux : quux : corge
+'''
+corrected = '''
+if foo
+(bar && baz) ? qux : quux
+else
+corge
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 31
+message = "Ternary operators must not be nested. Prefer `if` or `else` constructs instead."

@@ -1,0 +1,33 @@
+cop = "Lint/SafeNavigationWithEmpty"
+department = "lint"
+severity = "warning"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_lint_safenavigationwithempty_in_a_conditional_registers_an_offense_and_corrects_on_empty"
+source = '''
+return unless foo&.empty?
+'''
+corrected = '''
+return unless foo && foo.empty?
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 14
+column_end = 25
+message = "Avoid calling `empty?` with the safe navigation operator in conditionals."
+
+[[tests]]
+name = "rubocop_cop_lint_safenavigationwithempty_in_a_conditional_does_not_register_an_offense_on_empty"
+source = '''
+return if foo.empty?
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_safenavigationwithempty_outside_a_conditional_registers_no_offense"
+source = '''
+bar = foo&.empty?
+'''
+offenses = []

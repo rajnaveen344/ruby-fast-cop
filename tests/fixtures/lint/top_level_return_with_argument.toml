@@ -1,0 +1,216 @@
+cop = "Lint/TopLevelReturnWithArgument"
+department = "lint"
+severity = "warning"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_lint_toplevelreturnwithargument_code_segment_with_only_top_level_return_statement_expects_no_offense_from_the_return_without_arguments"
+source = '''
+return
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_toplevelreturnwithargument_code_segment_with_only_top_level_return_statement_expects_offense_from_the_return_with_arguments"
+source = '''
+return 1, 2, 3
+'''
+corrected = '''
+return
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 14
+message = "Top level return with argument detected."
+
+[[tests]]
+name = "rubocop_cop_lint_toplevelreturnwithargument_code_segment_with_only_top_level_return_statement_expects_multiple_offenses_from_the_return_with_arguments_statements"
+source = '''
+return 1, 2, 3
+
+return 1, 2, 3
+
+return 1, 2, 3
+'''
+corrected = '''
+return
+
+return
+
+return
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 14
+message = "Top level return with argument detected."
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 14
+message = "Top level return with argument detected."
+
+[[tests.offenses]]
+line = 5
+column_start = 0
+column_end = 14
+message = "Top level return with argument detected."
+
+[[tests]]
+name = "rubocop_cop_lint_toplevelreturnwithargument_code_segment_with_block_level_returns_other_than_the_top_level_return_expects_no_offense_from_the_return_without_arguments"
+source = '''
+foo
+
+[1, 2, 3, 4, 5].each { |n| return n }
+
+return
+
+bar
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_toplevelreturnwithargument_code_segment_with_block_level_returns_other_than_the_top_level_return_expects_offense_from_the_return_with_arguments"
+source = '''
+foo
+
+[1, 2, 3, 4, 5].each { |n| return n }
+
+return 1, 2, 3
+
+bar
+'''
+corrected = '''
+foo
+
+[1, 2, 3, 4, 5].each { |n| return n }
+
+return
+
+bar
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 0
+column_end = 14
+message = "Top level return with argument detected."
+
+[[tests]]
+name = "rubocop_cop_lint_toplevelreturnwithargument_code_segment_with_method_level_return_statements_expects_offense_when_method_level_top_level_return_co_exist"
+source = '''
+def method
+  return 'Hello World'
+end
+
+return 1, 2, 3
+'''
+corrected = '''
+def method
+  return 'Hello World'
+end
+
+return
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 0
+column_end = 14
+message = "Top level return with argument detected."
+
+[[tests]]
+name = "rubocop_cop_lint_toplevelreturnwithargument_code_segment_with_inline_if_along_with_top_level_return_expects_no_offense_from_the_return_without_arguments"
+source = '''
+foo
+
+return if 1 == 1
+
+bar
+
+def method
+  return "Hello World" if 1 == 1
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_toplevelreturnwithargument_code_segment_with_inline_if_along_with_top_level_return_expects_multiple_offenses_from_the_return_with_arguments"
+source = '''
+foo
+return 1, 2, 3 if 1 == 1
+bar
+return 2
+return 3
+
+def method
+  return "Hello World" if 1 == 1
+end
+'''
+corrected = '''
+foo
+return if 1 == 1
+bar
+return
+return
+
+def method
+  return "Hello World" if 1 == 1
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 14
+message = "Top level return with argument detected."
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 8
+message = "Top level return with argument detected."
+
+[[tests.offenses]]
+line = 5
+column_start = 0
+column_end = 8
+message = "Top level return with argument detected."
+
+[[tests]]
+name = "rubocop_cop_lint_toplevelreturnwithargument_code_segment_containing_semi_colon_separated_statements_expects_an_offense_from_the_return_with_arguments_and_multi_line_code"
+source = '''
+foo
+
+if a == b; warn 'hey'; return 42; end
+
+bar
+'''
+corrected = '''
+foo
+
+if a == b; warn 'hey'; return; end
+
+bar
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 23
+column_end = 32
+message = "Top level return with argument detected."
+
+[[tests]]
+name = "rubocop_cop_lint_toplevelreturnwithargument_code_segment_containing_semi_colon_separated_statements_expects_no_offense_from_the_return_with_arguments_and_multi_line_code"
+source = '''
+foo
+
+if a == b; warn 'hey'; return; end
+
+bar
+'''
+offenses = []

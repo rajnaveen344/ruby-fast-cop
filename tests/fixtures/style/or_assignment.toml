@@ -1,0 +1,345 @@
+cop = "Style/OrAssignment"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_orassignment_when_using_var_var_var_something_registers_an_offense_with_normal_variables"
+source = '''
+foo = foo ? foo : 'default'
+'''
+corrected = '''
+foo ||= 'default'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 27
+message = "Use the double pipe equals operator `||=` instead."
+
+[[tests]]
+name = "rubocop_cop_style_orassignment_when_using_var_var_var_something_registers_an_offense_with_instance_variables"
+source = '''
+@foo = @foo ? @foo : 'default'
+'''
+corrected = '''
+@foo ||= 'default'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 30
+message = "Use the double pipe equals operator `||=` instead."
+
+[[tests]]
+name = "rubocop_cop_style_orassignment_when_using_var_var_var_something_registers_an_offense_with_class_variables"
+source = '''
+@@foo = @@foo ? @@foo : 'default'
+'''
+corrected = '''
+@@foo ||= 'default'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 33
+message = "Use the double pipe equals operator `||=` instead."
+
+[[tests]]
+name = "rubocop_cop_style_orassignment_when_using_var_var_var_something_registers_an_offense_with_global_variables"
+source = '''
+$foo = $foo ? $foo : 'default'
+'''
+corrected = '''
+$foo ||= 'default'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 30
+message = "Use the double pipe equals operator `||=` instead."
+
+[[tests]]
+name = "rubocop_cop_style_orassignment_when_using_var_var_var_something_does_not_register_an_offense_if_any_of_the_variables_are_different"
+source = '''
+foo = foo ? bar : 3
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_orassignment_when_using_var_if_var_var_else_something_end_registers_an_offense_with_normal_variables"
+source = '''
+foo = if foo
+        foo
+      else
+        'default'
+      end
+'''
+corrected = '''
+foo ||= 'default'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 12
+message = "Use the double pipe equals operator `||=` instead."
+
+[[tests]]
+name = "rubocop_cop_style_orassignment_when_using_var_if_var_var_else_something_end_registers_an_offense_with_instance_variables"
+source = '''
+@foo = if @foo
+         @foo
+       else
+         'default'
+       end
+'''
+corrected = '''
+@foo ||= 'default'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 14
+message = "Use the double pipe equals operator `||=` instead."
+
+[[tests]]
+name = "rubocop_cop_style_orassignment_when_using_var_if_var_var_else_something_end_registers_an_offense_with_class_variables"
+source = '''
+@@foo = if @@foo
+          @@foo
+        else
+          'default'
+        end
+'''
+corrected = '''
+@@foo ||= 'default'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 16
+message = "Use the double pipe equals operator `||=` instead."
+
+[[tests]]
+name = "rubocop_cop_style_orassignment_when_using_var_if_var_var_else_something_end_registers_an_offense_with_global_variables"
+source = '''
+$foo = if $foo
+         $foo
+       else
+         'default'
+       end
+'''
+corrected = '''
+$foo ||= 'default'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 14
+message = "Use the double pipe equals operator `||=` instead."
+
+[[tests]]
+name = "rubocop_cop_style_orassignment_when_using_var_if_var_var_else_something_end_does_not_register_an_offense_if_any_of_the_variables_are_different"
+source = '''
+foo = if bar
+        foo
+      else
+        3
+      end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_orassignment_when_using_var_something_unless_var_registers_an_offense_for_normal_variables"
+source = '''
+foo = 'default' unless foo
+'''
+corrected = '''
+foo ||= 'default'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 26
+message = "Use the double pipe equals operator `||=` instead."
+
+[[tests]]
+name = "rubocop_cop_style_orassignment_when_using_var_something_unless_var_registers_an_offense_for_instance_variables"
+source = '''
+@foo = 'default' unless @foo
+'''
+corrected = '''
+@foo ||= 'default'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 28
+message = "Use the double pipe equals operator `||=` instead."
+
+[[tests]]
+name = "rubocop_cop_style_orassignment_when_using_var_something_unless_var_registers_an_offense_for_class_variables"
+source = '''
+@@foo = 'default' unless @@foo
+'''
+corrected = '''
+@@foo ||= 'default'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 30
+message = "Use the double pipe equals operator `||=` instead."
+
+[[tests]]
+name = "rubocop_cop_style_orassignment_when_using_var_something_unless_var_registers_an_offense_for_global_variables"
+source = '''
+$foo = 'default' unless $foo
+'''
+corrected = '''
+$foo ||= 'default'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 28
+message = "Use the double pipe equals operator `||=` instead."
+
+[[tests]]
+name = "rubocop_cop_style_orassignment_when_using_var_something_unless_var_does_not_register_an_offense_if_any_of_the_variables_are_different"
+source = '''
+unless foo
+  bar = 3
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_orassignment_when_using_unless_var_var_something_end_registers_an_offense_for_normal_variables"
+source = '''
+foo = nil
+unless foo
+  foo = 'default'
+end
+'''
+corrected = '''
+foo = nil
+foo ||= 'default'
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 10
+message = "Use the double pipe equals operator `||=` instead."
+
+[[tests]]
+name = "rubocop_cop_style_orassignment_when_using_unless_var_var_something_end_registers_an_offense_for_instance_variables"
+source = '''
+@foo = nil
+unless @foo
+  @foo = 'default'
+end
+'''
+corrected = '''
+@foo = nil
+@foo ||= 'default'
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 11
+message = "Use the double pipe equals operator `||=` instead."
+
+[[tests]]
+name = "rubocop_cop_style_orassignment_when_using_unless_var_var_something_end_registers_an_offense_for_class_variables"
+source = '''
+@@foo = nil
+unless @@foo
+  @@foo = 'default'
+end
+'''
+corrected = '''
+@@foo = nil
+@@foo ||= 'default'
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 12
+message = "Use the double pipe equals operator `||=` instead."
+
+[[tests]]
+name = "rubocop_cop_style_orassignment_when_using_unless_var_var_something_end_registers_an_offense_for_global_variables"
+source = '''
+$foo = nil
+unless $foo
+  $foo = 'default'
+end
+'''
+corrected = '''
+$foo = nil
+$foo ||= 'default'
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 11
+message = "Use the double pipe equals operator `||=` instead."
+
+[[tests]]
+name = "rubocop_cop_style_orassignment_when_using_unless_var_var_something_end_does_not_register_an_offense_if_any_of_the_variables_are_different"
+source = '''
+unless foo
+  bar = 3
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_orassignment_when_then_branch_body_is_empty_registers_an_offense"
+source = '''
+foo = nil
+if foo
+else
+  foo = 2
+end
+'''
+corrected = '''
+foo = nil
+foo ||= 2
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 6
+message = "Use the double pipe equals operator `||=` instead."
+
+[[tests]]
+name = "rubocop_cop_style_orassignment_when_using_elsif_statement_does_not_register_an_offense"
+source = '''
+foo = if foo
+        foo
+      elsif
+        bar
+      else
+        'default'
+      end
+'''
+offenses = []

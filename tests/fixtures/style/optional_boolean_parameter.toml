@@ -1,0 +1,118 @@
+cop = "Style/OptionalBooleanParameter"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_optionalbooleanparameter_registers_an_offense_when_defining_method_with_optional_boolean_arg"
+source = '''
+def some_method(bar = false)
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 16
+column_end = 27
+message = "Prefer keyword arguments for arguments with a boolean default value; use `bar: false` instead of `bar = false`."
+
+[tests.config]
+AllowedMethods = []
+
+[[tests]]
+name = "rubocop_cop_style_optionalbooleanparameter_registers_an_offense_when_defining_method_with_optional_boolean_arg_that_has_no_space"
+source = '''
+def some_method(bar=false)
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 16
+column_end = 25
+message = "Prefer keyword arguments for arguments with a boolean default value; use `bar: false` instead of `bar=false`."
+
+[tests.config]
+AllowedMethods = []
+
+[[tests]]
+name = "rubocop_cop_style_optionalbooleanparameter_registers_an_offense_when_defining_class_method_with_optional_boolean_arg"
+source = '''
+def self.some_method(bar = false)
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 21
+column_end = 32
+message = "Prefer keyword arguments for arguments with a boolean default value; use `bar: false` instead of `bar = false`."
+
+[tests.config]
+AllowedMethods = []
+
+[[tests]]
+name = "rubocop_cop_style_optionalbooleanparameter_registers_an_offense_when_defining_method_with_multiple_optional_boolean_args"
+source = '''
+def some_method(foo = true, bar = 1, baz = false, quux: true)
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 16
+column_end = 26
+message = "Prefer keyword arguments for arguments with a boolean default value; use `foo: true` instead of `foo = true`."
+
+[[tests.offenses]]
+line = 1
+column_start = 37
+column_end = 48
+message = "Prefer keyword arguments for arguments with a boolean default value; use `baz: false` instead of `baz = false`."
+
+[tests.config]
+AllowedMethods = []
+
+[[tests]]
+name = "rubocop_cop_style_optionalbooleanparameter_does_not_register_an_offense_when_defining_method_with_keyword_boolean_arg"
+source = '''
+def some_method(bar: false)
+end
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = []
+
+[[tests]]
+name = "rubocop_cop_style_optionalbooleanparameter_does_not_register_an_offense_when_defining_method_without_args"
+source = '''
+def some_method
+end
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = []
+
+[[tests]]
+name = "rubocop_cop_style_optionalbooleanparameter_does_not_register_an_offense_when_defining_method_with_optional_non_boolean_arg"
+source = '''
+def some_method(bar = 'foo')
+end
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = []
+
+[[tests]]
+name = "rubocop_cop_style_optionalbooleanparameter_when_allowedmethods_is_not_empty_does_not_register_an_offense"
+source = '''
+def respond_to_missing?(method, include_all = false)
+end
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["respond_to_missing?"]

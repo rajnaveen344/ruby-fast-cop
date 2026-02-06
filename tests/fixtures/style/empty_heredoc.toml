@@ -1,0 +1,109 @@
+cop = "Style/EmptyHeredoc"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_emptyheredoc_registers_an_offense_when_using_empty_eos_heredoc"
+source = '''
+<<~EOS
+EOS
+'''
+corrected = '''
+''
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Use an empty string literal instead of heredoc."
+
+[[tests]]
+name = "rubocop_cop_style_emptyheredoc_registers_an_offense_when_using_empty_eos_heredoc"
+source = '''
+<<-EOS
+EOS
+'''
+corrected = '''
+''
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Use an empty string literal instead of heredoc."
+
+[[tests]]
+name = "rubocop_cop_style_emptyheredoc_registers_an_offense_when_using_empty_eos_heredoc"
+source = '''
+<<EOS
+EOS
+'''
+corrected = '''
+''
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 5
+message = "Use an empty string literal instead of heredoc."
+
+[[tests]]
+name = "rubocop_cop_style_emptyheredoc_registers_an_offense_when_using_empty_heredoc_single_argument"
+source = '''
+do_something(<<~EOS)
+EOS
+'''
+corrected = '''
+do_something('')
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 19
+message = "Use an empty string literal instead of heredoc."
+
+[[tests]]
+name = "rubocop_cop_style_emptyheredoc_registers_an_offense_when_using_empty_heredoc_argument_with_other_argument"
+source = '''
+do_something(<<~EOS, arg)
+EOS
+'''
+corrected = '''
+do_something('', arg)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 19
+message = "Use an empty string literal instead of heredoc."
+
+[[tests]]
+name = "rubocop_cop_style_emptyheredoc_does_not_register_an_offense_when_using_not_empty_heredoc"
+source = '''
+<<~EOS
+  Hello.
+EOS
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_emptyheredoc_when_double_quoted_string_literals_are_preferred_registers_an_offense_when_using_empty_eos_heredoc"
+source = '''
+<<~EOS
+EOS
+'''
+corrected = '''
+""
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Use an empty string literal instead of heredoc."

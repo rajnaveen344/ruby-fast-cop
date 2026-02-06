@@ -1,0 +1,1281 @@
+cop = "Lint/LiteralInInterpolation"
+department = "lint"
+severity = "warning"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_accepts_empty_interpolation"
+source = '''
+"this is #{a} silly"
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_accepts_interpolation_of_xstr"
+source = '''
+"this is #{`a`} silly"
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_accepts_interpolation_of_irange_where_endpoints_are_not_literals"
+source = '''
+"this is an irange: #{var1..var2}"
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_accepts_interpolation_of_erange_where_endpoints_are_not_literals"
+source = '''
+"this is an erange: #{var1...var2}"
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation"
+source = '''
+"this is the #{%{literal}}"
+'''
+corrected = '''
+"this is the #{expected}"
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 27
+message = "Literal interpolation detected."
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation"
+source = '''
+"this is the #{%{literal}} literally"
+'''
+corrected = '''
+"this is the #{expected} literally"
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 37
+message = "Literal interpolation detected."
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation"
+source = '''
+"some #{%{literal}} with #{%{literal}} too"
+'''
+corrected = '''
+"some #{expected} with #{expected} too"
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 43
+message = "Literal interpolation detected."
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 43
+message = "Literal interpolation detected."
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_when_there_is_non_literal_and_literal_interpolation_when_literal_interpolation_is_before_non_literal_only_removes_interpolation_around_literal"
+source = '''
+"this is #{%{literal}} with #{a} now"
+'''
+corrected = '''
+"this is #{expected} with #{a} now"
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 37
+message = "Literal interpolation detected."
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_when_there_is_non_literal_and_literal_interpolation_when_literal_interpolation_is_after_non_literal_only_removes_interpolation_around_literal"
+source = '''
+"this is #{a} with #{%{literal}} now"
+'''
+corrected = '''
+"this is #{a} with #{expected} now"
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 21
+column_end = 37
+message = "Literal interpolation detected."
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation"
+source = '''
+"this is the #{%{literal};%{literal}}"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 38
+message = "Literal interpolation detected."
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_int_literal_interpolation_1_123"
+source = '''
+1_123
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_int_literal_interpolation_1123"
+source = '''
+1123
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_int_literal_interpolation_123_456_789_123_456"
+source = '''
+123_456_789_123_456_789
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_int_literal_interpolation_123456789123456789"
+source = '''
+123456789123456789
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_int_literal_interpolation_0xaabb"
+source = '''
+0xaabb
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_int_literal_interpolation_43707"
+source = '''
+43707
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_int_literal_interpolation_0o377"
+source = '''
+0o377
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_int_literal_interpolation_255"
+source = '''
+255
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_float_literal_interpolation_1_2e_3"
+source = '''
+1.2e-3
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_float_literal_interpolation_0_0012"
+source = '''
+0.0012
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_str_literal_interpolation_double_quot_string"
+source = '''
+"double_quot_string"
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_str_literal_interpolation_double_quot_string"
+source = '''
+double_quot_string
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_str_literal_interpolation_single_quot_string"
+source = '''
+'single_quot_string'
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_str_literal_interpolation_single_quot_string"
+source = '''
+single_quot_string
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_str_literal_interpolation_double_quot_string"
+source = '''
+"double_quot_string: '"
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_str_literal_interpolation_double_quot_string"
+source = '''
+double_quot_string: '
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_str_literal_interpolation_single_quot_string"
+source = '''
+'single_quot_string: "'
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_str_literal_interpolation_single_quot_string"
+source = '''
+single_quot_string: \"
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_sym_literal_interpolation_symbol"
+source = '''
+:symbol
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_sym_literal_interpolation_symbol"
+source = '''
+symbol
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_sym_literal_interpolation_symbol"
+source = '''
+:"symbol"
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_sym_literal_interpolation_symbol"
+source = '''
+symbol
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_sym_literal_interpolation_single_quot_in_sym"
+source = '''
+:"single quot in symbol: '"
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_sym_literal_interpolation_single_quot_in_symbo"
+source = '''
+single quot in symbol: '
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_sym_literal_interpolation_double_quot_in_sym"
+source = '''
+:'double quot in symbol: "'
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_sym_literal_interpolation_double_quot_in_symbo"
+source = '''
+double quot in symbol: \"
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_array_literal_interpolation"
+source = '''
+[]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_array_literal_interpolation"
+source = '''
+[]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_array_literal_interpolation_a_b"
+source = '''
+["a", "b"]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_array_literal_interpolation_a_b"
+source = '''
+[\"a\", \"b\"]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_array_literal_interpolation_w"
+source = '''
+%w[]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_array_literal_interpolation"
+source = '''
+[]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_array_literal_interpolation_w_v1"
+source = '''
+%w[v1]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_array_literal_interpolation_v1"
+source = '''
+[\"v1\"]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_array_literal_interpolation_w_v1_v2"
+source = '''
+%w[v1 v2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_array_literal_interpolation_v1_v2"
+source = '''
+[\"v1\", \"v2\"]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_array_literal_interpolation_i_s1_s2"
+source = '''
+%i[s1 s2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_array_literal_interpolation_s1_s2"
+source = '''
+[\"s1\", \"s2\"]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_array_literal_interpolation_i_s1_s2"
+source = '''
+%I[s1 s2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_array_literal_interpolation_s1_s2"
+source = '''
+[\"s1\", \"s2\"]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_array_literal_interpolation_i_s1_s2"
+source = '''
+%i[s1     s2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_array_literal_interpolation_s1_s2"
+source = '''
+[\"s1\", \"s2\"]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_array_literal_interpolation_i_s1_s2"
+source = '''
+%i[ s1   s2 ]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_array_literal_interpolation_s1_s2"
+source = '''
+[\"s1\", \"s2\"]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_hash_literal_interpolation_a_b"
+source = '''
+{"a" => "b"}
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_hash_literal_interpolation_a_b"
+source = '''
+{\"a\"=>\"b\"}
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_hash_literal_interpolation_foo_bar_fiz"
+source = '''
+{ foo: 'bar', :fiz => "buzz" }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_hash_literal_interpolation_foo_bar_fiz"
+source = '''
+{:foo=>\"bar\", :fiz=>\"buzz\"}
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_hash_literal_interpolation_foo_fiz_buzz"
+source = '''
+{ foo: { fiz: 'buzz' } }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_hash_literal_interpolation_foo_fiz_buzz"
+source = '''
+{:foo=>{:fiz=>\"buzz\"}}
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_hash_literal_interpolation_num_separate_1"
+source = '''
+{ num: { separate: 1_123, long_separate: 123_456_789_123_456_789, exponent: 1.2e-3 } }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_hash_literal_interpolation_num_separate_1"
+source = '''
+{:num=>{:separate=>1123, :long_separate=>123456789123456789, :exponent=>0.0012}}
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_hash_literal_interpolation_n_adic_num_hex"
+source = '''
+{ n_adic_num: { hex: 0xaabb, oct: 0o377 } }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_hash_literal_interpolation_n_adic_num_hex"
+source = '''
+{:n_adic_num=>{:hex=>43707, :oct=>255}}
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_hash_literal_interpolation_double_quot_sim"
+source = '''
+{ double_quot: { simple: "double_quot", single_in_double: "double_quot: '" } }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_hash_literal_interpolation_double_quot_sim"
+source = '''
+{:double_quot=>{:simple=>\"double_quot\", :single_in_double=>\"double_quot: '\"}}
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_hash_literal_interpolation_single_quot_sim"
+source = '''
+{ single_quot: { simple: 'single_quot', double_in_single: 'single_quot: "' } }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_hash_literal_interpolation_single_quot_sim"
+source = '''
+{:single_quot=>{:simple=>\"single_quot\", :double_in_single=>\"single_quot: \\\"\"}}
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_hash_literal_interpolation_bool_key_true"
+source = '''
+{ bool: { key: true } }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_hash_literal_interpolation_bool_key_true"
+source = '''
+{:bool=>{:key=>true}}
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_hash_literal_interpolation_bool_key_false"
+source = '''
+{ bool: { key: false } }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_hash_literal_interpolation_bool_key_false"
+source = '''
+{:bool=>{:key=>false}}
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_hash_literal_interpolation_nil_key_nil"
+source = '''
+{ nil: { key: nil } }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_hash_literal_interpolation_nil_key_nil"
+source = '''
+{:nil=>{:key=>nil}}
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_hash_literal_interpolation_symbol_key_sy"
+source = '''
+{ symbol: { key: :symbol } }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_hash_literal_interpolation_symbol_key_sy"
+source = '''
+{:symbol=>{:key=>:symbol}}
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_hash_literal_interpolation_symbol_key_s"
+source = '''
+{ symbol: { key: :"symbol" } }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_hash_literal_interpolation_symbol_key_sy"
+source = '''
+{:symbol=>{:key=>:symbol}}
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_hash_literal_interpolation_single_quot_symbol"
+source = '''
+{ single_quot_symbol: { key: :"single_quot_in_symbol: '" } }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_hash_literal_interpolation_single_quot_symbol"
+source = '''
+{:single_quot_symbol=>{:key=>:\"single_quot_in_symbol: '\"}}
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_hash_literal_interpolation_double_quot_symbol"
+source = '''
+{ double_quot_symbol: { key: :'double_quot_in_symbol: "' } }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_hash_literal_interpolation_double_quot_symbol"
+source = '''
+{:double_quot_symbol=>{:key=>:\"double_quot_in_symbol: \\\"\"}}
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_hash_literal_interpolation_single_quot_symbol"
+source = '''
+{ single_quot_symbol_not_in_space: { key: :"single_quot_in_symbol:'" } }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_hash_literal_interpolation_single_quot_symbol"
+source = '''
+{:single_quot_symbol_not_in_space=>{:key=>:\"single_quot_in_symbol:'\"}}
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_hash_literal_interpolation_single_quot_symbol"
+source = '''
+{ single_quot_symbol_in_space: { key: :"single_quot_in_symbol: " } }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_hash_literal_interpolation_single_quot_symbol"
+source = '''
+{:single_quot_symbol_in_space=>{:key=>:\"single_quot_in_symbol: \"}}
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_hash_literal_interpolation_range_key_1_2"
+source = '''
+{ range: { key: 1..2 } }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_hash_literal_interpolation_range_key_1_2"
+source = '''
+{:range=>{:key=>1..2}}
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_hash_literal_interpolation_range_key_1"
+source = '''
+{ range: { key: 1...2 } }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_hash_literal_interpolation_range_key_1"
+source = '''
+{:range=>{:key=>1...2}}
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_hash_literal_interpolation_array_key_w"
+source = '''
+{ array: { key: %w[] } }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_hash_literal_interpolation_array_key"
+source = '''
+{:array=>{:key=>[]}}
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_hash_literal_interpolation_array_key_w_v"
+source = '''
+{ array: { key: %w[v1] } }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_hash_literal_interpolation_array_key_v"
+source = '''
+{:array=>{:key=>[\"v1\"]}}
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_hash_literal_interpolation_array_key_w_v"
+source = '''
+{ array: { key: %w[v1 v2] } }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_hash_literal_interpolation_array_key_v"
+source = '''
+{:array=>{:key=>[\"v1\", \"v2\"]}}
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_hash_literal_interpolation_array_key_i_s"
+source = '''
+{ array: { key: %i[s1 s2] } }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_hash_literal_interpolation_array_key_s"
+source = '''
+{:array=>{:key=>[\"s1\", \"s2\"]}}
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_hash_literal_interpolation_array_key_i_s"
+source = '''
+{ array: { key: %I[s1 s2] } }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_hash_literal_interpolation_array_key_s"
+source = '''
+{:array=>{:key=>[\"s1\", \"s2\"]}}
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_hash_literal_interpolation_array_key_i_s"
+source = '''
+{ array: { key: %i[s1     s2] } }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_hash_literal_interpolation_array_key_s"
+source = '''
+{:array=>{:key=>[\"s1\", \"s2\"]}}
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_hash_literal_interpolation_array_key_i"
+source = '''
+{ array: { key: %i[ s1   s2 ] } }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_hash_literal_interpolation_array_key_s"
+source = '''
+{:array=>{:key=>[\"s1\", \"s2\"]}}
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_type_else_literal_interpolation_nil"
+source = '''
+nil
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation"
+source = '''
+#{prefix}[#{"this interpolation"} is significant]
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation"
+source = '''
+#{prefix}[#{""} is significant]
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation"
+source = '''
+#{prefix}[#{:"this interpolation"} is significant]
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation"
+source = '''
+#{prefix}[#{["this interpolation"]} is significant]
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation"
+source = '''
+#{prefix}[#{[:"this interpolation"]} is significant]
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation"
+source = '''
+%{prefix}[this #{%{literal}} is not significant]
+'''
+corrected = '''
+#{prefix}[this #{word} is not significant]
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 48
+message = "Literal interpolation detected."
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation"
+source = '''
+%{prefix}[this #{%{literal}} is not significant]
+'''
+corrected = '''
+#{prefix}[this #{word} is not significant]
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 48
+message = "Literal interpolation detected."
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation"
+source = '''
+%{prefix}[this #{%{literal}} is not significant]
+'''
+corrected = '''
+#{prefix}[this #{[word].inspect.gsub('"', '\"')} is not significant]
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 48
+message = "Literal interpolation detected."
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation"
+source = '''
+%{prefix}[this #{%{literal}} is not significant]
+'''
+corrected = '''
+#{prefix}[this #{[word.to_sym].inspect} is not significant]
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 48
+message = "Literal interpolation detected."
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_literal_interpolation_in_words_literal_w"
+source = '''
+%W
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_literal_interpolation_in_words_literal_i"
+source = '''
+%I
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_handles_nested_interpolations_when_autocorrecting"
+source = '''
+"this is #{"#{1}"} silly"
+'''
+corrected = '''
+"this is #{"1"} silly"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 14
+column_end = 15
+message = "Literal interpolation detected."
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation"
+source = '''
+%("this is #{#{keyword}} silly")
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation"
+source = '''
+"this is the #{%{keyword}} #{1}"
+'''
+corrected = '''
+"this is the #{#{keyword}} 1"
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 32
+message = "Literal interpolation detected."
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_special_keywords_file"
+source = '''
+__FILE__
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_special_keywords_line"
+source = '''
+__LINE__
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_special_keywords_end"
+source = '''
+__END__
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_special_keywords_encoding"
+source = '''
+__ENCODING__
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation"
+source = '''
+"this is the #{%{string}}"
+'''
+corrected = '''
+"this is the #{string.gsub(/'|"/, '')}"
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 26
+message = "Literal interpolation detected."
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_non_special_string_literal_interpolation_foo"
+source = '''
+'foo'
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_non_special_string_literal_interpolation_foo"
+source = '''
+"foo"
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_handles_double_quotes_in_single_quotes_when_autocorrecting"
+source = '''
+"this is #{'"'} silly"
+'''
+corrected = '''
+"this is \" silly"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 14
+message = "Literal interpolation detected."
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_handles_backslash_in_single_quotes_when_autocorrecting"
+source = '''
+x = "ABC".gsub(/(A)(B)(C)/, "D#{'\2'}F")
+"this is #{'\n'} silly"
+"this is #{%q(\n)} silly"
+'''
+corrected = '''
+x = "ABC".gsub(/(A)(B)(C)/, "D\\2F")
+"this is \\n silly"
+"this is \\n silly"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 32
+column_end = 36
+message = "Literal interpolation detected."
+
+[[tests.offenses]]
+line = 2
+column_start = 11
+column_end = 15
+message = "Literal interpolation detected."
+
+[[tests.offenses]]
+line = 3
+column_start = 11
+column_end = 17
+message = "Literal interpolation detected."
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_handles_backslash_in_double_quotes_when_autocorrecting"
+source = '''
+"this is #{"\n"} silly"
+"this is #{%(\n)} silly"
+"this is #{%Q(\n)} silly"
+'''
+corrected = '''
+"this is#{trailing_whitespace}
+ silly"
+"this is#{trailing_whitespace}
+ silly"
+"this is#{trailing_whitespace}
+ silly"
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 15
+message = "Literal interpolation detected."
+
+[[tests.offenses]]
+line = 2
+column_start = 11
+column_end = 16
+message = "Literal interpolation detected."
+
+[[tests.offenses]]
+line = 3
+column_start = 11
+column_end = 17
+message = "Literal interpolation detected."
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_does_not_register_an_offense_when_space_literal_at_the_end_of_heredoc_line"
+source = '''
+<<~HERE
+  Line with explicit space literal at the end. #{'  '}
+HERE
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_in_string_like_contexts_removes_interpolation_in_symbols"
+source = '''
+:"this is the #{%{literal}}"
+'''
+corrected = '''
+:"this is the #{expected}"
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 16
+column_end = 28
+message = "Literal interpolation detected."
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_in_string_like_contexts_removes_interpolation_in_backticks"
+source = '''
+`this is the #{%{literal}}`
+'''
+corrected = '''
+`this is the #{expected}`
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 27
+message = "Literal interpolation detected."
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_in_string_like_contexts_removes_interpolation_in_regular_expressions"
+source = '''
+/this is the #{%{literal}}/
+'''
+corrected = '''
+/this is the #{expected}/
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 27
+message = "Literal interpolation detected."
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_handling_regexp_special_characters_when_inside_a_regexp_literal_properly_escapes_a_forward_slash"
+source = '''
+/test#{'/'}test/
+'''
+corrected = '''
+/test\/test/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 10
+message = "Literal interpolation detected."
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_handling_regexp_special_characters_when_inside_a_regexp_literal_properly_escapes_multiple_forward_slashes"
+source = '''
+/test#{'/a/b/c/'}test/
+'''
+corrected = '''
+/test\/a\/b\/c\/test/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 16
+message = "Literal interpolation detected."
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_handling_regexp_special_characters_when_inside_a_regexp_literal_handles_escaped_forward_slashes"
+source = '''
+/test#{'\\/'}test/
+'''
+corrected = '''
+/test\/test/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 12
+message = "Literal interpolation detected."
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_handling_regexp_special_characters_when_inside_a_regexp_literal_handles_escaped_backslashes"
+source = '''
+/test#{'\\\\/'}test/
+'''
+corrected = '''
+/test\\\/test/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 14
+message = "Literal interpolation detected."
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_handling_regexp_special_characters_when_inside_a_r_regexp_does_not_escape_the_autocorrection"
+source = '''
+%r{test#{'/'}test}
+'''
+corrected = '''
+%r{test/test}
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 12
+message = "Literal interpolation detected."
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_handling_regexp_special_characters_when_inside_a_non_regexp_node_does_not_escape_the_autocorrection"
+source = '''
+"test#{'/'}test"
+'''
+corrected = '''
+"test/test"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 10
+message = "Literal interpolation detected."
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_handling_regexp_special_characters_with_invalid_string_literal_registers_an_offense"
+source = '''
+"#{"\201\203"}"
+'''
+corrected = '''
+"\201\203"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 13
+message = "Literal interpolation detected."
+
+[[tests]]
+name = "rubocop_cop_lint_literalininterpolation_does_not_register_an_offense_for_an_array_inside_a_regexp"
+source = '''
+/#{%w[a b c]}/
+'''
+offenses = []

@@ -1,0 +1,68 @@
+cop = "Security/YamlLoad"
+department = "security"
+severity = "warning"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_security_yamlload_does_not_register_an_offense_for_yaml_dump"
+source = '''
+YAML.dump("foo")
+::YAML.dump("foo")
+Module::YAML.dump("foo")
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_security_yamlload_does_not_register_an_offense_for_yaml_load_under_a_different_namespace"
+source = '''
+Module::YAML.load("foo")
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_security_yamlload_ruby_3_0_registers_an_offense_and_corrects_load_with_a_literal_string"
+source = '''
+YAML.load("--- !ruby/object:Foo {}")
+'''
+corrected = '''
+YAML.safe_load("--- !ruby/object:Foo {}")
+'''
+ruby_version = ">= 3.0"
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 9
+message = "Prefer using `YAML.safe_load` over `YAML.load`."
+
+[[tests]]
+name = "rubocop_cop_security_yamlload_ruby_3_0_registers_an_offense_and_corrects_a_fully_qualified_yaml_load"
+source = '''
+::YAML.load("--- foo")
+'''
+corrected = '''
+::YAML.safe_load("--- foo")
+'''
+ruby_version = ">= 3.0"
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 11
+message = "Prefer using `YAML.safe_load` over `YAML.load`."
+
+[[tests]]
+name = "rubocop_cop_security_yamlload_ruby_3_1_does_not_register_an_offense_load_with_a_literal_string"
+source = '''
+YAML.load("--- !ruby/object:Foo {}", permitted_classes: [Foo])
+'''
+ruby_version = ">= 3.1"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_security_yamlload_ruby_3_1_does_not_register_an_offense_a_fully_qualified_yaml_load"
+source = '''
+::YAML.load("--- !ruby/object:Foo {}", permitted_classes: [Foo])
+'''
+ruby_version = ">= 3.1"
+offenses = []

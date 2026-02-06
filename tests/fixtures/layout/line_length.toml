@@ -1,0 +1,4457 @@
+cop = "Layout/LineLength"
+department = "layout"
+severity = "convention"
+implemented = true
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_registers_an_offense_for_a_line_that_s_81_characters_wide"
+source = '''
+#{maximum_string}#
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 18
+message = "Line is too long. [81/80]"
+
+[tests.config]
+Max = 80
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_highlights_excessive_characters"
+source = '''
+#{maximum_string}abc
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 20
+message = "Line is too long. [83/80]"
+
+[tests.config]
+Max = 80
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_accepts_the_first_line_if_it_is_a_shebang_line"
+source = '''
+#!/System/Library/Frameworks/Ruby.framework/Versions/2.3/usr/bin/ruby --disable-gems
+'''
+offenses = []
+
+[tests.config]
+Max = 80
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_registers_an_offense_for_long_line_before_end_but_not_after"
+source = '''
+#{maximum_string}#{'#' * 70}
+__END__
+#{'#' * 200}
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 28
+message = "Line is too long. [150/80]"
+
+[tests.config]
+Max = 80
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_line_is_indented_with_tabs_accepts_a_short_line"
+source = '''
+			123
+'''
+offenses = []
+
+[tests.config]
+Max = 10
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_line_is_indented_with_tabs_registers_an_offense_for_a_long_line"
+source = '''
+												1
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 13
+message = "Line is too long. [25/10]"
+
+[tests.config]
+Max = 10
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_allowuri_option_is_enabled_and_the_url_fits_within_the_max_allowed_characters_registers_an_offense_for_the_line"
+source = '''
+# Some documentation comment...
+# See: https://github.com/rubocop/rubocop and then words that are not part of a URL
+'''
+base_indent = 10
+
+[[tests.offenses]]
+line = 2
+column_start = 80
+column_end = 93
+message = "Line is too long. [93/80]"
+
+[tests.config]
+AllowQualifiedName = true
+AllowURI = true
+Max = 80
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_allowuri_option_is_enabled_and_all_the_excessive_characters_are_part_of_a_url_accepts_the_line"
+source = '''
+          # Some documentation comment...
+          # See: https://github.com/rubocop/rubocop/commit/3b48d8bdf5b1c2e05e35061837309890f04ab08c
+'''
+offenses = []
+
+[tests.config]
+AllowQualifiedName = true
+AllowURI = true
+Max = 80
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_allowuri_option_is_enabled_and_all_the_excessive_characters_are_part_of_a_url_and_the_url_is_wrapped_in_single_quotes_accepts_the_line"
+source = '''
+            # See: 'https://github.com/rubocop/rubocop/commit/3b48d8bdf5b1c2e05e35061837309890f04ab08c'
+'''
+offenses = []
+
+[tests.config]
+AllowQualifiedName = true
+AllowURI = true
+Max = 80
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_allowuri_option_is_enabled_and_all_the_excessive_characters_are_part_of_a_url_and_the_url_is_wrapped_in_double_quotes_accepts_the_line"
+source = '''
+            # See: "https://github.com/rubocop/rubocop/commit/3b48d8bdf5b1c2e05e35061837309890f04ab08c"
+'''
+offenses = []
+
+[tests.config]
+AllowQualifiedName = true
+AllowURI = true
+Max = 80
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_allowuri_option_is_enabled_and_all_the_excessive_characters_are_part_of_a_url_and_the_url_is_wrapped_in_braces_accepts_the_line"
+source = '''
+            # See: {https://github.com/rubocop/rubocop/commit/3b48d8bdf5b1c2e05e35061837309890f04ab08c}
+'''
+offenses = []
+
+[tests.config]
+AllowQualifiedName = true
+AllowURI = true
+Max = 80
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_allowuri_option_is_enabled_and_all_the_excessive_characters_are_part_of_a_url_and_the_url_is_wrapped_in_braces_with_title_accepts_the_line"
+source = '''
+            # See: {https://github.com/rubocop/rubocop/commit/3b48d8bdf5b1c2e05e35061837309890f04ab08c Optional Title}
+'''
+offenses = []
+
+[tests.config]
+AllowQualifiedName = true
+AllowURI = true
+Max = 80
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_allowuri_option_is_enabled_and_the_excessive_characters_include_a_complete_url_registers_an_offense_for_the_line"
+source = '''
+# See: http://google.com/, http://gmail.com/, https://maps.google.com/, http://plus.google.com/
+'''
+base_indent = 10
+
+[[tests.offenses]]
+line = 1
+column_start = 80
+column_end = 105
+message = "Line is too long. [105/80]"
+
+[tests.config]
+AllowURI = true
+Max = 80
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_allowuri_option_is_enabled_and_the_excessive_characters_include_part_of_a_url_and_another_word_registers_an_offense_for_the_line"
+source = '''
+# See: https://github.com/rubocop/rubocop/commit/3b48d8bdf5b1c2e05e35061837309890f04ab08c and
+#   http://google.com/
+'''
+base_indent = 10
+
+[[tests.offenses]]
+line = 1
+column_start = 99
+column_end = 103
+message = "Line is too long. [103/80]"
+
+[tests.config]
+AllowURI = true
+Max = 80
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_allowuri_option_is_enabled_and_the_excessive_characters_include_part_of_a_url_in_double_quotes_does_not_include_the_quote_as_part_of_the_offense"
+source = '''
+# See: "https://github.com/rubocop/rubocop/commit/3b48d8bdf5b1c2e05e35061837309890f04ab08c" and
+#   "http://google.com/"
+'''
+base_indent = 10
+
+[[tests.offenses]]
+line = 1
+column_start = 101
+column_end = 105
+message = "Line is too long. [105/80]"
+
+[tests.config]
+AllowURI = true
+Max = 80
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_allowuri_option_is_enabled_and_the_excessive_characters_include_part_of_a_url_in_braces_and_another_word_registers_an_offense_for_the_line"
+source = '''
+# See: {https://github.com/rubocop/rubocop/commit/3b48d8bdf5b1c2e05e35061837309890f04ab08c} and
+#   http://google.com/
+'''
+base_indent = 10
+
+[[tests.offenses]]
+line = 1
+column_start = 101
+column_end = 105
+message = "Line is too long. [105/80]"
+
+[tests.config]
+AllowURI = true
+Max = 80
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_allowuri_option_is_enabled_and_the_excessive_characters_include_part_of_a_url_and_trailing_whitespace_registers_an_offense_for_the_line"
+source = '''
+          # See: https://github.com/rubocop/rubocop/commit/3b48d8bdf5b1c2e05e35061837309890f04ab08c#{trailing_whitespace}
+          #   http://google.com/
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 99
+column_end = 100
+message = "Line is too long. [100/80]"
+
+[tests.config]
+AllowQualifiedName = true
+AllowURI = true
+Max = 80
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_allowuri_option_is_enabled_with_uri_starting_before_or_after_limit_depending_on_tabs_count_registers_an_offense_for_the_line"
+source = '''
+				# There is some content http://test.com
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 26
+column_end = 43
+message = "Line is too long. [47/30]"
+
+[tests.config]
+AllowQualifiedName = true
+AllowURI = true
+Max = 30
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_allowuri_option_is_enabled_does_not_crash"
+source = '''
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxzxxxxxxxxxxx = LDAP::DEFAULT_GROUP_UNIQUE_MEMBER_LIST_KEY
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 80
+column_end = 85
+message = "Line is too long. [85/80]"
+
+[tests.config]
+AllowURI = true
+Max = 80
+URISchemes = ["LDAP"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_allowuri_option_is_enabled_and_the_url_does_not_have_a_http_s_scheme_rejects_the_line"
+source = '''
+#{'x' * 40} = 'otherprotocol://a.very.long.line.which.violates.LineLength/sadf'
+#{' ' * 40}                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Line is too long. [108/80]
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowQualifiedName = true
+AllowURI = true
+Max = 80
+URISchemes = ["LDAP"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_allowuri_option_is_enabled_and_the_url_does_not_have_a_http_s_scheme_and_the_scheme_has_been_configured_does_not_register_an_offense"
+source = '''
+#{'x' * 40} = 'otherprotocol://a.very.long.line.which.violates.LineLength/sadf'
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowQualifiedName = true
+AllowURI = true
+Max = 80
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_allowuri_option_is_enabled_and_the_uri_is_assigned_does_not_register_an_offense"
+source = '''
+#{'x' * 40} = 'https://a.very.long.line.which.violates.LineLength/sadf'
+#{'x' * 40} = "https://a.very.long.line.which.violates.LineLength/sadf"
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowQualifiedName = true
+AllowURI = true
+Max = 80
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_allowuri_option_is_enabled_and_the_uri_is_an_argument_does_not_register_an_offense"
+source = '''
+#{'x' * 40}("https://a.very.long.line.which.violates.LineLength/sadf")
+#{'x' * 40} "https://a.very.long.line.which.violates.LineLength/sadf"
+#{'x' * 40}('https://a.very.long.line.which.violates.LineLength/sadf')
+#{'x' * 40} 'https://a.very.long.line.which.violates.LineLength/sadf'
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowQualifiedName = true
+AllowURI = true
+Max = 80
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_allowqualifiedname_option_is_enabled_and_the_namespace_fits_within_the_max_allowed_characters_registers_an_offense_for_the_line"
+source = '''
+          # invoke the normal migration method
+          # Should call ActiveRecord::Oracle::SchemaStatements::create_table in the end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 80
+column_end = 87
+message = "Line is too long. [87/80]"
+
+[tests.config]
+AllowQualifiedName = true
+AllowURI = true
+Max = 80
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_allowqualifiedname_option_is_enabled_and_all_the_excessive_characters_are_part_of_a_qualifed_name_accepts_the_line"
+source = '''
+          # invoke the normal migration method
+          # should end up calling ActiveRecord::ConnectionAdapters::OracleEnhanced::SchemaStatements::create_table
+'''
+offenses = []
+
+[tests.config]
+AllowQualifiedName = true
+AllowURI = true
+Max = 80
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_allowqualifiedname_option_is_enabled_and_all_the_excessive_characters_are_part_of_a_qualifed_name_and_the_qualifed_name_is_wrapped_in_single_quotes_accepts_the_line"
+source = '''
+            # should end up calling 'ActiveRecord::ConnectionAdapters::OracleEnhanced::SchemaStatements::create_table'
+'''
+offenses = []
+
+[tests.config]
+AllowQualifiedName = true
+AllowURI = true
+Max = 80
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_allowqualifiedname_option_is_enabled_and_all_the_excessive_characters_are_part_of_a_qualifed_name_and_the_qualifed_name_is_wrapped_in_double_quotes_accepts_the_line"
+source = '''
+            # should end up calling "ActiveRecord::ConnectionAdapters::OracleEnhanced::SchemaStatements::create_table"
+'''
+offenses = []
+
+[tests.config]
+AllowQualifiedName = true
+AllowURI = true
+Max = 80
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_allowqualifiedname_option_is_enabled_and_all_the_excessive_characters_are_part_of_a_qualifed_name_and_the_qualifed_name_is_wrapped_in_braces_accepts_the_line"
+source = '''
+            # should end up calling {ActiveRecord::ConnectionAdapters::OracleEnhanced::SchemaStatements::create_table}
+'''
+offenses = []
+
+[tests.config]
+AllowQualifiedName = true
+AllowURI = true
+Max = 80
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_allowqualifiedname_option_is_enabled_and_the_excessive_characters_include_a_complete_qualifed_name_registers_an_offense_for_the_line"
+source = '''
+          # Invoke the normal migration method, in oracle envs should end up calling ActiveRecord::Oracle::create_table
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 80
+column_end = 119
+message = "Line is too long. [119/80]"
+
+[tests.config]
+AllowQualifiedName = true
+AllowURI = true
+Max = 80
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_allowqualifiedname_option_is_enabled_and_the_excessive_characters_include_a_complete_qualifed_name_when_multiple_entries_are_present_registers_an_offense_for_the_line"
+source = '''
+          # Refer ActiveRecord::Migrations, in oracle envs should end up calling ActiveRecord::Oracle::create_table
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 80
+column_end = 115
+message = "Line is too long. [115/80]"
+
+[tests.config]
+AllowQualifiedName = true
+AllowURI = true
+Max = 80
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_allowqualifiedname_option_is_enabled_and_the_excessive_characters_include_part_of_a_qualifed_name_and_another_word_registers_an_offense_for_the_line"
+source = '''
+          # Should call ActiveRecord::ConnectionAdapters::OracleEnhanced::SchemaStatements::create_table and
+          #   ActiveRecord::Example
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 104
+column_end = 108
+message = "Line is too long. [108/80]"
+
+[tests.config]
+AllowQualifiedName = true
+AllowURI = true
+Max = 80
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_allowqualifiedname_option_is_enabled_and_the_excessive_characters_include_part_of_a_qualifed_name_in_double_quotes_does_not_include_the_quote_as_part_of_the_offense"
+source = '''
+          # Should call "ActiveRecord::ConnectionAdapters::OracleEnhanced::SchemaStatements::create_table" and
+          #   "ActiveRecord::Example"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 106
+column_end = 110
+message = "Line is too long. [110/80]"
+
+[tests.config]
+AllowQualifiedName = true
+AllowURI = true
+Max = 80
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_allowqualifiedname_option_is_enabled_and_the_excessive_characters_include_part_of_a_qualifed_name_in_braces_and_another_word_registers_an_offense_for_the_line"
+source = '''
+          # Should call {ActiveRecord::ConnectionAdapters::OracleEnhanced::SchemaStatements::create_table} and
+          #   {ActiveRecord::Example}
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 106
+column_end = 110
+message = "Line is too long. [110/80]"
+
+[tests.config]
+AllowQualifiedName = true
+AllowURI = true
+Max = 80
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_allowqualifiedname_option_is_enabled_and_the_excessive_characters_include_part_of_a_qualifed_name_and_trailing_whitespace_registers_an_offense_for_the_line"
+source = '''
+          # Should call ActiveRecord::ConnectionAdapters::OracleEnhanced::SchemaStatements::create_table#{trailing_whitespace}
+          #   http://google.com/
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 104
+column_end = 105
+message = "Line is too long. [105/80]"
+
+[tests.config]
+AllowQualifiedName = true
+AllowURI = true
+Max = 80
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_allowqualifiedname_option_is_enabled_and_the_qualifed_name_is_an_argument_does_not_register_an_offense"
+source = '''
+#{'x' * 40}("ActiveRecord::Oracle::SchemaStatements::create_table")
+#{'x' * 40} "ActiveRecord::Oracle::SchemaStatements::create_table"
+#{'x' * 40}('ActiveRecord::Oracle::SchemaStatements::create_table')
+#{'x' * 40} 'ActiveRecord::Oracle::SchemaStatements::create_table'
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowQualifiedName = true
+AllowURI = true
+Max = 80
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_allowqualifiedname_option_is_not_enabled_and_all_the_excessive_characters_are_part_of_a_qualifed_name_registers_an_offense"
+source = '''
+          # invoke the normal migration method
+          # should end up calling ActiveRecord::ConnectionAdapters::OracleEnhanced::SchemaStatements::create_table
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 80
+column_end = 114
+message = "Line is too long. [114/80]"
+
+[tests.config]
+AllowQualifiedName = true
+AllowURI = true
+Max = 80
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_allowedpatterns_option_is_set_only_registers_an_offense_for_lines_not_matching_the_pattern"
+source = '''
+class ExampleTest < TestCase
+  test 'some really long test description which exceeds length' do
+  end
+  def test_some_other_long_test_description_which_exceeds_length
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 18
+column_end = 28
+message = "Line is too long. [28/18]"
+
+[tests.config]
+AllowQualifiedName = true
+AllowURI = true
+AllowedPatterns = ["^\\s*test\\s", "/^\\s*def\\s+test_/"]
+Max = 18
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_allowheredoc_option_is_enabled_accepts_long_lines_in_heredocs"
+source = '''
+<<-SQL
+  SELECT posts.id, posts.title, users.name FROM posts LEFT JOIN users ON posts.user_id = users.id;
+SQL
+'''
+offenses = []
+
+[tests.config]
+AllowHeredoc = true
+AllowQualifiedName = true
+AllowURI = true
+AllowedPatterns = ["^\\s*test\\s", "/^\\s*def\\s+test_/"]
+Max = 80
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_allowheredoc_option_is_enabled_and_splitstrings_option_is_enabled_does_not_register_an_offense"
+source = '''
+<<~MESSAGE
+  #{'hello' * 1} #{'world' * 2} #{'hello' * 1} #{'world' * 2} #{'hello' * 1} #{'world' * 2}
+MESSAGE
+'''
+offenses = []
+
+[tests.config]
+AllowHeredoc = true
+AllowQualifiedName = true
+AllowURI = true
+AllowedPatterns = ["^\\s*test\\s", "/^\\s*def\\s+test_/"]
+Max = 80
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_allowheredoc_option_is_enabled_when_the_source_has_no_ast_does_not_crash"
+source = '''
+# this results in AST being nil
+'''
+offenses = []
+
+[tests.config]
+AllowHeredoc = true
+AllowQualifiedName = true
+AllowURI = true
+AllowedPatterns = ["^\\s*test\\s", "/^\\s*def\\s+test_/"]
+Max = 80
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_allowheredoc_option_is_enabled_and_only_certain_heredoc_delimiters_are_permitted_rejects_long_lines_in_heredocs_with_not_permitted_delimiters"
+source = '''
+          foo(<<-DOC, <<-SQL, <<-FOO)
+            1st offense: Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            #{' ' * 68}^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Line is too long. [149/80]
+            #{<<-OK}
+              no offense (permitted): Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            OK
+            2nd offense: Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            #{' ' * 68}^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Line is too long. [149/80]
+          DOC
+            no offense (permitted): Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            #{<<-XXX}
+              no offense (nested inside permitted): Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            XXX
+            no offense (permitted): Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          SQL
+            3rd offense: Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            #{' ' * 68}^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Line is too long. [149/80]
+            #{<<-SQL}
+              no offense (permitted): Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            SQL
+            4th offense: Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            #{' ' * 68}^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Line is too long. [149/80]
+          FOO
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowURI = true
+AllowedPatterns = []
+Max = 80
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_allowuri_option_is_disabled_and_all_the_excessive_characters_are_part_of_a_url_registers_an_offense_for_the_line"
+source = '''
+          # Lorem ipsum dolar sit amet.
+          # See: https://github.com/rubocop/rubocop/commit/3b48d8bdf5b1c2e05e35061837309890f04ab08c
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 80
+column_end = 99
+message = "Line is too long. [99/80]"
+
+[tests.config]
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowURI = false
+AllowedPatterns = []
+Max = 80
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_allowrbsinlineannotation_is_disabled_registers_an_offense_for_a_long_line_with_an_rbs_inline_annotation"
+source = '''
+#: () -> String
+def hash
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 15
+message = "Line is too long. [15/10]"
+
+[tests.config]
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = false
+AllowURI = false
+AllowedPatterns = []
+Max = 10
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_allowrbsinlineannotation_is_disabled_registers_an_offense_for_a_long_line_with_an_rbs_inline_annotation_on_the_same_line_as_the_code"
+source = '''
+def each_address(&block) #: void
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 32
+message = "Line is too long. [32/10]"
+
+[tests.config]
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = false
+AllowURI = false
+AllowedPatterns = []
+Max = 10
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_allowrbsinlineannotation_is_enabled_does_not_register_an_offense_for_a_long_line_with_an_rbs_inline_annotation"
+source = '''
+#: () -> String
+def hash
+end
+'''
+offenses = []
+
+[tests.config]
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AllowedPatterns = []
+Max = 10
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_allowrbsinlineannotation_is_enabled_does_not_register_an_offense_for_a_long_line_with_an_rbs_inline_annotation_on_the_same_line_as_the_code"
+source = '''
+def each_address(&block) #: void
+end
+'''
+offenses = []
+
+[tests.config]
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AllowedPatterns = []
+Max = 10
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_allowcopdirectives_is_disabled_and_the_source_is_acceptable_length_with_a_trailing_rubocop_directive_registers_an_offense_for_the_line"
+source = '''
+#{'a' * 80} # rubocop:disable Layout/SomeCop
+#{' ' * 80}^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Line is too long. [113/80]
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowCopDirectives = false
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AllowedPatterns = []
+Max = 80
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_allowcopdirectives_is_disabled_and_the_source_is_acceptable_length_with_an_inline_comment_highlights_the_excess_comment"
+source = '''
+#{'a' * 80} ###
+#{' ' * 80}^^^^ Line is too long. [84/80]
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowCopDirectives = false
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AllowedPatterns = []
+Max = 80
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_allowcopdirectives_is_disabled_and_the_source_is_too_long_and_has_a_trailing_cop_directive_highlights_the_excess_source_and_cop_directive"
+source = '''
+#{'a' * 80} b # rubocop:disable Metrics/AbcSize
+#{' ' * 80}^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Line is too long. [116/80]
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowCopDirectives = false
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AllowedPatterns = []
+Max = 80
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_allowcopdirectives_is_enabled_and_the_rubocop_directive_is_excessively_long_accepts_the_line"
+source = '''
+# rubocop:disable Metrics/SomeReallyLongMetricNameThatShouldBeMuchShorterAndNeedsANameChange
+'''
+offenses = []
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AllowedPatterns = []
+Max = 80
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_allowcopdirectives_is_enabled_and_the_rubocop_directive_causes_an_excessive_line_length_accepts_the_line"
+source = '''
+def method_definition_that_is_just_under_the_line_length_limit(foo, bar) # rubocop:disable Metrics/AbcSize
+  # complex method
+end
+'''
+offenses = []
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AllowedPatterns = []
+Max = 80
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_allowcopdirectives_is_enabled_and_the_rubocop_directive_causes_an_excessive_line_length_and_has_explanatory_text_does_not_register_an_offense"
+source = '''
+def method_definition_that_is_just_under_the_line_length_limit(foo) # rubocop:disable Metrics/AbcSize inherently complex!
+  # complex
+end
+'''
+offenses = []
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AllowedPatterns = []
+Max = 80
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_allowcopdirectives_is_enabled_and_the_source_is_too_long_highlights_only_the_non_directive_part"
+source = '''
+#{'a' * 80}bcd # rubocop:enable Style/ClassVars
+#{' ' * 80}^^^ Line is too long. [83/80]
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AllowedPatterns = []
+Max = 80
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_allowcopdirectives_is_enabled_and_the_source_is_too_long_and_the_source_contains_non_directive_as_comment_highlights_only_the_non_directive_part"
+source = '''
+#{'a' * 70} # bbbbbbbbbbbbbb # rubocop:enable Style/ClassVars'
+#{' ' * 70}          ^^^^^^^ Line is too long. [87/80]
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AllowedPatterns = []
+Max = 80
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_when_allowcopdirectives_is_enabled_and_the_source_is_too_long_and_the_source_contains_non_directive_s_as_non_comment_registers_an_offense_for_the_line"
+source = '''
+            LARGE_DATA_STRING_PATTERN = %r{\A([A-Za-z0-9+/#]*={0,2})#([A-Za-z0-9+/#]*={0,2})#([A-Za-z0-9+/#]*={0,2})\z} # rubocop:disable Style/ClassVars
+            #{' ' * 68}^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Line is too long. [119/80]
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AllowedPatterns = []
+Max = 80
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_affecting_by_indentationwidth_from_layout_tab"
+source = '''
+		#{'#' * 28}a
+    #{' ' * 24}^^^ Line is too long. [33/30]
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AllowedPatterns = []
+Max = 80
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_affecting_by_indentationwidth_from_layout_tab_accepts_a_line_that_s_including_1_tab_with_size_2_and_28_other_characters"
+source = '''
+	#{'#' * 28}
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AllowedPatterns = []
+Max = 80
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_affecting_by_indentationwidth_from_layout_tab_with_allowuri_option_accepts_a_line_that_s_including_uri"
+source = '''
+		# https://github.com/rubocop/rubocop
+'''
+offenses = []
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AllowedPatterns = []
+Max = 80
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_affecting_by_indentationwidth_from_layout_tab_with_allowuri_option_accepts_a_line_that_s_including_uri_and_exceeds_by_1_char"
+source = '''
+		# https://github.com/ruboco
+'''
+offenses = []
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AllowedPatterns = []
+Max = 80
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_affecting_by_indentationwidth_from_layout_tab_with_allowuri_option_accepts_a_line_that_s_including_uri_with_text"
+source = '''
+		# See https://github.com/rubocop/rubocop
+'''
+offenses = []
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AllowedPatterns = []
+Max = 80
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_affecting_by_indentationwidth_from_layout_tab_with_allowuri_option_accepts_a_line_that_s_including_uri_in_quotes_with_text"
+source = '''
+		# See 'https://github.com/rubocop/rubocop'
+'''
+offenses = []
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AllowedPatterns = []
+Max = 80
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_affecting_by_indentationwidth_from_layout_tab_with_allowuri_option_registers_the_line_which_looks_like_yard_comment"
+source = '''
+          	expect(some_exception_variable) {|e| e.url.should == 'http://host/path'}
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 30
+column_end = 83
+message = "Line is too long. [83/30]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AllowedPatterns = []
+Max = 80
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_string_when_under_limit_does_not_add_any_offenses"
+source = '''
+'aaaaaaaaaaaaaaaaaaa'
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_string_when_under_limit_does_not_add_any_offenses_with_interpolation"
+source = '''
+'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa#{bbbbb}'
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_breaks_the_string_at_the_limit"
+source = '''
+'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbb'
+'''
+corrected = '''
+'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' \
+'bbbbb'
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 43
+message = "Line is too long. [43/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_when_allowheredoc_false_with_multiple_string_interpolations_registers_an_offense_and_autocorrects"
+source = '''
+<<~MESSAGE
+  #{'hello' * 1} #{'world' * 2} #{'hello' * 1}
+MESSAGE
+'''
+corrected = '''
+<<~MESSAGE
+  #{'hello' * 1} #{'world' * 2} #{'he' \
+'llo' * 1}
+MESSAGE
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 40
+column_end = 46
+message = "Line is too long. [46/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_when_the_string_straddles_after_the_limit_registers_an_offense_but_does_not_correct"
+source = '''
+foo
+                                     'aaaa'
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 40
+column_end = 43
+message = "Line is too long. [43/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_when_the_string_starts_after_the_limit_registers_an_offense_but_does_not_correct"
+source = '''
+foo
+                                        'aaaa'
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 40
+column_end = 46
+message = "Line is too long. [46/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_when_there_is_already_a_continuation_breaks_the_string_at_the_limit"
+source = '''
+'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' \
+'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbcccccccccccc'
+'''
+corrected = '''
+'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' \
+'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb' \
+'cccccccccccc'
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 40
+column_end = 50
+message = "Line is too long. [50/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_when_the_string_is_not_at_the_start_of_the_source_breaks_the_string_at_the_limit"
+source = '''
+x = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbb'
+'''
+corrected = '''
+x = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' \
+'bbbbb'
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 43
+message = "Line is too long. [43/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_when_the_string_is_not_at_the_start_of_the_source_with_spaces_breaks_the_string_at_the_last_space"
+source = '''
+x = 'aaaaaaaaaaaaaaaaaaaaaa bbbbbbbbbbbbbbb'
+'''
+corrected = '''
+x = 'aaaaaaaaaaaaaaaaaaaaaa ' \
+'bbbbbbbbbbbbbbb'
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 44
+message = "Line is too long. [44/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_when_the_string_is_not_at_the_start_of_the_source_with_escape_characters_breaks_the_string_at_the_last_space"
+source = '''
+x = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\nbbbbbbbbbb'
+'''
+corrected = '''
+x = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' \
+'\nbbbbbbbbbb'
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 49
+message = "Line is too long. [49/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_inside_a_hash_breaks_the_hash_not_the_string"
+source = '''
+{ x: 'aaaa', y: 'bbbbbbbbbbbbbbbbbbbbbbbbbbb', z: 'cccccccccccccccccccccccccccccccccccccccccc' }
+'''
+corrected = '''
+{ x: 'aaaa',#{' '}
+y: 'bbbbbbbbbbbbbbbbbbbbbbbbbbb', z: 'cccccccccccccccccccccccccccccccccccccccccc' }
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 96
+message = "Line is too long. [96/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_due_to_a_comment_registers_an_offense_but_does_not_correct"
+source = '''
+'aaaaaaaaaaaaaaaaaaaaa' # this comment makes the line too long
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 62
+message = "Line is too long. [62/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_when_there_is_a_space_in_the_string_breaks_the_string_at_the_space"
+source = '''
+'aaaaaaaaaaaaaaaaaaaaaaaaa bbbbbbbbbbbbbbbbbb'
+'''
+corrected = '''
+'aaaaaaaaaaaaaaaaaaaaaaaaa ' \
+'bbbbbbbbbbbbbbbbbb'
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 46
+message = "Line is too long. [46/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_when_there_are_multiple_spaces_in_the_string_breaks_the_string_at_the_last_space_before_the_limit"
+source = '''
+'aaaaaaaaaaaaaaaaaaaaaaaaa bbbbb ccccccccc dddddddddddddddddddddd eeeeeeeeeeee'
+'''
+corrected = '''
+'aaaaaaaaaaaaaaaaaaaaaaaaa bbbbb ' \
+'ccccccccc dddddddddddddddddddddd ' \
+'eeeeeeeeeeee'
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 79
+message = "Line is too long. [79/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_when_there_is_an_escape_character_at_the_limit_breaks_the_string_before_the_escape_character"
+source = '''
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\nbbbb"
+'''
+corrected = '''
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" \
+"\nbbbb"
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 43
+message = "Line is too long. [43/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_when_there_is_an_u_escape_character_at_the_limit_breaks_the_string_before_the_escape_character"
+source = '''
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\u0061bbbb"
+'''
+corrected = '''
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" \
+"\u0061bbbb"
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 46
+message = "Line is too long. [46/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_when_there_is_an_x_escape_character_at_the_limit_breaks_the_string_before_the_escape_character"
+source = '''
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\x61bbbb"
+'''
+corrected = '''
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" \
+"\x61bbbb"
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 42
+message = "Line is too long. [42/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_when_there_is_a_multibyte_character_at_the_limit_breaks_the_string_at_the_limit"
+source = '''
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaあbbbbb"
+'''
+corrected = '''
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" \
+"あbbbbb"
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 44
+message = "Line is too long. [44/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_when_the_string_is_inside_a_registers_an_offense_but_does_not_correct"
+source = '''
+%{aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 44
+message = "Line is too long. [44/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_registers_an_offense_but_does_not_correct"
+source = '''
+%{macro}[aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa]
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 51
+message = "Line is too long. [45/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_when_the_string_is_inside_a_heredoc_registers_an_offense_but_does_not_correct"
+source = '''
+<<~STR
+  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+STR
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 40
+column_end = 43
+message = "Line is too long. [43/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_with_interpolation_breaks_the_string_before_the_interpolation"
+source = '''
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa#{bbbb}"
+'''
+corrected = '''
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" \
+"#{bbbb}"
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 44
+message = "Line is too long. [44/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_with_interpolation_when_the_interpolation_is_before_the_limit_breaks_the_string_at_the_limit"
+source = '''
+"#{bbbb}aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+'''
+corrected = '''
+"#{bbbb}aaaaaaaaaaaaaaaaaaaaaaaaaaaaa" \
+"aaaaaaaaaaaaaaaa"
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 54
+message = "Line is too long. [54/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_with_interpolation_when_the_interpolation_comes_after_the_limit_breaks_the_string_but_not_the_interpolation"
+source = '''
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa#{bbbb}"
+'''
+corrected = '''
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" \
+"aaaaaaaaa#{bbbb}"
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 54
+message = "Line is too long. [54/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_with_interpolation_when_the_interpolation_is_not_on_the_first_line_registers_an_offense_and_corrects"
+source = '''
+a_long_named_method_call
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa#{bbbbbbbbb}"
+'''
+corrected = '''
+a_long_named_method_call
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" \
+"#{bbbbbbbbb}"
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 40
+column_end = 50
+message = "Line is too long. [50/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_with_interpolation_when_the_entire_string_is_interpolation_registers_an_offense_but_does_not_correct"
+source = '''
+"#{aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}"
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 54
+message = "Line is too long. [54/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_with_interpolation_with_multiple_interpolations_breaks_the_string_where_appropriate"
+source = '''
+"#{aaaaa}bbbbbbb#{cccccc}ddddddddddddddddddddd#{eeeeeeeeeeee}"
+'''
+corrected = '''
+"#{aaaaa}bbbbbbb#{cccccc}dddddddddddd" \
+"ddddddddd#{eeeeeeeeeeee}"
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 62
+message = "Line is too long. [62/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_with_interpolation_nested_interpolation_breaks_the_string_before_the_outer_interpolation"
+source = '''
+"aaaaaaaaaaaaa#{"#{bbbbbbbbbbbbbbbbbbbbbbbb}"}"
+'''
+corrected = '''
+"aaaaaaaaaaaaa" \
+"#{"#{bbbbbbbbbbbbbbbbbbbbbbbb}"}"
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 47
+message = "Line is too long. [47/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_true_when_the_string_has_no_spaces_and_spans_multiple_words_with_max_set_to_30_registers_an_offense_and_corrects_by_splitting_the_string"
+source = '''
+_const = '000000000000000 0000000000000000000000000000 000000000000000000000000000'
+'''
+corrected = '''
+_const = '000000000000000 ' \
+'00000000000000000000000000' \
+'00 ' \
+'000000000000000000000000000'
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 30
+column_end = 83
+message = "Line is too long. [83/30]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_string_when_over_limit_when_splitstrings_false_registers_an_offense_but_does_not_correct"
+source = '''
+'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 43
+message = "Line is too long. [43/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_hash_when_under_limit_does_not_add_any_offenses"
+source = '''
+{foo: 1, bar: "2"}
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_hash_when_over_limit_because_of_a_comment_adds_an_offense_and_does_not_autocorrect"
+source = '''
+{ # supersupersupersupersupersupersupersupersupersupersupersuperlongcomment
+  baz: "10000",
+  bar: "10000"}
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 75
+message = "Line is too long. [75/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_hash_when_over_limit_and_already_on_multiple_lines_long_key_adds_an_offense_and_does_not_autocorrect"
+source = '''
+{supersupersupersupersupersupersupersupersupersupersupersuperfirstarg: 10,
+  baz: "10000",
+  bar: "10000"}
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 74
+message = "Line is too long. [74/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_hash_when_over_limit_and_keys_already_on_multiple_lines_adds_an_offense_and_does_not_autocorrect"
+source = '''
+{
+  baz0: "10000",
+  baz1: "10000",
+  baz2: "10000", baz2: "10000", baz3: "10000", baz4: "10000",
+  bar: "10000"}
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 4
+column_start = 40
+column_end = 61
+message = "Line is too long. [61/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_hash_when_over_limit_adds_an_offense_and_autocorrects_it"
+source = '''
+{abc: "100000", def: "100000", ghi: "100000", jkl: "100000", mno: "100000"}
+'''
+corrected = '''
+{abc: "100000", def: "100000",#{trailing_whitespace}
+ghi: "100000", jkl: "100000", mno: "100000"}
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 75
+message = "Line is too long. [75/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_hash_when_over_limit_rocket_adds_an_offense_and_autocorrects_it"
+source = '''
+{"abc" => "100000", "def" => "100000", "casd" => "100000", "asdf" => "100000"}
+'''
+corrected = '''
+{"abc" => "100000", "def" => "100000",#{trailing_whitespace}
+"casd" => "100000", "asdf" => "100000"}
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 78
+message = "Line is too long. [78/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_hash_when_over_limit_rocket_symbol_adds_an_offense_and_autocorrects_it"
+source = '''
+{:abc => "100000", :asd => "100000", :asd => "100000", :fds => "100000"}
+'''
+corrected = '''
+{:abc => "100000", :asd => "100000",#{trailing_whitespace}
+:asd => "100000", :fds => "100000"}
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 72
+message = "Line is too long. [72/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_hash_when_nested_hashes_on_same_line_adds_an_offense_only_to_outer_and_autocorrects_it"
+source = '''
+{abc: "100000", def: "100000", ghi: {abc: "100000"}, jkl: "100000", mno: "100000"}
+'''
+corrected = '''
+{abc: "100000", def: "100000",#{trailing_whitespace}
+ghi: {abc: "100000"}, jkl: "100000", mno: "100000"}
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 82
+message = "Line is too long. [82/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_hash_when_hash_in_method_call_adds_an_offense_only_to_outer_and_autocorrects_it"
+source = '''
+get(
+  :index,
+  params: {driver_id: driver.id, from_date: "2017-08-18T15:09:04.000Z", to_date: "2017-09-19T15:09:04.000Z"},
+  xhr: true)
+'''
+corrected = '''
+get(
+  :index,
+  params: {driver_id: driver.id,#{trailing_whitespace}
+from_date: "2017-08-18T15:09:04.000Z", to_date: "2017-09-19T15:09:04.000Z"},
+  xhr: true)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 3
+column_start = 40
+column_end = 109
+message = "Line is too long. [109/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_method_definition_when_under_limit_does_not_add_any_offenses"
+source = '''
+def foo(foo: 1, bar: "2"); end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_method_definition_when_over_limit_adds_an_offense_and_autocorrects_it"
+source = '''
+def foo(abc: "100000", def: "100000", ghi: "100000", jkl: "100000", mno: "100000")
+end
+'''
+corrected = '''
+def foo(abc: "100000", def: "100000",#{trailing_whitespace}
+ghi: "100000", jkl: "100000", mno: "100000")
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 82
+message = "Line is too long. [82/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_class_method_definition_when_under_limit_does_not_add_any_offenses"
+source = '''
+def self.foo(foo: 1, bar: "2"); end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_class_method_definition_when_over_limit_adds_an_offense_and_autocorrects_it"
+source = '''
+def self.foo(abc: "100000", def: "100000", ghi: "100000", jkl: "100000", mno: "100000")
+end
+'''
+corrected = '''
+def self.foo(abc: "100000",#{trailing_whitespace}
+def: "100000", ghi: "100000", jkl: "100000", mno: "100000")
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 87
+message = "Line is too long. [87/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_method_call_when_under_limit_does_not_add_any_offenses"
+source = '''
+foo(foo: 1, bar: "2")
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_method_call_when_two_together_does_not_add_any_offenses"
+source = '''
+def baz(bar)
+  foo(shipment, actionable_delivery) &&
+    bar(shipment, actionable_delivery)
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_method_call_when_over_limit_adds_an_offense_and_autocorrects_it"
+source = '''
+foo(abc: "100000", def: "100000", ghi: "100000", jkl: "100000", mno: "100000")
+'''
+corrected = '''
+foo(abc: "100000", def: "100000", 
+ghi: "100000", jkl: "100000", mno: "100000")
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 78
+message = "Line is too long. [78/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_method_call_when_unparenthesized_when_there_is_one_argument_does_not_autocorrect"
+source = '''
+method_call xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 42
+message = "Line is too long. [42/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_method_call_when_unparenthesized_when_there_are_multiple_arguments_splits_the_line_after_the_first_element"
+source = '''
+method_call #{args}, abc
+'''
+corrected = '''
+method_call #{args},#{trailing_whitespace}
+abc
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 24
+message = "Line is too long. [45/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_method_call_when_call_with_hash_on_same_line_adds_an_offense_only_to_outer_and_autocorrects_it"
+source = '''
+foo(abc: "100000", def: "100000", ghi: {abc: "100000"}, jkl: "100000", mno: "100000")
+'''
+corrected = '''
+foo(abc: "100000", def: "100000", 
+ghi: {abc: "100000"}, jkl: "100000", mno: "100000")
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 85
+message = "Line is too long. [85/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_method_call_with_a_hash_with_a_too_long_first_item_when_parenthesized_corrects"
+source = '''
+foo(abc: '10000000000000000000000000000000000000000000000000000', def: '1000')
+'''
+corrected = '''
+foo(
+abc: '10000000000000000000000000000000000000000000000000000', def: '1000')
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 78
+message = "Line is too long. [78/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_method_call_with_a_hash_with_a_too_long_first_item_when_the_hash_is_parenthesized_corrects"
+source = '''
+foo({ abc: '10000000000000000000000000000000000000000000000000000', def: '1000' })
+'''
+corrected = '''
+foo({#{trailing_whitespace}
+abc: '10000000000000000000000000000000000000000000000000000', def: '1000' })
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 82
+message = "Line is too long. [82/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_method_call_with_a_hash_with_a_too_long_first_item_when_not_parenthesized_when_there_is_only_one_element_does_not_autocorrect"
+source = '''
+foo abc: '10000000000000000000000000000000000000000000000000000'
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 64
+message = "Line is too long. [64/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_method_call_with_a_hash_with_a_too_long_first_item_when_not_parenthesized_when_there_are_multiple_elements_moves_the_2nd_element_to_a_new_line"
+source = '''
+foo abc: '10000000000000000000000000000000000000000000000000000', ghi: '1000'
+'''
+corrected = '''
+foo abc: '10000000000000000000000000000000000000000000000000000',#{trailing_whitespace}
+ghi: '1000'
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 77
+message = "Line is too long. [77/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_method_call_with_a_hash_with_a_too_long_first_item_when_not_parenthesized_when_on_multiple_lines_does_not_correct"
+source = '''
+foo abc: '10000000000000000000000000000000000000000000000000000',
+    ghi: '1000'
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 65
+message = "Line is too long. [65/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_method_call_when_two_method_calls_adds_an_offense_only_to_outer_and_autocorrects_it"
+source = '''
+get(1000000, 30000, foo(44440000, 30000, 39999, 19929120312093))
+'''
+corrected = '''
+get(1000000, 30000, 
+foo(44440000, 30000, 39999, 19929120312093))
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 64
+message = "Line is too long. [64/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_method_call_when_nested_method_calls_allows_outer_to_get_broken_up_first_adds_offense_and_does_not_autocorrect"
+source = '''
+get(1000000,
+foo(44440000, 30000, 39999, 1992), foo(44440000, 30000, 39999, 12093))
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 40
+column_end = 70
+message = "Line is too long. [70/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_method_call_with_long_argument_list_registers_an_offense_and_autocorrects_it"
+source = '''
+attr_reader :first_name, :last_name, :email, :username, :country, :state, :city, :postal_code
+'''
+corrected = '''
+attr_reader :first_name, :last_name,#{trailing_whitespace}
+:email, :username, :country, :state, :city, :postal_code
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 93
+message = "Line is too long. [93/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_method_call_with_a_heredoc_argument_does_not_break_up_the_line"
+source = '''
+foo(<<~STRING, #{args}xxx)
+STRING
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 26
+message = "Line is too long. [44/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_method_call_with_a_heredoc_argument_does_not_break_up_the_line_when_parentheses_are_omitted"
+source = '''
+foo <<~STRING, #{args}xxx
+STRING
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 25
+message = "Line is too long. [43/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_method_call_with_a_heredoc_argument_does_not_break_up_the_line_when_a_heredoc_is_used_as_the_first_element_of_an_array"
+source = '''
+[<<~STRING, { key1: value1, key2: value2 }]
+STRING
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 43
+message = "Line is too long. [43/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_method_call_with_a_heredoc_argument_and_other_arguments_before_the_heredoc_can_break_up_the_line_before_the_heredoc_argument"
+source = '''
+foo(abc, <<~STRING, #{args}xxx)
+STRING
+'''
+corrected = '''
+foo(abc,#{trailing_whitespace}
+<<~STRING, #{args}xxx)
+STRING
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 31
+message = "Line is too long. [44/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_method_call_with_a_heredoc_argument_and_the_heredoc_is_after_the_line_should_split_can_break_up_the_line_before_the_heredoc_argument"
+source = '''
+foo(#{args}, <<~STRING)
+STRING
+'''
+corrected = '''
+foo(#{args},#{trailing_whitespace}
+<<~STRING)
+STRING
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 23
+message = "Line is too long. [50/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_safe_navigation_method_call_when_under_limit_does_not_add_any_offenses"
+source = '''
+foo&.bar(foo: 1, bar: "2")
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_safe_navigation_method_call_when_two_together_does_not_add_any_offenses"
+source = '''
+def baz(bar)
+  foo&.bar(shipment, actionable) &&
+    bar(shipment, actionable)
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_safe_navigation_method_call_when_over_limit_adds_an_offense_and_autocorrects_it"
+source = '''
+foo&.bar(abc: "100000", def: "100000", ghi: "100000", jkl: "100000", mno: "100000")
+'''
+corrected = '''
+foo&.bar(abc: "100000", def: "100000", 
+ghi: "100000", jkl: "100000", mno: "100000")
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 83
+message = "Line is too long. [83/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_safe_navigation_method_call_when_unparenthesized_when_there_is_one_argument_does_not_autocorrect"
+source = '''
+foo&.bar xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 42
+message = "Line is too long. [42/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_safe_navigation_method_call_when_unparenthesized_when_there_are_multiple_arguments_splits_the_line_after_the_first_element"
+source = '''
+foo&.bar #{args}, abc
+'''
+corrected = '''
+foo&.bar #{args},#{trailing_whitespace}
+abc
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 21
+message = "Line is too long. [42/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_safe_navigation_method_call_when_call_with_hash_on_same_line_adds_an_offense_only_to_outer_and_autocorrects_it"
+source = '''
+foo&.bar(abc: "100000", def: "100000", ghi: {abc: "100000"}, jkl: "100000", mno: "100000")
+'''
+corrected = '''
+foo&.bar(abc: "100000", def: "100000", 
+ghi: {abc: "100000"}, jkl: "100000", mno: "100000")
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 90
+message = "Line is too long. [90/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_safe_navigation_method_call_with_a_hash_with_a_too_long_first_item_when_parenthesized_corrects"
+source = '''
+foo&.bar(abc: '10000000000000000000000000000000000000000000000000000', def: '1000')
+'''
+corrected = '''
+foo&.bar(
+abc: '10000000000000000000000000000000000000000000000000000', def: '1000')
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 83
+message = "Line is too long. [83/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_safe_navigation_method_call_with_a_hash_with_a_too_long_first_item_when_the_hash_is_parenthesized_corrects"
+source = '''
+foo&.bar({ abc: '10000000000000000000000000000000000000000000000000000', def: '1000' })
+'''
+corrected = '''
+foo&.bar({#{trailing_whitespace}
+abc: '10000000000000000000000000000000000000000000000000000', def: '1000' })
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 87
+message = "Line is too long. [87/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_safe_navigation_method_call_with_a_hash_with_a_too_long_first_item_when_not_parenthesized_when_there_is_only_one_element_does_not_autocorrect"
+source = '''
+foo&.bar abc: '10000000000000000000000000000000000000000000000000000'
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 69
+message = "Line is too long. [69/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_safe_navigation_method_call_with_a_hash_with_a_too_long_first_item_when_not_parenthesized_when_there_are_multiple_elements_breaks_after_the_method_call"
+source = '''
+foo&.bar abc: '10000000000000000000000000000000000000000000000000000', ghi: '1000'
+'''
+corrected = '''
+foo&.bar abc: '10000000000000000000000000000000000000000000000000000',#{trailing_whitespace}
+ghi: '1000'
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 82
+message = "Line is too long. [82/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_safe_navigation_method_call_with_a_hash_with_a_too_long_first_item_when_not_parenthesized_when_on_multiple_lines_does_not_correct"
+source = '''
+foo&.bar abc: '10000000000000000000000000000000000000000000000000000',
+    ghi: '1000'
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 70
+message = "Line is too long. [70/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_safe_navigation_method_call_when_two_method_calls_when_the_inner_uses_safe_navigation_adds_an_offense_only_to_outer_and_autocorrects_it"
+source = '''
+get(1000000, 30000, foo&.bar(44440000, 30000, 39999, 19929120312093))
+'''
+corrected = '''
+get(1000000, 30000, 
+foo&.bar(44440000, 30000, 39999, 19929120312093))
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 69
+message = "Line is too long. [69/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_safe_navigation_method_call_when_two_method_calls_when_the_outer_uses_safe_navigation_adds_an_offense_only_to_outer_and_autocorrects_it"
+source = '''
+get&.bar(1000000, 30000, foo(44440000, 30000, 39999, 19929120312093))
+'''
+corrected = '''
+get&.bar(1000000, 30000, 
+foo(44440000, 30000, 39999, 19929120312093))
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 69
+message = "Line is too long. [69/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_safe_navigation_method_call_when_two_method_calls_when_both_use_safe_navigation_adds_an_offense_only_to_outer_and_autocorrects_it"
+source = '''
+get&.bar(1000000, 30000, foo&.baz(44440000, 30000, 39999, 19929120312093))
+'''
+corrected = '''
+get&.bar(1000000, 30000, 
+foo&.baz(44440000, 30000, 39999, 19929120312093))
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 74
+message = "Line is too long. [74/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_safe_navigation_method_call_when_nested_method_calls_allows_outer_to_get_broken_up_first_adds_offense_and_does_not_autocorrect"
+source = '''
+get(1000000,
+foo&.bar(44440000, 30000, 39999, 1992), foo&.baz(44440000, 30000, 39999, 12093))
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 40
+column_end = 80
+message = "Line is too long. [80/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_safe_navigation_method_call_when_nested_method_calls_with_safe_navigation_allows_outer_to_get_broken_up_first_adds_offense_and_does_not_autocorrect"
+source = '''
+get&.foo(1000000,
+foo&.bar(44440000, 30000, 39999, 1992), foo&.baz(44440000, 30000, 39999, 12093))
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 40
+column_end = 80
+message = "Line is too long. [80/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_safe_navigation_method_call_with_long_argument_list_registers_an_offense_and_autocorrects_it"
+source = '''
+foo&.bar :first_name, :last_name, :email, :username, :country, :state, :city, :postal_code
+'''
+corrected = '''
+foo&.bar :first_name, :last_name,#{trailing_whitespace}
+:email, :username, :country, :state, :city, :postal_code
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 90
+message = "Line is too long. [90/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_safe_navigation_method_call_with_a_heredoc_argument_does_not_break_up_the_line"
+source = '''
+foo&.bar(<<~STRING, #{args}xxx)
+STRING
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 31
+message = "Line is too long. [44/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_safe_navigation_method_call_with_a_heredoc_argument_does_not_break_up_the_line_when_parentheses_are_omitted"
+source = '''
+foo&.bar <<~STRING, #{args}xxx
+STRING
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 30
+message = "Line is too long. [43/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_safe_navigation_method_call_with_a_heredoc_argument_and_other_arguments_before_the_heredoc_can_break_up_the_line_before_the_heredoc_argument"
+source = '''
+foo&.bar(abc, <<~STRING, #{args}xxx)
+STRING
+'''
+corrected = '''
+foo&.bar(abc,#{trailing_whitespace}
+<<~STRING, #{args}xxx)
+STRING
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 36
+message = "Line is too long. [44/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_safe_navigation_method_call_with_a_heredoc_argument_and_the_heredoc_is_after_the_line_should_split_can_break_up_the_line_before_the_heredoc_argument"
+source = '''
+foo&.bar(#{args}, <<~STRING)
+STRING
+'''
+corrected = '''
+foo&.bar(#{args},#{trailing_whitespace}
+<<~STRING)
+STRING
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 28
+message = "Line is too long. [50/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_array_when_under_limit_does_not_add_any_offenses"
+source = '''
+[1, "2"]
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_array_when_already_on_two_lines_does_not_add_any_offenses"
+source = '''
+[1, "2",
+ "3"]
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_array_when_over_limit_adds_an_offense_and_autocorrects_it"
+source = '''
+["1111", "100000", "100000", "100000", "100000", "100000"]
+'''
+corrected = '''
+["1111", "100000", "100000", "100000", 
+"100000", "100000"]
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 58
+message = "Line is too long. [58/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_array_when_has_inside_array_adds_an_offense_only_to_outer_and_autocorrects_it"
+source = '''
+["1111", "100000", "100000", "100000", {abc: "100000", b: "2"}, "100000", "100000"]
+'''
+corrected = '''
+["1111", "100000", "100000", "100000", 
+{abc: "100000", b: "2"}, "100000", "100000"]
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 83
+message = "Line is too long. [83/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_array_when_two_arrays_on_two_lines_allows_outer_to_get_broken_first_adds_an_offense_only_to_inner_and_does_not_autocorrect_it"
+source = '''
+[1000000, 3912312312999,
+  [44440000, 3912312312999, 3912312312999, 1992912031231232131312093],
+100, 100]
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 40
+column_end = 70
+message = "Line is too long. [70/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_breakable_collection_method_call_inside_a_hash_breaks_the_hash_not_the_method"
+source = '''
+{ foo: 1234567890, bar: method_call(x, y, z) }
+'''
+corrected = '''
+{ foo: 1234567890,#{trailing_whitespace}
+bar: method_call(x, y, z) }
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 46
+message = "Line is too long. [46/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_breakable_collection_safe_navigation_method_call_inside_a_hash_breaks_the_hash_not_the_method"
+source = '''
+{ foo: 1234567890, bar: foo&.bar(x, y, z) }
+'''
+corrected = '''
+{ foo: 1234567890,#{trailing_whitespace}
+bar: foo&.bar(x, y, z) }
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 43
+message = "Line is too long. [43/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_no_breakable_collections_adds_an_offense_and_does_not_autocorrect_it"
+source = '''
+10000003912312312999
+  # 444400003912312312999391231231299919929120312312321313120933333333
+456
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 40
+column_end = 70
+message = "Line is too long. [70/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_long_blocks_braces_adds_an_offense_and_does_correct_it"
+source = '''
+foo.select { |bar| 4444000039123123129993912312312999199291203123123 }
+'''
+corrected = '''
+foo.select { |bar|
+ 4444000039123123129993912312312999199291203123123 }
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 70
+message = "Line is too long. [70/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_long_blocks_do_end_adds_an_offense_for_block_with_arguments_and_does_correct_it"
+source = '''
+foo.select do |bar| 4444000039123123129993912312312999199291203123 end
+'''
+corrected = '''
+foo.select do |bar|
+ 4444000039123123129993912312312999199291203123 end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 70
+message = "Line is too long. [70/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_long_blocks_do_end_adds_an_offense_for_block_without_arguments_and_does_correct_it"
+source = '''
+foo.select do 4444000039123123129993912312312999199291203123 end
+'''
+corrected = '''
+foo.select do
+ 4444000039123123129993912312312999199291203123 end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 64
+message = "Line is too long. [64/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_long_blocks_let_block_adds_an_offense_and_does_correct_it"
+source = '''
+let(:foobar) { BazBazBaz::BazBazBaz::BazBazBaz::BazBazBaz.baz(baz12) }
+'''
+corrected = '''
+let(:foobar) {
+ BazBazBaz::BazBazBaz::BazBazBaz::BazBazBaz.baz(baz12) }
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 70
+message = "Line is too long. [70/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_long_blocks_no_spaces_adds_an_offense_and_does_correct_it"
+source = '''
+let(:foobar){BazBazBaz::BazBazBaz::BazBazBaz::BazBazBaz.baz(baz12345)}
+'''
+corrected = '''
+let(:foobar){
+BazBazBaz::BazBazBaz::BazBazBaz::BazBazBaz.baz(baz12345)}
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 70
+message = "Line is too long. [70/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_long_blocks_lambda_syntax_when_argument_is_enclosed_in_parentheses_registers_an_offense_and_corrects"
+source = '''
+->(x) { fooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo }
+'''
+corrected = '''
+->(x) {
+ fooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo }
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 70
+message = "Line is too long. [70/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_long_blocks_lambda_syntax_when_argument_is_not_enclosed_in_parentheses_registers_an_offense_and_corrects"
+source = '''
+-> x { foooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo }
+'''
+corrected = '''
+-> x {
+ foooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo }
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 70
+message = "Line is too long. [70/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_long_blocks_heredoc_in_receiver_receiver_is_a_heredoc_registers_an_offense_but_does_not_correct"
+source = '''
+<<~FOO.select { |bar| 4444000039123123129993912312312999199291203123123 }
+  text
+FOO
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 73
+message = "Line is too long. [73/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_long_blocks_heredoc_in_receiver_receiver_is_an_array_containing_a_heredoc_registers_an_offense_but_does_not_correct"
+source = '''
+[<<~FOO].select { |bar| 4444000039123123129993912312312999199291203123123 }
+  text
+FOO
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 75
+message = "Line is too long. [75/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_long_blocks_heredoc_in_receiver_receiver_is_an_array_containing_multiple_heredocs_registers_an_offense_but_does_not_correct"
+source = '''
+[<<~FOO, <<~BAR].select { |bar| 4444000039123123129993912312312999199291203123123 }
+  text
+FOO
+  text 2
+BAR
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 83
+message = "Line is too long. [83/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_long_blocks_heredoc_in_receiver_receiver_is_a_heredoc_chain_registers_an_offense_but_does_not_correct"
+source = '''
+<<~FOO.bar.baz.select { |qux| 4444000039123123129993912312312999199291203123123 }
+  text
+FOO
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 81
+message = "Line is too long. [81/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_long_blocks_heredoc_in_receiver_receiver_contains_a_heredoc_as_a_method_argument_registers_an_offense_but_does_not_correct"
+source = '''
+bar.baz(<<~FOO).select { |qux| 4444000039123123129993912312312999199291203123123 }
+  text
+FOO
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 82
+message = "Line is too long. [82/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_long_blocks_heredoc_in_receiver_receiver_is_a_dstr_heredoc_registers_an_offense_but_does_not_correct"
+source = '''
+<<~FOO.select { |bar| 4444000039123123129993912312312999199291203123123 }
+  #{text}
+FOO
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 73
+message = "Line is too long. [73/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_long_blocks_heredoc_in_receiver_receiver_is_an_xstr_heredoc_registers_an_offense_but_does_not_correct"
+source = '''
+<<~`FOO`.select { |bar| 4444000039123123129993912312312999199291203123123 }
+  text
+FOO
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 75
+message = "Line is too long. [75/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_long_blocks_ruby_3_4_adds_an_offense_for_block_does_correct_it"
+source = '''
+foo.select { it + 4444000039123123129993912312312999199291203123123 }
+'''
+corrected = '''
+foo.select {
+ it + 4444000039123123129993912312312999199291203123123 }
+'''
+ruby_version = ">= 3.4"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 69
+message = "Line is too long. [69/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_long_blocks_ruby_3_4_adds_an_offense_for_do_end_block_and_does_correct_it"
+source = '''
+foo.select do it + 4444000039123123129993912312312999199291203123 end
+'''
+corrected = '''
+foo.select do
+ it + 4444000039123123129993912312312999199291203123 end
+'''
+ruby_version = ">= 3.4"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 69
+message = "Line is too long. [69/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_semicolon_when_under_limit_does_not_add_any_offenses"
+source = '''
+{foo: 1, bar: "2"}; a = 4 + 5
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_semicolon_when_over_limit_adds_offense_and_autocorrects_it_by_breaking_the_semicolon_before_the_hash"
+source = '''
+{foo: 1, bar: "2"}; a = 400000000000 + 500000000000000
+'''
+corrected = '''
+{foo: 1, bar: "2"};
+ a = 400000000000 + 500000000000000
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 54
+message = "Line is too long. [54/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_semicolon_when_over_limit_and_semicolon_at_end_of_line_adds_offense_and_autocorrects_it_by_breaking_the_first_semicolon_before_the_hash"
+source = '''
+{foo: 1, bar: "2"}; a = 400000000000 + 500000000000000;
+'''
+corrected = '''
+{foo: 1, bar: "2"};
+ a = 400000000000 + 500000000000000;
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 55
+message = "Line is too long. [55/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_semicolon_when_over_limit_and_many_spaces_around_semicolon_adds_offense_and_autocorrects_it_by_breaking_the_semicolon_before_the_hash"
+source = '''
+{foo: 1, bar: "2"}  ;   a = 400000000000 + 500000000000000
+'''
+corrected = '''
+{foo: 1, bar: "2"}  ;
+   a = 400000000000 + 500000000000000
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 58
+message = "Line is too long. [58/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_semicolon_when_over_limit_and_many_semicolons_adds_offense_and_autocorrects_it_by_breaking_the_semicolon_before_the_hash"
+source = '''
+{foo: 1, bar: "2"}  ;;; a = 400000000000 + 500000000000000
+'''
+corrected = '''
+{foo: 1, bar: "2"}  ;;;
+ a = 400000000000 + 500000000000000
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 58
+message = "Line is too long. [58/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_semicolon_when_over_limit_and_one_semicolon_at_the_end_adds_offense_and_does_not_autocorrect_before_the_hash"
+source = '''
+a = 400000000000 + 500000000000000000000;
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 41
+message = "Line is too long. [41/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_semicolon_when_over_limit_and_many_semicolons_at_the_end_adds_offense_and_does_not_autocorrect_before_the_hash"
+source = '''
+a = 400000000000 + 500000000000000000000;;;;;;;
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 47
+message = "Line is too long. [47/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_semicolon_semicolon_inside_string_literal_adds_offense_and_autocorrects_elsewhere"
+source = '''
+FooBar.new(baz: 30, bat: 'publisher_group:123;publisher:456;s:123')
+'''
+corrected = '''
+FooBar.new(baz: 30, 
+bat: 'publisher_group:123;publisher:456;s:123')
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 67
+message = "Line is too long. [67/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_semicolon_semicolons_inside_string_literal_adds_offense_and_autocorrects"
+source = '''
+"00000000000000000;0000000000000000000'000000;00000'0000;0000;000"
+'''
+corrected = '''
+"00000000000000000;000000000000000000" \
+"0'000000;00000'0000;0000;000"
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 66
+message = "Line is too long. [66/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = ["SQL", "OK"]
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_heredoc_when_over_limit_with_semicolon_adds_offense_and_does_not_autocorrect"
+source = '''
+foo = <<-SQL
+  SELECT a b c d a b FROM c d a b c d ; COUNT(*) a b
+SQL
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 40
+column_end = 52
+message = "Line is too long. [52/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = false
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_heredoc_when_heredoc_start_delimiter_has_a_chained_method_with_arguments_that_go_over_limit_adds_offense_and_does_not_autocorrect"
+source = '''
+str = <<~HEREDOC.do_something.with_args(foo: '', bar: '', baz: '')
+  text
+HEREDOC
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 66
+message = "Line is too long. [66/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = false
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_heredoc_when_heredoc_start_delimiter_has_a_chained_method_with_arguments_that_go_over_limit_adds_offense_and_does_not_autocorrect_for_dstr"
+source = '''
+str = <<~HEREDOC.do_something.with_args(foo: '', bar: '', baz: '')
+  #{text}
+HEREDOC
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 66
+message = "Line is too long. [66/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = false
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_heredoc_when_heredoc_start_delimiter_has_a_chained_method_with_arguments_that_go_over_limit_adds_offense_and_does_not_autocorrect_for_xstr"
+source = '''
+str = <<~`HEREDOC`.do_something.with_args(foo: '', bar: '', baz: '')
+  text
+HEREDOC
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 68
+message = "Line is too long. [68/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = false
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_comments_when_over_limit_with_semicolon_adds_offense_and_does_not_autocorrect"
+source = '''
+# a b c d a b c d a b c d ; a b c d a b c d a b c d a
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 53
+message = "Line is too long. [53/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = false
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]
+
+[[tests]]
+name = "rubocop_cop_layout_linelength_autocorrection_multiple_assignment_when_over_limit_at_right_hand_side_registers_and_corrects_an_offense"
+source = '''
+a = fooooooooooooooooooooooooooooooooooooo, b
+'''
+corrected = '''
+a =#{trailing_whitespace}
+fooooooooooooooooooooooooooooooooooooo,#{trailing_whitespace}
+b
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 40
+column_end = 45
+message = "Line is too long. [45/40]"
+
+[tests.config]
+AllowCopDirectives = true
+AllowHeredoc = false
+AllowQualifiedName = true
+AllowRBSInlineAnnotation = true
+AllowURI = false
+AutoCorrect = true
+Max = 40
+SplitStrings = "$UNRESOLVED:split_strings"
+URISchemes = ["$UNRESOLVED:otherprotocol"]

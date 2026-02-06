@@ -1,0 +1,284 @@
+cop = "Layout/EmptyLinesAroundAttributeAccessor"
+department = "layout"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinesaroundattributeaccessor_registers_an_offense_and_corrects_for_code_that_immediately_follows_accessor"
+source = '''
+attr_accessor :foo
+def do_something
+end
+'''
+corrected = '''
+attr_accessor :foo
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 18
+message = "Add an empty line after attribute accessor."
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinesaroundattributeaccessor_registers_an_offense_and_corrects_for_code_that_immediately_follows_accessor_with_comment"
+source = '''
+attr_accessor :foo # comment
+def do_something
+end
+'''
+corrected = '''
+attr_accessor :foo # comment
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 18
+message = "Add an empty line after attribute accessor."
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinesaroundattributeaccessor_registers_an_offense_and_corrects_for_an_attribute_accessor_and_comment_line"
+source = '''
+attr_accessor :foo
+# comment
+def do_something
+end
+'''
+corrected = '''
+attr_accessor :foo
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 18
+message = "Add an empty line after attribute accessor."
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinesaroundattributeaccessor_registers_an_offense_and_corrects_for_some_attribute_accessors_and_comment_line"
+source = '''
+attr_accessor :foo
+attr_reader :bar
+attr_writer :baz
+# comment
+def do_something
+end
+'''
+corrected = '''
+attr_accessor :foo
+attr_reader :bar
+attr_writer :baz
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 16
+message = "Add an empty line after attribute accessor."
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinesaroundattributeaccessor_registers_an_offense_and_corrects_for_an_attribute_accessor_and_some_comment_line"
+source = '''
+attr_accessor :foo
+# comment
+# comment
+def do_something
+end
+'''
+corrected = '''
+attr_accessor :foo
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 18
+message = "Add an empty line after attribute accessor."
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinesaroundattributeaccessor"
+source = '''
+attr_accessor :foo
+# rubocop:disable Department/Cop
+def do_something
+end
+'''
+corrected = '''
+attr_accessor :foo
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 18
+message = "Add an empty line after attribute accessor."
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinesaroundattributeaccessor"
+source = '''
+# rubocop:disable Department/Cop
+attr_accessor :foo
+# rubocop:enable Department/Cop
+def do_something
+end
+'''
+corrected = '''
+# rubocop:disable Department/Cop
+attr_accessor :foo
+# rubocop:enable Department/Cop
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 18
+message = "Add an empty line after attribute accessor."
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinesaroundattributeaccessor"
+source = '''
+# rubocop:disable Department/Cop
+attr_accessor :foo
+# rubocop:enable Department/Cop
+# comment
+def do_something
+end
+'''
+corrected = '''
+# rubocop:disable Department/Cop
+attr_accessor :foo
+# rubocop:enable Department/Cop
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 18
+message = "Add an empty line after attribute accessor."
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinesaroundattributeaccessor_accepts_code_that_separates_an_attribute_accessor_from_the_code_with_a_newline"
+source = '''
+attr_accessor :foo
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinesaroundattributeaccessor"
+source = '''
+# rubocop:disable Department/Cop
+attr_accessor :foo
+# rubocop:enable Department/Cop
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinesaroundattributeaccessor_accepts_code_that_where_the_attr_accessor_is_the_last_line"
+source = '''
+attr_accessor :foo
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinesaroundattributeaccessor_accepts_code_that_separates_attribute_accessors_from_the_code_with_a_newline"
+source = '''
+attr_accessor :foo
+attr_reader :bar
+attr_writer :baz
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinesaroundattributeaccessor_accepts_code_that_separates_attribute_accessors_from_the_code_and_comment_line_with_a_newline"
+source = '''
+attr_accessor :foo
+attr_reader :bar
+attr_writer :baz
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinesaroundattributeaccessor_accepts_code_when_used_in_class_definition"
+source = '''
+class Foo
+  attr_accessor :foo
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinesaroundattributeaccessor_accepts_code_when_attribute_method_is_method_chained"
+source = '''
+class Foo
+  attr.foo
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinesaroundattributeaccessor_does_not_register_an_offense_when_using_if_else_branches"
+source = '''
+if condition
+  attr_reader :foo
+else
+  do_something
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinesaroundattributeaccessor_when_allowaliassyntax_true_does_not_register_an_offense_for_code_that_immediately_alias_syntax_after_accessor"
+source = '''
+attr_accessor :foo
+alias foo? foo
+'''
+offenses = []
+
+[tests.config]
+AllowAliasSyntax = true
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinesaroundattributeaccessor_when_allowaliassyntax_false_registers_an_offense_for_code_that_immediately_alias_syntax_after_accessor"
+source = '''
+attr_accessor :foo
+alias foo? foo
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 18
+message = "Add an empty line after attribute accessor."
+
+[tests.config]
+AllowAliasSyntax = false
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinesaroundattributeaccessor_when_allowedmethods_private_does_not_register_an_offense_for_code_that_immediately_ignored_methods_after_accessor"
+source = '''
+attr_accessor :foo
+private :foo
+'''
+offenses = []
+
+[tests.config]
+AllowAliasSyntax = false
+AllowedMethods = ["$UNRESOLVED:private"]
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinesaroundattributeaccessor_when_allowedmethods_registers_an_offense_for_code_that_immediately_ignored_methods_after_accessor"
+source = '''
+attr_accessor :foo
+private :foo
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 18
+message = "Add an empty line after attribute accessor."
+
+[tests.config]
+AllowAliasSyntax = false
+AllowedMethods = []

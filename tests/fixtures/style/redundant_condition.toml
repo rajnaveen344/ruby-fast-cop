@@ -1,0 +1,1501 @@
+cop = "Style/RedundantCondition"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_redundantcondition_when_regular_condition_if_accepts_different_when_the_condition_does_not_match_the_branch"
+source = '''
+if a
+  b
+else
+  c
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantcondition_when_regular_condition_if_accepts_elsif"
+source = '''
+if a
+  b
+elsif d
+  d
+else
+  c
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantcondition_when_regular_condition_if_when_condition_and_if_branch_are_same_registers_an_offense_and_corrects"
+source = '''
+if b
+  b
+else
+  c
+end
+'''
+corrected = '''
+b || c
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 4
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+if b
+  # Important note.
+  b
+else
+  c
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 4
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = "rubocop_cop_style_redundantcondition_when_regular_condition_if_when_condition_and_if_branch_are_same_registers_an_offense_and_does_not_autocorrect_when_else_branch_has_a_comment"
+source = '''
+if b
+  b
+else
+  # Important note.
+  c
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 4
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = "rubocop_cop_style_redundantcondition_when_regular_condition_if_when_condition_and_if_branch_are_same_does_not_register_an_offense_when_using_assignment_by_hash_key_access"
+source = '''
+if @cache[key]
+  @cache[key]
+else
+  @cache[key] = heavy_load[key]
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantcondition_when_regular_condition_if_when_condition_and_if_branch_are_same_registers_an_offense_and_corrects_when_raise_without_argument_parentheses_in_else"
+source = '''
+if b
+  b
+else
+  raise 'foo'
+end
+'''
+corrected = '''
+b || raise('foo')
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 4
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+if b
+  b
+else
+  ('foo' if $VERBOSE)
+end
+'''
+corrected = '''
+b || ('foo' if $VERBOSE)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 4
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+if b
+  b
+else
+  (('foo' if $VERBOSE))
+end
+'''
+corrected = '''
+b || (('foo' if $VERBOSE))
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 4
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+if b
+  b
+else
+  do_something foo, bar, key: :value
+end
+'''
+corrected = '''
+b || do_something(foo, bar, key: :value)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 4
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+if b
+  b
+else
+  c + d
+end
+'''
+corrected = '''
+b || c + d
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 4
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+if b
+  b
+else
+  (c || d)
+end
+'''
+corrected = '''
+b || (c || d)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 4
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+if b
+  b
+else
+  c while d
+end
+'''
+corrected = '''
+b || (c while d)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 4
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+if b
+  b
+else
+  y(x,
+    z)
+end
+'''
+corrected = '''
+b || y(x,
+    z)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 4
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+ary << if foo
+         foo
+       else
+         bar
+       end
+'''
+corrected = '''
+ary << (foo || bar)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 13
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+if b
+  b
+else
+  c
+  d
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantcondition_when_regular_condition_if_when_condition_and_if_branch_are_same_accepts_an_elsif_branch"
+source = '''
+if a
+  a
+elsif cond
+  d
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantcondition_when_regular_condition_if_when_condition_and_if_branch_are_same_does_not_register_an_offense_when_using_modifier_if"
+source = '''
+bar if bar
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantcondition_when_regular_condition_if_when_condition_and_if_branch_are_same_does_not_register_an_offense_when_using_modifier_unless"
+source = '''
+bar unless bar
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantcondition_when_regular_condition_if_when_condition_and_if_branch_are_same"
+source = '''
+if do_something
+  do_something
+end
+'''
+corrected = '''
+do_something
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 15
+message = "This condition is not needed."
+
+[[tests]]
+name = ""
+source = '''
+if a
+  a
+else
+  b ? c : d
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantcondition_when_regular_condition_if_when_condition_and_if_branch_are_same_registers_an_offense_and_corrects_when_the_else_branch_contains_an_irange"
+source = '''
+if foo
+  foo
+else
+  1..2
+end
+'''
+corrected = '''
+foo || (1..2)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+def test
+  if foo
+    @value = foo
+  else
+    @value = 'bar'
+  end
+end
+'''
+corrected = '''
+def test
+  @value = foo || 'bar'
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 8
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+if foo
+  value = foo
+else
+  value = 'bar'
+end
+'''
+corrected = '''
+value = foo || 'bar'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+if foo
+  @value = foo
+else
+  @value = 'bar'
+end
+'''
+corrected = '''
+@value = foo || 'bar'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+if foo
+  @@value = foo
+else
+  @@value = 'bar'
+end
+'''
+corrected = '''
+@@value = foo || 'bar'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+if foo
+  $value = foo
+else
+  $value = 'bar'
+end
+'''
+corrected = '''
+$value = foo || 'bar'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+if foo
+  CONST = foo
+else
+  CONST = 'bar'
+end
+'''
+corrected = '''
+CONST = foo || 'bar'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+if foo
+  test.bar = foo
+else
+  test.bar = 'baz'
+end
+'''
+corrected = '''
+test.bar = foo || 'baz'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+if foo
+  @value - foo
+else
+  @value - 'bar'
+end
+'''
+corrected = '''
+@value - (foo || 'bar')
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+if foo
+  bar foo
+else
+  bar 1..2
+end
+'''
+corrected = '''
+bar foo || (1..2)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+if foo
+  bar foo
+else
+  bar({ baz => quux })
+end
+'''
+corrected = '''
+bar foo || { baz => quux }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+if foo
+  bar foo
+else
+  bar baz => quux
+end
+'''
+corrected = '''
+bar foo || { baz => quux }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+if foo
+  bar(foo)
+else
+  bar(1..2)
+end
+'''
+corrected = '''
+bar(foo || (1..2))
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+if foo
+  bar(foo)
+else
+  bar({})
+end
+'''
+corrected = '''
+bar(foo || {})
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+if foo
+  bar(foo)
+else
+  bar(*baz)
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantcondition_when_regular_condition_if_when_condition_and_if_branch_are_same_does_not_register_an_offense_when_the_branches_contains_double_splat_argument"
+source = '''
+if foo
+  bar(foo)
+else
+  bar(**baz)
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantcondition_when_regular_condition_if_when_condition_and_if_branch_are_same_does_not_register_an_offense_when_the_branches_contains_block_argument"
+source = '''
+if foo
+  bar(foo)
+else
+  bar(&baz)
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantcondition_when_regular_condition_if_when_condition_and_if_branch_are_same_does_not_register_an_offense_when_the_branches_contains_anonymous_splat_argument"
+source = '''
+def do_something(foo, *)
+  if foo
+    bar(foo)
+  else
+    bar(*)
+  end
+end
+'''
+ruby_version = ">= 3.2"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantcondition_when_regular_condition_if_when_condition_and_if_branch_are_same_does_not_register_an_offense_when_the_branches_contains_anonymous_double_splat_argument"
+source = '''
+def do_something(foo, **)
+  if foo
+    bar(foo)
+  else
+    bar(**)
+  end
+end
+'''
+ruby_version = ">= 3.2"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantcondition_when_regular_condition_if_when_condition_and_if_branch_are_same_does_not_register_an_offense_when_the_branches_contains_anonymous_block_argument"
+source = '''
+def do_something(foo, &)
+  if foo
+    bar(foo)
+  else
+    bar(&)
+  end
+end
+'''
+ruby_version = ">= 3.1"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantcondition_when_regular_condition_if_when_condition_and_if_branch_are_same_does_not_register_an_offense_when_the_branches_contains_arguments_forwarding"
+source = '''
+def do_something(foo, ...)
+  if foo
+    bar(foo)
+  else
+    bar(...)
+  end
+end
+'''
+ruby_version = ">= 2.7"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantcondition_when_regular_condition_if_when_condition_and_if_branch_are_same_does_not_register_offenses_when_using_nil_and_the_branches_contains_assignment"
+source = '''
+if foo.nil?
+  @value = foo
+else
+  @value = 'bar'
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantcondition_when_regular_condition_if_when_condition_and_if_branch_are_same_does_not_register_offenses_when_the_branches_contains_assignment_but_target_not_matched"
+source = '''
+if foo
+  @foo = foo
+else
+  @baz = 'quux'
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantcondition_when_regular_condition_if_when_condition_and_if_branch_are_same_does_not_register_offenses_when_using_nil_and_the_branches_contains_method_which_has_multiple_arguments"
+source = '''
+if foo.nil?
+  test.bar foo, bar
+else
+  test.bar = 'baz', 'quux'
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantcondition_when_regular_condition_if_when_condition_and_if_branch_are_same_does_not_register_offenses_when_the_branches_contains_hash_key_access"
+source = '''
+if foo
+  bar[foo]
+else
+  bar[1]
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantcondition_when_regular_condition_if_when_condition_and_if_branch_are_same_registers_an_offense_and_correct_when_the_branches_are_the_same_with_the_same_receivers"
+source = '''
+if x
+  X.find(x)
+else
+  X.find(y)
+end
+'''
+corrected = '''
+X.find(x || y)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 4
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+if x
+  X.find(x)
+else
+  Y.find(y)
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantcondition_when_regular_condition_if_when_true_as_the_true_branch_does_not_register_an_offense_when_true_is_used_as_the_true_branch_and_the_condition_is_a_local_variable"
+source = '''
+variable = do_something
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantcondition_when_regular_condition_if_when_true_as_the_true_branch_does_not_register_an_offense_when_true_is_used_as_the_true_branch_and_the_condition_is_an_instance_variable"
+source = '''
+if @variable
+  true
+else
+  a
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantcondition_when_regular_condition_if_when_true_as_the_true_branch_does_not_register_an_offense_when_true_is_used_as_the_true_branch_and_the_condition_is_a_class_variable"
+source = '''
+if @@variable
+  true
+else
+  a
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantcondition_when_regular_condition_if_when_true_as_the_true_branch_does_not_register_an_offense_when_true_is_used_as_the_true_branch_and_the_condition_is_a_global_variable"
+source = '''
+if $variable
+  true
+else
+  a
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantcondition_when_regular_condition_if_when_true_as_the_true_branch_does_not_register_an_offense_when_true_is_used_as_the_true_branch_and_the_condition_is_a_constant"
+source = '''
+if CONST
+  true
+else
+  a
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantcondition_when_regular_condition_if_when_true_as_the_true_branch_does_not_register_an_offense_when_true_is_used_as_the_true_branch_and_the_condition_is_not_a_predicate_method"
+source = '''
+if a[:key]
+  true
+else
+  a
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantcondition_when_regular_condition_if_when_true_as_the_true_branch_registers_an_offense_and_autocorrects_when_true_is_used_as_the_true_branch"
+source = '''
+if a.zero?
+  true
+else
+  a
+end
+'''
+corrected = '''
+a.zero? || a
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 10
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+if a&.zero?
+  true
+else
+  a
+end
+'''
+corrected = '''
+a&.zero? || a
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 11
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+if foo? arg
+  true
+else
+  bar
+end
+'''
+corrected = '''
+foo?(arg) || bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 11
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+if foo?(arg)
+  true
+else
+  bar
+end
+'''
+corrected = '''
+foo?(arg) || bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 12
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+if obj&.foo? arg
+  true
+else
+  bar
+end
+'''
+corrected = '''
+obj&.foo?(arg) || bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 16
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+if !a[:key]
+  a
+else
+  false
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantcondition_when_regular_condition_if_when_true_as_the_true_branch_registers_an_offense_and_autocorrects_when_true_is_used_as_the_true_branch_and_the_false_branch_is_a_string"
+source = '''
+if b.nil?
+  true
+else
+  'hello world'
+end
+'''
+corrected = '''
+b.nil? || 'hello world'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 9
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+if c.empty?
+  true
+else
+  [1, 2, 3]
+end
+'''
+corrected = '''
+c.empty? || [1, 2, 3]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 11
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+if a.zero?
+  true # comment
+else
+  a
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 10
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = "rubocop_cop_style_redundantcondition_when_regular_condition_if_when_true_as_the_true_branch_when_if_branch_has_a_comment_or_else_branch_has_a_comment_does_not_autocorrect_when_the_true_branch_has_a_comment_before_it"
+source = '''
+if a.zero?
+  # comment
+  true
+else
+  a
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 10
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = "rubocop_cop_style_redundantcondition_when_regular_condition_if_when_true_as_the_true_branch_when_if_branch_has_a_comment_or_else_branch_has_a_comment_does_not_autocorrect_when_the_false_branch_has_a_comment_after_it"
+source = '''
+if a.zero?
+  true
+else
+  a # comment
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 10
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = "rubocop_cop_style_redundantcondition_when_regular_condition_if_when_true_as_the_true_branch_when_if_branch_has_a_comment_or_else_branch_has_a_comment_does_not_autocorrect_when_the_false_branch_has_a_comment_before_it"
+source = '''
+if a.zero?
+  true
+else
+  # comment
+  a
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 10
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = "rubocop_cop_style_redundantcondition_when_regular_condition_if_when_the_true_branch_is_not_true_does_not_register_an_offense_when_the_true_branch_is_a_string"
+source = '''
+if a.zero?
+  'true'
+else
+  a
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantcondition_when_regular_condition_if_when_the_true_branch_is_not_true_does_not_register_an_offense_when_the_true_branch_is_a_quoted_string"
+source = '''
+if a.zero?
+  "true"
+else
+  a
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantcondition_when_regular_condition_if_when_the_true_branch_is_not_true_does_not_register_an_offense_when_the_true_branch_is_false"
+source = '''
+if a.zero?
+  false
+else
+  a
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantcondition_when_regular_condition_if_when_the_true_branch_is_not_true_does_not_register_an_offense_when_the_true_branch_is_a_number"
+source = '''
+if a.zero?
+  1
+else
+  a
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantcondition_when_regular_condition_if_when_the_true_branch_is_not_true_does_not_register_an_offense_when_there_is_no_else_branch"
+source = '''
+if a.zero?
+  true
+else
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantcondition_when_regular_condition_if_when_the_true_branch_is_not_true_does_not_register_an_offense_when_there_is_no_if_branch"
+source = '''
+if a.zero?
+else
+  a
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantcondition_when_regular_condition_if_when_the_true_branch_is_not_true_does_not_register_an_offense_when_there_are_two_different_branches"
+source = '''
+if a.zero?
+  a
+else
+  b
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantcondition_ternary_expression_accepts_expressions_when_the_condition_and_if_branch_do_not_match"
+source = '''
+b ? d : c
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantcondition_ternary_expression_registers_an_offense_with_extra_parentheses_and_modifier_if_in_else"
+source = '''
+b ? b : (raise 'foo' if $VERBOSE)
+'''
+corrected = '''
+b || (raise 'foo' if $VERBOSE)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 7
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+b ? b : c
+'''
+corrected = '''
+b || c
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 7
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+test ? test : Proc.new {}
+'''
+corrected = '''
+test || Proc.new {}
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 13
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+b.x ? b.x : c
+'''
+corrected = '''
+b.x || c
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 11
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+@b ? @b : c
+'''
+corrected = '''
+@b || c
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 9
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+a = b(x) ? b(x) : c
+'''
+corrected = '''
+a = b(x) || c
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 17
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+a = b[:x] ? b[:x] : b[:y]
+'''
+corrected = '''
+a = b[:x] || b[:y]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 19
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+time_period = updated_during ? updated_during : 2.days.ago..Time.now
+'''
+corrected = '''
+time_period = updated_during || (2.days.ago..Time.now)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 29
+column_end = 47
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+time_period = updated_during ? updated_during : 2.days.ago...Time.now
+'''
+corrected = '''
+time_period = updated_during || (2.days.ago...Time.now)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 29
+column_end = 47
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+foo ? bar(foo) : bar(quux)
+'''
+corrected = '''
+bar(foo || quux)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 26
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+foo ? foo(foo).bar(foo) : foo(foo).bar(quux)
+'''
+corrected = '''
+foo(foo).bar(foo || quux)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 44
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+if a
+  a
+else
+  b rescue c
+end
+'''
+corrected = '''
+a || (b rescue c)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 4
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+if a
+  a
+else
+  b and c
+end
+'''
+corrected = '''
+a || (b and c)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 4
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+a.zero? ? true : a
+'''
+corrected = '''
+a.zero? || a
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 16
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+a.zero? ? true : 5
+'''
+corrected = '''
+a.zero? || 5
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 16
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+a.zero? ? true : 'a string'
+'''
+corrected = '''
+a.zero? || 'a string'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 16
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+something = a.zero? ? true : a
+'''
+corrected = '''
+something = a.zero? || a
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 20
+column_end = 28
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+b.nil? ? true : [1, 2, 3]
+'''
+corrected = '''
+b.nil? || [1, 2, 3]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 15
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+something = a.nil? ? true : a
+'''
+corrected = '''
+something = a.nil? || a
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 19
+column_end = 27
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+a.zero? ? 'true' : a
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantcondition_ternary_expression_when_the_true_branch_is_not_true_does_not_register_an_offense_when_the_true_branch_is_a_quoted_string"
+source = '''
+a.zero? ? "true" : a
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantcondition_ternary_expression_when_the_true_branch_is_not_true_does_not_register_an_offense_when_the_true_branch_is_false"
+source = '''
+a.zero? ? false : a
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantcondition_ternary_expression_when_the_true_branch_is_not_true_does_not_register_an_offense_when_the_true_branch_is_a_number"
+source = '''
+a.zero? ? 1 : a
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantcondition_ternary_expression_when_the_true_branch_is_not_true_does_not_register_an_offense_when_the_true_and_false_branches_are_different_variables"
+source = '''
+a.zero? ? a : b
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantcondition_when_inverted_condition_unless_registers_no_offense"
+source = '''
+unless a
+  b
+else
+  c
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantcondition_when_inverted_condition_unless_when_condition_and_else_branch_are_same_registers_an_offense"
+source = '''
+unless b
+  y(x, z)
+else
+  b
+end
+'''
+corrected = '''
+b || y(x, z)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 8
+message = "Use double pipes `||` instead."
+
+[[tests]]
+name = ""
+source = '''
+unless b
+  c
+  d
+else
+  b
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantcondition_when_allowedmethods_nonzero_does_not_register_an_offense_when_using_nonzero"
+source = '''
+if a.nonzero?
+  true
+else
+  false
+end
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["nonzero?"]

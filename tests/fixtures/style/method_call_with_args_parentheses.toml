@@ -1,0 +1,2376 @@
+cop = "Style/MethodCallWithArgsParentheses"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_endless_methods_with_arguments_requires_method_calls_to_have_parens"
+source = '''
+def x() = foo("bar")
+'''
+ruby_version = ">= 3.0"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_endless_methods_without_arguments_registers_an_offense_when_there_are_parens"
+source = '''
+def x() = foo()
+'''
+corrected = '''
+def x() = foo#{trailing_whitespace}
+'''
+ruby_version = ">= 3.0"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 15
+message = "Omit parentheses for method calls with arguments."
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_endless_methods_without_arguments_registers_an_offense_for_defs_when_there_are_parens"
+source = '''
+def self.x() = foo()
+'''
+corrected = '''
+def self.x() = foo#{trailing_whitespace}
+'''
+ruby_version = ">= 3.0"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 18
+column_end = 20
+message = "Omit parentheses for method calls with arguments."
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_endless_methods_without_arguments_does_not_register_an_offense_when_there_are_parens"
+source = '''
+def x() = foo()
+'''
+ruby_version = ">= 3.0"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_endless_methods_without_arguments_does_not_register_an_offense_for_defs_when_there_are_parens"
+source = '''
+def self.x() = foo()
+'''
+ruby_version = ">= 3.0"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_endless_methods_without_arguments_does_not_register_an_offense_when_there_are_no_parens"
+source = '''
+def x() = foo
+'''
+ruby_version = ">= 3.0"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_endless_methods_without_arguments_does_not_register_an_offense_when_there_are_arguments"
+source = '''
+def x() = foo(y)
+'''
+ruby_version = ">= 3.0"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_endless_methods_without_arguments_does_not_register_an_offense_for_defs_when_there_are_arguments"
+source = '''
+def self.x() = foo(y)
+'''
+ruby_version = ">= 3.0"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_require_parentheses_default_accepts_no_parens_in_method_call_without_args"
+source = '''
+top.test
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_require_parentheses_default_accepts_parens_in_method_call_with_args"
+source = '''
+top.test(a, b)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_require_parentheses_default_accepts_parens_in_method_call_with_do_end_blocks"
+source = '''
+foo(:arg) do
+  bar
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_require_parentheses_default_registers_an_offense_for_method_call_without_parens"
+source = '''
+top.test a, b
+'''
+corrected = '''
+top.test(a, b)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 13
+message = "Use parentheses for method calls with arguments."
+
+[[tests]]
+name = ""
+source = '''
+top&.test a, b
+'''
+corrected = '''
+top&.test(a, b)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 14
+message = "Use parentheses for method calls with arguments."
+
+[[tests]]
+name = ""
+source = '''
+def foo
+  test a, b
+end
+'''
+corrected = '''
+def foo
+  test(a, b)
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 11
+message = "Use parentheses for method calls with arguments."
+
+[[tests]]
+name = ""
+source = '''
+def foo
+  Test a, b
+end
+'''
+corrected = '''
+def foo
+  Test(a, b)
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 11
+message = "Use parentheses for method calls with arguments."
+
+[[tests]]
+name = ""
+source = '''
+def foo
+  super a
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_require_parentheses_default_registers_no_offense_for_superclass_call_without_args"
+source = '''
+super
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_require_parentheses_default_registers_no_offense_for_yield_without_args"
+source = '''
+yield
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_require_parentheses_default_registers_no_offense_for_superclass_call_with_parens"
+source = '''
+super(a)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_require_parentheses_default_registers_an_offense_for_yield_without_parens"
+source = '''
+def foo
+  yield a
+end
+'''
+corrected = '''
+def foo
+  yield(a)
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 9
+message = "Use parentheses for method calls with arguments."
+
+[[tests]]
+name = ""
+source = '''
+top.test + a
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_require_parentheses_default_accepts_no_parens_for_setter_methods"
+source = '''
+top.test = a
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_require_parentheses_default_accepts_no_parens_for_unary_operators"
+source = '''
+!test
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_require_parentheses_default_autocorrects_fully_parenthesized_args_by_removing_space"
+source = '''
+top.eq (1 + 2)
+'''
+corrected = '''
+top.eq(1 + 2)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 14
+message = "Use parentheses for method calls with arguments."
+
+[[tests]]
+name = ""
+source = '''
+def foo
+  eq (1 + 2)
+end
+'''
+corrected = '''
+def foo
+  eq(1 + 2)
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 12
+message = "Use parentheses for method calls with arguments."
+
+[[tests]]
+name = ""
+source = '''
+def foo
+  eq 1, (2 + 3)
+  eq 1, 2, 3
+end
+'''
+corrected = '''
+def foo
+  eq(1, (2 + 3))
+  eq(1, 2, 3)
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 15
+message = "Use parentheses for method calls with arguments."
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 12
+message = "Use parentheses for method calls with arguments."
+
+[[tests]]
+name = ""
+source = '''
+top.eq (1 + 2) + 3
+'''
+corrected = '''
+top.eq((1 + 2) + 3)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 18
+message = "Use parentheses for method calls with arguments."
+
+[[tests]]
+name = ""
+source = '''
+top.eq (1 + 2), 3
+'''
+corrected = '''
+top.eq((1 + 2), 3)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 17
+message = "Use parentheses for method calls with arguments."
+
+[[tests]]
+name = ""
+source = '''
+def my_method
+  foo bar.baz(abc, xyz)
+end
+'''
+corrected = '''
+def my_method
+  foo(bar.baz(abc, xyz))
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 23
+message = "Use parentheses for method calls with arguments."
+
+[[tests]]
+name = ""
+source = '''
+def my_method
+  foo bar.baz(abc, xyz), foo(baz)
+end
+'''
+corrected = '''
+def my_method
+  foo(bar.baz(abc, xyz), foo(baz))
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 33
+message = "Use parentheses for method calls with arguments."
+
+[[tests]]
+name = ""
+source = '''
+def my_method
+  raise NotImplementedError
+end
+'''
+corrected = '''
+def my_method
+  raise(NotImplementedError)
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 27
+message = "Use parentheses for method calls with arguments."
+
+[[tests]]
+name = ""
+source = '''
+def my_method
+  sleep 1
+end
+'''
+corrected = '''
+def my_method
+  sleep(1)
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 9
+message = "Use parentheses for method calls with arguments."
+
+[[tests]]
+name = ""
+source = '''
+puts :test
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_require_parentheses_default_when_inspecting_macro_methods_in_a_class_body_does_not_register_an_offense"
+source = '''
+class Foo
+  bar :baz
+end
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_require_parentheses_default_when_inspecting_macro_methods_in_a_module_body_does_not_register_an_offense"
+source = '''
+module Foo
+  bar :baz
+end
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_require_parentheses_default_allowedpatterns_ignored_methods_listed_in_allowedpatterns"
+source = '''
+refute_match /^no/i, result
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_forwarded_arguments_in_2_7_accepts_parens_for_forwarded_arguments"
+source = '''
+def delegated_call(...)
+  @proxy.call(...)
+end
+'''
+ruby_version = ">= 2.7"
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_forwarded_arguments_in_3_0_accepts_parens_for_forwarded_arguments"
+source = '''
+def method_missing(name, ...)
+  @proxy.call(name, ...)
+end
+'''
+ruby_version = ">= 3.0"
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_numbered_parameters_in_2_7_accepts_parens_for_braced_numeric_block_calls"
+source = '''
+numblock.call(:arg) { _1 }
+'''
+ruby_version = ">= 2.7"
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_hash_value_omission_in_3_1_registers_an_offense_when_last_argument_is_a_hash_value_omission"
+source = '''
+foo(bar:, baz:)
+'''
+corrected = '''
+foo bar:, baz:
+'''
+ruby_version = ">= 3.1"
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 15
+message = "Omit parentheses for method calls with arguments."
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_hash_value_omission_in_3_1_does_not_register_an_offense_when_hash_value_omission_with_parentheses_and_using_modifier_form"
+source = '''
+do_something(value:) if condition
+'''
+ruby_version = ">= 3.1"
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_hash_value_omission_in_3_1_registers_and_corrects_an_offense_when_explicit_hash_value_with_parentheses_and_using_modifier_form"
+source = '''
+do_something(value: value) if condition
+'''
+corrected = '''
+do_something value: value if condition
+'''
+ruby_version = ">= 3.1"
+
+[[tests.offenses]]
+line = 1
+column_start = 12
+column_end = 26
+message = "Omit parentheses for method calls with arguments."
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_hash_value_omission_in_3_1_does_not_register_an_offense_when_without_parentheses_call_expr_follows"
+source = '''
+foo value:
+'''
+ruby_version = ">= 3.1"
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_hash_value_omission_in_3_1_registers_an_offense_when_with_parentheses_call_expr_follows"
+source = '''
+foo(value:)
+foo(arg)
+'''
+corrected = '''
+foo(value:)
+foo arg
+'''
+ruby_version = ">= 3.1"
+
+[[tests.offenses]]
+line = 2
+column_start = 3
+column_end = 8
+message = "Omit parentheses for method calls with arguments."
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_hash_value_omission_in_3_1_registers_an_offense_using_assignment_with_parentheses_call_expr_follows"
+source = '''
+var = foo(value:)
+foo(arg)
+'''
+corrected = '''
+var = foo(value:)
+foo arg
+'''
+ruby_version = ">= 3.1"
+
+[[tests.offenses]]
+line = 2
+column_start = 3
+column_end = 8
+message = "Omit parentheses for method calls with arguments."
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_hash_value_omission_in_3_1_does_not_register_an_offense_in_conditionals"
+source = '''
+var =
+  unless object.action(value:, other:)
+    condition || other_condition
+  end
+'''
+ruby_version = ">= 3.1"
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_hash_value_omission_in_3_1_registers_an_offense_in_case_match_multi_line_branches"
+source = '''
+case match
+in :pattern1
+  foo(value:)
+in :pattern2
+  bar(value:)
+end
+'''
+corrected = '''
+case match
+in :pattern1
+  foo value:
+in :pattern2
+  bar value:
+end
+'''
+ruby_version = ">= 3.1"
+
+[[tests.offenses]]
+line = 3
+column_start = 5
+column_end = 13
+message = "Omit parentheses for method calls with arguments."
+
+[[tests.offenses]]
+line = 5
+column_start = 5
+column_end = 13
+message = "Omit parentheses for method calls with arguments."
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_hash_value_omission_in_3_1_does_not_register_an_offense_in_case_match_single_line_branches"
+source = '''
+case match
+in :pattern1 then foo(value:)
+in :pattern2 then bar(value:)
+end
+'''
+ruby_version = ">= 3.1"
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_hash_value_omission_in_3_1_does_not_register_an_offense_in_case_single_line_branches"
+source = '''
+case match
+when /pattern1/ then foo(value:)
+when /pattern2/ then bar(value:)
+end
+'''
+ruby_version = ">= 3.1"
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_anonymous_rest_arguments_in_3_2_does_not_register_an_offense_when_method_calls_to_have_parens"
+source = '''
+def foo(*)
+  foo(*)
+  do_something
+end
+'''
+ruby_version = ">= 3.2"
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_anonymous_keyword_rest_arguments_in_3_2_does_not_register_an_offense_when_method_calls_to_have_parens"
+source = '''
+def foo(**)
+  foo(**)
+end
+'''
+ruby_version = ">= 3.2"
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_anonymous_keyword_rest_arguments_in_3_2_does_not_register_an_offense_when_forwarded_keyword_argument_has_additional_nodes"
+source = '''
+def foo(**)
+  foo(name: value, **)
+end
+'''
+ruby_version = ">= 3.2"
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_registers_an_offense_for_parens_in_method_call_without_args"
+source = '''
+top.test()
+'''
+corrected = '''
+top.test#{trailing_whitespace}
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 10
+message = "Omit parentheses for method calls with arguments."
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_registers_an_offense_for_multi_line_method_calls"
+source = '''
+test(
+  foo: bar
+)
+'''
+corrected = '''
+test \
+  foo: bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 5
+message = "Omit parentheses for method calls with arguments."
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_does_not_register_an_offense_for_superclass_call_with_parens"
+source = '''
+def foo
+  super(a)
+end
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_registers_an_offense_for_yield_call_with_parens"
+source = '''
+def foo
+  yield(a)
+end
+'''
+corrected = '''
+def foo
+  yield a
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 7
+column_end = 10
+message = "Omit parentheses for method calls with arguments."
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_registers_an_offense_for_parens_in_the_last_chain"
+source = '''
+foo().bar(3).wait(4)
+'''
+corrected = '''
+foo().bar(3).wait 4
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 20
+message = "Omit parentheses for method calls with arguments."
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_registers_an_offense_for_parens_in_do_end_blocks"
+source = '''
+foo(:arg) do
+  bar
+end
+'''
+corrected = '''
+foo :arg do
+  bar
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 9
+message = "Omit parentheses for method calls with arguments."
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_registers_an_offense_for_hashes_in_keyword_values"
+source = '''
+method_call(hash: {foo: :bar})
+'''
+corrected = '''
+method_call hash: {foo: :bar}
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 30
+message = "Omit parentheses for method calls with arguments."
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_registers_an_offense_for_r_regex_literal_as_arguments"
+source = '''
+method_call(%r{foo})
+'''
+corrected = '''
+method_call %r{foo}
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 20
+message = "Omit parentheses for method calls with arguments."
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_registers_an_offense_for_parens_in_string_interpolation"
+source = '''
+"#{t('no.parens')}"
+'''
+corrected = '''
+"#{t 'no.parens'}"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 17
+message = "Omit parentheses for method calls with arguments."
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_registers_an_offense_in_complex_conditionals"
+source = '''
+def foo
+  if cond.present? && verify?(:something)
+    h.do_with(kw: value)
+  elsif cond.present? || verify?(:something_else)
+    h.do_with(kw: value)
+  elsif whatevs?
+    h.do_with(kw: value)
+  end
+end
+'''
+corrected = '''
+def foo
+  if cond.present? && verify?(:something)
+    h.do_with kw: value
+  elsif cond.present? || verify?(:something_else)
+    h.do_with kw: value
+  elsif whatevs?
+    h.do_with kw: value
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 13
+column_end = 24
+message = "Omit parentheses for method calls with arguments."
+
+[[tests.offenses]]
+line = 5
+column_start = 13
+column_end = 24
+message = "Omit parentheses for method calls with arguments."
+
+[[tests.offenses]]
+line = 7
+column_start = 13
+column_end = 24
+message = "Omit parentheses for method calls with arguments."
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_registers_an_offense_in_assignments"
+source = '''
+foo = A::B.new(c)
+bar.foo = A::B.new(c)
+bar.foo(42).quux = A::B.new(c)
+'''
+corrected = '''
+foo = A::B.new c
+bar.foo = A::B.new c
+bar.foo(42).quux = A::B.new c
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 14
+column_end = 17
+message = "Omit parentheses for method calls with arguments."
+
+[[tests.offenses]]
+line = 2
+column_start = 18
+column_end = 21
+message = "Omit parentheses for method calls with arguments."
+
+[[tests.offenses]]
+line = 3
+column_start = 27
+column_end = 30
+message = "Omit parentheses for method calls with arguments."
+
+[[tests.offenses]]
+line = 5
+column_start = 29
+column_end = 32
+message = "Omit parentheses for method calls with arguments."
+
+[[tests.offenses]]
+line = 7
+column_start = 28
+column_end = 31
+message = "Omit parentheses for method calls with arguments."
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_registers_an_offense_for_camel_case_methods_with_arguments"
+source = '''
+Array(:arg)
+'''
+corrected = '''
+Array :arg
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 11
+message = "Omit parentheses for method calls with arguments."
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_registers_an_offense_in_multi_line_inheritance"
+source = '''
+class Point < Struct.new(:x, :y)
+end
+'''
+corrected = '''
+class Point < Struct.new :x, :y
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 24
+column_end = 32
+message = "Omit parentheses for method calls with arguments."
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_registers_an_offense_in_calls_inside_braced_blocks"
+source = '''
+client.images(page: page) { |resource| Image.new(resource) }
+'''
+corrected = '''
+client.images(page: page) { |resource| Image.new resource }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 48
+column_end = 58
+message = "Omit parentheses for method calls with arguments."
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_registers_an_offense_in_calls_inside_braced_numblocks"
+source = '''
+client.images(page: page) { Image.new(_1) }
+'''
+corrected = '''
+client.images(page: page) { Image.new _1 }
+'''
+ruby_version = ">= 2.7"
+
+[[tests.offenses]]
+line = 1
+column_start = 37
+column_end = 41
+message = "Omit parentheses for method calls with arguments."
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_accepts_parenthesized_method_calls_before_constant_resolution"
+source = '''
+do_something(arg)::CONST
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_accepts_parens_in_single_line_inheritance"
+source = '''
+        class Point < Struct.new(:x, :y); end
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_accepts_no_parens_in_method_call_without_args"
+source = '''
+top.test
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_accepts_no_parens_in_method_call_with_args"
+source = '''
+top.test 1, 2, foo: bar
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_accepts_parens_in_default_argument_value_calls"
+source = '''
+def regular(arg = default(42))
+  nil
+end
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_accepts_parens_in_default_keyword_argument_value_calls"
+source = '''
+def regular(arg: default(42))
+  nil
+end
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_accepts_parens_in_method_args"
+source = '''
+top.test 1, 2, foo: bar(3)
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_accepts_parens_in_nested_method_args"
+source = '''
+top.test 1, 2, foo: [bar(3)]
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_accepts_parens_in_calls_with_hash_as_arg"
+source = '''
+top.test(:first, {foo: :bar}.merge(baz: :maz))
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_accepts_special_lambda_call_syntax"
+source = '''
+thing.()
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_accepts_parens_in_chained_method_calls"
+source = '''
+foo().bar(3).wait(4).it
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_accepts_parens_in_chaining_with_operators"
+source = '''
+foo().bar(3).wait(4) + 4
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_accepts_parens_in_blocks_with_braces"
+source = '''
+foo(1) { 2 }
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_accepts_parens_around_argument_values_with_blocks"
+source = '''
+Foo::Bar.find(pending.things.map { |t| t['code'] }.first)
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_accepts_parens_around_argument_values_with_numblocks"
+source = '''
+Foo::Bar.find(pending.things.map { _1['code'] })
+'''
+ruby_version = ">= 2.7"
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_accepts_parens_in_array_literal_calls_with_blocks"
+source = '''
+[
+  foo.bar.quux(:args) do
+    pass
+  end,
+]
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_accepts_parens_in_array_literal_calls_with_numblocks"
+source = '''
+[
+  foo.bar.quux(:args) do
+    pass _1
+  end,
+]
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_accepts_parens_in_calls_with_logical_operators"
+source = '''
+foo(a) || bar(b) do
+  pass
+end
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_accepts_parens_in_calls_with_logical_operator_and_numblock"
+source = '''
+foo(a) || bar(b) do
+  pass _1
+end
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_accepts_parens_in_calls_with_args_with_logical_operators"
+source = '''
+foo a, b(1) || c(2, d(3))
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_accepts_parens_in_literals_with_unary_operators_as_first_argument"
+source = '''
+foo(+1.3i)
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_accepts_parens_in_args_splat"
+source = '''
+foo **kwargs
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_accepts_parens_in_slash_regexp_literal_as_argument"
+source = '''
+foo(/regexp/)
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_accepts_parens_in_argument_calls_with_braced_blocks"
+source = '''
+foo(bar(:arg) { 42 })
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_accepts_parens_in_implicit_to_proc"
+source = '''
+foo &block
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_accepts_parens_in_yield_argument_method_calls"
+source = '''
+yield path, File.basepath(path)
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_accepts_parens_in_super_calls_with_braced_blocks"
+source = '''
+super(foo(bar)) { yield }
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_accepts_parens_in_super_without_args"
+source = '''
+super()
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_accepts_parens_in_super_method_calls_as_arguments"
+source = '''
+super foo(bar)
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_accepts_parens_in_camel_case_method_without_args"
+source = '''
+Array()
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_accepts_parens_in_ternary_condition_calls"
+source = '''
+        foo.include?(bar) ? bar : quux
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_accepts_parens_in_args_with_ternary_conditions"
+source = '''
+        foo.include?(bar ? baz : quux)
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_accepts_parens_in_splat_calls"
+source = '''
+        foo(*bar(args))
+        foo(**quux(args))
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_accepts_parens_in_block_passing_calls"
+source = '''
+        foo(&method(:args))
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_accepts_parens_in_range_literals"
+source = '''
+        1..limit(n)
+        1...limit(n)
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_range_literals_accepts_parens_when_no_end_node_and_last_argument"
+source = '''
+foo(2..)
+foo(1, 2...)
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_range_literals_registers_an_offense_no_end_node_and_not_last_argument"
+source = '''
+foo(2.., 1)
+'''
+corrected = '''
+foo 2.., 1
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 11
+message = "Omit parentheses for method calls with arguments."
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_range_literals_accepts_parens_when_no_begin_node_and_first_argument"
+source = '''
+foo(..2, 1)
+foo(...2)
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_range_literals_registers_an_offense_no_begin_node_and_not_first_argument"
+source = '''
+foo(1, ..2)
+'''
+corrected = '''
+foo 1, ..2
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 11
+message = "Omit parentheses for method calls with arguments."
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_accepts_parens_in_assignment_in_conditions"
+source = '''
+        case response = get("server/list")
+        when server = response.take(1)
+          if @size ||= server.take(:size)
+            pass
+          elsif @@image &&= server.take(:image)
+            pass
+          end
+        end
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_accepts_parens_in_when_clause_is_used_to_pass_an_argument"
+source = '''
+        case condition
+          when do_something(arg)
+        end
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_autocorrects_single_line_calls"
+source = '''
+top.test(1, 2, foo: bar(3))
+'''
+corrected = '''
+top.test 1, 2, foo: bar(3)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 27
+message = "Omit parentheses for method calls with arguments."
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_autocorrects_multi_line_calls_with_trailing_whitespace"
+source = '''
+foo(#{trailing_whitespace}
+  bar: 3
+)
+'''
+corrected = '''
+foo \
+  bar: 3
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 5
+message = "Omit parentheses for method calls with arguments."
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_autocorrects_complex_multi_line_calls"
+source = '''
+foo(arg,
+  option: true
+)
+'''
+corrected = '''
+foo arg,
+  option: true
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 8
+message = "Omit parentheses for method calls with arguments."
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_accepts_parens_in_chaining_with_safe_operators"
+source = '''
+Something.find(criteria: given)&.field
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_accepts_parens_in_operator_method_calls"
+source = '''
+data.[](value)
+data&.[](value)
+string.<<(even_more_string)
+ruby.==(good)
+ruby&.===(better)
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_accepts_parens_in_one_line_in_pattern_matching"
+source = '''
+execute(query) in {elapsed:, sql_count:}
+'''
+ruby_version = ">= 2.7"
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_accepts_parens_in_one_line_in_pattern_matching"
+source = '''
+execute(query) in {elapsed:, sql_count:}
+'''
+ruby_version = ">= 3.0"
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_accepts_parens_in_one_line_pattern_matching"
+source = '''
+execute(query) => {elapsed:, sql_count:}
+'''
+ruby_version = ">= 3.0"
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_allowing_parenthesis_in_chaining_registers_an_offense_for_single_line_chaining_without_previous_parens"
+source = '''
+Rails.convoluted.example.logger.error("something")
+'''
+corrected = '''
+Rails.convoluted.example.logger.error "something"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 37
+column_end = 50
+message = "Omit parentheses for method calls with arguments."
+
+[tests.config]
+AllowParenthesesInChaining = true
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_allowing_parenthesis_in_chaining_registers_an_offense_for_multi_line_chaining_without_previous_parens"
+source = '''
+Rails
+  .convoluted
+  .example
+  .logger
+  .error("something")
+'''
+corrected = '''
+Rails
+  .convoluted
+  .example
+  .logger
+  .error "something"
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 8
+column_end = 21
+message = "Omit parentheses for method calls with arguments."
+
+[tests.config]
+AllowParenthesesInChaining = true
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_allowing_parenthesis_in_chaining_accepts_no_parens_in_the_last_call_if_previous_calls_with_parens"
+source = '''
+foo().bar(3).wait 4
+'''
+offenses = []
+
+[tests.config]
+AllowParenthesesInChaining = true
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_allowing_parenthesis_in_chaining_accepts_parens_when_previously_chained_sends_have_numblocks"
+source = '''
+[a, b].map { _1.call 'something' }.uniq.join(' - ')
+'''
+ruby_version = ">= 2.7"
+offenses = []
+
+[tests.config]
+AllowParenthesesInChaining = true
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_allowing_parenthesis_in_chaining_accepts_parens_in_the_last_call_if_any_previous_calls_with_parentheses"
+source = '''
+foo().bar(3).quux.wait(4)
+'''
+offenses = []
+
+[tests.config]
+AllowParenthesesInChaining = true
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_allowing_parenthesis_in_chaining_accepts_parens_in_empty_hashes_for_arguments_calls"
+source = '''
+params.should eq({})
+'''
+offenses = []
+
+[tests.config]
+AllowParenthesesInChaining = true
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_allowing_parens_in_multi_line_calls_accepts_parens_for_multi_line_calls"
+source = '''
+test(
+  foo: bar
+)
+'''
+offenses = []
+
+[tests.config]
+AllowParenthesesInChaining = true
+AllowParenthesesInMultilineCall = true
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_allowing_parens_in_multi_line_calls_accepts_parens_in_argument_calls_with_blocks"
+source = '''
+foo(
+  bar.new(quux) do
+    pass
+  end
+)
+'''
+offenses = []
+
+[tests.config]
+AllowParenthesesInChaining = true
+AllowParenthesesInMultilineCall = true
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_allowing_parens_in_multi_line_calls_accepts_parens_in_argument_calls_with_numblocks"
+source = '''
+foo(
+  bar.new(quux) do
+    pass _1
+  end
+)
+'''
+offenses = []
+
+[tests.config]
+AllowParenthesesInChaining = true
+AllowParenthesesInMultilineCall = true
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_allowing_parens_in_multi_line_calls_accepts_parens_in_argument_csend_with_blocks"
+source = '''
+foo(
+  bar&.new(quux) do
+    pass
+  end
+)
+'''
+offenses = []
+
+[tests.config]
+AllowParenthesesInChaining = true
+AllowParenthesesInMultilineCall = true
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_allowing_parens_in_multi_line_calls_accepts_parens_in_super_argument_call_with_blocks"
+source = '''
+super(
+  bar.new(quux) do
+    pass
+  end
+)
+'''
+offenses = []
+
+[tests.config]
+AllowParenthesesInChaining = true
+AllowParenthesesInMultilineCall = true
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_allowing_parens_in_multi_line_calls_accepts_parens_in_yield_argument_call_with_blocks"
+source = '''
+yield(
+  bar.new(quux) do
+    pass
+  end
+)
+'''
+offenses = []
+
+[tests.config]
+AllowParenthesesInChaining = true
+AllowParenthesesInMultilineCall = true
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_enforcedstyle_is_omit_parentheses_allowing_parens_in_camel_case_methods_accepts_parens_for_camel_case_method_names"
+source = '''
+Array(nil)
+'''
+offenses = []
+
+[tests.config]
+AllowParenthesesInCamelCaseMethod = true
+AllowParenthesesInChaining = true
+AllowParenthesesInMultilineCall = true
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_allowing_parens_in_string_interpolation_accepts_parens_for_camel_case_method_names"
+source = '''
+"#{t('this.is.good')}"
+"#{t 'this.is.also.good'}"
+'''
+offenses = []
+
+[tests.config]
+AllowParenthesesInCamelCaseMethod = true
+AllowParenthesesInChaining = true
+AllowParenthesesInMultilineCall = true
+AllowParenthesesInStringInterpolation = true
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_inspecting_macro_methods_with_includedmacros_in_a_class_body_finds_offense"
+source = '''
+class Foo
+  bar :abc
+end
+'''
+corrected = '''
+class Foo
+  bar(:abc)
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 10
+message = "Use parentheses for method calls with arguments."
+
+[tests.config]
+AllowParenthesesInCamelCaseMethod = true
+AllowParenthesesInChaining = true
+AllowParenthesesInMultilineCall = true
+AllowParenthesesInStringInterpolation = true
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+IncludedMacros = ["$UNRESOLVED:bar"]
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_inspecting_macro_methods_with_includedmacros_in_a_module_body_finds_offense"
+source = '''
+module Foo
+  bar :abc
+end
+'''
+corrected = '''
+module Foo
+  bar(:abc)
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 10
+message = "Use parentheses for method calls with arguments."
+
+[tests.config]
+AllowParenthesesInCamelCaseMethod = true
+AllowParenthesesInChaining = true
+AllowParenthesesInMultilineCall = true
+AllowParenthesesInStringInterpolation = true
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+IncludedMacros = ["$UNRESOLVED:bar"]
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_inspecting_macro_methods_with_includedmacros_for_a_macro_not_on_the_included_list_allows"
+source = '''
+module Foo
+  baz :abc
+end
+'''
+offenses = []
+
+[tests.config]
+AllowParenthesesInCamelCaseMethod = true
+AllowParenthesesInChaining = true
+AllowParenthesesInMultilineCall = true
+AllowParenthesesInStringInterpolation = true
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+IncludedMacros = ["$UNRESOLVED:bar"]
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_inspecting_macro_methods_with_includedmacros_for_macros_called_within_a_block_finds_offense"
+source = '''
+class Foo
+  test "description" do
+    assert_equal 1, 1
+  end
+end
+'''
+corrected = '''
+class Foo
+  test "description" do
+    assert_equal(1, 1)
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 4
+column_end = 21
+message = "Use parentheses for method calls with arguments."
+
+[tests.config]
+AllowParenthesesInCamelCaseMethod = true
+AllowParenthesesInChaining = true
+AllowParenthesesInMultilineCall = true
+AllowParenthesesInStringInterpolation = true
+AllowedMethods = ["$UNRESOLVED:puts"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+IncludedMacros = ["$UNRESOLVED:assert_equal"]
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_inspecting_macro_methods_with_includedmacros_for_a_macro_in_both_includedmacros_and_allowedmethods_allows"
+source = '''
+module Foo
+  bar :abc
+end
+'''
+offenses = []
+
+[tests.config]
+AllowParenthesesInCamelCaseMethod = true
+AllowParenthesesInChaining = true
+AllowParenthesesInMultilineCall = true
+AllowParenthesesInStringInterpolation = true
+AllowedMethods = ["$UNRESOLVED:bar"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+IncludedMacros = ["$UNRESOLVED:bar"]
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_inspecting_macro_methods_with_includedmacropatterns_in_a_class_body_finds_offense_for_methods_matching_patterns"
+source = '''
+class Foo
+  assert_equal 'expected', actual
+  refute_nil value
+end
+'''
+corrected = '''
+class Foo
+  assert_equal('expected', actual)
+  refute_nil(value)
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 33
+message = "Use parentheses for method calls with arguments."
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 18
+message = "Use parentheses for method calls with arguments."
+
+[tests.config]
+AllowParenthesesInCamelCaseMethod = true
+AllowParenthesesInChaining = true
+AllowParenthesesInMultilineCall = true
+AllowParenthesesInStringInterpolation = true
+AllowedMethods = ["$UNRESOLVED:bar"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+IncludedMacroPatterns = ["^assert", "^refute"]
+IncludedMacros = ["$UNRESOLVED:bar"]
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_inspecting_macro_methods_with_includedmacropatterns_for_macros_called_within_a_block_finds_offense"
+source = '''
+class Foo
+  test "description" do
+    assert_equal 1, 1
+  end
+end
+'''
+corrected = '''
+class Foo
+  test "description" do
+    assert_equal(1, 1)
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 4
+column_end = 21
+message = "Use parentheses for method calls with arguments."
+
+[tests.config]
+AllowParenthesesInCamelCaseMethod = true
+AllowParenthesesInChaining = true
+AllowParenthesesInMultilineCall = true
+AllowParenthesesInStringInterpolation = true
+AllowedMethods = ["$UNRESOLVED:bar"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+IncludedMacroPatterns = ["^assert", "^refute"]
+IncludedMacros = ["$UNRESOLVED:bar"]
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_inspecting_macro_methods_with_includedmacropatterns_for_a_macro_not_matching_included_patterns_allows"
+source = '''
+class Foo
+  has_many :posts
+end
+'''
+offenses = []
+
+[tests.config]
+AllowParenthesesInCamelCaseMethod = true
+AllowParenthesesInChaining = true
+AllowParenthesesInMultilineCall = true
+AllowParenthesesInStringInterpolation = true
+AllowedMethods = ["$UNRESOLVED:bar"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+IncludedMacroPatterns = ["^assert", "^refute"]
+IncludedMacros = ["$UNRESOLVED:bar"]
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithargsparentheses_when_inspecting_macro_methods_with_includedmacropatterns_for_a_macro_in_both_includedmacropatterns_and_allowedmethods_allows"
+source = '''
+class Foo
+  assert_equal 'test', result
+end
+'''
+offenses = []
+
+[tests.config]
+AllowParenthesesInCamelCaseMethod = true
+AllowParenthesesInChaining = true
+AllowParenthesesInMultilineCall = true
+AllowParenthesesInStringInterpolation = true
+AllowedMethods = ["$UNRESOLVED:assert_equal"]
+AllowedPatterns = ["^assert", "^refute"]
+EnforcedStyle = "omit_parentheses"
+IgnoreMacros = "true"
+IncludedMacroPatterns = ["^assert"]
+IncludedMacros = ["$UNRESOLVED:bar"]

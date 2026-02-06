@@ -1,0 +1,261 @@
+cop = "Style/SwapValues"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_swapvalues"
+source = '''
+tmp = %{x}
+#{x} = #{y}
+#{y} = tmp
+'''
+corrected = '''
+#{correction}
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 10
+message = "Replace this and assignments at lines 2 and 3 with `#{correction}`."
+
+[[tests]]
+name = "rubocop_cop_style_swapvalues_verbosely_swapping_local"
+source = '''
+local
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_swapvalues_verbosely_swapping_x"
+source = '''
+x
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_swapvalues_verbosely_swapping_y"
+source = '''
+y
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_swapvalues_verbosely_swapping_x_y_y_x"
+source = '''
+x, y = y, x
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_swapvalues_verbosely_swapping_global"
+source = '''
+global
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_swapvalues_verbosely_swapping_x"
+source = '''
+$x
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_swapvalues_verbosely_swapping_y"
+source = '''
+$y
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_swapvalues_verbosely_swapping_x_y_y_x"
+source = '''
+$x, $y = $y, $x
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_swapvalues_verbosely_swapping_instance"
+source = '''
+instance
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_swapvalues_verbosely_swapping_x"
+source = '''
+@x
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_swapvalues_verbosely_swapping_y"
+source = '''
+@y
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_swapvalues_verbosely_swapping_x_y_y_x"
+source = '''
+@x, @y = @y, @x
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_swapvalues_verbosely_swapping_class"
+source = '''
+class
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_swapvalues_verbosely_swapping_x"
+source = '''
+@@x
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_swapvalues_verbosely_swapping_y"
+source = '''
+@@y
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_swapvalues_verbosely_swapping_x_y_y_x"
+source = '''
+@@x, @@y = @@y, @@x
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_swapvalues_verbosely_swapping_constant"
+source = '''
+constant
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_swapvalues_verbosely_swapping_x"
+source = '''
+X
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_swapvalues_verbosely_swapping_y"
+source = '''
+Y
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_swapvalues_verbosely_swapping_x_y_y_x"
+source = '''
+X, Y = Y, X
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_swapvalues_verbosely_swapping_constant_with_namesp"
+source = '''
+constant with namespaces
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_swapvalues_verbosely_swapping_x"
+source = '''
+::X
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_swapvalues_verbosely_swapping_foo_y"
+source = '''
+Foo::Y
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_swapvalues_verbosely_swapping_x_foo_y_foo_y"
+source = '''
+::X, Foo::Y = Foo::Y, ::X
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_swapvalues_verbosely_swapping_mixed"
+source = '''
+mixed
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_swapvalues_verbosely_swapping_x"
+source = '''
+@x
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_swapvalues_verbosely_swapping_y"
+source = '''
+$y
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_swapvalues_verbosely_swapping_x_y_y_x"
+source = '''
+@x, $y = $y, @x
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_swapvalues_handles_comments_when_correcting"
+source = '''
+tmp = x # comment 1
+# comment 2
+x = y
+y = tmp # comment 3
+'''
+corrected = '''
+x, y = y, x
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 7
+message = "Replace this and assignments at lines 3 and 4 with `x, y = y, x`."
+
+[[tests]]
+name = "rubocop_cop_style_swapvalues_does_not_register_an_offense_when_idiomatically_swapping_variables"
+source = '''
+x, y = y, x
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_swapvalues_does_not_register_an_offense_when_almost_swapping_variables"
+source = '''
+tmp = x
+x = y
+y = not_a_tmp
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_swapvalues_does_not_register_an_offense_when_assigning_receiver_object_at_def"
+source = '''
+def (foo = Object.new).do_something
+end
+'''
+offenses = []

@@ -1,0 +1,60 @@
+cop = "Lint/RegexpAsCondition"
+department = "lint"
+severity = "warning"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_lint_regexpascondition_registers_an_offense_and_corrects_for_a_regexp_literal_in_if_condition"
+source = '''
+if /foo/
+end
+'''
+corrected = '''
+if /foo/ =~ $_
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 8
+message = "Do not use regexp literal as a condition. The regexp literal matches `$_` implicitly."
+
+[[tests]]
+name = "rubocop_cop_lint_regexpascondition_registers_an_offense_and_corrects_for_a_regexp_literal_with_bang_in_if_condition"
+source = '''
+if !/foo/
+end
+'''
+corrected = '''
+if !/foo/ =~ $_
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 9
+message = "Do not use regexp literal as a condition. The regexp literal matches `$_` implicitly."
+
+[[tests]]
+name = "rubocop_cop_lint_regexpascondition_does_not_register_an_offense_for_a_regexp_literal_outside_conditions"
+source = '''
+/foo/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_regexpascondition_does_not_register_an_offense_for_a_regexp_literal_with_bang_outside_conditions"
+source = '''
+!/foo/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_regexpascondition_does_not_register_an_offense_for_a_regexp_literal_with_operator"
+source = '''
+if /foo/ =~ str
+end
+'''
+offenses = []

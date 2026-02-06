@@ -1,0 +1,290 @@
+cop = "Style/DataInheritance"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_datainheritance_ruby_3_2_registers_an_offense_when_extending_instance_of_data_define"
+source = '''
+class Person < Data.define(:first_name, :last_name)
+  def foo; end
+end
+'''
+corrected = '''
+Person = Data.define(:first_name, :last_name) do
+  def foo; end
+end
+'''
+ruby_version = ">= 3.2"
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 51
+message = "Don't extend an instance initialized by `Data.define`. Use a block to customize the class."
+
+[[tests]]
+name = "rubocop_cop_style_datainheritance_ruby_3_2_registers_an_offense_when_extending_instance_of_data_define"
+source = '''
+class Person < ::Data.define(:first_name, :last_name)
+  def foo; end
+end
+'''
+corrected = '''
+Person = ::Data.define(:first_name, :last_name) do
+  def foo; end
+end
+'''
+ruby_version = ">= 3.2"
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 53
+message = "Don't extend an instance initialized by `Data.define`. Use a block to customize the class."
+
+[[tests]]
+name = "rubocop_cop_style_datainheritance_ruby_3_2_registers_an_offense_when_extending_instance_of_data_define_with_do_end"
+source = '''
+class Person < Data.define(:first_name, :last_name) do end
+end
+'''
+corrected = '''
+Person = Data.define(:first_name, :last_name) do
+end
+'''
+ruby_version = ">= 3.2"
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 58
+message = "Don't extend an instance initialized by `Data.define`. Use a block to customize the class."
+
+[[tests]]
+name = "rubocop_cop_style_datainheritance_ruby_3_2_registers_an_offense_when_extending_instance_of_data_define_without_do_end_and_class_body_is_empty"
+source = '''
+class Person < Data.define(:first_name, :last_name)
+end
+'''
+corrected = '''
+Person = Data.define(:first_name, :last_name)
+'''
+ruby_version = ">= 3.2"
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 51
+message = "Don't extend an instance initialized by `Data.define`. Use a block to customize the class."
+
+[[tests]]
+name = "rubocop_cop_style_datainheritance_ruby_3_2_registers_an_offense_when_extending_instance_of_data_define_without_do_end_and_class_body_is_empty_and_single_line_definition"
+source = '''
+class Person < Data.define(:first_name, :last_name); end
+'''
+corrected = '''
+Person = Data.define(:first_name, :last_name)
+'''
+ruby_version = ">= 3.2"
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 51
+message = "Don't extend an instance initialized by `Data.define`. Use a block to customize the class."
+
+[[tests]]
+name = "rubocop_cop_style_datainheritance_ruby_3_2_registers_an_offense_when_extending_instance_of_data_define_with_do_end"
+source = '''
+class Person < ::Data.define(:first_name, :last_name) do end
+end
+'''
+corrected = '''
+Person = ::Data.define(:first_name, :last_name) do
+end
+'''
+ruby_version = ">= 3.2"
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 60
+message = "Don't extend an instance initialized by `Data.define`. Use a block to customize the class."
+
+[[tests]]
+name = "rubocop_cop_style_datainheritance_ruby_3_2"
+source = '''
+# comment
+class Person < Data.define(:first_name, :last_name) do end
+end
+'''
+corrected = '''
+# comment
+Person = Data.define(:first_name, :last_name) do
+end
+'''
+ruby_version = ">= 3.2"
+
+[[tests.offenses]]
+line = 2
+column_start = 15
+column_end = 58
+message = "Don't extend an instance initialized by `Data.define`. Use a block to customize the class."
+
+[[tests]]
+name = "rubocop_cop_style_datainheritance_ruby_3_2_accepts_plain_class"
+source = '''
+class Person
+end
+'''
+ruby_version = ">= 3.2"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_datainheritance_ruby_3_2_accepts_extending_delegateclass"
+source = '''
+class Person < DelegateClass(Animal)
+end
+'''
+ruby_version = ">= 3.2"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_datainheritance_ruby_3_2_accepts_assignment_to_data_define"
+source = '''
+Person = Data.define(:first_name, :last_name)
+'''
+ruby_version = ">= 3.2"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_datainheritance_ruby_3_2_accepts_assignment_to_data_define"
+source = '''
+Person = ::Data.define(:first_name, :last_name)
+'''
+ruby_version = ">= 3.2"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_datainheritance_ruby_3_2_accepts_assignment_to_block_form_of_data_define"
+source = '''
+Person = Data.define(:first_name, :last_name) do
+  def age
+    42
+  end
+end
+'''
+ruby_version = ">= 3.2"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_datainheritance_ruby_3_1_accepts_extending_instance_of_data_define"
+source = '''
+class Person < Data.define(:first_name, :last_name)
+  def foo; end
+end
+'''
+ruby_version = ">= 3.1"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_datainheritance_ruby_3_1_accepts_extending_instance_of_data_define"
+source = '''
+class Person < ::Data.define(:first_name, :last_name)
+  def foo; end
+end
+'''
+ruby_version = ">= 3.1"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_datainheritance_ruby_3_1_accepts_extending_instance_of_data_define_with_do_end"
+source = '''
+class Person < Data.define(:first_name, :last_name) do end
+end
+'''
+ruby_version = ">= 3.1"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_datainheritance_ruby_3_1_accepts_extending_instance_of_data_define_without_do_end_and_class_body_is_empty"
+source = '''
+class Person < Data.define(:first_name, :last_name)
+end
+'''
+ruby_version = ">= 3.1"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_datainheritance_ruby_3_1_accepts_extending_instance_of_data_define_without_do_end_and_class_body_is_empty_and_single_line_definition"
+source = '''
+class Person < Data.define(:first_name, :last_name); end
+'''
+ruby_version = ">= 3.1"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_datainheritance_ruby_3_1_accepts_extending_instance_of_data_define_with_do_end"
+source = '''
+class Person < ::Data.define(:first_name, :last_name) do end
+end
+'''
+ruby_version = ">= 3.1"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_datainheritance_ruby_3_1"
+source = '''
+# comment
+class Person < Data.define(:first_name, :last_name) do end
+end
+'''
+ruby_version = ">= 3.1"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_datainheritance_ruby_3_1_accepts_plain_class"
+source = '''
+class Person
+end
+'''
+ruby_version = ">= 3.1"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_datainheritance_ruby_3_1_accepts_extending_delegateclass"
+source = '''
+class Person < DelegateClass(Animal)
+end
+'''
+ruby_version = ">= 3.1"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_datainheritance_ruby_3_1_accepts_assignment_to_data_define"
+source = '''
+Person = Data.define(:first_name, :last_name)
+'''
+ruby_version = ">= 3.1"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_datainheritance_ruby_3_1_accepts_assignment_to_data_define"
+source = '''
+Person = ::Data.define(:first_name, :last_name)
+'''
+ruby_version = ">= 3.1"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_datainheritance_ruby_3_1_accepts_assignment_to_block_form_of_data_define"
+source = '''
+Person = Data.define(:first_name, :last_name) do
+  def age
+    42
+  end
+end
+'''
+ruby_version = ">= 3.1"
+offenses = []

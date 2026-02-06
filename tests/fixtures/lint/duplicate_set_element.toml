@@ -1,0 +1,276 @@
+cop = "Lint/DuplicateSetElement"
+department = "lint"
+severity = "warning"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_lint_duplicatesetelement"
+source = '''
+#{class_name}[:foo, :bar, :foo]
+'''
+corrected = '''
+#{class_name}[:foo, :bar]
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 31
+message = "Remove the duplicate element in #{class_name}."
+
+[[tests]]
+name = "rubocop_cop_lint_duplicatesetelement"
+source = '''
+::#{class_name}[:foo, :bar, :foo]
+'''
+corrected = '''
+::#{class_name}[:foo, :bar]
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 33
+message = "Remove the duplicate element in #{class_name}."
+
+[[tests]]
+name = "rubocop_cop_lint_duplicatesetelement_registers_an_offense_when_using_multiple_duplicate_symbol_element"
+source = '''
+#{class_name}[:foo, :bar, :foo, :baz, :baz]
+'''
+corrected = '''
+#{class_name}[:foo, :bar, :baz]
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 43
+message = "Remove the duplicate element in #{class_name}."
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 43
+message = "Remove the duplicate element in #{class_name}."
+
+[[tests]]
+name = "rubocop_cop_lint_duplicatesetelement_registers_an_offense_when_using_duplicate_lvar_element"
+source = '''
+foo = do_foo
+bar = do_bar
+
+#{class_name}[foo, bar, foo]
+'''
+corrected = '''
+foo = do_foo
+bar = do_bar
+
+#{class_name}[foo, bar]
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 28
+message = "Remove the duplicate element in #{class_name}."
+
+[[tests]]
+name = "rubocop_cop_lint_duplicatesetelement_registers_an_offense_when_using_duplicate_ivar_element"
+source = '''
+#{class_name}[@foo, @bar, @foo]
+'''
+corrected = '''
+#{class_name}[@foo, @bar]
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 31
+message = "Remove the duplicate element in #{class_name}."
+
+[[tests]]
+name = "rubocop_cop_lint_duplicatesetelement_registers_an_offense_when_using_duplicate_constant_element"
+source = '''
+#{class_name}[Foo, Bar, Foo]
+'''
+corrected = '''
+#{class_name}[Foo, Bar]
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 28
+message = "Remove the duplicate element in #{class_name}."
+
+[[tests]]
+name = "rubocop_cop_lint_duplicatesetelement_does_not_register_an_offense_when_using_duplicate_method_call_element"
+source = '''
+#{class_name}[foo, bar, foo]
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_duplicatesetelement_does_not_register_an_offense_when_using_duplicate_safe_navigation_method_call_element"
+source = '''
+#{class_name}[obj&.foo, obj&.bar, obj&.foo]
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_duplicatesetelement_does_not_register_an_offense_when_using_duplicate_ternary_operator_element"
+source = '''
+#{class_name}[rand > 0.5 ? 1 : 2, rand > 0.5 ? 1 : 2]
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_duplicatesetelement"
+source = '''
+#{class_name}.new([:foo, :bar, :foo])
+'''
+corrected = '''
+#{class_name}.new([:foo, :bar])
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 37
+message = "Remove the duplicate element in #{class_name}."
+
+[[tests]]
+name = "rubocop_cop_lint_duplicatesetelement"
+source = '''
+#{class_name}.new(%i[foo bar foo])
+'''
+corrected = '''
+#{class_name}.new(%i[foo bar])
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 34
+message = "Remove the duplicate element in #{class_name}."
+
+[[tests]]
+name = "rubocop_cop_lint_duplicatesetelement"
+source = '''
+::#{class_name}.new([:foo, :bar, :foo])
+'''
+corrected = '''
+::#{class_name}.new([:foo, :bar])
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 39
+message = "Remove the duplicate element in #{class_name}."
+
+[[tests]]
+name = "rubocop_cop_lint_duplicatesetelement"
+source = '''
+#{class_name}[foo, bar]
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_duplicatesetelement"
+source = '''
+#{class_name}.new([:foo, :bar])
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_duplicatesetelement"
+source = '''
+#{class_name}[]
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_duplicatesetelement"
+source = '''
+#{class_name}[:foo]
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_duplicatesetelement_registers_an_offense_when_using_duplicate_symbol_element_in_to_set"
+source = '''
+[:foo, :bar, :foo].to_set
+'''
+corrected = '''
+[:foo, :bar].to_set
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 17
+message = "Remove the duplicate element in Set."
+
+[[tests]]
+name = "rubocop_cop_lint_duplicatesetelement_registers_an_offense_when_using_duplicate_symbol_element_in_to_set"
+source = '''
+[:foo, :bar, :foo]&.to_set
+'''
+corrected = '''
+[:foo, :bar]&.to_set
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 17
+message = "Remove the duplicate element in Set."
+
+[[tests]]
+name = "rubocop_cop_lint_duplicatesetelement_does_not_register_an_offense_when_using_duplicate_symbol_element_in_array"
+source = '''
+Array[:foo, :bar, :foo]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_duplicatesetelement_does_not_register_an_offense_when_using_duplicate_symbol_element_in_array_new"
+source = '''
+Array.new([:foo, :bar, :foo])
+'''
+offenses = []

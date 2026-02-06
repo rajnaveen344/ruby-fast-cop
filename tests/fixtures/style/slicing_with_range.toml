@@ -1,0 +1,356 @@
+cop = "Style/SlicingWithRange"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_slicingwithrange_ruby_2_5_reports_no_offense_for_array_slicing_end_with_1"
+source = '''
+ary[1..-1]
+'''
+ruby_version = ">= 2.5"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_slicingwithrange_ruby_2_6_reports_an_offense_for_slicing_with_0_1"
+source = '''
+ary[0..-1]
+'''
+corrected = '''
+ary
+'''
+ruby_version = ">= 2.6"
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 10
+message = "Remove the useless `[0..-1]`."
+
+[[tests]]
+name = "rubocop_cop_style_slicingwithrange_ruby_2_6_does_not_register_an_offense_for_slicing_with_0_1"
+source = '''
+ary[0...-1]
+'''
+ruby_version = ">= 2.6"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_slicingwithrange_ruby_2_6_reports_an_offense_for_slicing_with_0_nil"
+source = '''
+ary[0..nil]
+'''
+corrected = '''
+ary
+'''
+ruby_version = ">= 2.6"
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 11
+message = "Remove the useless `[0..nil]`."
+
+[[tests]]
+name = "rubocop_cop_style_slicingwithrange_ruby_2_6_reports_an_offense_for_slicing_with_0_nil"
+source = '''
+ary[0...nil]
+'''
+corrected = '''
+ary
+'''
+ruby_version = ">= 2.6"
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 12
+message = "Remove the useless `[0...nil]`."
+
+[[tests]]
+name = "rubocop_cop_style_slicingwithrange_ruby_2_6_reports_an_offense_for_slicing_to_1"
+source = '''
+ary[1..-1]
+'''
+corrected = '''
+ary[1..]
+'''
+ruby_version = ">= 2.6"
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 10
+message = "Prefer `[1..]` over `[1..-1]`."
+
+[[tests]]
+name = "rubocop_cop_style_slicingwithrange_ruby_2_6_reports_an_offense_for_slicing_to_nil"
+source = '''
+ary[1..nil]
+'''
+corrected = '''
+ary[1..]
+'''
+ruby_version = ">= 2.6"
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 11
+message = "Prefer `[1..]` over `[1..nil]`."
+
+[[tests]]
+name = "rubocop_cop_style_slicingwithrange_ruby_2_6_reports_an_offense_for_slicing_to_nil"
+source = '''
+ary[1...nil]
+'''
+corrected = '''
+ary[1...]
+'''
+ruby_version = ">= 2.6"
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 12
+message = "Prefer `[1...]` over `[1...nil]`."
+
+[[tests]]
+name = "rubocop_cop_style_slicingwithrange_ruby_2_6_reports_an_offense_for_slicing_from_expression_to_1"
+source = '''
+ary[fetch_start(true).first..-1]
+'''
+corrected = '''
+ary[fetch_start(true).first..]
+'''
+ruby_version = ">= 2.6"
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 32
+message = "Prefer `[fetch_start(true).first..]` over `[fetch_start(true).first..-1]`."
+
+[[tests]]
+name = "rubocop_cop_style_slicingwithrange_ruby_2_6_reports_no_offense_for_excluding_end"
+source = '''
+ary[1...-1]
+'''
+ruby_version = ">= 2.6"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_slicingwithrange_ruby_2_6_reports_no_offense_for_other_methods"
+source = '''
+ary.push(1..-1)
+'''
+ruby_version = ">= 2.6"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_slicingwithrange_ruby_2_6_reports_no_offense_for_array_with_range_inside"
+source = '''
+ranges = [1..-1]
+'''
+ruby_version = ">= 2.6"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_slicingwithrange_ruby_2_6_reports_no_offense_for_array_slicing_start_with_0"
+source = '''
+ary[0..42]
+'''
+ruby_version = ">= 2.6"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_slicingwithrange_ruby_2_6_when_calling_with_a_dot_reports_an_offense_and_removes_the_entire_method_call_for_0_1"
+source = '''
+ary.[](0..-1)
+'''
+corrected = '''
+ary
+'''
+ruby_version = ">= 2.6"
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 13
+message = "Remove the useless `.[](0..-1)`."
+
+[[tests]]
+name = "rubocop_cop_style_slicingwithrange_ruby_2_6_when_calling_with_a_dot_reports_an_offense_and_removes_the_entire_method_call_for_0_1_without_parens"
+source = '''
+ary.[] 0..-1
+'''
+corrected = '''
+ary
+'''
+ruby_version = ">= 2.6"
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 12
+message = "Remove the useless `.[] 0..-1`."
+
+[[tests]]
+name = "rubocop_cop_style_slicingwithrange_ruby_2_6_when_calling_with_a_dot_reports_an_offense_and_corrects_for_1_1"
+source = '''
+ary.[](1..-1)
+'''
+corrected = '''
+ary.[](1..)
+'''
+ruby_version = ">= 2.6"
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 13
+message = "Prefer `1..` over `1..-1`."
+
+[[tests]]
+name = "rubocop_cop_style_slicingwithrange_ruby_2_6_when_calling_with_a_dot_does_not_register_an_offense_for_1_1_without_parens"
+source = '''
+ary.[] 1..-1
+'''
+ruby_version = ">= 2.6"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_slicingwithrange_ruby_2_7_reports_an_offense_for_slicing_with_nil_42"
+source = '''
+ary[nil..42]
+'''
+corrected = '''
+ary[..42]
+'''
+ruby_version = ">= 2.7"
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 12
+message = "Prefer `[..42]` over `[nil..42]`."
+
+[[tests]]
+name = "rubocop_cop_style_slicingwithrange_ruby_2_7_does_not_register_an_offense_for_slicing_with_0_42"
+source = '''
+ary[0..42]
+'''
+ruby_version = ">= 2.7"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_slicingwithrange_ruby_2_7_reports_no_offense_for_startless"
+source = '''
+ary[..-1]
+'''
+ruby_version = ">= 2.7"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_slicingwithrange_ruby_2_7_when_calling_with_a_dot_reports_an_offense_and_corrects_for_nil_42"
+source = '''
+ary.[](nil..42)
+'''
+corrected = '''
+ary.[](..42)
+'''
+ruby_version = ">= 2.7"
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 15
+message = "Prefer `..42` over `nil..42`."
+
+[[tests]]
+name = "rubocop_cop_style_slicingwithrange_ruby_2_7_when_calling_with_a_dot_does_not_register_an_offense_for_nil_42_without_parens"
+source = '''
+ary.[] nil..42
+'''
+ruby_version = ">= 2.7"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_slicingwithrange_ruby_2_7_when_calling_with_a_safe_navigation_reports_an_offense_and_removes_the_entire_method_call_for_0_1"
+source = '''
+ary&.[](0..-1)
+'''
+corrected = '''
+ary
+'''
+ruby_version = ">= 2.7"
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 14
+message = "Remove the useless `&.[](0..-1)`."
+
+[[tests]]
+name = "rubocop_cop_style_slicingwithrange_ruby_2_7_when_calling_with_a_safe_navigation_reports_an_offense_and_removes_the_entire_method_call_for_0_1_without_parens"
+source = '''
+ary.[] 0..-1
+'''
+corrected = '''
+ary
+'''
+ruby_version = ">= 2.7"
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 12
+message = "Remove the useless `.[] 0..-1`."
+
+[[tests]]
+name = "rubocop_cop_style_slicingwithrange_ruby_2_7_when_calling_with_a_safe_navigation_reports_an_offense_and_corrects_for_1_1"
+source = '''
+ary.[](1..-1)
+'''
+corrected = '''
+ary.[](1..)
+'''
+ruby_version = ">= 2.7"
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 13
+message = "Prefer `1..` over `1..-1`."
+
+[[tests]]
+name = "rubocop_cop_style_slicingwithrange_ruby_2_7_when_calling_with_a_safe_navigation_does_not_register_an_offense_for_1_1_without_parens"
+source = '''
+ary.[] 1..-1
+'''
+ruby_version = ">= 2.7"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_slicingwithrange_ruby_2_7_when_calling_with_a_safe_navigation_reports_an_offense_and_corrects_for_nil_42"
+source = '''
+ary&.[](nil..42)
+'''
+corrected = '''
+ary&.[](..42)
+'''
+ruby_version = ">= 2.7"
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 16
+message = "Prefer `..42` over `nil..42`."
+
+[[tests]]
+name = "rubocop_cop_style_slicingwithrange_ruby_2_7_when_calling_with_a_safe_navigation_does_not_register_an_offense_for_nil_42_without_parens"
+source = '''
+ary&.[] nil..42
+'''
+ruby_version = ">= 2.7"
+offenses = []

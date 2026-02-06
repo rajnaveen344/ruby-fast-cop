@@ -1,0 +1,563 @@
+cop = "Style/RaiseArgs"
+department = "style"
+severity = "convention"
+implemented = true
+
+[[tests]]
+name = "rubocop_cop_style_raiseargs_when_enforced_style_is_compact_with_a_raise_with_2_args_reports_an_offense"
+source = '''
+raise RuntimeError, msg
+'''
+corrected = '''
+raise RuntimeError.new(msg)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 23
+message = "Provide an exception object as an argument to `raise`."
+
+[tests.config]
+EnforcedStyle = "compact"
+
+[[tests]]
+name = "rubocop_cop_style_raiseargs_when_enforced_style_is_compact_with_a_raise_with_2_args_and_exception_object_is_assigned_to_a_local_variable_reports_an_offense"
+source = '''
+raise error_class, msg
+'''
+corrected = '''
+raise error_class.new(msg)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 22
+message = "Provide an exception object as an argument to `raise`."
+
+[tests.config]
+EnforcedStyle = "compact"
+
+[[tests]]
+name = "rubocop_cop_style_raiseargs_when_enforced_style_is_compact_with_a_raise_with_exception_instantiation_and_message_arguments_reports_an_offense"
+source = '''
+raise FooError.new, message
+'''
+corrected = '''
+raise FooError.new(message)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 27
+message = "Provide an exception object as an argument to `raise`."
+
+[tests.config]
+EnforcedStyle = "compact"
+
+[[tests]]
+name = "rubocop_cop_style_raiseargs_when_enforced_style_is_compact_when_used_in_a_ternary_expression_registers_an_offense_and_autocorrects"
+source = '''
+foo ? raise(Ex, 'error') : bar
+'''
+corrected = '''
+foo ? raise(Ex.new('error')) : bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 24
+message = "Provide an exception object as an argument to `raise`."
+
+[tests.config]
+EnforcedStyle = "compact"
+
+[[tests]]
+name = "rubocop_cop_style_raiseargs_when_enforced_style_is_compact_when_used_in_a_logical_and_expression_registers_an_offense_and_autocorrects"
+source = '''
+bar && raise(Ex, 'error')
+'''
+corrected = '''
+bar && raise(Ex.new('error'))
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 25
+message = "Provide an exception object as an argument to `raise`."
+
+[tests.config]
+EnforcedStyle = "compact"
+
+[[tests]]
+name = "rubocop_cop_style_raiseargs_when_enforced_style_is_compact_when_used_in_a_logical_or_expression_registers_an_offense_and_autocorrects"
+source = '''
+bar || raise(Ex, 'error')
+'''
+corrected = '''
+bar || raise(Ex.new('error'))
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 25
+message = "Provide an exception object as an argument to `raise`."
+
+[tests.config]
+EnforcedStyle = "compact"
+
+[[tests]]
+name = "rubocop_cop_style_raiseargs_when_enforced_style_is_compact_with_correct_opposite_reports_an_offense"
+source = '''
+if a
+  raise RuntimeError, msg
+else
+  raise Ex.new(msg)
+end
+'''
+corrected = '''
+if a
+  raise RuntimeError.new(msg)
+else
+  raise Ex.new(msg)
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 25
+message = "Provide an exception object as an argument to `raise`."
+
+[tests.config]
+EnforcedStyle = "compact"
+
+[[tests]]
+name = "rubocop_cop_style_raiseargs_when_enforced_style_is_compact_with_correct_opposite_reports_multiple_offenses"
+source = '''
+if a
+  raise RuntimeError, msg
+elsif b
+  raise Ex.new(msg)
+else
+  raise ArgumentError, msg
+end
+'''
+corrected = '''
+if a
+  raise RuntimeError.new(msg)
+elsif b
+  raise Ex.new(msg)
+else
+  raise ArgumentError.new(msg)
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 25
+message = "Provide an exception object as an argument to `raise`."
+
+[[tests.offenses]]
+line = 6
+column_start = 2
+column_end = 26
+message = "Provide an exception object as an argument to `raise`."
+
+[tests.config]
+EnforcedStyle = "compact"
+
+[[tests]]
+name = "rubocop_cop_style_raiseargs_when_enforced_style_is_compact_with_a_raise_with_3_args_reports_an_offense"
+source = '''
+raise RuntimeError, msg, caller
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 31
+message = "Provide an exception object as an argument to `raise`."
+
+[tests.config]
+EnforcedStyle = "compact"
+
+[[tests]]
+name = "rubocop_cop_style_raiseargs_when_enforced_style_is_compact_accepts_a_raise_with_msg_argument"
+source = '''
+raise msg
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "compact"
+
+[[tests]]
+name = "rubocop_cop_style_raiseargs_when_enforced_style_is_compact_accepts_a_raise_with_an_exception_argument"
+source = '''
+raise Ex.new(msg)
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "compact"
+
+[[tests]]
+name = "rubocop_cop_style_raiseargs_when_enforced_style_is_compact_accepts_exception_constructor_with_keyword_arguments_and_message_argument"
+source = '''
+raise MyKwArgError.new(a: 1, b: 2), message
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "compact"
+
+[[tests]]
+name = "rubocop_cop_style_raiseargs_when_enforced_style_is_exploded_with_a_raise_with_exception_object_with_one_argument_reports_an_offense"
+source = '''
+raise Ex.new(msg)
+'''
+corrected = '''
+raise Ex, msg
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 17
+message = "Provide an exception class and message as arguments to `raise`."
+
+[tests.config]
+EnforcedStyle = "exploded"
+
+[[tests]]
+name = "rubocop_cop_style_raiseargs_when_enforced_style_is_exploded_with_a_raise_with_exception_object_with_no_arguments_reports_an_offense"
+source = '''
+raise Ex.new
+'''
+corrected = '''
+raise Ex
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 12
+message = "Provide an exception class and message as arguments to `raise`."
+
+[tests.config]
+EnforcedStyle = "exploded"
+
+[[tests]]
+name = "rubocop_cop_style_raiseargs_when_enforced_style_is_exploded_with_a_raise_with_exception_object_when_used_in_a_ternary_expression_registers_an_offense_and_autocorrects"
+source = '''
+foo ? raise(Ex.new('error')) : bar
+'''
+corrected = '''
+foo ? raise(Ex, 'error') : bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 28
+message = "Provide an exception class and message as arguments to `raise`."
+
+[tests.config]
+EnforcedStyle = "exploded"
+
+[[tests]]
+name = "rubocop_cop_style_raiseargs_when_enforced_style_is_exploded_with_a_raise_with_exception_object_when_used_in_a_logical_and_expression_registers_an_offense_and_autocorrects"
+source = '''
+bar && raise(Ex.new('error'))
+'''
+corrected = '''
+bar && raise(Ex, 'error')
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 29
+message = "Provide an exception class and message as arguments to `raise`."
+
+[tests.config]
+EnforcedStyle = "exploded"
+
+[[tests]]
+name = "rubocop_cop_style_raiseargs_when_enforced_style_is_exploded_with_a_raise_with_exception_object_when_used_in_a_logical_or_expression_registers_an_offense_and_autocorrects"
+source = '''
+bar || raise(Ex.new('error'))
+'''
+corrected = '''
+bar || raise(Ex, 'error')
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 29
+message = "Provide an exception class and message as arguments to `raise`."
+
+[tests.config]
+EnforcedStyle = "exploded"
+
+[[tests]]
+name = "rubocop_cop_style_raiseargs_when_enforced_style_is_exploded_with_opposite_correct_reports_an_offense_for_opposite_correct"
+source = '''
+if a
+  raise RuntimeError, msg
+else
+  raise Ex.new(msg)
+end
+'''
+corrected = '''
+if a
+  raise RuntimeError, msg
+else
+  raise Ex, msg
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 19
+message = "Provide an exception class and message as arguments to `raise`."
+
+[tests.config]
+EnforcedStyle = "exploded"
+
+[[tests]]
+name = "rubocop_cop_style_raiseargs_when_enforced_style_is_exploded_with_opposite_correct_reports_multiple_offenses"
+source = '''
+if a
+  raise RuntimeError, msg
+elsif b
+  raise Ex.new(msg)
+else
+  raise ArgumentError.new(msg)
+end
+'''
+corrected = '''
+if a
+  raise RuntimeError, msg
+elsif b
+  raise Ex, msg
+else
+  raise ArgumentError, msg
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 19
+message = "Provide an exception class and message as arguments to `raise`."
+
+[[tests.offenses]]
+line = 6
+column_start = 2
+column_end = 30
+message = "Provide an exception class and message as arguments to `raise`."
+
+[tests.config]
+EnforcedStyle = "exploded"
+
+[[tests]]
+name = "rubocop_cop_style_raiseargs_when_enforced_style_is_exploded_when_an_exception_object_is_assigned_to_a_local_variable_autocorrects_to_exploded_style"
+source = '''
+def do_something
+  klass = RuntimeError
+  raise klass.new('hi')
+end
+'''
+corrected = '''
+def do_something
+  klass = RuntimeError
+  raise klass, 'hi'
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 23
+message = "Provide an exception class and message as arguments to `raise`."
+
+[tests.config]
+EnforcedStyle = "exploded"
+
+[[tests]]
+name = "rubocop_cop_style_raiseargs_when_enforced_style_is_exploded_when_exception_type_is_in_allowedcompacttypes_accepts_exception_constructor_with_no_arguments"
+source = '''
+raise Ex1.new
+'''
+offenses = []
+
+[tests.config]
+AllowedCompactTypes = ["Ex1"]
+EnforcedStyle = "exploded"
+
+[[tests]]
+name = "rubocop_cop_style_raiseargs_when_enforced_style_is_exploded_when_exception_type_is_in_allowedcompacttypes_with_one_argument_accepts_exception_constructor"
+source = '''
+raise Ex1.new(msg)
+'''
+offenses = []
+
+[tests.config]
+AllowedCompactTypes = ["Ex1"]
+EnforcedStyle = "exploded"
+
+[[tests]]
+name = "rubocop_cop_style_raiseargs_when_enforced_style_is_exploded_when_exception_type_is_in_allowedcompacttypes_with_more_than_one_argument_accepts_exception_constructor"
+source = '''
+raise Ex1.new(arg1, arg2)
+'''
+offenses = []
+
+[tests.config]
+AllowedCompactTypes = ["Ex1"]
+EnforcedStyle = "exploded"
+
+[[tests]]
+name = "rubocop_cop_style_raiseargs_when_enforced_style_is_exploded_accepts_exception_constructor_with_more_than_1_argument"
+source = '''
+raise MyCustomError.new(a1, a2, a3)
+'''
+offenses = []
+
+[tests.config]
+AllowedCompactTypes = ["Ex1"]
+EnforcedStyle = "exploded"
+
+[[tests]]
+name = "rubocop_cop_style_raiseargs_when_enforced_style_is_exploded_accepts_exception_constructor_with_keyword_arguments"
+source = '''
+raise MyKwArgError.new(a: 1, b: 2)
+'''
+offenses = []
+
+[tests.config]
+AllowedCompactTypes = ["Ex1"]
+EnforcedStyle = "exploded"
+
+[[tests]]
+name = "rubocop_cop_style_raiseargs_when_enforced_style_is_exploded_accepts_a_raise_with_splatted_arguments"
+source = '''
+raise MyCustomError.new(*args)
+'''
+offenses = []
+
+[tests.config]
+AllowedCompactTypes = ["Ex1"]
+EnforcedStyle = "exploded"
+
+[[tests]]
+name = "rubocop_cop_style_raiseargs_when_enforced_style_is_exploded_when_ruby_3_2_accepts_a_raise_with_anonymous_splatted_arguments"
+source = '''
+def foo(*) raise MyCustomError.new(*) end
+'''
+ruby_version = ">= 3.2"
+offenses = []
+
+[tests.config]
+AllowedCompactTypes = ["Ex1"]
+EnforcedStyle = "exploded"
+
+[[tests]]
+name = "rubocop_cop_style_raiseargs_when_enforced_style_is_exploded_when_ruby_3_2_accepts_a_raise_with_anonymous_keyword_splatted_arguments"
+source = '''
+def foo(**) raise MyCustomError.new(**) end
+'''
+ruby_version = ">= 3.2"
+offenses = []
+
+[tests.config]
+AllowedCompactTypes = ["Ex1"]
+EnforcedStyle = "exploded"
+
+[[tests]]
+name = "rubocop_cop_style_raiseargs_when_enforced_style_is_exploded_when_ruby_27_accepts_a_raise_with_triple_dot_forwarding"
+source = '''
+def foo(...) raise MyCustomError.new(...) end
+'''
+ruby_version = ">= 2.7"
+offenses = []
+
+[tests.config]
+AllowedCompactTypes = ["Ex1"]
+EnforcedStyle = "exploded"
+
+[[tests]]
+name = "rubocop_cop_style_raiseargs_when_enforced_style_is_exploded_ignores_a_raise_with_an_exception_argument"
+source = '''
+raise Ex.new(entity), message
+'''
+offenses = []
+
+[tests.config]
+AllowedCompactTypes = ["Ex1"]
+EnforcedStyle = "exploded"
+
+[[tests]]
+name = "rubocop_cop_style_raiseargs_when_enforced_style_is_exploded_accepts_a_raise_with_3_args"
+source = '''
+raise RuntimeError, msg, caller
+'''
+offenses = []
+
+[tests.config]
+AllowedCompactTypes = ["Ex1"]
+EnforcedStyle = "exploded"
+
+[[tests]]
+name = "rubocop_cop_style_raiseargs_when_enforced_style_is_exploded_accepts_a_raise_with_2_args"
+source = '''
+raise RuntimeError, msg
+'''
+offenses = []
+
+[tests.config]
+AllowedCompactTypes = ["Ex1"]
+EnforcedStyle = "exploded"
+
+[[tests]]
+name = "rubocop_cop_style_raiseargs_when_enforced_style_is_exploded_accepts_a_raise_when_exception_object_is_assigned_to_a_local_variable"
+source = '''
+raise error_class, msg
+'''
+offenses = []
+
+[tests.config]
+AllowedCompactTypes = ["Ex1"]
+EnforcedStyle = "exploded"
+
+[[tests]]
+name = "rubocop_cop_style_raiseargs_when_enforced_style_is_exploded_accepts_a_raise_with_msg_argument"
+source = '''
+raise msg
+'''
+offenses = []
+
+[tests.config]
+AllowedCompactTypes = ["Ex1"]
+EnforcedStyle = "exploded"
+
+[[tests]]
+name = "rubocop_cop_style_raiseargs_when_enforced_style_is_exploded_accepts_a_raise_with_new_method_without_receiver"
+source = '''
+raise new
+'''
+offenses = []
+
+[tests.config]
+AllowedCompactTypes = ["Ex1"]
+EnforcedStyle = "exploded"

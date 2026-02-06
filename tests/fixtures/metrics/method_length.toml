@@ -1,0 +1,621 @@
+cop = "Metrics/MethodLength"
+department = "metrics"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_metrics_methodlength_when_method_is_an_instance_method_does_not_register_an_offense_when_there_are_exactly_max_lines"
+source = '''
+def m
+  a = 1
+  a = 2
+  a = 3
+  a = 4
+  a = 5
+end
+'''
+offenses = []
+
+[tests.config]
+CountComments = false
+Max = 5
+
+[[tests]]
+name = "rubocop_cop_metrics_methodlength_when_method_is_an_instance_method_registers_an_offense"
+source = '''
+def m
+  a = 1
+  a = 2
+  a = 3
+  a = 4
+  a = 5
+  a = 6
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 5
+message = "Method has too many lines. [6/5]"
+
+[tests.config]
+CountComments = false
+Max = 5
+
+[[tests]]
+name = "rubocop_cop_metrics_methodlength_when_method_is_defined_with_define_method_does_not_register_an_offense_when_there_are_exactly_max_lines"
+source = '''
+define_method(:m) do
+  a = 1
+  a = 2
+  a = 3
+  a = 4
+  a = 5
+end
+'''
+offenses = []
+
+[tests.config]
+CountComments = false
+Max = 5
+
+[[tests]]
+name = "rubocop_cop_metrics_methodlength_when_method_is_defined_with_define_method_registers_an_offense_when_there_are_more_than_max_lines"
+source = '''
+define_method(:m) do
+  a = 1
+  a = 2
+  a = 3
+  a = 4
+  a = 5
+  a = 6
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 20
+message = "Method has too many lines. [6/5]"
+
+[tests.config]
+CountComments = false
+Max = 5
+
+[[tests]]
+name = "rubocop_cop_metrics_methodlength_when_method_is_defined_with_define_method_registers_an_offense_for_an_over_long_dynamically_defined_method_with_a_dynamic_symbol_name"
+source = '''
+define_method(:"#{method_name}=") do
+  a = 1
+  a = 2
+  a = 3
+  a = 4
+  a = 5
+  a = 6
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 36
+message = "Method has too many lines. [6/5]"
+
+[tests.config]
+CountComments = false
+Max = 5
+
+[[tests]]
+name = "rubocop_cop_metrics_methodlength_when_method_is_defined_with_define_method_registers_an_offense_for_an_over_long_dynamically_defined_method_with_a_dynamic_string_name"
+source = '''
+define_method("#{method_name}=") do
+  a = 1
+  a = 2
+  a = 3
+  a = 4
+  a = 5
+  a = 6
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 35
+message = "Method has too many lines. [6/5]"
+
+[tests.config]
+CountComments = false
+Max = 5
+
+[[tests]]
+name = "rubocop_cop_metrics_methodlength_when_using_numbered_parameter_when_method_is_defined_with_define_method_registers_an_offense"
+source = '''
+define_method(:m) do
+  a = _1
+  a = _2
+  a = _3
+  a = _4
+  a = _5
+  a = _6
+end
+'''
+ruby_version = ">= 2.7"
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 20
+message = "Method has too many lines. [6/5]"
+
+[tests.config]
+CountComments = false
+Max = 5
+
+[[tests]]
+name = "rubocop_cop_metrics_methodlength_when_using_it_parameter_when_method_is_defined_with_define_method_registers_an_offense"
+source = '''
+define_method(:m) do
+  a = it
+  a = it
+  a = it
+  a = it
+  a = it
+  a = it
+end
+'''
+ruby_version = ">= 3.4"
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 20
+message = "Method has too many lines. [6/5]"
+
+[tests.config]
+CountComments = false
+Max = 5
+
+[[tests]]
+name = "rubocop_cop_metrics_methodlength_when_method_is_a_class_method_registers_an_offense"
+source = '''
+def self.m
+  a = 1
+  a = 2
+  a = 3
+  a = 4
+  a = 5
+  a = 6
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 10
+message = "Method has too many lines. [6/5]"
+
+[tests.config]
+CountComments = false
+Max = 5
+
+[[tests]]
+name = "rubocop_cop_metrics_methodlength_when_method_is_defined_on_a_singleton_class_registers_an_offense"
+source = '''
+class K
+  class << self
+    def m
+      a = 1
+      a = 2
+      a = 3
+      a = 4
+      a = 5
+      a = 6
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 4
+column_end = 9
+message = "Method has too many lines. [6/5]"
+
+[tests.config]
+CountComments = false
+Max = 5
+
+[[tests]]
+name = "rubocop_cop_metrics_methodlength_accepts_a_method_with_less_than_5_lines"
+source = '''
+def m
+  a = 1
+  a = 2
+  a = 3
+  a = 4
+end
+'''
+offenses = []
+
+[tests.config]
+CountComments = false
+Max = 5
+
+[[tests]]
+name = "rubocop_cop_metrics_methodlength_accepts_a_method_with_multiline_arguments_and_less_than_5_lines_of_body"
+source = '''
+def m(x,
+      y,
+      z)
+  a = 1
+  a = 2
+  a = 3
+  a = 4
+end
+'''
+offenses = []
+
+[tests.config]
+CountComments = false
+Max = 5
+
+[[tests]]
+name = "rubocop_cop_metrics_methodlength_does_not_count_blank_lines"
+source = '''
+def m()
+  a = 1
+  a = 2
+  a = 3
+  a = 4
+
+
+  a = 7
+end
+'''
+offenses = []
+
+[tests.config]
+CountComments = false
+Max = 5
+
+[[tests]]
+name = "rubocop_cop_metrics_methodlength_accepts_empty_methods"
+source = '''
+def m()
+end
+'''
+offenses = []
+
+[tests.config]
+CountComments = false
+Max = 5
+
+[[tests]]
+name = "rubocop_cop_metrics_methodlength_is_not_fooled_by_one_liner_methods_syntax_1"
+source = '''
+def one_line; 10 end
+def self.m()
+  a = 1
+  a = 2
+  a = 4
+  a = 5
+  a = 6
+end
+'''
+offenses = []
+
+[tests.config]
+CountComments = false
+Max = 5
+
+[[tests]]
+name = "rubocop_cop_metrics_methodlength_is_not_fooled_by_one_liner_methods_syntax_2"
+source = '''
+def one_line(test) 10 end
+def self.m()
+  a = 1
+  a = 2
+  a = 4
+  a = 5
+  a = 6
+end
+'''
+offenses = []
+
+[tests.config]
+CountComments = false
+Max = 5
+
+[[tests]]
+name = "rubocop_cop_metrics_methodlength_properly_counts_lines_when_method_ends_with_block"
+source = '''
+def m
+  something do
+    a = 2
+    a = 3
+    a = 4
+    a = 5
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 5
+message = "Method has too many lines. [6/5]"
+
+[tests.config]
+CountComments = false
+Max = 5
+
+[[tests]]
+name = "rubocop_cop_metrics_methodlength_does_not_count_commented_lines_by_default"
+source = '''
+def m()
+  a = 1
+  #a = 2
+  a = 3
+  #a = 4
+  a = 5
+  a = 6
+end
+'''
+offenses = []
+
+[tests.config]
+CountComments = false
+Max = 5
+
+[[tests]]
+name = "rubocop_cop_metrics_methodlength_does_not_crash_when_using_a_heredoc_in_a_block_without_block_arguments"
+source = '''
+def foo
+  do_something do
+    <<~HEREDOC
+      text
+    HEREDOC
+  end
+end
+'''
+offenses = []
+
+[tests.config]
+CountComments = false
+Max = 5
+
+[[tests]]
+name = "rubocop_cop_metrics_methodlength_when_countcomments_is_enabled_also_counts_commented_lines"
+source = '''
+def m
+  a = 1
+  #a = 2
+  a = 3
+  #a = 4
+  a = 5
+  a = 6
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 5
+message = "Method has too many lines. [6/5]"
+
+[tests.config]
+CountComments = false
+Max = 5
+
+[[tests]]
+name = "rubocop_cop_metrics_methodlength_when_methods_to_allow_are_defined_allowedmethods_is_enabled_still_rejects_other_methods_with_more_than_5_lines"
+source = '''
+def m
+  a = 1
+  a = 2
+  a = 3
+  a = 4
+  a = 5
+  a = 6
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 5
+message = "Method has too many lines. [6/5]"
+
+[tests.config]
+CountComments = false
+Max = 5
+
+[[tests]]
+name = "rubocop_cop_metrics_methodlength_when_methods_to_allow_are_defined_allowedmethods_is_enabled_accepts_the_foo_method_with_more_than_5_lines"
+source = '''
+def foo
+  a = 1
+  a = 2
+  a = 3
+  a = 4
+  a = 5
+  a = 6
+end
+'''
+offenses = []
+
+[tests.config]
+CountComments = false
+Max = 5
+
+[[tests]]
+name = "rubocop_cop_metrics_methodlength_when_methods_to_allow_are_defined_allowedmethods_is_enabled_accepts_dynamically_defined_matching_method_name_with_more_than_5_lines"
+source = '''
+define_method(:foo) do
+  a = 1
+  a = 2
+  a = 3
+  a = 4
+  a = 5
+  a = 6
+end
+'''
+offenses = []
+
+[tests.config]
+CountComments = false
+Max = 5
+
+[[tests]]
+name = "rubocop_cop_metrics_methodlength_when_methods_to_allow_are_defined_allowedmethods_is_enabled_accepts_dynamically_defined_matching_method_name_with_a_numblock"
+source = '''
+define_method(:foo) do
+  a = _1
+  a = _2
+  a = _3
+  a = _4
+  a = _5
+  a = _6
+end
+'''
+offenses = []
+
+[tests.config]
+CountComments = false
+Max = 5
+
+[[tests]]
+name = "rubocop_cop_metrics_methodlength_when_methods_to_allow_are_defined_allowedmethods_is_enabled_accepts_dynamically_defined_matching_method_name_with_an_itblock"
+source = '''
+define_method(:foo) do
+  a = it
+  a = it
+  a = it
+  a = it
+  a = it
+  a = it
+end
+'''
+ruby_version = ">= 3.4"
+offenses = []
+
+[tests.config]
+CountComments = false
+Max = 5
+
+[[tests]]
+name = "rubocop_cop_metrics_methodlength_when_methods_to_allow_are_defined_allowedpatterns_is_enabled_accepts_the_user_name_method"
+source = '''
+def user_name
+  a = 1
+  a = 2
+  a = 3
+  a = 4
+  a = 5
+  a = 6
+end
+'''
+offenses = []
+
+[tests.config]
+CountComments = false
+Max = 5
+
+[[tests]]
+name = "rubocop_cop_metrics_methodlength_when_methods_to_allow_are_defined_allowedpatterns_is_enabled_accepts_dynamically_defined_matching_method_name_with_more_than_5_lines"
+source = '''
+define_method(:user_name) do
+  a = 1
+  a = 2
+  a = 3
+  a = 4
+  a = 5
+  a = 6
+end
+'''
+offenses = []
+
+[tests.config]
+CountComments = false
+Max = 5
+
+[[tests]]
+name = "rubocop_cop_metrics_methodlength_when_methods_to_allow_are_defined_allowedpatterns_is_enabled_accepts_dynamically_defined_matching_method_name_with_a_numblock"
+source = '''
+define_method(:user_name) do
+  a = _1
+  a = _2
+  a = _3
+  a = _4
+  a = _5
+  a = _6
+end
+'''
+offenses = []
+
+[tests.config]
+CountComments = false
+Max = 5
+
+[[tests]]
+name = "rubocop_cop_metrics_methodlength_when_methods_to_allow_are_defined_allowedpatterns_is_enabled_accepts_dynamically_defined_matching_method_name_with_an_itblock"
+source = '''
+define_method(:user_name) do
+  a = it
+  a = it
+  a = it
+  a = it
+  a = it
+  a = it
+end
+'''
+ruby_version = ">= 3.4"
+offenses = []
+
+[tests.config]
+CountComments = false
+Max = 5
+
+[[tests]]
+name = "rubocop_cop_metrics_methodlength_when_methods_to_allow_are_defined_allowedpatterns_is_enabled_raises_offense_for_firstname"
+source = '''
+def firstname
+  a = 1
+  a = 2
+  a = 3
+  a = 4
+  a = 5
+  a = 6
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 13
+message = "Method has too many lines. [6/5]"
+
+[tests.config]
+CountComments = false
+Max = 5
+
+[[tests]]
+name = "rubocop_cop_metrics_methodlength_when_countasone_is_not_empty_folds_array_into_one_line"
+source = '''
+def m
+  a = 1
+  a = [
+    2,
+    3,
+    4,
+    5
+  ]
+end
+'''
+offenses = []
+
+[tests.config]
+CountComments = false
+Max = 5

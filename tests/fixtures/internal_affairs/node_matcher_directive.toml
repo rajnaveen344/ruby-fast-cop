@@ -1,0 +1,586 @@
+cop = "InternalAffairs/NodeMatcherDirective"
+department = "internal_affairs"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_nodematcherdirective_does_not_register_an_offense_if_the_node_matcher_already_has_a_directive"
+source = '''
+# @!method foo?(node)
+#{method} :foo?, '(str)'
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_nodematcherdirective_does_not_register_an_offense_if_the_directive_is_in_a_comment_block"
+source = '''
+# @!method foo?(node)
+# foo? matcher
+#{method} :foo?, '(str)'
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_nodematcherdirective_registers_an_offense_if_the_matcher_does_not_have_a_directive"
+source = '''
+#{method} :foo?, '(str)'
+'''
+corrected = '''
+# @!method foo?(node)
+#{method} :foo?, '(str)'
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 24
+message = "Precede `#{method}` with a `@!method` YARD directive."
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_nodematcherdirective_registers_an_offense_if_the_matcher_does_not_have_a_directive_and_a_method_call_is_used_for_a_pattern_argument"
+source = '''
+#{method} :foo?, format(PATTERN, type: 'const')
+'''
+corrected = '''
+# @!method foo?(node)
+#{method} :foo?, format(PATTERN, type: 'const')
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 47
+message = "Precede `#{method}` with a `@!method` YARD directive."
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_nodematcherdirective_registers_an_offense_if_the_matcher_does_not_have_a_directive_but_has_preceding_comments"
+source = '''
+# foo
+#{method} :foo?, '(str)'
+
+# foo bar baz
+# foo bar baz
+# foo bar baz
+#{method} :bar?, '(sym)'
+'''
+corrected = '''
+# foo
+# @!method foo?(node)
+#{method} :foo?, '(str)'
+
+# foo bar baz
+# foo bar baz
+# foo bar baz
+# @!method bar?(node)
+#{method} :bar?, '(sym)'
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 24
+message = "Precede `#{method}` with a `@!method` YARD directive."
+
+[[tests.offenses]]
+line = 7
+column_start = 0
+column_end = 24
+message = "Precede `#{method}` with a `@!method` YARD directive."
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_nodematcherdirective_registers_an_offense_if_the_directive_name_does_not_match_the_actual_name"
+source = '''
+# @!method bar?(node)
+#{method} :foo?, '(str)'
+'''
+corrected = '''
+# @!method foo?(node)
+#{method} :foo?, '(str)'
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 24
+message = "`@!method` YARD directive has invalid method name, use `foo?` instead of `bar?`."
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_nodematcherdirective_registers_an_offense_if_the_matcher_has_multiple_directives"
+source = '''
+# @!method foo?(node)
+# @!method foo?(node)
+#{method} :foo?, '(str)'
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 24
+message = "Multiple `@!method` YARD directives found for this matcher."
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_nodematcherdirective_autocorrects_with_the_right_arguments_if_the_pattern_includes_arguments"
+source = '''
+#{method} :foo?, '(str %1)'
+'''
+corrected = '''
+# @!method foo?(node, arg1)
+#{method} :foo?, '(str %1)'
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 27
+message = "Precede `#{method}` with a `@!method` YARD directive."
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_nodematcherdirective_autocorrects_with_the_right_arguments_if_the_pattern_references_a_non_contiguous_argument"
+source = '''
+#{method} :foo?, '(str %4)'
+'''
+corrected = '''
+# @!method foo?(node, arg1, arg2, arg3, arg4)
+#{method} :foo?, '(str %4)'
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 27
+message = "Precede `#{method}` with a `@!method` YARD directive."
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_nodematcherdirective_does_not_register_an_offense_if_called_with_a_dynamic_method_name"
+source = '''
+#{method} matcher_name, '(str)'
+#{method} "#{matcher_name}", '(str)'
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_nodematcherdirective_retains_indentation_properly_when_inserting"
+source = '''
+class MyCop
+  #{method} :foo?, '(str)'
+end
+'''
+corrected = '''
+class MyCop
+  # @!method foo?(node)
+  #{method} :foo?, '(str)'
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 26
+message = "Precede `#{method}` with a `@!method` YARD directive."
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_nodematcherdirective_retains_indentation_properly_when_correcting"
+source = '''
+class MyCop
+  # @!method bar?(node)
+  #{method} :foo?, '(str)'
+end
+'''
+corrected = '''
+class MyCop
+  # @!method foo?(node)
+  #{method} :foo?, '(str)'
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 26
+message = "`@!method` YARD directive has invalid method name, use `foo?` instead of `bar?`."
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_nodematcherdirective_inserts_a_blank_line_between_multiple_pattern_matchers"
+source = '''
+#{method} :foo?, '(str)'
+#{method} :bar?, '(str)'
+'''
+corrected = '''
+# @!method foo?(node)
+#{method} :foo?, '(str)'
+
+# @!method bar?(node)
+#{method} :bar?, '(str)'
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 24
+message = "Precede `#{method}` with a `@!method` YARD directive."
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 24
+message = "Precede `#{method}` with a `@!method` YARD directive."
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_nodematcherdirective_inserts_a_blank_line_between_multiple_multi_line_pattern_matchers"
+source = '''
+#{method} :foo?, <<~PATTERN
+  (str)
+PATTERN
+#{method} :bar?, <<~PATTERN
+  (str)
+PATTERN
+'''
+corrected = '''
+# @!method foo?(node)
+#{method} :foo?, <<~PATTERN
+  (str)
+PATTERN
+
+# @!method bar?(node)
+#{method} :bar?, <<~PATTERN
+  (str)
+PATTERN
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 27
+message = "Precede `#{method}` with a `@!method` YARD directive."
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 27
+message = "Precede `#{method}` with a `@!method` YARD directive."
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_nodematcherdirective_does_not_insert_a_blank_line_if_one_already_exists"
+source = '''
+#{method} :foo?, <<~PATTERN
+  (str)
+PATTERN
+
+#{method} :bar?, <<~PATTERN
+  (str)
+PATTERN
+'''
+corrected = '''
+# @!method foo?(node)
+#{method} :foo?, <<~PATTERN
+  (str)
+PATTERN
+
+# @!method bar?(node)
+#{method} :bar?, <<~PATTERN
+  (str)
+PATTERN
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 27
+message = "Precede `#{method}` with a `@!method` YARD directive."
+
+[[tests.offenses]]
+line = 5
+column_start = 0
+column_end = 27
+message = "Precede `#{method}` with a `@!method` YARD directive."
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_nodematcherdirective_removes_scope_class_yard_directive_if_it_is_not_a_class_method"
+source = '''
+# @!method foo?(node)
+# @!scope class
+#{method} :foo?, <<~PATTERN
+  (str)
+PATTERN
+'''
+corrected = '''
+# @!method foo?(node)
+#{method} :foo?, <<~PATTERN
+  (str)
+PATTERN
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 27
+message = "Do not use the `@!scope class` YARD directive if it is not a class method."
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_nodematcherdirective_removes_the_receiver_from_the_yard_directive_if_it_is_not_a_class_method"
+source = '''
+# @!method self.foo?(node)
+#{method} :foo?, <<~PATTERN
+  (str)
+PATTERN
+'''
+corrected = '''
+# @!method foo?(node)
+#{method} :foo?, <<~PATTERN
+  (str)
+PATTERN
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 27
+message = "`@!method` YARD directive has invalid method name, use `foo?` instead of `self.foo?`."
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_nodematcherdirective_removes_the_receiver_from_the_yard_directive_and_the_scope_directive_if_it_is_not_a_class_method"
+source = '''
+# @!method self.foo?(node)
+# @!scope class
+#{method} :foo?, <<~PATTERN
+  (str)
+PATTERN
+'''
+corrected = '''
+# @!method foo?(node)
+#{method} :foo?, <<~PATTERN
+  (str)
+PATTERN
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 27
+message = "Do not use the `@!scope class` YARD directive if it is not a class method."
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_nodematcherdirective_registers_an_offense_when_the_directive_has_the_wrong_name_without_self"
+source = '''
+# @!method self.bar?(node)
+#{method} :foo?, <<~PATTERN
+  (str)
+PATTERN
+'''
+corrected = '''
+# @!method foo?(node)
+#{method} :foo?, <<~PATTERN
+  (str)
+PATTERN
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 27
+message = "`@!method` YARD directive has invalid method name, use `foo?` instead of `self.bar?`."
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_nodematcherdirective_registers_no_offense_without_second_argument"
+source = '''
+#{method} :foo?
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_nodematcherdirective_when_using_class_methods_registers_an_offense_when_the_directive_is_missing"
+source = '''
+#{method} :"self.foo?", <<~PATTERN
+  (str)
+PATTERN
+
+#{method} "self.bar?", <<~PATTERN
+  (str)
+PATTERN
+'''
+corrected = '''
+# @!method foo?(node)
+# @!scope class
+#{method} :"self.foo?", <<~PATTERN
+  (str)
+PATTERN
+
+# @!method bar?(node)
+# @!scope class
+#{method} "self.bar?", <<~PATTERN
+  (str)
+PATTERN
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 34
+message = "Precede `#{method}` with a `@!method` YARD directive."
+
+[[tests.offenses]]
+line = 5
+column_start = 0
+column_end = 33
+message = "Precede `#{method}` with a `@!method` YARD directive."
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_nodematcherdirective_when_using_class_methods_registers_an_offense_when_the_directive_has_the_wrong_name"
+source = '''
+# @!method self.bar?(node)
+#{method} :"self.foo?", <<~PATTERN
+  (str)
+PATTERN
+'''
+corrected = '''
+# @!method foo?(node)
+# @!scope class
+#{method} :"self.foo?", <<~PATTERN
+  (str)
+PATTERN
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 34
+message = "Follow the `@!method` YARD directive with `@!scope class` if it is a class method."
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_nodematcherdirective_when_using_class_methods_registers_an_offense_when_the_method_has_the_wrong_name_without_self"
+source = '''
+# @!method bar?(node)
+#{method} :"self.foo?", <<~PATTERN
+  (str)
+PATTERN
+'''
+corrected = '''
+# @!method foo?(node)
+# @!scope class
+#{method} :"self.foo?", <<~PATTERN
+  (str)
+PATTERN
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 34
+message = "Follow the `@!method` YARD directive with `@!scope class` if it is a class method."
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_nodematcherdirective_when_using_class_methods_registers_an_offense_when_the_method_directive_contains_self_and_the_scope_directive_is_missing"
+source = '''
+# @!method self.foo?(node)
+#{method} 'self.foo?', <<~PATTERN
+  (str)
+PATTERN
+'''
+corrected = '''
+# @!method foo?(node)
+# @!scope class
+#{method} 'self.foo?', <<~PATTERN
+  (str)
+PATTERN
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 33
+message = "Follow the `@!method` YARD directive with `@!scope class` if it is a class method."
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_nodematcherdirective_when_using_class_methods_registers_no_offenses_when_it_is_correctly_specified"
+source = '''
+# @!method foo?(node)
+# @!scope class
+#{method} :"self.foo?", <<~PATTERN
+  (str)
+PATTERN
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_nodematcherdirective_when_using_class_methods_registers_no_offenses_when_the_receiver_is_not_self"
+source = '''
+#{method} :"x.foo?", <<~PATTERN
+  (str)
+PATTERN
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_nodematcherdirective_when_using_class_methods_gives_the_correct_message_for_self_prefix_on_method_when_scope_is_correctly_class"
+source = '''
+# @!method self.foo?(node)
+# @!scope class
+#{method} 'self.foo?', <<~PATTERN
+  (str)
+PATTERN
+'''
+corrected = '''
+# @!method foo?(node)
+# @!scope class
+#{method} 'self.foo?', <<~PATTERN
+  (str)
+PATTERN
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 33
+message = "`@!method` YARD directive has invalid method name, use `foo?` instead of `self.foo?`."

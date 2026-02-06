@@ -1,0 +1,321 @@
+cop = "Layout/MultilineMethodParameterLineBreaks"
+department = "layout"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_layout_multilinemethodparameterlinebreaks_when_one_parameter_on_same_line_does_not_add_any_offenses"
+source = '''
+def taz(abc)
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_multilinemethodparameterlinebreaks_when_there_are_no_parameters_does_not_add_any_offenses"
+source = '''
+def taz
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_multilinemethodparameterlinebreaks_when_two_parameters_are_on_next_line_does_not_add_any_offenses"
+source = '''
+def taz(
+  foo, bar
+)
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_multilinemethodparameterlinebreaks_when_many_parameter_are_on_multiple_lines_two_on_same_line_registers_an_offense_and_corrects"
+source = '''
+def taz(abc,
+foo, bar,
+baz
+)
+end
+'''
+corrected = '''
+def taz(abc,
+foo,#{trailing_whitespace}
+bar,
+baz
+)
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 5
+column_end = 8
+message = "Each parameter in a multi-line method definition must start on a separate line."
+
+[[tests]]
+name = "rubocop_cop_layout_multilinemethodparameterlinebreaks_when_many_parameters_are_on_multiple_lines_three_on_same_line_registers_an_offense_and_corrects"
+source = '''
+def taz(abc,
+foo, bar, barz,
+baz
+)
+end
+'''
+corrected = '''
+def taz(abc,
+foo,#{trailing_whitespace}
+bar,#{trailing_whitespace}
+barz,
+baz
+)
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 10
+column_end = 14
+message = "Each parameter in a multi-line method definition must start on a separate line."
+
+[[tests.offenses]]
+line = 2
+column_start = 5
+column_end = 8
+message = "Each parameter in a multi-line method definition must start on a separate line."
+
+[[tests]]
+name = "rubocop_cop_layout_multilinemethodparameterlinebreaks_when_many_parameters_including_hash_are_on_multiple_lines_three_on_same_line_registers_an_offense_and_corrects"
+source = '''
+def taz(abc,
+foo, bar, z: "barz",
+x:
+)
+end
+'''
+corrected = '''
+def taz(abc,
+foo,#{trailing_whitespace}
+bar,#{trailing_whitespace}
+z: "barz",
+x:
+)
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 10
+column_end = 19
+message = "Each parameter in a multi-line method definition must start on a separate line."
+
+[[tests.offenses]]
+line = 2
+column_start = 5
+column_end = 8
+message = "Each parameter in a multi-line method definition must start on a separate line."
+
+[[tests]]
+name = "rubocop_cop_layout_multilinemethodparameterlinebreaks_when_parameter_s_default_value_starts_on_same_line_but_ends_on_different_line_registers_an_offense_and_corrects"
+source = '''
+def taz(abc, foo = {
+  foo: "edf",
+})
+end
+'''
+corrected = '''
+def taz(abc,#{trailing_whitespace}
+foo = {
+  foo: "edf",
+})
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 20
+message = "Each parameter in a multi-line method definition must start on a separate line."
+
+[[tests]]
+name = "rubocop_cop_layout_multilinemethodparameterlinebreaks_when_second_parameter_starts_on_same_line_as_end_of_first_registers_an_offense_and_corrects"
+source = '''
+def taz(abc = {
+  foo: "edf",
+}, bar:)
+end
+'''
+corrected = '''
+def taz(abc = {
+  foo: "edf",
+},#{trailing_whitespace}
+bar:)
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 3
+column_start = 3
+column_end = 7
+message = "Each parameter in a multi-line method definition must start on a separate line."
+
+[[tests]]
+name = "rubocop_cop_layout_multilinemethodparameterlinebreaks_when_there_are_multiple_parameters_on_the_first_line_registers_an_offense_and_corrects_starting_from_the_2nd_argument"
+source = '''
+def do_something(foo, bar, baz,
+  quux)
+end
+'''
+corrected = '''
+def do_something(foo,#{trailing_whitespace}
+bar,#{trailing_whitespace}
+baz,
+  quux)
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 27
+column_end = 30
+message = "Each parameter in a multi-line method definition must start on a separate line."
+
+[[tests.offenses]]
+line = 1
+column_start = 22
+column_end = 25
+message = "Each parameter in a multi-line method definition must start on a separate line."
+
+[[tests]]
+name = "rubocop_cop_layout_multilinemethodparameterlinebreaks_ignore_last_element_ignores_last_parameter_that_value_is_a_multiline_hash"
+source = '''
+def foo(abc, foo, bar = {
+  a: 1,
+})
+end
+'''
+offenses = []
+
+[tests.config]
+AllowMultilineFinalElement = true
+
+[[tests]]
+name = "rubocop_cop_layout_multilinemethodparameterlinebreaks_ignore_last_element_registers_and_corrects_arguments_that_are_multiline_hashes_and_not_the_last_argument"
+source = '''
+def foo(abc, foo, bar = {
+  a: 1,
+}, buz)
+end
+'''
+corrected = '''
+def foo(abc,#{trailing_whitespace}
+foo,#{trailing_whitespace}
+bar = {
+  a: 1,
+},#{trailing_whitespace}
+buz)
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 18
+column_end = 25
+message = "Each parameter in a multi-line method definition must start on a separate line."
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 16
+message = "Each parameter in a multi-line method definition must start on a separate line."
+
+[tests.config]
+AllowMultilineFinalElement = true
+
+[[tests]]
+name = "rubocop_cop_layout_multilinemethodparameterlinebreaks_ignore_last_element_registers_and_corrects_last_argument_that_starts_on_a_new_line"
+source = '''
+def foo(abc, foo, ghi,
+jkl)
+end
+'''
+corrected = '''
+def foo(abc,#{trailing_whitespace}
+foo,#{trailing_whitespace}
+ghi,
+jkl)
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 18
+column_end = 21
+message = "Each parameter in a multi-line method definition must start on a separate line."
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 16
+message = "Each parameter in a multi-line method definition must start on a separate line."
+
+[tests.config]
+AllowMultilineFinalElement = true
+
+[[tests]]
+name = "rubocop_cop_layout_multilinemethodparameterlinebreaks_when_a_class_method_definition_is_used_when_all_parameters_are_on_the_same_line_does_not_add_any_offenses"
+source = '''
+def self.taz(
+  foo, bar
+)
+end
+'''
+offenses = []
+
+[tests.config]
+AllowMultilineFinalElement = true
+
+[[tests]]
+name = "rubocop_cop_layout_multilinemethodparameterlinebreaks_when_a_class_method_definition_is_used_when_not_all_parameters_are_on_separate_lines_registers_an_offense_and_corrects"
+source = '''
+def self.taz(abc,
+foo, bar,
+baz
+)
+end
+'''
+corrected = '''
+def self.taz(abc,
+foo,#{trailing_whitespace}
+bar,
+baz
+)
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 5
+column_end = 8
+message = "Each parameter in a multi-line method definition must start on a separate line."
+
+[tests.config]
+AllowMultilineFinalElement = true

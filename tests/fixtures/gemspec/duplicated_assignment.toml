@@ -1,0 +1,224 @@
+cop = "Gemspec/DuplicatedAssignment"
+department = "gemspec"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_gemspec_duplicatedassignment_registers_an_offense_when_using_name_twice"
+source = '''
+Gem::Specification.new do |spec|
+  spec.name = 'rubocop'
+  spec.name = 'rubocop2'
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 24
+message = "`name=` method calls already given on line 2 of the gemspec."
+
+[[tests]]
+name = "rubocop_cop_gemspec_duplicatedassignment_registers_an_offense_when_using_name_twice_and_using_1_as_a_specification_variable"
+source = '''
+Gem::Specification.new do
+  _1.name = 'rubocop'
+  _1.name = 'rubocop2'
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 22
+message = "`name=` method calls already given on line 2 of the gemspec."
+
+[[tests]]
+name = "rubocop_cop_gemspec_duplicatedassignment_registers_an_offense_when_using_name_twice_and_using_it_as_a_specification_variable"
+source = '''
+Gem::Specification.new do
+  it.name = 'rubocop'
+  it.name = 'rubocop2'
+end
+'''
+ruby_version = ">= 3.4"
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 22
+message = "`name=` method calls already given on line 2 of the gemspec."
+
+[[tests]]
+name = "rubocop_cop_gemspec_duplicatedassignment_registers_an_offense_when_using_version_twice"
+source = '''
+require 'rubocop/version'
+
+Gem::Specification.new do |spec|
+  spec.version = RuboCop::Version::STRING
+  spec.version = RuboCop::Version::STRING
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 41
+message = "`version=` method calls already given on line 4 of the gemspec."
+
+[[tests]]
+name = "rubocop_cop_gemspec_duplicatedassignment_registers_an_offense_when_using_name_twice_with_cbase"
+source = '''
+::Gem::Specification.new do |spec|
+  spec.name = 'rubocop'
+  spec.name = 'rubocop2'
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 24
+message = "`name=` method calls already given on line 2 of the gemspec."
+
+[[tests]]
+name = "rubocop_cop_gemspec_duplicatedassignment_registers_an_offense_when_using_required_ruby_version_twice"
+source = '''
+::Gem::Specification.new do |spec|
+  spec.required_ruby_version = '2.5'
+  spec.required_ruby_version = '2.6'
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 36
+message = "`required_ruby_version=` method calls already given on line 2 of the gemspec."
+
+[[tests]]
+name = "rubocop_cop_gemspec_duplicatedassignment_registers_an_offense_when_using_metadata_with_same_key_twice"
+source = '''
+::Gem::Specification.new do |spec|
+  spec.metadata['key'] = 1
+  spec.metadata[:key] = 2
+  spec.metadata['key'] = 2
+  spec.metadata['key'] = 3
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 26
+message = "`metadata['key']=` method calls already given on line 2 of the gemspec."
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 26
+message = "`metadata['key']=` method calls already given on line 2 of the gemspec."
+
+[[tests]]
+name = "rubocop_cop_gemspec_duplicatedassignment_does_not_register_an_offense_when_using_twice"
+source = '''
+Gem::Specification.new do |spec|
+  spec.requirements << 'libmagick, v6.0'
+  spec.requirements << 'A good graphics card'
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_gemspec_duplicatedassignment_does_not_register_an_offense_when_using_spec_add_dependency_twice"
+source = '''
+Gem::Specification.new do |spec|
+  spec.add_runtime_dependency('parallel', '~> 1.10')
+  spec.add_runtime_dependency('parser', '>= 2.3.3.1', '< 3.0')
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_gemspec_duplicatedassignment_does_not_register_an_offense_when_name_method_call_is_not_block_value"
+source = '''
+Gem::Specification.new do |spec|
+  foo = Foo.new
+  foo.name = :foo
+  foo.name = :bar
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_gemspec_duplicatedassignment_does_not_register_an_offense_when_using_with_different_keys"
+source = '''
+Gem::Specification.new do |spec|
+  spec.metadata['foo'] = 1
+  spec.metadata['bar'] = 2
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_gemspec_duplicatedassignment_does_not_register_an_offense_when_using_with_same_keys_and_different_receivers"
+source = '''
+Gem::Specification.new do |spec|
+  spec.misc['foo'] = 1
+  spec.metadata['foo'] = 2
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_gemspec_duplicatedassignment_does_not_register_an_offense_when_using_both_metadata_and_metadata"
+source = '''
+Gem::Specification.new do |spec|
+  spec.metadata = { 'foo' => 1 }
+  spec.metadata['foo'] = 1
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_gemspec_duplicatedassignment_does_not_register_an_offense_when_using_indexed_array_assignment"
+source = '''
+Gem::Specification.new do |spec|
+  spec.authors = []
+  spec.authors[0] = "author-1"
+  spec.authors[1] = "author-2"
+  spec.authors << "author-3"
+  spec.authors << "author-4"
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_gemspec_duplicatedassignment_does_not_register_an_offense_when_using_metadata_with_same_key_twice_which_are_not_literals"
+source = '''
+Gem::Specification.new do |spec|
+  spec.metadata[foo()] = 1
+  spec.metadata[foo()] = 2
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_gemspec_duplicatedassignment_with_non_standard_method_arity_does_not_register_an_offense_with_single_argument"
+source = '''
+Gem::Specification.new do |spec|
+  spec.metadata.[]=(1)
+  spec.metadata.[]=(2)
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_gemspec_duplicatedassignment_with_non_standard_method_arity_does_not_register_an_offense_with_more_than_two_arguments"
+source = '''
+Gem::Specification.new do |spec|
+  spec.metadata[1, 2] = 3
+  spec.metadata[1, 2] = 3
+end
+'''
+offenses = []

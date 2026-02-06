@@ -1,0 +1,253 @@
+cop = "Style/MapToSet"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_maptoset_registers_an_offense_and_corrects"
+source = '''
+foo.#{method} { |x| [x, x * 2] }.to_set
+'''
+corrected = '''
+foo.to_set { |x| [x, x * 2] }
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 39
+message = "Pass a block to `to_set` instead of calling `#{method}.to_set`."
+
+[[tests]]
+name = "rubocop_cop_style_maptoset_registers_an_offense_and_corrects"
+source = '''
+foo.#{method} { |x, y| [x.to_s, y.to_i] }.to_set
+'''
+corrected = '''
+foo.to_set { |x, y| [x.to_s, y.to_i] }
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 48
+message = "Pass a block to `to_set` instead of calling `#{method}.to_set`."
+
+[[tests]]
+name = "rubocop_cop_style_maptoset_when_using_numbered_parameters_registers_an_offense_and_corrects"
+source = '''
+foo.#{method} { [_1, _1 * 2] }.to_set
+'''
+corrected = '''
+foo.to_set { [_1, _1 * 2] }
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 37
+message = "Pass a block to `to_set` instead of calling `#{method}.to_set`."
+
+[[tests]]
+name = "rubocop_cop_style_maptoset_when_using_numbered_parameters_registers_an_offense_and_corrects"
+source = '''
+foo.#{method} { [_1.to_s, _2.to_i] }.to_set
+'''
+corrected = '''
+foo.to_set { [_1.to_s, _2.to_i] }
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 43
+message = "Pass a block to `to_set` instead of calling `#{method}.to_set`."
+
+[[tests]]
+name = "rubocop_cop_style_maptoset_registers_an_offense_and_corrects"
+source = '''
+foo.#{method}(&:do_something).to_set
+'''
+corrected = '''
+foo.to_set(&:do_something)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 36
+message = "Pass a block to `to_set` instead of calling `#{method}.to_set`."
+
+[[tests]]
+name = "rubocop_cop_style_maptoset_when_the_receiver_is_an_array_registers_an_offense_and_corrects"
+source = '''
+[1, 2, 3].#{method} { |x| [x, x * 2] }.to_set
+'''
+corrected = '''
+[1, 2, 3].to_set { |x| [x, x * 2] }
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 45
+message = "Pass a block to `to_set` instead of calling `#{method}.to_set`."
+
+[[tests]]
+name = "rubocop_cop_style_maptoset_when_the_receiver_is_a_hash_registers_an_offense_and_corrects"
+source = '''
+{ foo: :bar }.#{method} { |x, y| [x.to_s, y.to_s] }.to_set
+'''
+corrected = '''
+{ foo: :bar }.to_set { |x, y| [x.to_s, y.to_s] }
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 14
+column_end = 58
+message = "Pass a block to `to_set` instead of calling `#{method}.to_set`."
+
+[[tests]]
+name = "rubocop_cop_style_maptoset_when_chained_further_registers_an_offense_and_corrects"
+source = '''
+foo.#{method} { |x| x * 2 }.to_set.bar
+'''
+corrected = '''
+foo.to_set { |x| x * 2 }.bar
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 38
+message = "Pass a block to `to_set` instead of calling `#{method}.to_set`."
+
+[[tests]]
+name = "rubocop_cop_style_maptoset_does_not_register_an_offense"
+source = '''
+foo.#{method} { |x| x * 2 }
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_maptoset_does_not_register_an_offense_but_does_not_correct"
+source = '''
+foo.#{method} { |x| x * 2 }.to_set { |x| [x.to_s, x] }
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_maptoset_does_not_register_an_offense_but_does_not_correct"
+source = '''
+foo.#{method} { |x| x * 2 }.to_set { |x| [x.to_s, x] }
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_maptoset_does_not_register_an_offense_but_does_not_correct"
+source = '''
+foo.#{method} { |x| x * 2 }.to_set { |x| [x.to_s, x] }
+'''
+ruby_version = ">= 3.4"
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_maptoset_registers_an_offense_and_corrects_with_newline_removal"
+source = '''
+{foo: bar}
+  .#{method} { |k, v| [k.to_s, v.do_something] }
+  .to_set
+  .freeze
+'''
+corrected = '''
+{foo: bar}
+  .to_set { |k, v| [k.to_s, v.do_something] }
+  .freeze
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 3
+column_end = 48
+message = "Pass a block to `to_set` instead of calling `#{method}.to_set`."
+
+[[tests]]
+name = "rubocop_cop_style_maptoset_with_safe_navigation"
+source = '''
+foo&.#{method} { |x| [x, x * 2] }.to_set
+'''
+corrected = '''
+foo&.to_set { |x| [x, x * 2] }
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 40
+message = "Pass a block to `to_set` instead of calling `#{method}.to_set`."
+
+[[tests]]
+name = "rubocop_cop_style_maptoset_with_safe_navigation"
+source = '''
+foo.#{method} { |x| [x, x * 2] }&.to_set
+'''
+corrected = '''
+foo.to_set { |x| [x, x * 2] }
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 40
+message = "Pass a block to `to_set` instead of calling `#{method}.to_set`."
+
+[[tests]]
+name = "rubocop_cop_style_maptoset_with_safe_navigation"
+source = '''
+foo&.#{method} { |x| [x, x * 2] }&.to_set
+'''
+corrected = '''
+foo&.to_set { |x| [x, x * 2] }
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 41
+message = "Pass a block to `to_set` instead of calling `#{method}.to_set`."

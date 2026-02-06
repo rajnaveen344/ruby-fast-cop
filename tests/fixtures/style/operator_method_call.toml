@@ -1,0 +1,307 @@
+cop = "Style/OperatorMethodCall"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_operatormethodcall"
+source = '''
+foo.#{operator_method} bar
+'''
+corrected = '''
+foo #{operator_method} bar
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 4
+message = "Redundant dot detected."
+
+[[tests]]
+name = "rubocop_cop_style_operatormethodcall"
+source = '''
+foo.#{operator_method}bar
+'''
+corrected = '''
+foo #{operator_method} bar
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 4
+message = "Redundant dot detected."
+
+[[tests]]
+name = "rubocop_cop_style_operatormethodcall"
+source = '''
+foo #{operator_method} bar
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_operatormethodcall"
+source = '''
+foo.#{operator_method} 42
+'''
+corrected = '''
+foo #{operator_method} 42
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 4
+message = "Redundant dot detected."
+
+[[tests]]
+name = "rubocop_cop_style_operatormethodcall"
+source = '''
+foo bar.#{operator_method} baz
+'''
+corrected = '''
+foo bar #{operator_method} baz
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 8
+message = "Redundant dot detected."
+
+[[tests]]
+name = "rubocop_cop_style_operatormethodcall"
+source = '''
+foo.#{operator_method}(bar)
+'''
+corrected = '''
+foo #{operator_method}(bar)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 4
+message = "Redundant dot detected."
+
+[[tests]]
+name = "rubocop_cop_style_operatormethodcall"
+source = '''
+foo.bar.#{operator_method}(baz).quux(2)
+'''
+corrected = '''
+(foo.bar #{operator_method} baz).quux(2)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 8
+message = "Redundant dot detected."
+
+[[tests]]
+name = "rubocop_cop_style_operatormethodcall_does_not_register_an_offense_when_using_multiple_arguments"
+source = '''
+foo.#{operator_method}(bar, baz)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_operatormethodcall_registers_an_offense_when_using_foo"
+source = '''
+foo.==({})
+'''
+corrected = '''
+foo ==({})
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 4
+message = "Redundant dot detected."
+
+[[tests]]
+name = "rubocop_cop_style_operatormethodcall_registers_an_offense_when_using_foo_bar_to_s"
+source = '''
+foo.+ @bar.to_s
+'''
+corrected = '''
+foo + @bar.to_s
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 4
+message = "Redundant dot detected."
+
+[[tests]]
+name = "rubocop_cop_style_operatormethodcall_registers_an_offense_and_corrects_when_using_foo_bar"
+source = '''
+foo./(bar)
+'''
+corrected = '''
+foo / (bar)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 4
+message = "Redundant dot detected."
+
+[[tests]]
+name = "rubocop_cop_style_operatormethodcall_registers_an_offense_and_corrects_when_using_foo_bar"
+source = '''
+foo./ (bar)
+'''
+corrected = '''
+foo / (bar)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 4
+message = "Redundant dot detected."
+
+[[tests]]
+name = "rubocop_cop_style_operatormethodcall_does_not_register_an_offense_when_using_foo_bar_to_s"
+source = '''
+foo.+(@bar).to_s
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_operatormethodcall_does_not_register_an_offense_when_using_foo_bar"
+source = '''
+foo.+@ bar
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_operatormethodcall_does_not_register_an_offense_when_using_foo_bar"
+source = '''
+foo.-@ bar
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_operatormethodcall_does_not_register_an_offense_when_using_foo_bar"
+source = '''
+foo.!@ bar
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_operatormethodcall_does_not_register_an_offense_when_using_foo_bar"
+source = '''
+foo.~@ bar
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_operatormethodcall_does_not_register_an_offense_when_using_foo_bar"
+source = '''
+foo.` bar
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_operatormethodcall_does_not_register_an_offense_when_using_foo_bar"
+source = '''
+Foo.+(bar)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_operatormethodcall_does_not_register_an_offense_when_using_obj"
+source = '''
+obj.!
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_operatormethodcall_does_not_register_an_offense_when_using_forwarding_method_arguments"
+source = '''
+def foo(...)
+  bar.==(...)
+end
+'''
+ruby_version = ">= 2.7"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_operatormethodcall_does_not_register_an_offense_when_using_named_block_forwarding"
+source = '''
+def foo(&blk)
+  bar.==(&blk)
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_operatormethodcall_does_not_register_an_offense_when_using_anonymous_block_forwarding"
+source = '''
+def foo(&)
+  bar.==(&)
+end
+'''
+ruby_version = ">= 3.1"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_operatormethodcall_does_not_register_an_offense_when_using_named_rest_arguments_forwarding"
+source = '''
+def foo(*args)
+  bar.==(*args)
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_operatormethodcall_does_not_register_an_offense_when_using_anonymous_rest_arguments_forwarding"
+source = '''
+def foo(*)
+  bar.==(*)
+end
+'''
+ruby_version = ">= 3.2"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_operatormethodcall_does_not_register_an_offense_when_named_anonymous_keyword_rest_arguments_forwarding"
+source = '''
+def foo(**kwargs)
+  bar.==(**kwargs)
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_operatormethodcall_does_not_register_an_offense_when_using_anonymous_keyword_rest_arguments_forwarding"
+source = '''
+def foo(**)
+  bar.==(**)
+end
+'''
+ruby_version = ">= 3.2"
+offenses = []

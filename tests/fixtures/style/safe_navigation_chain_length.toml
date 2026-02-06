@@ -1,0 +1,125 @@
+cop = "Style/SafeNavigationChainLength"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_safenavigationchainlength_registers_an_offense_when_exceeding_safe_navigation_chain_length"
+source = '''
+x&.foo&.bar&.baz
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 16
+message = "Avoid safe navigation chains longer than 2 calls."
+
+[tests.config]
+Max = "$UNRESOLVED:max"
+
+[[tests]]
+name = "rubocop_cop_style_safenavigationchainlength_registers_an_offense_when_exceeding_safe_navigation_chain_length_on_method_call_receiver"
+source = '''
+x.foo&.bar&.baz&.zoo
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 20
+message = "Avoid safe navigation chains longer than 2 calls."
+
+[tests.config]
+Max = "$UNRESOLVED:max"
+
+[[tests]]
+name = "rubocop_cop_style_safenavigationchainlength_registers_an_offense_when_exceeding_safe_navigation_chain_length_in_the_middle_of_call_chain"
+source = '''
+x.foo&.bar&.baz&.zoo.nil?
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 20
+message = "Avoid safe navigation chains longer than 2 calls."
+
+[tests.config]
+Max = "$UNRESOLVED:max"
+
+[[tests]]
+name = "rubocop_cop_style_safenavigationchainlength_does_not_register_an_offense_when_not_exceeding_safe_navigation_chain_length"
+source = '''
+x&.foo&.bar
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+Max = "$UNRESOLVED:max"
+
+[[tests]]
+name = "rubocop_cop_style_safenavigationchainlength_does_not_register_an_offense_when_using_regular_methods_calls"
+source = '''
+x.foo.bar
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+Max = "$UNRESOLVED:max"
+
+[[tests]]
+name = "rubocop_cop_style_safenavigationchainlength_max_1_registers_an_offense_when_exceeding_safe_navigation_chain_length"
+source = '''
+x&.foo&.bar
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 11
+message = "Avoid safe navigation chains longer than 1 calls."
+
+[tests.config]
+Max = "$UNRESOLVED:max"
+
+[[tests]]
+name = "rubocop_cop_style_safenavigationchainlength_max_3_registers_an_offense_when_exceeding_safe_navigation_chain_length"
+source = '''
+x&.foo&.bar&.baz&.zoo
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 21
+message = "Avoid safe navigation chains longer than 3 calls."
+
+[tests.config]
+Max = "$UNRESOLVED:max"
+
+[[tests]]
+name = "rubocop_cop_style_safenavigationchainlength_max_3_does_not_register_an_offense_when_not_exceeding_safe_navigation_chain_length"
+source = '''
+x&.foo&.bar&.baz
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+Max = "$UNRESOLVED:max"

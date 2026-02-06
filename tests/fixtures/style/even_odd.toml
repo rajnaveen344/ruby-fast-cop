@@ -1,0 +1,264 @@
+cop = "Style/EvenOdd"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_evenodd_converts_x_2_0_to_even"
+source = '''
+x % 2 == 0
+'''
+corrected = '''
+x.even?
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 10
+message = "Replace with `Integer#even?`."
+
+[[tests]]
+name = "rubocop_cop_style_evenodd_converts_x_2_0_to_odd"
+source = '''
+x % 2 != 0
+'''
+corrected = '''
+x.odd?
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 10
+message = "Replace with `Integer#odd?`."
+
+[[tests]]
+name = "rubocop_cop_style_evenodd_converts_x_2_0_to_even"
+source = '''
+(x % 2) == 0
+'''
+corrected = '''
+x.even?
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 12
+message = "Replace with `Integer#even?`."
+
+[[tests]]
+name = "rubocop_cop_style_evenodd_converts_x_2_0_to_odd"
+source = '''
+(x % 2) != 0
+'''
+corrected = '''
+x.odd?
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 12
+message = "Replace with `Integer#odd?`."
+
+[[tests]]
+name = "rubocop_cop_style_evenodd_converts_x_2_1_to_odd"
+source = '''
+x % 2 == 1
+'''
+corrected = '''
+x.odd?
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 10
+message = "Replace with `Integer#odd?`."
+
+[[tests]]
+name = "rubocop_cop_style_evenodd_converts_x_2_1_to_even"
+source = '''
+x % 2 != 1
+'''
+corrected = '''
+x.even?
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 10
+message = "Replace with `Integer#even?`."
+
+[[tests]]
+name = "rubocop_cop_style_evenodd_converts_x_2_1_to_odd"
+source = '''
+(x % 2) == 1
+'''
+corrected = '''
+x.odd?
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 12
+message = "Replace with `Integer#odd?`."
+
+[[tests]]
+name = "rubocop_cop_style_evenodd_converts_y_2_1_to_even"
+source = '''
+(y % 2) != 1
+'''
+corrected = '''
+y.even?
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 12
+message = "Replace with `Integer#even?`."
+
+[[tests]]
+name = "rubocop_cop_style_evenodd_converts_x_y_2_1_to_even"
+source = '''
+(x.y % 2) != 1
+'''
+corrected = '''
+x.y.even?
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 14
+message = "Replace with `Integer#even?`."
+
+[[tests]]
+name = "rubocop_cop_style_evenodd_converts_x_y_2_1_to_even"
+source = '''
+(x(y) % 2) != 1
+'''
+corrected = '''
+x(y).even?
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 15
+message = "Replace with `Integer#even?`."
+
+[[tests]]
+name = "rubocop_cop_style_evenodd_accepts_x_2_2"
+source = '''
+x % 2 == 2
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_evenodd_accepts_x_3_0"
+source = '''
+x % 3 == 0
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_evenodd_accepts_x_3_0"
+source = '''
+x % 3 != 0
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_evenodd_converts_x_y_2_1_to_even"
+source = '''
+(x._(y) % 2) != 1
+'''
+corrected = '''
+x._(y).even?
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 17
+message = "Replace with `Integer#even?`."
+
+[[tests]]
+name = "rubocop_cop_style_evenodd_converts_x_y_2_1_to_even"
+source = '''
+(x._(y)) % 2 != 1
+'''
+corrected = '''
+(x._(y)).even?
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 17
+message = "Replace with `Integer#even?`."
+
+[[tests]]
+name = "rubocop_cop_style_evenodd_converts_x_y_2_1_to_even"
+source = '''
+x._(y) % 2 != 1
+'''
+corrected = '''
+x._(y).even?
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 15
+message = "Replace with `Integer#even?`."
+
+[[tests]]
+name = "rubocop_cop_style_evenodd_converts_1_2_1_to_even"
+source = '''
+1 % 2 != 1
+'''
+corrected = '''
+1.even?
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 10
+message = "Replace with `Integer#even?`."
+
+[[tests]]
+name = "rubocop_cop_style_evenodd_converts_complex_examples"
+source = '''
+if (y % 2) != 1
+  method == :== ? :even : :odd
+elsif x % 2 == 1
+  method == :== ? :odd : :even
+end
+'''
+corrected = '''
+if y.even?
+  method == :== ? :even : :odd
+elsif x.odd?
+  method == :== ? :odd : :even
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 15
+message = "Replace with `Integer#even?`."
+
+[[tests.offenses]]
+line = 3
+column_start = 6
+column_end = 16
+message = "Replace with `Integer#odd?`."

@@ -1,6 +1,6 @@
 //! Data-driven test runner for RuboCop parity tests.
 //!
-//! This module discovers YAML test fixtures and runs the corresponding cops
+//! This module discovers TOML test fixtures and runs the corresponding cops
 //! against the source code, comparing actual offenses with expected offenses.
 
 use glob::glob;
@@ -39,8 +39,11 @@ struct TestCase {
     #[serde(default)]
     corrected: Option<String>,
     /// Optional cop-specific configuration
+    #[serde(default = "default_toml_table")]
+    config: toml::Value,
+    /// Optional base indentation to restore (replaces ‹BASE›N‹/BASE› markers)
     #[serde(default)]
-    config: serde_yaml::Value,
+    base_indent: Option<usize>,
     /// Optional Ruby version requirement (e.g., ">= 3.1")
     #[serde(default)]
     ruby_version: Option<String>,
@@ -65,11 +68,15 @@ struct ExpectedOffense {
     message: String,
 }
 
-/// Find all YAML test fixture files
+fn default_toml_table() -> toml::Value {
+    toml::Value::Table(toml::map::Map::new())
+}
+
+/// Find all TOML test fixture files
 fn discover_test_files() -> Vec<PathBuf> {
     let pattern = concat!(
         env!("CARGO_MANIFEST_DIR"),
-        "/tests/fixtures/**/*.yaml"
+        "/tests/fixtures/**/*.toml"
     );
 
     let mut files: Vec<PathBuf> = glob(pattern)
@@ -77,29 +84,43 @@ fn discover_test_files() -> Vec<PathBuf> {
         .filter_map(|entry| entry.ok())
         .collect();
 
-    // Also check for .yml extension
-    let pattern_yml = concat!(
-        env!("CARGO_MANIFEST_DIR"),
-        "/tests/fixtures/**/*.yml"
-    );
-
-    let yml_files: Vec<PathBuf> = glob(pattern_yml)
-        .expect("Failed to read glob pattern")
-        .filter_map(|entry| entry.ok())
-        .collect();
-
-    files.extend(yml_files);
     files.sort();
     files
 }
 
-/// Load and parse a YAML test file
+/// Load and parse a TOML test file
 fn load_test_file(path: &PathBuf) -> Result<CopTestFile, String> {
     let content = std::fs::read_to_string(path)
         .map_err(|e| format!("Failed to read {}: {}", path.display(), e))?;
 
-    serde_yaml::from_str(&content)
+    toml::from_str(&content)
         .map_err(|e| format!("Failed to parse {}: {}", path.display(), e))
+}
+
+/// Convert a toml::Value to serde_yaml::Value for Config::from_cop_yaml()
+fn toml_to_yaml_value(value: &toml::Value) -> serde_yaml::Value {
+    match value {
+        toml::Value::String(s) => serde_yaml::Value::String(s.clone()),
+        toml::Value::Integer(i) => serde_yaml::Value::Number((*i).into()),
+        toml::Value::Float(f) => {
+            serde_yaml::Value::Number(serde_yaml::Number::from(*f))
+        }
+        toml::Value::Boolean(b) => serde_yaml::Value::Bool(*b),
+        toml::Value::Datetime(dt) => serde_yaml::Value::String(dt.to_string()),
+        toml::Value::Array(arr) => {
+            serde_yaml::Value::Sequence(arr.iter().map(toml_to_yaml_value).collect())
+        }
+        toml::Value::Table(table) => {
+            let mut mapping = serde_yaml::Mapping::new();
+            for (k, v) in table {
+                mapping.insert(
+                    serde_yaml::Value::String(k.clone()),
+                    toml_to_yaml_value(v),
+                );
+            }
+            serde_yaml::Value::Mapping(mapping)
+        }
+    }
 }
 
 /// Compare an actual offense with an expected offense
@@ -162,34 +183,16 @@ fn parse_ruby_version(version_str: &str) -> Option<f64> {
     version_num.parse::<f64>().ok()
 }
 
-/// Decode source from YAML format
-/// - Converts ‹TAB› back to actual tabs
-/// - Restores base indentation from ‹BASE›N‹/BASE› markers
-fn decode_source(source: &str) -> String {
+/// Decode source from TOML format
+/// - Converts ‹TAB› back to actual tabs (kept for edge cases)
+/// - Restores base indentation from base_indent field
+fn decode_source(source: &str, base_indent: Option<usize>) -> String {
     let source = source.replace("‹TAB›", "\t");
 
-    // Check for base indentation marker
-    // Note: ‹ and › are multi-byte UTF-8 characters (3 bytes each)
-    const BASE_PREFIX: &str = "‹BASE›";
-    const BASE_SUFFIX: &str = "‹/BASE›";
-
-    if source.starts_with(BASE_PREFIX) {
-        if let Some(end_marker) = source.find(BASE_SUFFIX) {
-            // Extract the indent number between ‹BASE› and ‹/BASE›
-            let prefix_len = BASE_PREFIX.len();
-            let base_indent: usize = source[prefix_len..end_marker].parse().unwrap_or(0);
-
-            // Find the start of content after ‹/BASE› and newline
-            let suffix_end = end_marker + BASE_SUFFIX.len();
-            let rest = if source[suffix_end..].starts_with('\n') {
-                &source[suffix_end + 1..]
-            } else {
-                &source[suffix_end..]
-            };
-
-            let indent_str = " ".repeat(base_indent);
-
-            return rest
+    if let Some(indent) = base_indent {
+        if indent > 0 {
+            let indent_str = " ".repeat(indent);
+            return source
                 .lines()
                 .map(|line| {
                     if line.trim().is_empty() {
@@ -213,11 +216,12 @@ fn run_test_case(
 ) -> Vec<String> {
     let mut errors = Vec::new();
 
-    // Build config from test case's config field
-    let config = Config::from_cop_yaml(cop_name, &test_case.config);
+    // Build config from test case's config field (convert TOML to YAML for the library API)
+    let yaml_config = toml_to_yaml_value(&test_case.config);
+    let config = Config::from_cop_yaml(cop_name, &yaml_config);
 
-    // Decode source (converts ‹TAB› markers back to actual tabs)
-    let source = decode_source(&test_case.source);
+    // Decode source
+    let source = decode_source(&test_case.source, test_case.base_indent);
 
     // Get Ruby version from test case, or use default
     let ruby_version = test_case
@@ -302,8 +306,7 @@ fn run_test_case(
 
 /// Check if a test case has $UNRESOLVED config values
 fn has_unresolved_config(test_case: &TestCase) -> bool {
-    // Convert config to string and check for $UNRESOLVED
-    let config_str = serde_yaml::to_string(&test_case.config).unwrap_or_default();
+    let config_str = toml::to_string(&test_case.config).unwrap_or_default();
     config_str.contains("$UNRESOLVED")
 }
 
@@ -410,12 +413,11 @@ fn rubocop_parity_tests() {
             }
             Err(e) => {
                 // Check if this file is likely unimplemented by looking for the marker
-                // This allows us to skip YAML parse errors for unimplemented cops
                 let content = std::fs::read_to_string(file_path).unwrap_or_default();
-                if content.contains("implemented: false") {
+                if content.contains("implemented = false") {
                     skipped_cops += 1;
                     println!(
-                        "  Skipping {} (unimplemented, YAML has parse issues)",
+                        "  Skipping {} (unimplemented, TOML has parse issues)",
                         file_path.display()
                     );
                 } else {

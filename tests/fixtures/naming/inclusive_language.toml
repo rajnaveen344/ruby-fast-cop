@@ -1,0 +1,614 @@
+cop = "Naming/InclusiveLanguage"
+department = "naming"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_naming_inclusivelanguage_flagged_term_matching_registers_an_offense_when_using_a_flagged_term"
+source = '''
+whitelist = %w(user1 user2)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 9
+message = "Consider replacing 'whitelist' with another term."
+
+[tests.config]
+FlaggedTerms = "{ 'whitelist' => {} }"
+
+[[tests]]
+name = "rubocop_cop_naming_inclusivelanguage_flagged_term_matching_registers_an_offense_when_using_a_flagged_term_with_mixed_case"
+source = '''
+class WhiteList
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 15
+message = "Consider replacing 'WhiteList' with another term."
+
+[tests.config]
+FlaggedTerms = "{ 'whitelist' => {} }"
+
+[[tests]]
+name = "rubocop_cop_naming_inclusivelanguage_flagged_term_matching_registers_an_offense_for_a_partial_word_match"
+source = '''
+class Nodewhitelist
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 19
+message = "Consider replacing 'whitelist' with another term."
+
+[tests.config]
+FlaggedTerms = "{ 'whitelist' => {} }"
+
+[[tests]]
+name = "rubocop_cop_naming_inclusivelanguage_flagged_term_matching_disable_default_flagged_term_ignores_flagged_terms_that_are_set_to_nil"
+source = '''
+# working on replacing whitelist and blacklist
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 37
+column_end = 46
+message = "Consider replacing 'blacklist' with another term."
+
+[tests.config]
+FlaggedTerms = "{ 'whitelist' => nil, 'blacklist' => {} }"
+
+[[tests]]
+name = "rubocop_cop_naming_inclusivelanguage_flagged_term_matching_multiple_offenses_on_a_line_registers_an_offense_for_each_word"
+source = '''
+master, slave = nodes
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 13
+message = "Consider replacing 'slave' with 'replica', 'secondary', or 'follower'."
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Consider replacing 'master' with 'main', 'primary', or 'leader'."
+
+[tests.config]
+FlaggedTerms = "{\n          'master' => { 'Suggestions' => %w[main primary leader] },\n          'slave' => { 'Suggestions' => %w[replica secondary follower] }\n        }"
+
+[[tests]]
+name = "rubocop_cop_naming_inclusivelanguage_flagged_term_matching_regex_registers_an_offense_for_a_flagged_term_matched_with_a_regexp"
+source = '''
+# white-list of IPs
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 12
+message = "Consider replacing 'white-list' with another term."
+
+[tests.config]
+FlaggedTerms = "{ 'whitelist' => { 'Regex' => /white[-_\\s]?list/ } }"
+
+[[tests]]
+name = "rubocop_cop_naming_inclusivelanguage_flagged_term_matching_wholeword_true_only_flags_when_the_term_is_a_whole_word"
+source = '''
+# infix allowed
+TeslaVehicle
+SLAVersion
+:teslavehicle
+
+# prefix allowed
+DatabaseSlave
+
+# suffix allowed
+Slave1
+
+# not allowed
+Slave
+:database_slave
+'database@slave'
+'''
+
+[[tests.offenses]]
+line = 13
+column_start = 0
+column_end = 5
+message = "Consider replacing 'Slave' with another term."
+
+[[tests.offenses]]
+line = 14
+column_start = 10
+column_end = 15
+message = "Consider replacing 'slave' with another term."
+
+[[tests.offenses]]
+line = 15
+column_start = 10
+column_end = 15
+message = "Consider replacing 'slave' with another term."
+
+[tests.config]
+CheckStrings = true
+FlaggedTerms = "{ 'slave' => { 'WholeWord' => true } }"
+
+[[tests]]
+name = "rubocop_cop_naming_inclusivelanguage_allowed_use_does_not_register_an_offense_for_an_allowed_use"
+source = '''
+# They had a Master's Degree
+'''
+offenses = []
+
+[tests.config]
+CheckStrings = true
+FlaggedTerms = "{\n        'master' => { 'AllowedRegex' => 'master\\'s degree' }\n      }"
+
+[[tests]]
+name = "rubocop_cop_naming_inclusivelanguage_allowed_use_offense_after_an_allowed_use_registers_an_offense_at_the_correct_location"
+source = '''
+barx, foo = method_call
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 9
+message = "Consider replacing 'foo' with another term."
+
+[tests.config]
+CheckStrings = true
+FlaggedTerms = "{\n          'foo' => {},\n          'bar' => { 'AllowedRegex' => 'barx' }\n        }"
+
+[[tests]]
+name = "rubocop_cop_naming_inclusivelanguage_suggestions_flagged_term_with_one_suggestion_includes_the_suggestion_in_the_offense_message"
+source = '''
+whitelist = %w(user1 user2)
+'''
+corrected = '''
+allowlist = %w(user1 user2)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 9
+message = "Consider replacing 'whitelist' with 'allowlist'."
+
+[tests.config]
+CheckStrings = true
+FlaggedTerms = "{\n          'whitelist' => { 'Suggestions' => 'allowlist' }\n        }"
+
+[[tests]]
+name = "rubocop_cop_naming_inclusivelanguage_suggestions_flagged_term_with_one_suggestion_in_array_includes_both_suggestions_in_the_offense_message"
+source = '''
+whitelist = %w(user1 user2)
+'''
+corrected = '''
+allowlist = %w(user1 user2)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 9
+message = "Consider replacing 'whitelist' with 'allowlist'."
+
+[tests.config]
+CheckStrings = true
+FlaggedTerms = "{\n          'whitelist' => { 'Suggestions' => %w[allowlist] }\n        }"
+
+[[tests]]
+name = "rubocop_cop_naming_inclusivelanguage_suggestions_flagged_term_with_two_suggestions_includes_both_suggestions_in_the_offense_message"
+source = '''
+whitelist = %w(user1 user2)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 9
+message = "Consider replacing 'whitelist' with 'allowlist' or 'permit'."
+
+[tests.config]
+CheckStrings = true
+FlaggedTerms = "{\n          'whitelist' => { 'Suggestions' => %w[allowlist permit] }\n        }"
+
+[[tests]]
+name = "rubocop_cop_naming_inclusivelanguage_suggestions_flagged_term_with_three_or_more_suggestions_includes_all_suggestions_in_the_message"
+source = '''
+default_branch = 'master'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 18
+column_end = 24
+message = "Consider replacing 'master' with 'main', 'primary', or 'leader'."
+
+[tests.config]
+CheckStrings = true
+FlaggedTerms = "{\n            'master' => { 'Suggestions' => %w[main primary leader] }\n          }"
+
+[[tests]]
+name = "rubocop_cop_naming_inclusivelanguage_identifiers_when_checkidentifiers_config_is_true_registers_an_offense"
+source = '''
+whitelist = %w(user1 user2)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 9
+message = "Consider replacing 'whitelist' with another term."
+
+[tests.config]
+CheckIdentifiers = "$UNRESOLVED:check_identifiers"
+CheckStrings = true
+FlaggedTerms = "{ 'whitelist' => {} }"
+
+[[tests]]
+name = "rubocop_cop_naming_inclusivelanguage_identifiers_when_checkidentifiers_config_is_false_does_not_register_offenses_for_identifiers"
+source = '''
+whitelist = %w(user1 user2)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+CheckIdentifiers = "$UNRESOLVED:check_identifiers"
+CheckStrings = true
+FlaggedTerms = "{ 'whitelist' => {} }"
+
+[[tests]]
+name = "rubocop_cop_naming_inclusivelanguage_variables_when_checkvariables_config_is_true_registers_offenses_for_instance_variables"
+source = '''
+@whitelist = %w(user1 user2)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 1
+column_end = 10
+message = "Consider replacing 'whitelist' with another term."
+
+[tests.config]
+CheckIdentifiers = "$UNRESOLVED:check_identifiers"
+CheckStrings = true
+CheckVariables = "$UNRESOLVED:check_variables"
+FlaggedTerms = "{ 'whitelist' => {} }"
+
+[[tests]]
+name = "rubocop_cop_naming_inclusivelanguage_variables_when_checkvariables_config_is_true_registers_offenses_for_class_variables"
+source = '''
+@@whitelist = %w(user1 user2)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 11
+message = "Consider replacing 'whitelist' with another term."
+
+[tests.config]
+CheckIdentifiers = "$UNRESOLVED:check_identifiers"
+CheckStrings = true
+CheckVariables = "$UNRESOLVED:check_variables"
+FlaggedTerms = "{ 'whitelist' => {} }"
+
+[[tests]]
+name = "rubocop_cop_naming_inclusivelanguage_variables_when_checkvariables_config_is_true_registers_offenses_for_global_variables"
+source = '''
+$whitelist = %w(user1 user2)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 1
+column_end = 10
+message = "Consider replacing 'whitelist' with another term."
+
+[tests.config]
+CheckIdentifiers = "$UNRESOLVED:check_identifiers"
+CheckStrings = true
+CheckVariables = "$UNRESOLVED:check_variables"
+FlaggedTerms = "{ 'whitelist' => {} }"
+
+[[tests]]
+name = "rubocop_cop_naming_inclusivelanguage_variables_when_checkvariables_config_is_false_does_not_register_offenses_for_variables"
+source = '''
+@whitelist = %w(user1 user2)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+CheckIdentifiers = "$UNRESOLVED:check_identifiers"
+CheckStrings = true
+CheckVariables = "$UNRESOLVED:check_variables"
+FlaggedTerms = "{ 'whitelist' => {} }"
+
+[[tests]]
+name = "rubocop_cop_naming_inclusivelanguage_constants_when_checkconstants_config_is_true_registers_offenses_for_constants"
+source = '''
+WHITELIST = %w(user1 user2)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 9
+message = "Consider replacing 'WHITELIST' with another term."
+
+[tests.config]
+CheckConstants = "$UNRESOLVED:check_constants"
+CheckIdentifiers = "$UNRESOLVED:check_identifiers"
+CheckStrings = true
+CheckVariables = "$UNRESOLVED:check_variables"
+FlaggedTerms = "{ 'whitelist' => {} }"
+
+[[tests]]
+name = "rubocop_cop_naming_inclusivelanguage_constants_when_checkconstants_config_is_false_does_not_register_offenses_for_constants"
+source = '''
+WHITELIST = %w(user1 user2)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+CheckConstants = "$UNRESOLVED:check_constants"
+CheckIdentifiers = "$UNRESOLVED:check_identifiers"
+CheckStrings = true
+CheckVariables = "$UNRESOLVED:check_variables"
+FlaggedTerms = "{ 'whitelist' => {} }"
+
+[[tests]]
+name = "rubocop_cop_naming_inclusivelanguage_strings_registers_an_offense_for_an_interpolated_string"
+source = '''
+puts "master node #{node}"
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 12
+message = "Consider replacing 'master' with another term."
+
+[tests.config]
+CheckConstants = "$UNRESOLVED:check_constants"
+CheckIdentifiers = "$UNRESOLVED:check_identifiers"
+CheckStrings = "$UNRESOLVED:check_strings"
+CheckVariables = "$UNRESOLVED:check_variables"
+FlaggedTerms = "{ 'master' => {}, 'slave' => {} }"
+
+[[tests]]
+name = "rubocop_cop_naming_inclusivelanguage_strings_registers_an_offense_for_a_multiline_string"
+source = '''
+node_types = "master
+  slave
+  primary
+  secondary"
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 14
+column_end = 20
+message = "Consider replacing 'master' with another term."
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 7
+message = "Consider replacing 'slave' with another term."
+
+[tests.config]
+CheckConstants = "$UNRESOLVED:check_constants"
+CheckIdentifiers = "$UNRESOLVED:check_identifiers"
+CheckStrings = "$UNRESOLVED:check_strings"
+CheckVariables = "$UNRESOLVED:check_variables"
+FlaggedTerms = "{ 'master' => {}, 'slave' => {} }"
+
+[[tests]]
+name = "rubocop_cop_naming_inclusivelanguage_strings_registers_an_offense_in_a_heredoc"
+source = '''
+node_text = <<~TEXT
+  master
+  primary
+  slave
+  secondary
+TEXT
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 8
+message = "Consider replacing 'master' with another term."
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 7
+message = "Consider replacing 'slave' with another term."
+
+[tests.config]
+CheckConstants = "$UNRESOLVED:check_constants"
+CheckIdentifiers = "$UNRESOLVED:check_identifiers"
+CheckStrings = "$UNRESOLVED:check_strings"
+CheckVariables = "$UNRESOLVED:check_variables"
+FlaggedTerms = "{ 'master' => {}, 'slave' => {} }"
+
+[[tests]]
+name = "rubocop_cop_naming_inclusivelanguage_strings_does_not_register_offenses_and_not_raise_argumenterror_for_invalid_byte_sequence_in_utf_8"
+source = '''
+%W("a\255\255")
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+CheckConstants = "$UNRESOLVED:check_constants"
+CheckIdentifiers = "$UNRESOLVED:check_identifiers"
+CheckStrings = "$UNRESOLVED:check_strings"
+CheckVariables = "$UNRESOLVED:check_variables"
+FlaggedTerms = "{ 'master' => {}, 'slave' => {} }"
+
+[[tests]]
+name = "rubocop_cop_naming_inclusivelanguage_strings_when_checkstrings_config_is_false_does_not_register_offenses_for_strings"
+source = '''
+puts "master node #{node}"
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+CheckConstants = "$UNRESOLVED:check_constants"
+CheckIdentifiers = "$UNRESOLVED:check_identifiers"
+CheckStrings = "$UNRESOLVED:check_strings"
+CheckVariables = "$UNRESOLVED:check_variables"
+FlaggedTerms = "{ 'master' => {}, 'slave' => {} }"
+
+[[tests]]
+name = "rubocop_cop_naming_inclusivelanguage_symbols_when_checksymbols_is_true_registers_an_offense"
+source = '''
+config[:master] = {}
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 14
+message = "Consider replacing 'master' with another term."
+
+[tests.config]
+CheckConstants = "$UNRESOLVED:check_constants"
+CheckIdentifiers = "$UNRESOLVED:check_identifiers"
+CheckStrings = "$UNRESOLVED:check_strings"
+CheckSymbols = "$UNRESOLVED:check_symbols"
+CheckVariables = "$UNRESOLVED:check_variables"
+FlaggedTerms = "{ 'master' => {} }"
+
+[[tests]]
+name = "rubocop_cop_naming_inclusivelanguage_symbols_when_checksymbols_is_false_does_not_register_an_offense"
+source = '''
+config[:master] = {}
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+CheckConstants = "$UNRESOLVED:check_constants"
+CheckIdentifiers = "$UNRESOLVED:check_identifiers"
+CheckStrings = "$UNRESOLVED:check_strings"
+CheckSymbols = "$UNRESOLVED:check_symbols"
+CheckVariables = "$UNRESOLVED:check_variables"
+FlaggedTerms = "{ 'master' => {} }"
+
+[[tests]]
+name = "rubocop_cop_naming_inclusivelanguage_comments_registers_an_offense_in_a_single_line_comment"
+source = '''
+# is it a foo?
+bar = baz # it's a foo!
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 13
+message = "Consider replacing 'foo' with another term."
+
+[[tests.offenses]]
+line = 2
+column_start = 19
+column_end = 22
+message = "Consider replacing 'foo' with another term."
+
+[tests.config]
+CheckComments = "$UNRESOLVED:check_comments"
+CheckConstants = "$UNRESOLVED:check_constants"
+CheckIdentifiers = "$UNRESOLVED:check_identifiers"
+CheckStrings = "$UNRESOLVED:check_strings"
+CheckSymbols = "$UNRESOLVED:check_symbols"
+CheckVariables = "$UNRESOLVED:check_variables"
+FlaggedTerms = "{ 'foo' => {} }"
+
+[[tests]]
+name = "rubocop_cop_naming_inclusivelanguage_comments_registers_an_offense_in_a_block_comment"
+source = '''
+=begin
+foo
+bar
+=end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 3
+message = "Consider replacing 'foo' with another term."
+
+[tests.config]
+CheckComments = "$UNRESOLVED:check_comments"
+CheckConstants = "$UNRESOLVED:check_constants"
+CheckIdentifiers = "$UNRESOLVED:check_identifiers"
+CheckStrings = "$UNRESOLVED:check_strings"
+CheckSymbols = "$UNRESOLVED:check_symbols"
+CheckVariables = "$UNRESOLVED:check_variables"
+FlaggedTerms = "{ 'foo' => {} }"
+
+[[tests]]
+name = "rubocop_cop_naming_inclusivelanguage_comments_when_checkcomments_is_false_does_not_register_an_offense"
+source = '''
+# is it a foo?
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+CheckComments = "$UNRESOLVED:check_comments"
+CheckConstants = "$UNRESOLVED:check_constants"
+CheckIdentifiers = "$UNRESOLVED:check_identifiers"
+CheckStrings = "$UNRESOLVED:check_strings"
+CheckSymbols = "$UNRESOLVED:check_symbols"
+CheckVariables = "$UNRESOLVED:check_variables"
+FlaggedTerms = "{ 'foo' => {} }"

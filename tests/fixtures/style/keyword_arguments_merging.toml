@@ -1,0 +1,123 @@
+cop = "Style/KeywordArgumentsMerging"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_keywordargumentsmerging_registers_an_offense_and_corrects_when_using_merge_with_keyword_arguments"
+source = '''
+foo(x, **options.merge(y: 1))
+'''
+corrected = '''
+foo(x, **options, y: 1)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 28
+message = "Provide additional arguments directly rather than using `merge`."
+
+[[tests]]
+name = "rubocop_cop_style_keywordargumentsmerging_registers_an_offense_and_corrects_when_using_merge_with_non_keyword_arguments"
+source = '''
+foo(x, **options.merge(other_options))
+'''
+corrected = '''
+foo(x, **options, **other_options)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 37
+message = "Provide additional arguments directly rather than using `merge`."
+
+[[tests]]
+name = "rubocop_cop_style_keywordargumentsmerging_registers_an_offense_and_corrects_when_using_merge_with_keyword_and_non_keyword_arguments"
+source = '''
+foo(x, **options.merge(y: 1, **other_options, z: 2))
+'''
+corrected = '''
+foo(x, **options, y: 1, **other_options, z: 2)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 51
+message = "Provide additional arguments directly rather than using `merge`."
+
+[[tests]]
+name = "rubocop_cop_style_keywordargumentsmerging_registers_an_offense_and_corrects_when_using_merge_with_hash_with_braces"
+source = '''
+foo(x, **options.merge({ y: 1 }))
+'''
+corrected = '''
+foo(x, **options,  y: 1 )
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 32
+message = "Provide additional arguments directly rather than using `merge`."
+
+[[tests]]
+name = "rubocop_cop_style_keywordargumentsmerging_registers_an_offense_and_corrects_when_using_merge_with_complex_argument"
+source = '''
+foo(x, **options.merge(other_options, y: 1, **yet_another_options))
+'''
+corrected = '''
+foo(x, **options, **other_options, y: 1, **yet_another_options)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 66
+message = "Provide additional arguments directly rather than using `merge`."
+
+[[tests]]
+name = "rubocop_cop_style_keywordargumentsmerging_registers_an_offense_and_corrects_when_using_merge_with_multiple_hash_arguments"
+source = '''
+foo(x, **options.merge(other_options, yet_another_options))
+'''
+corrected = '''
+foo(x, **options, **other_options, **yet_another_options)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 58
+message = "Provide additional arguments directly rather than using `merge`."
+
+[[tests]]
+name = "rubocop_cop_style_keywordargumentsmerging_registers_an_offense_and_corrects_when_using_a_chain_of_merge_s"
+source = '''
+foo(x, **options.merge(other_options).merge(more_options))
+'''
+corrected = '''
+foo(x, **options, **other_options, **more_options)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 57
+message = "Provide additional arguments directly rather than using `merge`."
+
+[[tests]]
+name = "rubocop_cop_style_keywordargumentsmerging_does_not_register_an_offense_when_not_using_merge"
+source = '''
+foo(x, **options)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_keywordargumentsmerging_does_not_register_an_offense_when_using_merge"
+source = '''
+foo(x, **options.merge!(other_options))
+'''
+offenses = []

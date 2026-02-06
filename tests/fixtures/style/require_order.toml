@@ -1,0 +1,351 @@
+cop = "Style/RequireOrder"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_requireorder_when_require_is_sorted_registers_no_offense"
+source = '''
+require 'a'
+require 'b'
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_requireorder_when_require_is_sorted_registers_no_offense_when_single_quoted_string_and_double_quoted_string_are_mixed"
+source = '''
+require 'a'
+require "b"
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_requireorder_when_only_one_require_registers_no_offense"
+source = '''
+require 'a'
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_requireorder_when_require_is_not_sorted_in_different_sections_registers_no_offense"
+source = '''
+require 'b'
+require 'd'
+
+require 'a'
+require 'c'
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_requireorder_when_require_is_not_sorted_registers_an_offense"
+source = '''
+require 'b'
+require 'a'
+'''
+corrected = '''
+require 'a'
+require 'b'
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 11
+message = "Sort `require` in alphabetical order."
+
+[[tests]]
+name = "rubocop_cop_style_requireorder_when_unsorted_require_has_some_inline_comments_registers_an_offense"
+source = '''
+require 'b' # comment
+require 'a'
+'''
+corrected = '''
+require 'a'
+require 'b' # comment
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 11
+message = "Sort `require` in alphabetical order."
+
+[[tests]]
+name = "rubocop_cop_style_requireorder_when_unsorted_require_has_some_full_line_comments_registers_an_offense"
+source = '''
+require 'b'
+# comment
+require 'a'
+'''
+corrected = '''
+# comment
+require 'a'
+require 'b'
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 11
+message = "Sort `require` in alphabetical order."
+
+[[tests]]
+name = "rubocop_cop_style_requireorder_when_require_relative_is_not_sorted_registers_an_offense"
+source = '''
+require_relative 'b'
+require_relative 'a'
+'''
+corrected = '''
+require_relative 'a'
+require_relative 'b'
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 20
+message = "Sort `require_relative` in alphabetical order."
+
+[[tests]]
+name = "rubocop_cop_style_requireorder_when_multiple_require_are_not_sorted_registers_an_offense"
+source = '''
+require 'd'
+require 'a'
+require 'b'
+require 'c'
+'''
+corrected = '''
+require 'a'
+require 'b'
+require 'c'
+require 'd'
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 11
+message = "Sort `require` in alphabetical order."
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 11
+message = "Sort `require` in alphabetical order."
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 11
+message = "Sort `require` in alphabetical order."
+
+[[tests]]
+name = "rubocop_cop_style_requireorder_when_both_require_and_require_relative_are_in_same_section_registers_no_offense"
+source = '''
+require 'b'
+require_relative 'a'
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_requireorder_when_require_relative_is_put_between_unsorted_require_registers_no_offense"
+source = '''
+require 'c'
+require_relative 'b'
+require 'a'
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_requireorder_when_require_is_a_method_argument_registers_no_offense"
+source = '''
+do_something(require)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_requireorder_when_bundler_require_is_put_between_unsorted_require_registers_no_offense"
+source = '''
+require 'e'
+Bundler.require(:default)
+require 'c'
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_requireorder_when_bundler_require_with_no_arguments_is_put_between_require_registers_no_offense"
+source = '''
+require 'c'
+Bundler.require
+require 'a'
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_requireorder_when_something_other_than_a_method_call_is_used_between_require_registers_no_offense"
+source = '''
+require 'a'
+begin
+end
+require 'b'
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_requireorder_when_if_is_used_between_require_registers_no_offense"
+source = '''
+require 'c'
+if foo
+  require 'a'
+end
+require 'b'
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_requireorder_when_unless_is_used_between_require_registers_no_offense"
+source = '''
+require 'c'
+unless foo
+  require 'a'
+end
+require 'b'
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_requireorder_when_conditional_with_multiple_require_is_used_between_require_registers_no_offense"
+source = '''
+require 'd'
+if foo
+  require 'a'
+  require 'b'
+end
+require 'c'
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_requireorder_when_conditional_with_multiple_unsorted_require_is_used_between_require_registers_an_offense"
+source = '''
+require 'd'
+if foo
+  require 'b'
+  require 'a'
+end
+require 'c'
+'''
+corrected = '''
+require 'd'
+if foo
+  require 'a'
+  require 'b'
+end
+require 'c'
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 13
+message = "Sort `require` in alphabetical order."
+
+[[tests]]
+name = "rubocop_cop_style_requireorder_when_nested_conditionals_is_used_between_require_registers_no_offense"
+source = '''
+require 'c'
+if foo
+  if bar
+    require 'a'
+  end
+end
+require 'b'
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_requireorder_when_modifier_conditional_if_is_used_between_require_registers_an_offense"
+source = '''
+require 'c'
+require 'a' if foo
+require 'b'
+'''
+corrected = '''
+require 'a' if foo
+require 'b'
+require 'c'
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 11
+message = "Sort `require` in alphabetical order."
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 11
+message = "Sort `require` in alphabetical order."
+
+[[tests]]
+name = "rubocop_cop_style_requireorder_when_modifier_conditional_unless_is_used_between_require_registers_an_offense"
+source = '''
+require 'c'
+require 'a' unless foo
+require 'b'
+'''
+corrected = '''
+require 'a' unless foo
+require 'b'
+require 'c'
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 11
+message = "Sort `require` in alphabetical order."
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 11
+message = "Sort `require` in alphabetical order."
+
+[[tests]]
+name = "rubocop_cop_style_requireorder_when_rescue_block_registers_an_offense_for_multiple_unsorted_require_s"
+source = '''
+begin
+  do_something
+rescue
+  require 'b'
+  require 'a'
+end
+'''
+corrected = '''
+begin
+  do_something
+rescue
+  require 'a'
+  require 'b'
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 13
+message = "Sort `require` in alphabetical order."
+
+[[tests]]
+name = "rubocop_cop_style_requireorder_when_rescue_block_registers_no_offense_for_single_require"
+source = '''
+begin
+  do_something
+rescue
+  require 'a'
+end
+'''
+offenses = []

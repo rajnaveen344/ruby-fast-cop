@@ -1,0 +1,439 @@
+cop = "Style/SendWithLiteralMethodName"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_symbol_literal_argument_registers_an_offense"
+source = '''
+obj.public_send(:foo)
+'''
+corrected = '''
+obj.foo
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 21
+message = "Use `foo` method call directly instead."
+
+[[tests]]
+name = "rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_symbol_literal_argument_with_safe_navigation_registers_an_offense"
+source = '''
+obj&.public_send(:foo)
+'''
+corrected = '''
+obj&.foo
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 22
+message = "Use `foo` method call directly instead."
+
+[[tests]]
+name = "rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_symbol_literal_argument_and_some_arguments_with_parentheses_registers_an_offense"
+source = '''
+obj.public_send(:foo, bar, 42)
+'''
+corrected = '''
+obj.foo(bar, 42)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 30
+message = "Use `foo` method call directly instead."
+
+[[tests]]
+name = "rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_symbol_literal_argument_and_some_arguments_with_parentheses_with_safe_navigation_registers_an_offense"
+source = '''
+obj&.public_send(:foo, bar, 42)
+'''
+corrected = '''
+obj&.foo(bar, 42)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 31
+message = "Use `foo` method call directly instead."
+
+[[tests]]
+name = "rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_symbol_literal_argument_and_some_arguments_without_parentheses_registers_an_offense"
+source = '''
+obj.public_send :foo, bar, 42
+'''
+corrected = '''
+obj.foo bar, 42
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 29
+message = "Use `foo` method call directly instead."
+
+[[tests]]
+name = "rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_symbol_literal_argument_and_some_arguments_without_parentheses_with_safe_navigation_registers_an_offense"
+source = '''
+obj&.public_send :foo, bar, 42
+'''
+corrected = '''
+obj&.foo bar, 42
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 30
+message = "Use `foo` method call directly instead."
+
+[[tests]]
+name = "rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_symbol_literal_argument_without_a_receiver_registers_an_offense"
+source = '''
+public_send(:foo)
+'''
+corrected = '''
+foo
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 17
+message = "Use `foo` method call directly instead."
+
+[[tests]]
+name = "rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_string_literal_argument_registers_an_offense"
+source = '''
+obj.public_send('foo')
+'''
+corrected = '''
+obj.foo
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 22
+message = "Use `foo` method call directly instead."
+
+[[tests]]
+name = "rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_string_literal_argument_with_safe_navigation_registers_an_offense"
+source = '''
+obj&.public_send('foo')
+'''
+corrected = '''
+obj&.foo
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 23
+message = "Use `foo` method call directly instead."
+
+[[tests]]
+name = "rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_method_name_with_underscore_registers_an_offense"
+source = '''
+obj.public_send("name_with_underscore")
+'''
+corrected = '''
+obj.name_with_underscore
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 39
+message = "Use `name_with_underscore` method call directly instead."
+
+[[tests]]
+name = "rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_method_name_with_underscore_with_safe_navigation_registers_an_offense"
+source = '''
+obj&.public_send("name_with_underscore")
+'''
+corrected = '''
+obj&.name_with_underscore
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 40
+message = "Use `name_with_underscore` method call directly instead."
+
+[[tests]]
+name = "rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_method_name_with_a_variable_argument_does_not_register_an_offense"
+source = '''
+obj.public_send(variable)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_method_name_with_a_variable_argument_with_safe_navigation_does_not_register_an_offense"
+source = '''
+obj&.public_send(variable)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_method_name_with_an_interpolated_string_argument_does_not_register_an_offense"
+source = '''
+obj.public_send("#{interpolated}string")
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_method_name_with_an_interpolated_string_argument_with_safe_navigation_does_not_register_an_offense"
+source = '''
+obj&.public_send("#{interpolated}string")
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_method_name_with_a_space_does_not_register_an_offense"
+source = '''
+obj.public_send("name with space")
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_method_name_with_a_space_with_safe_navigation_does_not_register_an_offense"
+source = '''
+obj&.public_send("name with space")
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_method_name_with_a_hyphen_does_not_register_an_offense"
+source = '''
+obj.public_send("name-with-hyphen")
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_method_name_with_a_hyphen_with_safe_navigation_does_not_register_an_offense"
+source = '''
+obj&.public_send("name-with-hyphen")
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_writer_method_name_does_not_register_an_offense"
+source = '''
+obj.public_send("name=")
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_writer_method_name_with_safe_navigation_does_not_register_an_offense"
+source = '''
+obj&.public_send("name=")
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_method_name_with_braces_does_not_register_an_offense"
+source = '''
+obj.public_send("{brackets}")
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_method_name_with_braces_with_safe_navigation_does_not_register_an_offense"
+source = '''
+obj&.public_send("{brackets}")
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_method_name_with_square_brackets_does_not_register_an_offense"
+source = '''
+obj.public_send("[square_brackets]")
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_method_name_with_square_brackets_with_safe_navigation_does_not_register_an_offense"
+source = '''
+obj&.public_send("[square_brackets]")
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_reserved_word_does_not_register_an_offense"
+source = '''
+obj.public_send(:#{reserved_word})
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_reserved_word_with_safe_navigation_does_not_register_an_offense"
+source = '''
+obj&.public_send(:#{reserved_word})
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_integer_literal_argument_does_not_register_an_offense"
+source = '''
+obj.public_send(42)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_with_a_integer_literal_argument_with_safe_navigation_does_not_register_an_offense"
+source = '''
+obj&.public_send(42)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_without_arguments_does_not_register_an_offense"
+source = '''
+obj.public_send
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_sendwithliteralmethodname_when_calling_public_send_without_arguments_with_safe_navigation_does_not_register_an_offense"
+source = '''
+obj&.public_send
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_sendwithliteralmethodname_when_calling_another_method_other_than_public_send_does_not_register_an_offense"
+source = '''
+obj.foo
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_sendwithliteralmethodname_when_calling_another_method_other_than_public_send_with_safe_navigation_does_not_register_an_offense"
+source = '''
+obj&.foo
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_sendwithliteralmethodname_when_allowsend_true_when_calling_send_with_a_symbol_literal_argument_does_not_register_an_offense"
+source = '''
+obj.send(:foo)
+'''
+offenses = []
+
+[tests.config]
+AllowSend = true
+
+[[tests]]
+name = "rubocop_cop_style_sendwithliteralmethodname_when_allowsend_true_when_calling_send_with_a_symbol_literal_argument_with_safe_navigation_does_not_register_an_offense"
+source = '''
+obj&.send(:foo)
+'''
+offenses = []
+
+[tests.config]
+AllowSend = true
+
+[[tests]]
+name = "rubocop_cop_style_sendwithliteralmethodname_when_allowsend_true_when_calling_send_with_a_symbol_literal_argument_does_not_register_an_offense"
+source = '''
+obj.__send__(:foo)
+'''
+offenses = []
+
+[tests.config]
+AllowSend = true
+
+[[tests]]
+name = "rubocop_cop_style_sendwithliteralmethodname_when_allowsend_true_when_calling_send_with_a_symbol_literal_argument_with_safe_navigation_does_not_register_an_offense"
+source = '''
+obj&.__send__(:foo)
+'''
+offenses = []
+
+[tests.config]
+AllowSend = true
+
+[[tests]]
+name = "rubocop_cop_style_sendwithliteralmethodname_when_allowsend_false_when_calling_send_with_a_symbol_literal_argument_registers_an_offense"
+source = '''
+obj.send(:foo)
+'''
+corrected = '''
+obj.foo
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 14
+message = "Use `foo` method call directly instead."
+
+[tests.config]
+AllowSend = false
+
+[[tests]]
+name = "rubocop_cop_style_sendwithliteralmethodname_when_allowsend_false_when_calling_send_with_a_symbol_literal_argument_with_safe_navigation_registers_an_offense"
+source = '''
+obj&.send(:foo)
+'''
+corrected = '''
+obj&.foo
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 15
+message = "Use `foo` method call directly instead."
+
+[tests.config]
+AllowSend = false
+
+[[tests]]
+name = "rubocop_cop_style_sendwithliteralmethodname_when_allowsend_false_when_calling_send_with_a_symbol_literal_argument_registers_an_offense"
+source = '''
+obj.__send__(:foo)
+'''
+corrected = '''
+obj.foo
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 18
+message = "Use `foo` method call directly instead."
+
+[tests.config]
+AllowSend = false
+
+[[tests]]
+name = "rubocop_cop_style_sendwithliteralmethodname_when_allowsend_false_when_calling_send_with_a_symbol_literal_argument_with_safe_navigation_registers_an_offense"
+source = '''
+obj&.__send__(:foo)
+'''
+corrected = '''
+obj&.foo
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 19
+message = "Use `foo` method call directly instead."
+
+[tests.config]
+AllowSend = false

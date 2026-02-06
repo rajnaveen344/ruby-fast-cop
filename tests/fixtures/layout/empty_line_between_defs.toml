@@ -1,0 +1,960 @@
+cop = "Layout/EmptyLineBetweenDefs"
+department = "layout"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinebetweendefs_finds_offenses_in_inner_classes"
+source = '''
+class K
+  def m
+  end
+'''
+
+[[tests.offenses]]
+line = 8
+column_start = 4
+column_end = 9
+message = "Expected 1 empty line between method definitions; found 0."
+
+[tests.config]
+AllowAdjacentOneLineDefs = false
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinebetweendefs_when_there_are_only_comments_between_defs_registers_an_offense"
+source = '''
+class J
+  def n
+  end # n-related
+  # checks something o-related
+  # and more
+  def o
+  end
+end
+'''
+corrected = '''
+class J
+  def n
+  end # n-related
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 2
+column_end = 7
+message = "Expected 1 empty line between method definitions; found 0."
+
+[tests.config]
+AllowAdjacentOneLineDefs = false
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinebetweendefs_conditional_method_definitions_accepts_defs_inside_a_conditional_without_blank_lines_in_between"
+source = '''
+if condition
+  def foo
+    true
+  end
+else
+  def foo
+    false
+  end
+end
+'''
+offenses = []
+
+[tests.config]
+AllowAdjacentOneLineDefs = false
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinebetweendefs_conditional_method_definitions_registers_an_offense_for_consecutive_defs_inside_a_conditional"
+source = '''
+if condition
+  def foo
+    true
+  end
+  def bar
+    true
+  end
+else
+  def foo
+    false
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 9
+message = "Expected 1 empty line between method definitions; found 0."
+
+[tests.config]
+AllowAdjacentOneLineDefs = false
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinebetweendefs_class_methods_adjacent_class_methods_registers_an_offense_for_missing_blank_line_between_methods"
+source = '''
+class Test
+  def self.foo
+    true
+  end
+  def self.bar
+    true
+  end
+end
+'''
+corrected = '''
+class Test
+  def self.foo
+    true
+  end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 14
+message = "Expected 1 empty line between method definitions; found 0."
+
+[tests.config]
+AllowAdjacentOneLineDefs = false
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinebetweendefs_class_methods_mixed_instance_and_class_methods_registers_an_offense_for_missing_blank_line_between_methods"
+source = '''
+class Test
+  def foo
+    true
+  end
+  def self.bar
+    true
+  end
+end
+'''
+corrected = '''
+class Test
+  def foo
+    true
+  end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 14
+message = "Expected 1 empty line between method definitions; found 0."
+
+[tests.config]
+AllowAdjacentOneLineDefs = false
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinebetweendefs_accepts_a_def_that_follows_a_line_with_code"
+source = '''
+x = 0
+def m
+end
+'''
+offenses = []
+
+[tests.config]
+AllowAdjacentOneLineDefs = false
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinebetweendefs_accepts_a_def_that_follows_code_and_a_comment"
+source = '''
+x = 0
+# 123
+def m
+end
+'''
+offenses = []
+
+[tests.config]
+AllowAdjacentOneLineDefs = false
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinebetweendefs_accepts_the_first_def_without_leading_empty_line_in_a_class"
+source = '''
+class K
+  def m
+  end
+end
+'''
+offenses = []
+
+[tests.config]
+AllowAdjacentOneLineDefs = false
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinebetweendefs_accepts_a_def_that_follows_an_empty_line_and_then_a_comment"
+source = '''
+class A
+  # calculates value
+  def m
+  end
+'''
+offenses = []
+
+[tests.config]
+AllowAdjacentOneLineDefs = false
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinebetweendefs_accepts_a_def_that_is_the_first_of_a_module"
+source = '''
+module Util
+  public
+  #
+  def html_escape(s)
+  end
+end
+'''
+offenses = []
+
+[tests.config]
+AllowAdjacentOneLineDefs = false
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinebetweendefs_accepts_a_nested_def"
+source = '''
+def mock_model(*attributes)
+  Class.new do
+    def initialize(attrs)
+    end
+  end
+end
+'''
+offenses = []
+
+[tests.config]
+AllowAdjacentOneLineDefs = false
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinebetweendefs_registers_an_offense_for_adjacent_one_liners_by_default"
+source = '''
+def a; end
+def b; end
+'''
+corrected = '''
+def a; end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 5
+message = "Expected 1 empty line between method definitions; found 0."
+
+[tests.config]
+AllowAdjacentOneLineDefs = false
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinebetweendefs_registers_an_offense_when_two_method_definitions_are_on_the_same_line_separated_by_a_semicolon"
+source = '''
+def a
+end;def b
+end
+'''
+corrected = '''
+def a
+end;
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 4
+column_end = 9
+message = "Expected 1 empty line between method definitions; found 0."
+
+[tests.config]
+AllowAdjacentOneLineDefs = false
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinebetweendefs_autocorrects_when_there_are_too_many_new_lines"
+source = '''
+def a; end
+'''
+corrected = '''
+def a; end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 0
+column_end = 5
+message = "Expected 1 empty line between method definitions; found 3."
+
+[tests.config]
+AllowAdjacentOneLineDefs = false
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinebetweendefs_treats_lines_with_whitespaces_as_blank"
+source = '''
+class J
+  def n
+  end
+'''
+offenses = []
+
+[tests.config]
+AllowAdjacentOneLineDefs = false
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinebetweendefs_doesn_t_allow_more_than_the_required_number_of_newlines"
+source = '''
+class A
+  def n
+  end
+'''
+corrected = '''
+class A
+  def n
+  end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 2
+column_end = 7
+message = "Expected 1 empty line between method definitions; found 2."
+
+[tests.config]
+AllowAdjacentOneLineDefs = false
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinebetweendefs_registers_an_offense_for_multiple_one_liners_on_the_same_line"
+source = '''
+def a; end; def b; end
+'''
+corrected = '''
+def a; end;#{trailing_whitespace}
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 12
+column_end = 17
+message = "Expected 1 empty line between method definitions; found 0."
+
+[tests.config]
+AllowAdjacentOneLineDefs = false
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinebetweendefs_when_allowadjacentonelinedefs_is_enabled_accepts_adjacent_one_liners"
+source = '''
+def a; end
+def b; end
+'''
+offenses = []
+
+[tests.config]
+AllowAdjacentOneLineDefs = true
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinebetweendefs_when_allowadjacentonelinedefs_is_enabled_registers_an_offense_for_adjacent_defs_if_some_are_multi_line"
+source = '''
+def a; end
+def b; end
+def c # Not a one-liner, so this is an offense.
+end
+def d; end # Also an offense since previous was multi-line:
+'''
+corrected = '''
+def a; end
+def b; end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 5
+message = "Expected 1 empty line between method definitions; found 0."
+
+[[tests.offenses]]
+line = 5
+column_start = 0
+column_end = 5
+message = "Expected 1 empty line between method definitions; found 0."
+
+[tests.config]
+AllowAdjacentOneLineDefs = true
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinebetweendefs_when_a_maximum_of_empty_lines_is_specified_finds_no_offense_for_no_empty_line"
+source = '''
+def n
+end
+def o
+end
+'''
+offenses = []
+
+[tests.config]
+AllowAdjacentOneLineDefs = true
+NumberOfEmptyLines = ["0", "1"]
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinebetweendefs_when_a_maximum_of_empty_lines_is_specified_finds_no_offense_for_one_empty_line"
+source = '''
+def n
+end
+'''
+offenses = []
+
+[tests.config]
+AllowAdjacentOneLineDefs = true
+NumberOfEmptyLines = ["0", "1"]
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinebetweendefs_when_a_maximum_of_empty_lines_is_specified_finds_an_offense_for_two_empty_lines"
+source = '''
+def n
+end
+'''
+corrected = '''
+def n
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 0
+column_end = 5
+message = "Expected 0..1 empty lines between method definitions; found 2."
+
+[tests.config]
+AllowAdjacentOneLineDefs = true
+NumberOfEmptyLines = ["0", "1"]
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinebetweendefs_when_multiple_lines_between_defs_are_allowed_treats_lines_with_whitespaces_as_blank"
+source = '''
+def n
+end
+'''
+corrected = '''
+def n
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 5
+message = "Expected 2 empty lines between method definitions; found 1."
+
+[tests.config]
+AllowAdjacentOneLineDefs = true
+NumberOfEmptyLines = 2
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinebetweendefs_when_multiple_lines_between_defs_are_allowed_registers_an_offense_and_corrects_when_there_are_too_many_new_lines"
+source = '''
+def n
+end
+'''
+corrected = '''
+def n
+end
+'''
+
+[[tests.offenses]]
+line = 7
+column_start = 0
+column_end = 5
+message = "Expected 2 empty lines between method definitions; found 4."
+
+[tests.config]
+AllowAdjacentOneLineDefs = true
+NumberOfEmptyLines = 2
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinebetweendefs_emptylinebetweenclassdefs_registers_an_offense_when_no_empty_lines_between_class_and_method_definitions"
+source = '''
+class Foo
+end
+class Baz
+end
+def example
+end
+'''
+corrected = '''
+class Foo
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 9
+message = "Expected 1 empty line between class definitions; found 0."
+
+[[tests.offenses]]
+line = 5
+column_start = 0
+column_end = 11
+message = "Expected 1 empty line between method definitions; found 0."
+
+[tests.config]
+AllowAdjacentOneLineDefs = true
+NumberOfEmptyLines = 2
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinebetweendefs_emptylinebetweenclassdefs_when_disabled_does_not_register_offense"
+source = '''
+class Foo
+end
+class Baz
+end
+def example
+end
+'''
+offenses = []
+
+[tests.config]
+AllowAdjacentOneLineDefs = true
+EmptyLineBetweenClassDefs = false
+NumberOfEmptyLines = 2
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinebetweendefs_emptylinebetweenclassdefs_with_allowadjacentonelinedefs_enabled_does_not_register_offense"
+source = '''
+class Foo; end
+class Baz; end
+'''
+offenses = []
+
+[tests.config]
+AllowAdjacentOneLineDefs = true
+EmptyLineBetweenClassDefs = false
+NumberOfEmptyLines = 2
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinebetweendefs_emptylinebetweenmoduledefs_registers_an_offense_when_no_empty_lines_between_module_and_method_definitions"
+source = '''
+module Foo
+end
+module Baz
+end
+def example
+end
+'''
+corrected = '''
+module Foo
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 10
+message = "Expected 1 empty line between module definitions; found 0."
+
+[[tests.offenses]]
+line = 5
+column_start = 0
+column_end = 11
+message = "Expected 1 empty line between method definitions; found 0."
+
+[tests.config]
+AllowAdjacentOneLineDefs = true
+EmptyLineBetweenClassDefs = false
+NumberOfEmptyLines = 2
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinebetweendefs_emptylinebetweenmoduledefs_when_disabled_does_not_register_offense"
+source = '''
+module Foo
+end
+module Baz
+end
+def example
+end
+'''
+offenses = []
+
+[tests.config]
+AllowAdjacentOneLineDefs = true
+EmptyLineBetweenClassDefs = false
+EmptyLineBetweenModuleDefs = false
+NumberOfEmptyLines = 2
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinebetweendefs_when_empty_lines_between_classes_and_modules_together_registers_an_offense_when_no_empty_lines_between_module_and_method_definitions"
+source = '''
+class Foo
+end
+module Baz
+end
+def example
+end
+'''
+corrected = '''
+class Foo
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 10
+message = "Expected 1 empty line between module definitions; found 0."
+
+[[tests.offenses]]
+line = 5
+column_start = 0
+column_end = 11
+message = "Expected 1 empty line between method definitions; found 0."
+
+[tests.config]
+AllowAdjacentOneLineDefs = true
+EmptyLineBetweenClassDefs = false
+EmptyLineBetweenModuleDefs = false
+NumberOfEmptyLines = 2
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinebetweendefs_endless_methods_between_endless_and_regular_methods_registers_an_offense_and_corrects"
+source = '''
+def foo() = x
+def bar
+  y
+end
+'''
+corrected = '''
+def foo() = x
+'''
+ruby_version = ">= 3.0"
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 7
+message = "Expected 1 empty line between method definitions; found 0."
+
+[tests.config]
+AllowAdjacentOneLineDefs = true
+EmptyLineBetweenClassDefs = false
+EmptyLineBetweenModuleDefs = false
+NumberOfEmptyLines = 2
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinebetweendefs_endless_methods_between_regular_and_endless_methods_registers_an_offense_and_corrects"
+source = '''
+def foo
+  x
+end
+def bar() = y
+'''
+corrected = '''
+def foo
+  x
+end
+'''
+ruby_version = ">= 3.0"
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 7
+message = "Expected 1 empty line between method definitions; found 0."
+
+[tests.config]
+AllowAdjacentOneLineDefs = true
+EmptyLineBetweenClassDefs = false
+EmptyLineBetweenModuleDefs = false
+NumberOfEmptyLines = 2
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinebetweendefs_endless_methods_between_endless_class_method_and_regular_methods_registers_an_offense_and_corrects"
+source = '''
+def self.foo = x
+def bar
+  y
+end
+'''
+corrected = '''
+def self.foo = x
+'''
+ruby_version = ">= 3.0"
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 7
+message = "Expected 1 empty line between method definitions; found 0."
+
+[tests.config]
+AllowAdjacentOneLineDefs = true
+EmptyLineBetweenClassDefs = false
+EmptyLineBetweenModuleDefs = false
+NumberOfEmptyLines = 2
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinebetweendefs_endless_methods_between_endless_class_method_and_regular_class_methods_registers_an_offense_and_corrects"
+source = '''
+def self.foo = x
+def self.bar
+  y
+end
+'''
+corrected = '''
+def self.foo = x
+'''
+ruby_version = ">= 3.0"
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 12
+message = "Expected 1 empty line between method definitions; found 0."
+
+[tests.config]
+AllowAdjacentOneLineDefs = true
+EmptyLineBetweenClassDefs = false
+EmptyLineBetweenModuleDefs = false
+NumberOfEmptyLines = 2
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinebetweendefs_endless_methods_with_allowadjacentonelinedefs_false_registers_an_offense_and_corrects"
+source = '''
+def foo() = x
+def bar() = y
+'''
+corrected = '''
+def foo() = x
+'''
+ruby_version = ">= 3.0"
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 7
+message = "Expected 1 empty line between method definitions; found 0."
+
+[tests.config]
+AllowAdjacentOneLineDefs = true
+EmptyLineBetweenClassDefs = false
+EmptyLineBetweenModuleDefs = false
+NumberOfEmptyLines = 2
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinebetweendefs_endless_methods_with_allowadjacentonelinedefs_true_does_not_register_an_offense"
+source = '''
+def foo() = x
+def bar() = y
+'''
+ruby_version = ">= 3.0"
+offenses = []
+
+[tests.config]
+AllowAdjacentOneLineDefs = true
+EmptyLineBetweenClassDefs = false
+EmptyLineBetweenModuleDefs = false
+NumberOfEmptyLines = 2
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinebetweendefs_deflikemacros_foo_registers_an_offense"
+source = '''
+foo 'first foo' do
+  #foo body
+end
+foo 'second foo' do
+  #foo body
+end
+'''
+corrected = '''
+foo 'first foo' do
+  #foo body
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 19
+message = "Expected 1 empty line between block definitions; found 0."
+
+[tests.config]
+AllowAdjacentOneLineDefs = "$UNRESOLVED:allow_adjacent_one_line_defs"
+DefLikeMacros = ["$UNRESOLVED:foo"]
+EmptyLineBetweenClassDefs = false
+EmptyLineBetweenModuleDefs = false
+NumberOfEmptyLines = 2
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinebetweendefs_deflikemacros_foo_registers_an_offense_if_next_to_method"
+source = '''
+def foo_first_foo
+  #foo body
+end
+foo 'second foo' do
+  #foo body
+end
+'''
+corrected = '''
+def foo_first_foo
+  #foo body
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 19
+message = "Expected 1 empty line between block definitions; found 0."
+
+[tests.config]
+AllowAdjacentOneLineDefs = "$UNRESOLVED:allow_adjacent_one_line_defs"
+DefLikeMacros = ["$UNRESOLVED:foo"]
+EmptyLineBetweenClassDefs = false
+EmptyLineBetweenModuleDefs = false
+NumberOfEmptyLines = 2
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinebetweendefs_deflikemacros_foo_registers_an_offense_if_next_to_numblock"
+source = '''
+foo 'first foo' do
+  #foo body
+end
+foo 'second foo' do
+  _1
+end
+'''
+corrected = '''
+foo 'first foo' do
+  #foo body
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 19
+message = "Expected 1 empty line between block definitions; found 0."
+
+[tests.config]
+AllowAdjacentOneLineDefs = "$UNRESOLVED:allow_adjacent_one_line_defs"
+DefLikeMacros = ["$UNRESOLVED:foo"]
+EmptyLineBetweenClassDefs = false
+EmptyLineBetweenModuleDefs = false
+NumberOfEmptyLines = 2
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinebetweendefs_deflikemacros_foo_registers_an_offense_if_next_to_itblock"
+source = '''
+foo 'first foo' do
+  #foo body
+end
+foo 'second foo' do
+  it
+end
+'''
+corrected = '''
+foo 'first foo' do
+  #foo body
+end
+'''
+ruby_version = ">= 3.4"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 19
+message = "Expected 1 empty line between block definitions; found 0."
+
+[tests.config]
+AllowAdjacentOneLineDefs = "$UNRESOLVED:allow_adjacent_one_line_defs"
+DefLikeMacros = ["$UNRESOLVED:foo"]
+EmptyLineBetweenClassDefs = false
+EmptyLineBetweenModuleDefs = false
+NumberOfEmptyLines = 2
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinebetweendefs_deflikemacros_foo_does_not_register_offense"
+source = '''
+foo 'first foo' do
+  #foo body
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowAdjacentOneLineDefs = "$UNRESOLVED:allow_adjacent_one_line_defs"
+DefLikeMacros = ["$UNRESOLVED:foo"]
+EmptyLineBetweenClassDefs = false
+EmptyLineBetweenModuleDefs = false
+NumberOfEmptyLines = 2
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinebetweendefs_deflikemacros_foo_does_not_register_offense_for_non_registered_macro_names"
+source = '''
+bar "bar" do
+  #bar body
+end
+foo 'first foo' do
+  #foo body
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowAdjacentOneLineDefs = "$UNRESOLVED:allow_adjacent_one_line_defs"
+DefLikeMacros = ["$UNRESOLVED:foo"]
+EmptyLineBetweenClassDefs = false
+EmptyLineBetweenModuleDefs = false
+NumberOfEmptyLines = 2
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinebetweendefs_deflikemacros_foo_does_not_register_an_offense_for_single_line_macros"
+source = '''
+foo :first_attribute
+foo :second_attribute
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowAdjacentOneLineDefs = "$UNRESOLVED:allow_adjacent_one_line_defs"
+DefLikeMacros = ["$UNRESOLVED:foo"]
+EmptyLineBetweenClassDefs = false
+EmptyLineBetweenModuleDefs = false
+NumberOfEmptyLines = 2
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinebetweendefs_deflikemacros_foo_and_allowadjacentonelinedefs_false_registers_an_offense_for_macros_that_take_no_block"
+source = '''
+foo :first_attribute
+foo :second_attribute
+'''
+corrected = '''
+foo :first_attribute
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 21
+message = "Expected 1 empty line between send definitions; found 0."
+
+[tests.config]
+AllowAdjacentOneLineDefs = "$UNRESOLVED:allow_adjacent_one_line_defs"
+DefLikeMacros = ["$UNRESOLVED:foo"]
+EmptyLineBetweenClassDefs = false
+EmptyLineBetweenModuleDefs = false
+NumberOfEmptyLines = 2

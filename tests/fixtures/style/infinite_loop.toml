@@ -1,0 +1,374 @@
+cop = "Style/InfiniteLoop"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_infiniteloop"
+source = '''
+while #{lit}
+  top
+end
+'''
+corrected = '''
+loop do
+  top
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 5
+message = "Use `Kernel#loop` for infinite loops."
+
+[[tests]]
+name = "rubocop_cop_style_infiniteloop"
+source = '''
+until #{lit}
+  top
+end
+'''
+corrected = '''
+loop do
+  top
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 5
+message = "Use `Kernel#loop` for infinite loops."
+
+[[tests]]
+name = "rubocop_cop_style_infiniteloop_accepts_kernel_loop"
+source = '''
+loop { break if something }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_infiniteloop_accepts_while_true_if_loop_would_change_semantics"
+source = '''
+def f1
+  a = nil # This `a` is local to `f1` and should not affect `f2`.
+  puts a
+end
+
+def f2
+  b = 17
+  while true
+    # `a` springs into existence here, while `b` already existed. Because
+    # of `a` we can't introduce a block.
+    a, b = 42, 42
+    break
+  end
+  puts a, b
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_infiniteloop_accepts_modifier_while_true_if_loop_would_change_semantics"
+source = '''
+a = next_value or break while true
+p a
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_infiniteloop_registers_an_offense_for_modifier_until_false_if_loop_would_not_change_semantics"
+source = '''
+a = nil
+a = next_value or break until false
+p a
+'''
+corrected = '''
+a = nil
+loop { a = next_value or break }
+p a
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 24
+column_end = 29
+message = "Use `Kernel#loop` for infinite loops."
+
+[[tests]]
+name = "rubocop_cop_style_infiniteloop"
+source = '''
+while true
+  a = 42
+  break
+end
+until false
+  # The variable `a` already exists here, having been introduced in the
+  # above `while` loop. We can therefore safely change it too `Kernel#loop`.
+  a = 43
+  break
+end
+puts a
+'''
+corrected = '''
+while true
+  a = 42
+  break
+end
+loop do
+  # The variable `a` already exists here, having been introduced in the
+  # above `while` loop. We can therefore safely change it too `Kernel#loop`.
+  a = 43
+  break
+end
+puts a
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 0
+column_end = 5
+message = "Use `Kernel#loop` for infinite loops."
+
+[[tests]]
+name = "rubocop_cop_style_infiniteloop"
+source = '''
+until false
+  a = 43
+  break
+end
+'''
+corrected = '''
+loop do
+  a = 43
+  break
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 5
+message = "Use `Kernel#loop` for infinite loops."
+
+[[tests]]
+name = "rubocop_cop_style_infiniteloop"
+source = '''
+a = 0
+while true
+  a = 42 # `a` is in scope outside of the `while`
+  break
+end
+until false
+  a = 43 # `a` is in scope outside of the `until`
+  break
+end
+puts a
+'''
+corrected = '''
+a = 0
+loop do
+  a = 42 # `a` is in scope outside of the `while`
+  break
+end
+loop do
+  a = 43 # `a` is in scope outside of the `until`
+  break
+end
+puts a
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 5
+message = "Use `Kernel#loop` for infinite loops."
+
+[[tests.offenses]]
+line = 6
+column_start = 0
+column_end = 5
+message = "Use `Kernel#loop` for infinite loops."
+
+[[tests]]
+name = "rubocop_cop_style_infiniteloop"
+source = '''
+while true
+  @a = 42
+  break
+end
+puts @a
+'''
+corrected = '''
+loop do
+  @a = 42
+  break
+end
+puts @a
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 5
+message = "Use `Kernel#loop` for infinite loops."
+
+[[tests]]
+name = "rubocop_cop_style_infiniteloop"
+source = '''
+something += 1 %{keyword} %{lit} # comment
+'''
+corrected = '''
+loop { something += 1 } # comment
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 42
+message = "Use `Kernel#loop` for infinite loops."
+
+[[tests]]
+name = "rubocop_cop_style_infiniteloop_with_non_default_indentation_width"
+source = '''
+# comment
+something 1, # comment 1
+    # comment 2
+    2 %{keyword} %{lit}
+'''
+corrected = '''
+# comment
+loop do
+    something 1, # comment 1
+        # comment 2
+        2
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 6
+column_end = 23
+message = "Use `Kernel#loop` for infinite loops."
+
+[[tests]]
+name = "rubocop_cop_style_infiniteloop"
+source = '''
+begin # comment 1
+  something += 1 # comment 2
+end %{keyword} %{lit} # comment 3
+'''
+corrected = '''
+loop do # comment 1
+  something += 1 # comment 2
+end # comment 3
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 4
+column_end = 33
+message = "Use `Kernel#loop` for infinite loops."
+
+[[tests]]
+name = "rubocop_cop_style_infiniteloop"
+source = '''
+begin
+  something += 1
+  something_else += 1
+end %{keyword} %{lit}
+'''
+corrected = '''
+loop do
+  something += 1
+  something_else += 1
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 4
+column_end = 21
+message = "Use `Kernel#loop` for infinite loops."
+
+[[tests]]
+name = "rubocop_cop_style_infiniteloop"
+source = '''
+something and something_else %{keyword} %{lit}
+'''
+corrected = '''
+loop { something and something_else }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 29
+column_end = 46
+message = "Use `Kernel#loop` for infinite loops."
+
+[[tests]]
+name = "rubocop_cop_style_infiniteloop"
+source = '''
+%{keyword} %{lit} do
+end
+'''
+corrected = '''
+loop do
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 20
+message = "Use `Kernel#loop` for infinite loops."
+
+[[tests]]
+name = "rubocop_cop_style_infiniteloop"
+source = '''
+%{keyword} %{lit}
+end
+'''
+corrected = '''
+loop do
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 17
+message = "Use `Kernel#loop` for infinite loops."
+
+[[tests]]
+name = "rubocop_cop_style_infiniteloop_autocorrector_while"
+source = '''
+while
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_infiniteloop_autocorrector_true"
+source = '''
+true
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_infiniteloop_autocorrector_until"
+source = '''
+until
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_infiniteloop_autocorrector_false"
+source = '''
+false
+'''
+offenses = []

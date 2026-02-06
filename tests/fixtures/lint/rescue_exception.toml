@@ -1,0 +1,150 @@
+cop = "Lint/RescueException"
+department = "lint"
+severity = "warning"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_lint_rescueexception_registers_an_offense_for_rescue_from_exception"
+source = '''
+begin
+  something
+rescue Exception
+  #do nothing
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 16
+message = "Avoid rescuing the `Exception` class. Perhaps you meant to rescue `StandardError`?"
+
+[[tests]]
+name = "rubocop_cop_lint_rescueexception_registers_an_offense_for_rescue_with_exception"
+source = '''
+begin
+  something
+rescue ::Exception
+  #do nothing
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 18
+message = "Avoid rescuing the `Exception` class. Perhaps you meant to rescue `StandardError`?"
+
+[[tests]]
+name = "rubocop_cop_lint_rescueexception_registers_an_offense_for_rescue_with_standarderror_exception"
+source = '''
+begin
+  something
+rescue StandardError, Exception
+  #do nothing
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 31
+message = "Avoid rescuing the `Exception` class. Perhaps you meant to rescue `StandardError`?"
+
+[[tests]]
+name = "rubocop_cop_lint_rescueexception_registers_an_offense_for_rescue_with_exception_e"
+source = '''
+begin
+  something
+rescue Exception => e
+  #do nothing
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 21
+message = "Avoid rescuing the `Exception` class. Perhaps you meant to rescue `StandardError`?"
+
+[[tests]]
+name = "rubocop_cop_lint_rescueexception_does_not_register_an_offense_for_rescue_with_no_class"
+source = '''
+begin
+  something
+  return
+rescue
+  file.close
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_rescueexception_does_not_register_an_offense_for_rescue_with_no_class_and_e"
+source = '''
+begin
+  something
+  return
+rescue => e
+  file.close
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_rescueexception_does_not_register_an_offense_for_rescue_with_other_class"
+source = '''
+begin
+  something
+  return
+rescue ArgumentError => e
+  file.close
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_rescueexception_does_not_register_an_offense_for_rescue_with_other_classes"
+source = '''
+begin
+  something
+  return
+rescue EOFError, ArgumentError => e
+  file.close
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_rescueexception_does_not_register_an_offense_for_rescue_with_a_module_prefix"
+source = '''
+begin
+  something
+  return
+rescue Test::Exception => e
+  file.close
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_rescueexception_does_not_crash_when_the_splat_operator_is_used_in_a_rescue"
+source = '''
+ERRORS = [Exception]
+begin
+  a = 3 / 0
+rescue *ERRORS
+  puts e
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_rescueexception_does_not_crash_when_the_namespace_of_a_rescued_class_is_in_a_local_variable"
+source = '''
+adapter = current_adapter
+begin
+rescue adapter::ParseError
+end
+'''
+offenses = []

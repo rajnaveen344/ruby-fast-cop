@@ -1,0 +1,78 @@
+cop = "InternalAffairs/LambdaOrProc"
+department = "internal_affairs"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_lambdaorproc_registers_an_offense_when_using_node_lambda_node_proc"
+source = '''
+node.lambda? || node.proc?
+'''
+corrected = '''
+node.lambda_or_proc?
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 26
+message = "Use `node.lambda_or_proc?`."
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_lambdaorproc_registers_an_offense_when_using_node_proc_node_lambda"
+source = '''
+node.proc? || node.lambda?
+'''
+corrected = '''
+node.lambda_or_proc?
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 26
+message = "Use `node.lambda_or_proc?`."
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_lambdaorproc_registers_an_offense_when_using_node_parenthesized_node_lambda_node_proc"
+source = '''
+node.parenthesized? || node.lambda? || node.proc?
+'''
+corrected = '''
+node.parenthesized? || node.lambda_or_proc?
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 23
+column_end = 49
+message = "Use `node.lambda_or_proc?`."
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_lambdaorproc_registers_an_offense_when_using_node_parenthesized_node_proc_node_lambda"
+source = '''
+node.parenthesized? || node.proc? || node.lambda?
+'''
+corrected = '''
+node.parenthesized? || node.lambda_or_proc?
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 23
+column_end = 49
+message = "Use `node.lambda_or_proc?`."
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_lambdaorproc_does_not_register_an_offense_when_using_node_lambda_or_proc"
+source = '''
+node.lambda_or_proc?
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_lambdaorproc_does_not_register_an_offense_when_lhs_and_rhs_have_different_receivers"
+source = '''
+node1.lambda? || node2.proc?
+'''
+offenses = []

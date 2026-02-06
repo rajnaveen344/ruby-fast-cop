@@ -1,0 +1,134 @@
+cop = "Layout/AssignmentIndentation"
+department = "layout"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_layout_assignmentindentation_registers_an_offense_for_incorrectly_indented_rhs"
+source = '''
+a =
+if b ; end
+'''
+corrected = '''
+a =
+  if b ; end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 10
+message = "Indent the first line of the right-hand-side of a multi-line assignment."
+
+[[tests]]
+name = "rubocop_cop_layout_assignmentindentation_allows_assignments_that_do_not_start_on_a_newline"
+source = '''
+a = if b
+      foo
+    end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_assignmentindentation_allows_a_properly_indented_rhs"
+source = '''
+a =
+  if b ; end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_assignmentindentation_allows_a_properly_indented_rhs_with_fullwidth_characters"
+source = '''
+f 'Ｒｕｂｙ', a =
+                b
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_assignmentindentation_registers_an_offense_for_multi_lhs"
+source = '''
+a,
+b =
+if b ; end
+'''
+corrected = '''
+a,
+b =
+  if b ; end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 10
+message = "Indent the first line of the right-hand-side of a multi-line assignment."
+
+[[tests]]
+name = "rubocop_cop_layout_assignmentindentation_ignores_comparison_operators"
+source = '''
+a ===
+if b ; end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_assignmentindentation_when_indentation_width_is_overridden_for_this_cop_only_allows_a_properly_indented_rhs"
+source = '''
+a =
+       if b ; end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_assignmentindentation_when_indentation_width_is_overridden_for_this_cop_only_autocorrects_indentation"
+source = '''
+a =
+  if b ; end
+'''
+corrected = '''
+a =
+       if b ; end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 12
+message = "Indent the first line of the right-hand-side of a multi-line assignment."
+
+[[tests]]
+name = "rubocop_cop_layout_assignmentindentation_registers_an_offense_for_incorrectly_indented_rhs_when_multiple_assignment"
+source = '''
+foo = bar =
+baz = ''
+'''
+corrected = '''
+foo = bar =
+  baz = ''
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 8
+message = "Indent the first line of the right-hand-side of a multi-line assignment."
+
+[[tests]]
+name = "rubocop_cop_layout_assignmentindentation"
+source = '''
+foo =
+  bar =
+  baz = 42
+'''
+corrected = '''
+foo =
+  bar =
+    baz = 42
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 10
+message = "Indent the first line of the right-hand-side of a multi-line assignment."

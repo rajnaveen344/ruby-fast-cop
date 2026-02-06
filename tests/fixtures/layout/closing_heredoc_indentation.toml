@@ -1,0 +1,186 @@
+cop = "Layout/ClosingHeredocIndentation"
+department = "layout"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_layout_closingheredocindentation_accepts_correctly_indented_closing_heredoc"
+source = '''
+class Test
+  def foo
+    <<-SQL
+      bar
+    SQL
+  end
+end
+'''
+offenses = []
+
+[tests.config]
+Enabled = true
+
+[[tests]]
+name = "rubocop_cop_layout_closingheredocindentation_accepts_correctly_indented_closing_heredoc_when_heredoc_contents_is_after_closing_heredoc"
+source = '''
+include_examples :offense,
+                 <<-EOS
+                   foo
+                     bar
+                 EOS
+'''
+offenses = []
+
+[tests.config]
+Enabled = true
+
+[[tests]]
+name = "rubocop_cop_layout_closingheredocindentation_accepts_correctly_indented_closing_heredoc_when_heredoc_contents_with_blank_line"
+source = '''
+def_node_matcher :eval_without_location?, <<~PATTERN
+  {
+    (send $(send _ $:sort ...) ${:[] :at :slice} {(int 0) (int -1)})
+
+    (send $(send _ $:sort_by _) ${:last :first})
+  }
+PATTERN
+'''
+offenses = []
+
+[tests.config]
+Enabled = true
+
+[[tests]]
+name = "rubocop_cop_layout_closingheredocindentation"
+source = '''
+include_examples :offense,
+                 <<-EOS
+  bar
+EOS
+'''
+offenses = []
+
+[tests.config]
+Enabled = true
+
+[[tests]]
+name = "rubocop_cop_layout_closingheredocindentation"
+source = '''
+include_examples :offense,
+                 <<-EOS.strip_indent
+  bar
+EOS
+'''
+offenses = []
+
+[tests.config]
+Enabled = true
+
+[[tests]]
+name = "rubocop_cop_layout_closingheredocindentation"
+source = '''
+let(:source) { <<~EOS }
+EOS
+'''
+offenses = []
+
+[tests.config]
+Enabled = true
+
+[[tests]]
+name = "rubocop_cop_layout_closingheredocindentation_accepts_correctly_indented_closing_heredoc_when_heredoc_contents_is_before_closing_heredoc"
+source = '''
+include_examples :offense,
+                 <<-EOS
+                   foo
+  bar
+                   baz
+                 EOS
+'''
+offenses = []
+
+[tests.config]
+Enabled = true
+
+[[tests]]
+name = "rubocop_cop_layout_closingheredocindentation_registers_an_offense_for_bad_indentation_of_a_closing_heredoc"
+source = '''
+class Test
+  def foo
+    <<-SQL
+      bar
+  SQL
+  end
+end
+'''
+corrected = '''
+class Test
+  def foo
+    <<-SQL
+      bar
+    SQL
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 0
+column_end = 5
+message = "`SQL` is not aligned with `<<-SQL`."
+
+[tests.config]
+Enabled = true
+
+[[tests]]
+name = "rubocop_cop_layout_closingheredocindentation_registers_an_offense_for_incorrectly_indented_empty_heredocs"
+source = '''
+def foo
+  <<-NIL
+
+    NIL
+end
+'''
+corrected = '''
+def foo
+  <<-NIL
+
+  NIL
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 7
+message = "`NIL` is not aligned with `<<-NIL`."
+
+[tests.config]
+Enabled = true
+
+[[tests]]
+name = "rubocop_cop_layout_closingheredocindentation_does_not_register_an_offense_for_correctly_indented_empty_heredocs"
+source = '''
+def foo
+  <<-NIL
+
+  NIL
+end
+'''
+offenses = []
+
+[tests.config]
+Enabled = true
+
+[[tests]]
+name = "rubocop_cop_layout_closingheredocindentation_does_not_register_an_offense_for_a_heredoc"
+source = '''
+def foo
+  <<NIL
+
+NIL
+end
+'''
+offenses = []
+
+[tests.config]
+Enabled = true

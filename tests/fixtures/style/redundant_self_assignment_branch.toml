@@ -1,0 +1,294 @@
+cop = "Style/RedundantSelfAssignmentBranch"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_redundantselfassignmentbranch_registers_and_corrects_an_offense_when_self_assigning_redundant_else_ternary_branch"
+source = '''
+foo = condition ? bar : foo
+'''
+corrected = '''
+foo = bar if condition
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 24
+column_end = 27
+message = "Remove the self-assignment branch."
+
+[[tests]]
+name = "rubocop_cop_style_redundantselfassignmentbranch"
+source = '''
+foo = condition ? bar(arg) : foo
+'''
+corrected = '''
+foo = bar(arg) if condition
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 29
+column_end = 32
+message = "Remove the self-assignment branch."
+
+[[tests]]
+name = "rubocop_cop_style_redundantselfassignmentbranch"
+source = '''
+foo = condition ? bar.
+  baz : foo
+'''
+corrected = '''
+foo = bar.
+  baz if condition
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 8
+column_end = 11
+message = "Remove the self-assignment branch."
+
+[[tests]]
+name = "rubocop_cop_style_redundantselfassignmentbranch"
+source = '''
+foo = condition ? (
+  ) : foo
+'''
+corrected = '''
+foo = (
+  ) if condition
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 9
+message = "Remove the self-assignment branch."
+
+[[tests]]
+name = "rubocop_cop_style_redundantselfassignmentbranch_registers_and_corrects_an_offense_when_self_assigning_redundant_if_ternary_branch"
+source = '''
+foo = condition ? foo : bar
+'''
+corrected = '''
+foo = bar unless condition
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 18
+column_end = 21
+message = "Remove the self-assignment branch."
+
+[[tests]]
+name = "rubocop_cop_style_redundantselfassignmentbranch_registers_and_corrects_an_offense_when_self_assigning_redundant_else_branch"
+source = '''
+foo = if condition
+        bar
+      else
+        foo
+      end
+'''
+corrected = '''
+foo = bar if condition
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 8
+column_end = 11
+message = "Remove the self-assignment branch."
+
+[[tests]]
+name = "rubocop_cop_style_redundantselfassignmentbranch_registers_and_corrects_an_offense_when_self_assigning_redundant_if_branch"
+source = '''
+foo = if condition
+        foo
+      else
+        bar
+      end
+'''
+corrected = '''
+foo = bar unless condition
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 8
+column_end = 11
+message = "Remove the self-assignment branch."
+
+[[tests]]
+name = "rubocop_cop_style_redundantselfassignmentbranch_registers_and_corrects_an_offense_when_self_assigning_redundant_if_branch_with_heredoc"
+source = '''
+foo = if condition
+        foo
+      else
+        <<~TEXT
+          bar
+        TEXT
+      end
+'''
+corrected = '''
+foo = <<~TEXT unless condition
+          bar
+        TEXT
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 8
+column_end = 11
+message = "Remove the self-assignment branch."
+
+[[tests]]
+name = "rubocop_cop_style_redundantselfassignmentbranch_does_not_register_an_offense_when_self_assigning_redundant_else_branch_and_multiline_if_branch"
+source = '''
+foo = if condition
+        bar
+        baz
+      else
+        foo
+      end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantselfassignmentbranch_does_not_register_an_offense_when_self_assigning_redundant_else_branch_and_multiline_else_branch"
+source = '''
+foo = if condition
+        foo
+      else
+        bar
+        baz
+      end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantselfassignmentbranch_registers_and_corrects_an_offense_when_self_assigning_redundant_else_branch_and_empty_if_branch"
+source = '''
+foo = if condition
+      else
+        foo
+      end
+'''
+corrected = '''
+foo = nil if condition
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 8
+column_end = 11
+message = "Remove the self-assignment branch."
+
+[[tests]]
+name = "rubocop_cop_style_redundantselfassignmentbranch_registers_and_corrects_an_offense_when_self_assigning_redundant_else_branch_and_empty_else_branch"
+source = '''
+foo = if condition
+        foo
+      else
+      end
+'''
+corrected = '''
+foo = nil unless condition
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 8
+column_end = 11
+message = "Remove the self-assignment branch."
+
+[[tests]]
+name = "rubocop_cop_style_redundantselfassignmentbranch_does_not_register_an_offense_when_self_assigning_redundant_else_ternary_branch_for_ivar"
+source = '''
+@foo = condition ? @bar : @foo
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantselfassignmentbranch_does_not_register_an_offense_when_self_assigning_redundant_else_ternary_branch_for_cvar"
+source = '''
+@@foo = condition ? @@bar : @@foo
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantselfassignmentbranch_does_not_register_an_offense_when_self_assigning_redundant_else_ternary_branch_for_gvar"
+source = '''
+$foo = condition ? $bar : $foo
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantselfassignmentbranch_does_not_register_an_offense_when_not_self_assigning_redundant_branches"
+source = '''
+foo = condition ? bar : baz
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantselfassignmentbranch_does_not_register_an_offense_when_using_only_if_branch"
+source = '''
+foo = if condition
+        bar
+      end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantselfassignmentbranch_does_not_register_an_offense_when_multi_assignment"
+source = '''
+foo, bar = baz
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantselfassignmentbranch_does_not_register_an_offense_when_lhs_is_not_variable"
+source = '''
+foo.do_something = condition ? foo.do_something : bar.do_something
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantselfassignmentbranch_does_not_register_an_offense_when_using_elsif_and_self_assigning_the_value_of_then_branch"
+source = '''
+foo = if condition
+  foo
+elsif another_condition
+  bar
+else
+  baz
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantselfassignmentbranch_does_not_register_an_offense_when_using_elsif_and_self_assigning_the_value_of_elsif_branch"
+source = '''
+foo = if condition
+        bar
+      elsif another_condition
+        foo
+      else
+        baz
+      end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantselfassignmentbranch_does_not_register_an_offense_when_using_elsif_and_self_assigning_the_value_of_else_branch"
+source = '''
+foo = if condition
+        bar
+      elsif another_condition
+        baz
+      else
+        foo
+      end
+'''
+offenses = []

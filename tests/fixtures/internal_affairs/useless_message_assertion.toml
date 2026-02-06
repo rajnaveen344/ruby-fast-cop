@@ -1,0 +1,57 @@
+cop = "InternalAffairs/UselessMessageAssertion"
+department = "internal_affairs"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_uselessmessageassertion_registers_an_offense_for_specs_that_assert_using_the_msg"
+source = '''
+it 'uses described_class::MSG to specify the expected message' do
+  inspect_source(cop, 'foo')
+  expect(cop.messages).to eq([described_class::MSG])
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 30
+column_end = 50
+message = "Do not specify cop behavior using `described_class::MSG`."
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_uselessmessageassertion_registers_an_offense_for_specs_that_expect_offense_using_the_msg"
+source = '''
+it 'uses described_class::MSG to expect offense' do
+  expect_offense(<<-SOURCE.strip_indent('|'))
+    |  foo
+    |  ^^^ #{described_class::MSG}
+  SOURCE
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 13
+column_end = 33
+message = "Do not specify cop behavior using `described_class::MSG`."
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_uselessmessageassertion_registers_an_offense_for_described_class_msg_in_let"
+source = '''
+let(:msg) { described_class::MSG }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 12
+column_end = 32
+message = "Do not specify cop behavior using `described_class::MSG`."
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_uselessmessageassertion_does_not_register_an_offense_for_an_assertion_about_the_message"
+source = '''
+it 'has a good message' do
+  expect(described_class::MSG).to eq('Good message.')
+end
+'''
+offenses = []

@@ -1,0 +1,790 @@
+cop = "Style/StringLiterals"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_configured_with_single_quotes_preferred_registers_an_offense_for_double_quotes_when_single_quotes_suffice"
+source = '''
+s = "abc"
+x = "a\\b"
+y ="\\b"
+z = "a\\"
+t = "{\"[\\\"*\\\"]\""
+'''
+corrected = '''
+s = 'abc'
+x = 'a\\b'
+y ='\\b'
+z = 'a\\'
+t = '{"[\"*\"]"'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 9
+message = "Prefer single-quoted strings when you don't need string interpolation or special symbols."
+
+[[tests.offenses]]
+line = 2
+column_start = 4
+column_end = 10
+message = "Prefer single-quoted strings when you don't need string interpolation or special symbols."
+
+[[tests.offenses]]
+line = 3
+column_start = 3
+column_end = 8
+message = "Prefer single-quoted strings when you don't need string interpolation or special symbols."
+
+[[tests.offenses]]
+line = 4
+column_start = 4
+column_end = 9
+message = "Prefer single-quoted strings when you don't need string interpolation or special symbols."
+
+[[tests.offenses]]
+line = 5
+column_start = 4
+column_end = 22
+message = "Prefer single-quoted strings when you don't need string interpolation or special symbols."
+
+[tests.config]
+EnforcedStyle = "single_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_configured_with_single_quotes_preferred_registers_an_offense_for_correct_opposite"
+source = '''
+s = "abc"
+x = 'abc'
+'''
+corrected = '''
+s = 'abc'
+x = 'abc'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 9
+message = "Prefer single-quoted strings when you don't need string interpolation or special symbols."
+
+[tests.config]
+EnforcedStyle = "single_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_configured_with_single_quotes_preferred_accepts_single_quotes"
+source = '''
+a = 'x'
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "single_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_configured_with_single_quotes_preferred_accepts_single_quotes_in_interpolation"
+source = '''
+"hello#{hash['there']}"
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "single_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_configured_with_single_quotes_preferred_accepts_q_and_q_quotes"
+source = '''
+a = %q(x) + %Q[x]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "single_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_configured_with_single_quotes_preferred_accepts_quotes"
+source = '''
+a = %(x)
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "single_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_configured_with_single_quotes_preferred_accepts_heredocs"
+source = '''
+execute <<-SQL
+  SELECT name from users
+SQL
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "single_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_configured_with_single_quotes_preferred_accepts_double_quotes_when_new_line_is_used"
+source = '''
+"\n"
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "single_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_configured_with_single_quotes_preferred_accepts_double_quotes_when_interpolating_quotes_in_multiple_lines"
+source = '''
+"#{encode_severity}:#{sprintf('%3d', line_number)}: #{m}"
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "single_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_configured_with_single_quotes_preferred_accepts_double_quotes_when_single_quotes_are_used"
+source = '''
+"'"
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "single_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_configured_with_single_quotes_preferred_accepts_double_quotes_when_interpolating_an_instance_variable"
+source = '''
+"#@test"
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "single_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_configured_with_single_quotes_preferred_accepts_double_quotes_when_interpolating_a_global_variable"
+source = '''
+"#$test"
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "single_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_configured_with_single_quotes_preferred_accepts_double_quotes_when_interpolating_a_class_variable"
+source = '''
+"#@@test"
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "single_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_configured_with_single_quotes_preferred_accepts_double_quotes_when_control_characters_are_used"
+source = '''
+"\e"
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "single_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_configured_with_single_quotes_preferred_accepts_double_quotes_when_unicode_control_sequence_is_used"
+source = '''
+"Espa\u00f1a"
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "single_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_configured_with_single_quotes_preferred_accepts_double_quotes_at_the_start_of_regexp_literals"
+source = '''
+s = /"((?:[^\"]|\.)*)"/
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "single_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_configured_with_single_quotes_preferred_accepts_double_quotes_with_some_other_special_symbols"
+source = '''
+g = "\xf9"
+copyright = "\u00A9"
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "single_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_configured_with_single_quotes_preferred_accepts_in_a_w"
+source = '''
+%w(")
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "single_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_configured_with_single_quotes_preferred_accepts_n_in_a_string"
+source = '''
+"foo \\\n bar"
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "single_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_configured_with_single_quotes_preferred_accepts_double_quotes_in_interpolation"
+source = '''
+"#{"A"}"
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "single_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_configured_with_single_quotes_preferred_detects_unneeded_double_quotes_within_concatenated_string"
+source = '''
+"#{x}" \
+"y"
+'''
+corrected = '''
+"#{x}" \
+'y'
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 3
+message = "Prefer single-quoted strings when you don't need string interpolation or special symbols."
+
+[tests.config]
+EnforcedStyle = "single_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_configured_with_single_quotes_preferred_can_handle_a_built_in_constant_parsed_as_string"
+source = '''
+if __FILE__ == $PROGRAM_NAME
+end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "single_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_configured_with_single_quotes_preferred_can_handle_character_literals"
+source = '''
+a = ?/
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "single_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_configured_with_single_quotes_preferred_registers_an_offense_for"
+source = '''
+"\""
+'''
+corrected = '''
+'"'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 4
+message = "Prefer single-quoted strings when you don't need string interpolation or special symbols."
+
+[tests.config]
+EnforcedStyle = "single_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_configured_with_single_quotes_preferred_registers_an_offense_for"
+source = '''
+"\\"
+'''
+corrected = '''
+'\\'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 4
+message = "Prefer single-quoted strings when you don't need string interpolation or special symbols."
+
+[tests.config]
+EnforcedStyle = "single_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_configured_with_single_quotes_preferred_registers_an_offense_for_words_with_non_ascii_chars"
+source = '''
+"España"
+'''
+corrected = '''
+'España'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 8
+message = "Prefer single-quoted strings when you don't need string interpolation or special symbols."
+
+[tests.config]
+EnforcedStyle = "single_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_configured_with_single_quotes_preferred_does_not_register_an_offense_for_words_with_non_ascii_chars_and_other_control_sequences"
+source = '''
+"España\n"
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "single_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_configured_with_double_quotes_preferred_registers_an_offense_for_single_quotes_when_double_quotes_would_be_equivalent"
+source = '''
+s = 'abc'
+'''
+corrected = '''
+s = "abc"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 9
+message = "Prefer double-quoted strings unless you need single quotes to avoid extra backslashes for escaping."
+
+[tests.config]
+EnforcedStyle = "double_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_configured_with_double_quotes_preferred_registers_an_offense_for_opposite_correct"
+source = '''
+s = "abc"
+x = 'abc'
+'''
+corrected = '''
+s = "abc"
+x = "abc"
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 4
+column_end = 9
+message = "Prefer double-quoted strings unless you need single quotes to avoid extra backslashes for escaping."
+
+[tests.config]
+EnforcedStyle = "double_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_configured_with_double_quotes_preferred_registers_an_offense_for_escaped_single_quote_in_single_quotes"
+source = '''
+'\''
+'\\'
+'''
+corrected = '''
+"'"
+"\\"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 4
+message = "Prefer double-quoted strings unless you need single quotes to avoid extra backslashes for escaping."
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 4
+message = "Prefer double-quoted strings unless you need single quotes to avoid extra backslashes for escaping."
+
+[tests.config]
+EnforcedStyle = "double_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_configured_with_double_quotes_preferred_does_not_accept_multiple_escaped_single_quotes_in_single_quotes"
+source = '''
+'This \'string\' has \'multiple\' escaped quotes'
+'''
+corrected = '''
+"This 'string' has 'multiple' escaped quotes"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 49
+message = "Prefer double-quoted strings unless you need single quotes to avoid extra backslashes for escaping."
+
+[tests.config]
+EnforcedStyle = "double_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_configured_with_double_quotes_preferred_accepts_double_quotes"
+source = '''
+a = "x"
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "double_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_configured_with_double_quotes_preferred_accepts_single_quotes_in_interpolation"
+source = '''
+"hello#{hash['there']}"
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "double_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_configured_with_double_quotes_preferred_accepts_q_and_q_quotes"
+source = '''
+a = %q(x) + %Q[x]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "double_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_configured_with_double_quotes_preferred_accepts_quotes"
+source = '''
+a = %(x)
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "double_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_configured_with_double_quotes_preferred_accepts_single_quoted_string_with_backslash"
+source = '''
+'\,'
+'100\%'
+'(\)'
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "double_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_configured_with_double_quotes_preferred_accepts_heredocs"
+source = '''
+execute <<-SQL
+  SELECT name from users
+SQL
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "double_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_configured_with_double_quotes_preferred_accepts_single_quotes_in_string_with_escaped_non_character"
+source = '''
+'\n'
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "double_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_configured_with_double_quotes_preferred_accepts_escaped_single_quote_in_string_with_escaped_non_character"
+source = '''
+'\'\n'
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "double_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_configured_with_double_quotes_preferred_accepts_single_quotes_when_they_are_needed"
+source = '''
+a = '\n'
+b = '"'
+c = '#{x}'
+d = '#@x'
+e = '#$x'
+f = '\s'
+g = '\z'
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "double_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_configured_with_double_quotes_preferred_flags_single_quotes_with_plain_not_var_or_interpolation_or_global"
+source = '''
+a = 'blah #'
+'''
+corrected = '''
+a = "blah #"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 12
+message = "Prefer double-quoted strings unless you need single quotes to avoid extra backslashes for escaping."
+
+[tests.config]
+EnforcedStyle = "double_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_configured_with_double_quotes_preferred_accepts_single_quotes_at_the_start_of_regexp_literals"
+source = '''
+s = /'((?:[^\']|\.)*)'/
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "double_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_configured_with_double_quotes_preferred_accepts_in_a_w"
+source = '''
+%w(')
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "double_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_configured_with_double_quotes_preferred_can_handle_a_built_in_constant_parsed_as_string"
+source = '''
+if __FILE__ == $PROGRAM_NAME
+end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "double_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_when_configured_with_a_bad_value_fails"
+source = '''
+a = "b"
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:other"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_when_consistentquotesinmultiline_is_true_and_enforcedstyle_is_single_quotes_registers_an_offense_for_strings_with_line_breaks_in_them"
+source = '''
+"--
+SELECT *
+  LEFT JOIN X on Y
+  FROM Models"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 3
+message = "Prefer single-quoted strings when you don't need string interpolation or special symbols."
+
+[tests.config]
+ConsistentQuotesInMultiline = true
+EnforcedStyle = "single_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_when_consistentquotesinmultiline_is_true_and_enforcedstyle_is_single_quotes_accepts_continued_strings_using_all_single_quotes"
+source = '''
+'abc' \
+'def'
+'''
+offenses = []
+
+[tests.config]
+ConsistentQuotesInMultiline = true
+EnforcedStyle = "single_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_when_consistentquotesinmultiline_is_true_and_enforcedstyle_is_single_quotes_registers_an_offense_for_mixed_quote_styles_in_a_continued_string"
+source = '''
+'abc' \
+"def"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 7
+message = "Inconsistent quote style."
+
+[tests.config]
+ConsistentQuotesInMultiline = true
+EnforcedStyle = "single_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_when_consistentquotesinmultiline_is_true_and_enforcedstyle_is_single_quotes_registers_an_offense_for_unneeded_double_quotes_in_continuation"
+source = '''
+"abc" \
+"def"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 7
+message = "Prefer single-quoted strings when you don't need string interpolation or special symbols."
+
+[tests.config]
+ConsistentQuotesInMultiline = true
+EnforcedStyle = "single_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_when_consistentquotesinmultiline_is_true_and_enforcedstyle_is_single_quotes_doesn_t_register_offense_for_double_quotes_with_interpolation"
+source = '''
+"abc" \
+"def#{1}"
+'''
+offenses = []
+
+[tests.config]
+ConsistentQuotesInMultiline = true
+EnforcedStyle = "single_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_when_consistentquotesinmultiline_is_true_and_enforcedstyle_is_single_quotes_doesn_t_register_offense_for_double_quotes_with_embedded_single"
+source = '''
+"abc'" \
+"def"
+'''
+offenses = []
+
+[tests.config]
+ConsistentQuotesInMultiline = true
+EnforcedStyle = "single_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_when_consistentquotesinmultiline_is_true_and_enforcedstyle_is_single_quotes_accepts_for_double_quotes_with_an_escaped_special_character"
+source = '''
+"abc\t" \
+"def"
+'''
+offenses = []
+
+[tests.config]
+ConsistentQuotesInMultiline = true
+EnforcedStyle = "single_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_when_consistentquotesinmultiline_is_true_and_enforcedstyle_is_single_quotes_accepts_for_double_quotes_with_an_escaped_normal_character"
+source = '''
+"abc\!" \
+"def"
+'''
+offenses = []
+
+[tests.config]
+ConsistentQuotesInMultiline = true
+EnforcedStyle = "single_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_when_consistentquotesinmultiline_is_true_and_enforcedstyle_is_single_quotes_doesn_t_choke_on_heredocs_with_inconsistent_indentation"
+source = '''
+<<-QUERY_STRING
+  DEFINE
+    BLAH
+QUERY_STRING
+'''
+offenses = []
+
+[tests.config]
+ConsistentQuotesInMultiline = true
+EnforcedStyle = "single_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_when_consistentquotesinmultiline_is_true_and_enforcedstyle_is_double_quotes_accepts_continued_strings_using_all_double_quotes"
+source = '''
+"abc" \
+"def"
+'''
+offenses = []
+
+[tests.config]
+ConsistentQuotesInMultiline = true
+EnforcedStyle = "double_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_when_consistentquotesinmultiline_is_true_and_enforcedstyle_is_double_quotes_registers_an_offense_for_mixed_quote_styles_in_a_continued_string"
+source = '''
+'abc' \
+"def"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 7
+message = "Inconsistent quote style."
+
+[tests.config]
+ConsistentQuotesInMultiline = true
+EnforcedStyle = "double_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_when_consistentquotesinmultiline_is_true_and_enforcedstyle_is_double_quotes_registers_an_offense_for_unneeded_single_quotes_in_continuation"
+source = '''
+'abs' \
+'def'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 7
+message = "Prefer double-quoted strings unless you need single quotes to avoid extra backslashes for escaping."
+
+[tests.config]
+ConsistentQuotesInMultiline = true
+EnforcedStyle = "double_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliterals_when_consistentquotesinmultiline_is_true_and_enforcedstyle_is_double_quotes_doesn_t_register_offense_for_single_quotes_with_embedded_double"
+source = '''
+'abc"' \
+'def'
+'''
+offenses = []
+
+[tests.config]
+ConsistentQuotesInMultiline = true
+EnforcedStyle = "double_quotes"

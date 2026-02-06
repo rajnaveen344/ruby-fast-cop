@@ -1,0 +1,351 @@
+cop = "Lint/LiteralAssignmentInCondition"
+department = "lint"
+severity = "warning"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_lint_literalassignmentincondition_registers_an_offense_when_assigning_integer_literal_to_local_variable_in_if_condition"
+source = '''
+if test = 42
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 12
+message = "Don't use literal assignment `= 42` in conditional, should be `==` or non-literal operand."
+
+[[tests]]
+name = "rubocop_cop_lint_literalassignmentincondition_registers_an_offense_when_assigning_string_literal_to_local_variable_in_if_condition"
+source = '''
+if test = 'foo'
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 15
+message = "Don't use literal assignment `= 'foo'` in conditional, should be `==` or non-literal operand."
+
+[[tests]]
+name = "rubocop_cop_lint_literalassignmentincondition_does_not_register_an_offense_when_assigning_interpolated_string_literal_to_local_variable_in_if_condition"
+source = '''
+if test = "#{foo}"
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalassignmentincondition_does_not_register_an_offense_when_assigning_xstring_literal_to_local_variable_in_if_condition"
+source = '''
+if test = `echo 'hi'`
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalassignmentincondition_registers_an_offense_when_assigning_empty_array_literal_to_local_variable_in_if_condition"
+source = '''
+if test = []
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 12
+message = "Don't use literal assignment `= []` in conditional, should be `==` or non-literal operand."
+
+[[tests]]
+name = "rubocop_cop_lint_literalassignmentincondition_registers_an_offense_when_assigning_array_literal_with_only_literal_elements_to_local_variable_in_if_condition"
+source = '''
+if test = [1, 2, 3]
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 19
+message = "Don't use literal assignment `= [1, 2, 3]` in conditional, should be `==` or non-literal operand."
+
+[[tests]]
+name = "rubocop_cop_lint_literalassignmentincondition_does_not_register_an_offense_when_assigning_array_literal_with_non_literal_elements_to_local_variable_in_if_condition"
+source = '''
+if test = [42, x, y]
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalassignmentincondition_registers_an_offense_when_assigning_empty_hash_literal_to_local_variable_in_if_condition"
+source = '''
+if test = {}
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 12
+message = "Don't use literal assignment `= {}` in conditional, should be `==` or non-literal operand."
+
+[[tests]]
+name = "rubocop_cop_lint_literalassignmentincondition_registers_an_offense_when_assigning_hash_literal_with_only_literal_elements_to_local_variable_in_if_condition"
+source = '''
+if test = {x: :y}
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 17
+message = "Don't use literal assignment `= {x: :y}` in conditional, should be `==` or non-literal operand."
+
+[[tests]]
+name = "rubocop_cop_lint_literalassignmentincondition_does_not_register_an_offense_when_assigning_hash_literal_with_non_literal_key_to_local_variable_in_if_condition"
+source = '''
+if test = {x => :y}
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalassignmentincondition_does_not_register_an_offense_when_assigning_hash_literal_with_non_literal_value_to_local_variable_in_if_condition"
+source = '''
+if test = {x: y}
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalassignmentincondition_does_not_register_an_offense_when_assigning_non_literal_to_local_variable_in_if_condition"
+source = '''
+if test = do_something
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalassignmentincondition_registers_an_offense_when_assigning_literal_to_local_variable_in_while_condition"
+source = '''
+while test = 42
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 15
+message = "Don't use literal assignment `= 42` in conditional, should be `==` or non-literal operand."
+
+[[tests]]
+name = "rubocop_cop_lint_literalassignmentincondition_registers_an_offense_when_assigning_literal_to_local_variable_in_until_condition"
+source = '''
+until test = 42
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 15
+message = "Don't use literal assignment `= 42` in conditional, should be `==` or non-literal operand."
+
+[[tests]]
+name = "rubocop_cop_lint_literalassignmentincondition_registers_an_offense_when_assigning_literal_to_instance_variable_in_condition"
+source = '''
+if @test = 42
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 13
+message = "Don't use literal assignment `= 42` in conditional, should be `==` or non-literal operand."
+
+[[tests]]
+name = "rubocop_cop_lint_literalassignmentincondition_registers_an_offense_when_assigning_literal_to_class_variable_in_condition"
+source = '''
+if @@test = 42
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 14
+message = "Don't use literal assignment `= 42` in conditional, should be `==` or non-literal operand."
+
+[[tests]]
+name = "rubocop_cop_lint_literalassignmentincondition_registers_an_offense_when_assigning_literal_to_global_variable_in_condition"
+source = '''
+if $test = 42
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 13
+message = "Don't use literal assignment `= 42` in conditional, should be `==` or non-literal operand."
+
+[[tests]]
+name = "rubocop_cop_lint_literalassignmentincondition_registers_an_offense_when_assigning_literal_to_constant_in_condition"
+source = '''
+if TEST = 42
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 12
+message = "Don't use literal assignment `= 42` in conditional, should be `==` or non-literal operand."
+
+[[tests]]
+name = "rubocop_cop_lint_literalassignmentincondition_does_not_register_an_offense_when_assigning_literal_to_collection_element_in_condition"
+source = '''
+if collection[index] = 42
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalassignmentincondition_does_not_register_an_offense_when_in_condition"
+source = '''
+if test == 10
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalassignmentincondition_registers_an_offense_when_assigning_after_in_condition"
+source = '''
+if test == 10 || foo = 1
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 21
+column_end = 24
+message = "Don't use literal assignment `= 1` in conditional, should be `==` or non-literal operand."
+
+[[tests]]
+name = "rubocop_cop_lint_literalassignmentincondition_does_not_register_an_offense_when_in_a_block_that_is_called_in_a_condition"
+source = '''
+return 1 if any_errors? { o = inspect(file) }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalassignmentincondition_does_not_register_an_offense_when_in_a_block_followed_by_method_call"
+source = '''
+return 1 if any_errors? { o = file }.present?
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalassignmentincondition_does_not_register_an_offense_when_assignment_in_a_block_after"
+source = '''
+if x?(bar) || y? { z = baz }
+  foo
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalassignmentincondition_registers_an_offense_when_in_condition_inside_a_block"
+source = '''
+foo { x if y = 42 }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 17
+message = "Don't use literal assignment `= 42` in conditional, should be `==` or non-literal operand."
+
+[[tests]]
+name = "rubocop_cop_lint_literalassignmentincondition_does_not_register_an_offense_when_in_condition_inside_a_block"
+source = '''
+foo { x if y = z }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalassignmentincondition_does_not_register_an_offense_when_in_condition"
+source = '''
+raise StandardError unless foo ||= bar
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalassignmentincondition_registers_an_offense_when_literal_assignment_after_in_condition"
+source = '''
+raise StandardError unless (foo ||= bar) || a = 42
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 46
+column_end = 50
+message = "Don't use literal assignment `= 42` in conditional, should be `==` or non-literal operand."
+
+[[tests]]
+name = "rubocop_cop_lint_literalassignmentincondition_does_not_register_an_offense_when_assigning_non_literal_after_in_condition"
+source = '''
+raise StandardError unless (foo ||= bar) || a = b
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalassignmentincondition_does_not_register_an_offense_when_assignment_method_in_condition"
+source = '''
+if test.method = 42
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalassignmentincondition_does_not_blow_up_when_empty_if_condition"
+source = '''
+if ()
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalassignmentincondition_does_not_blow_up_when_empty_unless_condition"
+source = '''
+unless ()
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalassignmentincondition_does_not_register_an_offense_when_using_parallel_assignment_with_splat_operator_in_the_block_of_guard_condition"
+source = '''
+return if do_something do |z|
+  x, y = *z
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_literalassignmentincondition_registers_when_in_condition_surrounded_with_braces"
+source = '''
+if (test = 42)
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 13
+message = "Don't use literal assignment `= 42` in conditional, should be `==` or non-literal operand."

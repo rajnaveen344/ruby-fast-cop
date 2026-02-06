@@ -1,0 +1,536 @@
+cop = "Lint/ShadowedException"
+department = "lint"
+severity = "warning"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedexception_modifier_rescue_accepts_rescue_in_its_modifier_form"
+source = '''
+foo rescue nil
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedexception_single_rescue_accepts_an_empty_rescue"
+source = '''
+begin
+  something
+rescue
+  handle_exception
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedexception_single_rescue_accepts_rescuing_a_single_exception"
+source = '''
+begin
+  something
+rescue Exception
+  handle_exception
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedexception_single_rescue_rescue_an_exception_without_causing_constant_name_deprecation_warning"
+source = '''
+def foo
+  something
+rescue TimeoutError
+  handle_exception
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedexception_single_rescue_accepts_rescuing_a_single_custom_exception"
+source = '''
+begin
+  something
+rescue NonStandardException
+  handle_exception
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedexception_single_rescue_accepts_rescuing_a_custom_exception_and_a_standard_exception"
+source = '''
+begin
+  something
+rescue Error, NonStandardException
+  handle_exception
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedexception_single_rescue_accepts_rescuing_multiple_custom_exceptions"
+source = '''
+begin
+  something
+rescue CustomError, NonStandardException
+  handle_exception
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedexception_single_rescue_accepts_rescue_containing_multiple_same_error_code_exceptions"
+source = '''
+begin
+  something
+rescue Errno::EAGAIN, Errno::EWOULDBLOCK, Errno::ECONNABORTED
+  handle_exception
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedexception_single_rescue_registers_an_offense_rescuing_exceptions_that_are_ancestors_of_each_other"
+source = '''
+def foo
+  something
+rescue StandardError, RuntimeError
+  handle_exception
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 34
+message = "Do not shadow rescued Exceptions."
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedexception_single_rescue_registers_an_offense_rescuing_exception_with_any_other_error_or_exception"
+source = '''
+begin
+  something
+rescue NonStandardError, Exception
+  handle_exception
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 34
+message = "Do not shadow rescued Exceptions."
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedexception_single_rescue_accepts_rescuing_a_single_exception_that_is_assigned_to_a_variable"
+source = '''
+begin
+  something
+rescue Exception => e
+  handle_exception(e)
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedexception_single_rescue_accepts_rescuing_a_single_exception_that_has_an_ensure"
+source = '''
+begin
+  something
+rescue Exception
+  handle_exception
+ensure
+  everything_is_ok
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedexception_single_rescue_accepts_rescuing_a_single_exception_that_has_an_else"
+source = '''
+begin
+  something
+rescue Exception
+  handle_exception
+else
+  handle_non_exception
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedexception_single_rescue_accepts_rescuing_a_multiple_exceptions_that_are_not_ancestors_that_have_an_else"
+source = '''
+begin
+  something
+rescue NoMethodError, ZeroDivisionError
+  handle_exception
+else
+  handle_non_exception
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedexception_single_rescue_when_there_are_multiple_levels_of_exceptions_in_the_same_rescue_registers_an_offense_for_two_exceptions"
+source = '''
+begin
+  something
+rescue StandardError, NameError
+  foo
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 31
+message = "Do not shadow rescued Exceptions."
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedexception_single_rescue_when_there_are_multiple_levels_of_exceptions_in_the_same_rescue_registers_an_offense_for_more_than_two_exceptions"
+source = '''
+begin
+  something
+rescue StandardError, NameError, NoMethodError
+  foo
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 46
+message = "Do not shadow rescued Exceptions."
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedexception_single_rescue_registers_an_offense_for_the_same_exception_multiple_times"
+source = '''
+begin
+  something
+rescue NameError, NameError
+  foo
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 27
+message = "Do not shadow rescued Exceptions."
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedexception_single_rescue_accepts_splat_arguments_passed_to_rescue"
+source = '''
+begin
+  a
+rescue *FOO
+  b
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedexception_multiple_rescues"
+source = '''
+begin
+  something
+rescue NoMethodError
+  handle_no_method_error
+rescue Exception
+  handle_exception
+rescue StandardError
+  handle_standard_error
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 0
+column_end = 16
+message = "Do not shadow rescued Exceptions."
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedexception_multiple_rescues"
+source = '''
+begin
+  something
+rescue Exception
+  handle_exception
+rescue NoMethodError, ZeroDivisionError
+  handle_standard_error
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 16
+message = "Do not shadow rescued Exceptions."
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedexception_multiple_rescues"
+source = '''
+begin
+  something
+rescue ZeroDivisionError
+  handle_exception
+rescue NoMethodError, StandardError
+  handle_standard_error
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 0
+column_end = 35
+message = "Do not shadow rescued Exceptions."
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedexception_multiple_rescues_registers_an_offense_rescuing_out_of_order_exceptions_when_there_is_an_ensure"
+source = '''
+begin
+  something
+rescue Exception
+  handle_exception
+rescue StandardError
+  handle_standard_error
+ensure
+  everything_is_ok
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 16
+message = "Do not shadow rescued Exceptions."
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedexception_multiple_rescues_accepts_rescuing_exceptions_in_order_of_level"
+source = '''
+begin
+  something
+rescue StandardError
+  handle_standard_error
+rescue Exception
+  handle_exception
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedexception_multiple_rescues_accepts_many_7_rescue_groups"
+source = '''
+begin
+  something
+rescue StandardError
+  handle_error
+rescue ErrorA
+  handle_error
+rescue ErrorB
+  handle_error
+rescue ErrorC
+  handle_error
+rescue ErrorD
+  handle_error
+rescue ErrorE
+  handle_error
+rescue ErrorF
+  handle_error
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedexception_multiple_rescues_accepts_rescuing_exceptions_in_order_of_level_with_multiple_exceptions_in_a_group"
+source = '''
+begin
+  something
+rescue NoMethodError, ZeroDivisionError
+  handle_standard_error
+rescue Exception
+  handle_exception
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedexception_multiple_rescues"
+source = '''
+begin
+  something
+rescue NonStandardError, NoMethodError
+  handle_standard_error
+rescue Exception
+  handle_exception
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedexception_multiple_rescues_accepts_rescuing_custom_exceptions_in_multiple_rescue_groups"
+source = '''
+begin
+  something
+rescue NonStandardError, OtherError
+  handle_standard_error
+rescue CustomError
+  handle_exception
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedexception_multiple_rescues_splat_arguments_accepts_splat_arguments_passed_to_multiple_rescues"
+source = '''
+begin
+  a
+rescue *FOO
+  b
+rescue *BAR
+  c
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedexception_multiple_rescues_splat_arguments"
+source = '''
+begin
+  a
+rescue StandardError
+  b
+rescue *BAR
+  c
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedexception_multiple_rescues_splat_arguments_registers_an_offense_for_splat_arguments_rescued_after_rescuing_exception"
+source = '''
+begin
+  a
+rescue Exception
+  b
+rescue *BAR
+  c
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 16
+message = "Do not shadow rescued Exceptions."
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedexception_multiple_rescues_exceptions_from_different_ancestry_chains_accepts_rescuing_exceptions_in_one_order"
+source = '''
+begin
+  a
+rescue ArgumentError
+  b
+rescue Interrupt
+  c
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedexception_multiple_rescues_exceptions_from_different_ancestry_chains_accepts_rescuing_exceptions_in_another_order"
+source = '''
+begin
+  a
+rescue Interrupt
+  b
+rescue ArgumentError
+  c
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedexception_multiple_rescues_accepts_rescuing_a_known_exception_after_an_unknown_exceptions"
+source = '''
+begin
+  a
+rescue UnknownException
+  b
+rescue StandardError
+  c
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedexception_multiple_rescues_accepts_rescuing_a_known_exception_before_an_unknown_exceptions"
+source = '''
+begin
+  a
+rescue StandardError
+  b
+rescue UnknownException
+  c
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedexception_multiple_rescues_accepts_rescuing_a_known_exception_between_unknown_exceptions"
+source = '''
+begin
+  a
+rescue UnknownException
+  b
+rescue StandardError
+  c
+rescue AnotherUnknownException
+  d
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedexception_multiple_rescues_registers_an_offense_rescuing_exception_before_an_unknown_exceptions"
+source = '''
+begin
+  a
+rescue Exception
+  b
+rescue UnknownException
+  c
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 16
+message = "Do not shadow rescued Exceptions."
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedexception_multiple_rescues_ignores_expressions_of_non_const"
+source = '''
+begin
+  a
+rescue foo
+  b
+rescue [bar]
+  c
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedexception_multiple_rescues_last_rescue_does_not_specify_exception_class_highlights_range_ending_at_rescue_keyword"
+source = '''
+begin
+rescue A, B
+  do_something
+rescue C
+  do_something
+rescue
+  do_something
+end
+'''
+offenses = []

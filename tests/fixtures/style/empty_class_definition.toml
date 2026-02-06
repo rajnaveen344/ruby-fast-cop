@@ -1,0 +1,698 @@
+cop = "Style/EmptyClassDefinition"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_emptyclassdefinition_when_enforcedstyle_is_class_definition_registers_an_offense_for_class_new_assignment_to_constant"
+source = '''
+FooError = Class.new(StandardError)
+'''
+corrected = '''
+class FooError < StandardError
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 35
+message = "Prefer a two-line class definition over `Class.new` for classes with no body."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:class_definition"
+
+[[tests]]
+name = "rubocop_cop_style_emptyclassdefinition_when_enforcedstyle_is_class_definition_registers_an_offense_for_class_new_assignment_to_constant_without_parent_class"
+source = '''
+MyClass = Class.new
+'''
+corrected = '''
+class MyClass
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 19
+message = "Prefer a two-line class definition over `Class.new` for classes with no body."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:class_definition"
+
+[[tests]]
+name = "rubocop_cop_style_emptyclassdefinition_when_enforcedstyle_is_class_definition_registers_an_offense_for_indented_class_new_assignment_to_constant"
+source = '''
+module Foo
+  BarError = Class.new(StandardError)
+end
+'''
+corrected = '''
+module Foo
+  class BarError < StandardError
+  end
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 37
+message = "Prefer a two-line class definition over `Class.new` for classes with no body."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:class_definition"
+
+[[tests]]
+name = "rubocop_cop_style_emptyclassdefinition_when_enforcedstyle_is_class_definition_registers_an_offense_for_class_new_assignment_to_constant_with_namespaced_parent_class"
+source = '''
+MyClass = Class.new(Alchemy::Admin::PreviewUrl)
+'''
+corrected = '''
+class MyClass < Alchemy::Admin::PreviewUrl
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 47
+message = "Prefer a two-line class definition over `Class.new` for classes with no body."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:class_definition"
+
+[[tests]]
+name = "rubocop_cop_style_emptyclassdefinition_when_enforcedstyle_is_class_definition_registers_an_offense_for_class_new_assignment_to_constant_with_absolute_parent_class_path"
+source = '''
+MyClass = Class.new(::Safemode::Jail)
+'''
+corrected = '''
+class MyClass < ::Safemode::Jail
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 37
+message = "Prefer a two-line class definition over `Class.new` for classes with no body."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:class_definition"
+
+[[tests]]
+name = "rubocop_cop_style_emptyclassdefinition_when_enforcedstyle_is_class_definition_does_not_register_an_offense_for_single_line_class_with_inheritance"
+source = '''
+class FooError < StandardError; end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:class_definition"
+
+[[tests]]
+name = "rubocop_cop_style_emptyclassdefinition_when_enforcedstyle_is_class_definition_does_not_register_an_offense_for_single_line_class_without_inheritance"
+source = '''
+class MyClass; end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:class_definition"
+
+[[tests]]
+name = "rubocop_cop_style_emptyclassdefinition_when_enforcedstyle_is_class_definition_does_not_register_an_offense_for_indented_single_line_class"
+source = '''
+module Foo
+  class Bar < Baz; end
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:class_definition"
+
+[[tests]]
+name = "rubocop_cop_style_emptyclassdefinition_when_enforcedstyle_is_class_definition_does_not_register_an_offense_for_two_line_class_with_body"
+source = '''
+class FooError < StandardError
+  def initialize(message)
+    super
+  end
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:class_definition"
+
+[[tests]]
+name = "rubocop_cop_style_emptyclassdefinition_when_enforcedstyle_is_class_definition_does_not_register_an_offense_for_single_line_class_with_body"
+source = '''
+class FooError < StandardError; def initialize; end; end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:class_definition"
+
+[[tests]]
+name = "rubocop_cop_style_emptyclassdefinition_when_enforcedstyle_is_class_definition_does_not_register_an_offense_for_two_line_class_with_inheritance"
+source = '''
+class FooError < StandardError
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:class_definition"
+
+[[tests]]
+name = "rubocop_cop_style_emptyclassdefinition_when_enforcedstyle_is_class_definition_does_not_register_an_offense_for_two_line_class_without_inheritance"
+source = '''
+class MyClass
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:class_definition"
+
+[[tests]]
+name = "rubocop_cop_style_emptyclassdefinition_when_enforcedstyle_is_class_definition_does_not_register_an_offense_for_class_new_with_block_using_do_end"
+source = '''
+Class.new(Settings::Base) do
+  def repositories(*_args); end
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:class_definition"
+
+[[tests]]
+name = "rubocop_cop_style_emptyclassdefinition_when_enforcedstyle_is_class_definition_does_not_register_an_offense_for_class_new_with_block_using_curly_braces"
+source = '''
+Class.new(Settings::Base) { setting :var }
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:class_definition"
+
+[[tests]]
+name = "rubocop_cop_style_emptyclassdefinition_when_enforcedstyle_is_class_definition_does_not_register_an_offense_for_class_new_with_empty_block_using_curly_braces"
+source = '''
+MyClass = Class.new(StandardError) { }
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:class_definition"
+
+[[tests]]
+name = "rubocop_cop_style_emptyclassdefinition_when_enforcedstyle_is_class_definition_does_not_register_an_offense_for_class_new_with_empty_block_using_do_end"
+source = '''
+MyClass = Class.new(StandardError) do end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:class_definition"
+
+[[tests]]
+name = "rubocop_cop_style_emptyclassdefinition_when_enforcedstyle_is_class_definition_does_not_register_an_offense_for_class_new_with_block_without_parent_class"
+source = '''
+Class.new do
+  def method
+  end
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:class_definition"
+
+[[tests]]
+name = "rubocop_cop_style_emptyclassdefinition_when_enforcedstyle_is_class_definition_does_not_register_an_offense_for_class_new_assigned_to_variables_local_instance_class_global"
+source = '''
+local_var = Class.new(Base)
+@instance_var = Class.new(Base)
+@@class_var = Class.new(Base)
+$global_var = Class.new(Base)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:class_definition"
+
+[[tests]]
+name = "rubocop_cop_style_emptyclassdefinition_when_enforcedstyle_is_class_definition_does_not_register_an_offense_for_operator_assignment_with_for_variables"
+source = '''
+local_var ||= Class.new(Base)
+@instance_var ||= Class.new(Base)
+@@class_var ||= Class.new(Base)
+$global_var ||= Class.new(Base)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:class_definition"
+
+[[tests]]
+name = "rubocop_cop_style_emptyclassdefinition_when_enforcedstyle_is_class_definition_does_not_register_an_offense_for_class_new_in_raise_statement"
+source = '''
+raise Class.new(StandardError)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:class_definition"
+
+[[tests]]
+name = "rubocop_cop_style_emptyclassdefinition_when_enforcedstyle_is_class_definition_does_not_register_an_offense_for_class_new_as_method_argument"
+source = '''
+foo(Class.new(Base))
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:class_definition"
+
+[[tests]]
+name = "rubocop_cop_style_emptyclassdefinition_when_enforcedstyle_is_class_definition_does_not_register_an_offense_for_class_new_in_return_statement"
+source = '''
+return Class.new(Error)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:class_definition"
+
+[[tests]]
+name = "rubocop_cop_style_emptyclassdefinition_when_enforcedstyle_is_class_definition_does_not_register_an_offense_for_class_new_with_tap_block"
+source = '''
+Class.new(Resolvers::BaseResolver).tap do |c|
+  c.const_set('MODEL_CLASS', model_class)
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:class_definition"
+
+[[tests]]
+name = "rubocop_cop_style_emptyclassdefinition_when_enforcedstyle_is_class_definition_does_not_register_an_offense_for_class_new_in_stub_const_arguments"
+source = '''
+stub_const('FakeService', Class.new)
+
+stub_const("MicrosoftSync::TestErrorNotPublic", Class.new(StandardError))
+
+stub_const("MicrosoftSync::TestError",
+           Class.new(MicrosoftSync::Errors::PublicError) do
+             def self.public_message
+               I18n.t "oops, this is a public error"
+             end
+           end)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:class_definition"
+
+[[tests]]
+name = "rubocop_cop_style_emptyclassdefinition_when_enforcedstyle_is_class_definition_does_not_register_an_offense_for_class_new_with_variable_as_parent_class"
+source = '''
+Class.new(local_var)
+Class.new(@instance_var)
+Class.new(@@class_var)
+Class.new($global_var)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:class_definition"
+
+[[tests]]
+name = "rubocop_cop_style_emptyclassdefinition_when_enforcedstyle_is_class_definition_does_not_register_an_offense_for_class_new_with_self_as_parent_class"
+source = '''
+MyClass = Class.new(self)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:class_definition"
+
+[[tests]]
+name = "rubocop_cop_style_emptyclassdefinition_when_enforcedstyle_is_class_definition_does_not_register_an_offense_for_constant_assignment_with_when_node_expression_is_nil"
+source = '''
+CONST ||= %i{user port proxy}.freeze
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:class_definition"
+
+[[tests]]
+name = "rubocop_cop_style_emptyclassdefinition_when_enforcedstyle_is_class_definition_does_not_register_an_offense_for_constant_assignment_that_is_not_class_new"
+source = '''
+BOOLEAN = ActiveRecord::Type::Boolean.new
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:class_definition"
+
+[[tests]]
+name = "rubocop_cop_style_emptyclassdefinition_when_enforcedstyle_is_class_definition_does_not_register_an_offense_for_constant_assignment_with_variable_or_method_call"
+source = '''
+CONST = condition
+private_constant :CONST
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:class_definition"
+
+[[tests]]
+name = "rubocop_cop_style_emptyclassdefinition_when_enforcedstyle_is_class_definition_does_not_register_an_offense_for_class_new_chained_with_any_method"
+source = '''
+MyClass = Class.new(Foreman::Renderer).send(:new)
+MyClass = Class.new(Foreman::Renderer).public_send(:new)
+MyClass = Class.new(StandardError).any_method
+MyClass = Class.new(StandardError).tap { }
+MyClass = Class.new(StandardError).send(:new).another_method
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:class_definition"
+
+[[tests]]
+name = "rubocop_cop_style_emptyclassdefinition_when_enforcedstyle_is_class_definition_does_not_register_an_offense_for_class_new_in_let_let_it_be_and_subject_blocks"
+source = '''
+let(:application_mailer) { Class.new(ActionMailer::Base) }
+let(:my_class) { Class.new }
+let(:view_component) do
+  Class.new(ViewComponent::Base)
+end
+let_it_be(:custom_config_class) { Class.new }
+subject { Class.new(ViewComponent::Base) }
+let(:my_class) { Class.new do
+  def method
+  end
+end }
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:class_definition"
+
+[[tests]]
+name = "rubocop_cop_style_emptyclassdefinition_when_enforcedstyle_is_class_new_registers_an_offense_for_two_line_class_definition_with_inheritance"
+source = '''
+class FooError < StandardError
+end
+'''
+corrected = '''
+FooError = Class.new(StandardError)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 30
+message = "Prefer `Class.new` over class definition for classes with no body."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:class_new"
+
+[[tests]]
+name = "rubocop_cop_style_emptyclassdefinition_when_enforcedstyle_is_class_new_registers_an_offense_for_single_line_class_definition_with_inheritance"
+source = '''
+class FooError < StandardError; end
+'''
+corrected = '''
+FooError = Class.new(StandardError)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 35
+message = "Prefer `Class.new` over class definition for classes with no body."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:class_new"
+
+[[tests]]
+name = "rubocop_cop_style_emptyclassdefinition_when_enforcedstyle_is_class_new_registers_an_offense_for_two_line_class_definition_without_inheritance"
+source = '''
+class MyClass
+end
+'''
+corrected = '''
+MyClass = Class.new
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 13
+message = "Prefer `Class.new` over class definition for classes with no body."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:class_new"
+
+[[tests]]
+name = "rubocop_cop_style_emptyclassdefinition_when_enforcedstyle_is_class_new_registers_an_offense_for_single_line_class_definition_without_inheritance"
+source = '''
+class MyClass; end
+'''
+corrected = '''
+MyClass = Class.new
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 18
+message = "Prefer `Class.new` over class definition for classes with no body."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:class_new"
+
+[[tests]]
+name = "rubocop_cop_style_emptyclassdefinition_when_enforcedstyle_is_class_new_registers_an_offense_for_indented_two_line_class_definition"
+source = '''
+module Foo
+  class BarError < StandardError
+  end
+end
+'''
+corrected = '''
+module Foo
+  BarError = Class.new(StandardError)
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 32
+message = "Prefer `Class.new` over class definition for classes with no body."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:class_new"
+
+[[tests]]
+name = "rubocop_cop_style_emptyclassdefinition_when_enforcedstyle_is_class_new_registers_an_offense_for_class_definition_with_namespaced_parent_class"
+source = '''
+class MyClass < Alchemy::Admin::PreviewUrl
+end
+'''
+corrected = '''
+MyClass = Class.new(Alchemy::Admin::PreviewUrl)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 42
+message = "Prefer `Class.new` over class definition for classes with no body."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:class_new"
+
+[[tests]]
+name = "rubocop_cop_style_emptyclassdefinition_when_enforcedstyle_is_class_new_registers_an_offense_for_class_definition_with_absolute_parent_class_path"
+source = '''
+class MyClass < ::Safemode::Jail
+end
+'''
+corrected = '''
+MyClass = Class.new(::Safemode::Jail)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 32
+message = "Prefer `Class.new` over class definition for classes with no body."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:class_new"
+
+[[tests]]
+name = "rubocop_cop_style_emptyclassdefinition_when_enforcedstyle_is_class_new_does_not_register_an_offense_for_class_new_assignment"
+source = '''
+FooError = Class.new(StandardError)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:class_new"
+
+[[tests]]
+name = "rubocop_cop_style_emptyclassdefinition_when_enforcedstyle_is_class_new_does_not_register_an_offense_for_class_new_without_parent_class"
+source = '''
+MyClass = Class.new
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:class_new"
+
+[[tests]]
+name = "rubocop_cop_style_emptyclassdefinition_when_enforcedstyle_is_class_new_registers_an_offense_for_indented_single_line_class_definition"
+source = '''
+module Foo
+  class Bar < Baz; end
+end
+'''
+corrected = '''
+module Foo
+  Bar = Class.new(Baz)
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 22
+message = "Prefer `Class.new` over class definition for classes with no body."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:class_new"
+
+[[tests]]
+name = "rubocop_cop_style_emptyclassdefinition_when_enforcedstyle_is_class_new_does_not_register_an_offense_for_class_with_body"
+source = '''
+class FooError < StandardError
+  def initialize(message)
+    super
+  end
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:class_new"
+
+[[tests]]
+name = "rubocop_cop_style_emptyclassdefinition_when_enforcedstyle_is_class_new_does_not_register_an_offense_for_single_line_class_with_body"
+source = '''
+class FooError < StandardError; def initialize; end; end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:class_new"

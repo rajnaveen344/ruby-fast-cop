@@ -1,0 +1,96 @@
+cop = "Layout/SpaceBeforeSemicolon"
+department = "layout"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_layout_spacebeforesemicolon_registers_an_offense_and_corrects_space_before_semicolon"
+source = '''
+x = 1 ; y = 2
+'''
+corrected = '''
+x = 1; y = 2
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 6
+message = "Space found before semicolon."
+
+[[tests]]
+name = "rubocop_cop_layout_spacebeforesemicolon_does_not_register_an_offense_for_no_space_before_semicolons"
+source = '''
+x = 1; y = 2
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_spacebeforesemicolon_registers_an_offense_and_corrects_more_than_one_space_before_a_semicolon"
+source = '''
+x = 1  ; y = 2
+'''
+corrected = '''
+x = 1; y = 2
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 7
+message = "Space found before semicolon."
+
+[[tests]]
+name = "rubocop_cop_layout_spacebeforesemicolon_inside_block_braces_accepts_no_space_between_an_opening_brace_and_a_semicolon"
+source = '''
+test {; }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_spacebeforesemicolon_inside_block_braces_when_enforcedstyle_for_spaceinsideblockbraces_is_space_accepts_a_space_between_an_opening_brace_and_a_semicolon"
+source = '''
+test { ; }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_spacebeforesemicolon_inside_block_braces_when_enforcedstyle_for_spaceinsideblockbraces_is_space_accepts_a_space_between_an_opening_lambda_brace_and_a_semicolon"
+source = '''
+-> { ; }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_spacebeforesemicolon_inside_block_braces_when_enforcedstyle_for_spaceinsideblockbraces_is_no_space_registers_an_offense_and_corrects_a_space_between_an_opening_brace_and_a_semicolon"
+source = '''
+test { ; }
+'''
+corrected = '''
+test {; }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 7
+message = "Space found before semicolon."
+
+[[tests]]
+name = "rubocop_cop_layout_spacebeforesemicolon_heredocs_registers_an_offense_and_corrects"
+source = '''
+<<~STR ; x = 1
+  text
+STR
+'''
+corrected = '''
+<<~STR; x = 1
+  text
+STR
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 7
+message = "Space found before semicolon."

@@ -1,12 +1,11 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# Validates that all RuboCop cops have corresponding test YAML files
+# Validates that all RuboCop cops have corresponding test TOML files
 #
 # Usage:
 #   ruby .claude/skills/rubocop-test-importer/scripts/validate_test_coverage.rb
 
-require 'yaml'
 require 'fileutils'
 
 # Find project root
@@ -27,37 +26,43 @@ def get_cop_specs
       basename = File.basename(spec_file, '_spec.rb')
       cop_name = basename.split('_').map(&:capitalize).join
       full_name = "#{dept.split('_').map(&:capitalize).join}/#{cop_name}"
-      cops << { department: dept, name: full_name, spec_file: spec_file, yaml_name: "#{basename}.yaml" }
+      cops << { department: dept, name: full_name, spec_file: spec_file, toml_name: "#{basename}.toml" }
     end
   end
   cops
 end
 
-def get_yaml_files
-  yamls = []
+def get_toml_files
+  tomls = []
   DEPARTMENTS.each do |dept|
-    yaml_dir = File.join(FIXTURES_DIR, dept)
-    next unless File.directory?(yaml_dir)
+    toml_dir = File.join(FIXTURES_DIR, dept)
+    next unless File.directory?(toml_dir)
 
-    Dir.glob(File.join(yaml_dir, '*.yaml')).each do |yaml_file|
-      yamls << { department: dept, file: yaml_file, basename: File.basename(yaml_file) }
+    Dir.glob(File.join(toml_dir, '*.toml')).each do |toml_file|
+      tomls << { department: dept, file: toml_file, basename: File.basename(toml_file) }
     end
   end
-  yamls
+  tomls
 end
 
-def validate_yaml_file(yaml_file)
-  content = YAML.safe_load(File.read(yaml_file), permitted_classes: [Symbol])
-  return { valid: false, error: 'Failed to parse' } unless content
+def validate_toml_file(toml_file)
+  content = File.read(toml_file)
 
-  tests = content['tests'] || []
+  # Basic validation: check for required keys
+  cop = content[/^cop\s*=\s*"(.+?)"/, 1]
+  return { valid: false, error: 'Missing cop field' } unless cop
+
+  implemented = content.include?('implemented = true')
+  has_tests = content.include?('[[tests]]')
+  test_count = content.scan('[[tests]]').length
+
   {
     valid: true,
-    cop: content['cop'],
-    implemented: content['implemented'],
-    test_count: tests.size,
-    has_offenses: tests.any? { |t| t['offenses'] && !t['offenses'].empty? },
-    manually_synced: File.read(yaml_file).include?('manually synced')
+    cop: cop,
+    implemented: implemented,
+    test_count: test_count,
+    has_offenses: content.include?('[[tests.offenses]]'),
+    has_tests: has_tests
   }
 rescue => e
   { valid: false, error: e.message }
@@ -72,66 +77,48 @@ def main
   end
 
   specs = get_cop_specs
-  yamls = get_yaml_files
+  tomls = get_toml_files
 
-  spec_map = specs.map { |s| [s[:yaml_name], s] }.to_h
-  yaml_map = yamls.map { |y| [y[:basename], y] }.to_h
+  spec_map = specs.map { |s| [s[:toml_name], s] }.to_h
+  toml_map = tomls.map { |t| [t[:basename], t] }.to_h
 
   missing = []
   invalid = []
-  manual = []
-  stats = { total: 0, implemented: 0, auto_synced: 0, manual_synced: 0 }
+  stats = { total: 0, implemented: 0 }
 
-  specs.each { |spec| missing << spec unless yaml_map[spec[:yaml_name]] }
+  specs.each { |spec| missing << spec unless toml_map[spec[:toml_name]] }
 
-  yamls.each do |yaml|
+  tomls.each do |toml|
     stats[:total] += 1
-    info = validate_yaml_file(yaml[:file])
+    info = validate_toml_file(toml[:file])
 
     unless info[:valid]
-      invalid << { file: yaml[:file], error: info[:error] }
+      invalid << { file: toml[:file], error: info[:error] }
       next
     end
 
     stats[:implemented] += 1 if info[:implemented]
-    if info[:manually_synced]
-      stats[:manual_synced] += 1
-      manual << yaml[:file]
-    else
-      stats[:auto_synced] += 1
-    end
   end
 
   puts "Summary"
   puts "-" * 40
-  puts "Total YAML files:     #{stats[:total]}"
-  puts "Auto-synced:          #{stats[:auto_synced]}"
-  puts "Manually synced:      #{stats[:manual_synced]}"
+  puts "Total TOML files:     #{stats[:total]}"
   puts "Implemented (true):   #{stats[:implemented]}"
   puts "Spec files found:     #{specs.size}"
   puts ""
 
   if missing.any?
-    puts "Missing YAML files (#{missing.size}):"
-    missing.each { |m| puts "   #{m[:department]}/#{m[:yaml_name]}" }
+    puts "Missing TOML files (#{missing.size}):"
+    missing.each { |m| puts "   #{m[:department]}/#{m[:toml_name]}" }
     puts ""
   else
-    puts "All spec files have corresponding YAML files"
+    puts "All spec files have corresponding TOML files"
     puts ""
   end
 
   if invalid.any?
-    puts "Invalid YAML files (#{invalid.size}):"
-    puts "   These need manual fixing (tabs, indentation, special chars)"
+    puts "Invalid TOML files (#{invalid.size}):"
     invalid.each { |i| puts "   - #{i[:file].sub(FIXTURES_DIR + '/', '')}" }
-    puts ""
-    puts "   To fix: /rubocop-test-importer fix <dept/cop>"
-    puts ""
-  end
-
-  if manual.any?
-    puts "Manually synced files (#{manual.size}):"
-    manual.each { |m| puts "   #{m.sub(FIXTURES_DIR + '/', '')}" }
     puts ""
   end
 
@@ -139,9 +126,9 @@ def main
   puts "-" * 40
   DEPARTMENTS.each do |dept|
     spec_count = specs.count { |s| s[:department] == dept }
-    yaml_count = yamls.count { |y| y[:department] == dept }
-    status = spec_count == yaml_count ? "ok" : "MISMATCH"
-    printf "   %-20s specs: %3d  yamls: %3d  %s\n", dept, spec_count, yaml_count, status
+    toml_count = tomls.count { |t| t[:department] == dept }
+    status = spec_count == toml_count ? "ok" : "MISMATCH"
+    printf "   %-20s specs: %3d  tomls: %3d  %s\n", dept, spec_count, toml_count, status
   end
 
   exit(1) if missing.any? || invalid.any?

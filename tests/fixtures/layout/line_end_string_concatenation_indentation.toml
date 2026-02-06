@@ -1,0 +1,404 @@
+cop = "Layout/LineEndStringConcatenationIndentation"
+department = "layout"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_layout_lineendstringconcatenationindentation_accepts_single_line_string_literal_concatenation"
+source = '''
+text = 'offense'
+puts 'This probably should not be '"an #{text}"
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_lineendstringconcatenationindentation_accepts_string_literal_with_line_break_concatenated_with_other_string"
+source = '''
+text = 'offense'
+puts 'This probably
+      should not be '"an #{text}"
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_lineendstringconcatenationindentation_accepts_a_multiline_string_literal"
+source = '''
+puts %(
+  foo
+  bar
+)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_lineendstringconcatenationindentation_accepts_indented_strings_in_implicit_return_statement_of_a_block"
+source = '''
+some_method do
+  'a' \
+    'b' \
+    'c'
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_lineendstringconcatenationindentation_accepts_indented_strings_in_implicit_return_statement_of_a_method_definition"
+source = '''
+def some_method
+  'a' \
+    'b' \
+    'c'
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_lineendstringconcatenationindentation_registers_an_offense_for_aligned_strings_in_an_if_elsif_else_statement"
+source = '''
+if cond1
+  'a' \
+  'b'
+elsif cond2
+  'c' \
+  'd'
+else
+  'e' \
+  'f'
+end
+'''
+corrected = '''
+if cond1
+  'a' \
+    'b'
+elsif cond2
+  'c' \
+    'd'
+else
+  'e' \
+    'f'
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 5
+message = "Indent the first part of a string concatenated with backslash."
+
+[[tests.offenses]]
+line = 6
+column_start = 2
+column_end = 5
+message = "Indent the first part of a string concatenated with backslash."
+
+[[tests.offenses]]
+line = 9
+column_start = 2
+column_end = 5
+message = "Indent the first part of a string concatenated with backslash."
+
+[[tests]]
+name = "rubocop_cop_layout_lineendstringconcatenationindentation_accepts_indented_strings_in_implicit_return_statement_of_a_singleton_method_definition"
+source = '''
+def self.some_method
+  'a' \
+    'b' \
+    'c'
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_lineendstringconcatenationindentation_accepts_indented_strings_in_implicit_return_statement_of_a_method_definition_after_other_statement"
+source = '''
+def some_method
+  b = 'b'
+  'a' \
+    "#{b}" \
+    'c'
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_lineendstringconcatenationindentation_accepts_indented_strings_in_ordinary_statement"
+source = '''
+'a' \
+  'b' \
+  'c'
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_lineendstringconcatenationindentation_accepts_a_heredoc_string_with_interpolation"
+source = '''
+warn <<~TEXT
+  A #{b}
+TEXT
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_lineendstringconcatenationindentation_accepts_a_heredoc_string"
+source = '''
+let(:source) do
+  <<~CODE
+    func({
+      @abc => 0,
+      @xyz => 1
+    })
+    func(
+      {
+        abc: 0
+      }
+    )
+    func(
+      {},
+      {
+        xyz: 1
+      }
+    )
+  CODE
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_lineendstringconcatenationindentation_accepts_an_empty_heredoc_string_with_interpolation"
+source = '''
+puts(<<~TEXT)
+TEXT
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_lineendstringconcatenationindentation_accepts_the_form_string_n_n"
+source = '''
+%
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_lineendstringconcatenationindentation_when_enforcedstyle_is_aligned_accepts_aligned_strings_in_method_call"
+source = '''
+puts 'a' \
+     'b'
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:aligned"
+
+[[tests]]
+name = "rubocop_cop_layout_lineendstringconcatenationindentation_when_enforcedstyle_is_aligned_registers_an_offense_for_unaligned_strings_in_hash_literal_values"
+source = '''
+MESSAGES = { KeyAlignment => 'Align the keys of a hash literal if ' \
+  'they span more than one line.',
+             SeparatorAlignment => 'Align the separators of a hash ' \
+               'literal if they span more than one line.',
+             TableAlignment => 'Align the keys and values of a hash ' \
+               'literal if they span more than one line.' }.freeze
+'''
+corrected = '''
+MESSAGES = { KeyAlignment => 'Align the keys of a hash literal if ' \
+                             'they span more than one line.',
+             SeparatorAlignment => 'Align the separators of a hash ' \
+                                   'literal if they span more than one line.',
+             TableAlignment => 'Align the keys and values of a hash ' \
+                               'literal if they span more than one line.' }.freeze
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 33
+message = "Align parts of a string concatenated with backslash."
+
+[[tests.offenses]]
+line = 4
+column_start = 15
+column_end = 57
+message = "Align parts of a string concatenated with backslash."
+
+[[tests.offenses]]
+line = 6
+column_start = 15
+column_end = 57
+message = "Align parts of a string concatenated with backslash."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:aligned"
+
+[[tests]]
+name = "rubocop_cop_layout_lineendstringconcatenationindentation_when_enforcedstyle_is_aligned_registers_an_offense_for_indented_string"
+source = '''
+puts 'a' \
+  "b" \
+  'c'
+'''
+corrected = '''
+puts 'a' \
+     "b" \
+     'c'
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 5
+message = "Align parts of a string concatenated with backslash."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:aligned"
+
+[[tests]]
+name = "rubocop_cop_layout_lineendstringconcatenationindentation_when_enforcedstyle_is_aligned_registers_an_offense_for_third_part_of_a_string_if_it_is_aligned_only_with_the_first"
+source = '''
+puts 'a' \
+  'b' \
+     'c'
+'''
+corrected = '''
+puts 'a' \
+     'b' \
+     'c'
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 5
+message = "Align parts of a string concatenated with backslash."
+
+[[tests.offenses]]
+line = 3
+column_start = 5
+column_end = 8
+message = "Align parts of a string concatenated with backslash."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:aligned"
+
+[[tests]]
+name = "rubocop_cop_layout_lineendstringconcatenationindentation_when_enforcedstyle_is_indented_accepts_indented_strings"
+source = '''
+puts 'a' \
+  'b'
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:indented"
+
+[[tests]]
+name = "rubocop_cop_layout_lineendstringconcatenationindentation_when_enforcedstyle_is_indented_registers_an_offense_for_aligned_strings_in_hash_literal_values"
+source = '''
+MESSAGES = { KeyAlignment => 'Align the keys of a hash literal if ' \
+                             'they span more than one line.',
+             SeparatorAlignment => 'Align the separators of a hash ' \
+                                   'literal if they span more than one line.',
+             TableAlignment => 'Align the keys and values of a hash ' \
+                               'literal if they span more than one line.' }.freeze
+'''
+corrected = '''
+MESSAGES = { KeyAlignment => 'Align the keys of a hash literal if ' \
+               'they span more than one line.',
+             SeparatorAlignment => 'Align the separators of a hash ' \
+               'literal if they span more than one line.',
+             TableAlignment => 'Align the keys and values of a hash ' \
+               'literal if they span more than one line.' }.freeze
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 29
+column_end = 60
+message = "Indent the first part of a string concatenated with backslash."
+
+[[tests.offenses]]
+line = 4
+column_start = 35
+column_end = 77
+message = "Indent the first part of a string concatenated with backslash."
+
+[[tests.offenses]]
+line = 6
+column_start = 31
+column_end = 73
+message = "Indent the first part of a string concatenated with backslash."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:indented"
+
+[[tests]]
+name = "rubocop_cop_layout_lineendstringconcatenationindentation_when_enforcedstyle_is_indented_registers_an_offense_for_aligned_string"
+source = '''
+puts %Q(a) \
+     'b' \
+     'c'
+'''
+corrected = '''
+puts %Q(a) \
+  'b' \
+  'c'
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 5
+column_end = 8
+message = "Indent the first part of a string concatenated with backslash."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:indented"
+
+[[tests]]
+name = "rubocop_cop_layout_lineendstringconcatenationindentation_when_enforcedstyle_is_indented_registers_an_offense_for_unaligned_third_part_of_string"
+source = '''
+puts 'a' \
+  "#{b}" \
+     "#{c}"
+'''
+corrected = '''
+puts 'a' \
+  "#{b}" \
+  "#{c}"
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 3
+column_start = 5
+column_end = 11
+message = "Align parts of a string concatenated with backslash."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:indented"
+
+[[tests]]
+name = "rubocop_cop_layout_lineendstringconcatenationindentation_when_enforcedstyle_is_indented_when_indentationwidth_is_1_accepts_indented_strings"
+source = '''
+puts 'a' \
+ 'b'
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:indented"

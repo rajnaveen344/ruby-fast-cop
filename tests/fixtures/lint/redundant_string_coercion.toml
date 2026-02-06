@@ -1,0 +1,294 @@
+cop = "Lint/RedundantStringCoercion"
+department = "lint"
+severity = "warning"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_lint_redundantstringcoercion_registers_an_offense_and_corrects_to_s_in_interpolation"
+source = '''
+"this is the #{result.to_s}"
+/regexp #{result.to_s}/
+:"symbol #{result.to_s}"
+`backticks #{result.to_s}`
+'''
+corrected = '''
+"this is the #{result}"
+/regexp #{result}/
+:"symbol #{result}"
+`backticks #{result}`
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 22
+column_end = 26
+message = "Redundant use of `Object#to_s` in interpolation."
+
+[[tests.offenses]]
+line = 2
+column_start = 17
+column_end = 21
+message = "Redundant use of `Object#to_s` in interpolation."
+
+[[tests.offenses]]
+line = 3
+column_start = 18
+column_end = 22
+message = "Redundant use of `Object#to_s` in interpolation."
+
+[[tests.offenses]]
+line = 4
+column_start = 20
+column_end = 24
+message = "Redundant use of `Object#to_s` in interpolation."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantstringcoercion_registers_an_offense_and_corrects_to_s_in_interpolation_with_safe_navigation"
+source = '''
+"this is the #{result&.to_s}"
+/regexp #{result&.to_s}/
+:"symbol #{result&.to_s}"
+`backticks #{result&.to_s}`
+'''
+corrected = '''
+"this is the #{result}"
+/regexp #{result}/
+:"symbol #{result}"
+`backticks #{result}`
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 23
+column_end = 27
+message = "Redundant use of `Object#to_s` in interpolation."
+
+[[tests.offenses]]
+line = 2
+column_start = 18
+column_end = 22
+message = "Redundant use of `Object#to_s` in interpolation."
+
+[[tests.offenses]]
+line = 3
+column_start = 19
+column_end = 23
+message = "Redundant use of `Object#to_s` in interpolation."
+
+[[tests.offenses]]
+line = 4
+column_start = 21
+column_end = 25
+message = "Redundant use of `Object#to_s` in interpolation."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantstringcoercion_registers_an_offense_and_corrects_to_s_in_an_interpolation_with_several_expressions"
+source = '''
+"this is the #{top; result.to_s}"
+'''
+corrected = '''
+"this is the #{top; result}"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 27
+column_end = 31
+message = "Redundant use of `Object#to_s` in interpolation."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantstringcoercion_accepts_to_s_with_arguments_in_an_interpolation"
+source = '''
+"this is a #{result.to_s(8)}"
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_redundantstringcoercion_accepts_interpolation_without_to_s"
+source = '''
+"this is the #{result}"
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_redundantstringcoercion_registers_an_offense_and_corrects_an_implicit_receiver"
+source = '''
+"#{to_s}"
+'''
+corrected = '''
+"#{self}"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 7
+message = "Use `self` instead of `Object#to_s` in interpolation."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantstringcoercion_does_not_explode_on_empty_interpolation"
+source = '''
+"this is #{} silly"
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_redundantstringcoercion_registers_an_offense_and_corrects_to_s_in_print_arguments"
+source = '''
+print first.to_s, second.to_s
+'''
+corrected = '''
+print first, second
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 12
+column_end = 16
+message = "Redundant use of `Object#to_s` in `print`."
+
+[[tests.offenses]]
+line = 1
+column_start = 25
+column_end = 29
+message = "Redundant use of `Object#to_s` in `print`."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantstringcoercion_registers_an_offense_and_corrects_to_s_in_print_arguments_without_receiver"
+source = '''
+print to_s, to_s
+'''
+corrected = '''
+print self, self
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 10
+message = "Use `self` instead of `Object#to_s` in `print`."
+
+[[tests.offenses]]
+line = 1
+column_start = 12
+column_end = 16
+message = "Use `self` instead of `Object#to_s` in `print`."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantstringcoercion_registers_an_offense_and_corrects_to_s_in_puts_arguments"
+source = '''
+puts first.to_s, second.to_s
+'''
+corrected = '''
+puts first, second
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 15
+message = "Redundant use of `Object#to_s` in `puts`."
+
+[[tests.offenses]]
+line = 1
+column_start = 24
+column_end = 28
+message = "Redundant use of `Object#to_s` in `puts`."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantstringcoercion_registers_an_offense_and_corrects_to_s_with_safe_navigation_in_puts_arguments"
+source = '''
+puts first&.to_s, second&.to_s
+'''
+corrected = '''
+puts first, second
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 12
+column_end = 16
+message = "Redundant use of `Object#to_s` in `puts`."
+
+[[tests.offenses]]
+line = 1
+column_start = 26
+column_end = 30
+message = "Redundant use of `Object#to_s` in `puts`."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantstringcoercion_registers_an_offense_and_corrects_to_s_in_warn_arguments"
+source = '''
+warn first.to_s, second.to_s
+'''
+corrected = '''
+warn first, second
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 15
+message = "Redundant use of `Object#to_s` in `warn`."
+
+[[tests.offenses]]
+line = 1
+column_start = 24
+column_end = 28
+message = "Redundant use of `Object#to_s` in `warn`."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantstringcoercion_registers_an_offense_and_corrects_to_s_in_puts_arguments_without_receiver"
+source = '''
+puts to_s, to_s
+'''
+corrected = '''
+puts self, self
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 9
+message = "Use `self` instead of `Object#to_s` in `puts`."
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 15
+message = "Use `self` instead of `Object#to_s` in `puts`."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantstringcoercion_does_not_register_an_offense_when_not_using_to_s_in_print_arguments"
+source = '''
+print obj.do_something
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_redundantstringcoercion_does_not_register_an_offense_when_not_using_to_s_in_puts_arguments"
+source = '''
+puts obj.do_something
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_redundantstringcoercion_does_not_register_an_offense_when_using_to_s_in_p_arguments"
+source = '''
+p first.to_s, second.to_s
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_redundantstringcoercion_does_not_register_an_offense_when_using_to_s_in_print_arguments_with_receiver"
+source = '''
+obj.print first.to_s, second.to_s
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_redundantstringcoercion_does_not_register_an_offense_when_using_to_s_argument_in_puts_argument"
+source = '''
+puts obj.to_s(argument)
+'''
+offenses = []

@@ -1,0 +1,467 @@
+cop = "Lint/NumberConversion"
+department = "lint"
+severity = "warning"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_lint_numberconversion_registers_an_offense_when_using_to_i"
+source = '''
+"10".to_i
+'''
+corrected = '''
+Integer("10", 10)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 9
+message = "Replace unsafe number conversion with number class parsing, instead of using `\"10\".to_i`, use stricter `Integer(\"10\", 10)`."
+
+[[tests]]
+name = ""
+source = '''
+"10"&.to_i
+'''
+corrected = '''
+Integer("10", 10)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 10
+message = "Replace unsafe number conversion with number class parsing, instead of using `\"10\".to_i`, use stricter `Integer(\"10\", 10)`."
+
+[[tests]]
+name = ""
+source = '''
+"10.2".to_f
+'''
+corrected = '''
+Float("10.2")
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 11
+message = "Replace unsafe number conversion with number class parsing, instead of using `\"10.2\".to_f`, use stricter `Float(\"10.2\")`."
+
+[[tests]]
+name = ""
+source = '''
+"10".to_c
+'''
+corrected = '''
+Complex("10")
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 9
+message = "Replace unsafe number conversion with number class parsing, instead of using `\"10\".to_c`, use stricter `Complex(\"10\")`."
+
+[[tests]]
+name = ""
+source = '''
+"1/3".to_r
+'''
+corrected = '''
+Rational("1/3")
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 10
+message = "Replace unsafe number conversion with number class parsing, instead of using `\"1/3\".to_r`, use stricter `Rational(\"1/3\")`."
+
+[[tests]]
+name = ""
+source = '''
+42.to_i
+42.0.to_i
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_numberconversion_registers_an_offense_when_using_to_f_for_number_literals"
+source = '''
+42.to_f
+42.0.to_f
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_numberconversion_registers_an_offense_when_using_to_c_for_number_literals"
+source = '''
+42.to_c
+42.0.to_c
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_numberconversion_registers_an_offense_when_using_to_r_for_number_literals"
+source = '''
+42.to_r
+42.0.to_r
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_numberconversion_registers_an_offense_when_to_i_called_on_a_variable"
+source = '''
+string_value = '10'
+string_value.to_i
+'''
+corrected = '''
+string_value = '10'
+Integer(string_value, 10)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 17
+message = "Replace unsafe number conversion with number class parsing, instead of using `string_value.to_i`, use stricter `Integer(string_value, 10)`."
+
+[[tests]]
+name = ""
+source = '''
+params = { id: 10 }
+params[:id].to_i
+'''
+corrected = '''
+params = { id: 10 }
+Integer(params[:id], 10)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 16
+message = "Replace unsafe number conversion with number class parsing, instead of using `params[:id].to_i`, use stricter `Integer(params[:id], 10)`."
+
+[[tests]]
+name = ""
+source = '''
+args = [1,2,3]
+args[0].to_i
+'''
+corrected = '''
+args = [1,2,3]
+Integer(args[0], 10)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 12
+message = "Replace unsafe number conversion with number class parsing, instead of using `args[0].to_i`, use stricter `Integer(args[0], 10)`."
+
+[[tests]]
+name = ""
+source = '''
+params[:field].to_i
+'''
+corrected = '''
+Integer(params[:field], 10)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 19
+message = "Replace unsafe number conversion with number class parsing, instead of using `params[:field].to_i`, use stricter `Integer(params[:field], 10)`."
+
+[[tests]]
+name = ""
+source = '''
+Integer(10)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_numberconversion_does_not_register_an_offense_when_using_float"
+source = '''
+Float('10')
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_numberconversion_does_not_register_an_offense_when_using_complex"
+source = '''
+Complex('10')
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_numberconversion_does_not_register_an_offense_when_to_i_called_without_a_receiver"
+source = '''
+to_i
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_numberconversion_does_not_register_an_offense_when_to_f_is_one_of_multiple_method_arguments"
+source = '''
+delegate :to_f, to: :description, allow_nil: true
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_numberconversion_to_method_in_symbol_form_registers_an_offense_and_autocorrects"
+source = '''
+"1,2,3,foo,5,6,7,8".split(',').map(&:to_i)
+'''
+corrected = '''
+"1,2,3,foo,5,6,7,8".split(',').map { |i| Integer(i, 10) }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 42
+message = "Replace unsafe number conversion with number class parsing, instead of using `&:to_i`, use stricter `{ |i| Integer(i, 10) }`."
+
+[[tests]]
+name = ""
+source = '''
+"1,2,3,foo,5,6,7,8".split(',')&.map(&:to_i)
+'''
+corrected = '''
+"1,2,3,foo,5,6,7,8".split(',')&.map { |i| Integer(i, 10) }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 43
+message = "Replace unsafe number conversion with number class parsing, instead of using `&:to_i`, use stricter `{ |i| Integer(i, 10) }`."
+
+[[tests]]
+name = ""
+source = '''
+"1,2,3,foo,5,6,7,8".split(',').map &:to_i
+'''
+corrected = '''
+"1,2,3,foo,5,6,7,8".split(',').map { |i| Integer(i, 10) }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 41
+message = "Replace unsafe number conversion with number class parsing, instead of using `&:to_i`, use stricter `{ |i| Integer(i, 10) }`."
+
+[[tests]]
+name = ""
+source = '''
+"foo".try(:to_f)
+'''
+corrected = '''
+"foo".try { |i| Float(i) }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 16
+message = "Replace unsafe number conversion with number class parsing, instead of using `:to_f`, use stricter `{ |i| Float(i) }`."
+
+[[tests]]
+name = ""
+source = '''
+"foo"&.try(:to_f)
+'''
+corrected = '''
+"foo"&.try { |i| Float(i) }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 17
+message = "Replace unsafe number conversion with number class parsing, instead of using `:to_f`, use stricter `{ |i| Float(i) }`."
+
+[[tests]]
+name = ""
+source = '''
+var.to_i.to_f
+'''
+corrected = '''
+Integer(var, 10).to_f
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 8
+message = "Replace unsafe number conversion with number class parsing, instead of using `var.to_i`, use stricter `Integer(var, 10)`."
+
+[[tests]]
+name = ""
+source = '''
+case foo.to_f
+when 0.0
+  bar
+else
+  baz
+end.to_i
+'''
+corrected = '''
+Integer(case foo.to_f
+when 0.0
+  bar
+else
+  baz
+end, 10)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 13
+message = "Replace unsafe number conversion with number class parsing, instead of using `foo.to_f`, use stricter `Float(foo)`."
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 13
+message = "Replace unsafe number conversion with number class parsing, instead of using `case foo.to_f[...]"
+
+[[tests]]
+name = ""
+source = '''
+Integer(var, 10).to_f
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_numberconversion_to_method_in_symbol_form_does_not_register_an_offense_when_using_float_constructor"
+source = '''
+Float(var).to_i
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_numberconversion_to_method_in_symbol_form_does_not_register_an_offense_when_using_complex_constructor"
+source = '''
+Complex(var).to_f
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_numberconversion_to_method_in_symbol_form_registers_an_offense_with_send"
+source = '''
+"foo".send(:to_c)
+'''
+corrected = '''
+"foo".send { |i| Complex(i) }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 17
+message = "Replace unsafe number conversion with number class parsing, instead of using `:to_c`, use stricter `{ |i| Complex(i) }`."
+
+[[tests]]
+name = ""
+source = '''
+Time.now.to_i
+Time.now.to_f
+Time.strptime("2000-10-31", "%Y-%m-%d").to_i
+Time.httpdate("Thu, 06 Oct 2011 02:26:12 GMT").to_f
+Time.now.to_datetime.to_i
+'''
+offenses = []
+
+[tests.config]
+IgnoredClasses = ["Time", "DateTime"]
+
+[[tests]]
+name = "rubocop_cop_lint_numberconversion_ignoredclasses_when_using_datetime"
+source = '''
+DateTime.new(2012, 8, 29, 22, 35, 0).to_i
+DateTime.new(2012, 8, 29, 22, 35, 0).to_f
+'''
+offenses = []
+
+[tests.config]
+IgnoredClasses = ["Time", "DateTime"]
+
+[[tests]]
+name = "rubocop_cop_lint_numberconversion_ignoredclasses_when_using_time_datetime_with_multiple_method_calls"
+source = '''
+Time.now.to_datetime.to_i
+DateTime.civil(2005, 2, 21, 10, 11, 12, Rational(-6, 24)).utc.to_f
+Time.zone.now.to_datetime.to_f
+DateTime.new(2012, 8, 29, 22, 35, 0)
+        .change(day: 1)
+        .change(month: 1)
+        .change(year: 2020)
+        .to_i
+'''
+offenses = []
+
+[tests.config]
+IgnoredClasses = ["Time", "DateTime"]
+
+[[tests]]
+name = "rubocop_cop_lint_numberconversion_allowedmethods_does_not_register_an_offense_for_an_allowed_method"
+source = '''
+10.minutes.to_i
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:minutes"]
+IgnoredClasses = ["Time", "DateTime"]
+
+[[tests]]
+name = "rubocop_cop_lint_numberconversion_allowedmethods_registers_an_offense_for_other_methods"
+source = '''
+10.hours.to_i
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 13
+message = "Replace unsafe number conversion with number class parsing, instead of using `10.hours.to_i`, use stricter `Integer(10.hours, 10)`."
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:minutes"]
+IgnoredClasses = ["Time", "DateTime"]
+
+[[tests]]
+name = "rubocop_cop_lint_numberconversion_allowedpatterns_does_not_register_an_offense_for_an_allowed_method"
+source = '''
+10.minutes.to_i
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:minutes"]
+AllowedPatterns = ["/min/"]
+IgnoredClasses = ["Time", "DateTime"]
+
+[[tests]]
+name = "rubocop_cop_lint_numberconversion_allowedpatterns_registers_an_offense_for_other_methods"
+source = '''
+10.hours.to_i
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 13
+message = "Replace unsafe number conversion with number class parsing, instead of using `10.hours.to_i`, use stricter `Integer(10.hours, 10)`."
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:minutes"]
+AllowedPatterns = ["/min/"]
+IgnoredClasses = ["Time", "DateTime"]

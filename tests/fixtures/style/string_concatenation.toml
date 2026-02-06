@@ -1,0 +1,473 @@
+cop = "Style/StringConcatenation"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_stringconcatenation_registers_an_offense_and_corrects_for_string_concatenation"
+source = '''
+email_with_name = user.name + ' <' + user.email + '>'
+'''
+corrected = '''
+email_with_name = "#{user.name} <#{user.email}>"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 18
+column_end = 53
+message = "Prefer string interpolation to string concatenation."
+
+[[tests]]
+name = "rubocop_cop_style_stringconcatenation_registers_an_offense_and_corrects_for_string_concatenation_as_part_of_other_expression"
+source = '''
+users = (user.name + ' ' + user.email) * 5
+'''
+corrected = '''
+users = ("#{user.name} #{user.email}") * 5
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 37
+message = "Prefer string interpolation to string concatenation."
+
+[[tests]]
+name = "rubocop_cop_style_stringconcatenation_correctly_handles_strings_with_special_characters"
+source = '''
+email_with_name = "\n" + user.name + ' ' + user.email + '\n'
+'''
+corrected = '''
+email_with_name = "\n#{user.name} #{user.email}\\n"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 18
+column_end = 60
+message = "Prefer string interpolation to string concatenation."
+
+[[tests]]
+name = "rubocop_cop_style_stringconcatenation_correctly_handles_nested_concatenatable_parts"
+source = '''
+(user.vip? ? greeting + ', ' : '') + user.name + ' <' + user.email + '>'
+'''
+corrected = '''
+"#{user.vip? ? "#{greeting}, " : ''}#{user.name} <#{user.email}>"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 72
+message = "Prefer string interpolation to string concatenation."
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 28
+message = "Prefer string interpolation to string concatenation."
+
+[[tests]]
+name = "rubocop_cop_style_stringconcatenation_correctly_handles_nested_concatenatable_parts_and_escaped_double_quotes"
+source = '''
+"foo" + "\"#{bar}\"" + 'baz'
+'''
+corrected = '''
+"foo\"#{bar}\"baz"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 28
+message = "Prefer string interpolation to string concatenation."
+
+[[tests]]
+name = "rubocop_cop_style_stringconcatenation_correctly_handles_nested_concatenatable_parts_and_escaped_single_quotes"
+source = '''
+"foo" + "\'#{bar}\'" + 'baz'
+'''
+corrected = '''
+"foo'#{bar}'baz"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 28
+message = "Prefer string interpolation to string concatenation."
+
+[[tests]]
+name = "rubocop_cop_style_stringconcatenation_does_not_register_an_offense_when_using_with_all_non_string_arguments"
+source = '''
+user.name + user.email
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_stringconcatenation_implicit_concatenation_registers_an_offense_and_corrects_with_implicit_concatenation_at_the_end"
+source = '''
+"a" + "b" "c"
+'''
+corrected = '''
+"abc"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 13
+message = "Prefer string interpolation to string concatenation."
+
+[[tests]]
+name = "rubocop_cop_style_stringconcatenation_implicit_concatenation_registers_an_offense_and_corrects_with_implicit_concatenation_at_the_start"
+source = '''
+"a" "b" + "c"
+'''
+corrected = '''
+"abc"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 13
+message = "Prefer string interpolation to string concatenation."
+
+[[tests]]
+name = "rubocop_cop_style_stringconcatenation_implicit_concatenation_registers_an_offense_and_corrects_with_implicit_concatenation_at_the_middle"
+source = '''
+"a" + "b" "c" + "d"
+'''
+corrected = '''
+"abcd"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 19
+message = "Prefer string interpolation to string concatenation."
+
+[[tests]]
+name = "rubocop_cop_style_stringconcatenation_implicit_concatenation_registers_an_offense_and_corrects_with_string_interpolation"
+source = '''
+"string #{interpolation}" 'foo' + 'bar'
+'''
+corrected = '''
+"string #{interpolation}foobar"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 39
+message = "Prefer string interpolation to string concatenation."
+
+[[tests]]
+name = "rubocop_cop_style_stringconcatenation_multiline_string_continuation_does_not_register_an_offense"
+source = '''
+"this is a long string " +
+  "this is a continuation"
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_stringconcatenation_multiline_simple_expressions_registers_an_offense_and_corrects"
+source = '''
+email_with_name = user.name +
+  ' ' +
+  user.email +
+  '\n'
+'''
+corrected = '''
+email_with_name = "#{user.name} #{user.email}\\n"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 18
+column_end = 29
+message = "Prefer string interpolation to string concatenation."
+
+[[tests]]
+name = "rubocop_cop_style_stringconcatenation_multiline_if_condition_registers_an_offense_but_does_not_correct"
+source = '''
+"result:" + if condition
+  "true"
+else
+  "false"
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 24
+message = "Prefer string interpolation to string concatenation."
+
+[[tests]]
+name = "rubocop_cop_style_stringconcatenation_multiline_multiline_block_registers_an_offense_but_does_not_correct"
+source = '''
+'(' + values.map do |v|
+    v.titleize
+end.join(', ') + ')'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 23
+message = "Prefer string interpolation to string concatenation."
+
+[[tests]]
+name = "rubocop_cop_style_stringconcatenation_nested_interpolation_registers_an_offense_and_corrects"
+source = '''
+"foo" + "bar: #{baz}"
+'''
+corrected = '''
+"foobar: #{baz}"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 21
+message = "Prefer string interpolation to string concatenation."
+
+[[tests]]
+name = "rubocop_cop_style_stringconcatenation_inline_block_registers_an_offense_but_does_not_correct"
+source = '''
+'(' + values.map { |v| v.titleize }.join(', ') + ')'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 52
+message = "Prefer string interpolation to string concatenation."
+
+[[tests]]
+name = "rubocop_cop_style_stringconcatenation_inline_block_registers_an_offense_but_does_not_correct_for_numblocks"
+source = '''
+'(' + values.map { _1.titleize }.join(', ') + ')'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 49
+message = "Prefer string interpolation to string concatenation."
+
+[[tests]]
+name = "rubocop_cop_style_stringconcatenation_heredoc_registers_an_offense_but_does_not_correct"
+source = '''
+"foo" + <<~STR
+  text
+STR
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 14
+message = "Prefer string interpolation to string concatenation."
+
+[[tests]]
+name = "rubocop_cop_style_stringconcatenation_heredoc_registers_an_offense_but_does_not_correct_when_string_concatenation_with_multiline_heredoc_text"
+source = '''
+"foo" + <<~TEXT
+  bar
+  baz
+TEXT
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 15
+message = "Prefer string interpolation to string concatenation."
+
+[[tests]]
+name = "rubocop_cop_style_stringconcatenation_double_quotes_inside_string_registers_an_offense_and_corrects_with_double_quotes"
+source = '''
+email_with_name = "He said " + "\"Arrest that man!\"."
+'''
+corrected = '''
+email_with_name = "He said \"Arrest that man!\"."
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 18
+column_end = 54
+message = "Prefer string interpolation to string concatenation."
+
+[[tests]]
+name = "rubocop_cop_style_stringconcatenation_double_quotes_inside_string_registers_an_offense_and_corrects_with_percentage_quotes"
+source = '''
+email_with_name = %(He said ) + %("Arrest that man!".)
+'''
+corrected = '''
+email_with_name = "He said \"Arrest that man!\"."
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 18
+column_end = 54
+message = "Prefer string interpolation to string concatenation."
+
+[[tests]]
+name = "rubocop_cop_style_stringconcatenation_empty_quotes_registers_an_offense_and_corrects"
+source = '''
+'"' + "foo" + '"'
+'"' + "foo" + "'"
+"'" + "foo" + '"'
+"'" + "foo" + '"' + "bar"
+'''
+corrected = '''
+"\"foo\""
+"\"foo'"
+"'foo\""
+"'foo\"bar"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 17
+message = "Prefer string interpolation to string concatenation."
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 17
+message = "Prefer string interpolation to string concatenation."
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 17
+message = "Prefer string interpolation to string concatenation."
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 25
+message = "Prefer string interpolation to string concatenation."
+
+[[tests]]
+name = "rubocop_cop_style_stringconcatenation_double_quotes_inside_string_surrounded_single_quotes_registers_an_offense_and_corrects_with_double_quotes"
+source = '''
+'"bar"' + foo
+'''
+corrected = '''
+"\"bar\"#{foo}"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 13
+message = "Prefer string interpolation to string concatenation."
+
+[[tests]]
+name = "rubocop_cop_style_stringconcatenation_characters_for_interpolation_inside_single_quotes_registers_an_offense_for"
+source = '''
+"foo" + '#{bar}'
+'''
+corrected = '''
+"foo\#{bar}"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 16
+message = "Prefer string interpolation to string concatenation."
+
+[[tests]]
+name = "rubocop_cop_style_stringconcatenation_characters_for_interpolation_inside_single_quotes_registers_an_offense_for"
+source = '''
+"foo" + '#@bar'
+'''
+corrected = '''
+"foo\#@bar"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 15
+message = "Prefer string interpolation to string concatenation."
+
+[[tests]]
+name = "rubocop_cop_style_stringconcatenation_characters_for_interpolation_inside_single_quotes_registers_an_offense_for"
+source = '''
+"foo" + '#@@bar'
+'''
+corrected = '''
+"foo\#@@bar"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 16
+message = "Prefer string interpolation to string concatenation."
+
+[[tests]]
+name = "rubocop_cop_style_stringconcatenation_characters_for_interpolation_inside_single_quotes_registers_an_offense_for"
+source = '''
+"foo" + '#$bar'
+'''
+corrected = '''
+"foo\#$bar"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 15
+message = "Prefer string interpolation to string concatenation."
+
+[[tests]]
+name = "rubocop_cop_style_stringconcatenation_mode_conservative_when_first_operand_is_not_string_literal_does_not_register_offense"
+source = '''
+user.name + "!!"
+user.name + "<"
+user.name + "<" + "user.email" + ">"
+'''
+offenses = []
+
+[tests.config]
+Mode = "conservative"
+
+[[tests]]
+name = "rubocop_cop_style_stringconcatenation_mode_conservative_when_first_operand_is_string_literal_registers_an_offense"
+source = '''
+"Hello " + user.name
+"Hello " + user.name + "!!"
+'''
+corrected = '''
+"Hello #{user.name}"
+"Hello #{user.name}!!"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 20
+message = "Prefer string interpolation to string concatenation."
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 27
+message = "Prefer string interpolation to string concatenation."
+
+[tests.config]
+Mode = "conservative"

@@ -1,0 +1,75 @@
+cop = "Lint/HashCompareByIdentity"
+department = "lint"
+severity = "warning"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_lint_hashcomparebyidentity_registers_an_offense_when_using_hash_methods_with_object_id_on_receiver_as_a_key"
+source = '''
+hash.key?(foo.object_id)
+hash.has_key?(foo.object_id)
+hash[foo.object_id] = bar
+hash[foo.object_id]
+hash.fetch(foo.object_id, 42)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 24
+message = "Use `Hash#compare_by_identity` instead of using `object_id` for keys."
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 28
+message = "Use `Hash#compare_by_identity` instead of using `object_id` for keys."
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 25
+message = "Use `Hash#compare_by_identity` instead of using `object_id` for keys."
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 19
+message = "Use `Hash#compare_by_identity` instead of using `object_id` for keys."
+
+[[tests.offenses]]
+line = 5
+column_start = 0
+column_end = 29
+message = "Use `Hash#compare_by_identity` instead of using `object_id` for keys."
+
+[[tests]]
+name = "rubocop_cop_lint_hashcomparebyidentity_registers_an_offense_when_using_hash_method_with_object_id_as_a_key"
+source = '''
+hash.key?(object_id)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 20
+message = "Use `Hash#compare_by_identity` instead of using `object_id` for keys."
+
+[[tests]]
+name = "rubocop_cop_lint_hashcomparebyidentity_registers_an_offense_when_using_hash_method_with_object_id_as_a_key_with_safe_navigation"
+source = '''
+hash&.key?(object_id)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 21
+message = "Use `Hash#compare_by_identity` instead of using `object_id` for keys."
+
+[[tests]]
+name = "rubocop_cop_lint_hashcomparebyidentity_does_not_register_an_offense_for_hash_methods_without_object_id_as_key"
+source = '''
+hash.key?(foo)
+'''
+offenses = []

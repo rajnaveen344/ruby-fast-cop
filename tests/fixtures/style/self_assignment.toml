@@ -1,0 +1,47 @@
+cop = "Style/SelfAssignment"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_selfassignment"
+source = '''
+%{var} = %{var} %{op} y
+'''
+corrected = '''
+#{var} #{op}= y
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 23
+message = "Use self-assignment shorthand `#{op}=`."
+
+[[tests]]
+name = "rubocop_cop_style_selfassignment_registers_an_offense_and_corrects_for_a_method_call_with_parentheses"
+source = '''
+%{var} = %{var}.%{op}(y)
+'''
+corrected = '''
+#{var} #{op}= y
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 24
+message = "Use self-assignment shorthand `#{op}=`."
+
+[[tests]]
+name = "rubocop_cop_style_selfassignment_does_not_register_an_offense_for_a_method_call_with_multiple_parameters"
+source = '''
+#{var} = #{var}.#{op}(y, z)
+'''
+interpolated = true
+verified = false
+offenses = []

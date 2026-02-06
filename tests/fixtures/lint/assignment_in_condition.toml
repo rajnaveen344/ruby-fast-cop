@@ -1,0 +1,589 @@
+cop = "Lint/AssignmentInCondition"
+department = "lint"
+severity = "warning"
+implemented = true
+
+[[tests]]
+name = "rubocop_cop_lint_assignmentincondition_registers_an_offense_for_lvar_assignment_in_condition"
+source = '''
+if test = 10
+end
+'''
+corrected = '''
+if (test = 10)
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 9
+message = "Use `==` if you meant to do a comparison or wrap the expression in parentheses to indicate you meant to assign in a condition."
+
+[tests.config]
+AllowSafeAssignment = true
+
+[[tests]]
+name = "rubocop_cop_lint_assignmentincondition_registers_an_offense_for_lvar_assignment_in_while_condition"
+source = '''
+while test = 10
+end
+'''
+corrected = '''
+while (test = 10)
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 12
+message = "Use `==` if you meant to do a comparison or wrap the expression in parentheses to indicate you meant to assign in a condition."
+
+[tests.config]
+AllowSafeAssignment = true
+
+[[tests]]
+name = "rubocop_cop_lint_assignmentincondition_registers_an_offense_for_lvar_assignment_in_until_condition"
+source = '''
+until test = 10
+end
+'''
+corrected = '''
+until (test = 10)
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 12
+message = "Use `==` if you meant to do a comparison or wrap the expression in parentheses to indicate you meant to assign in a condition."
+
+[tests.config]
+AllowSafeAssignment = true
+
+[[tests]]
+name = "rubocop_cop_lint_assignmentincondition_registers_an_offense_for_ivar_assignment_in_condition"
+source = '''
+if @test = 10
+end
+'''
+corrected = '''
+if (@test = 10)
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 10
+message = "Use `==` if you meant to do a comparison or wrap the expression in parentheses to indicate you meant to assign in a condition."
+
+[tests.config]
+AllowSafeAssignment = true
+
+[[tests]]
+name = "rubocop_cop_lint_assignmentincondition_registers_an_offense_for_clvar_assignment_in_condition"
+source = '''
+if @@test = 10
+end
+'''
+corrected = '''
+if (@@test = 10)
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 11
+message = "Use `==` if you meant to do a comparison or wrap the expression in parentheses to indicate you meant to assign in a condition."
+
+[tests.config]
+AllowSafeAssignment = true
+
+[[tests]]
+name = "rubocop_cop_lint_assignmentincondition_registers_an_offense_for_gvar_assignment_in_condition"
+source = '''
+if $test = 10
+end
+'''
+corrected = '''
+if ($test = 10)
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 10
+message = "Use `==` if you meant to do a comparison or wrap the expression in parentheses to indicate you meant to assign in a condition."
+
+[tests.config]
+AllowSafeAssignment = true
+
+[[tests]]
+name = "rubocop_cop_lint_assignmentincondition_registers_an_offense_for_constant_assignment_in_condition"
+source = '''
+if TEST = 10
+end
+'''
+corrected = '''
+if (TEST = 10)
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 9
+message = "Use `==` if you meant to do a comparison or wrap the expression in parentheses to indicate you meant to assign in a condition."
+
+[tests.config]
+AllowSafeAssignment = true
+
+[[tests]]
+name = "rubocop_cop_lint_assignmentincondition_registers_an_offense_for_collection_element_assignment_in_condition"
+source = '''
+if a[3] = 10
+end
+'''
+corrected = '''
+if (a[3] = 10)
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 9
+message = "Use `==` if you meant to do a comparison or wrap the expression in parentheses to indicate you meant to assign in a condition."
+
+[tests.config]
+AllowSafeAssignment = true
+
+[[tests]]
+name = "rubocop_cop_lint_assignmentincondition_accepts_in_condition"
+source = '''
+if test == 10
+end
+'''
+offenses = []
+
+[tests.config]
+AllowSafeAssignment = true
+
+[[tests]]
+name = "rubocop_cop_lint_assignmentincondition_registers_an_offense_for_assignment_after_in_condition"
+source = '''
+if test == 10 || foobar = 1
+end
+'''
+corrected = '''
+if test == 10 || (foobar = 1)
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 24
+column_end = 25
+message = "Use `==` if you meant to do a comparison or wrap the expression in parentheses to indicate you meant to assign in a condition."
+
+[tests.config]
+AllowSafeAssignment = true
+
+[[tests]]
+name = "rubocop_cop_lint_assignmentincondition_accepts_in_a_block_that_is_called_in_a_condition"
+source = '''
+return 1 if any_errors? { o = inspect(file) }
+'''
+offenses = []
+
+[tests.config]
+AllowSafeAssignment = true
+
+[[tests]]
+name = "rubocop_cop_lint_assignmentincondition_accepts_in_a_block_followed_by_method_call"
+source = '''
+return 1 if any_errors? { o = file }.present?
+'''
+offenses = []
+
+[tests.config]
+AllowSafeAssignment = true
+
+[[tests]]
+name = "rubocop_cop_lint_assignmentincondition_accepts_in_a_numblock_that_is_called_in_a_condition"
+source = '''
+return 1 if any_errors? { o = inspect(_1) }
+'''
+offenses = []
+
+[tests.config]
+AllowSafeAssignment = true
+
+[[tests]]
+name = "rubocop_cop_lint_assignmentincondition_accepts_in_a_numblock_followed_by_method_call"
+source = '''
+return 1 if any_errors? { o = _1 }.present?
+'''
+offenses = []
+
+[tests.config]
+AllowSafeAssignment = true
+
+[[tests]]
+name = "rubocop_cop_lint_assignmentincondition_ruby_3_4_accepts_in_an_itblock_that_is_called_in_a_condition"
+source = '''
+return 1 if any_errors? { o = inspect(it) }
+'''
+ruby_version = ">= 3.4"
+offenses = []
+
+[tests.config]
+AllowSafeAssignment = true
+
+[[tests]]
+name = "rubocop_cop_lint_assignmentincondition_ruby_3_4_accepts_in_an_itblock_followed_by_method_call"
+source = '''
+return 1 if any_errors? { o = it }.present?
+'''
+ruby_version = ">= 3.4"
+offenses = []
+
+[tests.config]
+AllowSafeAssignment = true
+
+[[tests]]
+name = "rubocop_cop_lint_assignmentincondition_accepts_assignment_in_a_block_after"
+source = '''
+if x?(bar) || y? { z = baz }
+  foo
+end
+'''
+offenses = []
+
+[tests.config]
+AllowSafeAssignment = true
+
+[[tests]]
+name = "rubocop_cop_lint_assignmentincondition_registers_an_offense_for_in_condition_inside_a_block"
+source = '''
+foo { x if y = z }
+'''
+corrected = '''
+foo { x if (y = z) }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 14
+message = "Use `==` if you meant to do a comparison or wrap the expression in parentheses to indicate you meant to assign in a condition."
+
+[tests.config]
+AllowSafeAssignment = true
+
+[[tests]]
+name = "rubocop_cop_lint_assignmentincondition_accepts_in_condition"
+source = '''
+raise StandardError unless foo ||= bar
+'''
+offenses = []
+
+[tests.config]
+AllowSafeAssignment = true
+
+[[tests]]
+name = "rubocop_cop_lint_assignmentincondition_registers_an_offense_for_assignment_after_in_condition"
+source = '''
+raise StandardError unless (foo ||= bar) || a = b
+'''
+corrected = '''
+raise StandardError unless (foo ||= bar) || (a = b)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 46
+column_end = 47
+message = "Use `==` if you meant to do a comparison or wrap the expression in parentheses to indicate you meant to assign in a condition."
+
+[tests.config]
+AllowSafeAssignment = true
+
+[[tests]]
+name = "rubocop_cop_lint_assignmentincondition_registers_an_offense_for_assignment_methods"
+source = '''
+if test.method = 10
+end
+'''
+corrected = '''
+if (test.method = 10)
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 16
+message = "Use `==` if you meant to do a comparison or wrap the expression in parentheses to indicate you meant to assign in a condition."
+
+[tests.config]
+AllowSafeAssignment = true
+
+[[tests]]
+name = "rubocop_cop_lint_assignmentincondition_registers_an_offense_for_assignment_methods_with_safe_navigation_operator"
+source = '''
+if test&.method = 10
+end
+'''
+corrected = '''
+if (test&.method = 10)
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 16
+column_end = 17
+message = "Use `==` if you meant to do a comparison or wrap the expression in parentheses to indicate you meant to assign in a condition."
+
+[tests.config]
+AllowSafeAssignment = true
+
+[[tests]]
+name = "rubocop_cop_lint_assignmentincondition_does_not_blow_up_for_empty_if_condition"
+source = '''
+if ()
+end
+'''
+offenses = []
+
+[tests.config]
+AllowSafeAssignment = true
+
+[[tests]]
+name = "rubocop_cop_lint_assignmentincondition_does_not_blow_up_for_empty_unless_condition"
+source = '''
+unless ()
+end
+'''
+offenses = []
+
+[tests.config]
+AllowSafeAssignment = true
+
+[[tests]]
+name = "rubocop_cop_lint_assignmentincondition_does_not_register_an_offense_for_assignment_in_method_call"
+source = '''
+return unless %i[asc desc].include?(order = params[:order])
+'''
+offenses = []
+
+[tests.config]
+AllowSafeAssignment = true
+
+[[tests]]
+name = "rubocop_cop_lint_assignmentincondition_safe_assignment_is_allowed_accepts_in_condition_surrounded_with_braces"
+source = '''
+if (test = 10)
+end
+'''
+offenses = []
+
+[tests.config]
+AllowSafeAssignment = true
+
+[[tests]]
+name = "rubocop_cop_lint_assignmentincondition_safe_assignment_is_allowed_accepts_in_condition_surrounded_with_braces"
+source = '''
+if (test[0] = 10)
+end
+'''
+offenses = []
+
+[tests.config]
+AllowSafeAssignment = true
+
+[[tests]]
+name = "rubocop_cop_lint_assignmentincondition_safe_assignment_is_allowed_registers_an_offense_and_corrects"
+source = '''
+%{keyword} (foo == bar %{operator} test = 10)
+end
+'''
+corrected = '''
+#{keyword} (foo == bar #{operator} (test = 10))
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 45
+message = "Use `==` if you meant to do a comparison or wrap the expression in parentheses to indicate you meant to assign in a condition."
+
+[tests.config]
+AllowSafeAssignment = true
+
+[[tests]]
+name = "rubocop_cop_lint_assignmentincondition_safe_assignment_is_allowed_registers_an_offense_and_corrects_inside_nested_parentheses"
+source = '''
+%{keyword} ((foo == bar %{operator} test = 10))
+end
+'''
+corrected = '''
+#{keyword} ((foo == bar #{operator} (test = 10)))
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 47
+message = "Use `==` if you meant to do a comparison or wrap the expression in parentheses to indicate you meant to assign in a condition."
+
+[tests.config]
+AllowSafeAssignment = true
+
+[[tests]]
+name = "rubocop_cop_lint_assignmentincondition_safe_assignment_is_allowed_registers_an_offense_and_corrects"
+source = '''
+do_something %{keyword} (foo == bar %{operator} test = 10)
+'''
+corrected = '''
+do_something #{keyword} (foo == bar #{operator} (test = 10))
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 58
+message = "Use `==` if you meant to do a comparison or wrap the expression in parentheses to indicate you meant to assign in a condition."
+
+[tests.config]
+AllowSafeAssignment = true
+
+[[tests]]
+name = "rubocop_cop_lint_assignmentincondition_safe_assignment_is_allowed_does_not_register_an_offense"
+source = '''
+if (test = foo #{operator} bar == baz)
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowSafeAssignment = true
+
+[[tests]]
+name = "rubocop_cop_lint_assignmentincondition_safe_assignment_is_not_allowed_does_not_accept_in_condition_surrounded_with_braces"
+source = '''
+if (test = 10)
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 10
+message = "Use `==` if you meant to do a comparison or move the assignment up out of the condition."
+
+[tests.config]
+AllowSafeAssignment = false
+
+[[tests]]
+name = "rubocop_cop_lint_assignmentincondition_safe_assignment_is_not_allowed_does_not_accept_in_condition_surrounded_with_braces"
+source = '''
+if (test[0] = 10)
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 12
+column_end = 13
+message = "Use `==` if you meant to do a comparison or move the assignment up out of the condition."
+
+[tests.config]
+AllowSafeAssignment = false
+
+[[tests]]
+name = "rubocop_cop_lint_assignmentincondition_safe_assignment_is_not_allowed_registers_an_offense_but_does_not_correct"
+source = '''
+%{keyword} (foo == bar %{operator} test = 10)
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 45
+message = "Use `==` if you meant to do a comparison or move the assignment up out of the condition."
+
+[tests.config]
+AllowSafeAssignment = false
+
+[[tests]]
+name = "rubocop_cop_lint_assignmentincondition_safe_assignment_is_not_allowed_registers_an_offense_but_does_not_correct_inside_nested_parentheses"
+source = '''
+%{keyword} ((foo == bar %{operator} test = 10))
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 47
+message = "Use `==` if you meant to do a comparison or move the assignment up out of the condition."
+
+[tests.config]
+AllowSafeAssignment = false
+
+[[tests]]
+name = "rubocop_cop_lint_assignmentincondition_safe_assignment_is_not_allowed_registers_an_offense_but_does_not_correct"
+source = '''
+do_something %{keyword} (foo == bar %{operator} test = 10)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 58
+message = "Use `==` if you meant to do a comparison or move the assignment up out of the condition."
+
+[tests.config]
+AllowSafeAssignment = false
+
+[[tests]]
+name = "rubocop_cop_lint_assignmentincondition_safe_assignment_is_not_allowed_registers_an_offense_but_does_not_correct"
+source = '''
+if (test = foo #{operator} bar == baz)
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 10
+message = "Use `==` if you meant to do a comparison or move the assignment up out of the condition."
+
+[tests.config]
+AllowSafeAssignment = false

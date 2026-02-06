@@ -1,0 +1,259 @@
+cop = "Style/CollectionQuerying"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_collectionquerying_registers_an_offense_for_count_positive"
+source = '''
+x.count.positive?
+'''
+corrected = '''
+x.any?
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 17
+message = "Use `any?` instead."
+
+[[tests]]
+name = "rubocop_cop_style_collectionquerying_registers_an_offense_for_multiline_count_positive"
+source = '''
+x
+  .count
+  .positive?
+'''
+corrected = '''
+x
+  .any?
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 3
+column_end = 8
+message = "Use `any?` instead."
+
+[[tests]]
+name = "rubocop_cop_style_collectionquerying_registers_an_offense_for_count_foo_positive"
+source = '''
+x.count(&:foo?).positive?
+'''
+corrected = '''
+x.any?(&:foo?)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 25
+message = "Use `any?` instead."
+
+[[tests]]
+name = "rubocop_cop_style_collectionquerying_registers_an_offense_for_count_item_item_foo_positive"
+source = '''
+x.count { |item| item.foo? }.positive?
+'''
+corrected = '''
+x.any? { |item| item.foo? }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 38
+message = "Use `any?` instead."
+
+[[tests]]
+name = "rubocop_cop_style_collectionquerying_registers_an_offense_for_count_1_foo_positive"
+source = '''
+x.count { _1.foo? }.positive?
+'''
+corrected = '''
+x.any? { _1.foo? }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 29
+message = "Use `any?` instead."
+
+[[tests]]
+name = "rubocop_cop_style_collectionquerying_registers_an_offense_for_count_it_foo_positive"
+source = '''
+x.count { it.foo? }.positive?
+'''
+corrected = '''
+x.any? { it.foo? }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 29
+message = "Use `any?` instead."
+
+[[tests]]
+name = "rubocop_cop_style_collectionquerying_registers_an_offense_for_count_foo_positive"
+source = '''
+x&.count(&:foo?).positive?
+'''
+corrected = '''
+x&.any?(&:foo?)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 26
+message = "Use `any?` instead."
+
+[[tests]]
+name = "rubocop_cop_style_collectionquerying_registers_an_offense_for_count_positive"
+source = '''
+x&.count.positive?
+'''
+corrected = '''
+x&.any?
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 18
+message = "Use `any?` instead."
+
+[[tests]]
+name = "rubocop_cop_style_collectionquerying_registers_an_offense_for_count_foo_0"
+source = '''
+x.count(&:foo?) > 0
+'''
+corrected = '''
+x.any?(&:foo?)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 19
+message = "Use `any?` instead."
+
+[[tests]]
+name = "rubocop_cop_style_collectionquerying_registers_an_offense_for_count_foo_0"
+source = '''
+x.count(&:foo?) != 0
+'''
+corrected = '''
+x.any?(&:foo?)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 20
+message = "Use `any?` instead."
+
+[[tests]]
+name = "rubocop_cop_style_collectionquerying_registers_an_offense_for_count_foo_zero"
+source = '''
+x.count(&:foo?).zero?
+'''
+corrected = '''
+x.none?(&:foo?)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 21
+message = "Use `none?` instead."
+
+[[tests]]
+name = "rubocop_cop_style_collectionquerying_registers_an_offense_for_count_foo_0"
+source = '''
+x.count(&:foo?) == 0
+'''
+corrected = '''
+x.none?(&:foo?)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 20
+message = "Use `none?` instead."
+
+[[tests]]
+name = "rubocop_cop_style_collectionquerying_registers_an_offense_for_count_foo_1"
+source = '''
+x.count(&:foo?) == 1
+'''
+corrected = '''
+x.one?(&:foo?)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 20
+message = "Use `one?` instead."
+
+[[tests]]
+name = "rubocop_cop_style_collectionquerying_when_allcops_activesupportextensionsenabled_true_registers_an_offense_for_count_foo_1"
+source = '''
+x.count(&:foo?) > 1
+'''
+corrected = '''
+x.many?(&:foo?)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 19
+message = "Use `many?` instead."
+
+[[tests]]
+name = "rubocop_cop_style_collectionquerying_when_allcops_activesupportextensionsenabled_false_does_not_register_an_offense_for_count_foo_1"
+source = '''
+x.count(&:foo?) > 1
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_collectionquerying_does_not_register_an_offense_for_count_foo_positive"
+source = '''
+x.count(foo).positive?
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_collectionquerying_does_not_register_an_offense_for_count_foo_bar_positive"
+source = '''
+x.count(foo: bar).positive?
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_collectionquerying_does_not_register_an_offense_for_count_positive"
+source = '''
+x.count&.positive?
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_collectionquerying_does_not_register_an_offense_for_count"
+source = '''
+x.count
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_collectionquerying_does_not_register_an_offense_when_count_does_not_have_a_receiver"
+source = '''
+count.positive?
+'''
+offenses = []

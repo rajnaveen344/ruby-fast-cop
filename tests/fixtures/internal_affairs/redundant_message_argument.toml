@@ -1,0 +1,62 @@
+cop = "InternalAffairs/RedundantMessageArgument"
+department = "internal_affairs"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_redundantmessageargument_when_msg_is_passed_registers_an_offense"
+source = '''
+add_offense(node, message: MSG)
+'''
+corrected = '''
+add_offense(node)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 18
+column_end = 30
+message = "Redundant message argument to `#add_offense`."
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_redundantmessageargument_does_not_register_an_offense_when_formatted_msg_is_passed"
+source = '''
+add_offense(node, location: :expression, message: MSG % foo)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_redundantmessageargument_when_message_is_passed_does_not_register_an_offense"
+source = '''
+add_offense(
+  node,
+  location: :expression,
+  message: message,
+  severity: :error
+)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_redundantmessageargument_when_message_with_offending_node_is_passed_when_message_is_the_only_keyword_argument_does_not_register_an_offense"
+source = '''
+add_offense(node, message: message(node))
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_redundantmessageargument_when_message_with_offending_node_is_passed_when_there_are_others_keyword_arguments_does_not_register_an_offense"
+source = '''
+add_no_offenses(node,
+            location: :selector,
+            message: message(node),
+            severity: :fatal)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_redundantmessageargument_does_not_register_an_offense_when_message_with_another_node_is_passed"
+source = '''
+add_offense(node, message: message(other_node))
+'''
+offenses = []

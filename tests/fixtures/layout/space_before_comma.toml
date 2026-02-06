@@ -1,0 +1,97 @@
+cop = "Layout/SpaceBeforeComma"
+department = "layout"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_layout_spacebeforecomma_registers_an_offense_and_corrects_block_argument_with_space_before_comma"
+source = '''
+each { |s , t| }
+'''
+corrected = '''
+each { |s, t| }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 10
+message = "Space found before comma."
+
+[[tests]]
+name = "rubocop_cop_layout_spacebeforecomma_registers_an_offense_and_corrects_array_index_with_space_before_comma"
+source = '''
+formats[0 , 1]
+'''
+corrected = '''
+formats[0, 1]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 10
+message = "Space found before comma."
+
+[[tests]]
+name = "rubocop_cop_layout_spacebeforecomma_registers_an_offense_and_corrects_method_call_arg_with_space_before_comma"
+source = '''
+a(1 , 2)
+'''
+corrected = '''
+a(1, 2)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 4
+message = "Space found before comma."
+
+[[tests]]
+name = "rubocop_cop_layout_spacebeforecomma_does_not_register_an_offense_for_no_spaces_before_comma"
+source = '''
+a(1, 2)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_spacebeforecomma_handles_more_than_one_space_before_a_comma"
+source = '''
+each { |s  , t| a(1  , formats[0  , 1])}
+                   ^^ Space found before comma.
+'''
+corrected = '''
+each { |s, t| a(1, formats[0, 1])}
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 32
+column_end = 34
+message = "Space found before comma."
+
+[[tests.offenses]]
+line = 2
+column_start = 9
+column_end = 11
+message = "Space found before comma."
+
+[[tests]]
+name = "rubocop_cop_layout_spacebeforecomma_heredocs_registers_an_offense_and_corrects"
+source = '''
+a(<<~STR , 2)
+  text
+STR
+'''
+corrected = '''
+a(<<~STR, 2)
+  text
+STR
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 9
+message = "Space found before comma."

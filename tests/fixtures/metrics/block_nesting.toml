@@ -1,0 +1,537 @@
+cop = "Metrics/BlockNesting"
+department = "metrics"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_metrics_blocknesting_accepts_max_levels_of_nesting"
+source = '''
+if a
+  if b
+    puts b
+  end
+end
+'''
+offenses = []
+
+[tests.config]
+Max = 2
+
+[[tests]]
+name = "rubocop_cop_metrics_blocknesting_max_1_levels_of_if_nesting_registers_an_offense"
+source = '''
+if a
+  if b
+    if c
+      puts c
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 4
+column_end = 8
+message = "Avoid more than 2 levels of block nesting."
+
+[tests.config]
+Max = 2
+
+[[tests]]
+name = "rubocop_cop_metrics_blocknesting_max_2_levels_of_if_nesting_registers_an_offense"
+source = '''
+if a
+  if b
+    if c
+      if d
+        puts d
+      end
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 4
+column_end = 8
+message = "Avoid more than 2 levels of block nesting."
+
+[tests.config]
+Max = 2
+
+[[tests]]
+name = "rubocop_cop_metrics_blocknesting_multiple_nested_ifs_at_same_level_registers_2_offenses"
+source = '''
+if a
+  if b
+    if c
+      puts c
+    end
+  end
+  if d
+    if e
+      puts e
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 4
+column_end = 8
+message = "Avoid more than 2 levels of block nesting."
+
+[[tests.offenses]]
+line = 8
+column_start = 4
+column_end = 8
+message = "Avoid more than 2 levels of block nesting."
+
+[tests.config]
+Max = 2
+
+[[tests]]
+name = "rubocop_cop_metrics_blocknesting_nested_case_registers_an_offense"
+source = '''
+if a
+  if b
+    case c
+      when C
+        puts C
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 4
+column_end = 10
+message = "Avoid more than 2 levels of block nesting."
+
+[tests.config]
+Max = 2
+
+[[tests]]
+name = "rubocop_cop_metrics_blocknesting_nested_case_as_a_pattern_matching_registers_an_offense"
+source = '''
+if a
+  if b
+    case c
+      in C
+        puts C
+    end
+  end
+end
+'''
+ruby_version = ">= 2.7"
+
+[[tests.offenses]]
+line = 3
+column_start = 4
+column_end = 10
+message = "Avoid more than 2 levels of block nesting."
+
+[tests.config]
+Max = 2
+
+[[tests]]
+name = "rubocop_cop_metrics_blocknesting_nested_while_registers_an_offense"
+source = '''
+if a
+  if b
+    while c
+      puts c
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 4
+column_end = 11
+message = "Avoid more than 2 levels of block nesting."
+
+[tests.config]
+Max = 2
+
+[[tests]]
+name = "rubocop_cop_metrics_blocknesting_nested_modifier_while_registers_an_offense"
+source = '''
+if a
+  if b
+    begin
+      puts c
+    end while c
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 4
+column_end = 9
+message = "Avoid more than 2 levels of block nesting."
+
+[tests.config]
+Max = 2
+
+[[tests]]
+name = "rubocop_cop_metrics_blocknesting_nested_until_registers_an_offense"
+source = '''
+if a
+  if b
+    until c
+      puts c
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 4
+column_end = 11
+message = "Avoid more than 2 levels of block nesting."
+
+[tests.config]
+Max = 2
+
+[[tests]]
+name = "rubocop_cop_metrics_blocknesting_nested_modifier_until_registers_an_offense"
+source = '''
+if a
+  if b
+    begin
+      puts c
+    end until c
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 4
+column_end = 9
+message = "Avoid more than 2 levels of block nesting."
+
+[tests.config]
+Max = 2
+
+[[tests]]
+name = "rubocop_cop_metrics_blocknesting_nested_for_registers_an_offense"
+source = '''
+if a
+  if b
+    for c in [1,2] do
+      puts c
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 4
+column_end = 21
+message = "Avoid more than 2 levels of block nesting."
+
+[tests.config]
+Max = 2
+
+[[tests]]
+name = "rubocop_cop_metrics_blocknesting_nested_rescue_registers_an_offense"
+source = '''
+if a
+  if b
+    begin
+      puts c
+    rescue
+      puts x
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 4
+column_end = 10
+message = "Avoid more than 2 levels of block nesting."
+
+[tests.config]
+Max = 2
+
+[[tests]]
+name = "rubocop_cop_metrics_blocknesting_accepts_if_elsif"
+source = '''
+if a
+elsif b
+elsif c
+elsif d
+end
+'''
+offenses = []
+
+[tests.config]
+Max = 2
+
+[[tests]]
+name = "rubocop_cop_metrics_blocknesting_when_countblocks_is_false_accepts_nested_multiline_blocks"
+source = '''
+if a
+  if b
+    [1, 2].each do |c|
+      puts c
+    end
+  end
+end
+'''
+offenses = []
+
+[tests.config]
+CountBlocks = false
+Max = 2
+
+[[tests]]
+name = "rubocop_cop_metrics_blocknesting_when_countblocks_is_false_accepts_nested_inline_blocks"
+source = '''
+if a
+  if b
+    [1, 2].each { |c| puts c }
+  end
+end
+'''
+offenses = []
+
+[tests.config]
+CountBlocks = false
+Max = 2
+
+[[tests]]
+name = "rubocop_cop_metrics_blocknesting_when_countblocks_is_false_when_numbered_parameter_accepts_nested_multiline_blocks"
+source = '''
+if a
+  if b
+    [1, 2].each do
+      puts _1
+    end
+  end
+end
+'''
+ruby_version = ">= 2.7"
+offenses = []
+
+[tests.config]
+CountBlocks = false
+Max = 2
+
+[[tests]]
+name = "rubocop_cop_metrics_blocknesting_when_countblocks_is_false_when_numbered_parameter_accepts_nested_inline_blocks"
+source = '''
+if a
+  if b
+    [1, 2].each { puts _1 }
+  end
+end
+'''
+ruby_version = ">= 2.7"
+offenses = []
+
+[tests.config]
+CountBlocks = false
+Max = 2
+
+[[tests]]
+name = "rubocop_cop_metrics_blocknesting_when_countblocks_is_true_nested_multiline_block_registers_an_offense"
+source = '''
+if a
+  if b
+    [1, 2].each do |c|
+      puts c
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 4
+column_end = 22
+message = "Avoid more than 2 levels of block nesting."
+
+[tests.config]
+CountBlocks = true
+Max = 2
+
+[[tests]]
+name = "rubocop_cop_metrics_blocknesting_when_countblocks_is_true_nested_inline_block_registers_an_offense"
+source = '''
+if a
+  if b
+    [1, 2].each { |c| puts c }
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 4
+column_end = 30
+message = "Avoid more than 2 levels of block nesting."
+
+[tests.config]
+CountBlocks = true
+Max = 2
+
+[[tests]]
+name = "rubocop_cop_metrics_blocknesting_when_countblocks_is_true_when_numbered_parameter_nested_multiline_block_registers_an_offense"
+source = '''
+if a
+  if b
+    [1, 2].each do
+      puts _1
+    end
+  end
+end
+'''
+ruby_version = ">= 2.7"
+
+[[tests.offenses]]
+line = 3
+column_start = 4
+column_end = 18
+message = "Avoid more than 2 levels of block nesting."
+
+[tests.config]
+CountBlocks = true
+Max = 2
+
+[[tests]]
+name = "rubocop_cop_metrics_blocknesting_when_countblocks_is_true_when_numbered_parameter_nested_inline_block_registers_an_offense"
+source = '''
+if a
+  if b
+    [1, 2].each { puts _1 }
+  end
+end
+'''
+ruby_version = ">= 2.7"
+
+[[tests.offenses]]
+line = 3
+column_start = 4
+column_end = 27
+message = "Avoid more than 2 levels of block nesting."
+
+[tests.config]
+CountBlocks = true
+Max = 2
+
+[[tests]]
+name = "rubocop_cop_metrics_blocknesting_when_countblocks_is_true_when_it_parameter_nested_multiline_block_registers_an_offense"
+source = '''
+if a
+  if b
+    [1, 2].each do
+      puts it
+    end
+  end
+end
+'''
+ruby_version = ">= 3.4"
+
+[[tests.offenses]]
+line = 3
+column_start = 4
+column_end = 18
+message = "Avoid more than 2 levels of block nesting."
+
+[tests.config]
+CountBlocks = true
+Max = 2
+
+[[tests]]
+name = "rubocop_cop_metrics_blocknesting_when_countblocks_is_true_when_it_parameter_nested_inline_block_registers_an_offense"
+source = '''
+if a
+  if b
+    [1, 2].each { puts it }
+  end
+end
+'''
+ruby_version = ">= 3.4"
+
+[[tests.offenses]]
+line = 3
+column_start = 4
+column_end = 27
+message = "Avoid more than 2 levels of block nesting."
+
+[tests.config]
+CountBlocks = true
+Max = 2
+
+[[tests]]
+name = "rubocop_cop_metrics_blocknesting_when_countmodifierforms_is_false_accepts_nested_modifier_forms"
+source = '''
+if a
+  if b
+    puts 'hello' if c
+  end
+end
+'''
+offenses = []
+
+[tests.config]
+CountBlocks = true
+CountModifierForms = false
+Max = 2
+
+[[tests]]
+name = "rubocop_cop_metrics_blocknesting_when_countmodifierforms_is_false_registers_nested_if_expressions"
+source = '''
+if a
+  if b
+    if c
+      puts 'hello'
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 4
+column_end = 8
+message = "Avoid more than 2 levels of block nesting."
+
+[tests.config]
+CountBlocks = true
+CountModifierForms = false
+Max = 2
+
+[[tests]]
+name = "rubocop_cop_metrics_blocknesting_when_countmodifierforms_is_true_nested_modifier_forms_registers_an_offense"
+source = '''
+if a
+  if b
+    puts 'hello' if c
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 4
+column_end = 21
+message = "Avoid more than 2 levels of block nesting."
+
+[tests.config]
+CountBlocks = true
+CountModifierForms = true
+Max = 2

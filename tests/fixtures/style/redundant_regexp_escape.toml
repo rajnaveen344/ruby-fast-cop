@@ -1,0 +1,722 @@
+cop = "Style/RedundantRegexpEscape"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_regexp_without_escapes_does_not_register_an_offense"
+source = '''
+foo = /a/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_regexp_with_escaped_slashes_does_not_register_an_offense"
+source = '''
+foo = /\/a\//
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_regexp_with_a_line_continuation_does_not_register_an_offense"
+source = '''
+foo = /a\
+b/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_regexp_with_a_line_continuation_within_a_character_class_does_not_register_an_offense"
+source = '''
+foo = /[a\
+b]/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_regexp_does_not_register_an_offense"
+source = '''
+foo = /\#{escape}/
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_regexp_does_not_register_an_offense"
+source = '''
+foo = /[\#{escape}]/
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_regexp_with_an_invalid_g_escape_does_not_register_an_offense"
+source = '''
+foo = /\g/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_regexp_with_an_escaped_m_a_outside_a_character_class_does_not_register_an_offense"
+source = '''
+foo = /\M-a/n
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_regexp_with_an_escaped_m_a_inside_a_character_class_does_not_register_an_offense"
+source = '''
+foo = /[\M-a]/n
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_regexp_does_not_register_an_offense"
+source = '''
+foo = /\#{char}/
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_regexp_registers_an_offense_and_corrects"
+source = '''
+foo = /[\#{char}]/
+'''
+corrected = '''
+foo = /[#{char}]/
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 10
+message = "Redundant escape inside regexp literal"
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_regexp_with_an_escaped_inside_a_character_class_inside_a_group_registers_an_offense_and_corrects"
+source = '''
+foo = /([\+])/
+'''
+corrected = '''
+foo = /([+])/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 11
+message = "Redundant escape inside regexp literal"
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_regexp_with_an_escaped_inside_a_character_class_beginning_with_registers_an_offense_and_corrects"
+source = '''
+foo = /[:\.]/
+'''
+corrected = '''
+foo = /[:.]/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 11
+message = "Redundant escape inside regexp literal"
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_regexp_with_an_escaped_character_being_the_last_character_inside_a_character_class_with_a_regexp_r_literal_registers_an_offense_and_corrects"
+source = '''
+foo = %r{[0-9\-]}
+'''
+corrected = '''
+foo = %r{[0-9-]}
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 15
+message = "Redundant escape inside regexp literal"
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_regexp_with_an_escaped_character_being_the_last_character_inside_a_character_class_with_a_regexp_literal_registers_an_offense_and_corrects"
+source = '''
+foo = /[0-9\-]/
+'''
+corrected = '''
+foo = /[0-9-]/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 13
+message = "Redundant escape inside regexp literal"
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_regexp_with_an_escaped_character_being_the_last_character_inside_a_character_class_with_an_escaped_opening_square_bracket_before_an_escaped_character_registers_an_offense_and_corrects"
+source = '''
+foo = /[\[\-]/
+'''
+corrected = '''
+foo = /[\[-]/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 12
+message = "Redundant escape inside regexp literal"
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_regexp_with_an_escaped_character_being_the_first_character_inside_a_character_class_with_a_regexp_r_literal_registers_an_offense_and_corrects"
+source = '''
+foo = %r{[\-0-9]}
+'''
+corrected = '''
+foo = %r{[-0-9]}
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 12
+message = "Redundant escape inside regexp literal"
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_regexp_with_an_escaped_character_being_the_first_character_inside_a_character_class_with_a_regexp_literal_registers_an_offense_and_corrects"
+source = '''
+foo = /[\-0-9]/
+'''
+corrected = '''
+foo = /[-0-9]/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 10
+message = "Redundant escape inside regexp literal"
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_regexp_with_an_escaped_character_being_neither_first_nor_last_inside_a_character_class_does_not_register_an_offense"
+source = '''
+foo = /[\[\-\]]/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_regexp_with_an_escaped_character_class_and_following_escaped_char_does_not_register_an_offense"
+source = '''
+foo = /\[\+/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_regexp_with_a_character_class_and_following_escaped_char_does_not_register_an_offense"
+source = '''
+foo = /[a]\+/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_regexp_with_a_nested_character_class_then_allowed_escape_does_not_register_an_offense"
+source = '''
+foo = /[a-w&&[^c-g]\-1-9]/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_regexp_with_a_nested_character_class_containing_redundant_escape_registers_an_offense_and_corrects"
+source = '''
+foo = /[[:punct:]&&[^\.]]/
+'''
+corrected = '''
+foo = /[[:punct:]&&[^.]]/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 21
+column_end = 23
+message = "Redundant escape inside regexp literal"
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_regexp_with_a_posix_character_class_then_allowed_escape_inside_a_character_class_does_not_register_an_offense"
+source = '''
+foo = /[[:alnum:]\-_]+/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_regexp_with_a_posix_character_class_then_disallowed_escape_inside_a_character_class_registers_an_offense_and_corrects"
+source = '''
+foo = /[[:alnum:]\.]/
+'''
+corrected = '''
+foo = /[[:alnum:].]/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 19
+message = "Redundant escape inside regexp literal"
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_regexp_with_a_backreference_does_not_register_an_offense"
+source = '''
+foo = /([a-z])\s*\1/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_regexp_with_an_interpolated_unnecessary_escape_regexp_registers_an_offense_and_corrects"
+source = '''
+foo = /a#{/\-/}c/
+'''
+corrected = '''
+foo = /a#{/-/}c/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 13
+message = "Redundant escape inside regexp literal"
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_regexp_with_an_escaped_instance_variable_after_does_not_register_an_offense"
+source = '''
+foo = /[#\@not_ivar]/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_regexp_with_an_escaped_class_variable_after_does_not_register_an_offense"
+source = '''
+foo = /[#\@@not_cvar]/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_regexp_with_an_escaped_global_variable_after_does_not_register_an_offense"
+source = '''
+foo = /[#\$not_gvar]/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_regexp_with_an_escape_inside_an_interpolated_string_does_not_register_an_offense"
+source = '''
+foo = /#{"\""}/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_regexp_with_an_escaped_interpolation_outside_a_character_class_does_not_register_an_offense"
+source = '''
+foo = /\#\{[a-z_]+\}/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_regexp_with_an_escaped_interpolation_inside_a_character_class_does_not_register_an_offense"
+source = '''
+foo = /[\#{}]/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_regexp_with_an_uppercase_metacharacter_inside_a_character_class_does_not_register_an_offense"
+source = '''
+foo = /[\H]/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_regexp_with_an_uppercase_metacharacter_outside_a_character_class_does_not_register_an_offense"
+source = '''
+foo = /\H/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_regexp_with_a_free_spaced_mode_regex_with_a_commented_and_does_not_register_an_offense"
+source = '''
+r = /
+  foo # shouldn't start a char class: [
+  \+  # escape is only redundant inside a char class, so not redundant here
+  bar # shouldn't end a char class: ]
+/x
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_regexp_with_a_free_spaced_mode_regex_with_a_commented_redundant_escape_does_not_register_an_offense"
+source = '''
+r = /
+  foo # redundant unless commented: \-
+/x
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_regexp_with_a_free_spaced_mode_regex_with_a_commented_redundant_escape_on_a_single_line_does_not_register_an_offense"
+source = '''
+r = /foo # redundant unless commented: \-/x
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_regexp_with_a_free_spaced_mode_regex_with_redundant_escape_preceded_by_an_escaped_comment_registers_offenses_and_corrects"
+source = '''
+r = /
+  foo \# \-
+/x
+'''
+corrected = '''
+r = /
+  foo \# -
+/x
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 9
+column_end = 11
+message = "Redundant escape inside regexp literal"
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_regexp_with_regexp_options_and_a_redundant_escape_registers_offenses_and_corrects"
+source = '''
+r = /\-/i
+'''
+corrected = '''
+r = /-/i
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 7
+message = "Redundant escape inside regexp literal"
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_regexp_with_an_interpolation_followed_by_redundant_escapes_registers_offenses_and_corrects"
+source = '''
+METHOD_NAME  = /\#?#{IDENTIFIER}[\!\?]?\(?/.freeze
+'''
+corrected = '''
+METHOD_NAME  = /\#?#{IDENTIFIER}[!?]?\(?/.freeze
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 33
+column_end = 35
+message = "Redundant escape inside regexp literal"
+
+[[tests.offenses]]
+line = 1
+column_start = 35
+column_end = 37
+message = "Redundant escape inside regexp literal"
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_regexp_with_multiple_escaped_metachars_inside_a_character_class_registers_offenses_and_corrects"
+source = '''
+foo = /[\s\(\|\{\[;,\*\=]/
+            ^^ Redundant escape inside regexp literal
+                    ^^ Redundant escape inside regexp literal
+'''
+corrected = '''
+foo = /[\s(|{\[;,*=]/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 12
+message = "Redundant escape inside regexp literal"
+
+[[tests.offenses]]
+line = 2
+column_start = 14
+column_end = 16
+message = "Redundant escape inside regexp literal"
+
+[[tests.offenses]]
+line = 3
+column_start = 22
+column_end = 24
+message = "Redundant escape inside regexp literal"
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_regexp_does_not_register_an_offense"
+source = '''
+foo = /\#{char}/
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_regexp_does_not_register_an_offense"
+source = '''
+foo = /[\#{char}]/
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_regexp_registers_an_offense_and_corrects"
+source = '''
+foo = /a\#{char}b/
+'''
+corrected = '''
+foo = /a#{char}b/
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 10
+message = "Redundant escape inside regexp literal"
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_regexp_registers_an_offense_and_corrects"
+source = '''
+foo = /a[\#{char}]b/
+'''
+corrected = '''
+foo = /a[#{char}]b/
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 11
+message = "Redundant escape inside regexp literal"
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_r_regexp_without_escapes_does_not_register_an_offense"
+source = '''
+foo = %r{a}
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_r_regexp_with_an_escaped_or_outside_a_character_class_does_not_register_an_offense"
+source = '''
+foo = %r{\{\}}
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_r_regexp_with_an_escaped_or_inside_a_character_class_does_not_register_an_offense"
+source = '''
+foo = %r{[\{\}]}
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_r_regexp_with_redundantly_escaped_slashes_registers_an_offense_and_corrects"
+source = '''
+foo = %r{\/a\/}
+'''
+corrected = '''
+foo = %r{/a/}
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 11
+message = "Redundant escape inside regexp literal"
+
+[[tests.offenses]]
+line = 1
+column_start = 12
+column_end = 14
+message = "Redundant escape inside regexp literal"
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_without_escapes_does_not_register_an_offense"
+source = '''
+foo = %r#{l}a#{r}
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_escaped_delimiters_and_regexp_options_does_not_register_an_offense"
+source = '''
+foo = %r#{l}#{escaped_delims}#{r}i
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_escaped_delimiters_outside_a_character_class_does_not_register_an_offense"
+source = '''
+foo = %r#{l}#{escaped_delims}#{r}
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_escaped_delimiters_inside_a_character_class_does_not_register_an_offense"
+source = '''
+foo = %r#{l}a[#{escaped_delims}]b#{r}
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_r_regexp_without_escapes_does_not_register_an_offense"
+source = '''
+foo = %r/a/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_single_line_r_regexp_with_escaped_slashes_does_not_register_an_offense"
+source = '''
+foo = %r/\/a\//
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_multi_line_r_regexp_without_escapes_does_not_register_an_offense"
+source = '''
+foo = %r{
+  a
+  b
+}x
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_multi_line_r_regexp_with_a_inside_a_character_class_does_not_register_an_offense"
+source = '''
+regexp = %r{
+  \A[a-z#]            # letters or #
+  \.[a-z]\z           # dot + letters
+}x
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_multi_line_r_regexp_with_redundantly_escaped_slashes_registers_an_offense_and_corrects"
+source = '''
+foo = %r{
+  \/a
+  b\/
+}x
+'''
+corrected = '''
+foo = %r{
+  /a
+  b/
+}x
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 4
+message = "Redundant escape inside regexp literal"
+
+[[tests.offenses]]
+line = 3
+column_start = 3
+column_end = 5
+message = "Redundant escape inside regexp literal"
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_multi_line_r_regexp_with_a_redundant_escape_after_a_line_with_comment_registers_an_offense_and_corrects"
+source = '''
+foo = %r{
+  foo # this should not affect the position of the escape below
+  \-
+}x
+'''
+corrected = '''
+foo = %r{
+  foo # this should not affect the position of the escape below
+  -
+}x
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 4
+message = "Redundant escape inside regexp literal"
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_multi_line_r_regexp_without_escapes_does_not_register_an_offense"
+source = '''
+foo = %r/
+  a
+  b
+/x
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_a_multi_line_r_regexp_with_escaped_slashes_does_not_register_an_offense"
+source = '''
+foo = %r/
+  \/a
+  b\/
+/x
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_multibyte_characters_removes_the_escape_character_at_the_right_position"
+source = '''
+x = s[/[一二三四\.]+/]
+p x
+'''
+corrected = '''
+x = s[/[一二三四.]+/]
+p x
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 12
+column_end = 14
+message = "Redundant escape inside regexp literal"
+
+[[tests]]
+name = "rubocop_cop_style_redundantregexpescape_with_escaping_invalid_byte_sequence_in_utf_8_registers_an_offense_and_corrects"
+source = '''
+r = /[\§]/
+'''
+corrected = '''
+r = /[§]/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 8
+message = "Redundant escape inside regexp literal"

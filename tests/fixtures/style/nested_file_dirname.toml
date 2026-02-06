@@ -1,0 +1,60 @@
+cop = "Style/NestedFileDirname"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_nestedfiledirname_ruby_3_1_registers_and_corrects_an_offense_when_using_file_dirname_path_nested_two_times"
+source = '''
+File.dirname(File.dirname(path))
+'''
+corrected = '''
+File.dirname(path, 2)
+'''
+ruby_version = ">= 3.1"
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 32
+message = "Use `dirname(path, 2)` instead."
+
+[[tests]]
+name = "rubocop_cop_style_nestedfiledirname_ruby_3_1_registers_and_corrects_an_offense_when_using_file_dirname_path_nested_three_times"
+source = '''
+File.dirname(File.dirname(File.dirname(path)))
+'''
+corrected = '''
+File.dirname(path, 3)
+'''
+ruby_version = ">= 3.1"
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 46
+message = "Use `dirname(path, 3)` instead."
+
+[[tests]]
+name = "rubocop_cop_style_nestedfiledirname_ruby_3_1_does_not_register_an_offense_when_using_non_nested_file_dirname_path"
+source = '''
+File.dirname(path)
+'''
+ruby_version = ">= 3.1"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_nestedfiledirname_ruby_3_1_does_not_register_an_offense_when_using_file_dirname_path_2"
+source = '''
+File.dirname(path, 2)
+'''
+ruby_version = ">= 3.1"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_nestedfiledirname_ruby_3_0_does_not_register_an_offense_when_using_file_dirname_path_nested_two_times"
+source = '''
+File.dirname(File.dirname(path))
+'''
+ruby_version = ">= 3.0"
+offenses = []

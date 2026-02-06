@@ -1,0 +1,115 @@
+cop = "Lint/DuplicateMagicComment"
+department = "lint"
+severity = "warning"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_lint_duplicatemagiccomment_registers_an_offense_when_frozen_magic_comments_are_duplicated"
+source = '''
+# frozen_string_literal: true
+# frozen_string_literal: true
+'''
+corrected = '''
+# frozen_string_literal: true
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 29
+message = "Duplicate magic comment detected."
+
+[[tests]]
+name = "rubocop_cop_lint_duplicatemagiccomment_registers_an_offense_when_frozen_magic_comments_with_different_case_are_duplicated"
+source = '''
+# frozen_string_literal: true
+# frozen_string_literal: TRUE
+'''
+corrected = '''
+# frozen_string_literal: true
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 29
+message = "Duplicate magic comment detected."
+
+[[tests]]
+name = "rubocop_cop_lint_duplicatemagiccomment_registers_an_offense_when_same_encoding_magic_comments_are_duplicated"
+source = '''
+# encoding: ascii
+# encoding: ascii
+'''
+corrected = '''
+# encoding: ascii
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 17
+message = "Duplicate magic comment detected."
+
+[[tests]]
+name = "rubocop_cop_lint_duplicatemagiccomment_registers_an_offense_when_different_encoding_magic_comments_are_duplicated"
+source = '''
+# encoding: ascii
+# encoding: utf-8
+'''
+corrected = '''
+# encoding: ascii
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 17
+message = "Duplicate magic comment detected."
+
+[[tests]]
+name = "rubocop_cop_lint_duplicatemagiccomment_registers_an_offense_when_encoding_and_frozen_magic_comments_are_duplicated"
+source = '''
+# encoding: ascii
+# frozen_string_literal: true
+# encoding: ascii
+# frozen_string_literal: true
+'''
+corrected = '''
+# encoding: ascii
+# frozen_string_literal: true
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 17
+message = "Duplicate magic comment detected."
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 29
+message = "Duplicate magic comment detected."
+
+[[tests]]
+name = "rubocop_cop_lint_duplicatemagiccomment_does_not_register_an_offense_when_frozen_magic_comments_are_not_duplicated"
+source = '''
+# frozen_string_literal: true
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_duplicatemagiccomment_does_not_register_an_offense_when_encoding_magic_comments_are_not_duplicated"
+source = '''
+# encoding: ascii
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_duplicatemagiccomment_does_not_register_an_offense_when_encoding_and_frozen_magic_comments_are_not_duplicated"
+source = '''
+# encoding: ascii
+# frozen_string_literal: true
+'''
+offenses = []

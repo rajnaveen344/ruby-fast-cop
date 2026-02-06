@@ -1,6 +1,6 @@
-//! Statistics tool for YAML test fixtures.
+//! Statistics tool for TOML test fixtures.
 //!
-//! Reads all YAML fixtures and provides deterministic statistics about test coverage,
+//! Reads all TOML fixtures and provides deterministic statistics about test coverage,
 //! interpolation status, and verification progress.
 //!
 //! Usage:
@@ -30,12 +30,16 @@ struct CopTestFile {
 struct TestCase {
     #[allow(dead_code)]
     name: String,
-    #[serde(default)]
-    config: serde_yaml::Value,
+    #[serde(default = "default_toml_table")]
+    config: toml::Value,
     #[serde(default)]
     interpolated: bool,
     #[serde(default)]
     verified: bool,
+}
+
+fn default_toml_table() -> toml::Value {
+    toml::Value::Table(toml::map::Map::new())
 }
 
 /// Statistics for a single cop
@@ -63,11 +67,11 @@ struct OverallStats {
     tests_with_unresolved_config: usize,
 }
 
-/// Find all YAML test fixture files
+/// Find all TOML test fixture files
 fn discover_test_files() -> Vec<PathBuf> {
     let pattern = concat!(
         env!("CARGO_MANIFEST_DIR"),
-        "/tests/fixtures/**/*.yaml"
+        "/tests/fixtures/**/*.toml"
     );
 
     let mut files: Vec<PathBuf> = glob(pattern)
@@ -79,16 +83,16 @@ fn discover_test_files() -> Vec<PathBuf> {
     files
 }
 
-/// Count $UNRESOLVED: occurrences in a YAML value
-fn count_unresolved(value: &serde_yaml::Value) -> usize {
+/// Count $UNRESOLVED: occurrences in a TOML value
+fn count_unresolved(value: &toml::Value) -> usize {
     match value {
-        serde_yaml::Value::String(s) => {
+        toml::Value::String(s) => {
             if s.starts_with("$UNRESOLVED:") { 1 } else { 0 }
         }
-        serde_yaml::Value::Sequence(arr) => {
+        toml::Value::Array(arr) => {
             arr.iter().map(count_unresolved).sum()
         }
-        serde_yaml::Value::Mapping(map) => {
+        toml::Value::Table(map) => {
             map.values().map(count_unresolved).sum()
         }
         _ => 0,
@@ -121,7 +125,7 @@ fn main() {
             }
         };
 
-        let test_file: CopTestFile = match serde_yaml::from_str(&content) {
+        let test_file: CopTestFile = match toml::from_str(&content) {
             Ok(f) => f,
             Err(e) => {
                 eprintln!("Warning: Failed to parse {}: {}", file_path.display(), e);
@@ -170,18 +174,14 @@ fn main() {
 
                 // Collect examples for --unresolved flag
                 if show_unresolved && unresolved_examples.len() < 20 {
-                    if let serde_yaml::Value::Mapping(map) = &test.config {
+                    if let toml::Value::Table(map) = &test.config {
                         for (k, v) in map {
-                            if let serde_yaml::Value::String(s) = v {
+                            if let toml::Value::String(s) = v {
                                 if s.starts_with("$UNRESOLVED:") {
-                                    let key = match k {
-                                        serde_yaml::Value::String(ks) => ks.clone(),
-                                        _ => format!("{:?}", k),
-                                    };
                                     unresolved_examples.push((
                                         test_file.cop.clone(),
                                         test.name.clone(),
-                                        format!("{}: {}", key, s),
+                                        format!("{}: {}", k, s),
                                     ));
                                 }
                             }
@@ -216,7 +216,7 @@ fn main() {
 
     // Print overall statistics
     println!("╔══════════════════════════════════════════════════════════════╗");
-    println!("║              YAML Test Fixture Statistics                    ║");
+    println!("║              TOML Test Fixture Statistics                    ║");
     println!("╚══════════════════════════════════════════════════════════════╝");
     println!();
 
@@ -312,7 +312,7 @@ fn main() {
     // Print legend
     println!("Legend");
     println!("───────────────────────────────────────────────────────────────");
-    println!("  Interp    = Tests with interpolated: true (need manual verification)");
+    println!("  Interp    = Tests with interpolated = true (need manual verification)");
     println!("  Verified  = Interpolated tests that have been manually verified");
     println!("  Unresol   = Config values marked $UNRESOLVED:xxx");
     println!("  Runnable  = Tests that will execute (implemented + not interpolated OR verified)");

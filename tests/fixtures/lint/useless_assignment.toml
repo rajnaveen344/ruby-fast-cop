@@ -1,0 +1,2663 @@
+cop = "Lint/UselessAssignment"
+department = "lint"
+severity = "warning"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_assigned_and_assigned_again_in_a_modifier_condition_accepts_with_parentheses"
+source = '''
+a = nil
+puts a if (a = 123)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_assigned_and_assigned_again_in_a_modifier_condition_accepts_without_parentheses"
+source = '''
+a = nil
+puts a unless a = 123
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_assigned_and_assigned_again_in_a_modifier_loop_condition_accepts_with_parentheses"
+source = '''
+a = nil
+puts a while (a = false)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_assigned_and_assigned_again_in_a_modifier_loop_condition_accepts_without_parentheses"
+source = '''
+a = nil
+puts a until a = true
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_assigned_and_unreferenced_in_a_method_registers_an_offense"
+source = '''
+class SomeClass
+  foo = 1
+  puts foo
+  def some_method
+    foo = 2
+    bar = 3
+    puts bar
+  end
+end
+'''
+corrected = '''
+class SomeClass
+  foo = 1
+  puts foo
+  def some_method
+    2
+    bar = 3
+    puts bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 4
+column_end = 7
+message = "Useless assignment to variable - `foo`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_registers_an_offense"
+source = '''
+class SomeClass
+  foo = 1
+  puts foo
+  def self.some_method
+    foo = 2
+    bar = 3
+    puts bar
+  end
+end
+'''
+corrected = '''
+class SomeClass
+  foo = 1
+  puts foo
+  def self.some_method
+    2
+    bar = 3
+    puts bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 4
+column_end = 7
+message = "Useless assignment to variable - `foo`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_registers_an_offense"
+source = '''
+1.times do
+  foo = 1
+  puts foo
+  instance = Object.new
+  def instance.some_method
+    foo = 2
+    bar = 3
+    puts bar
+  end
+end
+'''
+corrected = '''
+1.times do
+  foo = 1
+  puts foo
+  instance = Object.new
+  def instance.some_method
+    2
+    bar = 3
+    puts bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 4
+column_end = 7
+message = "Useless assignment to variable - `foo`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_assigned_and_unreferenced_in_a_class_registers_an_offense"
+source = '''
+1.times do
+  foo = 1
+  puts foo
+  class SomeClass
+    foo = 2
+    bar = 3
+    puts bar
+  end
+end
+'''
+corrected = '''
+1.times do
+  foo = 1
+  puts foo
+  class SomeClass
+    2
+    bar = 3
+    puts bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 4
+column_end = 7
+message = "Useless assignment to variable - `foo`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_registers_an_offense"
+source = '''
+1.times do
+  foo = 1
+  puts foo
+  array_class = Array
+  class SomeClass < array_class
+    foo = 2
+    bar = 3
+    puts bar
+  end
+end
+'''
+corrected = '''
+1.times do
+  foo = 1
+  puts foo
+  array_class = Array
+  class SomeClass < array_class
+    2
+    bar = 3
+    puts bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 4
+column_end = 7
+message = "Useless assignment to variable - `foo`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_assigned_and_unreferenced_in_a_singleton_class_registers_an_offense"
+source = '''
+1.times do
+  foo = 1
+  puts foo
+  instance = Object.new
+  class << instance
+    foo = 2
+    bar = 3
+    puts bar
+  end
+end
+'''
+corrected = '''
+1.times do
+  foo = 1
+  puts foo
+  instance = Object.new
+  class << instance
+    2
+    bar = 3
+    puts bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 4
+column_end = 7
+message = "Useless assignment to variable - `foo`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_assigned_and_unreferenced_in_a_module_registers_an_offense"
+source = '''
+1.times do
+  foo = 1
+  puts foo
+  module SomeModule
+    foo = 2
+    bar = 3
+    puts bar
+  end
+end
+'''
+corrected = '''
+1.times do
+  foo = 1
+  puts foo
+  module SomeModule
+    2
+    bar = 3
+    puts bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 4
+column_end = 7
+message = "Useless assignment to variable - `foo`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_assigned_and_referenced_when_defining_a_module_does_not_register_an_offense"
+source = '''
+x = Object.new
+module x::Foo
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_assigned_and_unreferenced_in_for_registers_an_offense"
+source = '''
+for item in items
+end
+'''
+corrected = '''
+for _ in items
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 8
+message = "Useless assignment to variable - `item`. Did you mean `items`?"
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_assigned_before_for_registers_an_offense_when_it_is_not_referenced"
+source = '''
+node = foo
+for node in bar
+  return node if baz?
+end
+'''
+corrected = '''
+foo
+for node in bar
+  return node if baz?
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 4
+message = "Useless assignment to variable - `node`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_assigned_before_for_registers_no_offense_when_the_variable_is_referenced_in_the_collection"
+source = '''
+node = foo
+for node in node.children
+  return node if bar?
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_assigned_and_unreferenced_in_for_with_multiple_variables_registers_an_offense"
+source = '''
+for i, j in items
+  do_something(i)
+end
+'''
+corrected = '''
+for i, _ in items
+  do_something(i)
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 8
+message = "Useless assignment to variable - `j`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_assigned_and_referenced_in_for_does_not_register_an_offense"
+source = '''
+for item in items
+  do_something(item)
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_assigned_and_unreferenced_in_top_level_registers_an_offense"
+source = '''
+foo = 1
+bar = 2
+puts bar
+'''
+corrected = '''
+1
+bar = 2
+puts bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 3
+message = "Useless assignment to variable - `foo`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_assigned_with_operator_assignment_in_top_level_registers_an_offense"
+source = '''
+foo ||= 1
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 3
+message = "Useless assignment to variable - `foo`. Use `||` instead of `||=`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_assigned_multiple_times_but_unreferenced_registers_offenses_for_each_assignment"
+source = '''
+def some_method
+  foo = 1
+  bar = 2
+  foo = 3
+  puts bar
+end
+'''
+corrected = '''
+def some_method
+  1
+  bar = 2
+  3
+  puts bar
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 5
+message = "Useless assignment to variable - `foo`."
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 5
+message = "Useless assignment to variable - `foo`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_referenced_variable_is_reassigned_but_not_re_referenced_registers_an_offense_for_the_non_re_referenced_assignment"
+source = '''
+def some_method
+  foo = 1
+  puts foo
+  foo = 3
+end
+'''
+corrected = '''
+def some_method
+  foo = 1
+  puts foo
+  3
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 5
+message = "Useless assignment to variable - `foo`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_an_unreferenced_variable_is_reassigned_and_re_referenced_registers_an_offense_for_the_unreferenced_assignment"
+source = '''
+def some_method
+  foo = 1
+  foo = 3
+  puts foo
+end
+'''
+corrected = '''
+def some_method
+  1
+  foo = 3
+  puts foo
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 5
+message = "Useless assignment to variable - `foo`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_an_unreferenced_variable_is_reassigned_in_a_block_accepts"
+source = '''
+def const_name(node)
+  const_names = []
+  const_node = node
+
+  loop do
+    namespace_node, name = *const_node
+    const_names << name
+    break unless namespace_node
+    break if namespace_node.type == :cbase
+    const_node = namespace_node
+  end
+
+  const_names.reverse.join('::')
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_referenced_variable_is_reassigned_in_a_block_accepts"
+source = '''
+def some_method
+  foo = 1
+  puts foo
+  1.times do
+    foo = 2
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_block_local_variable_is_declared_but_not_assigned_accepts"
+source = '''
+1.times do |i; foo|
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_block_local_variable_is_assigned_and_unreferenced_registers_offenses_for_the_assignment"
+source = '''
+1.times do |i; foo|
+  foo = 2
+end
+'''
+corrected = '''
+1.times do |i; foo|
+  2
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 5
+message = "Useless assignment to variable - `foo`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_block_local_variable_is_assigned_and_unreferenced_registers_offenses_for_self_assignment_in_numblock"
+source = '''
+do_something { foo += _1 }
+'''
+corrected = '''
+do_something { foo + _1 }
+'''
+ruby_version = ">= 2.7"
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 18
+message = "Useless assignment to variable - `foo`. Use `+` instead of `+=`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_block_local_variable_is_assigned_and_unreferenced_registers_offenses_for_self_assignment_in_itblock"
+source = '''
+do_something { foo += it }
+'''
+corrected = '''
+do_something { foo + it }
+'''
+ruby_version = ">= 3.4"
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 18
+message = "Useless assignment to variable - `foo`. Use `+` instead of `+=`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_assigned_in_loop_body_and_unreferenced_registers_an_offense"
+source = '''
+def some_method
+  while true
+    foo = 1
+  end
+end
+'''
+corrected = '''
+def some_method
+  while true
+    1
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 4
+column_end = 7
+message = "Useless assignment to variable - `foo`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_accepts"
+source = '''
+def some_method
+  total = 0
+  foo = 0
+
+  while total < 100
+    total += foo
+    foo += 1
+  end
+
+  total
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_accepts"
+source = '''
+def some_method
+  total = 0
+  foo = 0
+
+  while foo < 100
+    total += 1
+    foo += 1
+  end
+
+  total
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_setter_is_invoked_with_operator_assignment_in_loop_body_accepts"
+source = '''
+def some_method
+  obj = {}
+
+  while obj[:count] < 100
+    obj[:count] += 1
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_reassigned_before_a_block_registers_an_offense"
+source = '''
+def some_method
+  foo = 1
+  foo = 2
+  bar {
+    foo = 3
+  }
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 5
+message = "Useless assignment to variable - `foo`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_reassigned_in_another_branch_before_a_block_accepts"
+source = '''
+def some_method
+  if baz
+    foo = 1
+  else
+    foo = 2
+    bar {
+      foo = 3
+    }
+  end
+
+  foo
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_reassigned_in_another_case_branch_before_a_block_accepts"
+source = '''
+def some_method
+  case baz
+  when 1
+    foo = 1
+  else
+    foo = 2
+    bar {
+      foo = 3
+    }
+  end
+
+  foo
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_assigning_in_branch_accepts"
+source = '''
+def some_method
+  changed = false
+
+  if Random.rand > 1
+    changed = true
+  end
+
+  [].each do
+    changed = true
+  end
+
+  puts changed
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_assigning_in_case_accepts"
+source = '''
+def some_method
+  changed = false
+
+  case Random.rand
+  when 0.5
+    changed = true
+  when 1..20
+    changed = false
+  when 21..70
+    changed = true
+  end
+
+  [].each do
+    changed = true
+  end
+
+  puts changed
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_registers_an_offense"
+source = '''
+def some_method
+  total = 0
+  foo = 0
+
+  while total < 100
+    total += 1
+    foo += 1
+  end
+
+  total
+end
+'''
+corrected = '''
+def some_method
+  total = 0
+  foo = 0
+
+  while total < 100
+    total += 1
+    foo = 1
+  end
+
+  total
+end
+'''
+
+[[tests.offenses]]
+line = 7
+column_start = 4
+column_end = 7
+message = "Useless assignment to variable - `foo`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_registers_an_offense"
+source = '''
+while true
+  def some_method
+    foo = 1
+    puts foo
+    foo = 3
+  end
+end
+'''
+corrected = '''
+while true
+  def some_method
+    foo = 1
+    puts foo
+    3
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 4
+column_end = 7
+message = "Useless assignment to variable - `foo`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_registers_an_offense"
+source = '''
+foo = 1
+
+while foo < 100
+  foo += 1
+  def some_method
+    foo = 1
+  end
+end
+'''
+corrected = '''
+foo = 1
+
+while foo < 100
+  foo += 1
+  def some_method
+    1
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 4
+column_end = 7
+message = "Useless assignment to variable - `foo`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_assigned_in_single_branch_if_and_unreferenced_registers_an_offense"
+source = '''
+def some_method(flag)
+  if flag
+    foo = 1
+  end
+end
+'''
+corrected = '''
+def some_method(flag)
+  if flag
+    1
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 4
+column_end = 7
+message = "Useless assignment to variable - `foo`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_registers_an_offense_for_the_unreferenced_assignment"
+source = '''
+def some_method(flag)
+  if flag
+    foo = 1
+    foo = 2
+  end
+
+  foo
+end
+'''
+corrected = '''
+def some_method(flag)
+  if flag
+    1
+    foo = 2
+  end
+
+  foo
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 4
+column_end = 7
+message = "Useless assignment to variable - `foo`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_reassigned_in_single_branch_if_and_referenced_after_the_branching_accepts"
+source = '''
+def some_method(flag)
+  foo = 1
+
+  if flag
+    foo = 2
+  end
+
+  foo
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_reassigned_in_a_loop_while_loop_accepts"
+source = '''
+def while(param)
+  ret = 1
+
+  while param != 10
+    param += 2
+    ret = param + 1
+  end
+
+  ret
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_reassigned_in_a_loop_post_while_loop_accepts"
+source = '''
+def post_while(param)
+  ret = 1
+
+  begin
+    param += 2
+    ret = param + 1
+  end while param < 40
+
+  ret
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_reassigned_in_a_loop_until_loop_accepts"
+source = '''
+def until(param)
+  ret = 1
+
+  until param == 10
+    param += 2
+    ret = param + 1
+  end
+
+  ret
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_reassigned_in_a_loop_post_until_loop_accepts"
+source = '''
+def post_until(param)
+  ret = 1
+
+  begin
+    param += 2
+    ret = param + 1
+  end until param == 10
+
+  ret
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_reassigned_in_a_loop_for_loop_accepts"
+source = '''
+def for(param)
+  ret = 1
+
+  for x in param...10
+    param += x
+    ret = param + 1
+  end
+
+  ret
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_assigned_in_each_branch_of_if_and_referenced_after_the_branching_accepts"
+source = '''
+def some_method(flag)
+  if flag
+    foo = 2
+  else
+    foo = 3
+  end
+
+  foo
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_reassigned_in_single_branch_if_and_referenced_in_the_branch_registers_an_offense_for_the_unreferenced_assignment"
+source = '''
+def some_method(flag)
+  foo = 1
+
+  if flag
+    foo = 2
+    puts foo
+  end
+end
+'''
+corrected = '''
+def some_method(flag)
+  1
+
+  if flag
+    foo = 2
+    puts foo
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 5
+message = "Useless assignment to variable - `foo`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_assigned_in_each_branch_of_if_and_referenced_in_the_else_branch_registers_an_offense_for_the_assignment_in_the_if_branch"
+source = '''
+def some_method(flag)
+  if flag
+    foo = 2
+  else
+    foo = 3
+    puts foo
+  end
+end
+'''
+corrected = '''
+def some_method(flag)
+  if flag
+    2
+  else
+    foo = 3
+    puts foo
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 4
+column_end = 7
+message = "Useless assignment to variable - `foo`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_registers_an_offense_for_the_reassignment_in_the_if_branch"
+source = '''
+def some_method(flag)
+  foo = 1
+
+  if flag
+    puts foo
+    foo = 2
+  else
+    puts foo
+  end
+end
+'''
+corrected = '''
+def some_method(flag)
+  foo = 1
+
+  if flag
+    puts foo
+    2
+  else
+    puts foo
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 4
+column_end = 7
+message = "Useless assignment to variable - `foo`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_registers_an_offense_for_the_assignment_in_the_if_branch"
+source = '''
+if flag
+  foo = 1
+else
+  puts foo
+end
+'''
+corrected = '''
+if flag
+  1
+else
+  puts foo
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 5
+message = "Useless assignment to variable - `foo`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_registers_an_offense_for_the_reassignment_in_the_if_branch"
+source = '''
+def some_method(flag_a, flag_b)
+  foo = 1
+
+  if flag_a
+    puts foo
+    foo = 2
+  elsif flag_b
+    puts foo
+  end
+end
+'''
+corrected = '''
+def some_method(flag_a, flag_b)
+  foo = 1
+
+  if flag_a
+    puts foo
+    2
+  elsif flag_b
+    puts foo
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 4
+column_end = 7
+message = "Useless assignment to variable - `foo`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_registers_an_offense_for_the_reassignment_in_the_if_branch"
+source = '''
+def some_method(flag_a, flag_b)
+  foo = 1
+
+  if flag_a
+    puts foo
+    foo = 2
+  else
+    case
+    when flag_b
+      puts foo
+    end
+  end
+end
+'''
+corrected = '''
+def some_method(flag_a, flag_b)
+  foo = 1
+
+  if flag_a
+    puts foo
+    2
+  else
+    case
+    when flag_b
+      puts foo
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 4
+column_end = 7
+message = "Useless assignment to variable - `foo`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_an_assignment_in_an_if_branch_is_referenced_in_another_if_branch_accepts"
+source = '''
+def some_method(flag_a, flag_b)
+  if flag_a
+    foo = 1
+  end
+
+  if flag_b
+    puts foo
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_accepts"
+source = '''
+def some_method(flag)
+  foo = 1 unless foo
+  puts foo
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_registers_an_offense"
+source = '''
+def some_method(flag)
+  foo = 1 unless foo
+end
+'''
+corrected = '''
+def some_method(flag)
+  1 unless foo
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 5
+message = "Useless assignment to variable - `foo`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_assigned_on_each_side_of_and_referenced_after_the_accepts"
+source = '''
+def some_method
+  (foo = do_something_returns_object_or_nil) && (foo = 1)
+  foo
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_registers_an_offense_for_the_unreferenced_assignment"
+source = '''
+def some_method
+  foo = 1
+  (foo = do_something_returns_object_or_nil) && do_something
+  foo
+end
+'''
+corrected = '''
+def some_method
+  1
+  (foo = do_something_returns_object_or_nil) && do_something
+  foo
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 5
+message = "Useless assignment to variable - `foo`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_accepts"
+source = '''
+def some_method
+  foo = 1
+  do_something_returns_object_or_nil && foo = 2
+  foo
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_accepts"
+source = '''
+def some_method(bar)
+  foo = 1
+  bar &&= (foo = 2)
+  [foo, bar]
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_accepts"
+source = '''
+def some_method(bar)
+  foo = 1
+  bar ||= (foo = 2)
+  [foo, bar]
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_accepts"
+source = '''
+def some_method(bar)
+  foo = 1
+  bar += (foo = 2)
+  [foo, bar]
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_reassigned_while_referencing_itself_in_rhs_and_referenced_accepts"
+source = '''
+def some_method
+  foo = [1, 2]
+  foo = foo.map { |i| i + 1 }
+  puts foo
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_reassigned_while_referencing_itself_in_rhs_and_referenced_registers_an_offense_when_the_reassignment_is_the_last_statement"
+source = '''
+foo = [1, 2]
+foo = foo.map { |i| i + 1 }
+'''
+corrected = '''
+foo = [1, 2]
+foo.map { |i| i + 1 }
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 3
+message = "Useless assignment to variable - `foo`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_reassigned_with_binary_operator_assignment_and_referenced_accepts"
+source = '''
+def some_method
+  foo = 1
+  foo += 1
+  foo
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_reassigned_with_logical_operator_assignment_and_referenced_accepts"
+source = '''
+def some_method
+  foo = do_something_returns_object_or_nil
+  foo ||= 1
+  foo
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_registers_an_offense_for_the_assignment_in_rhs"
+source = '''
+def some_method
+  foo = 1
+  foo += foo = 2
+  foo
+end
+'''
+corrected = '''
+def some_method
+  foo = 1
+  foo += 2
+  foo
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 9
+column_end = 12
+message = "Useless assignment to variable - `foo`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_assigned_first_with_and_referenced_accepts"
+source = '''
+def some_method
+  foo ||= 1
+  foo
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_assigned_with_at_the_last_expression_of_the_scope_registers_an_offense"
+source = '''
+def some_method
+  foo = do_something_returns_object_or_nil
+  foo ||= 1
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 5
+message = "Useless assignment to variable - `foo`. Use `||` instead of `||=`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_assigned_with_before_the_last_expression_of_the_scope_registers_an_offense"
+source = '''
+def some_method
+  foo = do_something_returns_object_or_nil
+  foo ||= 1
+  some_return_value
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 5
+message = "Useless assignment to variable - `foo`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_assigned_with_multiple_assignment_and_unreferenced_registers_an_offense"
+source = '''
+def some_method
+  foo, bar = do_something
+  puts foo
+end
+'''
+corrected = '''
+def some_method
+  foo, _ = do_something
+  puts foo
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 7
+column_end = 10
+message = "Useless assignment to variable - `bar`. Use `_` or `_bar` as a variable name to indicate that it won't be used."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_assigned_as_an_argument_to_a_method_given_to_multiple_assignment_registers_an_offense"
+source = '''
+def some_method
+  a, b = func(c = 3)
+  [a, b]
+end
+'''
+corrected = '''
+def some_method
+  a, b = func(3)
+  [a, b]
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 14
+column_end = 15
+message = "Useless assignment to variable - `c`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_assigned_as_an_argument_to_a_method_given_to_multiple_assignment_and_later_used_does_not_register_an_offense"
+source = '''
+def some_method
+  a, b = func(c = 3)
+  [a, b, c]
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_variables_are_assigned_using_chained_assignment_and_remain_unreferenced_registers_an_offense"
+source = '''
+def some_method
+  foo = bar = do_something
+end
+'''
+corrected = '''
+def some_method
+  bar = do_something
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 5
+message = "Useless assignment to variable - `foo`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_same_name_variables_are_assigned_using_chained_assignment_registers_an_offense"
+source = '''
+def some_method
+  foo = foo = do_something
+end
+'''
+corrected = '''
+def some_method
+  foo = do_something
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 5
+message = "Useless assignment to variable - `foo`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_variables_are_assigned_using_unary_operator_in_chained_assignment_and_remain_unreferenced_registers_an_offense"
+source = '''
+def some_method
+  foo = -bar = do_something
+end
+'''
+corrected = '''
+def some_method
+  -bar = do_something
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 5
+message = "Useless assignment to variable - `foo`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_variables_are_assigned_with_sequential_assignment_using_the_comma_operator_and_unreferenced_registers_an_offense"
+source = '''
+def some_method
+  foo = 1, bar = 2
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 5
+message = "Useless assignment to variable - `foo`."
+
+[[tests.offenses]]
+line = 2
+column_start = 11
+column_end = 14
+message = "Useless assignment to variable - `bar`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_accepts"
+source = '''
+def some_method
+  foo = 1
+  foo, bar = do_something(foo)
+  puts foo, bar
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_part_of_a_multiple_assignment_is_enclosed_in_parentheses_registers_an_offense_when_the_variable_in_parentheses_is_not_used"
+source = '''
+def some_method
+  foo, (bar, baz) = do_something
+  puts foo, bar
+end
+'''
+corrected = '''
+def some_method
+  foo, (bar, _) = do_something
+  puts foo, bar
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 13
+column_end = 16
+message = "Useless assignment to variable - `baz`. Use `_` or `_baz` as a variable name to indicate that it won't be used."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_part_of_a_multiple_assignment_is_enclosed_in_parentheses_registers_an_offense_when_the_variable_in_nested_parentheses_is_not_used"
+source = '''
+def some_method
+  foo, (bar, (baz, qux)) = do_something
+  puts foo, bar, baz
+end
+'''
+corrected = '''
+def some_method
+  foo, (bar, (baz, _)) = do_something
+  puts foo, bar, baz
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 19
+column_end = 22
+message = "Useless assignment to variable - `qux`. Use `_` or `_qux` as a variable name to indicate that it won't be used."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_part_of_a_multiple_assignment_is_enclosed_in_parentheses_with_splat_registers_an_offense_when_the_variable_is_not_used"
+source = '''
+def some_method
+  (foo, bar), *baz = do_something
+  puts foo, bar
+end
+'''
+corrected = '''
+def some_method
+  (foo, bar), *_ = do_something
+  puts foo, bar
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 15
+column_end = 18
+message = "Useless assignment to variable - `baz`. Use `_` or `_baz` as a variable name to indicate that it won't be used."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_part_of_a_multiple_assignment_is_enclosed_in_parentheses_with_splat_registers_an_offense_when_the_variable_is_not_used_in_nested_assignment"
+source = '''
+def some_method
+  foo, (*bar, baz) = do_something
+  puts foo, baz
+end
+'''
+corrected = '''
+def some_method
+  foo, (*_, baz) = do_something
+  puts foo, baz
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 9
+column_end = 12
+message = "Useless assignment to variable - `bar`. Use `_` or `_bar` as a variable name to indicate that it won't be used."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_assigned_with_rest_assignment_and_unreferenced_registers_an_offense"
+source = '''
+def some_method
+  foo, *bar = do_something
+  puts foo
+end
+'''
+corrected = '''
+def some_method
+  foo, *_ = do_something
+  puts foo
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 8
+column_end = 11
+message = "Useless assignment to variable - `bar`. Use `_` or `_bar` as a variable name to indicate that it won't be used."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_assigned_in_loop_body_and_referenced_in_post_while_condition_accepts"
+source = '''
+begin
+  a = (a || 0) + 1
+  puts a
+end while a <= 2
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_assigned_in_loop_body_and_referenced_in_post_until_condition_accepts"
+source = '''
+begin
+  a = (a || 0) + 1
+  puts a
+end until a > 2
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_assigned_in_main_body_of_begin_with_rescue_but_unreferenced_registers_an_offense"
+source = '''
+begin
+  do_something
+  foo = true
+rescue
+  do_anything
+end
+'''
+corrected = '''
+begin
+  do_something
+  true
+rescue
+  do_anything
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 5
+message = "Useless assignment to variable - `foo`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_accepts"
+source = '''
+begin
+  do_something
+  foo = :in_begin
+rescue FirstError
+  foo = :in_first_rescue
+rescue SecondError
+  foo = :in_second_rescue
+else
+  foo = :in_else
+end
+
+puts foo
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_accepts"
+source = '''
+begin
+  status = :initial
+  connect_sometimes_fails!
+  status = :connected
+  fetch_sometimes_fails!
+  status = :fetched
+rescue
+  do_something
+end
+
+puts status
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_accepts"
+source = '''
+begin
+  status = :initial
+  connect_sometimes_fails!
+  status = :connected
+  fetch_sometimes_fails!
+  status = :fetched
+rescue
+  puts status
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_accepts"
+source = '''
+begin
+  status = :initial
+  connect_sometimes_fails!
+  status = :connected
+  fetch_sometimes_fails!
+  status = :fetched
+ensure
+  puts status
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_reassigned_multiple_times_in_rescue_and_referenced_after_the_begin_registers_an_offense"
+source = '''
+foo = false
+
+begin
+  do_something
+rescue
+  foo = true
+  foo = true
+end
+
+puts foo
+'''
+corrected = '''
+foo = false
+
+begin
+  do_something
+rescue
+  true
+  foo = true
+end
+
+puts foo
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 2
+column_end = 5
+message = "Useless assignment to variable - `foo`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_registers_an_offense"
+source = '''
+foo = false
+
+begin
+  do_something
+rescue
+  foo = true
+  foo = true
+ensure
+  do_anything
+end
+
+puts foo
+'''
+corrected = '''
+foo = false
+
+begin
+  do_something
+rescue
+  true
+  foo = true
+ensure
+  do_anything
+end
+
+puts foo
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 2
+column_end = 5
+message = "Useless assignment to variable - `foo`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_registers_an_offense"
+source = '''
+begin
+  do_something
+rescue
+  do_anything
+ensure
+  foo = true
+  foo = true
+end
+
+puts foo
+'''
+corrected = '''
+begin
+  do_something
+rescue
+  do_anything
+ensure
+  true
+  foo = true
+end
+
+puts foo
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 2
+column_end = 5
+message = "Useless assignment to variable - `foo`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_assigned_at_the_end_of_rescue_and_would_be_referenced_with_retry_accepts"
+source = '''
+retried = false
+
+begin
+  do_something
+rescue
+  fail if retried
+  retried = true
+  retry
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_accepts"
+source = '''
+retry_count = 0
+
+begin
+  do_something
+rescue
+  fail if (retry_count += 1) > 3
+  retry
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_registers_offenses_for_each_assignment_before_ensure"
+source = '''
+begin
+  do_something
+  foo = :in_begin
+rescue FirstError
+  foo = :in_first_rescue
+rescue SecondError
+  foo = :in_second_rescue
+else
+  foo = :in_else
+ensure
+  foo = :in_ensure
+end
+
+puts foo
+'''
+corrected = '''
+begin
+  do_something
+  :in_begin
+rescue FirstError
+  :in_first_rescue
+rescue SecondError
+  :in_second_rescue
+else
+  :in_else
+ensure
+  foo = :in_ensure
+end
+
+puts foo
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 5
+message = "Useless assignment to variable - `foo`."
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 5
+message = "Useless assignment to variable - `foo`."
+
+[[tests.offenses]]
+line = 7
+column_start = 2
+column_end = 5
+message = "Useless assignment to variable - `foo`."
+
+[[tests.offenses]]
+line = 9
+column_start = 2
+column_end = 5
+message = "Useless assignment to variable - `foo`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_registers_an_offense"
+source = '''
+begin
+  do_something
+rescue FirstError => error
+rescue SecondError
+  p error # => nil
+end
+'''
+corrected = '''
+begin
+  do_something
+rescue FirstError
+rescue SecondError
+  p error # => nil
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 21
+column_end = 26
+message = "Useless assignment to variable - `error`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_method_argument_is_reassigned_and_zero_arity_super_is_called_accepts"
+source = '''
+def some_method(foo)
+  foo = 1
+  super
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_local_variable_is_unreferenced_and_zero_arity_super_is_called_registers_an_offense"
+source = '''
+def some_method(bar)
+  foo = 1
+  super
+end
+'''
+corrected = '''
+def some_method(bar)
+  1
+  super
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 5
+message = "Useless assignment to variable - `foo`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_method_argument_is_reassigned_but_not_passed_to_super_registers_an_offense"
+source = '''
+def some_method(foo, bar)
+  foo = 1
+  super(bar)
+end
+'''
+corrected = '''
+def some_method(foo, bar)
+  1
+  super(bar)
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 5
+message = "Useless assignment to variable - `foo`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_named_capture_is_unreferenced_in_top_level_registers_an_offense"
+source = '''
+/(?<foo>w+)/ =~ 'FOO'
+'''
+corrected = '''
+/(?:w+)/ =~ 'FOO'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 12
+message = "Useless assignment to variable - `foo`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_named_capture_is_unreferenced_in_other_than_top_level_registers_an_offense"
+source = '''
+def some_method
+  /(?<foo>\w+)/ =~ 'FOO'
+end
+'''
+corrected = '''
+def some_method
+  /(?:\w+)/ =~ 'FOO'
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 15
+message = "Useless assignment to variable - `foo`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_named_capture_is_referenced_accepts"
+source = '''
+def some_method
+  /(?<foo>w+)(?<bar> +)/ =~ 'FOO'
+  puts foo
+  puts bar
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_referenced_in_rhs_of_named_capture_expression_accepts"
+source = '''
+def some_method
+  foo = 'some string'
+  /(?<foo>w+)/ =~ foo
+  puts foo
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_pattern_match_variable_is_assigned_with_in_and_referenced_in_a_block_does_not_register_an_offense"
+source = '''
+def some_method
+  foo in { bar: bar }
+  baz { bar -= 1 }
+  foo
+end
+'''
+ruby_version = ">= 2.7"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_pattern_match_variable_is_assigned_with_in_and_unreferenced_in_a_block_registers_an_offense"
+source = '''
+def some_method
+  foo in { bar: bar }
+  baz { qux -= 1 }
+  foo
+end
+'''
+ruby_version = ">= 2.7"
+
+[[tests.offenses]]
+line = 3
+column_start = 8
+column_end = 11
+message = "Useless assignment to variable - `qux`. Use `-` instead of `-=`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_pattern_match_variable_is_assigned_with_and_referenced_in_a_block_does_not_register_an_offense"
+source = '''
+def some_method
+  foo => { bar: bar }
+  baz { bar -= 1 }
+  foo
+end
+'''
+ruby_version = ">= 3.0"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_pattern_match_variable_is_assigned_with_and_unreferenced_in_a_block_registers_an_offense"
+source = '''
+def some_method
+  foo => { bar: bar }
+  baz { qux -= 1 }
+  foo
+end
+'''
+ruby_version = ">= 3.0"
+
+[[tests.offenses]]
+line = 3
+column_start = 8
+column_end = 11
+message = "Useless assignment to variable - `qux`. Use `-` instead of `-=`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_assigned_in_begin_and_referenced_outside_accepts"
+source = '''
+def some_method
+  begin
+    foo = 1
+  end
+  puts foo
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_shadowed_by_a_block_argument_and_unreferenced_registers_an_offense"
+source = '''
+def some_method
+  foo = 1
+  1.times do |foo|
+    puts foo
+  end
+end
+'''
+corrected = '''
+def some_method
+  1
+  1.times do |foo|
+    puts foo
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 5
+message = "Useless assignment to variable - `foo`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_not_used_and_the_name_starts_with_accepts"
+source = '''
+def some_method
+  _foo = 1
+  bar = 2
+  puts bar
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_method_argument_is_not_used_accepts"
+source = '''
+def some_method(arg)
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_an_optional_method_argument_is_not_used_accepts"
+source = '''
+def some_method(arg = nil)
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_block_method_argument_is_not_used_accepts"
+source = '''
+def some_method(&block)
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_splat_method_argument_is_not_used_accepts"
+source = '''
+def some_method(*args)
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_an_optional_keyword_method_argument_is_not_used_accepts"
+source = '''
+def some_method(name: value)
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_keyword_splat_method_argument_is_used_accepts"
+source = '''
+def some_method(name: value, **rest_keywords)
+  p rest_keywords
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_keyword_splat_method_argument_is_not_used_accepts"
+source = '''
+def some_method(name: value, **rest_keywords)
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_an_anonymous_keyword_splat_method_argument_is_defined_accepts"
+source = '''
+def some_method(name: value, **)
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_block_argument_is_not_used_accepts"
+source = '''
+1.times do |i|
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_there_is_only_one_ast_node_and_it_is_unused_variable_registers_an_offense"
+source = '''
+foo = 1
+'''
+corrected = '''
+1
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 3
+message = "Useless assignment to variable - `foo`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_assigned_while_being_passed_to_a_method_taking_block_and_the_variable_is_used_accepts"
+source = '''
+some_method(foo = 1) do
+end
+puts foo
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_assigned_while_being_passed_to_a_method_taking_block_and_the_variable_is_not_used_registers_an_offense"
+source = '''
+some_method(foo = 1) do
+end
+'''
+corrected = '''
+some_method(1) do
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 12
+column_end = 15
+message = "Useless assignment to variable - `foo`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_assigned_and_passed_to_a_method_followed_by_method_taking_block_accepts"
+source = '''
+pattern = '*.rb'
+Dir.glob(pattern).map do |path|
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_using_numbered_block_parameter_does_not_register_an_offense_when_the_variable_is_used"
+source = '''
+var = 42
+
+do_something { _1 == var }
+'''
+ruby_version = ">= 2.7"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_using_numbered_block_parameter_does_not_register_an_offense_when_the_variable_is_assigned_and_later_used"
+source = '''
+var = nil
+
+do_something { var = _1 }
+
+something_else(var)
+'''
+ruby_version = ">= 2.7"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_using_it_block_parameter_does_not_register_an_offense_when_the_variable_is_used"
+source = '''
+var = 42
+
+do_something { it == var }
+'''
+ruby_version = ">= 3.4"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_using_it_block_parameter_does_not_register_an_offense_when_the_variable_is_assigned_and_later_used"
+source = '''
+var = nil
+
+do_something { var = it }
+
+something_else(var)
+'''
+ruby_version = ">= 3.4"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_assigned_in_2_identical_if_branches_doesn_t_think_1_of_the_2_assignments_is_useless"
+source = '''
+def foo
+  if bar
+    foo = 1
+  else
+    foo = 1
+  end
+  foo.bar.baz
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_similar_name_suggestion_when_there_s_a_similar_variable_like_method_invocation_suggests_the_method_name"
+source = '''
+def some_method
+  enviromnent = {}
+  another_symbol
+  puts environment
+end
+'''
+corrected = '''
+def some_method
+  {}
+  another_symbol
+  puts environment
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 13
+message = "Useless assignment to variable - `enviromnent`. Did you mean `environment`?"
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_similar_name_suggestion_when_there_s_a_similar_variable_suggests_the_variable_name"
+source = '''
+def some_method
+  environment = nil
+  another_symbol
+  enviromnent = {}
+  puts environment
+end
+'''
+corrected = '''
+def some_method
+  environment = nil
+  another_symbol
+  {}
+  puts environment
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 13
+message = "Useless assignment to variable - `enviromnent`. Did you mean `environment`?"
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_similar_name_suggestion_when_there_are_only_less_similar_names_does_not_suggest_any_name"
+source = '''
+def some_method
+  enviromnent = {}
+  another_symbol
+  puts envelope
+end
+'''
+corrected = '''
+def some_method
+  {}
+  another_symbol
+  puts envelope
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 13
+message = "Useless assignment to variable - `enviromnent`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_similar_name_suggestion_when_there_s_a_similar_method_invocation_with_explicit_receiver_does_not_suggest_any_name"
+source = '''
+def some_method
+  enviromnent = {}
+  another_symbol
+  puts self.environment
+end
+'''
+corrected = '''
+def some_method
+  {}
+  another_symbol
+  puts self.environment
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 13
+message = "Useless assignment to variable - `enviromnent`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_similar_name_suggestion_when_there_s_a_similar_method_invocation_with_arguments_does_not_suggest_any_name"
+source = '''
+def some_method
+  enviromnent = {}
+  another_symbol
+  puts environment(1)
+end
+'''
+corrected = '''
+def some_method
+  {}
+  another_symbol
+  puts environment(1)
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 13
+message = "Useless assignment to variable - `enviromnent`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_similar_name_suggestion_when_there_s_a_similar_name_but_it_s_in_inner_scope_does_not_suggest_any_name"
+source = '''
+class SomeClass
+  enviromnent = {}
+
+  def some_method(environment)
+    puts environment
+  end
+end
+'''
+corrected = '''
+class SomeClass
+  {}
+
+  def some_method(environment)
+    puts environment
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 13
+message = "Useless assignment to variable - `enviromnent`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_inside_a_case_match_node_does_not_register_an_offense_when_the_variable_is_used"
+source = '''
+case '0'
+in String
+  res = 1
+else
+  res = 2
+end
+
+do_something(res)
+'''
+ruby_version = ">= 2.7"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_duplicate_assignments_in_the_loop_body_while_loop_registers_an_offense"
+source = '''
+while
+  foo = 1
+  foo = 1
+  p foo
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 5
+message = "Useless assignment to variable - `foo`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_duplicate_assignments_in_the_loop_body_while_loop_with_parenthesized_body_registers_an_offense"
+source = '''
+while
+  (
+    foo = 1
+    foo = 1
+  )
+  p foo
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 4
+column_end = 7
+message = "Useless assignment to variable - `foo`."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_duplicate_assignments_in_if_branch_inside_a_loop_while_loop_does_not_register_an_offense"
+source = '''
+while
+  if cond
+    var += 1
+  else
+    var -= 1
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_duplicate_assignments_appear_in_if_branch_inside_a_loop_and_the_variable_is_used_outside_while_loop_while_loop_does_not_register_an_offense"
+source = '''
+var = false
+while loop_cond
+  if var
+    var = false
+    foo
+  else
+    var = true
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_duplicate_assignments_appear_in_nested_if_branches_inside_a_loop_and_the_variable_is_used_outside_while_loop_while_loop_does_not_register_an_offense"
+source = '''
+def parse_options
+  index = -1
+  while loop_cond
+    index += 1
+
+    if first_cond
+      index += 1
+    else
+      if second_cond
+        index += 1
+      else
+        if third_cond
+          index += 1
+        end
+      end
+    end
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_duplicate_assignments_in_rescue_branch_with_retry_does_not_register_an_offense"
+source = '''
+def testing
+rescue Foo
+  attempts += 1
+  retry
+rescue Bar
+  attempts += 1
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_duplicate_assignments_in_a_case_branch_inside_a_loop_while_loop_does_not_register_an_offense"
+source = '''
+while
+  case
+  when fizz then foo += 1
+  when buzz then foo -= 1
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_duplicate_assignments_in_a_case_match_branch_inside_a_loop_while_loop_does_not_register_an_offense"
+source = '''
+while
+  case expr
+  in fizz then foo += 1
+  in buzz then foo -= 1
+  end
+end
+'''
+ruby_version = ">= 2.7"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_assigned_in_loop_body_and_used_in_loop_condition_does_not_register_an_offense_when_variable_is_used_directly_in_condition"
+source = '''
+keep_going = true
+while keep_going
+  keep_going = false
+  if rand < 0.5
+    keep_going = true
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessassignment_when_a_variable_is_assigned_in_loop_body_and_used_in_loop_condition_does_not_register_an_offense_when_variable_is_used_in_condition_expression"
+source = '''
+try = 0
+while try < max_tries
+  try += 1
+  next if weak?
+  try = 0
+end
+
+raise(CombinationPoolExhaustedError)
+'''
+offenses = []

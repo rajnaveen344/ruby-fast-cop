@@ -1,0 +1,332 @@
+cop = "Naming/PredicatePrefix"
+department = "naming"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_naming_predicateprefix_with_restricted_prefixes_registers_an_offense_when_method_name_starts_with_is"
+source = '''
+def is_attr; end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 11
+message = "Rename `is_attr` to `attr?`."
+
+[tests.config]
+ForbiddenPrefixes = ["$UNRESOLVED:has_", "$UNRESOLVED:is_"]
+NamePrefix = ["$UNRESOLVED:has_", "$UNRESOLVED:is_"]
+
+[[tests]]
+name = "rubocop_cop_naming_predicateprefix_with_restricted_prefixes_registers_an_offense_when_method_name_starts_with_has"
+source = '''
+def has_attr; end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 12
+message = "Rename `has_attr` to `attr?`."
+
+[tests.config]
+ForbiddenPrefixes = ["$UNRESOLVED:has_", "$UNRESOLVED:is_"]
+NamePrefix = ["$UNRESOLVED:has_", "$UNRESOLVED:is_"]
+
+[[tests]]
+name = "rubocop_cop_naming_predicateprefix_with_restricted_prefixes_accepts_method_name_that_starts_with_unknown_prefix"
+source = '''
+def have_attr; end
+'''
+offenses = []
+
+[tests.config]
+ForbiddenPrefixes = ["$UNRESOLVED:has_", "$UNRESOLVED:is_"]
+NamePrefix = ["$UNRESOLVED:has_", "$UNRESOLVED:is_"]
+
+[[tests]]
+name = "rubocop_cop_naming_predicateprefix_with_restricted_prefixes_accepts_method_name_that_is_an_assignment"
+source = '''
+def is_hello=; end
+'''
+offenses = []
+
+[tests.config]
+ForbiddenPrefixes = ["$UNRESOLVED:has_", "$UNRESOLVED:is_"]
+NamePrefix = ["$UNRESOLVED:has_", "$UNRESOLVED:is_"]
+
+[[tests]]
+name = "rubocop_cop_naming_predicateprefix_with_restricted_prefixes_accepts_method_name_when_corrected_name_is_invalid_identifier"
+source = '''
+def is_2d?; end
+'''
+offenses = []
+
+[tests.config]
+ForbiddenPrefixes = ["$UNRESOLVED:has_", "$UNRESOLVED:is_"]
+NamePrefix = ["$UNRESOLVED:has_", "$UNRESOLVED:is_"]
+
+[[tests]]
+name = "rubocop_cop_naming_predicateprefix_without_restricted_prefixes_registers_an_offense_when_method_name_starts_with_is"
+source = '''
+def is_attr; end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 11
+message = "Rename `is_attr` to `is_attr?`."
+
+[tests.config]
+ForbiddenPrefixes = []
+NamePrefix = ["$UNRESOLVED:has_", "$UNRESOLVED:is_"]
+
+[[tests]]
+name = "rubocop_cop_naming_predicateprefix_without_restricted_prefixes_registers_an_offense_when_method_name_starts_with_has"
+source = '''
+def has_attr; end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 12
+message = "Rename `has_attr` to `has_attr?`."
+
+[tests.config]
+ForbiddenPrefixes = []
+NamePrefix = ["$UNRESOLVED:has_", "$UNRESOLVED:is_"]
+
+[[tests]]
+name = "rubocop_cop_naming_predicateprefix_without_restricted_prefixes_accepts_method_name_that_starts_with_unknown_prefix"
+source = '''
+def have_attr; end
+'''
+offenses = []
+
+[tests.config]
+ForbiddenPrefixes = []
+NamePrefix = ["$UNRESOLVED:has_", "$UNRESOLVED:is_"]
+
+[[tests]]
+name = "rubocop_cop_naming_predicateprefix_without_restricted_prefixes_accepts_method_name_when_corrected_name_is_invalid_identifier"
+source = '''
+def is_2d?; end
+'''
+offenses = []
+
+[tests.config]
+ForbiddenPrefixes = []
+NamePrefix = ["$UNRESOLVED:has_", "$UNRESOLVED:is_"]
+
+[[tests]]
+name = "rubocop_cop_naming_predicateprefix_with_permitted_predicate_names_accepts_method_name_which_is_in_permitted_list"
+source = '''
+def is_a?; end
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["is_a?"]
+ForbiddenPrefixes = ["$UNRESOLVED:is_"]
+NamePrefix = ["$UNRESOLVED:is_"]
+
+[[tests]]
+name = "rubocop_cop_naming_predicateprefix_with_method_definition_macros_registers_an_offense_when_using_define_method"
+source = '''
+define_method(:is_hello) do |method_name|
+  method_name == 'hello'
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 14
+column_end = 23
+message = "Rename `is_hello` to `hello?`."
+
+[tests.config]
+AllowedMethods = ["is_a?"]
+ForbiddenPrefixes = ["$UNRESOLVED:is_"]
+MethodDefinitionMacros = ["$UNRESOLVED:define_method", "$UNRESOLVED:def_node_matcher"]
+NamePrefix = ["$UNRESOLVED:is_"]
+
+[[tests]]
+name = "rubocop_cop_naming_predicateprefix_with_method_definition_macros_registers_an_offense_when_using_an_internal_affair_macro"
+source = '''
+def_node_matcher :is_hello, <<~PATTERN
+  (send
+    (send nil? :method_name) :==
+    (str 'hello'))
+PATTERN
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 26
+message = "Rename `is_hello` to `hello?`."
+
+[tests.config]
+AllowedMethods = ["is_a?"]
+ForbiddenPrefixes = ["$UNRESOLVED:is_"]
+MethodDefinitionMacros = ["$UNRESOLVED:define_method", "$UNRESOLVED:def_node_matcher"]
+NamePrefix = ["$UNRESOLVED:is_"]
+
+[[tests]]
+name = "rubocop_cop_naming_predicateprefix_with_method_definition_macros_accepts_method_name_when_corrected_name_is_invalid_identifier"
+source = '''
+define_method(:is_2d?) do |method_name|
+  method_name == 'hello'
+end
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["is_a?"]
+ForbiddenPrefixes = ["$UNRESOLVED:is_"]
+MethodDefinitionMacros = ["$UNRESOLVED:define_method", "$UNRESOLVED:def_node_matcher"]
+NamePrefix = ["$UNRESOLVED:is_"]
+
+[[tests]]
+name = "rubocop_cop_naming_predicateprefix_without_method_definition_macros_registers_an_offense_when_using_define_method"
+source = '''
+define_method(:is_hello) do |method_name|
+  method_name == 'hello'
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 14
+column_end = 23
+message = "Rename `is_hello` to `hello?`."
+
+[tests.config]
+AllowedMethods = ["is_a?"]
+ForbiddenPrefixes = ["$UNRESOLVED:is_"]
+MethodDefinitionMacros = ["$UNRESOLVED:define_method", "$UNRESOLVED:def_node_matcher"]
+NamePrefix = ["$UNRESOLVED:is_"]
+
+[[tests]]
+name = "rubocop_cop_naming_predicateprefix_without_method_definition_macros_does_not_register_any_offenses_when_using_an_internal_affair_macro"
+source = '''
+def_node_matcher :is_hello, <<~PATTERN
+  (send
+    (send nil? :method_name) :==
+    (str 'hello'))
+PATTERN
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["is_a?"]
+ForbiddenPrefixes = ["$UNRESOLVED:is_"]
+MethodDefinitionMacros = ["$UNRESOLVED:define_method", "$UNRESOLVED:def_node_matcher"]
+NamePrefix = ["$UNRESOLVED:is_"]
+
+[[tests]]
+name = "rubocop_cop_naming_predicateprefix_without_method_definition_macros_accepts_method_name_when_corrected_name_is_invalid_identifier"
+source = '''
+define_method(:is_2d?) do |method_name|
+  method_name == 'hello'
+end
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["is_a?"]
+ForbiddenPrefixes = ["$UNRESOLVED:is_"]
+MethodDefinitionMacros = ["$UNRESOLVED:define_method", "$UNRESOLVED:def_node_matcher"]
+NamePrefix = ["$UNRESOLVED:is_"]
+
+[[tests]]
+name = "rubocop_cop_naming_predicateprefix_using_sorbet_sigs_registers_an_offense_if_no_when_sig_returns_t_boolean_and_variants"
+source = '''
+sig do
+  returns(T::Boolean)
+end
+def is_attr; end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 4
+column_end = 11
+message = "Rename `is_attr` to `is_attr?`."
+
+[tests.config]
+AllowedMethods = ["is_a?"]
+ForbiddenPrefixes = []
+MethodDefinitionMacros = ["$UNRESOLVED:define_method", "$UNRESOLVED:def_node_matcher"]
+NamePrefix = ["$UNRESOLVED:is_", "$UNRESOLVED:has_"]
+UseSorbetSigs = "true"
+
+[[tests]]
+name = "rubocop_cop_naming_predicateprefix_using_sorbet_sigs_does_not_register_an_offense_if_no_when_sig_returns_t_array_string"
+source = '''
+sig { returns(T::Array[String]) }
+def has_caused_error
+  errors.add(:base, 'This has caused an error')
+end
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["is_a?"]
+ForbiddenPrefixes = []
+MethodDefinitionMacros = ["$UNRESOLVED:define_method", "$UNRESOLVED:def_node_matcher"]
+NamePrefix = ["$UNRESOLVED:is_", "$UNRESOLVED:has_"]
+UseSorbetSigs = "true"
+
+[[tests]]
+name = "rubocop_cop_naming_predicateprefix_using_sorbet_sigs_picks_the_correct_sig_when_there_are_multiple"
+source = '''
+sig { returns(T::Boolean) }
+def is_attr?; end
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["is_a?"]
+ForbiddenPrefixes = []
+MethodDefinitionMacros = ["$UNRESOLVED:define_method", "$UNRESOLVED:def_node_matcher"]
+NamePrefix = ["$UNRESOLVED:is_", "$UNRESOLVED:has_"]
+UseSorbetSigs = "true"
+
+[[tests]]
+name = "rubocop_cop_naming_predicateprefix_using_sorbet_sigs_works_correctly_when_returns_is_chained_on_params"
+source = '''
+sig { params(x: Integer).returns(T::Boolean) }
+def is_even(x); end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 4
+column_end = 11
+message = "Rename `is_even` to `is_even?`."
+
+[tests.config]
+AllowedMethods = ["is_a?"]
+ForbiddenPrefixes = []
+MethodDefinitionMacros = ["$UNRESOLVED:define_method", "$UNRESOLVED:def_node_matcher"]
+NamePrefix = ["$UNRESOLVED:is_", "$UNRESOLVED:has_"]
+UseSorbetSigs = "true"
+
+[[tests]]
+name = "rubocop_cop_naming_predicateprefix_using_sorbet_sigs_does_not_register_an_offense_if_no_when_no_sigs_but_the_config_is_enabled"
+source = '''
+def is_attr; end
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["is_a?"]
+ForbiddenPrefixes = []
+MethodDefinitionMacros = ["$UNRESOLVED:define_method", "$UNRESOLVED:def_node_matcher"]
+NamePrefix = ["$UNRESOLVED:is_", "$UNRESOLVED:has_"]
+UseSorbetSigs = "true"

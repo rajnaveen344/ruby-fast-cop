@@ -1,0 +1,989 @@
+cop = "Lint/ShadowedArgument"
+department = "lint"
+severity = "warning"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_method_argument_shadowing_when_a_single_argument_is_shadowed_registers_an_offense"
+source = '''
+def do_something(foo)
+  foo = 42
+  puts foo
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 10
+message = "Argument `foo` was shadowed by a local variable before it was used."
+
+[tests.config]
+IgnoreImplicitReferences = false
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_method_argument_shadowing_when_a_single_argument_is_shadowed_when_zsuper_is_used_registers_an_offense"
+source = '''
+def do_something(foo)
+  foo = 42
+  super
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 10
+message = "Argument `foo` was shadowed by a local variable before it was used."
+
+[tests.config]
+IgnoreImplicitReferences = false
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_method_argument_shadowing_when_a_single_argument_is_shadowed_when_zsuper_is_used_when_argument_was_shadowed_by_zsuper_registers_an_offense"
+source = '''
+def select_fields(query, current_time)
+  query = super
+  query.select('*')
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 15
+message = "Argument `query` was shadowed by a local variable before it was used."
+
+[tests.config]
+IgnoreImplicitReferences = false
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_method_argument_shadowing_when_a_single_argument_is_shadowed_when_zsuper_is_used_when_ignoreimplicitreferences_config_option_is_set_to_true_accepts"
+source = '''
+def do_something(foo)
+  foo = 42
+  super
+end
+'''
+offenses = []
+
+[tests.config]
+IgnoreImplicitReferences = true
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_method_argument_shadowing_when_a_single_argument_is_shadowed_when_zsuper_is_used_when_ignoreimplicitreferences_config_option_is_set_to_true_when_argument_was_shadowed_by_zsuper_does_not_register_an_offense"
+source = '''
+def select_fields(query, current_time)
+  query = super
+  query.select('*')
+end
+'''
+offenses = []
+
+[tests.config]
+IgnoreImplicitReferences = true
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_method_argument_shadowing_when_a_single_argument_is_shadowed_when_argument_was_used_in_shorthand_assignment_does_not_register_an_offense"
+source = '''
+def do_something(bar)
+  bar = 'baz' if foo
+  bar ||= {}
+end
+'''
+offenses = []
+
+[tests.config]
+IgnoreImplicitReferences = true
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_method_argument_shadowing_when_a_single_argument_is_shadowed_when_a_splat_argument_is_shadowed_registers_an_offense"
+source = '''
+def do_something(*items)
+  *items, last = [42, 42]
+  puts items
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 3
+column_end = 8
+message = "Argument `items` was shadowed by a local variable before it was used."
+
+[tests.config]
+IgnoreImplicitReferences = true
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_method_argument_shadowing_when_a_single_argument_is_shadowed_when_reassigning_to_splat_variable_does_not_register_an_offense"
+source = '''
+def do_something(*items)
+  *items, last = items
+  puts items
+end
+'''
+offenses = []
+
+[tests.config]
+IgnoreImplicitReferences = true
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_method_argument_shadowing_when_a_single_argument_is_shadowed_when_self_assigning_to_a_block_argument_in_for_does_not_register_an_offense"
+source = '''
+for item in items
+  do_something { |arg| arg = arg }
+end
+'''
+offenses = []
+
+[tests.config]
+IgnoreImplicitReferences = true
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_method_argument_shadowing_when_a_single_argument_is_shadowed_when_binding_is_used_registers_an_offense"
+source = '''
+def do_something(foo)
+  foo = 42
+  binding
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 10
+message = "Argument `foo` was shadowed by a local variable before it was used."
+
+[tests.config]
+IgnoreImplicitReferences = true
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_method_argument_shadowing_when_a_single_argument_is_shadowed_when_binding_is_used_when_ignoreimplicitreferences_config_option_is_set_to_true_accepts"
+source = '''
+def do_something(foo)
+  foo = 42
+  binding
+end
+'''
+offenses = []
+
+[tests.config]
+IgnoreImplicitReferences = true
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_method_argument_shadowing_when_a_single_argument_is_shadowed_and_the_argument_is_not_used_accepts"
+source = '''
+def do_something(foo)
+  puts 'done something'
+end
+'''
+offenses = []
+
+[tests.config]
+IgnoreImplicitReferences = true
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_method_argument_shadowing_when_a_single_argument_is_shadowed_and_shadowed_within_a_conditional_registers_an_offense_without_specifying_where_the_reassignment_took_place"
+source = '''
+def do_something(foo)
+  if bar
+    foo = 43
+  end
+  foo = 42
+  puts foo
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 20
+message = "Argument `foo` was shadowed by a local variable before it was used."
+
+[tests.config]
+IgnoreImplicitReferences = true
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_method_argument_shadowing_when_a_single_argument_is_shadowed_and_shadowed_within_a_conditional_and_was_used_before_shadowing_accepts"
+source = '''
+def do_something(foo)
+  if bar
+    puts foo
+    foo = 43
+  end
+  foo = 42
+  puts foo
+end
+'''
+offenses = []
+
+[tests.config]
+IgnoreImplicitReferences = true
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_method_argument_shadowing_when_a_single_argument_is_shadowed_and_shadowed_within_a_conditional_and_the_argument_was_not_shadowed_outside_the_conditional_accepts"
+source = '''
+def do_something(foo)
+  if bar
+    foo = 42
+  end
+
+  puts foo
+end
+'''
+offenses = []
+
+[tests.config]
+IgnoreImplicitReferences = true
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_method_argument_shadowing_when_a_single_argument_is_shadowed_and_shadowed_within_a_conditional_and_the_conditional_occurs_after_the_reassignment_registers_an_offense"
+source = '''
+def do_something(foo)
+  foo = 43
+  if bar
+    foo = 42
+  end
+  puts foo
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 10
+message = "Argument `foo` was shadowed by a local variable before it was used."
+
+[tests.config]
+IgnoreImplicitReferences = true
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_method_argument_shadowing_when_a_single_argument_is_shadowed_and_shadowed_within_a_conditional_and_the_conditional_is_nested_within_a_conditional_registers_an_offense_without_specifying_where_the_reassignment_took_place"
+source = '''
+def do_something(foo)
+  if bar
+    if baz
+      foo = 43
+    end
+  end
+  foo = 42
+  puts foo
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 20
+message = "Argument `foo` was shadowed by a local variable before it was used."
+
+[tests.config]
+IgnoreImplicitReferences = true
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_method_argument_shadowing_when_a_single_argument_is_shadowed_and_shadowed_within_a_conditional_and_the_conditional_is_nested_within_a_conditional_and_the_argument_was_used_before_shadowing_accepts"
+source = '''
+def do_something(foo)
+  if bar
+    puts foo
+    if baz
+      foo = 43
+    end
+  end
+  foo = 42
+  puts foo
+end
+'''
+offenses = []
+
+[tests.config]
+IgnoreImplicitReferences = true
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_method_argument_shadowing_when_a_single_argument_is_shadowed_and_shadowed_within_a_conditional_and_the_conditional_is_nested_within_a_lambda_registers_an_offense_without_specifying_where_the_reassignment_took_place"
+source = '''
+def do_something(foo)
+  lambda do
+    if baz
+      foo = 43
+    end
+  end
+  foo = 42
+  puts foo
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 20
+message = "Argument `foo` was shadowed by a local variable before it was used."
+
+[tests.config]
+IgnoreImplicitReferences = true
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_method_argument_shadowing_when_a_single_argument_is_shadowed_and_shadowed_within_a_conditional_and_the_conditional_is_nested_within_a_lambda_and_the_argument_was_used_before_shadowing_accepts"
+source = '''
+def do_something(foo)
+  lambda do
+    puts foo
+    if baz
+      foo = 43
+    end
+  end
+  foo = 42
+  puts foo
+end
+'''
+offenses = []
+
+[tests.config]
+IgnoreImplicitReferences = true
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_method_argument_shadowing_when_a_single_argument_is_shadowed_and_shadowed_within_a_block_registers_an_offense_without_specifying_where_the_reassignment_took_place"
+source = '''
+def do_something(foo)
+  something { foo = 43 }
+
+  foo = 42
+  puts foo
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 20
+message = "Argument `foo` was shadowed by a local variable before it was used."
+
+[tests.config]
+IgnoreImplicitReferences = true
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_method_argument_shadowing_when_a_single_argument_is_shadowed_and_shadowed_within_a_block_and_was_used_before_shadowing_accepts"
+source = '''
+def do_something(foo)
+  lambda do
+    puts foo
+    foo = 43
+  end
+
+  foo = 42
+  puts foo
+end
+'''
+offenses = []
+
+[tests.config]
+IgnoreImplicitReferences = true
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_method_argument_shadowing_when_a_single_argument_is_shadowed_and_shadowed_within_a_block_and_the_argument_was_not_shadowed_outside_the_block_accepts"
+source = '''
+def do_something(foo)
+  something { foo = 43 }
+
+  puts foo
+end
+'''
+offenses = []
+
+[tests.config]
+IgnoreImplicitReferences = true
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_method_argument_shadowing_when_a_single_argument_is_shadowed_and_shadowed_within_a_block_and_the_block_occurs_after_the_reassignment_registers_an_offense"
+source = '''
+def do_something(foo)
+  foo = 43
+  something { foo = 42 }
+  puts foo
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 10
+message = "Argument `foo` was shadowed by a local variable before it was used."
+
+[tests.config]
+IgnoreImplicitReferences = true
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_method_argument_shadowing_when_a_single_argument_is_shadowed_and_shadowed_within_a_block_and_the_block_is_nested_within_a_block_registers_an_offense_without_specifying_where_the_reassignment_took_place"
+source = '''
+def do_something(foo)
+  something do
+    lambda do
+      foo = 43
+    end
+  end
+
+  foo = 42
+  puts foo
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 20
+message = "Argument `foo` was shadowed by a local variable before it was used."
+
+[tests.config]
+IgnoreImplicitReferences = true
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_method_argument_shadowing_when_a_single_argument_is_shadowed_and_shadowed_within_a_block_and_the_block_is_nested_within_a_block_and_the_argument_was_used_before_shadowing_accepts"
+source = '''
+def do_something(foo)
+  lambda do
+    puts foo
+
+    something do
+      foo = 43
+    end
+  end
+
+  foo = 42
+  puts foo
+end
+'''
+offenses = []
+
+[tests.config]
+IgnoreImplicitReferences = true
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_method_argument_shadowing_when_a_single_argument_is_shadowed_and_shadowed_within_a_block_and_the_block_is_nested_within_a_conditional_registers_an_offense_without_specifying_where_the_reassignment_took_place"
+source = '''
+def do_something(foo)
+  if baz
+    lambda do
+      foo = 43
+    end
+  end
+
+  foo = 42
+  puts foo
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 20
+message = "Argument `foo` was shadowed by a local variable before it was used."
+
+[tests.config]
+IgnoreImplicitReferences = true
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_method_argument_shadowing_when_a_single_argument_is_shadowed_and_shadowed_within_a_block_and_the_block_is_nested_within_a_conditional_and_the_argument_was_used_before_shadowing_accepts"
+source = '''
+def do_something(foo)
+  if baz
+    puts foo
+    lambda do
+      foo = 43
+    end
+  end
+  foo = 42
+  puts foo
+end
+'''
+offenses = []
+
+[tests.config]
+IgnoreImplicitReferences = true
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_method_argument_shadowing_when_a_single_argument_is_shadowed_and_shadowed_within_rescue_and_assigned_before_the_rescue_registers_an_offense"
+source = '''
+def do_something(foo)
+  foo = bar
+  begin
+  rescue
+    foo = baz
+  end
+  puts foo
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 11
+message = "Argument `foo` was shadowed by a local variable before it was used."
+
+[tests.config]
+IgnoreImplicitReferences = true
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_method_argument_shadowing_when_a_single_argument_is_shadowed_and_shadowed_within_rescue_and_the_argument_was_not_shadowed_outside_the_rescue_registers_no_offense"
+source = '''
+  def do_something(foo)
+  begin
+  rescue
+    foo = bar
+  end
+  puts foo
+end
+'''
+offenses = []
+
+[tests.config]
+IgnoreImplicitReferences = true
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_method_argument_shadowing_when_multiple_arguments_are_shadowed_and_one_of_them_shadowed_within_a_lambda_while_another_is_shadowed_outside_registers_an_offense"
+source = '''
+def do_something(foo, bar)
+  lambda do
+    bar = 42
+  end
+
+  foo = 43
+  puts(foo, bar)
+end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 2
+column_end = 10
+message = "Argument `foo` was shadowed by a local variable before it was used."
+
+[tests.config]
+IgnoreImplicitReferences = true
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_block_argument_shadowing_when_a_block_local_variable_is_assigned_but_no_argument_is_shadowed_accepts"
+source = '''
+numbers = [1, 2, 3]
+numbers.each do |i; j|
+  j = i * 2
+  puts j
+end
+'''
+offenses = []
+
+[tests.config]
+IgnoreImplicitReferences = true
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_block_argument_shadowing_when_a_single_argument_is_shadowed_registers_an_offense"
+source = '''
+do_something do |foo|
+  foo = 42
+  puts foo
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 10
+message = "Argument `foo` was shadowed by a local variable before it was used."
+
+[tests.config]
+IgnoreImplicitReferences = true
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_block_argument_shadowing_when_a_single_argument_is_shadowed_when_zsuper_is_used_accepts"
+source = '''
+do_something do |foo|
+  foo = 42
+  super
+end
+'''
+offenses = []
+
+[tests.config]
+IgnoreImplicitReferences = true
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_block_argument_shadowing_when_a_single_argument_is_shadowed_when_binding_is_used_registers_an_offense"
+source = '''
+do_something do |foo|
+  foo = 42
+  binding
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 10
+message = "Argument `foo` was shadowed by a local variable before it was used."
+
+[tests.config]
+IgnoreImplicitReferences = true
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_block_argument_shadowing_when_a_single_argument_is_shadowed_when_binding_is_used_when_ignoreimplicitreferences_config_option_is_set_to_true_accepts"
+source = '''
+do_something do |foo|
+  foo = 42
+  binding
+end
+'''
+offenses = []
+
+[tests.config]
+IgnoreImplicitReferences = true
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_block_argument_shadowing_when_a_single_argument_is_shadowed_and_the_argument_is_not_used_accepts"
+source = '''
+do_something do |foo|
+  puts 'done something'
+end
+'''
+offenses = []
+
+[tests.config]
+IgnoreImplicitReferences = true
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_block_argument_shadowing_when_a_single_argument_is_shadowed_and_shadowed_within_a_conditional_registers_an_offense_without_specifying_where_the_reassignment_took_place"
+source = '''
+do_something do |foo|
+  if bar
+    foo = 43
+  end
+  foo = 42
+  puts foo
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 20
+message = "Argument `foo` was shadowed by a local variable before it was used."
+
+[tests.config]
+IgnoreImplicitReferences = true
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_block_argument_shadowing_when_a_single_argument_is_shadowed_and_shadowed_within_a_conditional_and_was_used_before_shadowing_accepts"
+source = '''
+do_something do |foo|
+  if bar
+    puts foo
+    foo = 43
+  end
+  foo = 42
+  puts foo
+end
+'''
+offenses = []
+
+[tests.config]
+IgnoreImplicitReferences = true
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_block_argument_shadowing_when_a_single_argument_is_shadowed_and_shadowed_within_a_conditional_and_the_argument_was_not_shadowed_outside_the_conditional_accepts"
+source = '''
+do_something do |foo|
+  if bar
+    foo = 42
+  end
+
+  puts foo
+end
+'''
+offenses = []
+
+[tests.config]
+IgnoreImplicitReferences = true
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_block_argument_shadowing_when_a_single_argument_is_shadowed_and_shadowed_within_a_conditional_and_the_conditional_occurs_after_the_reassignment_registers_an_offense"
+source = '''
+do_something do |foo|
+  foo = 43
+  if bar
+    foo = 42
+  end
+  puts foo
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 10
+message = "Argument `foo` was shadowed by a local variable before it was used."
+
+[tests.config]
+IgnoreImplicitReferences = true
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_block_argument_shadowing_when_a_single_argument_is_shadowed_and_shadowed_within_a_conditional_and_the_conditional_is_nested_within_a_conditional_registers_an_offense_without_specifying_where_the_reassignment_took_place"
+source = '''
+do_something do |foo|
+  if bar
+    if baz
+      foo = 43
+    end
+  end
+  foo = 42
+  puts foo
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 20
+message = "Argument `foo` was shadowed by a local variable before it was used."
+
+[tests.config]
+IgnoreImplicitReferences = true
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_block_argument_shadowing_when_a_single_argument_is_shadowed_and_shadowed_within_a_conditional_and_the_conditional_is_nested_within_a_conditional_and_the_argument_was_used_before_shadowing_accepts"
+source = '''
+do_something do |foo|
+  if bar
+    puts foo
+    if baz
+      foo = 43
+    end
+  end
+  foo = 42
+  puts foo
+end
+'''
+offenses = []
+
+[tests.config]
+IgnoreImplicitReferences = true
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_block_argument_shadowing_when_a_single_argument_is_shadowed_and_shadowed_within_a_conditional_and_the_conditional_is_nested_within_a_lambda_registers_an_offense_without_specifying_where_the_reassignment_took_place"
+source = '''
+do_something do |foo|
+  lambda do
+    if baz
+      foo = 43
+    end
+  end
+  foo = 42
+  puts foo
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 20
+message = "Argument `foo` was shadowed by a local variable before it was used."
+
+[tests.config]
+IgnoreImplicitReferences = true
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_block_argument_shadowing_when_a_single_argument_is_shadowed_and_shadowed_within_a_conditional_and_the_conditional_is_nested_within_a_lambda_and_the_argument_was_used_before_shadowing_accepts"
+source = '''
+do_something do |foo|
+  lambda do
+    puts foo
+    if baz
+      foo = 43
+    end
+  end
+  foo = 42
+  puts foo
+end
+'''
+offenses = []
+
+[tests.config]
+IgnoreImplicitReferences = true
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_block_argument_shadowing_when_a_single_argument_is_shadowed_and_shadowed_within_a_block_registers_an_offense_without_specifying_where_the_reassignment_took_place"
+source = '''
+do_something do |foo|
+  something { foo = 43 }
+
+  foo = 42
+  puts foo
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 20
+message = "Argument `foo` was shadowed by a local variable before it was used."
+
+[tests.config]
+IgnoreImplicitReferences = true
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_block_argument_shadowing_when_a_single_argument_is_shadowed_and_shadowed_within_a_block_and_was_used_before_shadowing_accepts"
+source = '''
+do_something do |foo|
+  lambda do
+    puts foo
+    foo = 43
+  end
+
+  foo = 42
+  puts foo
+end
+'''
+offenses = []
+
+[tests.config]
+IgnoreImplicitReferences = true
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_block_argument_shadowing_when_a_single_argument_is_shadowed_and_shadowed_within_a_block_and_the_argument_was_not_shadowed_outside_the_block_accepts"
+source = '''
+do_something do |foo|
+  something { foo = 43 }
+
+  puts foo
+end
+'''
+offenses = []
+
+[tests.config]
+IgnoreImplicitReferences = true
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_block_argument_shadowing_when_a_single_argument_is_shadowed_and_shadowed_within_a_block_and_the_block_occurs_after_the_reassignment_registers_an_offense"
+source = '''
+do_something do |foo|
+  foo = 43
+  something { foo = 42 }
+  puts foo
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 10
+message = "Argument `foo` was shadowed by a local variable before it was used."
+
+[tests.config]
+IgnoreImplicitReferences = true
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_block_argument_shadowing_when_a_single_argument_is_shadowed_and_shadowed_within_a_block_and_the_block_is_nested_within_a_block_registers_an_offense_without_specifying_where_the_reassignment_took_place"
+source = '''
+do_something do |foo|
+  something do
+    lambda do
+      foo = 43
+    end
+  end
+
+  foo = 42
+  puts foo
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 20
+message = "Argument `foo` was shadowed by a local variable before it was used."
+
+[tests.config]
+IgnoreImplicitReferences = true
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_block_argument_shadowing_when_a_single_argument_is_shadowed_and_shadowed_within_a_block_and_the_block_is_nested_within_a_block_and_the_argument_was_used_before_shadowing_accepts"
+source = '''
+do_something do |foo|
+  lambda do
+    puts foo
+
+    something do
+      foo = 43
+    end
+  end
+
+  foo = 42
+  puts foo
+end
+'''
+offenses = []
+
+[tests.config]
+IgnoreImplicitReferences = true
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_block_argument_shadowing_when_a_single_argument_is_shadowed_and_shadowed_within_a_block_and_the_block_is_nested_within_a_conditional_registers_an_offense_without_specifying_where_the_reassignment_took_place"
+source = '''
+do_something do |foo|
+  if baz
+    lambda do
+      foo = 43
+    end
+  end
+
+  foo = 42
+  puts foo
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 20
+message = "Argument `foo` was shadowed by a local variable before it was used."
+
+[tests.config]
+IgnoreImplicitReferences = true
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_block_argument_shadowing_when_a_single_argument_is_shadowed_and_shadowed_within_a_block_and_the_block_is_nested_within_a_conditional_and_the_argument_was_used_before_shadowing_accepts"
+source = '''
+do_something do |foo|
+  if baz
+    puts foo
+    lambda do
+      foo = 43
+    end
+  end
+  foo = 42
+  puts foo
+end
+'''
+offenses = []
+
+[tests.config]
+IgnoreImplicitReferences = true
+
+[[tests]]
+name = "rubocop_cop_lint_shadowedargument_block_argument_shadowing_when_multiple_arguments_are_shadowed_and_one_of_them_shadowed_within_a_lambda_while_another_is_shadowed_outside_registers_an_offense"
+source = '''
+do_something do |foo, bar|
+  lambda do
+    bar = 42
+  end
+
+  foo = 43
+  puts(foo, bar)
+end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 2
+column_end = 10
+message = "Argument `foo` was shadowed by a local variable before it was used."
+
+[tests.config]
+IgnoreImplicitReferences = true

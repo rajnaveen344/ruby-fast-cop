@@ -1,0 +1,69 @@
+cop = "Layout/SpaceAfterSemicolon"
+department = "layout"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_layout_spaceaftersemicolon_registers_an_offense_and_corrects_semicolon_without_space_after_it"
+source = '''
+x = 1;y = 2
+'''
+corrected = '''
+x = 1; y = 2
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 6
+message = "Space missing after semicolon."
+
+[[tests]]
+name = "rubocop_cop_layout_spaceaftersemicolon_does_not_crash_if_semicolon_is_the_last_character_of_the_file"
+source = '''
+x = 1;
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_spaceaftersemicolon_does_not_register_an_offense_when_semicolons_appear_consecutively"
+source = '''
+foo;; bar
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_spaceaftersemicolon_inside_block_braces_accepts_a_space_between_a_semicolon_and_a_closing_brace"
+source = '''
+test { ; }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_spaceaftersemicolon_inside_block_braces_accepts_no_space_between_a_semicolon_and_a_closing_brace_of_string_interpolation"
+source = '''
+"#{ ;}"
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_spaceaftersemicolon_inside_block_braces_when_enforcedstyle_for_spaceinsideblockbraces_is_space_registers_an_offense_and_corrects_no_space_between_a_semicolon_and_a_closing_brace"
+source = '''
+test { ;}
+'''
+corrected = '''
+test { ; }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 8
+message = "Space missing after semicolon."
+
+[[tests]]
+name = "rubocop_cop_layout_spaceaftersemicolon_inside_block_braces_when_enforcedstyle_for_spaceinsideblockbraces_is_no_space_accepts_no_space_between_a_semicolon_and_a_closing_brace"
+source = '''
+test { ;}
+'''
+offenses = []

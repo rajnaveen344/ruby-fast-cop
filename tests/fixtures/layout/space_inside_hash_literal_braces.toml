@@ -1,0 +1,838 @@
+cop = "Layout/SpaceInsideHashLiteralBraces"
+department = "layout"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_layout_spaceinsidehashliteralbraces_with_space_inside_empty_braces_not_allowed_accepts_empty_braces_with_no_space_inside"
+source = '''
+h = {}
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:space"
+EnforcedStyleForEmptyBraces = "$UNRESOLVED:no_space"
+
+[[tests]]
+name = "rubocop_cop_layout_spaceinsidehashliteralbraces_with_space_inside_empty_braces_not_allowed_registers_an_offense_for_empty_braces_with_space_inside"
+source = '''
+h = { }
+'''
+corrected = '''
+h = {}
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 6
+message = "Space inside empty hash literal braces detected."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:space"
+EnforcedStyleForEmptyBraces = "$UNRESOLVED:no_space"
+
+[[tests]]
+name = "rubocop_cop_layout_spaceinsidehashliteralbraces_with_newline_inside_empty_braces_not_allowed_registers_an_offense"
+source = '''
+h = {
+}
+'''
+corrected = '''
+h = {}
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 5
+message = "Space inside empty hash literal braces detected."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:space"
+EnforcedStyleForEmptyBraces = "$UNRESOLVED:no_space"
+
+[[tests]]
+name = "rubocop_cop_layout_spaceinsidehashliteralbraces_with_space_inside_empty_braces_allowed_accepts_empty_braces_with_space_inside"
+source = '''
+h = { }
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:space"
+EnforcedStyleForEmptyBraces = "$UNRESOLVED:space"
+
+[[tests]]
+name = "rubocop_cop_layout_spaceinsidehashliteralbraces_with_space_inside_empty_braces_allowed_registers_an_offense_for_empty_braces_with_no_space_inside"
+source = '''
+h = {}
+'''
+corrected = '''
+h = { }
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 5
+message = "Space inside empty hash literal braces missing."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:space"
+EnforcedStyleForEmptyBraces = "$UNRESOLVED:space"
+
+[[tests]]
+name = "rubocop_cop_layout_spaceinsidehashliteralbraces_with_space_inside_empty_braces_allowed_when_using_method_argument_that_both_key_and_value_are_hash_literals_registers_hashes_with_no_spaces"
+source = '''
+foo({key: value} => {key: value})
+                    ^ Space inside { missing.
+'''
+corrected = '''
+foo({ key: value } => { key: value })
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 31
+column_end = 32
+message = "Space inside } missing."
+
+[[tests.offenses]]
+line = 2
+column_start = 15
+column_end = 16
+message = "Space inside } missing."
+
+[[tests.offenses]]
+line = 2
+column_start = 4
+column_end = 5
+message = "Space inside { missing."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:space"
+EnforcedStyleForEmptyBraces = "$UNRESOLVED:space"
+
+[[tests]]
+name = "rubocop_cop_layout_spaceinsidehashliteralbraces_registers_an_offense_for_hashes_with_no_spaces_if_so_configured"
+source = '''
+h = {a: 1, b: 2}
+h = {a => 1}
+'''
+corrected = '''
+h = { a: 1, b: 2 }
+h = { a => 1 }
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 5
+message = "Space inside { missing."
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 16
+message = "Space inside } missing."
+
+[[tests.offenses]]
+line = 2
+column_start = 4
+column_end = 5
+message = "Space inside { missing."
+
+[[tests.offenses]]
+line = 2
+column_start = 11
+column_end = 12
+message = "Space inside } missing."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:space"
+EnforcedStyleForEmptyBraces = "$UNRESOLVED:space"
+
+[[tests]]
+name = "rubocop_cop_layout_spaceinsidehashliteralbraces_registers_an_offense_for_correct_opposite"
+source = '''
+h = { a: 1}
+'''
+corrected = '''
+h = { a: 1 }
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 11
+message = "Space inside } missing."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:space"
+EnforcedStyleForEmptyBraces = "$UNRESOLVED:space"
+
+[[tests]]
+name = "rubocop_cop_layout_spaceinsidehashliteralbraces_handles_as_final_hash_value"
+source = '''
+h = {a: '{'}
+'''
+corrected = '''
+h = { a: '{' }
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 12
+message = "Space inside } missing."
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 5
+message = "Space inside { missing."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:space"
+EnforcedStyleForEmptyBraces = "$UNRESOLVED:space"
+
+[[tests]]
+name = "rubocop_cop_layout_spaceinsidehashliteralbraces_when_using_hash_pattern_matching_registers_an_offense_when_hash_pattern_with_no_spaces"
+source = '''
+case foo
+in {k1: 0, k2: 1}
+end
+'''
+corrected = '''
+case foo
+in { k1: 0, k2: 1 }
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 16
+column_end = 17
+message = "Space inside } missing."
+
+[[tests.offenses]]
+line = 2
+column_start = 3
+column_end = 4
+message = "Space inside { missing."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:space"
+EnforcedStyleForEmptyBraces = "$UNRESOLVED:space"
+
+[[tests]]
+name = "rubocop_cop_layout_spaceinsidehashliteralbraces_when_using_hash_pattern_matching_does_not_register_an_offense_when_hash_pattern_with_spaces"
+source = '''
+case foo
+in { k1: 0, k2: 1 }
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:space"
+EnforcedStyleForEmptyBraces = "$UNRESOLVED:space"
+
+[[tests]]
+name = "rubocop_cop_layout_spaceinsidehashliteralbraces_when_using_one_line_hash_in_pattern_matching_registers_an_offense_when_hash_pattern_with_no_spaces"
+source = '''
+foo in {k1: 0, k2: 1}
+'''
+corrected = '''
+foo in { k1: 0, k2: 1 }
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 20
+column_end = 21
+message = "Space inside } missing."
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 8
+message = "Space inside { missing."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:space"
+EnforcedStyleForEmptyBraces = "$UNRESOLVED:space"
+
+[[tests]]
+name = "rubocop_cop_layout_spaceinsidehashliteralbraces_when_using_one_line_hash_in_pattern_matching_does_not_register_an_offense_when_hash_pattern_with_spaces"
+source = '''
+foo in { k1: 0, k2: 1 }
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:space"
+EnforcedStyleForEmptyBraces = "$UNRESOLVED:space"
+
+[[tests]]
+name = "rubocop_cop_layout_spaceinsidehashliteralbraces_when_using_one_line_hash_pattern_matching_registers_an_offense_when_hash_pattern_with_no_spaces"
+source = '''
+foo => {k1: 0, k2: 1}
+'''
+corrected = '''
+foo => { k1: 0, k2: 1 }
+'''
+ruby_version = ">= 3.0"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 20
+column_end = 21
+message = "Space inside } missing."
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 8
+message = "Space inside { missing."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:space"
+EnforcedStyleForEmptyBraces = "$UNRESOLVED:space"
+
+[[tests]]
+name = "rubocop_cop_layout_spaceinsidehashliteralbraces_when_using_one_line_hash_pattern_matching_does_not_register_an_offense_when_hash_pattern_with_spaces"
+source = '''
+foo => { k1: 0, k2: 1 }
+'''
+ruby_version = ">= 3.0"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:space"
+EnforcedStyleForEmptyBraces = "$UNRESOLVED:space"
+
+[[tests]]
+name = "rubocop_cop_layout_spaceinsidehashliteralbraces_when_enforcedstyle_is_no_space_registers_an_offense_for_hashes_with_spaces"
+source = '''
+h = { a: 1, b: 2 }
+'''
+corrected = '''
+h = {a: 1, b: 2}
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 6
+message = "Space inside { detected."
+
+[[tests.offenses]]
+line = 1
+column_start = 16
+column_end = 17
+message = "Space inside } detected."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:no_space"
+EnforcedStyleForEmptyBraces = "$UNRESOLVED:space"
+
+[[tests]]
+name = "rubocop_cop_layout_spaceinsidehashliteralbraces_when_enforcedstyle_is_no_space_registers_an_offense_for_opposite_correct"
+source = '''
+h = {a: 1 }
+'''
+corrected = '''
+h = {a: 1}
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 10
+message = "Space inside } detected."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:no_space"
+EnforcedStyleForEmptyBraces = "$UNRESOLVED:space"
+
+[[tests]]
+name = "rubocop_cop_layout_spaceinsidehashliteralbraces_when_enforcedstyle_is_no_space_handles_as_final_hash_value"
+source = '''
+h = { a: '{' }
+'''
+corrected = '''
+h = {a: '{'}
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 12
+column_end = 13
+message = "Space inside } detected."
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 6
+message = "Space inside { detected."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:no_space"
+EnforcedStyleForEmptyBraces = "$UNRESOLVED:space"
+
+[[tests]]
+name = "rubocop_cop_layout_spaceinsidehashliteralbraces_when_enforcedstyle_is_no_space_accepts_hashes_with_no_spaces"
+source = '''
+h = {a: 1, b: 2}
+h = {a => 1}
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:no_space"
+EnforcedStyleForEmptyBraces = "$UNRESOLVED:space"
+
+[[tests]]
+name = "rubocop_cop_layout_spaceinsidehashliteralbraces_when_enforcedstyle_is_no_space_accepts_multiline_hash"
+source = '''
+h = {
+      a: 1,
+      b: 2,
+}
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:no_space"
+EnforcedStyleForEmptyBraces = "$UNRESOLVED:space"
+
+[[tests]]
+name = "rubocop_cop_layout_spaceinsidehashliteralbraces_when_enforcedstyle_is_no_space_accepts_multiline_hash_with_comment"
+source = '''
+h = { # Comment
+      a: 1,
+      b: 2,
+}
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:no_space"
+EnforcedStyleForEmptyBraces = "$UNRESOLVED:space"
+
+[[tests]]
+name = "rubocop_cop_layout_spaceinsidehashliteralbraces_when_enforcedstyle_is_no_space_when_using_method_argument_that_both_key_and_value_are_hash_literals_accepts_hashes_with_no_spaces"
+source = '''
+foo({key: value} => {key: value})
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:no_space"
+EnforcedStyleForEmptyBraces = "$UNRESOLVED:space"
+
+[[tests]]
+name = "rubocop_cop_layout_spaceinsidehashliteralbraces_when_enforcedstyle_is_no_space_when_using_hash_pattern_matching_registers_an_offense_when_hash_with_spaces"
+source = '''
+case foo
+in { k1: 0, k2: 1 }
+end
+'''
+corrected = '''
+case foo
+in {k1: 0, k2: 1}
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 17
+column_end = 18
+message = "Space inside } detected."
+
+[[tests.offenses]]
+line = 2
+column_start = 4
+column_end = 5
+message = "Space inside { detected."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:no_space"
+EnforcedStyleForEmptyBraces = "$UNRESOLVED:space"
+
+[[tests]]
+name = "rubocop_cop_layout_spaceinsidehashliteralbraces_when_enforcedstyle_is_no_space_when_using_hash_pattern_matching_does_not_register_an_offense_when_hash_pattern_with_no_spaces"
+source = '''
+case foo
+in {k1: 0, k2: 1}
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:no_space"
+EnforcedStyleForEmptyBraces = "$UNRESOLVED:space"
+
+[[tests]]
+name = "rubocop_cop_layout_spaceinsidehashliteralbraces_when_enforcedstyle_is_no_space_when_using_one_line_hash_in_pattern_matching_registers_an_offense_when_hash_with_spaces"
+source = '''
+foo in { k1: 0, k2: 1 }
+'''
+corrected = '''
+foo in {k1: 0, k2: 1}
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 21
+column_end = 22
+message = "Space inside } detected."
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 9
+message = "Space inside { detected."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:no_space"
+EnforcedStyleForEmptyBraces = "$UNRESOLVED:space"
+
+[[tests]]
+name = "rubocop_cop_layout_spaceinsidehashliteralbraces_when_enforcedstyle_is_no_space_when_using_one_line_hash_in_pattern_matching_does_not_register_an_offense_when_hash_with_no_spaces"
+source = '''
+foo in {k1: 0, k2: 1}
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:no_space"
+EnforcedStyleForEmptyBraces = "$UNRESOLVED:space"
+
+[[tests]]
+name = "rubocop_cop_layout_spaceinsidehashliteralbraces_when_enforcedstyle_is_no_space_when_using_one_line_hash_pattern_matching_registers_an_offense_when_hash_with_spaces"
+source = '''
+foo => { k1: 0, k2: 1 }
+'''
+corrected = '''
+foo => {k1: 0, k2: 1}
+'''
+ruby_version = ">= 3.0"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 21
+column_end = 22
+message = "Space inside } detected."
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 9
+message = "Space inside { detected."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:no_space"
+EnforcedStyleForEmptyBraces = "$UNRESOLVED:space"
+
+[[tests]]
+name = "rubocop_cop_layout_spaceinsidehashliteralbraces_when_enforcedstyle_is_no_space_when_using_one_line_hash_pattern_matching_does_not_register_an_offense_when_hash_with_no_spaces"
+source = '''
+foo => {k1: 0, k2: 1}
+'''
+ruby_version = ">= 3.0"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:no_space"
+EnforcedStyleForEmptyBraces = "$UNRESOLVED:space"
+
+[[tests]]
+name = "rubocop_cop_layout_spaceinsidehashliteralbraces_when_enforcedstyle_is_compact_doesn_t_register_an_offense_for_non_nested_hashes_with_spaces"
+source = '''
+h = { a: 1, b: 2 }
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "compact"
+EnforcedStyleForEmptyBraces = "$UNRESOLVED:space"
+
+[[tests]]
+name = "rubocop_cop_layout_spaceinsidehashliteralbraces_when_enforcedstyle_is_compact_registers_an_offense_for_nested_hashes_with_spaces"
+source = '''
+h = { a: { a: 1, b: 2 } }
+'''
+corrected = '''
+h = { a: { a: 1, b: 2 }}
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 23
+column_end = 24
+message = "Space inside } detected."
+
+[tests.config]
+EnforcedStyle = "compact"
+EnforcedStyleForEmptyBraces = "$UNRESOLVED:space"
+
+[[tests]]
+name = "rubocop_cop_layout_spaceinsidehashliteralbraces_when_enforcedstyle_is_compact_registers_an_offense_for_opposite_correct"
+source = '''
+h = {a: 1 }
+'''
+corrected = '''
+h = { a: 1 }
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 5
+message = "Space inside { missing."
+
+[tests.config]
+EnforcedStyle = "compact"
+EnforcedStyleForEmptyBraces = "$UNRESOLVED:space"
+
+[[tests]]
+name = "rubocop_cop_layout_spaceinsidehashliteralbraces_when_enforcedstyle_is_compact_registers_offenses_for_hashes_with_no_spaces"
+source = '''
+h = {a: 1, b: 2}
+h = {a => 1}
+'''
+corrected = '''
+h = { a: 1, b: 2 }
+h = { a => 1 }
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 16
+message = "Space inside } missing."
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 5
+message = "Space inside { missing."
+
+[[tests.offenses]]
+line = 2
+column_start = 11
+column_end = 12
+message = "Space inside } missing."
+
+[[tests.offenses]]
+line = 2
+column_start = 4
+column_end = 5
+message = "Space inside { missing."
+
+[tests.config]
+EnforcedStyle = "compact"
+EnforcedStyleForEmptyBraces = "$UNRESOLVED:space"
+
+[[tests]]
+name = "rubocop_cop_layout_spaceinsidehashliteralbraces_when_enforcedstyle_is_compact_accepts_multiline_hash"
+source = '''
+h = {
+      a: 1,
+      b: 2,
+}
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "compact"
+EnforcedStyleForEmptyBraces = "$UNRESOLVED:space"
+
+[[tests]]
+name = "rubocop_cop_layout_spaceinsidehashliteralbraces_when_enforcedstyle_is_compact_accepts_multiline_hash_with_comment"
+source = '''
+h = { # Comment
+      a: 1,
+      b: 2,
+}
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "compact"
+EnforcedStyleForEmptyBraces = "$UNRESOLVED:space"
+
+[[tests]]
+name = "rubocop_cop_layout_spaceinsidehashliteralbraces_accepts_hashes_with_spaces_by_default"
+source = '''
+h = { a: 1, b: 2 }
+h = { a => 1 }
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "compact"
+EnforcedStyleForEmptyBraces = "$UNRESOLVED:space"
+
+[[tests]]
+name = "rubocop_cop_layout_spaceinsidehashliteralbraces_accepts_hash_literals_with_no_braces"
+source = '''
+x(a: b.c)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "compact"
+EnforcedStyleForEmptyBraces = "$UNRESOLVED:space"
+
+[[tests]]
+name = "rubocop_cop_layout_spaceinsidehashliteralbraces_can_handle_interpolation_in_a_braceless_hash_literal"
+source = '''
+f(get: "#{x}")
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "compact"
+EnforcedStyleForEmptyBraces = "$UNRESOLVED:space"
+
+[[tests]]
+name = "rubocop_cop_layout_spaceinsidehashliteralbraces_on_hash_x_1_1_does_not_register_an_offense"
+source = '''
+Hash[{ x: 1 } => [1]]
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "compact"
+EnforcedStyleForEmptyBraces = "$UNRESOLVED:space"
+
+[[tests]]
+name = "rubocop_cop_layout_spaceinsidehashliteralbraces_on_key_does_not_register_an_offense"
+source = '''
+{ key: "{" }
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "compact"
+EnforcedStyleForEmptyBraces = "$UNRESOLVED:space"
+
+[[tests]]
+name = "rubocop_cop_layout_spaceinsidehashliteralbraces_offending_hash_following_empty_hash_registers_an_offense_on_both_sides"
+source = '''
+{}
+{key: 1}
+'''
+corrected = '''
+{}
+{ key: 1 }
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 1
+message = "Space inside { missing."
+
+[[tests.offenses]]
+line = 2
+column_start = 7
+column_end = 8
+message = "Space inside } missing."
+
+[tests.config]
+EnforcedStyle = "compact"
+EnforcedStyleForEmptyBraces = "$UNRESOLVED:space"

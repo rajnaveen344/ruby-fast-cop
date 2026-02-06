@@ -1,0 +1,638 @@
+cop = "Lint/RedundantCopDisableDirective"
+department = "lint"
+severity = "warning"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopdisabledirective_check_when_there_are_disabled_lines_and_there_are_no_offenses_and_a_comment_disables_a_cop_that_is_disabled_in_the_config_returns_an_offense_when_disabling_same_cop"
+source = '''
+# rubocop:disable Metrics/MethodLength
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 38
+message = "Unnecessary disabling of `Metrics/MethodLength`."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopdisabledirective_check_when_there_are_disabled_lines_and_there_are_no_offenses_and_a_comment_disables_a_cop_that_is_disabled_in_the_config_when_that_cop_was_previously_enabled_returns_no_offense"
+source = '''
+# rubocop:enable Metrics/MethodLength
+foo
+# rubocop:disable Metrics/MethodLength
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopdisabledirective_check_when_there_are_disabled_lines_and_there_are_no_offenses_and_a_comment_disables_a_cop_that_is_disabled_in_the_config_if_that_cop_has_offenses_returns_an_offense"
+source = '''
+# rubocop:disable Metrics/MethodLength
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 38
+message = "Unnecessary disabling of `Metrics/MethodLength`."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopdisabledirective_check_when_there_are_disabled_lines_and_there_are_no_offenses_and_a_comment_disables_a_department_that_is_disabled_in_the_config_returns_an_offense_when_same_department_is_disabled"
+source = '''
+# rubocop:disable Metrics
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 25
+message = "Unnecessary disabling of `Metrics` department."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopdisabledirective_check_when_there_are_disabled_lines_and_there_are_no_offenses_and_a_comment_disables_a_department_that_is_disabled_in_the_config_returns_an_offense_when_cop_from_this_department_is_disabled"
+source = '''
+# rubocop:disable Metrics/MethodLength
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 38
+message = "Unnecessary disabling of `Metrics/MethodLength`."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopdisabledirective_check_when_there_are_disabled_lines_and_there_are_no_offenses_and_a_comment_disables_one_cop_returns_an_offense"
+source = '''
+# rubocop:disable Metrics/MethodLength
+'''
+corrected = '''
+
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 38
+message = "Unnecessary disabling of `Metrics/MethodLength`."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopdisabledirective_check_when_there_are_disabled_lines_and_there_are_no_offenses_and_a_comment_disables_an_unknown_cop_returns_an_offense"
+source = '''
+# rubocop:disable UnknownCop
+'''
+corrected = '''
+
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 28
+message = "Unnecessary disabling of `UnknownCop` (unknown cop)."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopdisabledirective_check_when_there_are_disabled_lines_and_there_are_no_offenses_and_a_comment_disables_when_using_a_directive_comment_after_a_non_directive_comment_returns_an_offense"
+source = '''
+# not very long comment # rubocop:disable Layout/LineLength
+'''
+corrected = '''
+# not very long comment
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 24
+column_end = 59
+message = "Unnecessary disabling of `Layout/LineLength`."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopdisabledirective_check_when_there_are_disabled_lines_and_there_are_no_offenses_and_a_comment_disables_itself_and_another_cop_disabled_on_the_same_range_returns_no_offense"
+source = '''
+# rubocop:disable Lint/RedundantCopDisableDirective, Metrics/ClassLength
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopdisabledirective_check_when_there_are_disabled_lines_and_there_are_no_offenses_and_a_comment_disables_itself_and_another_cop_disabled_on_different_ranges_returns_no_offense"
+source = '''
+# rubocop:disable Lint/RedundantCopDisableDirective
+# rubocop:disable Metrics/ClassLength
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopdisabledirective_check_when_there_are_disabled_lines_and_there_are_no_offenses_and_a_comment_disables_multiple_cops_and_the_leftmost_one_has_no_offenses_returns_an_offense"
+source = '''
+# rubocop:disable Metrics/ClassLength, Metrics/MethodLength
+'''
+corrected = '''
+# rubocop:disable Metrics/MethodLength
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 18
+column_end = 37
+message = "Unnecessary disabling of `Metrics/ClassLength`."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopdisabledirective_check_when_there_are_disabled_lines_and_there_are_no_offenses_and_a_comment_disables_multiple_cops_with_abbreviated_names_one_of_them_has_offenses_returns_an_offense"
+source = '''
+puts 1
+# rubocop:disable MethodLength, ClassLength, Debugger
+#
+# offense here
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 32
+column_end = 43
+message = "Unnecessary disabling of `Metrics/ClassLength`."
+
+[[tests.offenses]]
+line = 2
+column_start = 45
+column_end = 53
+message = "Unnecessary disabling of `Lint/Debugger`."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopdisabledirective_check_when_there_are_disabled_lines_and_there_are_no_offenses_and_a_comment_disables_comment_is_not_at_the_beginning_of_the_file_and_not_all_cops_have_offenses_returns_an_offense"
+source = '''
+puts 1
+# rubocop:disable Metrics/MethodLength, Metrics/ClassLength
+#
+# offense here
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 40
+column_end = 59
+message = "Unnecessary disabling of `Metrics/ClassLength`."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopdisabledirective_check_when_there_are_disabled_lines_and_there_are_no_offenses_and_a_comment_disables_misspelled_cops_returns_an_offense"
+source = '''
+# rubocop:disable Metrics/MethodLenght, KlassLength
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 51
+message = "#{message}"
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopdisabledirective_check_when_there_are_disabled_lines_and_there_are_no_offenses_and_a_comment_disables_misspelled_cops_when_the_department_starts_with_a_lowercase_letter_registers_an_offense"
+source = '''
+# rubocop:disable lint/SelfAssignment
+'''
+corrected = '''
+
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 37
+message = "Unnecessary disabling of `lint/SelfAssignment` (did you mean `Lint/SelfAssignment`?)."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopdisabledirective_check_when_there_are_disabled_lines_and_there_are_no_offenses_and_a_comment_disables_misspelled_cops_when_the_cop_starts_with_a_lowercase_letter_registers_an_offense"
+source = '''
+# rubocop:disable Lint/selfAssignment
+'''
+corrected = '''
+
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 37
+message = "Unnecessary disabling of `Lint/selfAssignment` (did you mean `Lint/SelfAssignment`?)."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopdisabledirective_check_when_there_are_disabled_lines_and_there_are_no_offenses_and_a_comment_disables_all_cops_returns_an_offense"
+source = '''
+# rubocop : disable all
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 23
+message = "Unnecessary disabling of all cops."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopdisabledirective_check_when_there_are_disabled_lines_and_there_are_two_offenses_and_a_comment_disables_one_cop_twice_returns_an_offense"
+source = '''
+class One
+  # rubocop:disable Style/ClassVars
+  @@class_var = 1  # offense here
+end
+
+class Two
+  # rubocop:disable Style/ClassVars
+  @@class_var = 2  # offense and here
+  # rubocop:enable Style/ClassVars
+end
+'''
+
+[[tests.offenses]]
+line = 7
+column_start = 2
+column_end = 35
+message = "Unnecessary disabling of `Style/ClassVars`."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopdisabledirective_check_when_there_are_disabled_lines_and_there_are_two_offenses_and_a_comment_disables_one_cop_and_then_all_cops_returns_an_offense"
+source = '''
+class One
+  # rubocop:disable Style/ClassVars
+  # rubocop:disable all
+  @@class_var = 1
+  # offense here
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 35
+message = "Unnecessary disabling of `Style/ClassVars`."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopdisabledirective_check_when_there_are_disabled_lines_and_there_is_an_offense_and_a_comment_disables_that_cop_but_on_other_lines_returns_an_offense"
+source = '''
+# 1
+# 2
+# 3, offense here
+# 4
+# rubocop:disable Layout/IndentationStyle
+#
+# rubocop:enable Layout/IndentationStyle
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 0
+column_end = 41
+message = "Unnecessary disabling of `Layout/IndentationStyle`."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopdisabledirective_check_autocorrecting_whitespace_when_the_comment_is_the_first_line_of_the_file_followed_by_code_removes_the_comment"
+source = '''
+# rubocop:disable Metrics/MethodLength
+def my_method
+end
+# rubocop:enable Metrics/MethodLength
+'''
+corrected = '''
+def my_method
+end
+# rubocop:enable Metrics/MethodLength
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 38
+message = "Unnecessary disabling of `Metrics/MethodLength`."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopdisabledirective_check_autocorrecting_whitespace_when_the_comment_is_the_first_line_of_the_file_followed_by_a_newline_removes_the_comment_and_newline"
+source = '''
+# rubocop:disable Metrics/MethodLength
+
+def my_method
+end
+# rubocop:enable Metrics/MethodLength
+'''
+corrected = '''
+def my_method
+end
+# rubocop:enable Metrics/MethodLength
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 38
+message = "Unnecessary disabling of `Metrics/MethodLength`."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopdisabledirective_check_autocorrecting_whitespace_when_the_comment_is_the_first_line_of_the_file_followed_by_another_comment_removes_the_comment_and_newline"
+source = '''
+# rubocop:disable Metrics/MethodLength
+# @api private
+def my_method
+end
+# rubocop:enable Metrics/MethodLength
+'''
+corrected = '''
+# @api private
+def my_method
+end
+# rubocop:enable Metrics/MethodLength
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 38
+message = "Unnecessary disabling of `Metrics/MethodLength`."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopdisabledirective_check_autocorrecting_whitespace_when_there_is_only_whitespace_before_the_comment_leaves_the_whitespace"
+source = '''
+
+# rubocop:disable Metrics/MethodLength
+def my_method
+end
+# rubocop:enable Metrics/MethodLength
+'''
+corrected = '''
+
+def my_method
+end
+# rubocop:enable Metrics/MethodLength
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 38
+message = "Unnecessary disabling of `Metrics/MethodLength`."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopdisabledirective_check_autocorrecting_whitespace_when_the_comment_is_not_the_first_line_of_the_file_preserves_whitespace_before_the_comment"
+source = '''
+attr_reader :foo
+
+# rubocop:disable Metrics/MethodLength
+def my_method
+end
+# rubocop:enable Metrics/MethodLength
+'''
+corrected = '''
+attr_reader :foo
+
+def my_method
+end
+# rubocop:enable Metrics/MethodLength
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 38
+message = "Unnecessary disabling of `Metrics/MethodLength`."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopdisabledirective_check_autocorrecting_whitespace_nested_inside_a_namespace_preserves_indentation"
+source = '''
+module Foo
+  module Bar
+    # rubocop:disable Metrics/ClassLength
+    class Baz
+    end
+    # rubocop:enable Metrics/ClassLength
+  end
+end
+'''
+corrected = '''
+module Foo
+  module Bar
+    class Baz
+    end
+    # rubocop:enable Metrics/ClassLength
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 4
+column_end = 41
+message = "Unnecessary disabling of `Metrics/ClassLength`."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopdisabledirective_check_autocorrecting_whitespace_inline_comment_removes_the_comment_and_preceding_whitespace"
+source = '''
+module Foo
+  module Bar
+    class Baz         # rubocop:disable Metrics/ClassLength
+    end
+  end
+end
+'''
+corrected = '''
+module Foo
+  module Bar
+    class Baz
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 22
+column_end = 59
+message = "Unnecessary disabling of `Metrics/ClassLength`."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopdisabledirective_check_autocorrecting_whitespace_when_there_is_a_blank_line_before_inline_comment_removes_the_comment_and_preceding_whitespace"
+source = '''
+def foo; end
+
+def bar # rubocop:disable Metrics/ClassLength
+  do_something do
+  end
+end
+'''
+corrected = '''
+def foo; end
+
+def bar
+  do_something do
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 8
+column_end = 45
+message = "Unnecessary disabling of `Metrics/ClassLength`."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopdisabledirective_check_with_a_disabled_department_removes_entire_comment"
+source = '''
+# rubocop:disable Style
+def bar
+  do_something
+end
+'''
+corrected = '''
+def bar
+  do_something
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 23
+message = "Unnecessary disabling of `Style` department."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopdisabledirective_check_with_a_disabled_department_removes_redundant_department"
+source = '''
+# rubocop:disable Style, Metrics/ClassLength
+def bar
+  do_something
+end
+'''
+corrected = '''
+# rubocop:disable Metrics/ClassLength
+def bar
+  do_something
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 18
+column_end = 23
+message = "Unnecessary disabling of `Style` department."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopdisabledirective_check_with_a_disabled_department_removes_cop_duplicated_by_department"
+source = '''
+# rubocop:disable Metrics, Metrics/ClassLength
+def bar
+  do_something
+end
+'''
+corrected = '''
+# rubocop:disable Metrics
+def bar
+  do_something
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 27
+column_end = 46
+message = "Unnecessary disabling of `Metrics/ClassLength`."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopdisabledirective_check_with_a_disabled_department_removes_cop_duplicated_by_department_on_previous_line"
+source = '''
+# rubocop:disable Metrics
+def bar
+  do_something # rubocop:disable Metrics/ClassLength
+end
+'''
+corrected = '''
+# rubocop:disable Metrics
+def bar
+  do_something
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 15
+column_end = 52
+message = "Unnecessary disabling of `Metrics/ClassLength`."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopdisabledirective_check_with_a_disabled_department_removes_cop_duplicated_by_department_and_leaves_free_text_as_a_comment"
+source = '''
+# rubocop:disable Metrics
+def bar
+  do_something # rubocop:disable Metrics/ClassLength - note
+end
+'''
+corrected = '''
+# rubocop:disable Metrics
+def bar
+  do_something # - note
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 15
+column_end = 52
+message = "Unnecessary disabling of `Metrics/ClassLength`."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopdisabledirective_check_with_a_disabled_department_removes_department_duplicated_by_department"
+source = '''
+# rubocop:disable Metrics
+class One
+  # rubocop:disable Metrics
+  @@class_var = 1  # offense here
+end
+# rubocop:enable Metrics
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 27
+message = "Unnecessary disabling of `Metrics` department."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopdisabledirective_check_with_a_disabled_department_removes_department_duplicated_by_department_on_previous_line"
+source = '''
+# rubocop:disable Metrics
+class One
+@@class_var = 1  # rubocop:disable Metrics
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 17
+column_end = 42
+message = "Unnecessary disabling of `Metrics` department."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopdisabledirective_check_with_a_disabled_department_removes_department_duplicated_by_department_and_leaves_free_text_as_a_comment"
+source = '''
+# rubocop:disable Metrics
+def bar
+  do_something # rubocop:disable Metrics - note
+end
+'''
+corrected = '''
+# rubocop:disable Metrics
+def bar
+  do_something # - note
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 15
+column_end = 40
+message = "Unnecessary disabling of `Metrics` department."
+
+[[tests]]
+name = "rubocop_cop_lint_redundantcopdisabledirective_check_with_a_disabled_department_does_not_remove_correct_department"
+source = '''
+# rubocop:disable Metrics
+def bar
+  do_something
+end
+'''
+offenses = []

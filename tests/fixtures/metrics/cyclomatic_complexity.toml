@@ -1,0 +1,653 @@
+cop = "Metrics/CyclomaticComplexity"
+department = "metrics"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_metrics_cyclomaticcomplexity_when_max_is_1_accepts_a_method_with_no_decision_points"
+source = '''
+def method_name
+  call_foo
+end
+'''
+offenses = []
+
+[tests.config]
+Max = 1
+
+[[tests]]
+name = "rubocop_cop_metrics_cyclomaticcomplexity_when_max_is_1_accepts_an_empty_method"
+source = '''
+def method_name
+end
+'''
+offenses = []
+
+[tests.config]
+Max = 1
+
+[[tests]]
+name = "rubocop_cop_metrics_cyclomaticcomplexity_when_max_is_1_accepts_an_empty_define_method"
+source = '''
+define_method :method_name do
+end
+'''
+offenses = []
+
+[tests.config]
+Max = 1
+
+[[tests]]
+name = "rubocop_cop_metrics_cyclomaticcomplexity_when_max_is_1_accepts_complex_code_outside_of_methods"
+source = '''
+def method_name
+  call_foo
+end
+'''
+offenses = []
+
+[tests.config]
+Max = 1
+
+[[tests]]
+name = "rubocop_cop_metrics_cyclomaticcomplexity_when_max_is_1_registers_an_offense_for_an_if_modifier"
+source = '''
+def self.method_name
+  call_foo if some_condition
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 20
+message = "Cyclomatic complexity for `method_name` is too high. [2/1]"
+
+[tests.config]
+Max = 1
+
+[[tests]]
+name = "rubocop_cop_metrics_cyclomaticcomplexity_when_max_is_1_registers_an_offense_for_an_unless_modifier"
+source = '''
+def method_name
+  call_foo unless some_condition
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 15
+message = "Cyclomatic complexity for `method_name` is too high. [2/1]"
+
+[tests.config]
+Max = 1
+
+[[tests]]
+name = "rubocop_cop_metrics_cyclomaticcomplexity_when_max_is_1_registers_an_offense_for_an_elsif_block"
+source = '''
+def method_name
+  if first_condition then
+    call_foo
+  elsif second_condition then
+    call_bar
+  else
+    call_bam
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 15
+message = "Cyclomatic complexity for `method_name` is too high. [3/1]"
+
+[tests.config]
+Max = 1
+
+[[tests]]
+name = "rubocop_cop_metrics_cyclomaticcomplexity_when_max_is_1_registers_an_offense_for_a_ternary_operator"
+source = '''
+def method_name
+  value = some_condition ? 1 : 2
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 15
+message = "Cyclomatic complexity for `method_name` is too high. [2/1]"
+
+[tests.config]
+Max = 1
+
+[[tests]]
+name = "rubocop_cop_metrics_cyclomaticcomplexity_when_max_is_1_registers_an_offense_for_a_while_block"
+source = '''
+def method_name
+  while some_condition do
+    call_foo
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 15
+message = "Cyclomatic complexity for `method_name` is too high. [2/1]"
+
+[tests.config]
+Max = 1
+
+[[tests]]
+name = "rubocop_cop_metrics_cyclomaticcomplexity_when_max_is_1_registers_an_offense_for_an_until_block"
+source = '''
+def method_name
+  until some_condition do
+    call_foo
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 15
+message = "Cyclomatic complexity for `method_name` is too high. [2/1]"
+
+[tests.config]
+Max = 1
+
+[[tests]]
+name = "rubocop_cop_metrics_cyclomaticcomplexity_when_max_is_1_registers_an_offense_for_a_for_block"
+source = '''
+def method_name
+  for i in 1..2 do
+    call_method
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 15
+message = "Cyclomatic complexity for `method_name` is too high. [2/1]"
+
+[tests.config]
+Max = 1
+
+[[tests]]
+name = "rubocop_cop_metrics_cyclomaticcomplexity_when_max_is_1_registers_an_offense_for_a_rescue_block"
+source = '''
+def method_name
+  begin
+    call_foo
+  rescue Exception
+    call_bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 15
+message = "Cyclomatic complexity for `method_name` is too high. [2/1]"
+
+[tests.config]
+Max = 1
+
+[[tests]]
+name = "rubocop_cop_metrics_cyclomaticcomplexity_when_max_is_1_registers_an_offense_for_a_case_when_block"
+source = '''
+def method_name
+  case value
+  when 1
+    call_foo
+  when 2
+    call_bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 15
+message = "Cyclomatic complexity for `method_name` is too high. [3/1]"
+
+[tests.config]
+Max = 1
+
+[[tests]]
+name = "rubocop_cop_metrics_cyclomaticcomplexity_when_max_is_1_registers_an_offense_for_a_case_in_block"
+source = '''
+def method_name
+  case value
+  in 1
+    call_foo
+  in 2
+    call_bar
+  end
+end
+'''
+ruby_version = ">= 2.7"
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 15
+message = "Cyclomatic complexity for `method_name` is too high. [3/1]"
+
+[tests.config]
+Max = 1
+
+[[tests]]
+name = "rubocop_cop_metrics_cyclomaticcomplexity_when_max_is_1_registers_an_offense_for"
+source = '''
+def method_name
+  call_foo && call_bar
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 15
+message = "Cyclomatic complexity for `method_name` is too high. [2/1]"
+
+[tests.config]
+Max = 1
+
+[[tests]]
+name = "rubocop_cop_metrics_cyclomaticcomplexity_when_max_is_1_registers_an_offense_for"
+source = '''
+def method_name
+  foo = nil
+  foo &&= 42
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 15
+message = "Cyclomatic complexity for `method_name` is too high. [2/1]"
+
+[tests.config]
+Max = 1
+
+[[tests]]
+name = "rubocop_cop_metrics_cyclomaticcomplexity_when_max_is_1_registers_an_offense_for_and"
+source = '''
+def method_name
+  call_foo and call_bar
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 15
+message = "Cyclomatic complexity for `method_name` is too high. [2/1]"
+
+[tests.config]
+Max = 1
+
+[[tests]]
+name = "rubocop_cop_metrics_cyclomaticcomplexity_when_max_is_1_registers_an_offense_for"
+source = '''
+def method_name
+  call_foo || call_bar
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 15
+message = "Cyclomatic complexity for `method_name` is too high. [2/1]"
+
+[tests.config]
+Max = 1
+
+[[tests]]
+name = "rubocop_cop_metrics_cyclomaticcomplexity_when_max_is_1_registers_an_offense_for"
+source = '''
+def method_name
+  foo = nil
+  foo ||= 42
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 15
+message = "Cyclomatic complexity for `method_name` is too high. [2/1]"
+
+[tests.config]
+Max = 1
+
+[[tests]]
+name = "rubocop_cop_metrics_cyclomaticcomplexity_when_max_is_1_registers_an_offense_for_or"
+source = '''
+def method_name
+  call_foo or call_bar
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 15
+message = "Cyclomatic complexity for `method_name` is too high. [2/1]"
+
+[tests.config]
+Max = 1
+
+[[tests]]
+name = "rubocop_cop_metrics_cyclomaticcomplexity_when_max_is_1_deals_with_nested_if_blocks_containing_and"
+source = '''
+def method_name
+  if first_condition then
+    call_foo if second_condition && third_condition
+    call_bar if fourth_condition || fifth_condition
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 15
+message = "Cyclomatic complexity for `method_name` is too high. [6/1]"
+
+[tests.config]
+Max = 1
+
+[[tests]]
+name = "rubocop_cop_metrics_cyclomaticcomplexity_when_max_is_1_registers_an_offense_for"
+source = '''
+def method_name
+  foo&.bar
+  foo&.bar
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 15
+message = "Cyclomatic complexity for `method_name` is too high. [3/1]"
+
+[tests.config]
+Max = 1
+
+[[tests]]
+name = "rubocop_cop_metrics_cyclomaticcomplexity_when_max_is_1_counts_repeated_on_same_untouched_local_variable_as_1"
+source = '''
+def method_name
+  var = 1
+  var&.foo
+  var&.dont_count_me
+  var = 2
+  var&.bar
+  var&.dont_count_me_either
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 15
+message = "Cyclomatic complexity for `method_name` is too high. [3/1]"
+
+[tests.config]
+Max = 1
+
+[[tests]]
+name = "rubocop_cop_metrics_cyclomaticcomplexity_when_max_is_1_counts_only_a_single_method"
+source = '''
+def method_name_1
+  call_foo if some_condition
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 17
+message = "Cyclomatic complexity for `method_name_1` is too high. [2/1]"
+
+[[tests.offenses]]
+line = 5
+column_start = 0
+column_end = 17
+message = "Cyclomatic complexity for `method_name_2` is too high. [2/1]"
+
+[tests.config]
+Max = 1
+
+[[tests]]
+name = "rubocop_cop_metrics_cyclomaticcomplexity_when_max_is_1_registers_an_offense_for_a_define_method"
+source = '''
+define_method :method_name do
+  call_foo if some_condition
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 29
+message = "Cyclomatic complexity for `method_name` is too high. [2/1]"
+
+[tests.config]
+Max = 1
+
+[[tests]]
+name = "rubocop_cop_metrics_cyclomaticcomplexity_when_max_is_1_counts_enumerating_methods_with_blocks_as_1"
+source = '''
+define_method :method_name do
+  (1..4).map do |i|                            # map: +1
+    i * 2
+  end.each.with_index { |val, i| puts val, i } # each: +0, with_index: +1
+  return treasure.map
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 29
+message = "Cyclomatic complexity for `method_name` is too high. [3/1]"
+
+[tests.config]
+Max = 1
+
+[[tests]]
+name = "rubocop_cop_metrics_cyclomaticcomplexity_when_max_is_1_ruby_2_7_counts_enumerating_methods_with_numblocks_as_1"
+source = '''
+define_method :method_name do
+  (_1.._2).map do |i|                          # map: +1
+    i * 2
+  end.each.with_index { |val, i| puts val, i } # each: +0, with_index: +1
+  return treasure.map
+end
+'''
+ruby_version = ">= 2.7"
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 29
+message = "Cyclomatic complexity for `method_name` is too high. [3/1]"
+
+[tests.config]
+Max = 1
+
+[[tests]]
+name = "rubocop_cop_metrics_cyclomaticcomplexity_when_max_is_1_counts_enumerating_methods_with_block_pass_as_1"
+source = '''
+define_method :method_name do
+  [].map(&:to_s)
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 29
+message = "Cyclomatic complexity for `method_name` is too high. [2/1]"
+
+[tests.config]
+Max = 1
+
+[[tests]]
+name = "rubocop_cop_metrics_cyclomaticcomplexity_when_max_is_1_does_not_count_blocks_in_general"
+source = '''
+define_method :method_name do
+  Struct.new(:foo, :bar) do
+    String.class_eval do
+      [42].tap do |answer|
+        foo { bar }
+      end
+    end
+  end
+end
+'''
+offenses = []
+
+[tests.config]
+Max = 1
+
+[[tests]]
+name = "rubocop_cop_metrics_cyclomaticcomplexity_when_max_is_1_with_lsp_option_registers_an_offense_for_an_unless_modifier"
+source = '''
+def method_name
+  call_foo unless some_condition
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 15
+message = "Cyclomatic complexity for `method_name` is too high. [2/1]"
+
+[tests.config]
+Max = 1
+
+[[tests]]
+name = "rubocop_cop_metrics_cyclomaticcomplexity_when_allowedmethods_is_enabled_does_not_register_an_offense_when_defining_an_instance_method"
+source = '''
+def foo
+  bar.baz(:qux)
+end
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:foo"]
+Max = 0
+
+[[tests]]
+name = "rubocop_cop_metrics_cyclomaticcomplexity_when_allowedmethods_is_enabled_does_not_register_an_offense_when_defining_a_class_method"
+source = '''
+def self.foo
+  bar.baz(:qux)
+end
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:foo"]
+Max = 0
+
+[[tests]]
+name = "rubocop_cop_metrics_cyclomaticcomplexity_when_allowedmethods_is_enabled_does_not_register_an_offense_when_using_define_method"
+source = '''
+define_method :foo do
+  bar.baz(:qux)
+end
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:foo"]
+Max = 0
+
+[[tests]]
+name = "rubocop_cop_metrics_cyclomaticcomplexity_when_allowedpatterns_is_enabled_does_not_register_an_offense_when_defining_an_instance_method"
+source = '''
+def foo
+  bar.baz(:qux)
+end
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:foo"]
+AllowedPatterns = ["/foo/"]
+Max = 0
+
+[[tests]]
+name = "rubocop_cop_metrics_cyclomaticcomplexity_when_allowedpatterns_is_enabled_does_not_register_an_offense_when_defining_a_class_method"
+source = '''
+def self.foo
+  bar.baz(:qux)
+end
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:foo"]
+AllowedPatterns = ["/foo/"]
+Max = 0
+
+[[tests]]
+name = "rubocop_cop_metrics_cyclomaticcomplexity_when_allowedpatterns_is_enabled_does_not_register_an_offense_when_using_define_method"
+source = '''
+define_method :foo do
+  bar.baz(:qux)
+end
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:foo"]
+AllowedPatterns = ["/foo/"]
+Max = 0
+
+[[tests]]
+name = "rubocop_cop_metrics_cyclomaticcomplexity_when_max_is_2_counts_stupid_nested_if_and_else_blocks"
+source = '''
+def method_name
+  if first_condition then
+    call_foo
+  else
+    if second_condition then
+      call_bar
+    else
+      call_bam if third_condition
+    end
+    call_baz if fourth_condition
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 15
+message = "Cyclomatic complexity for `method_name` is too high. [5/2]"
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:foo"]
+AllowedPatterns = ["/foo/"]
+Max = 2

@@ -1,0 +1,605 @@
+cop = "Style/MapIntoArray"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_mapintoarray_registers_an_offense_and_corrects_when_using_each_with_to_build_an_array"
+source = '''
+dest = []
+src.each { |e| dest << e * 2 }
+'''
+corrected = '''
+dest = src.map { |e| e * 2 }
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 30
+message = "Use `map` instead of `each` to map elements into an array."
+
+[[tests]]
+name = "rubocop_cop_style_mapintoarray_registers_an_offense_and_corrects_when_using_each_with_push_to_build_an_array"
+source = '''
+dest = []
+src.each { |e| dest.push(e * 2) }
+'''
+corrected = '''
+dest = src.map { |e| e * 2 }
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 33
+message = "Use `map` instead of `each` to map elements into an array."
+
+[[tests]]
+name = "rubocop_cop_style_mapintoarray_registers_an_offense_and_corrects_when_using_each_with_push_with_hash_argument_without_braces_to_build_an_array"
+source = '''
+dest = []
+src.each { |e| dest.push(e: 2) }
+'''
+corrected = '''
+dest = src.map { |e| { e: 2 } }
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 32
+message = "Use `map` instead of `each` to map elements into an array."
+
+[[tests]]
+name = "rubocop_cop_style_mapintoarray_registers_an_offense_and_corrects_when_using_each_with_push_with_hash_argument_with_braces_to_build_an_array"
+source = '''
+dest = []
+src.each { |e| dest.push({ e: 2 }) }
+'''
+corrected = '''
+dest = src.map { |e| { e: 2 } }
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 36
+message = "Use `map` instead of `each` to map elements into an array."
+
+[[tests]]
+name = "rubocop_cop_style_mapintoarray_registers_an_offense_and_corrects_when_using_each_with_append_to_build_an_array"
+source = '''
+dest = []
+src.each { |e| dest.append(e * 2) }
+'''
+corrected = '''
+dest = src.map { |e| e * 2 }
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 35
+message = "Use `map` instead of `each` to map elements into an array."
+
+[[tests]]
+name = "rubocop_cop_style_mapintoarray_registers_an_offense_and_corrects_when_using_each_with_append_with_hash_argument_without_braces_to_build_an_array"
+source = '''
+dest = []
+src.each { |e| dest.append(e: 2) }
+'''
+corrected = '''
+dest = src.map { |e| { e: 2 } }
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 34
+message = "Use `map` instead of `each` to map elements into an array."
+
+[[tests]]
+name = "rubocop_cop_style_mapintoarray_registers_an_offense_and_corrects_when_using_each_with_append_with_hash_argument_with_braces_to_build_an_array"
+source = '''
+dest = []
+src.each { |e| dest.append({ e: 2 }) }
+'''
+corrected = '''
+dest = src.map { |e| { e: 2 } }
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 38
+message = "Use `map` instead of `each` to map elements into an array."
+
+[[tests]]
+name = "rubocop_cop_style_mapintoarray_registers_an_offense_and_corrects_when_a_non_related_operation_precedes_an_each_call"
+source = '''
+dest = []
+do_something
+src.each { |e| dest << e * 2 }
+'''
+corrected = '''
+do_something
+dest = src.map { |e| e * 2 }
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 30
+message = "Use `map` instead of `each` to map elements into an array."
+
+[[tests]]
+name = "rubocop_cop_style_mapintoarray_registers_an_offense_and_corrects_when_a_non_related_operation_follows_an_each_call"
+source = '''
+dest = []
+src.each { |e| dest << e * 2 }
+do_something
+'''
+corrected = '''
+dest = src.map { |e| e * 2 }
+do_something
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 30
+message = "Use `map` instead of `each` to map elements into an array."
+
+[[tests]]
+name = "rubocop_cop_style_mapintoarray_registers_an_offense_and_corrects_when_using_an_if_statement"
+source = '''
+dest = []
+src.each do |e|
+  dest << if cond?
+    e
+  else
+    e * 2
+  end
+end
+'''
+corrected = '''
+dest = src.map do |e|
+  if cond?
+    e
+  else
+    e * 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 15
+message = "Use `map` instead of `each` to map elements into an array."
+
+[[tests]]
+name = "rubocop_cop_style_mapintoarray_registers_an_offense_and_corrects_when_using_a_case_statement"
+source = '''
+dest = []
+src.each do |e|
+  dest << case foo
+  when 1
+    e
+  else
+    e * 2
+  end
+end
+'''
+corrected = '''
+dest = src.map do |e|
+  case foo
+  when 1
+    e
+  else
+    e * 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 15
+message = "Use `map` instead of `each` to map elements into an array."
+
+[[tests]]
+name = "rubocop_cop_style_mapintoarray_registers_an_offense_and_corrects_when_using_a_begin_block"
+source = '''
+dest = []
+src.each do |e|
+  dest << begin
+    foo
+    e * 2
+  end
+end
+'''
+corrected = '''
+dest = src.map do |e|
+  begin
+    foo
+    e * 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 15
+message = "Use `map` instead of `each` to map elements into an array."
+
+[[tests]]
+name = "rubocop_cop_style_mapintoarray_registers_an_offense_and_corrects_when_using_an_array_literal"
+source = '''
+dest = []
+src.each { |e| dest << [1, e] }
+'''
+corrected = '''
+dest = src.map { |e| [1, e] }
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 31
+message = "Use `map` instead of `each` to map elements into an array."
+
+[[tests]]
+name = "rubocop_cop_style_mapintoarray_registers_an_offense_and_corrects_when_using_a_literal"
+source = '''
+dest = []
+src.each { |e| dest << true }
+'''
+corrected = '''
+dest = src.map { |e| true }
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 29
+message = "Use `map` instead of `each` to map elements into an array."
+
+[[tests]]
+name = "rubocop_cop_style_mapintoarray_registers_an_offense_and_corrects_when_using_a_numblock"
+source = '''
+dest = []
+src.each { dest << _1 * 2 }
+'''
+corrected = '''
+dest = src.map { _1 * 2 }
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 27
+message = "Use `map` instead of `each` to map elements into an array."
+
+[[tests]]
+name = "rubocop_cop_style_mapintoarray_registers_an_offense_and_corrects_when_using_a_itblock"
+source = '''
+dest = []
+src.each { dest << it * 2 }
+'''
+corrected = '''
+dest = src.map { it * 2 }
+'''
+ruby_version = ">= 3.4"
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 27
+message = "Use `map` instead of `each` to map elements into an array."
+
+[[tests]]
+name = "rubocop_cop_style_mapintoarray_registers_an_offense_and_corrects_when_the_destination_initialized_multiple_times"
+source = '''
+dest = []
+do_something(dest)
+dest = []
+src.each { |e| dest << e * 2 }
+'''
+corrected = '''
+dest = []
+do_something(dest)
+dest = src.map { |e| e * 2 }
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 30
+message = "Use `map` instead of `each` to map elements into an array."
+
+[[tests]]
+name = "rubocop_cop_style_mapintoarray_registers_an_offense_and_corrects_removing_a_destination_reference_follows_an_each_call"
+source = '''
+dest = []
+src.each { |e| dest << e * 2 }
+dest
+'''
+corrected = '''
+dest = src.map { |e| e * 2 }
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 30
+message = "Use `map` instead of `each` to map elements into an array."
+
+[[tests]]
+name = "rubocop_cop_style_mapintoarray_registers_an_offense_and_corrects_when_nested_autocorrections_required"
+source = '''
+dest = []
+src.each do |e|
+  dest << (
+    dest2 = []
+    src.each do |e|
+      dest2 << e
+    end
+    dest2
+  )
+end
+'''
+corrected = '''
+dest = src.map do |e|
+  (
+    dest2 = src.map do |e|
+      e
+    end
+  )
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 15
+message = "Use `map` instead of `each` to map elements into an array."
+
+[[tests.offenses]]
+line = 5
+column_start = 4
+column_end = 19
+message = "Use `map` instead of `each` to map elements into an array."
+
+[[tests]]
+name = "rubocop_cop_style_mapintoarray_registers_an_offense_and_corrects_when_the_destination_comes_from_tap_on_an_empty_array"
+source = '''
+[].tap do |dest|
+  src.each { |e| dest << e * 2 }
+end
+'''
+corrected = '''
+dest = src.map { |e| e * 2 }
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 32
+message = "Use `map` instead of `each` to map elements into an array."
+
+[[tests]]
+name = "rubocop_cop_style_mapintoarray_does_not_register_an_offense_when_the_destination_comes_from_tap_on_an_empty_array_that_has_been_mutated"
+source = '''
+[].tap do |dest|
+  do_something(dest)
+  src.each { |e| dest << e * 2 }
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_mapintoarray_does_not_register_an_offense_when_the_destination_comes_from_tap_on_a_non_empty_array"
+source = '''
+[1, 2, 3].tap do |dest|
+  src.each { |e| dest << e * 2 }
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_mapintoarray_does_not_register_an_offense_when_the_destination_comes_from_tap_on_a_non_array"
+source = '''
+{}.tap do |dest|
+  src.each { |e| dest << e * 2 }
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_mapintoarray_does_not_register_an_offense_when_the_destination_is_not_a_local_variable"
+source = '''
+@dest = []
+src.each { |e| @dest << e }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_mapintoarray_does_not_register_an_offense_when_each_is_called_with_non_block_arguments"
+source = '''
+dest = []
+StringIO.new('foo:bar').each(':') { |e| dest << e }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_mapintoarray_does_not_register_an_offense_when_using_each_without_receiver_with_to_build_an_array"
+source = '''
+dest = []
+each { |e| dest << e * 2 }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_mapintoarray_does_not_register_an_offense_when_using_each_with_self_receiver_with_to_build_an_array"
+source = '''
+dest = []
+self.each { |e| dest << e * 2 }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_mapintoarray_does_not_register_an_offense_when_the_parent_node_of_an_each_call_is_not_a_begin_node"
+source = '''
+[
+  dest = [],
+  src.each { |e| dest << e * 2 },
+]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_mapintoarray_does_not_register_an_offense_when_the_destination_initialization_is_not_a_sibling_of_an_each_call"
+source = '''
+dest = []
+if cond
+  src.each { |e| dest << e * 2 }
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_mapintoarray_does_not_register_an_offense_when_the_destination_is_used_before_an_each_call"
+source = '''
+dest = []
+dest << 0
+src.each { |e| dest << e * 2 }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_mapintoarray_does_not_register_an_offense_when_the_destination_is_used_in_the_receiver_expression"
+source = '''
+dest = []
+(dest << 1).each { |e| dest << e * 2 }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_mapintoarray_does_not_register_an_offense_when_the_destination_is_shadowed_by_a_block_argument"
+source = '''
+dest = []
+src.each { |dest| dest << 1 }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_mapintoarray_does_not_register_an_offense_when_the_destination_is_used_in_the_transformation"
+source = '''
+dest = []
+src.each { |e| dest << dest.size }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_mapintoarray_does_not_register_an_offense_when_pushing_splat"
+source = '''
+dest = []
+src.each { |e| dest.push(*e) }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_mapintoarray_does_not_register_an_offense_when_pushing_anonymously_forwarded_block"
+source = '''
+def foo(&)
+  dest = []
+  src.each { |e| dest.push(&) }
+end
+'''
+ruby_version = ">= 3.1"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_mapintoarray_does_not_register_an_offense_when_pushing_anonymously_forwarded_restarg"
+source = '''
+def foo(*)
+  dest = []
+  src.each { |e| dest.push(*) }
+end
+'''
+ruby_version = ">= 3.2"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_mapintoarray_does_not_register_an_offense_when_pushing_anonymously_forwarded_kwrestarg"
+source = '''
+def foo(**)
+  dest = []
+  src.each { |e| dest.push(**) }
+end
+'''
+ruby_version = ">= 3.2"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_mapintoarray_does_not_register_an_offense_when_pushing_anonymously_forwarded_args"
+source = '''
+def foo(...)
+  dest = []
+  src.each { |e| dest.push(...) }
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_mapintoarray_destination_initializer_registers_an_offense_and_corrects"
+source = '''
+dest = #{initializer}
+src.each { |e| dest << e * 2 }
+'''
+corrected = '''
+dest = src.map { |e| e * 2 }
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 30
+message = "Use `map` instead of `each` to map elements into an array."
+
+[[tests]]
+name = "rubocop_cop_style_mapintoarray_new_method_name_for_replacement_when_style_collectionmethods_is_configured_for_map_registers_an_offense_and_corrects_using_the_method_specified_in_preferredmethods"
+source = '''
+dest = []
+src.each { |e| dest << e * 2 }
+'''
+corrected = '''
+dest = src.collect { |e| e * 2 }
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 30
+message = "Use `collect` instead of `each` to map elements into an array."
+
+[[tests]]
+name = "rubocop_cop_style_mapintoarray_new_method_name_for_replacement_when_style_collectionmethods_is_configured_except_for_map_registers_an_offense_and_corrects_using_map_method"
+source = '''
+dest = []
+src.each { |e| dest << e * 2 }
+'''
+corrected = '''
+dest = src.map { |e| e * 2 }
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 30
+message = "Use `map` instead of `each` to map elements into an array."

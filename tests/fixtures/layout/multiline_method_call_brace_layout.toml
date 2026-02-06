@@ -1,0 +1,259 @@
+cop = "Layout/MultilineMethodCallBraceLayout"
+department = "layout"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_layout_multilinemethodcallbracelayout_ignores_implicit_calls"
+source = '''
+foo 1,
+2
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:enforced_style"
+
+[[tests]]
+name = "rubocop_cop_layout_multilinemethodcallbracelayout_ignores_single_line_calls"
+source = '''
+foo(1,2)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:enforced_style"
+
+[[tests]]
+name = "rubocop_cop_layout_multilinemethodcallbracelayout_ignores_calls_without_arguments"
+source = '''
+puts
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:enforced_style"
+
+[[tests]]
+name = "rubocop_cop_layout_multilinemethodcallbracelayout_ignores_calls_with_an_empty_brace"
+source = '''
+puts()
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:enforced_style"
+
+[[tests]]
+name = "rubocop_cop_layout_multilinemethodcallbracelayout_ignores_calls_with_a_multiline_empty_brace"
+source = '''
+puts(
+)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:enforced_style"
+
+[[tests]]
+name = "rubocop_cop_layout_multilinemethodcallbracelayout_registers_an_offense_when_using_method_chain_for_heredoc_argument_in_multiline_literal_brace_layout"
+source = '''
+foo(<<~EOS, arg
+  text
+EOS
+).do_something
+'''
+corrected = '''
+foo(<<~EOS, arg).do_something
+  text
+EOS
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 1
+message = "Closing method call brace must be on the same line as the last argument when opening brace is on the same line as the first argument."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:enforced_style"
+
+[[tests]]
+name = "rubocop_cop_layout_multilinemethodcallbracelayout_registers_an_offense_when_using_safe_navigation_method_chain_for_heredoc_argument_in_multiline_literal_brace_layout"
+source = '''
+foo(<<~EOS, arg
+  text
+EOS
+)&.do_something
+'''
+corrected = '''
+foo(<<~EOS, arg)&.do_something
+  text
+EOS
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 1
+message = "Closing method call brace must be on the same line as the last argument when opening brace is on the same line as the first argument."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:enforced_style"
+
+[[tests]]
+name = "rubocop_cop_layout_multilinemethodcallbracelayout_when_enforcedstyle_is_new_line_still_ignores_single_line_calls"
+source = '''
+puts("Hello world!")
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:enforced_style"
+
+[[tests]]
+name = "rubocop_cop_layout_multilinemethodcallbracelayout_when_enforcedstyle_is_new_line_ignores_single_line_calls_with_multi_line_receiver"
+source = '''
+[
+].join(" ")
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:enforced_style"
+
+[[tests]]
+name = "rubocop_cop_layout_multilinemethodcallbracelayout_when_enforcedstyle_is_new_line_ignores_single_line_calls_with_multi_line_receiver_with_leading_dot"
+source = '''
+[
+]
+.join(" ")
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:enforced_style"
+
+[[tests]]
+name = "rubocop_cop_layout_multilinemethodcallbracelayout_when_comment_present_before_closing_brace_corrects_closing_brace_without_crashing"
+source = '''
+super(bar(baz,
+  ham # comment
+))
+'''
+corrected = '''
+super(bar(baz,
+  ham)) # comment
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 1
+message = "Closing method call brace must be on the same line as the last argument when opening brace is on the same line as the first argument."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:enforced_style"
+
+[[tests]]
+name = "rubocop_cop_layout_multilinemethodcallbracelayout_with_safe_navigation_ignores_single_line_calls"
+source = '''
+foo&.bar(1,2)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:enforced_style"
+
+[[tests]]
+name = "rubocop_cop_layout_multilinemethodcallbracelayout_with_safe_navigation_with_enforcedstyle_symmetrical_registers_an_offense_and_corrects"
+source = '''
+foo&.bar(
+  baz)
+'''
+corrected = '''
+foo&.bar(
+  baz
+)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 5
+column_end = 6
+message = "Closing method call brace must be on the line after the last argument when opening brace is on a separate line from the first argument."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:enforced_style"
+
+[[tests]]
+name = "rubocop_cop_layout_multilinemethodcallbracelayout_with_safe_navigation_with_enforcedstyle_new_line_registers_an_offense_and_corrects"
+source = '''
+foo&.bar(
+  baz)
+'''
+corrected = '''
+foo&.bar(
+  baz
+)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 5
+column_end = 6
+message = "Closing method call brace must be on the line after the last argument."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:enforced_style"
+
+[[tests]]
+name = "rubocop_cop_layout_multilinemethodcallbracelayout_with_safe_navigation_with_enforcedstyle_same_line_registers_an_offense_and_corrects"
+source = '''
+foo&.bar(
+  baz
+)
+'''
+corrected = '''
+foo&.bar(
+  baz)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 1
+message = "Closing method call brace must be on the same line as the last argument."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:enforced_style"

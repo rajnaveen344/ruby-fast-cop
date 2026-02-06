@@ -1,0 +1,155 @@
+cop = "Lint/DuplicateCaseCondition"
+department = "lint"
+severity = "warning"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_lint_duplicatecasecondition_registers_an_offense_for_repeated_case_conditionals"
+source = '''
+case x
+when false
+  first_method
+when true
+  second_method
+when false
+  third_method
+end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 5
+column_end = 10
+message = "Duplicate `when` condition detected."
+
+[[tests]]
+name = "rubocop_cop_lint_duplicatecasecondition_registers_an_offense_for_subsequent_repeated_case_conditionals"
+source = '''
+case x
+when false
+  first_method
+when false
+  second_method
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 5
+column_end = 10
+message = "Duplicate `when` condition detected."
+
+[[tests]]
+name = "rubocop_cop_lint_duplicatecasecondition_registers_multiple_offenses_for_multiple_repeated_case_conditionals"
+source = '''
+case x
+when false
+  first_method
+when true
+  second_method
+when false
+  third_method
+when true
+  fourth_method
+end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 5
+column_end = 10
+message = "Duplicate `when` condition detected."
+
+[[tests.offenses]]
+line = 8
+column_start = 5
+column_end = 9
+message = "Duplicate `when` condition detected."
+
+[[tests]]
+name = "rubocop_cop_lint_duplicatecasecondition_registers_multiple_offenses_for_repeated_multi_value_conditionals"
+source = '''
+case x
+when a, b
+  first_method
+when b, a
+  second_method
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 8
+column_end = 9
+message = "Duplicate `when` condition detected."
+
+[[tests.offenses]]
+line = 4
+column_start = 5
+column_end = 6
+message = "Duplicate `when` condition detected."
+
+[[tests]]
+name = "rubocop_cop_lint_duplicatecasecondition_registers_an_offense_for_repeated_logical_operator_when_expressions"
+source = '''
+case x
+when a && b
+  first_method
+when a && b
+  second_method
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 5
+column_end = 11
+message = "Duplicate `when` condition detected."
+
+[[tests]]
+name = "rubocop_cop_lint_duplicatecasecondition_accepts_trivial_case_expressions"
+source = '''
+case x
+when false
+  first_method
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_duplicatecasecondition_accepts_non_redundant_case_expressions"
+source = '''
+case x
+when false
+  first_method
+when true
+  second_method
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_duplicatecasecondition_accepts_non_redundant_case_expressions_with_an_else_expression"
+source = '''
+case x
+when false
+  method_name
+when true
+  second_method
+else
+  third_method
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_duplicatecasecondition_accepts_similar_but_not_equivalent_expressions"
+source = '''
+case x
+when something && another && other
+  first_method
+when something && another
+  second_method
+end
+'''
+offenses = []

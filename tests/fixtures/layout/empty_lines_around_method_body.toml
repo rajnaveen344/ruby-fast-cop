@@ -1,0 +1,195 @@
+cop = "Layout/EmptyLinesAroundMethodBody"
+department = "layout"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinesaroundmethodbody_registers_an_offense_for_method_body_starting_with_a_blank"
+source = '''
+def some_method
+
+#{beginning_offense_annotation}
+  do_something
+end
+'''
+corrected = '''
+def some_method
+  do_something
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinesaroundmethodbody_registers_an_offense_for_class_method_body_starting_with_a_blank"
+source = '''
+def Test.some_method
+
+#{beginning_offense_annotation}
+  do_something
+end
+'''
+corrected = '''
+def Test.some_method
+  do_something
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinesaroundmethodbody_registers_an_offense_for_method_body_ending_with_a_blank"
+source = '''
+def some_method
+  do_something
+
+#{end_offense_annotation}
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinesaroundmethodbody_registers_an_offense_for_class_method_body_ending_with_a_blank"
+source = '''
+def Test.some_method
+  do_something
+
+#{end_offense_annotation}
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinesaroundmethodbody_is_not_fooled_by_single_line_methods"
+source = '''
+def some_method; do_something; end
+
+something_else
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinesaroundmethodbody_registers_an_offense_for_methods_with_empty_lines_and_arguments_spanning_multiple_lines"
+source = '''
+def some_method(
+  arg
+)
+
+#{beginning_offense_annotation}
+  do_something
+end
+'''
+corrected = '''
+def some_method(
+  arg
+)
+  do_something
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinesaroundmethodbody_registers_an_offense_for_methods_with_empty_lines_empty_arguments_spanning_multiple_lines"
+source = '''
+def some_method(
+
+)
+
+#{beginning_offense_annotation}
+  do_something
+end
+'''
+corrected = '''
+def some_method(
+
+)
+  do_something
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinesaroundmethodbody_endless_methods_does_not_register_an_offense_for_a_single_line_endless_method"
+source = '''
+def foo = quux
+'''
+ruby_version = ">= 3.0"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinesaroundmethodbody_endless_methods_does_not_register_an_offense_for_multiline_endless_method_where_the_body_is_on_the_same_line_as_the"
+source = '''
+def foo(bar,
+  baz) = quux
+'''
+ruby_version = ">= 3.0"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinesaroundmethodbody_endless_methods_does_not_register_an_offense_for_multiline_endless_method_where_the_body_is_on_the_next_line"
+source = '''
+def foo(bar, baz) =
+  quux
+'''
+ruby_version = ">= 3.0"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinesaroundmethodbody_endless_methods_does_not_register_an_offense_for_multiline_endless_method_when_there_is_a_comment_before_the_body"
+source = '''
+def foo(bar, baz) =
+  # comment
+  quux
+'''
+ruby_version = ">= 3.0"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinesaroundmethodbody_endless_methods_registers_an_offense_and_corrects_for_multiline_endless_method_with_extra_lines"
+source = '''
+def foo(bar,
+  baz) =
+
+#{beginning_offense_annotation}
+  quux
+'''
+corrected = '''
+def foo(bar,
+  baz) =
+  quux
+'''
+ruby_version = ">= 3.0"
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_emptylinesaroundmethodbody_endless_methods_registers_an_offense_and_corrects_for_multiline_endless_method_with_a_comment_and_extra_lines"
+source = '''
+def foo(bar,
+  baz) =
+
+#{beginning_offense_annotation}
+  # comment
+  quux
+'''
+corrected = '''
+def foo(bar,
+  baz) =
+  # comment
+  quux
+'''
+ruby_version = ">= 3.0"
+interpolated = true
+verified = false
+offenses = []

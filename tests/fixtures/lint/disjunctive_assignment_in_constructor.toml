@@ -1,0 +1,111 @@
+cop = "Lint/DisjunctiveAssignmentInConstructor"
+department = "lint"
+severity = "warning"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_lint_disjunctiveassignmentinconstructor_empty_constructor_accepts"
+source = '''
+class Banana
+  def initialize
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_disjunctiveassignmentinconstructor_constructor_does_not_have_disjunctive_assignment_accepts"
+source = '''
+class Banana
+  def initialize
+    @delicious = true
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_disjunctiveassignmentinconstructor_constructor_has_disjunctive_assignment_lhs_is_lvar_accepts"
+source = '''
+class Banana
+  def initialize
+    delicious ||= true
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_disjunctiveassignmentinconstructor_constructor_has_disjunctive_assignment_lhs_is_ivar_registers_an_offense_and_corrects"
+source = '''
+class Banana
+  def initialize
+    @delicious ||= true
+  end
+end
+'''
+corrected = '''
+class Banana
+  def initialize
+    @delicious = true
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 15
+column_end = 18
+message = "Unnecessary disjunctive assignment. Use plain assignment."
+
+[[tests]]
+name = "rubocop_cop_lint_disjunctiveassignmentinconstructor_constructor_has_disjunctive_assignment_lhs_is_ivar_constructor_calls_super_after_assignment_registers_an_offense_and_corrects"
+source = '''
+class Banana
+  def initialize
+    @delicious ||= true
+    super
+  end
+end
+'''
+corrected = '''
+class Banana
+  def initialize
+    @delicious = true
+    super
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 15
+column_end = 18
+message = "Unnecessary disjunctive assignment. Use plain assignment."
+
+[[tests]]
+name = "rubocop_cop_lint_disjunctiveassignmentinconstructor_constructor_has_disjunctive_assignment_lhs_is_ivar_constructor_calls_super_before_disjunctive_assignment_accepts"
+source = '''
+class Banana
+  def initialize
+    super
+    @delicious ||= true
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_disjunctiveassignmentinconstructor_constructor_has_disjunctive_assignment_lhs_is_ivar_constructor_calls_any_method_before_disjunctive_assignment_accepts"
+source = '''
+class Banana
+  def initialize
+    # With the limitations of static analysis, it's very difficult
+    # to determine, after this method call, whether the disjunctive
+    # assignment is necessary or not.
+    absolutely_any_method
+    @delicious ||= true
+  end
+end
+'''
+offenses = []

@@ -1,0 +1,301 @@
+cop = "Style/DocumentDynamicEvalDefinition"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_documentdynamicevaldefinition_registers_an_offense_when_using_eval_type_method_with_string_interpolation_without_comment_docs"
+source = '''
+class_eval <<-EOT, __FILE__, __LINE__ + 1
+  def #{unsafe_method}(*params, &block)
+    to_str.#{unsafe_method}(*params, &block)
+  end
+EOT
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 10
+message = "Add a comment block showing its appearance if interpolated."
+
+[[tests]]
+name = "rubocop_cop_style_documentdynamicevaldefinition_does_not_register_an_offense_when_using_eval_type_method_without_string_interpolation"
+source = '''
+class_eval <<-EOT, __FILE__, __LINE__ + 1
+  def capitalize(*params, &block)
+    to_str.capitalize(*params, &block)
+  end
+EOT
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_documentdynamicevaldefinition_does_not_register_an_offense_when_using_eval_type_method_with_string_interpolation_with_comment_docs"
+source = '''
+class_eval <<-EOT, __FILE__, __LINE__ + 1
+  def #{unsafe_method}(*params, &block)       # def capitalize(*params, &block)
+    to_str.#{unsafe_method}(*params, &block)  #   to_str.capitalize(*params, &block)
+  end                                          # end
+EOT
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_documentdynamicevaldefinition"
+source = '''
+stringio.instance_eval("def original_filename; 'stringio#{n}.txt'; end")
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 22
+message = "Add a comment block showing its appearance if interpolated."
+
+[[tests]]
+name = "rubocop_cop_style_documentdynamicevaldefinition"
+source = '''
+stringio.instance_eval("def original_filename; 'stringio#{n}.txt'; end # def original_filename; 'stringiofoo.txt'; end")
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_documentdynamicevaldefinition_block_comment_in_heredoc_does_not_register_an_offense_for_a_matching_block_comment"
+source = '''
+class_eval <<-EOT, __FILE__, __LINE__ + 1
+  # def capitalize(*params, &block)
+  #   to_str.capitalize(*params, &block)
+  # end
+
+  def #{unsafe_method}(*params, &block)
+    to_str.#{unsafe_method}(*params, &block)
+  end
+EOT
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_documentdynamicevaldefinition_block_comment_in_heredoc_does_not_evaluate_comments_if_there_is_no_interpolation"
+source = '''
+class_eval <<-EOT, __FILE__, __LINE__ + 1
+  def capitalize(*params, &block)
+    to_str.capitalize(*params, &block)
+  end
+EOT
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_documentdynamicevaldefinition_block_comment_in_heredoc_does_not_register_an_offense_when_using_inline_comments"
+source = '''
+class_eval <<-EOT, __FILE__, __LINE__ + 1
+  # def capitalize(*params, &block)
+  #   to_str.capitalize(*params, &block)
+  # end
+
+  def #{unsafe_method}(*params, &block)
+    to_str.#{unsafe_method}(*params, &block) # { note: etc. }
+  end
+EOT
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_documentdynamicevaldefinition_block_comment_in_heredoc_does_not_register_an_offense_when_using_other_text"
+source = '''
+class_eval <<-EOT, __FILE__, __LINE__ + 1
+  # EXAMPLE: def capitalize(*params, &block)
+  #   to_str.capitalize(*params, &block)
+  # end
+
+  def #{unsafe_method}(*params, &block)
+    to_str.#{unsafe_method}(*params, &block)
+  end
+EOT
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_documentdynamicevaldefinition_block_comment_in_heredoc_does_not_register_an_offense_when_using_multiple_methods"
+source = '''
+class_eval <<-EOT, __FILE__, __LINE__ + 1
+  # def capitalize(*params, &block)
+  #   to_str.capitalize(*params, &block)
+  # end
+  #
+  # def capitalize!(*params)
+  #   @dirty = true
+  #   super
+  # end
+
+  def #{unsafe_method}(*params, &block)
+    to_str.#{unsafe_method}(*params, &block)
+  end
+
+  def #{unsafe_method}!(*params)
+    @dirty = true
+    super
+  end
+EOT
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_documentdynamicevaldefinition_block_comment_in_heredoc_does_not_register_an_offense_when_using_multiple_methods_with_split_comments"
+source = '''
+class_eval <<-EOT, __FILE__, __LINE__ + 1
+  # def capitalize(*params, &block)
+  #   to_str.capitalize(*params, &block)
+  # end
+  def #{unsafe_method}(*params, &block)
+    to_str.#{unsafe_method}(*params, &block)
+  end
+
+  # def capitalize!(*params)
+  #   @dirty = true
+  #   super
+  # end
+  def #{unsafe_method}!(*params)
+    @dirty = true
+    super
+  end
+EOT
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_documentdynamicevaldefinition_block_comment_in_heredoc_registers_an_offense_if_the_comment_does_not_match_the_method"
+source = '''
+class_eval <<-EOT, __FILE__, __LINE__ + 1
+  # def capitalize(*params, &block)
+  #   str.capitalize(*params, &block)
+  # end
+
+  def #{unsafe_method}(*params, &block)
+    to_str.#{unsafe_method}(*params, &block)
+  end
+EOT
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 10
+message = "Add a comment block showing its appearance if interpolated."
+
+[[tests]]
+name = "rubocop_cop_style_documentdynamicevaldefinition_block_comment_outside_heredoc_does_not_register_an_offense_for_a_matching_block_comment_before_the_heredoc"
+source = '''
+class_eval(
+  # def capitalize(*params, &block)
+  #   to_str.capitalize(*params, &block)
+  # end
+
+  <<-EOT, __FILE__, __LINE__ + 1
+    def #{unsafe_method}(*params, &block)
+      to_str.#{unsafe_method}(*params, &block)
+    end
+  EOT
+)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_documentdynamicevaldefinition_block_comment_outside_heredoc_does_not_register_an_offense_for_a_matching_block_comment_after_the_heredoc"
+source = '''
+class_eval(
+  <<-EOT, __FILE__, __LINE__ + 1
+    def #{unsafe_method}(*params, &block)
+      to_str.#{unsafe_method}(*params, &block)
+    end
+  EOT
+  # def capitalize(*params, &block)
+  #   to_str.capitalize(*params, &block)
+  # end
+)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_documentdynamicevaldefinition_block_comment_outside_heredoc_does_not_register_an_offense_when_using_inline_comments"
+source = '''
+class_eval(
+  # def capitalize(*params, &block)
+  #   to_str.capitalize(*params, &block)
+  # end
+
+  <<-EOT, __FILE__, __LINE__ + 1
+    def #{unsafe_method}(*params, &block)
+      to_str.#{unsafe_method}(*params, &block) # { note: etc. }
+    end
+  EOT
+)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_documentdynamicevaldefinition_block_comment_outside_heredoc_does_not_register_an_offense_when_using_other_text"
+source = '''
+class_eval(
+  # EXAMPLE: def capitalize(*params, &block)
+  #   to_str.capitalize(*params, &block)
+  # end
+
+  <<-EOT, __FILE__, __LINE__ + 1
+    def #{unsafe_method}(*params, &block)
+      to_str.#{unsafe_method}(*params, &block)
+    end
+  EOT
+)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_documentdynamicevaldefinition_block_comment_outside_heredoc_registers_an_offense_if_the_comment_does_not_match_the_method"
+source = '''
+class_eval(
+  # def capitalize(*params, &block)
+  #   str.capitalize(*params, &block)
+  # end
+
+  <<-EOT, __FILE__, __LINE__ + 1
+    def #{unsafe_method}(*params, &block)
+      to_str.#{unsafe_method}(*params, &block)
+    end
+  EOT
+)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 10
+message = "Add a comment block showing its appearance if interpolated."
+
+[[tests]]
+name = "rubocop_cop_style_documentdynamicevaldefinition_block_comment_outside_heredoc_does_not_register_an_offense_when_using_multiple_methods"
+source = '''
+class_eval(
+  # def capitalize(*params, &block)
+  #   to_str.capitalize(*params, &block)
+  # end
+  #
+  # def capitalize!(*params)
+  #   @dirty = true
+  #   super
+  # end
+
+  <<-EOT, __FILE__, __LINE__ + 1
+    def #{unsafe_method}(*params, &block)
+      to_str.#{unsafe_method}(*params, &block)
+    end
+
+    def #{unsafe_method}!(*params)
+      @dirty = true
+      super
+    end
+  EOT
+)
+'''
+offenses = []

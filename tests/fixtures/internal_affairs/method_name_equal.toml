@@ -1,0 +1,56 @@
+cop = "InternalAffairs/MethodNameEqual"
+department = "internal_affairs"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_methodnameequal_registers_an_offense_when_using_method_do_something"
+source = '''
+node.method_name == :do_something
+'''
+corrected = '''
+node.method?(:do_something)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 33
+message = "Use `node.method?(:do_something)` instead."
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_methodnameequal_registers_an_offense_when_using_method_do_something"
+source = '''
+node.method_name != :do_something
+'''
+corrected = '''
+!node.method?(:do_something)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 33
+message = "Use `!node.method?(:do_something)` instead."
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_methodnameequal_registers_an_offense_when_using_method_other_node_do_something"
+source = '''
+node.method_name == other_node.do_something
+'''
+corrected = '''
+node.method?(other_node.do_something)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 43
+message = "Use `node.method?(other_node.do_something)` instead."
+
+[[tests]]
+name = "rubocop_cop_internalaffairs_methodnameequal_does_not_register_an_offense_when_using_method"
+source = '''
+node.method?(:do_something)
+'''
+offenses = []

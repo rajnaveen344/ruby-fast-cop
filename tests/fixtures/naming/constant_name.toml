@@ -1,0 +1,235 @@
+cop = "Naming/ConstantName"
+department = "naming"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_naming_constantname_registers_an_offense_for_camel_case_in_const_name"
+source = '''
+TopCase = 5
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 7
+message = "Use SCREAMING_SNAKE_CASE for constants."
+
+[[tests]]
+name = "rubocop_cop_naming_constantname_registers_an_offense_for_camel_case_in_const_name_when_using_frozen_range_assignment"
+source = '''
+TopCase = (1..5).freeze
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 7
+message = "Use SCREAMING_SNAKE_CASE for constants."
+
+[[tests]]
+name = "rubocop_cop_naming_constantname_registers_an_offense_for_camel_case_in_const_name_when_using_frozen_object_assignment"
+source = '''
+TopCase = 5.freeze
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 7
+message = "Use SCREAMING_SNAKE_CASE for constants."
+
+[[tests]]
+name = "rubocop_cop_naming_constantname_registers_an_offense_for_non_posix_upper_case_in_const_name"
+source = '''
+Nö = 'no'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 2
+message = "Use SCREAMING_SNAKE_CASE for constants."
+
+[[tests]]
+name = "rubocop_cop_naming_constantname_registers_offenses_for_camel_case_in_multiple_const_assignment"
+source = '''
+TopCase, Test2, TEST_3 = 5, 6, 7
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 7
+message = "Use SCREAMING_SNAKE_CASE for constants."
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 14
+message = "Use SCREAMING_SNAKE_CASE for constants."
+
+[[tests]]
+name = "rubocop_cop_naming_constantname_registers_an_offense_for_snake_case_in_const_name"
+source = '''
+TOP_test = 5
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 8
+message = "Use SCREAMING_SNAKE_CASE for constants."
+
+[[tests]]
+name = "rubocop_cop_naming_constantname_registers_1_offense_if_rhs_is_offending_const_assignment"
+source = '''
+Bar = Foo = 4
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 9
+message = "Use SCREAMING_SNAKE_CASE for constants."
+
+[[tests]]
+name = "rubocop_cop_naming_constantname_allows_screaming_snake_case_in_const_name"
+source = '''
+TOP_TEST = 5
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_naming_constantname_allows_screaming_snake_case_in_multiple_const_assignment"
+source = '''
+TOP_TEST, TEST_2 = 5, 6
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_naming_constantname_allows_screaming_snake_case_with_posix_upper_case_characters"
+source = '''
+TÖP_TEST = 5
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_naming_constantname_does_not_check_names_if_rhs_is_a_method_call"
+source = '''
+AnythingGoes = test
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_naming_constantname_does_not_check_names_if_rhs_is_a_method_call_with_conditional_assign"
+source = '''
+AnythingGoes ||= test
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_naming_constantname_does_not_check_names_if_rhs_is_a_class_new"
+source = '''
+Invalid = Class.new(StandardError)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_naming_constantname_does_not_check_names_if_rhs_is_a_class_new_with_conditional_assign"
+source = '''
+Invalid ||= Class.new(StandardError)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_naming_constantname_does_not_check_names_if_rhs_is_a_struct_new"
+source = '''
+Investigation = Struct.new(:offenses, :errors)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_naming_constantname_does_not_check_names_if_rhs_is_a_struct_new_with_conditional_assign"
+source = '''
+Investigation ||= Struct.new(:offenses, :errors)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_naming_constantname_does_not_check_names_if_rhs_is_a_method_call_with_block"
+source = '''
+AnythingGoes = test do
+  do_something
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_naming_constantname_does_not_check_if_rhs_is_another_constant"
+source = '''
+Parser::CurrentRuby = Parser::Ruby21
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_naming_constantname_does_not_check_if_rhs_is_a_non_offensive_const_assignment"
+source = '''
+Bar = Foo = Qux
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_naming_constantname_checks_qualified_const_names"
+source = '''
+::AnythingGoes = 30
+a::Bar_foo = 10
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 14
+message = "Use SCREAMING_SNAKE_CASE for constants."
+
+[[tests.offenses]]
+line = 2
+column_start = 3
+column_end = 10
+message = "Use SCREAMING_SNAKE_CASE for constants."
+
+[[tests]]
+name = "rubocop_cop_naming_constantname_does_not_register_an_offense_when_assigning_a_constant_from_an_empty_branch_of_else"
+source = '''
+CONST = if condition
+  foo
+else
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_naming_constantname_when_a_rhs_is_a_conditional_expression_when_conditional_branches_contain_only_constants_does_not_check_names"
+source = '''
+Investigation = if true then Foo else Bar end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_naming_constantname_when_a_rhs_is_a_conditional_expression_when_conditional_branches_contain_a_value_other_than_a_constant_does_not_check_names"
+source = '''
+Investigation = if true then "foo" else Bar end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_naming_constantname_when_a_rhs_is_a_conditional_expression_when_conditional_branches_contain_only_string_values_registers_an_offense"
+source = '''
+TopCase = if true then 'foo' else 'bar' end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 7
+message = "Use SCREAMING_SNAKE_CASE for constants."

@@ -1,0 +1,111 @@
+cop = "Layout/SpaceInsideRangeLiteral"
+department = "layout"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_layout_spaceinsiderangeliteral_registers_an_offense_for_space_inside_literal"
+source = '''
+1 .. 2
+1.. 2
+1 ..2
+'''
+corrected = '''
+1..2
+1..2
+1..2
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Space inside range literal."
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 5
+message = "Space inside range literal."
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 5
+message = "Space inside range literal."
+
+[[tests]]
+name = "rubocop_cop_layout_spaceinsiderangeliteral_accepts_no_space_inside_literal"
+source = '''
+1..2
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_spaceinsiderangeliteral_registers_an_offense_for_space_inside_literal"
+source = '''
+1 ... 2
+1... 2
+1 ...2
+'''
+corrected = '''
+1...2
+1...2
+1...2
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 7
+message = "Space inside range literal."
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 6
+message = "Space inside range literal."
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 6
+message = "Space inside range literal."
+
+[[tests]]
+name = "rubocop_cop_layout_spaceinsiderangeliteral_accepts_no_space_inside_literal"
+source = '''
+1...2
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_spaceinsiderangeliteral_accepts_complex_range_literal_with_space_in_it"
+source = '''
+0...(line - 1)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_spaceinsiderangeliteral_accepts_multiline_range_literal_with_no_space_in_it"
+source = '''
+x = 0..
+    10
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_spaceinsiderangeliteral_registers_an_offense_in_multiline_range_literal_with_space_in_it"
+source = '''
+x = 0 ..
+    10
+'''
+corrected = '''
+x = 0..10
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 8
+message = "Space inside range literal."

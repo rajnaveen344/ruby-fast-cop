@@ -1,0 +1,118 @@
+cop = "Style/MultilineIfModifier"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_multilineifmodifier_if_guard_clause_registers_an_offense"
+source = '''
+{
+  result: run
+} if cond
+'''
+corrected = '''
+if cond
+  {
+    result: run
+  }
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 1
+message = "Favor a normal if-statement over a modifier clause in a multiline statement."
+
+[[tests]]
+name = "rubocop_cop_style_multilineifmodifier_if_guard_clause_allows_a_one_liner"
+source = '''
+run if cond
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_multilineifmodifier_if_guard_clause_allows_a_multiline_condition"
+source = '''
+run if cond &&
+       cond2
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_multilineifmodifier_if_guard_clause_registers_an_offense_when_nested_modifier"
+source = '''
+[
+] if inner if outer
+'''
+corrected = '''
+if outer
+  if inner
+    [
+    ]
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 1
+message = "Favor a normal if-statement over a modifier clause in a multiline statement."
+
+[[tests]]
+name = "rubocop_cop_style_multilineifmodifier_unless_guard_clause_registers_an_offense"
+source = '''
+{
+  result: run
+} unless cond
+'''
+corrected = '''
+unless cond
+  {
+    result: run
+  }
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 1
+message = "Favor a normal unless-statement over a modifier clause in a multiline statement."
+
+[[tests]]
+name = "rubocop_cop_style_multilineifmodifier_unless_guard_clause_allows_a_one_liner"
+source = '''
+run unless cond
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_multilineifmodifier_unless_guard_clause_allows_a_multiline_condition"
+source = '''
+run unless cond &&
+           cond2
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_multilineifmodifier_unless_guard_clause_registers_an_offense_when_nested_modifier"
+source = '''
+[
+] unless inner unless outer
+'''
+corrected = '''
+unless outer
+  unless inner
+    [
+    ]
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 1
+message = "Favor a normal unless-statement over a modifier clause in a multiline statement."

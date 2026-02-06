@@ -1,0 +1,1006 @@
+cop = "Layout/ArgumentAlignment"
+department = "layout"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_layout_argumentalignment_aligned_with_first_argument_registers_an_offense_and_corrects_arguments_with_single_indent"
+source = '''
+function(a,
+  if b then c else d end)
+'''
+corrected = '''
+function(a,
+         if b then c else d end)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 24
+message = "Align the arguments of a method call if they span more than one line."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:with_first_argument"
+
+[[tests]]
+name = "rubocop_cop_layout_argumentalignment_aligned_with_first_argument_registers_an_offense_and_corrects_multiline_missed_indentation"
+source = '''
+func(a,
+       b,
+c)
+'''
+corrected = '''
+func(a,
+     b,
+     c)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 7
+column_end = 8
+message = "Align the arguments of a method call if they span more than one line."
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 1
+message = "Align the arguments of a method call if they span more than one line."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:with_first_argument"
+
+[[tests]]
+name = "rubocop_cop_layout_argumentalignment_aligned_with_first_argument_registers_an_offense_and_corrects_arguments_with_double_indent"
+source = '''
+function(a,
+    if b then c else d end)
+'''
+corrected = '''
+function(a,
+         if b then c else d end)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 4
+column_end = 26
+message = "Align the arguments of a method call if they span more than one line."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:with_first_argument"
+
+[[tests]]
+name = "rubocop_cop_layout_argumentalignment_aligned_with_first_argument_accepts_multiline_method_call"
+source = '''
+Test.config["something"] =
+ true
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:with_first_argument"
+
+[[tests]]
+name = "rubocop_cop_layout_argumentalignment_aligned_with_first_argument_accepts_correctly_aligned_arguments"
+source = '''
+function(a,
+         0, 1,
+         (x + y),
+         if b then c else d end)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:with_first_argument"
+
+[[tests]]
+name = "rubocop_cop_layout_argumentalignment_aligned_with_first_argument_accepts_correctly_aligned_arguments_with_fullwidth_characters"
+source = '''
+f 'Ｒｕｂｙ', g(a,
+                b)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:with_first_argument"
+
+[[tests]]
+name = "rubocop_cop_layout_argumentalignment_aligned_with_first_argument_accepts_calls_that_only_span_one_line"
+source = '''
+find(path, s, @special[sexp[0]])
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:with_first_argument"
+
+[[tests]]
+name = "rubocop_cop_layout_argumentalignment_aligned_with_first_argument_doesn_t_get_confused_by_a_symbol_argument"
+source = '''
+add_offense(index,
+            MSG % kind)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:with_first_argument"
+
+[[tests]]
+name = "rubocop_cop_layout_argumentalignment_aligned_with_first_argument_registers_an_offense_and_corrects_when_missed_indentation_kwargs"
+source = '''
+func1(foo: 'foo',
+  bar: 'bar',
+  baz: 'baz')
+func2(do_something,
+  foo: 'foo',
+  bar: 'bar',
+  baz: 'baz')
+'''
+corrected = '''
+func1(foo: 'foo',
+      bar: 'bar',
+      baz: 'baz')
+func2(do_something,
+      foo: 'foo',
+      bar: 'bar',
+      baz: 'baz')
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 12
+message = "Align the arguments of a method call if they span more than one line."
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 12
+message = "Align the arguments of a method call if they span more than one line."
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 13
+message = "Align the arguments of a method call if they span more than one line."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:with_first_argument"
+
+[[tests]]
+name = "rubocop_cop_layout_argumentalignment_aligned_with_first_argument_registers_an_offense_and_corrects_splat_operator"
+source = '''
+func1(*a,
+      *b,
+      c)
+func2(a,
+     *b,
+      c)
+func3(*a)
+'''
+corrected = '''
+func1(*a,
+      *b,
+      c)
+func2(a,
+      *b,
+      c)
+func3(*a)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 5
+column_start = 5
+column_end = 7
+message = "Align the arguments of a method call if they span more than one line."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:with_first_argument"
+
+[[tests]]
+name = "rubocop_cop_layout_argumentalignment_aligned_with_first_argument_doesn_t_get_confused_by_extra_comma_at_the_end"
+source = '''
+func1(a,
+     b,)
+'''
+corrected = '''
+func1(a,
+      b,)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 5
+column_end = 6
+message = "Align the arguments of a method call if they span more than one line."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:with_first_argument"
+
+[[tests]]
+name = "rubocop_cop_layout_argumentalignment_aligned_with_first_argument_can_handle_a_correctly_aligned_string_literal_as_first_argument"
+source = '''
+add_offense(x,
+            a)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:with_first_argument"
+
+[[tests]]
+name = "rubocop_cop_layout_argumentalignment_aligned_with_first_argument_can_handle_a_string_literal_as_other_argument"
+source = '''
+add_offense(
+            "", a)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:with_first_argument"
+
+[[tests]]
+name = "rubocop_cop_layout_argumentalignment_aligned_with_first_argument_doesn_t_get_confused_by_a_line_break_inside_a_parameter"
+source = '''
+read(path, { headers:    true,
+             converters: :numeric })
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:with_first_argument"
+
+[[tests]]
+name = "rubocop_cop_layout_argumentalignment_aligned_with_first_argument_doesn_t_get_confused_by_symbols_with_embedded_expressions"
+source = '''
+send(:"#{name}_comments_path")
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:with_first_argument"
+
+[[tests]]
+name = "rubocop_cop_layout_argumentalignment_aligned_with_first_argument_doesn_t_get_confused_by_regexen_with_embedded_expressions"
+source = '''
+a(/#{name}/)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:with_first_argument"
+
+[[tests]]
+name = "rubocop_cop_layout_argumentalignment_aligned_with_first_argument_accepts_braceless_hashes"
+source = '''
+run(collection, :entry_name => label,
+                :paginator  => paginator)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:with_first_argument"
+
+[[tests]]
+name = "rubocop_cop_layout_argumentalignment_aligned_with_first_argument_accepts_the_first_parameter_being_on_a_new_row"
+source = '''
+match(
+  a,
+  b
+)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:with_first_argument"
+
+[[tests]]
+name = "rubocop_cop_layout_argumentalignment_aligned_with_first_argument_can_handle_heredoc_strings"
+source = '''
+class_eval(<<-EOS, __FILE__, __LINE__ + 1)
+            def run_#{name}_callbacks(*args)
+              a = 1
+              return value
+            end
+            EOS
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:with_first_argument"
+
+[[tests]]
+name = "rubocop_cop_layout_argumentalignment_aligned_with_first_argument_can_handle_a_method_call_within_a_method_call"
+source = '''
+a(a1,
+  b(b1,
+    b2),
+  a2)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:with_first_argument"
+
+[[tests]]
+name = "rubocop_cop_layout_argumentalignment_aligned_with_first_argument_can_handle_a_call_embedded_in_a_string"
+source = '''
+model("#{index(name)}", child)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:with_first_argument"
+
+[[tests]]
+name = "rubocop_cop_layout_argumentalignment_aligned_with_first_argument_can_handle_do_end"
+source = '''
+run(lambda do |e|
+  w = e['warden']
+end)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:with_first_argument"
+
+[[tests]]
+name = "rubocop_cop_layout_argumentalignment_aligned_with_first_argument_can_handle_a_call_with_a_block_inside_another_call"
+source = '''
+new(table_name,
+    exec_query("info('#{row['name']}')").map { |col|
+      col['name']
+    })
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:with_first_argument"
+
+[[tests]]
+name = "rubocop_cop_layout_argumentalignment_aligned_with_first_argument_can_handle_a_ternary_condition_with_a_block_reference"
+source = '''
+cond ? a : func(&b)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:with_first_argument"
+
+[[tests]]
+name = "rubocop_cop_layout_argumentalignment_aligned_with_first_argument_can_handle_parentheses_used_with_no_arguments"
+source = '''
+func()
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:with_first_argument"
+
+[[tests]]
+name = "rubocop_cop_layout_argumentalignment_aligned_with_first_argument_can_handle_a_multiline_hash_as_second_parameter"
+source = '''
+tag(:input, {
+  :value => value
+})
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:with_first_argument"
+
+[[tests]]
+name = "rubocop_cop_layout_argumentalignment_aligned_with_first_argument_can_handle_method_calls_without_parentheses"
+source = '''
+a(b c, d)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:with_first_argument"
+
+[[tests]]
+name = "rubocop_cop_layout_argumentalignment_aligned_with_first_argument_can_handle_other_method_calls_without_parentheses"
+source = '''
+chars(Unicode.apply_mapping @wrapped_string, :uppercase)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:with_first_argument"
+
+[[tests]]
+name = "rubocop_cop_layout_argumentalignment_aligned_with_first_argument_doesn_t_crash_and_burn_when_there_are_nested_issues"
+source = '''
+build(:house,
+  :rooms => [
+    build(:bedroom,
+      :bed => build(:bed,
+        :occupants => [],
+        :size => "king"
+      )
+    )
+  ]
+)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 13
+message = "Align the arguments of a method call if they span more than one line."
+
+[[tests.offenses]]
+line = 4
+column_start = 6
+column_end = 25
+message = "Align the arguments of a method call if they span more than one line."
+
+[[tests.offenses]]
+line = 5
+column_start = 8
+column_end = 25
+message = "Align the arguments of a method call if they span more than one line."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:with_first_argument"
+
+[[tests]]
+name = "rubocop_cop_layout_argumentalignment_aligned_with_first_argument_assigned_methods_accepts_the_first_parameter_being_on_a_new_row"
+source = '''
+assigned_value = match(
+  a,
+  b,
+  c
+)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:with_first_argument"
+
+[[tests]]
+name = "rubocop_cop_layout_argumentalignment_aligned_with_first_argument_assigned_methods_accepts_the_first_parameter_being_on_method_row"
+source = '''
+assigned_value = match(a,
+                       b,
+                       c
+                 )
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:with_first_argument"
+
+[[tests]]
+name = "rubocop_cop_layout_argumentalignment_aligned_with_first_argument_registers_an_offense_and_corrects_multi_line_outdented_parameters"
+source = '''
+create :transaction, :closed,
+      account:          account,
+      open_price:       1.29,
+      close_price:      1.30
+'''
+corrected = '''
+create :transaction, :closed,
+       account:          account,
+       open_price:       1.29,
+       close_price:      1.30
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 32
+message = "Align the arguments of a method call if they span more than one line."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:with_first_argument"
+
+[[tests]]
+name = "rubocop_cop_layout_argumentalignment_aligned_with_first_argument_registers_an_offense_and_correct_multi_line_parameters_indented_too_far"
+source = '''
+create :transaction, :closed,
+         account:          account,
+         open_price:       1.29,
+         close_price:      1.30
+'''
+corrected = '''
+create :transaction, :closed,
+       account:          account,
+       open_price:       1.29,
+       close_price:      1.30
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 9
+column_end = 35
+message = "Align the arguments of a method call if they span more than one line."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:with_first_argument"
+
+[[tests]]
+name = "rubocop_cop_layout_argumentalignment_aligned_with_first_argument_does_not_crash_in_autocorrect_on_dynamic_string_in_parameter_value"
+source = '''
+class MyModel < ActiveRecord::Base
+  has_many :other_models,
+    class_name: "legacy_name",
+    order: "#{legacy_name.table_name}.published DESC"
+
+end
+'''
+corrected = '''
+class MyModel < ActiveRecord::Base
+  has_many :other_models,
+           class_name: "legacy_name",
+           order: "#{legacy_name.table_name}.published DESC"
+
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 3
+column_start = 4
+column_end = 30
+message = "Align the arguments of a method call if they span more than one line."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:with_first_argument"
+
+[[tests]]
+name = "rubocop_cop_layout_argumentalignment_aligned_with_first_argument_can_handle_a_method_call_using_square_brackets"
+source = '''
+callable[
+      foo,
+    bar,
+           baz
+]
+'''
+corrected = '''
+callable[
+      foo,
+      bar,
+      baz
+]
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 3
+column_start = 4
+column_end = 7
+message = "Align the arguments of a method call if they span more than one line."
+
+[[tests.offenses]]
+line = 4
+column_start = 11
+column_end = 14
+message = "Align the arguments of a method call if they span more than one line."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:with_first_argument"
+
+[[tests]]
+name = "rubocop_cop_layout_argumentalignment_aligned_with_first_argument_when_using_safe_navigation_operator_registers_an_offense_and_corrects_arguments_with_single_indent"
+source = '''
+receiver&.function(a,
+  if b then c else d end)
+'''
+corrected = '''
+receiver&.function(a,
+                   if b then c else d end)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 24
+message = "Align the arguments of a method call if they span more than one line."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:with_first_argument"
+
+[[tests]]
+name = "rubocop_cop_layout_argumentalignment_aligned_with_fixed_indentation_autocorrects_by_outdenting_when_indented_too_far"
+source = '''
+create :transaction, :closed,
+       account:     account,
+       open_price:  1.29,
+       close_price: 1.30
+'''
+corrected = '''
+create :transaction, :closed,
+  account:     account,
+  open_price:  1.29,
+  close_price: 1.30
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 7
+column_end = 27
+message = "Use one level of indentation for arguments following the first line of a multi-line method call."
+
+[[tests.offenses]]
+line = 3
+column_start = 7
+column_end = 24
+message = "Use one level of indentation for arguments following the first line of a multi-line method call."
+
+[[tests.offenses]]
+line = 4
+column_start = 7
+column_end = 24
+message = "Use one level of indentation for arguments following the first line of a multi-line method call."
+
+[tests.config]
+EnforcedStyle = "with_fixed_indentation"
+
+[[tests]]
+name = "rubocop_cop_layout_argumentalignment_aligned_with_fixed_indentation_autocorrects_by_indenting_when_not_indented"
+source = '''
+create :transaction, :closed,
+account:     account,
+open_price:  1.29,
+close_price: 1.30
+'''
+corrected = '''
+create :transaction, :closed,
+  account:     account,
+  open_price:  1.29,
+  close_price: 1.30
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 20
+message = "Use one level of indentation for arguments following the first line of a multi-line method call."
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 17
+message = "Use one level of indentation for arguments following the first line of a multi-line method call."
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 17
+message = "Use one level of indentation for arguments following the first line of a multi-line method call."
+
+[tests.config]
+EnforcedStyle = "with_fixed_indentation"
+
+[[tests]]
+name = "rubocop_cop_layout_argumentalignment_aligned_with_fixed_indentation_registers_an_offense_and_corrects_when_missed_indentation_kwargs"
+source = '''
+func1(foo: 'foo',
+      bar: 'bar',
+      baz: 'baz')
+func2(do_something,
+      foo: 'foo',
+      bar: 'bar',
+      baz: 'baz')
+'''
+corrected = '''
+func1(foo: 'foo',
+  bar: 'bar',
+  baz: 'baz')
+func2(do_something,
+  foo: 'foo',
+  bar: 'bar',
+  baz: 'baz')
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 16
+message = "Use one level of indentation for arguments following the first line of a multi-line method call."
+
+[[tests.offenses]]
+line = 3
+column_start = 6
+column_end = 16
+message = "Use one level of indentation for arguments following the first line of a multi-line method call."
+
+[[tests.offenses]]
+line = 5
+column_start = 6
+column_end = 16
+message = "Use one level of indentation for arguments following the first line of a multi-line method call."
+
+[[tests.offenses]]
+line = 6
+column_start = 6
+column_end = 16
+message = "Use one level of indentation for arguments following the first line of a multi-line method call."
+
+[[tests.offenses]]
+line = 7
+column_start = 6
+column_end = 16
+message = "Use one level of indentation for arguments following the first line of a multi-line method call."
+
+[tests.config]
+EnforcedStyle = "with_fixed_indentation"
+
+[[tests]]
+name = "rubocop_cop_layout_argumentalignment_aligned_with_fixed_indentation_corrects_indentation_for_kwargs_starting_on_same_line_as_other_args"
+source = '''
+func(do_something, foo: 'foo',
+                   bar: 'bar',
+                   baz: 'baz')
+'''
+corrected = '''
+func(do_something, foo: 'foo',
+  bar: 'bar',
+  baz: 'baz')
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 19
+column_end = 29
+message = "Use one level of indentation for arguments following the first line of a multi-line method call."
+
+[[tests.offenses]]
+line = 3
+column_start = 19
+column_end = 29
+message = "Use one level of indentation for arguments following the first line of a multi-line method call."
+
+[tests.config]
+EnforcedStyle = "with_fixed_indentation"
+
+[[tests]]
+name = "rubocop_cop_layout_argumentalignment_aligned_with_fixed_indentation_multi_line_method_calls_can_handle_existing_indentation_from_multi_line_method_calls"
+source = '''
+something
+  .method_name(
+    a,
+    b,
+    c
+  )
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "with_fixed_indentation"
+
+[[tests]]
+name = "rubocop_cop_layout_argumentalignment_aligned_with_fixed_indentation_multi_line_method_calls_registers_offenses_and_corrects_double_indentation_from_relevant_method"
+source = '''
+something
+  .method_name(
+      a,
+      b,
+      c
+  )
+'''
+corrected = '''
+something
+  .method_name(
+    a,
+    b,
+    c
+  )
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 6
+column_end = 7
+message = "Use one level of indentation for arguments following the first line of a multi-line method call."
+
+[[tests.offenses]]
+line = 4
+column_start = 6
+column_end = 7
+message = "Use one level of indentation for arguments following the first line of a multi-line method call."
+
+[[tests.offenses]]
+line = 5
+column_start = 6
+column_end = 7
+message = "Use one level of indentation for arguments following the first line of a multi-line method call."
+
+[tests.config]
+EnforcedStyle = "with_fixed_indentation"
+
+[[tests]]
+name = "rubocop_cop_layout_argumentalignment_aligned_with_fixed_indentation_multi_line_method_calls_does_not_err_on_method_call_without_a_method_name"
+source = '''
+something
+  .(
+    a,
+    b,
+    c
+  )
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "with_fixed_indentation"
+
+[[tests]]
+name = "rubocop_cop_layout_argumentalignment_aligned_with_fixed_indentation_multi_line_method_calls_can_handle_a_method_call_using_square_brackets"
+source = '''
+callable[
+      foo,
+    bar,
+           baz
+]
+'''
+corrected = '''
+callable[
+  foo,
+  bar,
+  baz
+]
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 9
+message = "Use one level of indentation for arguments following the first line of a multi-line method call."
+
+[[tests.offenses]]
+line = 3
+column_start = 4
+column_end = 7
+message = "Use one level of indentation for arguments following the first line of a multi-line method call."
+
+[[tests.offenses]]
+line = 4
+column_start = 11
+column_end = 14
+message = "Use one level of indentation for arguments following the first line of a multi-line method call."
+
+[tests.config]
+EnforcedStyle = "with_fixed_indentation"
+
+[[tests]]
+name = "rubocop_cop_layout_argumentalignment_aligned_with_fixed_indentation_assigned_methods_with_indentationwidth_width_set_to_4_accepts_the_first_parameter_being_on_a_new_row"
+source = '''
+assigned_value = match(
+    a,
+    b,
+    c
+)
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "with_fixed_indentation"
+
+[[tests]]
+name = "rubocop_cop_layout_argumentalignment_aligned_with_fixed_indentation_assigned_methods_with_indentationwidth_width_set_to_4_accepts_the_first_parameter_being_on_method_row"
+source = '''
+assigned_value = match(a,
+    b,
+    c
+)
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "with_fixed_indentation"
+
+[[tests]]
+name = "rubocop_cop_layout_argumentalignment_aligned_with_fixed_indentation_assigned_methods_with_argumentalignment_indentationwidth_set_to_4_accepts_the_first_parameter_being_on_a_new_row"
+source = '''
+assigned_value = match(
+    a,
+    b,
+    c
+)
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "with_fixed_indentation"
+
+[[tests]]
+name = "rubocop_cop_layout_argumentalignment_aligned_with_fixed_indentation_assigned_methods_with_argumentalignment_indentationwidth_set_to_4_accepts_the_first_parameter_being_on_method_row"
+source = '''
+assigned_value = match(a,
+    b,
+    c
+)
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "with_fixed_indentation"
+
+[[tests]]
+name = "rubocop_cop_layout_argumentalignment_aligned_with_fixed_indentation_does_not_register_an_offense_when_using_aligned_braced_hash_as_an_argument"
+source = '''
+do_something(
+  {
+    foo: 'bar',
+    baz: 'qux'
+  }
+)
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "with_fixed_indentation"

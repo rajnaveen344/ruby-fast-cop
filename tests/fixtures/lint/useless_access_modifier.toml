@@ -1,0 +1,1399 @@
+cop = "Lint/UselessAccessModifier"
+department = "lint"
+severity = "warning"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_when_an_access_modifier_has_no_effect_registers_an_offense_and_corrects"
+source = '''
+class SomeClass
+  def some_method
+    puts 10
+  end
+  private
+  def self.some_method
+    puts 10
+  end
+end
+'''
+corrected = '''
+class SomeClass
+  def some_method
+    puts 10
+  end
+  def self.some_method
+    puts 10
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 9
+message = "Useless `private` access modifier."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_when_an_access_modifier_is_used_on_top_level_registers_an_offense_and_corrects"
+source = '''
+def some_method
+  puts 10
+end
+private
+def other_method
+  puts 10
+end
+'''
+corrected = '''
+def some_method
+  puts 10
+end
+def other_method
+  puts 10
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 7
+message = "Useless `private` access modifier."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_when_an_access_modifier_has_no_methods_registers_an_offense_and_corrects"
+source = '''
+class SomeClass
+  def some_method
+    puts 10
+  end
+  protected
+end
+'''
+corrected = '''
+class SomeClass
+  def some_method
+    puts 10
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 11
+message = "Useless `protected` access modifier."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_when_an_access_modifier_is_followed_by_attr_does_not_register_an_offense"
+source = '''
+class SomeClass
+  protected
+  attr_accessor :some_property
+  public
+  attr_reader :another_one
+  private
+  attr :yet_again, true
+  protected
+  attr_writer :just_for_good_measure
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_when_an_access_modifier_is_followed_by_a_class_method_defined_on_constant_registers_an_offense_and_corrects"
+source = '''
+class SomeClass
+  protected
+  def SomeClass.some_method
+  end
+end
+'''
+corrected = '''
+class SomeClass
+  def SomeClass.some_method
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 11
+message = "Useless `protected` access modifier."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_when_there_are_consecutive_access_modifiers_registers_an_offense_and_corrects"
+source = '''
+class SomeClass
+ private
+ private
+  def some_method
+    puts 10
+  end
+  def some_other_method
+    puts 10
+  end
+end
+'''
+corrected = '''
+class SomeClass
+ private
+  def some_method
+    puts 10
+  end
+  def some_other_method
+    puts 10
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 1
+column_end = 8
+message = "Useless `private` access modifier."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_when_passing_method_as_symbol_does_not_register_an_offense"
+source = '''
+class SomeClass
+  def some_method
+    puts 10
+  end
+  private :some_method
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_when_class_is_empty_save_modifier_registers_an_offense_and_corrects"
+source = '''
+class SomeClass
+  private
+end
+'''
+corrected = '''
+class SomeClass
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 9
+message = "Useless `private` access modifier."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_when_multiple_class_definitions_in_file_but_only_one_has_offense_registers_an_offense_and_corrects"
+source = '''
+class SomeClass
+  private
+end
+class SomeOtherClass
+end
+'''
+corrected = '''
+class SomeClass
+end
+class SomeOtherClass
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 9
+message = "Useless `private` access modifier."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_when_using_inline_modifiers_does_not_register_an_offense"
+source = '''
+class SomeClass
+  private def some_method
+    puts 10
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_when_only_a_constant_or_local_variable_is_defined_after_the_modifier_registers_an_offense_and_corrects"
+source = '''
+class SomeClass
+  private
+  #{binding_name} = 1
+end
+'''
+corrected = '''
+class SomeClass
+  #{binding_name} = 1
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 9
+message = "Useless `private` access modifier."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_when_a_def_is_an_argument_to_a_method_call_does_not_register_an_offense"
+source = '''
+class SomeClass
+  private
+  helper_method def some_method
+    puts 10
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_when_private_class_method_is_used_without_arguments_registers_an_offense_and_corrects"
+source = '''
+class SomeClass
+  private_class_method
+
+  def self.some_method
+    puts 10
+  end
+end
+'''
+corrected = '''
+class SomeClass
+
+  def self.some_method
+    puts 10
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 22
+message = "Useless `private_class_method` access modifier."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_when_private_class_method_is_used_with_arguments_does_not_register_an_offense"
+source = '''
+class SomeClass
+  private_class_method def self.some_method
+    puts 10
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_when_using_activesupport_s_concerning_method_is_aware_that_this_creates_a_new_scope"
+source = '''
+class SomeClass
+  concerning :FirstThing do
+    def foo
+    end
+    private
+
+    def method
+    end
+  end
+
+  concerning :SecondThing do
+    def omg
+    end
+    private
+    def method
+    end
+  end
+ end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_when_using_activesupport_s_concerning_method_still_points_out_redundant_uses_within_the_block"
+source = '''
+class SomeClass
+  concerning :FirstThing do
+    def foo
+    end
+    private
+
+    def method
+    end
+  end
+
+  concerning :SecondThing do
+    def omg
+    end
+    private
+    def method
+    end
+    private
+    def another_method
+    end
+  end
+ end
+'''
+corrected = '''
+class SomeClass
+  concerning :FirstThing do
+    def foo
+    end
+    private
+
+    def method
+    end
+  end
+
+  concerning :SecondThing do
+    def omg
+    end
+    private
+    def method
+    end
+    def another_method
+    end
+  end
+ end
+'''
+
+[[tests.offenses]]
+line = 17
+column_start = 4
+column_end = 11
+message = "Useless `private` access modifier."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_when_using_activesupport_s_concerning_method_ruby_2_7_still_points_out_redundant_uses_within_the_block"
+source = '''
+class SomeClass
+  concerning :SecondThing do
+    p _1
+    def omg
+    end
+    private
+    def method
+    end
+    private
+    def another_method
+    end
+  end
+ end
+'''
+corrected = '''
+class SomeClass
+  concerning :SecondThing do
+    p _1
+    def omg
+    end
+    private
+    def method
+    end
+    def another_method
+    end
+  end
+ end
+'''
+ruby_version = ">= 2.7"
+
+[[tests.offenses]]
+line = 9
+column_start = 4
+column_end = 11
+message = "Useless `private` access modifier."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_when_using_activesupport_behavior_when_rails_is_not_enabled_reports_offenses_and_corrects"
+source = '''
+module SomeModule
+  extend ActiveSupport::Concern
+  class_methods do
+    def some_public_class_method
+    end
+    private
+    def some_private_class_method
+    end
+  end
+  def some_public_instance_method
+  end
+  private
+  def some_private_instance_method
+  end
+end
+'''
+corrected = '''
+module SomeModule
+  extend ActiveSupport::Concern
+  class_methods do
+    def some_public_class_method
+    end
+    private
+    def some_private_class_method
+    end
+  end
+  def some_public_instance_method
+  end
+  def some_private_instance_method
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 12
+column_start = 2
+column_end = 9
+message = "Useless `private` access modifier."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_when_using_the_class_methods_method_from_activesupport_concern_is_aware_that_this_creates_a_new_scope"
+source = '''
+module SomeModule
+  extend ActiveSupport::Concern
+  class_methods do
+    def some_public_class_method
+    end
+    private
+    def some_private_class_method
+    end
+  end
+  def some_public_instance_method
+  end
+  private
+  def some_private_instance_method
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_when_using_a_known_method_creating_method_is_aware_that_this_creates_a_new_method"
+source = '''
+class SomeClass
+  private
+
+  delegate :foo, to: :bar
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_when_using_a_known_method_creating_method_still_points_out_redundant_uses_within_the_module"
+source = '''
+class SomeClass
+  delegate :foo, to: :bar
+
+  private
+end
+'''
+corrected = '''
+class SomeClass
+  delegate :foo, to: :bar
+
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 9
+message = "Useless `private` access modifier."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_registers_an_offense_and_corrects_for_public"
+source = '''
+#{keyword} A
+  public
+  def method
+  end
+end
+'''
+corrected = '''
+#{keyword} A
+  def method
+  end
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 8
+message = "Useless `public` access modifier."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_doesn_t_register_an_offense_for_protected"
+source = '''
+#{keyword} A
+  protected
+  def method
+  end
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_doesn_t_register_an_offense_for_private"
+source = '''
+#{keyword} A
+  private
+  def method
+  end
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier"
+source = '''
+#{keyword} A
+  #{modifier == 'private' ? 'protected' : 'private'}
+  def method1
+  end
+  %{modifier}
+  %{modifier}
+  def method2
+  end
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 6
+column_start = 2
+column_end = 13
+message = "Useless `#{modifier}` access modifier."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_registers_an_offense_and_corrects_even_when_public_is_not_repeated"
+source = '''
+#{keyword} A
+  def method1
+  end
+  public
+  def method2
+  end
+end
+'''
+corrected = '''
+#{keyword} A
+  def method1
+  end
+  def method2
+  end
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 8
+message = "Useless `public` access modifier."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_doesn_t_register_an_offense_when_protected_is_not_repeated"
+source = '''
+#{keyword} A
+  def method1
+  end
+  protected
+  def method2
+  end
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_doesn_t_register_an_offense_when_private_is_not_repeated"
+source = '''
+#{keyword} A
+  def method1
+  end
+  private
+  def method2
+  end
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier"
+source = '''
+#{keyword} A
+  def method1
+  end
+  def method2
+  end
+  %{modifier}
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 6
+column_start = 2
+column_end = 13
+message = "Useless `#{modifier}` access modifier."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier"
+source = '''
+#{keyword} A
+  #{modifier == 'private' ? 'protected' : 'private'}
+  def blah
+  end
+  begin
+    def method1
+    end
+    %{modifier}
+    %{modifier}
+    def method2
+    end
+  end
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 9
+column_start = 4
+column_end = 15
+message = "Useless `#{modifier}` access modifier."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_doesn_t_flag_an_access_modifier_from_surrounding_scope"
+source = '''
+#{keyword} A
+  #{modifier}
+  begin
+    def method1
+    end
+  end
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier"
+source = '''
+#{keyword} A
+  def foo
+  end
+
+  do_something do
+    { #{modifier}: #{modifier} }
+  end
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier"
+source = '''
+#{keyword} A
+  private
+  def method1
+  end
+  public
+  private
+  def method2
+  end
+end
+'''
+corrected = '''
+#{keyword} A
+  private
+  def method1
+  end
+  private
+  def method2
+  end
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 8
+message = "Useless `public` access modifier."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier"
+source = '''
+#{keyword} A
+  #{modifier}
+  #{conditional_type} x
+    def method1
+    end
+  end
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier"
+source = '''
+#{keyword} A
+  #{modifier}
+  [1, 2].#{iteration_method} do |i|
+    define_method("method#{i}") do
+      i
+    end
+  end
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_doesn_t_register_an_offense_if_a_block_is_passed"
+source = '''
+#{keyword} A
+  #{modifier}
+  define_method(:method1) do
+  end
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier"
+source = '''
+#{keyword} A
+  #{modifier}
+  define_method(:method1, #{proc_type} { })
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_inside_a_class_doesn_t_register_an_offense_if_a_method_is_defined"
+source = '''
+#{keyword} A
+  class << self
+    #{modifier}
+    define_method(:method1) do
+    end
+  end
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_inside_a_class_doesn_t_register_an_offense_if_the_modifier_is_the_same_as_outside_the_meta_class"
+source = '''
+#{keyword} A
+  #{modifier}
+  def method1
+  end
+  class << self
+    #{modifier}
+    def method2
+    end
+  end
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_inside_a_class_registers_an_offense_if_no_method_is_defined"
+source = '''
+#{keyword} A
+  class << self
+    %{modifier}
+  end
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 3
+column_start = 4
+column_end = 15
+message = "Useless `#{modifier}` access modifier."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_inside_a_class_registers_an_offense_if_no_method_is_defined_after_the_modifier"
+source = '''
+#{keyword} A
+  class << self
+    def method1
+    end
+    %{modifier}
+  end
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 5
+column_start = 4
+column_end = 15
+message = "Useless `#{modifier}` access modifier."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_inside_a_class_registers_an_offense_even_if_a_non_singleton_class_method_is_defined"
+source = '''
+#{keyword} A
+  def method1
+  end
+  class << self
+    %{modifier}
+  end
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 5
+column_start = 4
+column_end = 15
+message = "Useless `#{modifier}` access modifier."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_outside_a_class_doesn_t_register_an_offense_if_a_method_is_defined"
+source = '''
+class << A
+  #{modifier}
+  define_method(:method1) do
+  end
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_outside_a_class_registers_an_offense_if_no_method_is_defined"
+source = '''
+class << A
+  %{modifier}
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 13
+message = "Useless `#{modifier}` access modifier."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_outside_a_class_registers_an_offense_if_no_method_is_defined_after_the_modifier"
+source = '''
+class << A
+  def method1
+  end
+  %{modifier}
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 13
+message = "Useless `#{modifier}` access modifier."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_doesn_t_register_an_offense_if_a_method_is_defined"
+source = '''
+A.class_eval do
+  #{modifier}
+  define_method(:method1) do
+  end
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_registers_an_offense_if_no_method_is_defined"
+source = '''
+A.class_eval do
+  %{modifier}
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 13
+message = "Useless `#{modifier}` access modifier."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_inside_a_class_registers_an_offense_when_a_modifier_is_outside_the_block_and_a_method_is_defined_only_inside_the_block"
+source = '''
+class A
+  %{modifier}
+  A.class_eval do
+    def method1
+    end
+  end
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 13
+message = "Useless `#{modifier}` access modifier."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_inside_a_class_registers_two_offenses_when_a_modifier_is_inside_and_outside_the_block_and_no_method_is_defined"
+source = '''
+class A
+  %{modifier}
+  A.class_eval do
+    %{modifier}
+  end
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 13
+message = "Useless `#{modifier}` access modifier."
+
+[[tests.offenses]]
+line = 4
+column_start = 4
+column_end = 15
+message = "Useless `#{modifier}` access modifier."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier"
+source = '''
+#{klass}.new do
+  #{modifier}
+  def foo
+  end
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier"
+source = '''
+#{klass}.new do
+  %{modifier}
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 13
+message = "Useless `#{modifier}` access modifier."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_doesn_t_register_an_offense_if_a_method_is_defined"
+source = '''
+A.instance_eval do
+  #{modifier}
+  define_method(:method1) do
+  end
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_registers_an_offense_if_no_method_is_defined"
+source = '''
+A.instance_eval do
+  %{modifier}
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 13
+message = "Useless `#{modifier}` access modifier."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_inside_a_class"
+source = '''
+class A
+  %{modifier}
+  self.instance_eval do
+    def method1
+    end
+  end
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 13
+message = "Useless `#{modifier}` access modifier."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_inside_a_class_registers_two_offenses_when_a_modifier_is_inside_and_outside_the_and_no_method_is_defined"
+source = '''
+class A
+  %{modifier}
+  self.instance_eval do
+    %{modifier}
+  end
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 13
+message = "Useless `#{modifier}` access modifier."
+
+[[tests.offenses]]
+line = 4
+column_start = 4
+column_end = 15
+message = "Useless `#{modifier}` access modifier."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier"
+source = '''
+#{keyword} A
+  #{modifier}
+  def method1
+  end
+  #{keyword} B
+    def method2
+    end
+    #{modifier}
+    def method3
+    end
+  end
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_unused_modifiers"
+source = '''
+#{keyword} A
+  %{modifier}
+  #{keyword} B
+    %{modifier}
+  end
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 13
+message = "Useless `#{modifier}` access modifier."
+
+[[tests.offenses]]
+line = 4
+column_start = 4
+column_end = 15
+message = "Useless `#{modifier}` access modifier."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_unused_modifiers"
+source = '''
+#{keyword} A
+  %{modifier}
+  #{keyword} B
+    def method1
+    end
+  end
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 13
+message = "Useless `#{modifier}` access modifier."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_unused_modifiers"
+source = '''
+#{keyword} A
+  #{keyword} B
+    %{modifier}
+  end
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 3
+column_start = 4
+column_end = 15
+message = "Useless `#{modifier}` access modifier."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_def_in_data_define_block_doesn_t_register_an_offense_if_a_method_is_defined_in_data_define_with_block"
+source = '''
+Data.define do
+  #{modifier}
+  def foo
+  end
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_def_in_data_define_block_registers_an_offense_if_no_method_is_defined_in_data_define_with_block"
+source = '''
+Data.define do
+  %{modifier}
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 13
+message = "Useless `#{modifier}` access modifier."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_def_in_data_define_block_registers_an_offense_if_no_method_is_defined_in_data_define_with_block"
+source = '''
+::Data.define do
+  %{modifier}
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 13
+message = "Useless `#{modifier}` access modifier."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_def_in_data_define_block_registers_an_offense_if_no_method_is_defined_in_data_define_with_numblock"
+source = '''
+Data.define do
+  %{modifier}
+  do_something(_1)
+end
+'''
+ruby_version = ">= 3.2"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 13
+message = "Useless `#{modifier}` access modifier."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_def_in_data_define_block_registers_an_offense_if_no_method_is_defined_in_data_define_with_itblock"
+source = '''
+Data.define do
+  %{modifier}
+  do_something(it)
+end
+'''
+ruby_version = ">= 3.4"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 13
+message = "Useless `#{modifier}` access modifier."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_when_allcops_activesupportextensionsenabled_true_when_using_same_access_modifier_inside_and_outside_the_included_block_does_not_register_an_offense"
+source = '''
+class SomeClass
+  included do
+    private
+    def foo; end
+  end
+  private
+  def bar; end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_when_allcops_activesupportextensionsenabled_true_when_using_same_access_modifier_inside_and_outside_the_included_block_registers_an_offense_when_using_repeated_access_modifier_inside_outside_the_included_block"
+source = '''
+class SomeClass
+  included do
+    private
+    private
+    def foo; end
+  end
+  private
+  private
+  def bar; end
+end
+'''
+corrected = '''
+class SomeClass
+  included do
+    private
+    def foo; end
+  end
+  private
+  def bar; end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 4
+column_end = 11
+message = "Useless `private` access modifier."
+
+[[tests.offenses]]
+line = 8
+column_start = 2
+column_end = 9
+message = "Useless `private` access modifier."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_when_allcops_activesupportextensionsenabled_false_when_using_same_access_modifier_inside_and_outside_the_included_block_registers_an_offense"
+source = '''
+class SomeClass
+  included do
+    private
+    def foo; end
+  end
+  private
+  def bar; end
+end
+'''
+corrected = '''
+class SomeClass
+  included do
+    private
+    def foo; end
+  end
+  def bar; end
+end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 2
+column_end = 9
+message = "Useless `private` access modifier."
+
+[[tests]]
+name = "rubocop_cop_lint_uselessaccessmodifier_when_allcops_activesupportextensionsenabled_false_when_using_same_access_modifier_inside_and_outside_the_included_block_registers_an_offense_when_using_repeated_access_modifier_inside_outside_the_included_block"
+source = '''
+class SomeClass
+  included do
+    private
+    private
+    def foo; end
+  end
+  private
+  private
+  def bar; end
+end
+'''
+corrected = '''
+class SomeClass
+  included do
+    private
+    def foo; end
+  end
+  def bar; end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 4
+column_end = 11
+message = "Useless `private` access modifier."
+
+[[tests.offenses]]
+line = 7
+column_start = 2
+column_end = 9
+message = "Useless `private` access modifier."
+
+[[tests.offenses]]
+line = 8
+column_start = 2
+column_end = 9
+message = "Useless `private` access modifier."

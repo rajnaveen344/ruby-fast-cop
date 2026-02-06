@@ -1,0 +1,51 @@
+cop = "Style/RedundantFileExtensionInRequire"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_redundantfileextensioninrequire_registers_an_offense_and_corrects_when_requiring_filename_ending_with_rb"
+source = '''
+require 'foo.rb'
+require_relative '../foo.rb'
+'''
+corrected = '''
+require 'foo'
+require_relative '../foo'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 12
+column_end = 15
+message = "Redundant `.rb` file extension detected."
+
+[[tests.offenses]]
+line = 2
+column_start = 24
+column_end = 27
+message = "Redundant `.rb` file extension detected."
+
+[[tests]]
+name = "rubocop_cop_style_redundantfileextensioninrequire_does_not_register_an_offense_when_requiring_filename_ending_with_so"
+source = '''
+require 'foo.so'
+require_relative '../foo.so'
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantfileextensioninrequire_does_not_register_an_offense_when_requiring_filename_without_an_extension"
+source = '''
+require 'foo'
+require_relative '../foo'
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantfileextensioninrequire_does_not_register_an_offense_when_requiring_variable_as_a_filename"
+source = '''
+require name
+require_relative name
+'''
+offenses = []

@@ -1,0 +1,114 @@
+cop = "Style/RedundantConstantBase"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_redundantconstantbase_with_prefixed_constant_in_class_registers_no_offense"
+source = '''
+class Foo
+  ::Bar
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantconstantbase_with_prefixed_constant_in_module_registers_no_offense"
+source = '''
+module Foo
+  ::Bar
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantconstantbase_with_prefixed_constant_in_neither_class_nor_module_registers_an_offense"
+source = '''
+::Bar
+'''
+corrected = '''
+Bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 2
+message = "Remove redundant `::`."
+
+[[tests]]
+name = "rubocop_cop_style_redundantconstantbase_with_prefixed_nested_constant_in_neither_class_nor_module_registers_an_offense"
+source = '''
+::Bar::Baz
+'''
+corrected = '''
+Bar::Baz
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 2
+message = "Remove redundant `::`."
+
+[[tests]]
+name = "rubocop_cop_style_redundantconstantbase_with_prefixed_constant_in_sclass_registers_an_offense"
+source = '''
+class << self
+  ::Bar
+end
+'''
+corrected = '''
+class << self
+  Bar
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 4
+message = "Remove redundant `::`."
+
+[[tests]]
+name = "rubocop_cop_style_redundantconstantbase_with_prefixed_constant_as_super_class_registers_an_offense"
+source = '''
+class Foo < ::Bar
+end
+'''
+corrected = '''
+class Foo < Bar
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 12
+column_end = 14
+message = "Remove redundant `::`."
+
+[[tests]]
+name = "rubocop_cop_style_redundantconstantbase_with_prefixed_constant_and_prefixed_super_class_registers_an_offense"
+source = '''
+class Foo < ::Bar
+  ::A
+end
+'''
+corrected = '''
+class Foo < Bar
+  ::A
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 12
+column_end = 14
+message = "Remove redundant `::`."
+
+[[tests]]
+name = "rubocop_cop_style_redundantconstantbase_when_lint_constantresolution_is_disabling_with_prefixed_constant_in_neither_class_nor_module_does_not_register_an_offense"
+source = '''
+::Bar
+'''
+offenses = []

@@ -1,0 +1,121 @@
+cop = "Style/NestedParenthesizedCalls"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_nestedparenthesizedcalls_on_a_non_parenthesized_method_call_doesn_t_register_an_offense"
+source = '''
+puts 1, 2
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_nestedparenthesizedcalls_on_a_method_call_with_no_arguments_doesn_t_register_an_offense"
+source = '''
+puts
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_nestedparenthesizedcalls_on_a_nested_parenthesized_method_call_doesn_t_register_an_offense"
+source = '''
+puts(compute(something))
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_nestedparenthesizedcalls_on_a_non_parenthesized_call_nested_in_a_parenthesized_one_with_a_single_argument_to_the_nested_call_registers_an_offense"
+source = '''
+puts(compute something)
+'''
+corrected = '''
+puts(compute(something))
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 22
+message = "Add parentheses to nested method call `compute something`."
+
+[[tests]]
+name = "rubocop_cop_style_nestedparenthesizedcalls_on_a_non_parenthesized_call_nested_in_a_parenthesized_one_with_a_single_argument_to_the_nested_call_when_using_safe_navigation_operator_registers_an_offense"
+source = '''
+puts(receiver&.compute something)
+'''
+corrected = '''
+puts(receiver&.compute(something))
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 32
+message = "Add parentheses to nested method call `receiver&.compute something`."
+
+[[tests]]
+name = "rubocop_cop_style_nestedparenthesizedcalls_on_a_non_parenthesized_call_nested_in_a_parenthesized_one_with_multiple_arguments_to_the_nested_call_registers_an_offense"
+source = '''
+puts(compute first, second)
+'''
+corrected = '''
+puts(compute(first, second))
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 26
+message = "Add parentheses to nested method call `compute first, second`."
+
+[[tests]]
+name = "rubocop_cop_style_nestedparenthesizedcalls_on_a_call_with_no_arguments_nested_in_a_parenthesized_one_doesn_t_register_an_offense"
+source = '''
+puts(compute)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_nestedparenthesizedcalls_on_an_aref_nested_in_a_parenthesized_method_call_doesn_t_register_an_offense"
+source = '''
+method(obj[1])
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_nestedparenthesizedcalls_on_a_deeply_nested_argument_doesn_t_register_an_offense"
+source = '''
+method(block_taker { another_method 1 })
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_nestedparenthesizedcalls_on_a_permitted_method_doesn_t_register_an_offense"
+source = '''
+expect(obj).to(be true)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_nestedparenthesizedcalls_on_a_call_to_a_setter_method_doesn_t_register_an_offense"
+source = '''
+expect(object1.attr = 1).to eq 1
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_nestedparenthesizedcalls_backslash_newline_in_method_call_registers_an_offense"
+source = '''
+puts(nex \
+       5)
+'''
+corrected = '''
+puts(nex(5))
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 10
+message = "Add parentheses to nested method call [...]"

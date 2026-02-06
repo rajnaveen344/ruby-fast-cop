@@ -1,0 +1,76 @@
+cop = "Layout/ConditionPosition"
+department = "layout"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_layout_conditionposition_registers_an_offense_and_corrects_for_condition_on_the_next_line"
+source = '''
+#{keyword}
+x == 10
+end
+'''
+corrected = '''
+#{keyword} x == 10
+end
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 7
+message = "Place the condition on the same line as `#{keyword}`."
+
+[[tests]]
+name = "rubocop_cop_layout_conditionposition_accepts_condition_on_the_same_line"
+source = '''
+#{keyword} x == 10
+ bala
+end
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_conditionposition_accepts_condition_on_a_different_line_for_modifiers"
+source = '''
+do_something #{keyword}
+  something && something_else
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_conditionposition_registers_an_offense_and_corrects_for_elsif_condition_on_the_next_line"
+source = '''
+if something
+  test
+elsif
+  something
+  test
+end
+'''
+corrected = '''
+if something
+  test
+elsif something
+  test
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 11
+message = "Place the condition on the same line as `elsif`."
+
+[[tests]]
+name = "rubocop_cop_layout_conditionposition_accepts_ternary_ops"
+source = '''
+x ? a : b
+'''
+offenses = []

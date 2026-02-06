@@ -1,14 +1,14 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# Script to extract RuboCop RSpec tests into YAML fixtures for ruby-fast-cop
+# Script to extract RuboCop RSpec tests into TOML fixtures for ruby-fast-cop
 #
 # Usage:
 #   ruby .claude/skills/rubocop-test-importer/scripts/sync_rubocop_tests.rb
 #   ruby .claude/skills/rubocop-test-importer/scripts/sync_rubocop_tests.rb --update
 #
 # Reads from: /tmp/rubocop-specs/spec/rubocop/cop/
-# Outputs to: tests/fixtures/{department}/{cop_name}.yaml
+# Outputs to: tests/fixtures/{department}/{cop_name}.toml
 
 require 'yaml'
 require 'fileutils'
@@ -245,15 +245,11 @@ class RSpecTestExtractor
   end
 
   # Extract heredoc content for a specific method call
-  # This ensures we get the right heredoc when multiple methods use the same marker name
   def extract_heredoc_for_method(content, method_name, marker)
-    # Pattern: method_name followed by heredoc, then content, then closing marker
-    # We need to match the heredoc that immediately follows the method call
     pattern = /#{Regexp.escape(method_name)}\s*\(?\s*<<[~-]?['"]?#{Regexp.escape(marker)}['"]?\s*(?:,\s*[^)]+)?\)?\s*\n(.*?)\n\s*#{Regexp.escape(marker)}/m
 
     if content =~ pattern
       heredoc_content = $1
-      # Check if it's a squiggly heredoc
       if content =~ /#{Regexp.escape(method_name)}\s*\(?\s*<<~/
         heredoc_content = process_squiggly_heredoc(heredoc_content)
       end
@@ -410,40 +406,38 @@ class TestSyncer
         return
       end
 
-      write_yaml(dept, cop_name, full_cop_name, tests)
+      write_toml(dept, cop_name, full_cop_name, tests)
     rescue => e
       @stats[:errors] += 1
       puts "  ERROR: #{full_cop_name}: #{e.message}"
     end
   end
 
-  def write_yaml(dept, cop_name, full_cop_name, tests)
+  def write_toml(dept, cop_name, full_cop_name, tests)
     output_subdir = File.join(output_dir, dept)
     FileUtils.mkdir_p(output_subdir)
 
-    yaml_file = File.join(output_subdir, "#{snake_case(cop_name)}.yaml")
+    toml_file = File.join(output_subdir, "#{snake_case(cop_name)}.toml")
 
     implemented = IMPLEMENTED_COPS.include?(full_cop_name)
-    if File.exist?(yaml_file) && update_mode
-      existing = YAML.safe_load(File.read(yaml_file), permitted_classes: [Symbol])
-      implemented = existing['implemented'] if existing && existing.key?('implemented')
+    if File.exist?(toml_file) && update_mode
+      content = File.read(toml_file)
+      implemented = true if content.include?('implemented = true')
     end
 
     severity = DEFAULT_SEVERITY[full_cop_name.split('/').first] || 'convention'
 
-    yaml_data = {
-      'cop' => full_cop_name,
-      'department' => dept,
-      'severity' => severity,
-      'implemented' => implemented,
-      'tests' => format_tests(tests)
-    }
+    toml_content = generate_toml(
+      cop: full_cop_name,
+      department: dept,
+      severity: severity,
+      implemented: implemented,
+      tests: tests
+    )
 
-    yaml_content = generate_yaml(yaml_data)
-
-    if File.exist?(yaml_file)
-      existing_content = File.read(yaml_file)
-      if existing_content == yaml_content
+    if File.exist?(toml_file)
+      existing_content = File.read(toml_file)
+      if existing_content == toml_content
         @stats[:unchanged] += 1
         return
       end
@@ -454,86 +448,155 @@ class TestSyncer
       action = 'Created'
     end
 
-    File.write(yaml_file, yaml_content)
-    puts "  #{action}: #{yaml_file} (#{tests.length} tests)"
+    File.write(toml_file, toml_content)
+    puts "  #{action}: #{toml_file} (#{tests.length} tests)"
   end
 
-  def format_tests(tests)
-    tests.map do |test|
-      formatted = { 'name' => test[:name], 'source' => test[:source] }
+  def generate_toml(cop:, department:, severity:, implemented:, tests:)
+    lines = []
+    lines << "cop = #{toml_string(cop)}"
+    lines << "department = #{toml_string(department)}"
+    lines << "severity = #{toml_string(severity)}"
+    lines << "implemented = #{implemented}"
+    lines << ""
 
-      if test[:offenses] && !test[:offenses].empty?
-        formatted['offenses'] = test[:offenses].map do |o|
-          { 'line' => o[:line], 'column_start' => o[:column_start],
-            'column_end' => o[:column_end], 'message' => o[:message] }
-        end
+    tests.each do |test|
+      lines << "[[tests]]"
+      lines << "name = #{toml_string(test[:name])}"
+
+      # Source - check if it needs base_indent
+      source = test[:source] || ''
+      base_indent = compute_base_indent(source)
+
+      if base_indent && base_indent > 0
+        # Strip the base indentation from source
+        stripped = source.lines.map { |l|
+          if l.strip.empty?
+            "\n"
+          elsif l.length > base_indent
+            l[base_indent..]
+          else
+            l.lstrip
+          end
+        }.join.chomp
+        lines << "source = #{toml_literal_string(stripped)}"
+        lines << "base_indent = #{base_indent}"
       else
-        formatted['offenses'] = []
+        lines << "source = #{toml_literal_string(source)}"
       end
 
-      formatted['corrected'] = test[:corrected] if test[:corrected]
-      formatted['config'] = test[:config] if test[:config] && !test[:config].empty?
-      formatted['ruby_version'] = test[:ruby_version] if test[:ruby_version]
-      formatted
-    end
-  end
+      # Corrected (optional)
+      if test[:corrected]
+        lines << "corrected = #{toml_literal_string(test[:corrected])}"
+      end
 
-  def generate_yaml(data)
-    lines = ["cop: #{data['cop']}", "department: #{data['department']}",
-             "severity: #{data['severity']}", "implemented: #{data['implemented']}", "", "tests:"]
+      # Ruby version (optional)
+      if test[:ruby_version]
+        lines << "ruby_version = #{toml_string(test[:ruby_version])}"
+      end
 
-    data['tests'].each do |test|
-      lines << "  - name: #{test['name']}"
-      lines << "    source: |"
-      test['source'].to_s.each_line { |line| lines << "      #{line.rstrip}" }
+      # Interpolated/verified (optional)
+      if test[:interpolated]
+        lines << "interpolated = true"
+        lines << "verified = false"
+      end
 
-      lines << "    offenses:"
-      if test['offenses'].nil? || test['offenses'].empty?
-        lines << "      []"
+      # Offenses
+      offenses = test[:offenses] || []
+      if offenses.empty?
+        lines << "offenses = []"
       else
-        test['offenses'].each do |o|
-          lines << "      - line: #{o['line']}"
-          lines << "        column_start: #{o['column_start']}"
-          lines << "        column_end: #{o['column_end']}"
-          lines << "        message: #{yaml_escape(o['message'])}"
+        offenses.each do |o|
+          lines << ""
+          lines << "[[tests.offenses]]"
+          lines << "line = #{o[:line]}"
+          lines << "column_start = #{o[:column_start]}"
+          lines << "column_end = #{o[:column_end]}"
+          lines << "message = #{toml_string(o[:message])}"
         end
       end
 
-      if test['corrected']
-        lines << "    corrected: |"
-        test['corrected'].to_s.each_line { |line| lines << "      #{line.rstrip}" }
+      # Config (optional)
+      config = test[:config]
+      if config && !config.empty?
+        lines << ""
+        lines << "[tests.config]"
+        config.sort.each do |key, value|
+          lines << "#{toml_key(key)} = #{toml_value(value)}"
+        end
       end
 
-      if test['config'] && !test['config'].empty?
-        lines << "    config:"
-        test['config'].each { |key, value| lines << "      #{key}: #{yaml_escape(value)}" }
-      end
-
-      lines << "    ruby_version: #{yaml_escape(test['ruby_version'])}" if test['ruby_version']
       lines << ""
     end
 
     lines.join("\n")
   end
 
-  def yaml_escape(value)
-    return value.to_s if value.is_a?(Integer) || value.is_a?(Float)
-    return value.to_s if value == true || value == false
-    return '""' if value.nil?
+  # Compute base indentation needed for TOML literal strings
+  # Returns base indent if first line is more indented than zero
+  def compute_base_indent(source)
+    indents = source.lines
+      .reject { |l| l.strip.empty? }
+      .map { |l| l[/^\s*/].length }
 
-    str = value.to_s
-    needs_quoting = str.empty? || str =~ /^[\s:@#\[\]{}|>&*!?,`'"%-]/ ||
-                    str =~ /[\s:]$/ || str.include?("\n") || str.include?("\\") ||
-                    str =~ /^(true|false|null|yes|no|on|off)$/i || str =~ /^\d/ ||
-                    str.include?('"') || str.include?("'") || str.include?(':') || str.include?('#')
+    return nil if indents.empty?
 
-    if needs_quoting
-      return "'#{str.gsub("'", "''")}'" if str.include?("\\") && !str.include?("'")
-      escaped = str.gsub('\\', '\\\\\\\\').gsub('"', '\\"')
-                   .gsub("\n", '\\n').gsub("\t", '\\t').gsub("\r", '\\r')
-      "\"#{escaped}\""
+    min_indent = indents.min
+    first_indent = indents.first
+
+    # Only need base_indent if the minimum indentation is > 0
+    # (TOML literal strings preserve indentation as-is)
+    min_indent > 0 ? min_indent : nil
+  end
+
+  # TOML basic string (double-quoted, with escaping)
+  def toml_string(str)
+    escaped = str.to_s
+      .gsub('\\', '\\\\\\\\')
+      .gsub('"', '\\"')
+      .gsub("\n", '\\n')
+      .gsub("\t", '\\t')
+      .gsub("\r", '\\r')
+    "\"#{escaped}\""
+  end
+
+  # TOML literal string (triple-single-quoted, no escaping)
+  # Falls back to basic string if content contains '''
+  def toml_literal_string(str)
+    content = str.to_s.chomp
+    if content.include?("'''")
+      # Fall back to basic string with escaping
+      toml_string(content)
     else
-      str
+      "'''\n#{content}\n'''"
+    end
+  end
+
+  # TOML key - quote if contains special characters
+  def toml_key(key)
+    if key =~ %r{[^a-zA-Z0-9_-]}
+      "\"#{key}\""
+    else
+      key
+    end
+  end
+
+  # Convert a Ruby value to TOML representation
+  def toml_value(val)
+    case val
+    when String
+      toml_string(val)
+    when Integer, Float
+      val.to_s
+    when TrueClass, FalseClass
+      val.to_s
+    when Array
+      items = val.map { |v| toml_value(v) }
+      "[#{items.join(', ')}]"
+    when NilClass
+      '""'
+    else
+      toml_string(val.to_s)
     end
   end
 

@@ -65,6 +65,7 @@ thiserror = "2"          # Error handling
 clap = { version = "4", features = ["derive"] }  # CLI (TODO)
 serde = { version = "1", features = ["derive"] } # Serialization (TODO)
 serde_yaml = "0.9"       # .rubocop.yml parsing (TODO)
+toml = "0.8"             # TOML test fixture parsing
 rayon = "1.8"            # Parallel processing (TODO)
 ```
 
@@ -159,13 +160,13 @@ app/models/user.rb:10:5: C: Style/StringLiterals: Prefer double quotes.
 
 ## Testing
 
-### Data-Driven Tests (YAML Fixtures)
+### Data-Driven Tests (TOML Fixtures)
 
-Test cases are stored in `tests/fixtures/{department}/{cop_name}.yaml`. These were **extracted via script** from RuboCop's spec files, not hand-written.
+Test cases are stored in `tests/fixtures/{department}/{cop_name}.toml`. These were **extracted via script** from RuboCop's spec files, not hand-written.
 
-**IMPORTANT: Always validate YAML fixtures against the original RuboCop specs when implementing a cop.**
+**IMPORTANT: Always validate TOML fixtures against the original RuboCop specs when implementing a cop.**
 
-The extraction script may have edge cases or errors. Before trusting a YAML fixture:
+The extraction script may have edge cases or errors. Before trusting a TOML fixture:
 
 1. **Fetch the original RuboCop spec file:**
    ```bash
@@ -179,51 +180,59 @@ The extraction script may have edge cases or errors. Before trusting a YAML fixt
 
 2. **Compare key test cases:**
    - Check that offense line/column positions match the `^^^` markers in the original
-   - Verify the `config:` values match `let(:cop_config)` blocks
-   - Ensure `expect_no_offenses` tests have `offenses: []`
-   - Check `corrected:` field matches `expect_correction` blocks
+   - Verify the `[tests.config]` values match `let(:cop_config)` blocks
+   - Ensure `expect_no_offenses` tests have `offenses = []`
+   - Check `corrected` field matches `expect_correction` blocks
 
 3. **Watch for extraction issues:**
    - Shared examples (`it_behaves_like`) may not have captured all context
    - Deeply nested `context` blocks may have missed config inheritance
-   - **YAML parse errors**: Some fixtures contain tab characters or special characters that break YAML parsing. The test runner skips files with parse errors if they're marked `implemented: false`, but you must fix YAML issues before marking a cop as implemented.
 
 4. **The `interpolated` and `verified` flags:**
 
-   **`interpolated: true` means the test requires manual verification by an AI agent.** This flag is set when:
+   **`interpolated = true` means the test requires manual verification by an AI agent.** This flag is set when:
    - Source code contains unresolved Ruby string interpolation (`#{...}`)
    - Config has unresolved values (marked with `$UNRESOLVED:` prefix)
 
-   Tests with `interpolated: true` are **automatically skipped** unless they also have `verified: true`.
+   Tests with `interpolated = true` are **automatically skipped** unless they also have `verified = true`.
 
-   ```yaml
+   ```toml
    # SKIPPED - has unresolved source interpolation
-   - name: test_with_interpolated_source
-     source: |
-       spec.#{attribute} = #{value}
-     offenses:
-       - message: "Do not set `#{attribute}`"
-     interpolated: true
-     verified: false
+   [[tests]]
+   name = "test_with_interpolated_source"
+   source = '''
+   spec.#{attribute} = #{value}
+   '''
+   interpolated = true
+   verified = false
+
+   [[tests.offenses]]
+   message = "Do not set `#{attribute}`"
 
    # SKIPPED - has unresolved config values
-   - name: test_with_unresolved_config
-     source: |
-       format('%s', foo)
-     config:
-       EnforcedStyle: $UNRESOLVED:enforced_style
-       Mode: $UNRESOLVED:mode
-     interpolated: true
-     verified: false
+   [[tests]]
+   name = "test_with_unresolved_config"
+   source = '''
+   format('%s', foo)
+   '''
+   interpolated = true
+   verified = false
+
+   [tests.config]
+   EnforcedStyle = "$UNRESOLVED:enforced_style"
+   Mode = "$UNRESOLVED:mode"
 
    # RUNS - manually verified and fixed
-   - name: test_verified
-     source: |
-       spec.rubygems_version = '1.0'
-     config:
-       EnforcedStyle: annotated
-     interpolated: true
-     verified: true
+   [[tests]]
+   name = "test_verified"
+   source = '''
+   spec.rubygems_version = '1.0'
+   '''
+   interpolated = true
+   verified = true
+
+   [tests.config]
+   EnforcedStyle = "annotated"
    ```
 
    **How to verify an interpolated test:**
@@ -234,35 +243,35 @@ The extraction script may have edge cases or errors. Before trusting a YAML fixt
    2. Find the corresponding test case in the spec
    3. Resolve all `#{...}` in source/message with actual values from the spec
    4. Replace `$UNRESOLVED:variable_name` config values with actual values from `let(:variable_name)` blocks
-   5. Change `verified: false` to `verified: true`
-   6. Keep `interpolated: true` as a marker that it was originally interpolated
+   5. Change `verified = false` to `verified = true`
+   6. Keep `interpolated = true` as a marker that it was originally interpolated
 
 5. **Validation workflow when implementing a cop:**
    ```
    Before implementing:
-   1. Read the YAML fixture: tests/fixtures/{dept}/{cop}.yaml
+   1. Read the TOML fixture: tests/fixtures/{dept}/{cop}.toml
    2. Fetch original spec from RuboCop repo
    3. Spot-check 3-5 test cases match
    4. Fix any interpolated tests:
       - Replace #{...} with actual values
       - Replace $UNRESOLVED:var with actual config values
-      - Set verified: true
+      - Set verified = true
 
    After implementing:
    1. Run: cargo test --test tester
    2. If tests fail unexpectedly, compare with original spec
-   3. Fix YAML if extraction was wrong, or fix implementation
+   3. Fix TOML if extraction was wrong, or fix implementation
    ```
 
-6. **Re-extract if needed:**
+6. **Re-sync if needed:**
    ```bash
-   # Re-extract a single cop's tests
-   cargo run --bin extract-rubocop-tests -- /tmp/rubocop-specs/spec/rubocop/cop/{dept}/{cop}_spec.rb
+   # Use the rubocop-test-importer skill to re-sync tests
+   /rubocop-test-importer sync
    ```
 
 ### Test Types
 
-- **Parity tests** (`tests/tester.rs`) - Data-driven tests from YAML fixtures
+- **Parity tests** (`tests/tester.rs`) - Data-driven tests from TOML fixtures
 - **Unit tests** - Cop-specific edge cases in `src/cops/{dept}/{cop}.rs`
 - **Integration tests** - End-to-end CLI comparison with RuboCop
 - **Benchmark tests** - Performance validation
@@ -277,21 +286,21 @@ The extraction script may have edge cases or errors. Before trusting a YAML fixt
 
 ### Adding a new cop
 1. **Validate test fixtures first:**
-   - Read `tests/fixtures/{department}/{cop_name}.yaml`
+   - Read `tests/fixtures/{department}/{cop_name}.toml`
    - Fetch original spec: `curl -s "https://raw.githubusercontent.com/rubocop/rubocop/master/spec/rubocop/cop/{department}/{cop_name}_spec.rb"`
    - Compare 3-5 test cases to verify extraction accuracy
-   - Fix YAML if needed, or note discrepancies
+   - Fix TOML if needed, or note discrepancies
 
 2. Create file in `src/cops/{department}/{cop_name}.rs`
 3. Implement `Cop` trait
 4. Add to department's `mod.rs`
 5. Register in cop registry
-6. Set `implemented: true` in the YAML fixture
+6. Set `implemented = true` in the TOML fixture
 7. Run `cargo test --test tester` - verify tests pass
 8. **Post-implementation validation:**
    - If any test fails unexpectedly, compare with original RuboCop spec
    - Run actual RuboCop on failing test source to confirm expected behavior
-   - Fix implementation or YAML as needed
+   - Fix implementation or TOML as needed
 9. Update COPS.md
 
 ### Adding a new formatter

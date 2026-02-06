@@ -1,0 +1,921 @@
+cop = "Style/RedundantReturn"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_redundantreturn_reports_an_offense_for_def_with_only_a_return"
+source = '''
+def func
+  return something
+ensure
+  2
+end
+'''
+corrected = '''
+def func
+  something
+ensure
+  2
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 8
+message = "Redundant `return` detected."
+
+[tests.config]
+AllowMultipleReturnValues = false
+
+[[tests]]
+name = "rubocop_cop_style_redundantreturn_reports_an_offense_for_defs_with_only_a_return"
+source = '''
+def Test.func
+  return something
+end
+'''
+corrected = '''
+def Test.func
+  something
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 8
+message = "Redundant `return` detected."
+
+[tests.config]
+AllowMultipleReturnValues = false
+
+[[tests]]
+name = "rubocop_cop_style_redundantreturn_reports_an_offense_for_def_ending_with_return"
+source = '''
+def func
+  some_preceding_statements
+  return something
+end
+'''
+corrected = '''
+def func
+  some_preceding_statements
+  something
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 8
+message = "Redundant `return` detected."
+
+[tests.config]
+AllowMultipleReturnValues = false
+
+[[tests]]
+name = "rubocop_cop_style_redundantreturn_reports_an_offense_for_define_method_with_only_a_return"
+source = '''
+define_method(:foo) do
+  return something
+end
+'''
+corrected = '''
+define_method(:foo) do
+  something
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 8
+message = "Redundant `return` detected."
+
+[tests.config]
+AllowMultipleReturnValues = false
+
+[[tests]]
+name = "rubocop_cop_style_redundantreturn_reports_an_offense_for_define_singleton_method_with_only_a_return"
+source = '''
+define_singleton_method(:foo) do
+  return something
+end
+'''
+corrected = '''
+define_singleton_method(:foo) do
+  something
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 8
+message = "Redundant `return` detected."
+
+[tests.config]
+AllowMultipleReturnValues = false
+
+[[tests]]
+name = "rubocop_cop_style_redundantreturn_reports_an_offense_for_define_method_ending_with_return"
+source = '''
+define_method(:foo) do
+  some_preceding_statements
+  return something
+end
+'''
+corrected = '''
+define_method(:foo) do
+  some_preceding_statements
+  something
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 8
+message = "Redundant `return` detected."
+
+[tests.config]
+AllowMultipleReturnValues = false
+
+[[tests]]
+name = "rubocop_cop_style_redundantreturn_reports_an_offense_for_define_singleton_method_ending_with_return"
+source = '''
+define_singleton_method(:foo) do
+  some_preceding_statements
+  return something
+end
+'''
+corrected = '''
+define_singleton_method(:foo) do
+  some_preceding_statements
+  something
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 8
+message = "Redundant `return` detected."
+
+[tests.config]
+AllowMultipleReturnValues = false
+
+[[tests]]
+name = "rubocop_cop_style_redundantreturn_reports_an_offense_for_lambda_ending_with_return"
+source = '''
+lambda do
+  some_preceding_statements
+  return something
+end
+'''
+corrected = '''
+lambda do
+  some_preceding_statements
+  something
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 8
+message = "Redundant `return` detected."
+
+[tests.config]
+AllowMultipleReturnValues = false
+
+[[tests]]
+name = "rubocop_cop_style_redundantreturn_reports_an_offense_for_ending_with_return"
+source = '''
+-> do
+  some_preceding_statements
+  return something
+end
+'''
+corrected = '''
+-> do
+  some_preceding_statements
+  something
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 8
+message = "Redundant `return` detected."
+
+[tests.config]
+AllowMultipleReturnValues = false
+
+[[tests]]
+name = "rubocop_cop_style_redundantreturn_does_not_register_an_offense_for_proc_ending_with_return"
+source = '''
+proc do
+  some_preceding_statements
+  return something
+end
+'''
+offenses = []
+
+[tests.config]
+AllowMultipleReturnValues = false
+
+[[tests]]
+name = "rubocop_cop_style_redundantreturn_reports_an_offense_for_def_ending_with_return_with_splat_argument"
+source = '''
+def func
+  some_preceding_statements
+  return *something
+end
+'''
+corrected = '''
+def func
+  some_preceding_statements
+  something
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 8
+message = "Redundant `return` detected."
+
+[tests.config]
+AllowMultipleReturnValues = false
+
+[[tests]]
+name = "rubocop_cop_style_redundantreturn_reports_an_offense_for_defs_ending_with_return"
+source = '''
+def self.func
+  some_preceding_statements
+  return something
+end
+'''
+corrected = '''
+def self.func
+  some_preceding_statements
+  something
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 8
+message = "Redundant `return` detected."
+
+[tests.config]
+AllowMultipleReturnValues = false
+
+[[tests]]
+name = "rubocop_cop_style_redundantreturn_registers_an_offense_when_returning_value_with_guard_clause_and_return_is_used"
+source = '''
+def func
+  return something if something_else
+end
+'''
+corrected = '''
+def func
+  something if something_else
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 8
+message = "Redundant `return` detected."
+
+[tests.config]
+AllowMultipleReturnValues = false
+
+[[tests]]
+name = "rubocop_cop_style_redundantreturn_does_not_register_an_offense_when_returning_value_with_guard_clause_and_return_is_not_used"
+source = '''
+def func
+  something if something_else
+end
+'''
+offenses = []
+
+[tests.config]
+AllowMultipleReturnValues = false
+
+[[tests]]
+name = "rubocop_cop_style_redundantreturn_does_not_blow_up_on_empty_method_body"
+source = '''
+def func
+end
+'''
+offenses = []
+
+[tests.config]
+AllowMultipleReturnValues = false
+
+[[tests]]
+name = "rubocop_cop_style_redundantreturn_does_not_blow_up_on_empty_if_body"
+source = '''
+def func
+  if x
+  elsif y
+  else
+  end
+end
+'''
+offenses = []
+
+[tests.config]
+AllowMultipleReturnValues = false
+
+[[tests]]
+name = "rubocop_cop_style_redundantreturn_autocorrects_by_removing_redundant_returns"
+source = '''
+def func
+  one
+  two
+  return something
+end
+'''
+corrected = '''
+def func
+  one
+  two
+  something
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 8
+message = "Redundant `return` detected."
+
+[tests.config]
+AllowMultipleReturnValues = false
+
+[[tests]]
+name = "rubocop_cop_style_redundantreturn_when_return_has_no_arguments"
+source = '''
+def func
+  one
+  two
+  %{ret}
+  # comment
+end
+'''
+corrected = '''
+def func
+  one
+  two
+  nil
+  # comment
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 8
+message = "Redundant `return` detected."
+
+[tests.config]
+AllowMultipleReturnValues = false
+
+[[tests]]
+name = "rubocop_cop_style_redundantreturn_when_return_has_no_arguments_common_behavior_return"
+source = '''
+return
+'''
+offenses = []
+
+[tests.config]
+AllowMultipleReturnValues = false
+
+[[tests]]
+name = "rubocop_cop_style_redundantreturn_when_return_has_no_arguments_common_behavior_return"
+source = '''
+return()
+'''
+offenses = []
+
+[tests.config]
+AllowMultipleReturnValues = false
+
+[[tests]]
+name = "rubocop_cop_style_redundantreturn_when_multi_value_returns_are_not_allowed_reports_an_offense_for_def_with_only_a_return"
+source = '''
+def func
+  return something, test
+end
+'''
+corrected = '''
+def func
+  [something, test]
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 8
+message = "Redundant `return` detected. To return multiple values, use an array."
+
+[tests.config]
+AllowMultipleReturnValues = false
+
+[[tests]]
+name = "rubocop_cop_style_redundantreturn_when_multi_value_returns_are_not_allowed_reports_an_offense_for_defs_with_only_a_return"
+source = '''
+def Test.func
+  return something, test
+end
+'''
+corrected = '''
+def Test.func
+  [something, test]
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 8
+message = "Redundant `return` detected. To return multiple values, use an array."
+
+[tests.config]
+AllowMultipleReturnValues = false
+
+[[tests]]
+name = "rubocop_cop_style_redundantreturn_when_multi_value_returns_are_not_allowed_reports_an_offense_for_def_ending_with_return"
+source = '''
+def func
+  one
+  two
+  return something, test
+end
+'''
+corrected = '''
+def func
+  one
+  two
+  [something, test]
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 8
+message = "Redundant `return` detected. To return multiple values, use an array."
+
+[tests.config]
+AllowMultipleReturnValues = false
+
+[[tests]]
+name = "rubocop_cop_style_redundantreturn_when_multi_value_returns_are_not_allowed_reports_an_offense_for_defs_ending_with_return"
+source = '''
+def self.func
+  one
+  two
+  return something, test
+end
+'''
+corrected = '''
+def self.func
+  one
+  two
+  [something, test]
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 8
+message = "Redundant `return` detected. To return multiple values, use an array."
+
+[tests.config]
+AllowMultipleReturnValues = false
+
+[[tests]]
+name = "rubocop_cop_style_redundantreturn_when_multi_value_returns_are_not_allowed_autocorrects_by_removing_return_when_using_an_explicit_hash"
+source = '''
+def func
+  return {:a => 1, :b => 2}
+end
+'''
+corrected = '''
+def func
+  {:a => 1, :b => 2}
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 8
+message = "Redundant `return` detected."
+
+[tests.config]
+AllowMultipleReturnValues = false
+
+[[tests]]
+name = "rubocop_cop_style_redundantreturn_when_multi_value_returns_are_not_allowed_autocorrects_by_making_an_implicit_hash_explicit"
+source = '''
+def func
+  return :a => 1, :b => 2
+end
+'''
+corrected = '''
+def func
+  {:a => 1, :b => 2}
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 8
+message = "Redundant `return` detected."
+
+[tests.config]
+AllowMultipleReturnValues = false
+
+[[tests]]
+name = "rubocop_cop_style_redundantreturn_when_multi_value_returns_are_not_allowed_reports_an_offense_when_multiple_return_values_have_a_parenthesized_return_value"
+source = '''
+def do_something
+  return (foo && bar), 42
+end
+'''
+corrected = '''
+def do_something
+  [(foo && bar), 42]
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 8
+message = "Redundant `return` detected. To return multiple values, use an array."
+
+[tests.config]
+AllowMultipleReturnValues = false
+
+[[tests]]
+name = "rubocop_cop_style_redundantreturn_when_multi_value_returns_are_allowed_accepts_def_with_only_a_return"
+source = '''
+def func
+  return something, test
+end
+'''
+offenses = []
+
+[tests.config]
+AllowMultipleReturnValues = true
+
+[[tests]]
+name = "rubocop_cop_style_redundantreturn_when_multi_value_returns_are_allowed_accepts_defs_with_only_a_return"
+source = '''
+def Test.func
+  return something, test
+end
+'''
+offenses = []
+
+[tests.config]
+AllowMultipleReturnValues = true
+
+[[tests]]
+name = "rubocop_cop_style_redundantreturn_when_multi_value_returns_are_allowed_accepts_def_ending_with_return"
+source = '''
+def func
+  one
+  two
+  return something, test
+end
+'''
+offenses = []
+
+[tests.config]
+AllowMultipleReturnValues = true
+
+[[tests]]
+name = "rubocop_cop_style_redundantreturn_when_multi_value_returns_are_allowed_accepts_defs_ending_with_return"
+source = '''
+def self.func
+  one
+  two
+  return something, test
+end
+'''
+offenses = []
+
+[tests.config]
+AllowMultipleReturnValues = true
+
+[[tests]]
+name = "rubocop_cop_style_redundantreturn_when_return_is_inside_begin_end_body_registers_an_offense_and_autocorrects"
+source = '''
+def func
+  some_preceding_statements
+  begin
+    return 1
+  end
+end
+'''
+corrected = '''
+def func
+  some_preceding_statements
+  begin
+    1
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 4
+column_end = 10
+message = "Redundant `return` detected."
+
+[tests.config]
+AllowMultipleReturnValues = true
+
+[[tests]]
+name = "rubocop_cop_style_redundantreturn_when_rescue_and_return_blocks_present_registers_an_offense_and_autocorrects_when_inside_function_or_rescue_block"
+source = '''
+def func
+  1
+  2
+  return 3
+rescue SomeException
+  4
+  return 5
+rescue AnotherException
+  return 6
+ensure
+  return 7
+end
+'''
+corrected = '''
+def func
+  1
+  2
+  3
+rescue SomeException
+  4
+  5
+rescue AnotherException
+  6
+ensure
+  return 7
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 8
+message = "Redundant `return` detected."
+
+[[tests.offenses]]
+line = 7
+column_start = 2
+column_end = 8
+message = "Redundant `return` detected."
+
+[[tests.offenses]]
+line = 9
+column_start = 2
+column_end = 8
+message = "Redundant `return` detected."
+
+[tests.config]
+AllowMultipleReturnValues = true
+
+[[tests]]
+name = "rubocop_cop_style_redundantreturn_when_rescue_and_return_blocks_present_registers_an_offense_and_autocorrects_when_rescue_has_else_clause"
+source = '''
+def func
+  return 3
+rescue SomeException
+else
+  return 4
+end
+'''
+corrected = '''
+def func
+  return 3
+rescue SomeException
+else
+  4
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 8
+message = "Redundant `return` detected."
+
+[tests.config]
+AllowMultipleReturnValues = true
+
+[[tests]]
+name = "rubocop_cop_style_redundantreturn_when_return_is_inside_an_if_branch_registers_an_offense_and_autocorrects"
+source = '''
+def func
+  some_preceding_statements
+  if x
+    return 1
+  elsif y
+    return 2
+  else
+    return 3
+  end
+end
+'''
+corrected = '''
+def func
+  some_preceding_statements
+  if x
+    1
+  elsif y
+    2
+  else
+    3
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 4
+column_end = 10
+message = "Redundant `return` detected."
+
+[[tests.offenses]]
+line = 6
+column_start = 4
+column_end = 10
+message = "Redundant `return` detected."
+
+[[tests.offenses]]
+line = 8
+column_start = 4
+column_end = 10
+message = "Redundant `return` detected."
+
+[tests.config]
+AllowMultipleReturnValues = true
+
+[[tests]]
+name = "rubocop_cop_style_redundantreturn_when_return_is_inside_a_when_branch_registers_an_offense_and_autocorrects"
+source = '''
+def func
+  some_preceding_statements
+  case x
+  when y then return 1
+  when z then return 2
+  when q
+  else
+    return 3
+  end
+end
+'''
+corrected = '''
+def func
+  some_preceding_statements
+  case x
+  when y then 1
+  when z then 2
+  when q
+  else
+    3
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 14
+column_end = 20
+message = "Redundant `return` detected."
+
+[[tests.offenses]]
+line = 5
+column_start = 14
+column_end = 20
+message = "Redundant `return` detected."
+
+[[tests.offenses]]
+line = 8
+column_start = 4
+column_end = 10
+message = "Redundant `return` detected."
+
+[tests.config]
+AllowMultipleReturnValues = true
+
+[[tests]]
+name = "rubocop_cop_style_redundantreturn_when_case_nodes_are_empty_accepts_empty_when_nodes"
+source = '''
+def func
+  case x
+  when y then 1
+  when z # do nothing
+  else
+    3
+  end
+end
+'''
+offenses = []
+
+[tests.config]
+AllowMultipleReturnValues = true
+
+[[tests]]
+name = "rubocop_cop_style_redundantreturn_when_return_is_inside_an_in_branch_registers_an_offense_and_autocorrects"
+source = '''
+def func
+  some_preceding_statements
+  case x
+  in y then return 1
+  in z then return 2
+  in q
+  else
+    return 3
+  end
+end
+'''
+corrected = '''
+def func
+  some_preceding_statements
+  case x
+  in y then 1
+  in z then 2
+  in q
+  else
+    3
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 12
+column_end = 18
+message = "Redundant `return` detected."
+
+[[tests.offenses]]
+line = 5
+column_start = 12
+column_end = 18
+message = "Redundant `return` detected."
+
+[[tests.offenses]]
+line = 8
+column_start = 4
+column_end = 10
+message = "Redundant `return` detected."
+
+[tests.config]
+AllowMultipleReturnValues = true
+
+[[tests]]
+name = "rubocop_cop_style_redundantreturn_when_case_match_nodes_are_empty_accepts_empty_in_nodes"
+source = '''
+def func
+  case x
+  in y then 1
+  in z # do nothing
+  else
+    3
+  end
+end
+'''
+offenses = []
+
+[tests.config]
+AllowMultipleReturnValues = true
+
+[[tests]]
+name = "rubocop_cop_style_redundantreturn_does_not_register_an_offense_when_using_lambda_call_block"
+source = '''
+lambda.call(block)
+'''
+offenses = []
+
+[tests.config]
+AllowMultipleReturnValues = true

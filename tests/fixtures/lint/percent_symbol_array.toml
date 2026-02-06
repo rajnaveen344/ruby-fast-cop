@@ -1,0 +1,73 @@
+cop = "Lint/PercentSymbolArray"
+department = "lint"
+severity = "warning"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_lint_percentsymbolarray_detecting_colons_or_commas_in_a_i_i_string_accepts_tokens_without_colons_or_commas"
+source = '''
+%#{char}(foo bar baz)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_percentsymbolarray_detecting_colons_or_commas_in_a_i_i_string_accepts_likely_false_positive"
+source = '''
+%#{char}{$,}
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_percentsymbolarray_detecting_colons_or_commas_in_a_i_i_string_registers_an_offense_and_corrects_when_symbols_contain_colons_and_are_comma_separated"
+source = '''
+%#{char}(:foo, :bar, :baz)
+'''
+corrected = '''
+%#{char}(foo bar baz)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 20
+message = "Within `%i`/`%I`, ':' and ',' are unnecessary and may be unwanted in the resulting symbols."
+
+[[tests]]
+name = "rubocop_cop_lint_percentsymbolarray_detecting_colons_or_commas_in_a_i_i_string_registers_an_offense_and_corrects_when_one_symbol_has_a_colon_but_there_are_no_commas"
+source = '''
+%#{char}(:foo bar baz)
+'''
+corrected = '''
+%#{char}(foo bar baz)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 16
+message = "Within `%i`/`%I`, ':' and ',' are unnecessary and may be unwanted in the resulting symbols."
+
+[[tests]]
+name = "rubocop_cop_lint_percentsymbolarray_detecting_colons_or_commas_in_a_i_i_string_registers_an_offense_and_corrects_when_there_are_no_colons_but_one_comma"
+source = '''
+%#{char}(foo, bar baz)
+'''
+corrected = '''
+%#{char}(foo bar baz)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 16
+message = "Within `%i`/`%I`, ':' and ',' are unnecessary and may be unwanted in the resulting symbols."

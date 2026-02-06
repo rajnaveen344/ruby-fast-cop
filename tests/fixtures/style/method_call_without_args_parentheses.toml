@@ -1,0 +1,495 @@
+cop = "Style/MethodCallWithoutArgsParentheses"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithoutargsparentheses_registers_an_offense_for_parens_in_method_call_without_args"
+source = '''
+top.test()
+'''
+corrected = '''
+top.test
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 10
+message = "Do not use parentheses for method calls with no arguments."
+
+[[tests]]
+name = ""
+source = '''
+Test()
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithoutargsparentheses_accepts_parens_in_method_call_with_args"
+source = '''
+top.test(a)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithoutargsparentheses_accepts_special_lambda_call_syntax"
+source = '''
+thing.()
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithoutargsparentheses_accepts_parens_after_not"
+source = '''
+not(something)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithoutargsparentheses_does_not_register_an_offense_when_using_it_in_a_single_line_block"
+source = '''
+0.times { it() }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithoutargsparentheses_registers_an_offense_when_using_foo_it_in_a_single_line_block"
+source = '''
+0.times { foo.it() }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 16
+column_end = 18
+message = "Do not use parentheses for method calls with no arguments."
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithoutargsparentheses_registers_an_offense_when_using_foo_it_in_a_single_line_block"
+source = '''
+0.times { foo&.it() }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 19
+message = "Do not use parentheses for method calls with no arguments."
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithoutargsparentheses_does_not_register_an_offense_when_using_it_in_a_multiline_block"
+source = '''
+0.times do
+  it()
+  it = 1
+  it
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithoutargsparentheses_registers_an_offense_when_using_it_without_arguments_in_def_body"
+source = '''
+def foo
+  it()
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 4
+column_end = 6
+message = "Do not use parentheses for method calls with no arguments."
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithoutargsparentheses_registers_an_offense_when_using_it_without_arguments_in_the_block_with_empty_block_parameter"
+source = '''
+0.times { ||
+  it()
+}
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 4
+column_end = 6
+message = "Do not use parentheses for method calls with no arguments."
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithoutargsparentheses_registers_an_offense_when_using_it_without_arguments_in_the_block_with_useless_block_parameter"
+source = '''
+0.times { |_n|
+  it()
+}
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 4
+column_end = 6
+message = "Do not use parentheses for method calls with no arguments."
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithoutargsparentheses_when_allowedmethods_is_enabled_allows_a_listed_method"
+source = '''
+s()
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:s"]
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithoutargsparentheses_when_allowedmethods_is_enabled_allows_a_listed_method_used_with_safe_navigation"
+source = '''
+foo&.s()
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:s"]
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithoutargsparentheses_when_allowedpatterns_is_enabled_allows_a_method_that_matches"
+source = '''
+my_test()
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:s"]
+AllowedPatterns = ["test"]
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithoutargsparentheses_when_allowedpatterns_is_enabled_allows_a_method_that_matches_with_safe_navigation"
+source = '''
+foo&.my_test()
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:s"]
+AllowedPatterns = ["test"]
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithoutargsparentheses_assignment_to_a_variable_with_the_same_name_accepts_parens_in_local_variable_assignment"
+source = '''
+test = test()
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:s"]
+AllowedPatterns = ["test"]
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithoutargsparentheses_assignment_to_a_variable_with_the_same_name_registers_an_offense_when_calling_method_on_a_receiver"
+source = '''
+test = x.test()
+'''
+corrected = '''
+test = x.test
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 15
+message = "Do not use parentheses for method calls with no arguments."
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:s"]
+AllowedPatterns = ["test"]
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithoutargsparentheses_assignment_to_a_variable_with_the_same_name_registers_an_offense_when_calling_method_on_a_receiver_with_safe_navigation"
+source = '''
+test = x&.test()
+'''
+corrected = '''
+test = x&.test
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 14
+column_end = 16
+message = "Do not use parentheses for method calls with no arguments."
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:s"]
+AllowedPatterns = ["test"]
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithoutargsparentheses_assignment_to_a_variable_with_the_same_name_accepts_parens_in_default_argument_assignment"
+source = '''
+def foo(test = test())
+end
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:s"]
+AllowedPatterns = ["test"]
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithoutargsparentheses_assignment_to_a_variable_with_the_same_name_accepts_parens_in_shorthand_assignment"
+source = '''
+test ||= test()
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:s"]
+AllowedPatterns = ["test"]
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithoutargsparentheses_assignment_to_a_variable_with_the_same_name_accepts_parens_in_parallel_assignment"
+source = '''
+one, test = 1, test()
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:s"]
+AllowedPatterns = ["test"]
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithoutargsparentheses_assignment_to_a_variable_with_the_same_name_accepts_parens_in_complex_assignment"
+source = '''
+test = begin
+  case a
+  when b
+    c = test() if d
+  end
+end
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:s"]
+AllowedPatterns = ["test"]
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithoutargsparentheses_assignment_to_a_variable_with_the_same_name_registers_an_empty_parens_offense_for_array_mass_assignment_with_same_name"
+source = '''
+A = [1, 2]
+def c; A; end
+'''
+corrected = '''
+A = [1, 2]
+def c; A; end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 11
+column_end = 13
+message = "Do not use parentheses for method calls with no arguments."
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:s"]
+AllowedPatterns = ["test"]
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithoutargsparentheses_registers_an_offense_for_obj_method_func"
+source = '''
+obj.method ||= func()
+'''
+corrected = '''
+obj.method ||= func
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 19
+column_end = 21
+message = "Do not use parentheses for method calls with no arguments."
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:s"]
+AllowedPatterns = ["test"]
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithoutargsparentheses_registers_an_offense_for_obj_method_func"
+source = '''
+obj.method &&= func()
+'''
+corrected = '''
+obj.method &&= func
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 19
+column_end = 21
+message = "Do not use parentheses for method calls with no arguments."
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:s"]
+AllowedPatterns = ["test"]
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithoutargsparentheses_registers_an_offense_for_obj_method_func"
+source = '''
+obj.method += func()
+'''
+corrected = '''
+obj.method += func
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 18
+column_end = 20
+message = "Do not use parentheses for method calls with no arguments."
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:s"]
+AllowedPatterns = ["test"]
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithoutargsparentheses_autocorrects_calls_that_could_be_empty_literals"
+source = '''
+Hash.new()
+Array.new()
+String.new()
+'''
+corrected = '''
+Hash.new
+Array.new
+String.new
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 10
+message = "Do not use parentheses for method calls with no arguments."
+
+[[tests.offenses]]
+line = 2
+column_start = 9
+column_end = 11
+message = "Do not use parentheses for method calls with no arguments."
+
+[[tests.offenses]]
+line = 3
+column_start = 10
+column_end = 12
+message = "Do not use parentheses for method calls with no arguments."
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:s"]
+AllowedPatterns = ["test"]
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithoutargsparentheses_method_call_as_argument_accepts_without_parens"
+source = '''
+_a = c(d.e)
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:s"]
+AllowedPatterns = ["test"]
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithoutargsparentheses_method_call_as_argument_registers_an_offense_with_empty_parens"
+source = '''
+_a = c(d())
+'''
+corrected = '''
+_a = c(d)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 10
+message = "Do not use parentheses for method calls with no arguments."
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:s"]
+AllowedPatterns = ["test"]
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithoutargsparentheses_method_call_as_argument_registers_an_empty_parens_offense_for_multiple_assignment"
+source = '''
+_a, _b, _c = d(e())
+'''
+corrected = '''
+_a, _b, _c = d(e)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 16
+column_end = 18
+message = "Do not use parentheses for method calls with no arguments."
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:s"]
+AllowedPatterns = ["test"]
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithoutargsparentheses_method_call_as_argument_registers_an_empty_parens_offense_for_multiple_assignment_with_safe_navigation"
+source = '''
+_a, _b, _c = d&.e()
+'''
+corrected = '''
+_a, _b, _c = d&.e
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 19
+message = "Do not use parentheses for method calls with no arguments."
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:s"]
+AllowedPatterns = ["test"]
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithoutargsparentheses_registers_an_empty_parens_offense_for_hash_mass_assignment"
+source = '''
+h = {}
+h[:a], h[:b] = c()
+'''
+corrected = '''
+h = {}
+h[:a], h[:b] = c
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 16
+column_end = 18
+message = "Do not use parentheses for method calls with no arguments."
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:s"]
+AllowedPatterns = ["test"]
+
+[[tests]]
+name = "rubocop_cop_style_methodcallwithoutargsparentheses_registers_an_empty_parens_offense_for_array_mass_assignment"
+source = '''
+a = []
+a[0], a[10] = c()
+'''
+corrected = '''
+a = []
+a[0], a[10] = c
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 15
+column_end = 17
+message = "Do not use parentheses for method calls with no arguments."
+
+[tests.config]
+AllowedMethods = ["$UNRESOLVED:s"]
+AllowedPatterns = ["test"]

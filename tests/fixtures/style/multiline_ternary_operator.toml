@@ -1,0 +1,367 @@
+cop = "Style/MultilineTernaryOperator"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_multilineternaryoperator"
+source = '''
+a = cond ?
+  b : c
+'''
+corrected = '''
+a = if cond
+  b
+else
+  c
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 10
+message = "Avoid multi-line ternary operators, use `if` or `unless` instead."
+
+[[tests]]
+name = "rubocop_cop_style_multilineternaryoperator_registers_an_offense_and_corrects_when_the_false_branch_is_on_a_separate_line_and_assigning_a_return_value"
+source = '''
+a = cond ? b :
+    c
+'''
+corrected = '''
+a = if cond
+  b
+else
+  c
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 14
+message = "Avoid multi-line ternary operators, use `if` or `unless` instead."
+
+[[tests]]
+name = "rubocop_cop_style_multilineternaryoperator_registers_an_offense_and_corrects_when_the_false_branch_is_on_a_separate_line"
+source = '''
+cond ? b :
+c
+'''
+corrected = '''
+if cond
+  b
+else
+  c
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 10
+message = "Avoid multi-line ternary operators, use `if` or `unless` instead."
+
+[[tests]]
+name = "rubocop_cop_style_multilineternaryoperator_registers_an_offense_and_corrects_when_nesting_multiline_ternary_operators"
+source = '''
+cond_a? ? foo :
+  cond_b? ? bar :
+    cond_c? ? baz : qux
+'''
+corrected = '''
+if cond_a?
+  foo
+else
+  if cond_b?
+  bar
+else
+  cond_c? ? baz : qux
+end
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 15
+message = "Avoid multi-line ternary operators, use `if` or `unless` instead."
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 17
+message = "Avoid multi-line ternary operators, use `if` or `unless` instead."
+
+[[tests]]
+name = "rubocop_cop_style_multilineternaryoperator_registers_an_offense_and_corrects_when_everything_is_on_a_separate_line"
+source = '''
+a = cond ?
+    b :
+    c
+'''
+corrected = '''
+a = if cond
+  b
+else
+  c
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 10
+message = "Avoid multi-line ternary operators, use `if` or `unless` instead."
+
+[[tests]]
+name = "rubocop_cop_style_multilineternaryoperator_registers_an_offense_and_corrects_when_condition_is_multiline"
+source = '''
+a =
+  b ==
+    c ? d : e
+'''
+corrected = '''
+a =
+  if b ==
+    c
+  d
+else
+  e
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 6
+message = "Avoid multi-line ternary operators, use `if` or `unless` instead."
+
+[[tests]]
+name = "rubocop_cop_style_multilineternaryoperator_registers_an_offense_and_corrects_when_condition_is_multiline_and_using_hash_key_assignment"
+source = '''
+a[:a] =
+  b ==
+    c ? d : e
+'''
+corrected = '''
+a[:a] =
+  if b ==
+    c
+  d
+else
+  e
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 6
+message = "Avoid multi-line ternary operators, use `if` or `unless` instead."
+
+[[tests]]
+name = "rubocop_cop_style_multilineternaryoperator_registers_an_offense_and_corrects_when_condition_is_multiline_and_using_assignment_method"
+source = '''
+a.foo =
+  b ==
+    c ? d : e
+'''
+corrected = '''
+a.foo =
+  if b ==
+    c
+  d
+else
+  e
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 6
+message = "Avoid multi-line ternary operators, use `if` or `unless` instead."
+
+[[tests]]
+name = "rubocop_cop_style_multilineternaryoperator"
+source = '''
+do_something(arg
+               .foo ? bar : baz)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_multilineternaryoperator_registers_an_offense_and_corrects_when_returning_a_multiline_ternary_operator_expression_with_return"
+source = '''
+return cond ?
+       foo :
+       bar
+'''
+corrected = '''
+return cond ? foo : bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 13
+message = "Avoid multi-line ternary operators, use single-line instead."
+
+[[tests]]
+name = "rubocop_cop_style_multilineternaryoperator_ruby_3_2_registers_an_offense_and_corrects_when_returning_a_multiline_ternary_operator_expression_with_break"
+source = '''
+break cond ?
+      foo :
+      bar
+'''
+corrected = '''
+break cond ? foo : bar
+'''
+ruby_version = ">= 3.2"
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 12
+message = "Avoid multi-line ternary operators, use single-line instead."
+
+[[tests]]
+name = "rubocop_cop_style_multilineternaryoperator_ruby_3_2_registers_an_offense_and_corrects_when_returning_a_multiline_ternary_operator_expression_with_next"
+source = '''
+next cond ?
+     foo :
+     bar
+'''
+corrected = '''
+next cond ? foo : bar
+'''
+ruby_version = ">= 3.2"
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 11
+message = "Avoid multi-line ternary operators, use single-line instead."
+
+[[tests]]
+name = "rubocop_cop_style_multilineternaryoperator_registers_an_offense_and_corrects_when_returning_a_multiline_ternary_operator_expression_with_method_call"
+source = '''
+do_something cond ?
+             foo :
+             bar
+'''
+corrected = '''
+do_something cond ? foo : bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 19
+message = "Avoid multi-line ternary operators, use single-line instead."
+
+[[tests]]
+name = "rubocop_cop_style_multilineternaryoperator_registers_an_offense_and_corrects_when_returning_a_multiline_ternary_operator_expression_with_safe_navigation_method_call"
+source = '''
+obj&.do_something cond ?
+                  foo :
+                  bar
+'''
+corrected = '''
+obj&.do_something cond ? foo : bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 18
+column_end = 24
+message = "Avoid multi-line ternary operators, use single-line instead."
+
+[[tests]]
+name = "rubocop_cop_style_multilineternaryoperator_accepts_a_single_line_ternary_operator_expression"
+source = '''
+a = cond ? b : c
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_multilineternaryoperator"
+source = '''
+# comment a
+a = cond ?
+  b : c # comment b
+# comment c
+'''
+corrected = '''
+# comment a
+a = if cond
+  b
+else
+  c
+end # comment b
+# comment c
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 4
+column_end = 10
+message = "Avoid multi-line ternary operators, use `if` or `unless` instead."
+
+[[tests]]
+name = "rubocop_cop_style_multilineternaryoperator"
+source = '''
+a = cond ? # comment a
+  # comment b
+  b : c
+
+a = cond ?
+  b : # comment
+  c
+
+a = cond ? b : # comment
+  c
+'''
+corrected = '''
+# comment a
+# comment b
+a = if cond
+  b
+else
+  c
+end
+
+# comment
+a = if cond
+  b
+else
+  c
+end
+
+# comment
+a = if cond
+  b
+else
+  c
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 22
+message = "Avoid multi-line ternary operators, use `if` or `unless` instead."
+
+[[tests.offenses]]
+line = 5
+column_start = 4
+column_end = 10
+message = "Avoid multi-line ternary operators, use `if` or `unless` instead."
+
+[[tests.offenses]]
+line = 9
+column_start = 4
+column_end = 24
+message = "Avoid multi-line ternary operators, use `if` or `unless` instead."

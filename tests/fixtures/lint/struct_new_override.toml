@@ -1,0 +1,129 @@
+cop = "Lint/StructNewOverride"
+department = "lint"
+severity = "warning"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_lint_structnewoverride_registers_an_offense_using_struct_new_symbol"
+source = '''
+Bad = Struct.new(:members)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 25
+message = "`:members` member overrides `Struct#members` and it may be unexpected."
+
+[[tests]]
+name = "rubocop_cop_lint_structnewoverride_registers_an_offense_using_struct_new_symbol"
+source = '''
+Bad = ::Struct.new(:members)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 19
+column_end = 27
+message = "`:members` member overrides `Struct#members` and it may be unexpected."
+
+[[tests]]
+name = "rubocop_cop_lint_structnewoverride_registers_an_offense_using_struct_new_string_symbols"
+source = '''
+Struct.new('Bad', :members, :name)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 18
+column_end = 26
+message = "`:members` member overrides `Struct#members` and it may be unexpected."
+
+[[tests]]
+name = "rubocop_cop_lint_structnewoverride_registers_an_offense_using_struct_new_symbols"
+source = '''
+Bad = Struct.new(:name, :members, :address)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 24
+column_end = 32
+message = "`:members` member overrides `Struct#members` and it may be unexpected."
+
+[[tests]]
+name = "rubocop_cop_lint_structnewoverride_registers_an_offense_using_struct_new_symbol_string"
+source = '''
+Bad = Struct.new(:name, "members")
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 24
+column_end = 33
+message = "`\"members\"` member overrides `Struct#members` and it may be unexpected."
+
+[[tests]]
+name = "rubocop_cop_lint_structnewoverride_registers_an_offense_using_struct_new_with_a_block"
+source = '''
+Struct.new(:members) do
+  def members?
+    !members.empty?
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 19
+message = "`:members` member overrides `Struct#members` and it may be unexpected."
+
+[[tests]]
+name = "rubocop_cop_lint_structnewoverride_registers_an_offense_using_struct_new_with_multiple_overrides"
+source = '''
+Struct.new(:members, :clone, :zip)
+                     ^^^^^^ `:clone` member overrides `Struct#clone` and it may be unexpected.
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 29
+column_end = 33
+message = "`:zip` member overrides `Struct#zip` and it may be unexpected."
+
+[[tests.offenses]]
+line = 2
+column_start = 11
+column_end = 19
+message = "`:members` member overrides `Struct#members` and it may be unexpected."
+
+[[tests]]
+name = "rubocop_cop_lint_structnewoverride_registers_an_offense_using_struct_new_with_an_option_argument"
+source = '''
+Struct.new(:members, keyword_init: true)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 19
+message = "`:members` member overrides `Struct#members` and it may be unexpected."
+
+[[tests]]
+name = "rubocop_cop_lint_structnewoverride_does_not_register_an_offense_with_no_overrides"
+source = '''
+Good = Struct.new(:id, :name)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_structnewoverride_does_not_register_an_offense_with_an_override_within_a_given_block"
+source = '''
+Good = Struct.new(:id, :name) do
+  def members
+    super.tap { |ret| pp "members: " + ret.to_s }
+  end
+end
+'''
+offenses = []

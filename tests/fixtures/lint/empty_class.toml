@@ -1,0 +1,136 @@
+cop = "Lint/EmptyClass"
+department = "lint"
+severity = "warning"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_lint_emptyclass_registers_an_offense_for_empty_class"
+source = '''
+class Foo
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 9
+message = "Empty class detected."
+
+[tests.config]
+AllowComments = false
+
+[[tests]]
+name = "rubocop_cop_lint_emptyclass_registers_an_offense_for_empty_class_metaclass"
+source = '''
+class Foo
+  class << self
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 15
+message = "Empty metaclass detected."
+
+[tests.config]
+AllowComments = false
+
+[[tests]]
+name = "rubocop_cop_lint_emptyclass_registers_an_offense_for_empty_object_metaclass"
+source = '''
+class << obj
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 12
+message = "Empty metaclass detected."
+
+[tests.config]
+AllowComments = false
+
+[[tests]]
+name = "rubocop_cop_lint_emptyclass_registers_an_offense_when_empty_metaclass_contains_only_comments"
+source = '''
+class Foo
+  class << self
+    # Comment.
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 15
+message = "Empty metaclass detected."
+
+[tests.config]
+AllowComments = false
+
+[[tests]]
+name = "rubocop_cop_lint_emptyclass_does_not_register_an_offense_when_class_is_not_empty"
+source = '''
+class Foo
+  attr_reader :bar
+end
+'''
+offenses = []
+
+[tests.config]
+AllowComments = false
+
+[[tests]]
+name = "rubocop_cop_lint_emptyclass_does_not_register_an_offense_when_empty_has_a_parent"
+source = '''
+class Child < Parent
+end
+'''
+offenses = []
+
+[tests.config]
+AllowComments = false
+
+[[tests]]
+name = "rubocop_cop_lint_emptyclass_does_not_register_an_offense_when_metaclass_is_not_empty"
+source = '''
+class Foo
+  class << self
+    attr_reader :bar
+  end
+end
+'''
+offenses = []
+
+[tests.config]
+AllowComments = false
+
+[[tests]]
+name = "rubocop_cop_lint_emptyclass_when_allowcomments_is_true_does_not_register_an_offense_when_empty_class_contains_only_comments"
+source = '''
+class Foo
+  # Comment.
+end
+'''
+offenses = []
+
+[tests.config]
+AllowComments = true
+
+[[tests]]
+name = "rubocop_cop_lint_emptyclass_when_allowcomments_is_true_does_not_register_an_offense_when_empty_metaclass_contains_only_comments"
+source = '''
+class Foo
+  class << self
+    # Comment.
+  end
+end
+'''
+offenses = []
+
+[tests.config]
+AllowComments = true

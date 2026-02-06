@@ -1,0 +1,70 @@
+cop = "Layout/MultilineArrayBraceLayout"
+department = "layout"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_layout_multilinearraybracelayout_ignores_implicit_arrays"
+source = '''
+foo = a,
+b
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:symmetrical"
+
+[[tests]]
+name = "rubocop_cop_layout_multilinearraybracelayout_ignores_single_line_arrays"
+source = '''
+[a, b, c]
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:symmetrical"
+
+[[tests]]
+name = "rubocop_cop_layout_multilinearraybracelayout_ignores_empty_arrays"
+source = '''
+[]
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:symmetrical"
+
+[[tests]]
+name = "rubocop_cop_layout_multilinearraybracelayout_when_comment_present_before_closing_brace_corrects_closing_brace_without_crashing"
+source = '''
+{
+  key1: [a, # comment 1
+        b # comment 2
+  ],
+  key2: 'foo'
+}
+'''
+corrected = '''
+{
+  key1: [a, # comment 1
+        b], # comment 2
+  key2: 'foo'
+}
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 3
+message = "The closing array brace must be on the same line as the last array element when the opening brace is on the same line as the first array element."
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:symmetrical"

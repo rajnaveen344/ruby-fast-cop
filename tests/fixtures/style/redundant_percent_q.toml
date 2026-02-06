@@ -1,0 +1,270 @@
+cop = "Style/RedundantPercentQ"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_redundantpercentq_with_q_strings_registers_an_offense_for_only_single_quotes"
+source = '''
+%q('hi')
+'''
+corrected = '''
+"'hi'"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 8
+message = "Use `%q` only for strings that contain both single quotes and double quotes."
+
+[[tests]]
+name = "rubocop_cop_style_redundantpercentq_with_q_strings_registers_an_offense_for_only_double_quotes"
+source = '''
+%q("hi")
+'''
+corrected = '''
+'"hi"'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 8
+message = "Use `%q` only for strings that contain both single quotes and double quotes."
+
+[[tests]]
+name = "rubocop_cop_style_redundantpercentq_with_q_strings_registers_an_offense_for_no_quotes"
+source = '''
+%q(hi)
+'''
+corrected = '''
+'hi'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Use `%q` only for strings that contain both single quotes and double quotes."
+
+[[tests]]
+name = "rubocop_cop_style_redundantpercentq_with_q_strings_accepts_a_string_with_single_quotes_and_double_quotes"
+source = '''
+%q('"hi"')
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantpercentq_with_q_strings_registers_an_offense_for_a_string_containing_escaped_backslashes"
+source = '''
+%q(\\\\foo\\\\)
+'''
+corrected = '''
+'\\\\foo\\\\'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 15
+message = "Use `%q` only for strings that contain both single quotes and double quotes."
+
+[[tests]]
+name = "rubocop_cop_style_redundantpercentq_with_q_strings_accepts_a_string_with_escaped_non_backslash_characters"
+source = '''
+%q(\'foo\')
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantpercentq_with_q_strings_accepts_a_string_with_escaped_backslash_and_non_backslash_characters"
+source = '''
+%q(\\ \'foo\' \\)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantpercentq_with_q_strings_accepts_regular_expressions_starting_with_q"
+source = '''
+/%q?/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantpercentq_with_q_strings_autocorrects_for_strings_that_are_concatenated_with_backslash"
+source = '''
+%q(foo bar baz) \
+  'boogers'
+'''
+corrected = '''
+'foo bar baz' \
+  'boogers'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 15
+message = "Use `%q` only for strings that contain both single quotes and double quotes."
+
+[[tests]]
+name = "rubocop_cop_style_redundantpercentq_with_q_strings_registers_an_offense_for_static_string_without_quotes"
+source = '''
+%Q(hi)
+'''
+corrected = '''
+"hi"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Use `%Q` only for strings that contain both single quotes and double quotes, or for dynamic strings that contain double quotes."
+
+[[tests]]
+name = "rubocop_cop_style_redundantpercentq_with_q_strings_registers_an_offense_for_static_string_with_only_double_quotes"
+source = '''
+%Q("hi")
+'''
+corrected = '''
+'"hi"'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 8
+message = "Use `%Q` only for strings that contain both single quotes and double quotes, or for dynamic strings that contain double quotes."
+
+[[tests]]
+name = "rubocop_cop_style_redundantpercentq_with_q_strings_registers_an_offense_for_dynamic_string_without_quotes"
+source = '''
+%Q(hi#{4})
+'''
+corrected = '''
+"hi#{4}"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 10
+message = "Use `%Q` only for strings that contain both single quotes and double quotes, or for dynamic strings that contain double quotes."
+
+[[tests]]
+name = "rubocop_cop_style_redundantpercentq_with_q_strings_accepts_a_string_with_single_quotes_and_double_quotes"
+source = '''
+%Q('"hi"')
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantpercentq_with_q_strings_accepts_a_string_with_double_quotes_and_an_escaped_special_character"
+source = '''
+%Q("\thi")
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantpercentq_with_q_strings_accepts_a_string_with_double_quotes_and_an_escaped_normal_character"
+source = '''
+%Q("\!thi")
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantpercentq_with_q_strings_accepts_a_dynamic_q_string_with_double_quotes"
+source = '''
+%Q("hi#{4}")
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantpercentq_with_q_strings_accepts_regular_expressions_starting_with_q"
+source = '''
+/%Q?/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantpercentq_with_q_strings_autocorrects_for_strings_that_are_concatenated_with_backslash"
+source = '''
+%Q(foo bar baz) \
+  'boogers'
+'''
+corrected = '''
+"foo bar baz" \
+  'boogers'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 15
+message = "Use `%Q` only for strings that contain both single [...]"
+
+[[tests]]
+name = "rubocop_cop_style_redundantpercentq_with_q_strings_autocorrects_safely_for_multiline_strings_containing_double_quotes"
+source = '''
+%Q(
+  Quoth the Raven "Nevermore."
+)
+'''
+corrected = '''
+'
+  Quoth the Raven "Nevermore."
+'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 3
+message = "Use `%Q` only for strings that contain both single [...]"
+
+[[tests]]
+name = "rubocop_cop_style_redundantpercentq_accepts_a_heredoc_string_that_contains_q"
+source = '''
+  s = <<CODE
+%q('hi') # line 1
+%q("hi")
+CODE
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantpercentq_accepts_q_at_the_beginning_of_a_double_quoted_string_with_interpolation"
+source = '''
+"%q(a)#{b}"
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantpercentq_accepts_q_at_the_beginning_of_a_double_quoted_string_with_interpolation"
+source = '''
+"%Q(a)#{b}"
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantpercentq_accepts_q_at_the_beginning_of_a_section_of_a_double_quoted_string_with_interpolation"
+source = '''
+"%#{b}%q(a)"
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantpercentq_accepts_q_at_the_beginning_of_a_section_of_a_double_quoted_string_with_interpolation"
+source = '''
+"%#{b}%Q(a)"
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantpercentq_accepts_q_containing_string_interpolation"
+source = '''
+%q(foo #{'bar'} baz)
+'''
+offenses = []

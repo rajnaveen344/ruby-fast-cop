@@ -1,0 +1,187 @@
+cop = "Style/TrailingCommaInBlockArgs"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_trailingcommainblockargs_curly_brace_block_format_registers_an_offense_when_a_trailing_comma_is_not_needed"
+source = '''
+test { |a, b,| a + b }
+'''
+corrected = '''
+test { |a, b| a + b }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 12
+column_end = 13
+message = "Useless trailing comma present in block arguments."
+
+[[tests]]
+name = "rubocop_cop_style_trailingcommainblockargs_curly_brace_block_format_does_not_register_an_offense_when_a_trailing_comma_is_required"
+source = '''
+test { |a,| a }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_trailingcommainblockargs_curly_brace_block_format_does_not_register_an_offense_when_no_arguments_are_present"
+source = '''
+test { a }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_trailingcommainblockargs_curly_brace_block_format"
+source = '''
+test { |a, b| a + b }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_trailingcommainblockargs_curly_brace_block_format_does_not_register_an_offense_for_default_arguments"
+source = '''
+test { |a, b, c = nil| a + b + c }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_trailingcommainblockargs_curly_brace_block_format_does_not_register_an_offense_for_keyword_arguments"
+source = '''
+test { |a, b, c: 1| a + b + c }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_trailingcommainblockargs_curly_brace_block_format_ignores_commas_in_default_argument_strings"
+source = '''
+add { |foo, bar = ','| foo + bar }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_trailingcommainblockargs_curly_brace_block_format_preserves_semicolons_in_block_local_variables"
+source = '''
+add { |foo, bar,; baz| foo + bar }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_trailingcommainblockargs_do_end_block_format_registers_an_offense_when_a_trailing_comma_is_not_needed"
+source = '''
+test do |a, b,|
+  a + b
+end
+'''
+corrected = '''
+test do |a, b|
+  a + b
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 14
+message = "Useless trailing comma present in block arguments."
+
+[[tests]]
+name = "rubocop_cop_style_trailingcommainblockargs_do_end_block_format_does_not_register_an_offense_when_a_trailing_comma_is_required"
+source = '''
+test do |a,|
+  a
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_trailingcommainblockargs_do_end_block_format_does_not_register_an_offense_when_no_arguments_are_present"
+source = '''
+test do
+  a
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_trailingcommainblockargs_do_end_block_format_does_not_register_an_offense_for_an_empty_block"
+source = '''
+test do ||
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_trailingcommainblockargs_do_end_block_format"
+source = '''
+test do |a, b|
+  a + b
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_trailingcommainblockargs_do_end_block_format_does_not_register_an_offense_for_default_arguments"
+source = '''
+test do |a, b, c = nil|
+   a + b + c
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_trailingcommainblockargs_do_end_block_format_does_not_register_an_offense_for_keyword_arguments"
+source = '''
+test do |a, b, c: 1|
+   a + b + c
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_trailingcommainblockargs_do_end_block_format_ignores_commas_in_default_argument_strings"
+source = '''
+add do |foo, bar = ','|
+  foo + bar
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_trailingcommainblockargs_do_end_block_format_preserves_semicolons_in_block_local_variables"
+source = '''
+add do |foo, bar,; baz|
+  foo + bar
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_trailingcommainblockargs_when_has_multiple_arguments_does_not_register_an_offense"
+source = '''
+-> (foo, bar) { do_something(foo, bar) }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_trailingcommainblockargs_when_lambda_has_multiple_arguments"
+source = '''
+lambda { |foo, bar| do_something(foo, bar) }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_trailingcommainblockargs_when_lambda_has_multiple_arguments_registers_an_offense_and_corrects_when_a_trailing_comma_isn_t_needed"
+source = '''
+lambda { |foo, bar,| do_something(foo, bar) }
+'''
+corrected = '''
+lambda { |foo, bar| do_something(foo, bar) }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 18
+column_end = 19
+message = "Useless trailing comma present in block arguments."

@@ -1,0 +1,394 @@
+cop = "Style/ExplicitBlockArgument"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_explicitblockargument_registers_an_offense_and_corrects_when_block_just_yields_its_arguments"
+source = '''
+def m
+  items.something(first_arg) { |i| yield i }
+end
+'''
+corrected = '''
+def m(&block)
+  items.something(first_arg, &block)
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 44
+message = "Consider using explicit block argument in the surrounding method's signature over `yield`."
+
+[[tests]]
+name = "rubocop_cop_style_explicitblockargument_registers_an_offense_and_corrects_when_multiple_arguments_are_yielded"
+source = '''
+def m
+  items.something(first_arg) { |i, j| yield i, j }
+end
+'''
+corrected = '''
+def m(&block)
+  items.something(first_arg, &block)
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 50
+message = "Consider using explicit block argument in the surrounding method's signature over `yield`."
+
+[[tests]]
+name = "rubocop_cop_style_explicitblockargument_does_not_register_an_offense_when_arguments_are_yielded_in_a_different_order"
+source = '''
+def m
+  items.something(first_arg) { |i, j| yield j, i }
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_explicitblockargument_correctly_corrects_when_method_already_has_an_explicit_block_argument"
+source = '''
+def m(&blk)
+  items.something { |i| yield i }
+end
+'''
+corrected = '''
+def m(&blk)
+  items.something(&blk)
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 33
+message = "Consider using explicit block argument in the surrounding method's signature over `yield`."
+
+[[tests]]
+name = "rubocop_cop_style_explicitblockargument_correctly_corrects_when_the_method_call_has_a_trailing_comma_in_its_argument_list"
+source = '''
+def m
+  items.something(a, b,) { |i| yield i }
+end
+'''
+corrected = '''
+def m(&block)
+  items.something(a, b, &block)
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 40
+message = "Consider using explicit block argument in the surrounding method's signature over `yield`."
+
+[[tests]]
+name = "rubocop_cop_style_explicitblockargument_correctly_corrects_when_using_safe_navigation_method_call"
+source = '''
+def do_something
+  array&.each do |row|
+    yield row
+  end
+end
+'''
+corrected = '''
+def do_something(&block)
+  array&.each(&block)
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 22
+message = "Consider using explicit block argument in the surrounding method's signature over `yield`."
+
+[[tests]]
+name = "rubocop_cop_style_explicitblockargument_registers_an_offense_and_corrects_when_method_contains_multiple_yield_s"
+source = '''
+def m
+  items.something { |i| yield i }
+
+  if condition
+    yield 2
+  elsif other_condition
+    3.times { yield }
+  else
+    other_items.something { |i, j| yield i, j }
+  end
+end
+'''
+corrected = '''
+def m(&block)
+  items.something(&block)
+
+  if condition
+    yield 2
+  elsif other_condition
+    3.times(&block)
+  else
+    other_items.something(&block)
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 33
+message = "Consider using explicit block argument in the surrounding method's signature over `yield`."
+
+[[tests.offenses]]
+line = 7
+column_start = 4
+column_end = 21
+message = "Consider using explicit block argument in the surrounding method's signature over `yield`."
+
+[[tests.offenses]]
+line = 9
+column_start = 4
+column_end = 47
+message = "Consider using explicit block argument in the surrounding method's signature over `yield`."
+
+[[tests]]
+name = "rubocop_cop_style_explicitblockargument_does_not_register_an_offense_when_yield_is_not_inside_block"
+source = '''
+def m
+  yield i
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_explicitblockargument_registers_an_offense_and_corrects_when_yield_inside_block_has_no_arguments"
+source = '''
+def m
+  3.times { yield }
+end
+'''
+corrected = '''
+def m(&block)
+  3.times(&block)
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 19
+message = "Consider using explicit block argument in the surrounding method's signature over `yield`."
+
+[[tests]]
+name = "rubocop_cop_style_explicitblockargument_registers_an_offense_and_corrects_when_yield_is_inside_block_of_super"
+source = '''
+def do_something
+  super { yield }
+end
+'''
+corrected = '''
+def do_something(&block)
+  super(&block)
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 17
+message = "Consider using explicit block argument in the surrounding method's signature over `yield`."
+
+[[tests]]
+name = "rubocop_cop_style_explicitblockargument_does_not_register_an_offense_when_yield_is_the_sole_block_body"
+source = '''
+def m
+  items.something do |i|
+    do_something
+    yield i
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_explicitblockargument_does_not_register_an_offense_when_yield_arguments_is_not_a_prefix_of_block_arguments"
+source = '''
+def m
+  items.something { |i, j, k| yield j, k }
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_explicitblockargument_does_not_register_an_offense_when_there_is_more_than_one_block_argument_and_not_all_are_yielded"
+source = '''
+def m
+  items.something { |i, j| yield i }
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_explicitblockargument_does_not_register_an_offense_when_code_is_called_outside_of_a_method"
+source = '''
+render("partial") do
+  yield
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_explicitblockargument_does_not_add_extra_parens_when_correcting"
+source = '''
+def my_method()
+  foo() { yield }
+end
+'''
+corrected = '''
+def my_method(&block)
+  foo(&block)
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 17
+message = "Consider using explicit block argument in the surrounding method's signature over `yield`."
+
+[[tests]]
+name = "rubocop_cop_style_explicitblockargument_does_not_add_extra_parens_to_super_when_correcting"
+source = '''
+def my_method
+  super() { yield }
+end
+'''
+corrected = '''
+def my_method(&block)
+  super(&block)
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 19
+message = "Consider using explicit block argument in the surrounding method's signature over `yield`."
+
+[[tests]]
+name = "rubocop_cop_style_explicitblockargument_adds_to_the_existing_arguments_when_correcting"
+source = '''
+def my_method(x)
+  foo(x) { yield }
+end
+'''
+corrected = '''
+def my_method(x, &block)
+  foo(x, &block)
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 18
+message = "Consider using explicit block argument in the surrounding method's signature over `yield`."
+
+[[tests]]
+name = "rubocop_cop_style_explicitblockargument_registers_an_offense_when_using_arguments_with_zsuper_in_a_method_definition"
+source = '''
+def my_method(x, y = 42, *args, **options)
+  super { yield }
+end
+'''
+corrected = '''
+def my_method(x, y = 42, *args, **options, &block)
+  super(x, y, *args, **options, &block)
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 17
+message = "Consider using explicit block argument in the surrounding method's signature over `yield`."
+
+[[tests]]
+name = "rubocop_cop_style_explicitblockargument_registers_an_offense_when_using_arguments_with_zsuper_in_a_singleton_method_definition"
+source = '''
+def self.my_method(x, y = 42, *args, **options)
+  super { yield }
+end
+'''
+corrected = '''
+def self.my_method(x, y = 42, *args, **options, &block)
+  super(x, y, *args, **options, &block)
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 17
+message = "Consider using explicit block argument in the surrounding method's signature over `yield`."
+
+[[tests]]
+name = "rubocop_cop_style_explicitblockargument_registers_an_offense_and_corrects_when_there_are_two_methods_with_the_same_implementation_and_name"
+source = '''
+def foo
+  bar { |baz| yield baz }
+end
+
+def foo
+  bar { |baz| yield baz }
+end
+'''
+corrected = '''
+def foo(&block)
+  bar(&block)
+end
+
+def foo(&block)
+  bar(&block)
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 25
+message = "Consider using explicit block argument in the surrounding method's signature over `yield`."
+
+[[tests.offenses]]
+line = 6
+column_start = 2
+column_end = 25
+message = "Consider using explicit block argument in the surrounding method's signature over `yield`."
+
+[[tests]]
+name = "rubocop_cop_style_explicitblockargument_registers_an_offense_when_there_are_nested_method_definitions"
+source = '''
+def foo
+  def bar.baz
+    qux { |quux| yield quux }
+  end
+end
+'''
+corrected = '''
+def foo
+  def bar.baz(&block)
+    qux(&block)
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 4
+column_end = 29
+message = "Consider using explicit block argument in the surrounding method's signature over `yield`."

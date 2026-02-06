@@ -1,0 +1,129 @@
+cop = "Style/IfUnlessModifierOfIfUnless"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_ifunlessmodifierofifunless_provides_a_good_error_message"
+source = '''
+condition ? then_part : else_part unless external_condition
+'''
+corrected = '''
+unless external_condition
+condition ? then_part : else_part
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 34
+column_end = 40
+message = "Avoid modifier `unless` after another conditional."
+
+[[tests]]
+name = "rubocop_cop_style_ifunlessmodifierofifunless_ternary_with_modifier_registers_an_offense_and_corrects"
+source = '''
+condition ? then_part : else_part unless external_condition
+'''
+corrected = '''
+unless external_condition
+condition ? then_part : else_part
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 34
+column_end = 40
+message = "Avoid modifier `unless` after another conditional."
+
+[[tests]]
+name = "rubocop_cop_style_ifunlessmodifierofifunless_using_nested_mofifier_registers_an_offense_and_corrects"
+source = '''
+condition ? then_part : else_part if inner_condition if outer_condition
+'''
+corrected = '''
+if outer_condition
+if inner_condition
+condition ? then_part : else_part
+end
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 53
+column_end = 55
+message = "Avoid modifier `if` after another conditional."
+
+[[tests.offenses]]
+line = 1
+column_start = 34
+column_end = 36
+message = "Avoid modifier `if` after another conditional."
+
+[[tests]]
+name = "rubocop_cop_style_ifunlessmodifierofifunless_conditional_with_modifier_registers_an_offense_and_corrects"
+source = '''
+unless condition
+  then_part
+end if external_condition
+'''
+corrected = '''
+if external_condition
+unless condition
+  then_part
+end
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 4
+column_end = 6
+message = "Avoid modifier `if` after another conditional."
+
+[[tests]]
+name = "rubocop_cop_style_ifunlessmodifierofifunless_unless_else_with_modifier_registers_an_offense_and_corrects"
+source = '''
+unless condition
+  then_part
+else
+  else_part
+end if external_condition
+'''
+corrected = '''
+if external_condition
+unless condition
+  then_part
+else
+  else_part
+end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 4
+column_end = 6
+message = "Avoid modifier `if` after another conditional."
+
+[[tests]]
+name = "rubocop_cop_style_ifunlessmodifierofifunless_conditional_with_modifier_in_body_accepts"
+source = '''
+if condition
+  then_part if maybe?
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_ifunlessmodifierofifunless_nested_conditionals_accepts"
+source = '''
+if external_condition
+  if condition
+    then_part
+  end
+end
+'''
+offenses = []

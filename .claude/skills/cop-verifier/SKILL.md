@@ -7,7 +7,7 @@ allowed-tools: Bash(cargo run --bin fixture_stats *), Bash(curl *), Read, Edit, 
 
 # Cop Verifier
 
-Verify and fix interpolated test fixtures that were extracted from RuboCop's RSpec test suite. Tests marked `interpolated: true` contain unresolved Ruby string interpolation (`#{...}`) or config values (`$UNRESOLVED:`) that need manual verification.
+Verify and fix interpolated test fixtures that were extracted from RuboCop's RSpec test suite. Tests marked `interpolated = true` contain unresolved Ruby string interpolation (`#{...}`) or config values (`$UNRESOLVED:`) that need manual verification.
 
 ## Commands
 
@@ -38,30 +38,32 @@ Use `/cop-verifier <command>`:
 
 ## What "Verification" Means
 
-Tests marked `interpolated: true` contain Ruby code/values that weren't fully resolved during extraction:
+Tests marked `interpolated = true` contain Ruby code/values that weren't fully resolved during extraction:
 
 ### 1. Source Code Interpolation (`#{...}`)
 
-```yaml
+```toml
 # BEFORE: Unresolved - what is #{method}?
-source: |
-  foo.#{method}
+source = '''
+foo.#{method}
+'''
 
 # AFTER: Resolved from original spec
-source: |
-  foo.upcase
+source = '''
+foo.upcase
+'''
 ```
 
 ### 2. Config Values (`$UNRESOLVED:variable`)
 
-```yaml
+```toml
 # BEFORE: What is $UNRESOLVED:enforced_style?
-config:
-  EnforcedStyle: $UNRESOLVED:enforced_style
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:enforced_style"
 
 # AFTER: Found in spec's let(:enforced_style) { 'double_quotes' }
-config:
-  EnforcedStyle: double_quotes
+[tests.config]
+EnforcedStyle = "double_quotes"
 ```
 
 ## Handling Commands
@@ -72,7 +74,7 @@ Search for unverified tests and display them:
 
 ```bash
 # Find files with interpolated tests
-grep -r "interpolated: true" tests/fixtures/ | grep -v "verified: true" | head -50
+grep -r "interpolated = true" tests/fixtures/ | grep -v "verified = true" | head -50
 
 # Or use the stats tool with verbose mode
 cargo run --bin fixture_stats -- --verbose
@@ -86,10 +88,10 @@ cargo run --bin fixture_stats
 
 ### For `verify <dept/cop>` command:
 
-1. **Read the YAML fixture:**
+1. **Read the TOML fixture:**
 
    ```bash
-   cat tests/fixtures/{dept}/{cop}.yaml
+   cat tests/fixtures/{dept}/{cop}.toml
    ```
 
 2. **Fetch the original RuboCop spec:**
@@ -98,17 +100,17 @@ cargo run --bin fixture_stats
    curl -s "https://raw.githubusercontent.com/rubocop/rubocop/master/spec/rubocop/cop/{dept}/{cop}_spec.rb"
    ```
 
-3. **For each test with `interpolated: true` and `verified: false`:**
+3. **For each test with `interpolated = true` and `verified = false`:**
    - Find the corresponding `it` block in the spec
    - Look for `let(:variable)` blocks that define interpolated values
    - Resolve all `#{...}` in source/message/offenses
    - Replace all `$UNRESOLVED:var` in config with actual values
 
-4. **Update the YAML file:**
+4. **Update the TOML file:**
    - Replace interpolated source with resolved values
    - Replace `$UNRESOLVED:var` config values
-   - Change `verified: false` to `verified: true`
-   - Keep `interpolated: true` as a marker
+   - Change `verified = false` to `verified = true`
+   - Keep `interpolated = true` as a marker
 
 ### For `verify-test` command:
 
@@ -116,19 +118,23 @@ Same as above but for a single test case.
 
 ## Verification Workflow
 
-### Step 1: Read the YAML fixture
+### Step 1: Read the TOML fixture
 
-```yaml
-# tests/fixtures/style/string_literals.yaml
-- name: some_test_with_interpolation
-  source: |
-    "#{string}"
-  offenses:
-    - message: "Use #{style} quotes"
-  config:
-    EnforcedStyle: $UNRESOLVED:enforced_style
-  interpolated: true
-  verified: false
+```toml
+# tests/fixtures/style/string_literals.toml
+[[tests]]
+name = "some_test_with_interpolation"
+source = '''
+"#{string}"
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+message = "Use #{style} quotes"
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:enforced_style"
 ```
 
 ### Step 2: Fetch original RuboCop spec
@@ -153,17 +159,21 @@ end
 
 ### Step 3: Resolve values
 
-```yaml
+```toml
 # AFTER verification
-- name: some_test_with_interpolation
-  source: |
-    "hello"
-  offenses:
-    - message: "Use single quotes"
-  config:
-    EnforcedStyle: single_quotes
-  interpolated: true
-  verified: true # Changed from false
+[[tests]]
+name = "some_test_with_interpolation"
+source = '''
+"hello"
+'''
+interpolated = true
+verified = true
+
+[[tests.offenses]]
+message = "Use single quotes"
+
+[tests.config]
+EnforcedStyle = "single_quotes"
 ```
 
 ## Common Patterns in RuboCop Specs
@@ -194,17 +204,6 @@ it_behaves_like 'accepts', 'valid_code'
 # Look for shared_examples_for 'accepts' elsewhere in the file
 ```
 
-## Special Encodings in YAML
-
-The extraction process uses special markers for YAML-incompatible content:
-
-| Marker           | Meaning                      |
-| ---------------- | ---------------------------- |
-| `‹TAB›`          | Literal tab character        |
-| `‹BASE›N‹/BASE›` | Base indentation of N spaces |
-
-When verifying, preserve these markers. The test runner decodes them automatically.
-
 ## Tips
 
 1. **Start with simpler cops** - Some cops have complex shared examples; start with straightforward ones
@@ -219,14 +218,14 @@ When verifying, preserve these markers. The test runner decodes them automatical
    echo 'code_here' | bundle exec rubocop --stdin test.rb --only Dept/CopName
    ```
 
-5. **Keep interpolated: true** - This flag marks the test as originally interpolated for tracking purposes; only change `verified` to `true`
+5. **Keep interpolated = true** - This flag marks the test as originally interpolated for tracking purposes; only change `verified` to `true`
 
 ## Example Session
 
 ```
 > /cop-verifier verify style/method_call_with_args_parentheses
 
-Reading YAML fixture...
+Reading TOML fixture...
 Found 12 interpolated tests needing verification.
 
 Fetching original spec from GitHub...

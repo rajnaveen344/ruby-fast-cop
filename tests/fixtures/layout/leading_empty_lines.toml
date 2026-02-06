@@ -1,0 +1,102 @@
+cop = "Layout/LeadingEmptyLines"
+department = "layout"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_layout_leadingemptylines_allows_blank_lines_without_any_comments_or_code"
+source = '''
+
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_leadingemptylines_accepts_not_having_a_blank_line_before_a_class"
+source = '''
+class Foo
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_leadingemptylines_accepts_not_having_a_blank_line_before_code"
+source = '''
+puts 1
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_leadingemptylines_accepts_not_having_a_blank_line_before_a_comment"
+source = '''
+# something
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_leadingemptylines_registers_an_offense_and_corrects_a_new_line_before_a_class"
+source = '''
+
+class Foo
+end
+'''
+corrected = '''
+class Foo
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 5
+message = "Unnecessary blank line at the beginning of the source."
+
+[[tests]]
+name = "rubocop_cop_layout_leadingemptylines_registers_an_offense_and_corrects_a_new_line_before_code"
+source = '''
+
+puts 1
+'''
+corrected = '''
+puts 1
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 4
+message = "Unnecessary blank line at the beginning of the source."
+
+[[tests]]
+name = "rubocop_cop_layout_leadingemptylines_registers_an_offense_and_corrects_a_new_line_before_a_comment"
+source = '''
+
+# something
+'''
+corrected = '''
+# something
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 11
+message = "Unnecessary blank line at the beginning of the source."
+
+[[tests]]
+name = "rubocop_cop_layout_leadingemptylines_registers_an_offense_and_corrects_multiple_new_lines_before_a_class"
+source = '''
+
+
+class Foo
+end
+'''
+corrected = '''
+class Foo
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 5
+message = "Unnecessary blank line at the beginning of the source."

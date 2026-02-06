@@ -1,0 +1,215 @@
+cop = "Style/ModuleMemberExistenceCheck"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_modulememberexistencecheck"
+source = '''
+x.#{array_returning_method}.include?(method)
+'''
+corrected = '''
+x.#{predicate_method}(method)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 44
+message = "Use `#{predicate_method}(method)` instead."
+
+[[tests]]
+name = "rubocop_cop_style_modulememberexistencecheck"
+source = '''
+x.#{array_returning_method}.include? method
+'''
+corrected = '''
+x.#{predicate_method}(method)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 43
+message = "Use `#{predicate_method}(method)` instead."
+
+[[tests]]
+name = "rubocop_cop_style_modulememberexistencecheck"
+source = '''
+x.#{array_returning_method}.member?(method)
+'''
+corrected = '''
+x.#{predicate_method}(method)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 43
+message = "Use `#{predicate_method}(method)` instead."
+
+[[tests]]
+name = "rubocop_cop_style_modulememberexistencecheck"
+source = '''
+x&.#{array_returning_method}&.include?(method)
+'''
+corrected = '''
+x&.#{predicate_method}(method)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 46
+message = "Use `#{predicate_method}(method)` instead."
+
+[[tests]]
+name = "rubocop_cop_style_modulememberexistencecheck"
+source = '''
+#{array_returning_method}.include?(method)
+'''
+corrected = '''
+#{predicate_method}(method)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 42
+message = "Use `#{predicate_method}(method)` instead."
+
+[[tests]]
+name = "rubocop_cop_style_modulememberexistencecheck"
+source = '''
+x.#{array_returning_method}(false).include?(method)
+'''
+corrected = '''
+x.#{predicate_method}(method, false)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 51
+message = "Use `#{predicate_method}(method, false)` instead."
+
+[[tests]]
+name = "rubocop_cop_style_modulememberexistencecheck"
+source = '''
+x.#{array_returning_method}(true).include?(method)
+'''
+corrected = '''
+x.#{predicate_method}(method)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 50
+message = "Use `#{predicate_method}(method)` instead."
+
+[[tests]]
+name = "rubocop_cop_style_modulememberexistencecheck"
+source = '''
+x.#{array_returning_method}(inherit).include?(method)
+'''
+corrected = '''
+x.#{predicate_method}(method, inherit)
+'''
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 53
+message = "Use `#{predicate_method}(method, inherit)` instead."
+
+[[tests]]
+name = "rubocop_cop_style_modulememberexistencecheck"
+source = '''
+x.#{array_returning_method}(inherit).include?(method)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_modulememberexistencecheck"
+source = '''
+x.#{array_returning_method}(true, false).include?(method)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_modulememberexistencecheck_does_not_register_an_offense_when_passing_more_than_one_argument_to_include"
+source = '''
+x.#{array_returning_method}.include?(foo, bar)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_modulememberexistencecheck_does_not_register_an_offense_when_passing_a_splat_argument_to_include"
+source = '''
+x.#{array_returning_method}.include?(*foo)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_modulememberexistencecheck_does_not_register_an_offense_when_passing_a_kwargs_argument_to_include"
+source = '''
+x.#{array_returning_method}.include?(**foo)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_modulememberexistencecheck_does_not_register_an_offense_when_passing_a_block_argument_to_include"
+source = '''
+x.#{array_returning_method}.include?(&foo)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_modulememberexistencecheck"
+source = '''
+x.#{array_returning_method}(*foo).include?(method)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_modulememberexistencecheck"
+source = '''
+x.#{array_returning_method}.include?(method)
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+AllowedMethods = ["array_returning_method.to_s"]

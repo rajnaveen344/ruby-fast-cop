@@ -1,0 +1,120 @@
+cop = "Style/RedundantCurrentDirectoryInPath"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_redundantcurrentdirectoryinpath_registers_an_offense_when_using_a_current_directory_path_in_require_relative"
+source = '''
+require_relative './path/to/feature'
+'''
+corrected = '''
+require_relative 'path/to/feature'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 18
+column_end = 20
+message = "Remove the redundant current directory path."
+
+[[tests]]
+name = "rubocop_cop_style_redundantcurrentdirectoryinpath_registers_an_offense_when_using_a_current_directory_path_with_string_interpolation_in_require_relative"
+source = '''
+require_relative './path/#{to}/feature'
+'''
+corrected = '''
+require_relative 'path/#{to}/feature'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 18
+column_end = 20
+message = "Remove the redundant current directory path."
+
+[[tests]]
+name = "rubocop_cop_style_redundantcurrentdirectoryinpath_registers_an_offense_when_using_a_complex_current_directory_path_in_require_relative"
+source = '''
+require_relative './//./../path/to/feature'
+'''
+corrected = '''
+require_relative '../path/to/feature'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 18
+column_end = 22
+message = "Remove the redundant current directory path."
+
+[[tests]]
+name = "rubocop_cop_style_redundantcurrentdirectoryinpath_registers_an_offense_when_using_a_current_directory_path_in_require_relative_q"
+source = '''
+require_relative %q(./path/to/feature)
+'''
+corrected = '''
+require_relative %q(path/to/feature)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 20
+column_end = 22
+message = "Remove the redundant current directory path."
+
+[[tests]]
+name = "rubocop_cop_style_redundantcurrentdirectoryinpath_does_not_register_an_offense_when_using_a_parent_directory_path_in_require_relative"
+source = '''
+require_relative '../path/to/feature'
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantcurrentdirectoryinpath_does_not_register_an_offense_when_using_a_path_that_starts_with_a_dot_in_require_relative"
+source = '''
+require_relative '.path'
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantcurrentdirectoryinpath_does_not_register_an_offense_when_not_using_a_one_character_path_in_require_relative"
+source = '''
+require_relative 'p/t/feature'
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantcurrentdirectoryinpath_does_not_register_an_offense_when_not_using_a_current_directory_path_in_require_relative"
+source = '''
+require_relative 'path/to/feature'
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantcurrentdirectoryinpath_does_not_register_an_offense_when_not_using_a_current_directory_path_with_string_interpolation_in_require_relative"
+source = '''
+require_relative "path/#{to}/feature"
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantcurrentdirectoryinpath_does_not_register_an_offense_when_not_using_a_current_directory_path_in_not_require_relative"
+source = '''
+do_something './path/to/feature'
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantcurrentdirectoryinpath_does_not_register_an_offense_when_a_method_with_no_arguments_is_used"
+source = '''
+do_something
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_redundantcurrentdirectoryinpath_does_not_register_an_offense_when_a_require_relative_with_no_arguments_is_used"
+source = '''
+require_relative
+'''
+offenses = []

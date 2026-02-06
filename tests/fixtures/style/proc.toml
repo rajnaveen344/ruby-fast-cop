@@ -1,0 +1,80 @@
+cop = "Style/Proc"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_proc_registers_an_offense_for_a_proc_new_call"
+source = '''
+f = Proc.new { |x| puts x }
+'''
+corrected = '''
+f = proc { |x| puts x }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 12
+message = "Use `proc` instead of `Proc.new`."
+
+[[tests]]
+name = "rubocop_cop_style_proc_registers_an_offense_for_proc_new"
+source = '''
+f = ::Proc.new { |x| puts x }
+'''
+corrected = '''
+f = proc { |x| puts x }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 14
+message = "Use `proc` instead of `Proc.new`."
+
+[[tests]]
+name = "rubocop_cop_style_proc_accepts_the_proc_new_call_without_block"
+source = '''
+p = Proc.new
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_proc_accepts_the_proc_new_call_without_block"
+source = '''
+p = ::Proc.new
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_proc_ruby_2_7_registers_an_offense_for_a_proc_new_call"
+source = '''
+f = Proc.new { puts _1 }
+'''
+corrected = '''
+f = proc { puts _1 }
+'''
+ruby_version = ">= 2.7"
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 12
+message = "Use `proc` instead of `Proc.new`."
+
+[[tests]]
+name = "rubocop_cop_style_proc_ruby_3_4_registers_an_offense_for_a_proc_new_call"
+source = '''
+f = Proc.new { puts it }
+'''
+corrected = '''
+f = proc { puts it }
+'''
+ruby_version = ">= 3.4"
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 12
+message = "Use `proc` instead of `Proc.new`."

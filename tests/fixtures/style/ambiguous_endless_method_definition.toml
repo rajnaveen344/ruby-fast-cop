@@ -1,0 +1,92 @@
+cop = "Style/AmbiguousEndlessMethodDefinition"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_ambiguousendlessmethoddefinition_ruby_3_0_does_not_register_an_offense_for_a_non_endless_method"
+source = '''
+def foo
+end
+'''
+ruby_version = ">= 3.0"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_ambiguousendlessmethoddefinition_ruby_3_0"
+source = '''
+def foo
+end #{operator} bar
+'''
+ruby_version = ">= 3.0"
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_ambiguousendlessmethoddefinition_ruby_3_0_does_not_register_an_offense_when_the_operator_is_already_wrapped_in_parens"
+source = '''
+def foo = (true #{operator} bar)
+'''
+ruby_version = ">= 3.0"
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_ambiguousendlessmethoddefinition_ruby_3_0_does_not_register_an_offense_when_the_method_definition_is_already_wrapped_in_parens"
+source = '''
+(def foo = true) #{operator} bar
+'''
+ruby_version = ">= 3.0"
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_ambiguousendlessmethoddefinition_ruby_3_0"
+source = '''
+#{operator} bar
+  def foo = true
+end
+'''
+ruby_version = ">= 3.0"
+interpolated = true
+verified = false
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_ambiguousendlessmethoddefinition_ruby_3_0"
+source = '''
+def foo = true #{operator} bar
+'''
+corrected = '''
+def foo
+  true
+end #{operator} bar
+'''
+ruby_version = ">= 3.0"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 30
+message = "Avoid using `#{operator}` statements with endless methods."
+
+[[tests]]
+name = "rubocop_cop_style_ambiguousendlessmethoddefinition_ruby_3_0_does_not_register_an_offense_for"
+source = '''
+def foo = true && bar
+'''
+ruby_version = ">= 3.0"
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_ambiguousendlessmethoddefinition_ruby_3_0_does_not_register_an_offense_for"
+source = '''
+def foo = true || bar
+'''
+ruby_version = ">= 3.0"
+offenses = []

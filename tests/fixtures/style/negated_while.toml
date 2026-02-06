@@ -1,0 +1,162 @@
+cop = "Style/NegatedWhile"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_negatedwhile_registers_an_offense_for_while_with_exclamation_point_condition"
+source = '''
+while !a_condition
+  some_method
+end
+some_method while !a_condition
+'''
+corrected = '''
+until a_condition
+  some_method
+end
+some_method until a_condition
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 18
+message = "Favor `until` over `while` for negative conditions."
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 30
+message = "Favor `until` over `while` for negative conditions."
+
+[[tests]]
+name = "rubocop_cop_style_negatedwhile_registers_an_offense_for_until_with_exclamation_point_condition"
+source = '''
+until !a_condition
+  some_method
+end
+some_method until !a_condition
+'''
+corrected = '''
+while a_condition
+  some_method
+end
+some_method while a_condition
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 18
+message = "Favor `while` over `until` for negative conditions."
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 30
+message = "Favor `while` over `until` for negative conditions."
+
+[[tests]]
+name = "rubocop_cop_style_negatedwhile_registers_an_offense_for_while_with_not_condition"
+source = '''
+while (not a_condition)
+  some_method
+end
+some_method while not a_condition
+'''
+corrected = '''
+until (a_condition)
+  some_method
+end
+some_method until a_condition
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 23
+message = "Favor `until` over `while` for negative conditions."
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 33
+message = "Favor `until` over `while` for negative conditions."
+
+[[tests]]
+name = "rubocop_cop_style_negatedwhile_accepts_a_while_where_only_part_of_the_condition_is_negated"
+source = '''
+while !a_condition && another_condition
+  some_method
+end
+while not a_condition or another_condition
+  some_method
+end
+some_method while not a_condition or other_cond
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_negatedwhile_accepts_a_while_where_the_condition_is_doubly_negated"
+source = '''
+while !!a_condition
+  some_method
+end
+some_method while !!a_condition
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_negatedwhile_autocorrects_by_replacing_while_not_with_until"
+source = '''
+something while !x.even?
+something while(!x.even?)
+'''
+corrected = '''
+something until x.even?
+something until(x.even?)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 24
+message = "Favor `until` over `while` for negative conditions."
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 25
+message = "Favor `until` over `while` for negative conditions."
+
+[[tests]]
+name = "rubocop_cop_style_negatedwhile_autocorrects_by_replacing_until_not_with_while"
+source = '''
+something until !x.even?
+'''
+corrected = '''
+something while x.even?
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 24
+message = "Favor `while` over `until` for negative conditions."
+
+[[tests]]
+name = "rubocop_cop_style_negatedwhile_does_not_blow_up_for_empty_while_condition"
+source = '''
+while ()
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_negatedwhile_does_not_blow_up_for_empty_until_condition"
+source = '''
+until ()
+end
+'''
+offenses = []

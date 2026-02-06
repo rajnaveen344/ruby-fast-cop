@@ -1,0 +1,58 @@
+cop = "Lint/Loop"
+department = "lint"
+severity = "warning"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_lint_loop_registers_an_offense_and_corrects_for_begin_end_while"
+source = '''
+begin
+  something
+end while test
+'''
+corrected = '''
+loop do
+  something
+break unless test
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 4
+column_end = 9
+message = "Use `Kernel#loop` with `break` rather than `begin/end/until`(or `while`)."
+
+[[tests]]
+name = "rubocop_cop_lint_loop_registers_an_offense_for_begin_end_until"
+source = '''
+begin
+  something
+end until test
+'''
+corrected = '''
+loop do
+  something
+break if test
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 4
+column_end = 9
+message = "Use `Kernel#loop` with `break` rather than `begin/end/until`(or `while`)."
+
+[[tests]]
+name = "rubocop_cop_lint_loop_accepts_loop_break_unless"
+source = '''
+loop do; one; two; break unless test; end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_loop_accepts_loop_break_if"
+source = '''
+loop do; one; two; break if test; end
+'''
+offenses = []

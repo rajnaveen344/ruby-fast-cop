@@ -1,0 +1,63 @@
+cop = "Style/ArrayJoin"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_arrayjoin_registers_an_offense_for_an_array_followed_by_string"
+source = '''
+%w(one two three) * ", "
+'''
+corrected = '''
+%w(one two three).join(", ")
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 18
+column_end = 19
+message = "Favor `Array#join` over `Array#*`."
+
+[[tests]]
+name = "rubocop_cop_style_arrayjoin_autocorrects_to_join_when_there_are_no_spaces"
+source = '''
+%w(one two three)*", "
+'''
+corrected = '''
+%w(one two three).join(", ")
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 18
+message = "Favor `Array#join` over `Array#*`."
+
+[[tests]]
+name = "rubocop_cop_style_arrayjoin_autocorrects_to_join_when_setting_to_a_variable"
+source = '''
+foo = %w(one two three)*", "
+'''
+corrected = '''
+foo = %w(one two three).join(", ")
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 23
+column_end = 24
+message = "Favor `Array#join` over `Array#*`."
+
+[[tests]]
+name = "rubocop_cop_style_arrayjoin_does_not_register_an_offense_for_numbers"
+source = '''
+%w(one two three) * 4
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_style_arrayjoin_does_not_register_an_offense_for_ambiguous_cases"
+source = '''
+%w(one two three) * test
+'''
+offenses = []

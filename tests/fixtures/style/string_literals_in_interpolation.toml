@@ -1,0 +1,211 @@
+cop = "Style/StringLiteralsInInterpolation"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_stringliteralsininterpolation_configured_with_single_quotes_preferred_registers_an_offense_for_double_quotes_within_embedded_expression_in_a_string"
+source = '''
+"#{"A"}"
+'''
+corrected = '''
+"#{'A'}"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 6
+message = "Prefer single-quoted strings inside interpolations."
+
+[tests.config]
+EnforcedStyle = "single_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliteralsininterpolation_configured_with_single_quotes_preferred_registers_an_offense_for_double_quotes_within_embedded_expression_in_a_symbol"
+source = '''
+:"#{"A"}"
+'''
+corrected = '''
+:"#{'A'}"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 7
+message = "Prefer single-quoted strings inside interpolations."
+
+[tests.config]
+EnforcedStyle = "single_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliteralsininterpolation_configured_with_single_quotes_preferred_registers_an_offense_for_double_quotes_within_embedded_expression_in_a_heredoc_string"
+source = '''
+<<RUBY
+#{"A"}
+RUBY
+'''
+corrected = '''
+<<RUBY
+#{'A'}
+RUBY
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 5
+message = "Prefer single-quoted strings inside interpolations."
+
+[tests.config]
+EnforcedStyle = "single_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliteralsininterpolation_configured_with_single_quotes_preferred_registers_an_offense_for_double_quotes_within_a_regexp"
+source = '''
+/foo#{"sar".sub("s", 'b')}/
+'''
+corrected = '''
+/foo#{'sar'.sub('s', 'b')}/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 11
+message = "Prefer single-quoted strings inside interpolations."
+
+[[tests.offenses]]
+line = 1
+column_start = 16
+column_end = 19
+message = "Prefer single-quoted strings inside interpolations."
+
+[tests.config]
+EnforcedStyle = "single_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliteralsininterpolation_configured_with_single_quotes_preferred_accepts_double_quotes_on_a_static_string"
+source = '''
+"A"
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "single_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliteralsininterpolation_configured_with_single_quotes_preferred_accepts_double_quotes_on_a_broken_static_string"
+source = '''
+"A" \
+  "B"
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "single_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliteralsininterpolation_configured_with_single_quotes_preferred_accepts_double_quotes_on_static_strings_within_a_method"
+source = '''
+def m
+  puts "A"
+  puts "B"
+end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "single_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliteralsininterpolation_configured_with_single_quotes_preferred_can_handle_a_built_in_constant_parsed_as_string"
+source = '''
+if __FILE__ == $PROGRAM_NAME
+end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "single_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliteralsininterpolation_configured_with_single_quotes_preferred_can_handle_character_literals"
+source = '''
+a = ?/
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "single_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliteralsininterpolation_configured_with_double_quotes_preferred_registers_an_offense_for_single_quotes_within_embedded_expression_in_a_string"
+source = '''
+"#{'A'}"
+'''
+corrected = '''
+"#{"A"}"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 6
+message = "Prefer double-quoted strings inside interpolations."
+
+[tests.config]
+EnforcedStyle = "double_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliteralsininterpolation_configured_with_double_quotes_preferred_registers_an_offense_for_single_quotes_within_embedded_expression_in_a_symbol"
+source = '''
+:"#{'A'}"
+'''
+corrected = '''
+:"#{"A"}"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 7
+message = "Prefer double-quoted strings inside interpolations."
+
+[tests.config]
+EnforcedStyle = "double_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliteralsininterpolation_configured_with_double_quotes_preferred_registers_an_offense_for_single_quotes_within_embedded_expression_in_a_heredoc_string"
+source = '''
+<<RUBY
+#{'A'}
+RUBY
+'''
+corrected = '''
+<<RUBY
+#{"A"}
+RUBY
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 5
+message = "Prefer double-quoted strings inside interpolations."
+
+[tests.config]
+EnforcedStyle = "double_quotes"
+
+[[tests]]
+name = "rubocop_cop_style_stringliteralsininterpolation_when_configured_with_a_bad_value_fails"
+source = '''
+a = "#{"b"}"
+'''
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+EnforcedStyle = "$UNRESOLVED:other"

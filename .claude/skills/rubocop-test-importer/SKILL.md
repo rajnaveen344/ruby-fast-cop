@@ -1,6 +1,6 @@
 ---
 name: rubocop-test-importer
-description: Import and validate RuboCop test fixtures. Use for syncing tests from RuboCop specs, checking coverage, fixing invalid YAML files, or manually importing specific cops.
+description: Import and validate RuboCop test fixtures. Use for syncing tests from RuboCop specs, checking coverage, fixing invalid TOML files, or manually importing specific cops.
 argument-hint: "[status|sync|download|validate|fix <dept/cop>]"
 allowed-tools: Bash(ruby *), Bash(chmod *), Bash(./scripts/*), Bash(find *), Bash(grep *), Bash(wc *), Read, Write, Glob
 hooks:
@@ -20,10 +20,10 @@ Use `/rubocop-test-importer <command>`:
 | Command          | Description                                |
 | ---------------- | ------------------------------------------ |
 | `status`         | Show current sync status and invalid files |
-| `sync`           | Download specs and sync all tests to YAML  |
+| `sync`           | Download specs and sync all tests to TOML  |
 | `download`       | Only download RuboCop specs (no sync)      |
 | `validate`       | Run validation to check for issues         |
-| `fix <dept/cop>` | Manually fix a specific invalid YAML file  |
+| `fix <dept/cop>` | Manually fix a specific invalid TOML file  |
 
 ## Quick Start
 
@@ -43,9 +43,9 @@ Use `/rubocop-test-importer <command>`:
 All scripts are in `.claude/skills/rubocop-test-importer/scripts/`:
 
 - `download_rubocop_specs.sh` - Downloads RuboCop specs via sparse git checkout
-- `sync_rubocop_tests.rb` - Extracts tests from RSpec to YAML fixtures
-- `validate_test_coverage.rb` - Validates all YAML files and reports issues
-- `show_spec_for_manual_sync.rb` - Shows spec content for manual YAML creation
+- `sync_rubocop_tests.rb` - Extracts tests from RSpec to TOML fixtures
+- `validate_test_coverage.rb` - Validates all TOML files and reports issues
+- `show_spec_for_manual_sync.rb` - Shows spec content for manual TOML creation
 
 ## Handling Commands
 
@@ -79,42 +79,54 @@ ruby .claude/skills/rubocop-test-importer/scripts/validate_test_coverage.rb
 
 1. Run: `ruby .claude/skills/rubocop-test-importer/scripts/show_spec_for_manual_sync.rb <dept/cop>`
 2. Read the RSpec file shown
-3. Create a valid YAML file at `tests/fixtures/<dept>/<cop>.yaml`
-4. Include `# NOTE: This file was manually synced` comment
+3. Create a valid TOML file at `tests/fixtures/<dept>/<cop>.toml`
+4. Use `'''` literal strings for source/corrected (no escaping needed)
 5. Handle edge cases:
-   - Replace literal tabs with spaces or use quoted strings with `\t`
-   - Ensure consistent indentation in source blocks
-   - Escape special YAML characters properly
+   - If source contains `'''`, use basic strings with escaping instead
+   - Use `base_indent = N` if source has decreasing indentation
 
-## YAML Format
+## TOML Format
 
-```yaml
-cop: Department/CopName
-department: department
-severity: convention # or warning, error, fatal
-implemented: false # set true when cop is implemented in Rust
+```toml
+cop = "Department/CopName"
+department = "department"
+severity = "convention"  # or warning, error, fatal
+implemented = false      # set true when cop is implemented in Rust
 
-# NOTE: This file was manually synced from RuboCop specs.
+[[tests]]
+name = "descriptive_test_name"
+source = '''
+ruby_code_here
+'''
+offenses = []
 
-tests:
-  - name: descriptive_test_name
-    source: |
-      ruby_code_here
-    offenses:
-      - line: 1
-        column_start: 1
-        column_end: 10
-        message: "Error message"
-    corrected: | # Optional
-      corrected_code
-    config: # Optional
-      EnforcedStyle: something
-    ruby_version: ">= 3.1" # Optional
+[[tests]]
+name = "test_with_offense"
+source = '''
+bad_code_here
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 10
+message = "Error message"
+
+[tests.config]
+EnforcedStyle = "something"
 ```
+
+### Key format rules:
+- `source`/`corrected` use multi-line literal strings (`'''`) — no escaping needed
+- Empty offenses: `offenses = []` (inline)
+- Non-empty offenses: `[[tests.offenses]]` (array of tables)
+- Config: `[tests.config]` sub-table (when present)
+- Optional fields (`corrected`, `config`, `ruby_version`, `interpolated`, `verified`) omitted when not needed
+- `base_indent = N` for source with indentation that was stripped
 
 ## Implemented Cops
 
-These cops have `implemented: true` in their YAML:
+These cops have `implemented = true` in their TOML:
 
 - Lint/Debugger
 - Lint/AssignmentInCondition

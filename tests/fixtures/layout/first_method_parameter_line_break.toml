@@ -1,0 +1,185 @@
+cop = "Layout/FirstMethodParameterLineBreak"
+department = "layout"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_layout_firstmethodparameterlinebreak_registers_an_offense_and_corrects_params_listed_on_the_first_line"
+source = '''
+def foo(bar,
+  baz)
+  do_something
+end
+'''
+corrected = '''
+def foo(
+bar,
+  baz)
+  do_something
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 11
+message = "Add a line break before the first parameter of a multi-line method parameter list."
+
+[[tests]]
+name = "rubocop_cop_layout_firstmethodparameterlinebreak_registers_an_offense_and_corrects_params_on_first_line_of_singleton_method"
+source = '''
+def self.foo(bar,
+  baz)
+  do_something
+end
+'''
+corrected = '''
+def self.foo(
+bar,
+  baz)
+  do_something
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 16
+message = "Add a line break before the first parameter of a multi-line method parameter list."
+
+[[tests]]
+name = "rubocop_cop_layout_firstmethodparameterlinebreak_accepts_params_listed_on_a_single_line"
+source = '''
+def foo(bar, baz, bing)
+  do_something
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_firstmethodparameterlinebreak_accepts_params_without_parens"
+source = '''
+def foo bar,
+  baz
+  do_something
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_firstmethodparameterlinebreak_accepts_single_line_methods"
+source = '''
+def foo(bar, baz) ; bing ; end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_firstmethodparameterlinebreak_accepts_methods_without_params"
+source = '''
+def foo
+  bing
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_layout_firstmethodparameterlinebreak_registers_an_offense_and_corrects_params_with_default_values"
+source = '''
+def foo(bar = [],
+  baz = 2)
+  do_something
+end
+'''
+corrected = '''
+def foo(
+bar = [],
+  baz = 2)
+  do_something
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 16
+message = "Add a line break before the first parameter of a multi-line method parameter list."
+
+[[tests]]
+name = "rubocop_cop_layout_firstmethodparameterlinebreak_last_element_can_be_multiline_ignores_last_argument_that_value_is_a_multiline_hash"
+source = '''
+def foo(bar, baz = {
+  a: b
+})
+  do_something
+end
+'''
+offenses = []
+
+[tests.config]
+AllowMultilineFinalElement = true
+
+[[tests]]
+name = "rubocop_cop_layout_firstmethodparameterlinebreak_last_element_can_be_multiline_ignores_single_argument_that_value_is_a_multiline_hash"
+source = '''
+def foo(bar = {
+  a: b
+})
+  do_something
+end
+'''
+offenses = []
+
+[tests.config]
+AllowMultilineFinalElement = true
+
+[[tests]]
+name = "rubocop_cop_layout_firstmethodparameterlinebreak_last_element_can_be_multiline_registers_and_corrects_parameters_that_value_is_a_multiline_hashes_and_is_not_the_last_parameter"
+source = '''
+def foo(bar, baz = {
+  a: b
+}, qux = false)
+  do_something
+end
+'''
+corrected = '''
+def foo(
+bar, baz = {
+  a: b
+}, qux = false)
+  do_something
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 11
+message = "Add a line break before the first parameter of a multi-line method parameter list."
+
+[tests.config]
+AllowMultilineFinalElement = true
+
+[[tests]]
+name = "rubocop_cop_layout_firstmethodparameterlinebreak_last_element_can_be_multiline_registers_and_corrects_last_parameter_that_starts_on_another_line"
+source = '''
+def foo(bar, baz,
+  qux = false)
+  do_something
+end
+'''
+corrected = '''
+def foo(
+bar, baz,
+  qux = false)
+  do_something
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 11
+message = "Add a line break before the first parameter of a multi-line method parameter list."
+
+[tests.config]
+AllowMultilineFinalElement = true

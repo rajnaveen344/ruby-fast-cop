@@ -1,0 +1,183 @@
+cop = "Style/NumberedParametersLimit"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_style_numberedparameterslimit_with_ruby_2_7_does_not_register_an_offense_for_a_normal_block_with_too_many_parameters"
+source = '''
+foo { |a, b, c, d, e, f, g| do_something(a,b,c,d,e,f,g) }
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+Max = "$UNRESOLVED:max"
+
+[[tests]]
+name = "rubocop_cop_style_numberedparameterslimit_with_ruby_2_7_does_not_register_an_offense_for_a_numblock_with_fewer_than_max_parameters"
+source = '''
+foo { do_something(_1) }
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+Max = "$UNRESOLVED:max"
+
+[[tests]]
+name = "rubocop_cop_style_numberedparameterslimit_with_ruby_2_7_does_not_register_an_offense_for_a_numblock_with_exactly_max_parameters"
+source = '''
+foo { do_something(_1, _2) }
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+Max = "$UNRESOLVED:max"
+
+[[tests]]
+name = "rubocop_cop_style_numberedparameterslimit_with_ruby_2_7_when_there_are_more_than_max_numbered_parameters_registers_an_offense_for_a_single_line_numblock"
+source = '''
+foo { do_something(_1, _2, _3, _4, _5) }
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 40
+message = "Avoid using more than 2 numbered parameters; 5 detected."
+
+[tests.config]
+Max = "$UNRESOLVED:max"
+
+[[tests]]
+name = "rubocop_cop_style_numberedparameterslimit_with_ruby_2_7_when_there_are_more_than_max_numbered_parameters_registers_an_offense_for_a_multiline_numblock"
+source = '''
+foo do
+  do_something(_1, _2, _3, _4, _5)
+end
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Avoid using more than 2 numbered parameters; 5 detected."
+
+[tests.config]
+Max = "$UNRESOLVED:max"
+
+[[tests]]
+name = "rubocop_cop_style_numberedparameterslimit_with_ruby_2_7_when_configuring_max_does_not_register_an_offense_when_there_are_not_too_many_numbered_params"
+source = '''
+foo { do_something(_1, _2, _3, _4, _5) }
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+Max = "$UNRESOLVED:max"
+
+[[tests]]
+name = "rubocop_cop_style_numberedparameterslimit_with_ruby_2_7_when_max_is_1_does_not_register_an_offense_when_only_numbered_parameter_1_is_used_once"
+source = '''
+foo { do_something(_1) }
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+Max = "$UNRESOLVED:max"
+
+[[tests]]
+name = "rubocop_cop_style_numberedparameterslimit_with_ruby_2_7_when_max_is_1_does_not_register_an_offense_when_only_numbered_parameter_1_is_used_twice"
+source = '''
+foo { do_something(_1, _1) }
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+Max = "$UNRESOLVED:max"
+
+[[tests]]
+name = "rubocop_cop_style_numberedparameterslimit_with_ruby_2_7_when_max_is_1_does_not_register_an_offense_when_only_numbered_parameter_9_is_used_once"
+source = '''
+foo { do_something(_9) }
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+Max = "$UNRESOLVED:max"
+
+[[tests]]
+name = "rubocop_cop_style_numberedparameterslimit_with_ruby_2_7_when_max_is_1_does_not_register_an_offense_when_using_numbered_parameter_with_underscored_local_variable"
+source = '''
+_lvar = 42
+foo { do_something(_2, _lvar) }
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+offenses = []
+
+[tests.config]
+Max = "$UNRESOLVED:max"
+
+[[tests]]
+name = "rubocop_cop_style_numberedparameterslimit_with_ruby_2_7_when_max_is_1_uses_the_right_offense_message"
+source = '''
+foo { do_something(_1, _2, _3, _4, _5) }
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 40
+message = "Avoid using more than 1 numbered parameter; 5 detected."
+
+[tests.config]
+Max = "$UNRESOLVED:max"
+
+[[tests]]
+name = "rubocop_cop_style_numberedparameterslimit_with_ruby_2_7_sets_max_properly_for_auto_gen_config"
+source = '''
+foo { do_something(_1, _2, _3, _4, _5) }
+'''
+ruby_version = ">= 2.7"
+interpolated = true
+verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 40
+message = "Avoid using more than 2 numbered parameters; 5 detected."
+
+[tests.config]
+Max = "$UNRESOLVED:max"

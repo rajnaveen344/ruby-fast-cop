@@ -1,0 +1,559 @@
+cop = "Lint/ConstantReassignment"
+department = "lint"
+severity = "warning"
+implemented = false
+
+[[tests]]
+name = "rubocop_cop_lint_constantreassignment_registers_an_offense_when_reassigning_a_constant_on_top_level_namespace"
+source = '''
+FOO = :bar
+FOO = :baz
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 10
+message = "Constant `FOO` is already assigned in this namespace."
+
+[[tests]]
+name = "rubocop_cop_lint_constantreassignment_registers_an_offense_when_reassigning_a_constant_on_top_level_namespace_referencing_self"
+source = '''
+self::FOO = :bar
+self::FOO = :baz
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 16
+message = "Constant `FOO` is already assigned in this namespace."
+
+[[tests]]
+name = "rubocop_cop_lint_constantreassignment_registers_an_offense_when_reassigning_a_constant_in_a_class"
+source = '''
+class A
+  FOO = :bar
+  FOO = :baz
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 12
+message = "Constant `FOO` is already assigned in this namespace."
+
+[[tests]]
+name = "rubocop_cop_lint_constantreassignment_registers_an_offense_when_reassigning_a_constant_in_a_class_referencing_self"
+source = '''
+class A
+  self::FOO = :bar
+  self::FOO = :baz
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 18
+message = "Constant `FOO` is already assigned in this namespace."
+
+[[tests]]
+name = "rubocop_cop_lint_constantreassignment_registers_an_offense_when_reassigning_a_constant_in_a_module"
+source = '''
+module A
+  FOO = :bar
+  FOO = :baz
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 12
+message = "Constant `FOO` is already assigned in this namespace."
+
+[[tests]]
+name = "rubocop_cop_lint_constantreassignment_registers_an_offense_when_reassigning_a_constant_in_a_module_referencing_self"
+source = '''
+module A
+  self::FOO = :bar
+  self::FOO = :baz
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 18
+message = "Constant `FOO` is already assigned in this namespace."
+
+[[tests]]
+name = "rubocop_cop_lint_constantreassignment_registers_an_offense_when_reassigning_a_constant_by_referencing_a_relative_namespace"
+source = '''
+class A
+  FOO = :bar
+end
+
+A::FOO = :baz
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 0
+column_end = 13
+message = "Constant `FOO` is already assigned in this namespace."
+
+[[tests]]
+name = "rubocop_cop_lint_constantreassignment_registers_an_offense_when_reassigning_a_constant_by_referencing_an_absolute_namespace"
+source = '''
+class A
+  FOO = :bar
+end
+
+::A::FOO = :baz
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 0
+column_end = 15
+message = "Constant `FOO` is already assigned in this namespace."
+
+[[tests]]
+name = "rubocop_cop_lint_constantreassignment_registers_an_offense_when_reassigning_a_constant_by_referencing_a_nested_relative_namespace"
+source = '''
+module A
+  class B
+    FOO = :bar
+  end
+end
+
+A::B::FOO = :baz
+'''
+
+[[tests.offenses]]
+line = 7
+column_start = 0
+column_end = 16
+message = "Constant `FOO` is already assigned in this namespace."
+
+[[tests]]
+name = "rubocop_cop_lint_constantreassignment_registers_an_offense_when_reassigning_a_constant_by_referencing_a_nested_absolute_namespace"
+source = '''
+module A
+  class B
+    FOO = :bar
+  end
+end
+
+::A::B::FOO = :baz
+'''
+
+[[tests.offenses]]
+line = 7
+column_start = 0
+column_end = 18
+message = "Constant `FOO` is already assigned in this namespace."
+
+[[tests]]
+name = "rubocop_cop_lint_constantreassignment_registers_an_offense_when_reassigning_a_top_level_constant_assigned_under_a_different_namespace"
+source = '''
+class A
+  ::FOO = :bar
+end
+
+FOO = :baz
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 0
+column_end = 10
+message = "Constant `FOO` is already assigned in this namespace."
+
+[[tests]]
+name = "rubocop_cop_lint_constantreassignment_registers_an_offense_when_reassigning_a_class_constant_from_a_module"
+source = '''
+module A
+  class B
+    FOO = :bar
+  end
+
+  B::FOO = :baz
+end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 2
+column_end = 15
+message = "Constant `FOO` is already assigned in this namespace."
+
+[[tests]]
+name = "rubocop_cop_lint_constantreassignment_registers_an_offense_when_reassigning_a_constant_in_a_reopened_class"
+source = '''
+module A
+  class B
+    FOO = :bar
+  end
+
+  class B
+    FOO = :baz
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 7
+column_start = 4
+column_end = 14
+message = "Constant `FOO` is already assigned in this namespace."
+
+[[tests]]
+name = "rubocop_cop_lint_constantreassignment_registers_an_offense_when_reassigning_a_constant_within_another_constant"
+source = '''
+class A
+  ALL = [
+    FOO = :a,
+    BAR = :b,
+    BAZ = :c,
+    FOO = :d,
+  ]
+end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 4
+column_end = 12
+message = "Constant `FOO` is already assigned in this namespace."
+
+[[tests]]
+name = "rubocop_cop_lint_constantreassignment_registers_an_offense_when_reassigning_a_constant_within_another_constant_with_freeze"
+source = '''
+class A
+  ALL = [
+    FOO = :a,
+    BAR = :b,
+    BAZ = :c,
+    FOO = :d,
+  ].freeze
+end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 4
+column_end = 12
+message = "Constant `FOO` is already assigned in this namespace."
+
+[[tests]]
+name = "rubocop_cop_lint_constantreassignment_registers_an_offense_when_reassigning_a_constant_within_a_conditionally_defined_class"
+source = '''
+class A
+  FOO = :bar
+  FOO = :baz
+end unless defined?(A)
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 12
+message = "Constant `FOO` is already assigned in this namespace."
+
+[[tests]]
+name = "rubocop_cop_lint_constantreassignment_does_not_register_an_offense_when_using_or_assignment"
+source = '''
+FOO = :bar
+FOO ||= :baz
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_constantreassignment_does_not_register_an_offense_when_assigning_a_constant_with_the_same_name_in_a_different_class"
+source = '''
+class A
+  FOO = :bar
+end
+
+class B
+  FOO = :baz
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_constantreassignment_does_not_register_an_offense_when_assigning_a_constant_with_the_same_name_in_a_different_module"
+source = '''
+module A
+  FOO = :bar
+end
+
+module B
+  FOO = :baz
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_constantreassignment_does_not_register_an_offense_when_assigning_a_constant_with_the_same_name_in_a_class_with_the_same_name_in_a_different_namespace"
+source = '''
+module A
+  class C
+    FOO = :bar
+  end
+end
+
+module B
+  class C
+    FOO = :baz
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_constantreassignment_does_not_register_an_offense_when_assigning_a_constant_with_the_same_name_on_top_level_and_class_namespace"
+source = '''
+FOO = :bar
+
+class A
+  FOO = :baz
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_constantreassignment_does_not_register_an_offense_when_assigning_a_constant_with_the_same_name_on_top_level_and_class_namespace_referencing_self"
+source = '''
+FOO = :bar
+
+class A
+  self::FOO = :baz
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_constantreassignment_does_not_register_an_offense_when_assigning_a_constant_with_the_same_name_on_top_level_and_module_namespace"
+source = '''
+FOO = :bar
+
+module A
+  FOO = :baz
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_constantreassignment_does_not_register_an_offense_when_assigning_a_constant_in_a_namespace_with_the_same_name_but_on_top_level"
+source = '''
+module A
+  FOO = :bar
+  ::FOO = :baz
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_constantreassignment_does_not_register_an_offense_when_assigning_a_constant_with_the_same_name_and_namespace_name_but_on_top_level"
+source = '''
+module A
+  module B
+    FOO = :bar
+  end
+
+  ::B::FOO = :baz
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_constantreassignment_does_not_register_an_offense_when_assigning_a_constant_with_the_same_name_as_top_level_constant_after_remove_const_with_symbol_argument"
+source = '''
+FOO = :bar
+
+class A
+  FOO = :baz
+
+  remove_const :FOO
+
+  FOO = :quux
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_constantreassignment_does_not_register_an_offense_when_assigning_a_constant_with_the_same_name_as_top_level_constant_after_remove_const_with_string_argument"
+source = '''
+FOO = :bar
+
+class A
+  FOO = :baz
+
+  remove_const 'FOO'
+
+  FOO = :quux
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_constantreassignment_does_not_raise_an_error_when_using_remove_const_with_variable_argument"
+source = '''
+class A
+  FOO = :bar
+
+  constant = :FOO
+  remove_const constant
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_constantreassignment_does_not_register_an_offense_when_assigning_a_constant_with_the_same_name_as_top_level_constant_after_self_remove_const"
+source = '''
+FOO = :bar
+
+class A
+  FOO = :baz
+
+  self.remove_const :FOO
+
+  FOO = :quux
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_constantreassignment_does_not_register_an_offense_when_reassigning_a_constant_inside_a_block"
+source = '''
+class A
+  FOO = :bar
+
+  silence_warnings do
+    FOO = :baz
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_constantreassignment_does_not_register_an_offense_when_reassigning_a_constant_inside_a_block_with_multiple_statements"
+source = '''
+class A
+  FOO = :bar
+
+  silence_warnings do
+    FOO = :baz
+    BAR = :quux
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_constantreassignment_does_not_register_an_offense_for_simple_constant_assignment"
+source = '''
+FOO = :bar
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_constantreassignment_does_not_register_an_offense_for_constant_assignment_with_a_condition"
+source = '''
+FOO = :bar
+FOO = :baz unless something
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_constantreassignment_does_not_register_an_offense_for_constant_assignment_within_an_if_else_block"
+source = '''
+if something
+  FOO = :bar
+else
+  FOO = :baz
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_constantreassignment_does_not_register_an_offense_for_constant_assignment_within_an_if_else_block_with_multiple_statements"
+source = '''
+FOO = :bar
+
+if something
+  FOO = :baz
+  FOO = :quux
+else
+  FOO = :baz
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_constantreassignment_does_not_register_an_offense_for_constant_assignment_within_an_if_else_block_with_multiple_statements_inside_a_class"
+source = '''
+class Foo
+  FOO = :bar
+
+  if something
+    FOO = :baz
+    FOO = :quux
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_constantreassignment_does_not_register_an_offense_for_constant_assignment_within_an_if_statement_inside_a_class"
+source = '''
+class Foo
+  if something
+    FOO = :bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_constantreassignment_does_not_register_an_offense_when_reassigning_a_constant_in_a_class_new_block"
+source = '''
+FOO = :bar
+
+Class.new do
+  FOO = :baz
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_constantreassignment_does_not_register_an_offense_when_assigning_a_constant_in_a_begin_rescue_block"
+source = '''
+begin
+  FOO = File.read(filename)
+rescue
+  FOO = nil
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_constantreassignment_does_not_register_an_offense_when_constant_is_reasigned_with_a_variable_path"
+source = '''
+lvar::FOO = 1
+lvar::FOO = 2
+'''
+offenses = []
+
+[[tests]]
+name = "rubocop_cop_lint_constantreassignment_does_not_register_an_offense_when_a_nested_constant_is_reassigned_with_a_variable_path"
+source = '''
+lvar::FOO::BAR = 1
+lvar::FOO::BAR = 2
+'''
+offenses = []
