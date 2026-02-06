@@ -4,51 +4,591 @@ severity = "convention"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_modifier_if_that_does_not_fit_on_one_line_when_layout_linelength_is_enabled_corrects_it_to_normal_form"
+name = "rubocopcopstyleifunlessmodifier_accepts_code_with_eol_comment_since_user_might_want_to_keep_it"
+source = '''
+unless a
+  b # A comment
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_accepts_ifelseend"
+source = '''
+if args.last.is_a? Hash then args.pop else Hash.new end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_accepts_ifelsif"
+source = '''
+if test
+  something
+elsif test2
+  something_else
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_accepts_ifend_followed_by_a_chained_call_using_"
+source = '''
+if test
+  something
+end.inspect
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_accepts_ifend_followed_by_a_chained_call_using__2"
+source = '''
+if test
+  something
+end&.inspect
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_adds_parens_in_autocorrect_when_ifend_used_with__operator"
+source = '''
+a || if b
+  1
+end
+'''
+corrected = '''
+a || (1 if b)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 7
+message = "Favor modifier `if` usage when having a single-line body. Another good alternative is the usage of control flow `&&`/`||`."
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_adds_parens_in_autocorrect_when_ifend_used_with__operator_2"
+source = '''
+a && if b
+  1
+end
+'''
+corrected = '''
+a && (1 if b)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 7
+message = "Favor modifier `if` usage when having a single-line body. Another good alternative is the usage of control flow `&&`/`||`."
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_accepts_ifend_when_used_as_lhs_of_binary_arithmetic"
+source = '''
+if test
+  1
+end + 2
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_behaves_like_condition_modifier_cop_for_a_multiline_if_accepts_it_if_single_line_would_not_fit_on_one_line"
+source = '''
+if aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_behaves_like_condition_modifier_cop_for_a_multiline_if_accepts_it_if_single_line_would_not_fit_on_one_line_and_body_last_argument_is_a_hash_type_with_value_omission"
+source = '''
+if aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb(a:)
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_behaves_like_condition_modifier_cop_for_a_multiline_if_accepts_it_if_body_spans_more_than_one_line"
+source = '''
+if some_condition
+  do_something
+  do_something_else
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_behaves_like_condition_modifier_cop_for_a_multiline_if_corrects_it_if_result_fits_in_one_line"
+source = '''
+if condition
+  do_something
+end
+'''
+corrected = '''
+do_something if condition
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 2
+message = "Favor modifier `if` usage when having a single-line body. Another good alternative is the usage of control flow `&&`/`||`."
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_behaves_like_condition_modifier_cop_for_a_multiline_if_accepts_an_empty_body"
+source = '''
+if cond
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_behaves_like_condition_modifier_cop_for_a_multiline_if_accepts_it_when_condition_has_local_variable_assignment"
+source = '''
+if (var = something)
+  puts var
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_behaves_like_condition_modifier_cop_for_a_multiline_if_corrects_it_when_assignment_is_in_body"
+source = '''
+if true
+  x = 0
+end
+'''
+corrected = '''
+x = 0 if true
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 2
+message = "Favor modifier `if` usage when having a single-line body. Another good alternative is the usage of control flow `&&`/`||`."
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_behaves_like_condition_modifier_cop_for_a_multiline_if_doesnt_break_when_used_as_rhs_of_local_var_assignment"
+source = '''
+a = if b
+  1
+end
+'''
+corrected = '''
+a = (1 if b)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 6
+message = "Favor modifier `if` usage when having a single-line body. Another good alternative is the usage of control flow `&&`/`||`."
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_behaves_like_condition_modifier_cop_for_a_multiline_if_doesnt_break_when_used_as_rhs_of_instance_var_assignment"
+source = '''
+@a = if b
+  1
+end
+'''
+corrected = '''
+@a = (1 if b)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 7
+message = "Favor modifier `if` usage when having a single-line body. Another good alternative is the usage of control flow `&&`/`||`."
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_behaves_like_condition_modifier_cop_for_a_multiline_if_doesnt_break_when_used_as_rhs_of_class_var_assignment"
+source = '''
+@@a = if b
+  1
+end
+'''
+corrected = '''
+@@a = (1 if b)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 8
+message = "Favor modifier `if` usage when having a single-line body. Another good alternative is the usage of control flow `&&`/`||`."
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_behaves_like_condition_modifier_cop_for_a_multiline_if_doesnt_break_when_used_as_rhs_of_constant_assignment"
+source = '''
+A = if b
+  1
+end
+'''
+corrected = '''
+A = (1 if b)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 6
+message = "Favor modifier `if` usage when having a single-line body. Another good alternative is the usage of control flow `&&`/`||`."
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_behaves_like_condition_modifier_cop_for_a_multiline_if_doesnt_break_when_used_as_rhs_of_binary_arithmetic"
+source = '''
+a + if b
+  1
+end
+'''
+corrected = '''
+a + (1 if b)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 6
+message = "Favor modifier `if` usage when having a single-line body. Another good alternative is the usage of control flow `&&`/`||`."
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_behaves_like_condition_modifier_cop_for_a_multiline_if_handles_inline_comments_during_autocorrection"
+source = '''
+if bar # important comment not to be nuked
+  baz
+end
+'''
+corrected = '''
+baz if bar # important comment not to be nuked
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 2
+message = "Favor modifier `if` usage when having a single-line body. Another good alternative is the usage of control flow `&&`/`||`."
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_behaves_like_condition_modifier_cop_for_a_multiline_if_handles_oneline_usage"
+source = '''
+if foo; bar; end
+'''
+corrected = '''
+bar if foo
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 2
+message = "Favor modifier `if` usage when having a single-line body. Another good alternative is the usage of control flow `&&`/`||`."
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_behaves_like_condition_modifier_cop_for_a_multiline_if_when_layoutlinelength_is_disabled_registers_an_offense_even_for_a_long_modifier_statement"
+source = '''
+if foo
+  "This string would make the line longer than eighty characters if combined with the statement."
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 2
+message = "Favor modifier `if` usage when having a single-line body. Another good alternative is the usage of control flow `&&`/`||`."
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_behaves_like_condition_modifier_cop_for_a_multiline_if_accepts_multiline_condition_in_modifier_form_registers_an_offense"
+source = '''
+foo if bar ||
+               baz
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_behaves_like_condition_modifier_cop_for_a_multiline_if_when_there_is_a_comment_on_the_first_line_and_some_code_after_the_end_keyword_does_not_register_an_offense"
+source = '''
+[
+  1, if foo # bar
+       baz
+     end, 3
+]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_behaves_like_condition_modifier_cop_for_a_multiline_unless_accepts_it_if_single_line_would_not_fit_on_one_line"
+source = '''
+unless aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_behaves_like_condition_modifier_cop_for_a_multiline_unless_accepts_it_if_single_line_would_not_fit_on_one_line_and_body_last_argument_is_a_hash_type_with_value_omission"
+source = '''
+unless aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb(a:)
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_behaves_like_condition_modifier_cop_for_a_multiline_unless_accepts_it_if_body_spans_more_than_one_line"
+source = '''
+unless some_condition
+  do_something
+  do_something_else
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_behaves_like_condition_modifier_cop_for_a_multiline_unless_corrects_it_if_result_fits_in_one_line"
+source = '''
+unless condition
+  do_something
+end
+'''
+corrected = '''
+do_something unless condition
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Favor modifier `unless` usage when having a single-line body. Another good alternative is the usage of control flow `&&`/`||`."
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_behaves_like_condition_modifier_cop_for_a_multiline_unless_accepts_an_empty_body"
+source = '''
+unless cond
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_behaves_like_condition_modifier_cop_for_a_multiline_unless_accepts_it_when_condition_has_local_variable_assignment"
+source = '''
+unless (var = something)
+  puts var
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_behaves_like_condition_modifier_cop_for_a_multiline_unless_corrects_it_when_assignment_is_in_body"
+source = '''
+unless true
+  x = 0
+end
+'''
+corrected = '''
+x = 0 unless true
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Favor modifier `unless` usage when having a single-line body. Another good alternative is the usage of control flow `&&`/`||`."
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_behaves_like_condition_modifier_cop_for_a_multiline_unless_doesnt_break_when_used_as_rhs_of_local_var_assignment"
+source = '''
+a = unless b
+  1
+end
+'''
+corrected = '''
+a = (1 unless b)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 10
+message = "Favor modifier `unless` usage when having a single-line body. Another good alternative is the usage of control flow `&&`/`||`."
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_behaves_like_condition_modifier_cop_for_a_multiline_unless_doesnt_break_when_used_as_rhs_of_instance_var_assignment"
+source = '''
+@a = unless b
+  1
+end
+'''
+corrected = '''
+@a = (1 unless b)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 11
+message = "Favor modifier `unless` usage when having a single-line body. Another good alternative is the usage of control flow `&&`/`||`."
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_behaves_like_condition_modifier_cop_for_a_multiline_unless_doesnt_break_when_used_as_rhs_of_class_var_assignment"
+source = '''
+@@a = unless b
+  1
+end
+'''
+corrected = '''
+@@a = (1 unless b)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 12
+message = "Favor modifier `unless` usage when having a single-line body. Another good alternative is the usage of control flow `&&`/`||`."
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_behaves_like_condition_modifier_cop_for_a_multiline_unless_doesnt_break_when_used_as_rhs_of_constant_assignment"
+source = '''
+A = unless b
+  1
+end
+'''
+corrected = '''
+A = (1 unless b)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 10
+message = "Favor modifier `unless` usage when having a single-line body. Another good alternative is the usage of control flow `&&`/`||`."
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_behaves_like_condition_modifier_cop_for_a_multiline_unless_doesnt_break_when_used_as_rhs_of_binary_arithmetic"
+source = '''
+a + unless b
+  1
+end
+'''
+corrected = '''
+a + (1 unless b)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 10
+message = "Favor modifier `unless` usage when having a single-line body. Another good alternative is the usage of control flow `&&`/`||`."
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_behaves_like_condition_modifier_cop_for_a_multiline_unless_handles_inline_comments_during_autocorrection"
+source = '''
+unless bar # important comment not to be nuked
+  baz
+end
+'''
+corrected = '''
+baz unless bar # important comment not to be nuked
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Favor modifier `unless` usage when having a single-line body. Another good alternative is the usage of control flow `&&`/`||`."
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_behaves_like_condition_modifier_cop_for_a_multiline_unless_handles_oneline_usage"
+source = '''
+unless foo; bar; end
+'''
+corrected = '''
+bar unless foo
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Favor modifier `unless` usage when having a single-line body. Another good alternative is the usage of control flow `&&`/`||`."
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_behaves_like_condition_modifier_cop_for_a_multiline_unless_when_layoutlinelength_is_disabled_registers_an_offense_even_for_a_long_modifier_statement"
+source = '''
+unless foo
+  "This string would make the line longer than eighty characters if combined with the statement."
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Favor modifier `unless` usage when having a single-line body. Another good alternative is the usage of control flow `&&`/`||`."
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_behaves_like_condition_modifier_cop_for_a_multiline_unless_accepts_multiline_condition_in_modifier_form_registers_an_offense"
+source = '''
+foo unless bar ||
+               baz
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_behaves_like_condition_modifier_cop_for_a_multiline_unless_when_there_is_a_comment_on_the_first_line_and_some_code_after_the_end_keyword_does_not_register_an_offense"
+source = '''
+[
+  1, unless foo # bar
+       baz
+     end, 3
+]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_modifier_if_that_does_not_fit_on_one_line_when_layoutlinelength_is_enabled_corrects_it_to_normal_form"
 source = '''
 def f
   # Comment 1
-  %{body} if condition # Comment 2
+  puts '                                                           ' if condition # Comment 2
 end
 '''
 corrected = '''
 def f
   # Comment 1
   if condition
-    puts '#{spaces}'
+    puts '                                                           '
   end # Comment 2
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 3
-column_start = 0
-column_end = 34
+column_start = 69
+column_end = 71
 message = "Modifier form of `if` makes the line too long."
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_modifier_if_that_does_not_fit_on_one_line_when_layout_linelength_is_enabled_and_the_long_line_is_allowed_because_allowuri_is_true_accepts"
+name = "rubocopcopstyleifunlessmodifier_modifier_if_that_does_not_fit_on_one_line_when_layoutlinelength_is_enabled_and_the_long_line_is_allowed_because_allowuri_is_true_accepts"
 source = '''
-puts 1 if url == '#{long_url}'
+puts 1 if url == 'https://some.example.com/with/a/rather?long&and=very&complicated=path'
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_modifier_if_that_does_not_fit_on_one_line_when_layout_linelength_is_enabled_and_the_long_line_is_too_long_because_allowuri_is_false_registers_an_offense"
+name = "rubocopcopstyleifunlessmodifier_modifier_if_that_does_not_fit_on_one_line_when_layoutlinelength_is_enabled_and_the_long_line_is_too_long_because_allowuri_is_false_registers_an_offense"
 source = '''
-puts 1 if url == '#{long_url}'
+puts 1 if url == 'https://some.example.com/with/a/rather?long&and=very&complicated=path'
 '''
 corrected = '''
-if url == '#{long_url}'
+if url == 'https://some.example.com/with/a/rather?long&and=very&complicated=path'
   puts 1
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -57,7 +597,7 @@ column_end = 9
 message = "Modifier form of `if` makes the line too long."
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_modifier_if_that_does_not_fit_on_one_line_when_layout_linelength_is_enabled_when_using_multiple_if_modifier_in_the_long_one_line_registers_an_offense"
+name = "rubocopcopstyleifunlessmodifier_modifier_if_that_does_not_fit_on_one_line_when_layoutlinelength_is_enabled_when_using_multiple_if_modifier_in_the_long_one_line_registers_an_offense"
 source = '''
 def f
   return value if items.filter_map { |item| item.do_something if item.something? }
@@ -84,7 +624,7 @@ column_end = 17
 message = "Modifier form of `if` makes the line too long."
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_modifier_if_that_does_not_fit_on_one_line_when_layout_linelength_is_enabled_when_using_a_method_with_heredoc_argument_registers_an_offense"
+name = "rubocopcopstyleifunlessmodifier_modifier_if_that_does_not_fit_on_one_line_when_layoutlinelength_is_enabled_when_using_a_method_with_heredoc_argument_registers_an_offense"
 source = '''
 fooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo(<<~EOS) if condition
   string
@@ -105,7 +645,7 @@ column_end = 71
 message = "Modifier form of `if` makes the line too long."
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_modifier_if_that_does_not_fit_on_one_line_when_layout_linelength_is_enabled_when_variable_assignment_is_used_in_the_branch_body_of_if_modifier_registers_an_offense"
+name = "rubocopcopstyleifunlessmodifier_modifier_if_that_does_not_fit_on_one_line_when_layoutlinelength_is_enabled_when_variable_assignment_is_used_in_the_branch_body_of_if_modifier_registers_an_offense"
 source = '''
 variable = foooooooooooooooooooooooooooooooooooooooooooooooooooooooo if condition
 '''
@@ -122,7 +662,7 @@ column_end = 71
 message = "Modifier form of `if` makes the line too long."
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_modifier_if_that_does_not_fit_on_one_line_when_layout_linelength_is_enabled_when_the_line_is_too_long_due_to_long_comment_with_modifier_registers_an_offense"
+name = "rubocopcopstyleifunlessmodifier_modifier_if_that_does_not_fit_on_one_line_when_layoutlinelength_is_enabled_when_the_line_is_too_long_due_to_long_comment_with_modifier_registers_an_offense"
 source = '''
 some_statement if some_quite_long_condition # The condition might have been long, but this comment is longer. In fact, it is too long for RuboCop
 '''
@@ -138,86 +678,74 @@ column_end = 17
 message = "Modifier form of `if` makes the line too long."
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_modifier_if_that_does_not_fit_on_one_line_when_layout_linelength_is_enabled_allowcopdirectives_and_the_long_line_is_allowed_because_allowcopdirectives_is_true_accepts"
+name = "rubocopcopstyleifunlessmodifier_modifier_if_that_does_not_fit_on_one_line_when_layoutlinelength_is_enabled_allowcopdirectives_and_the_long_line_is_allowed_because_allowcopdirectives_is_true_accepts"
 source = '''
 def f
-  #{body} if condition #{comment}
+  puts '                                                         ' if condition # rubocop:disable Style/For
 end
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_modifier_if_that_does_not_fit_on_one_line_when_layout_linelength_is_enabled_allowcopdirectives_and_the_long_line_is_too_long_because_allowcopdirectives_is_false_registers_an_offense"
+name = "rubocopcopstyleifunlessmodifier_modifier_if_that_does_not_fit_on_one_line_when_layoutlinelength_is_enabled_allowcopdirectives_and_the_long_line_is_too_long_because_allowcopdirectives_is_false_registers_an_offense"
 source = '''
 def f
-  %{body} if condition #{comment}
+  puts '                                                         ' if condition # rubocop:disable Style/For
 end
 '''
 corrected = '''
 def f
-  #{comment}
-  #{body} if condition
+  # rubocop:disable Style/For
+  puts '                                                         ' if condition
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 2
-column_start = 0
-column_end = 33
+column_start = 67
+column_end = 69
 message = "Modifier form of `if` makes the line too long."
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_modifier_if_that_does_not_fit_on_one_line_when_layout_linelength_is_disabled_in_configuration_accepts"
+name = "rubocopcopstyleifunlessmodifier_modifier_if_that_does_not_fit_on_one_line_when_layoutlinelength_is_disabled_in_configuration_accepts"
 source = '''
 def f
-  #{source}
+  puts '                                                           ' if condition
 end
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_modifier_if_that_does_not_fit_on_one_line_when_layout_linelength_is_disabled_with_enable_disable_comments_accepts"
+name = "rubocopcopstyleifunlessmodifier_modifier_if_that_does_not_fit_on_one_line_when_layoutlinelength_is_disabled_with_enabledisable_comments_accepts"
 source = '''
 def f
   # rubocop:disable Layout/LineLength
-  #{source}
+  puts '                                                           ' if condition
   # rubocop:enable Layout/LineLength
 end
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_modifier_if_that_does_not_fit_on_one_line_when_layout_linelength_is_disabled_with_an_eol_comment_accepts"
+name = "rubocopcopstyleifunlessmodifier_modifier_if_that_does_not_fit_on_one_line_when_layoutlinelength_is_disabled_with_an_eol_comment_accepts"
 source = '''
 def f
-  #{source} # rubocop:disable Layout/LineLength
+  puts '                                                           ' if condition # rubocop:disable Layout/LineLength
 end
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_multiline_if_that_fits_on_one_line_registers_an_offense"
+name = "rubocopcopstyleifunlessmodifier_multiline_if_that_fits_on_one_line_registers_an_offense"
 source = '''
-if #{condition}
-  #{body}
+if aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
 
 end
 '''
 corrected = '''
-#{body} if #{condition}
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb if aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -226,7 +754,7 @@ column_end = 2
 message = "Favor modifier `if` usage when having a single-line body. Another good alternative is the usage of control flow `&&`/`||`."
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_multiline_if_that_fits_on_one_line_and_has_two_statements_separated_by_semicolon_accepts"
+name = "rubocopcopstyleifunlessmodifier_multiline_if_that_fits_on_one_line_and_has_two_statements_separated_by_semicolon_accepts"
 source = '''
 if condition
   do_this; do_that
@@ -235,7 +763,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_multiline_if_that_fits_on_one_line_and_has_a_method_call_with_kwargs_splat_registers_an_offense"
+name = "rubocopcopstyleifunlessmodifier_multiline_if_that_fits_on_one_line_and_has_a_method_call_with_kwargs_splat_registers_an_offense"
 source = '''
 if condition
   do_this(**options)
@@ -252,18 +780,16 @@ column_end = 2
 message = "Favor modifier `if` usage when having a single-line body. Another good alternative is the usage of control flow `&&`/`||`."
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_modifier_if_that_does_not_fit_on_one_line_but_is_not_the_only_statement_on_the_line_accepts"
+name = "rubocopcopstyleifunlessmodifier_modifier_if_that_does_not_fit_on_one_line_but_is_not_the_only_statement_on_the_line_accepts"
 source = '''
 def f
-  puts '#{spaces}' if condition; some_method_call
+  puts '                                                           ' if condition; some_method_call
 end
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_multiline_if_that_fits_on_one_line_with_comment_on_first_line_registers_an_offense_and_preserves_comment"
+name = "rubocopcopstyleifunlessmodifier_multiline_if_that_fits_on_one_line_with_comment_on_first_line_registers_an_offense_and_preserves_comment"
 source = '''
 if a # comment
   b
@@ -280,7 +806,7 @@ column_end = 2
 message = "Favor modifier `if` usage when having a single-line body. Another good alternative is the usage of control flow `&&`/`||`."
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_multiline_if_that_fits_on_one_line_with_comment_near_end_accepts"
+name = "rubocopcopstyleifunlessmodifier_multiline_if_that_fits_on_one_line_with_comment_near_end_accepts"
 source = '''
 if a
   b
@@ -293,7 +819,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_short_multiline_if_near_an_else_etc_registers_an_offense"
+name = "rubocopcopstyleifunlessmodifier_short_multiline_if_near_an_else_etc_registers_an_offense"
 source = '''
 if x
   y
@@ -330,7 +856,7 @@ column_end = 2
 message = "Favor modifier `if` usage when having a single-line body. Another good alternative is the usage of control flow `&&`/`||`."
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_multiline_unless_that_fits_on_one_line_registers_an_offense"
+name = "rubocopcopstyleifunlessmodifier_multiline_unless_that_fits_on_one_line_registers_an_offense"
 source = '''
 unless a
   b
@@ -347,34 +873,7 @@ column_end = 6
 message = "Favor modifier `unless` usage when having a single-line body. Another good alternative is the usage of control flow `&&`/`||`."
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_accepts_code_with_eol_comment_since_user_might_want_to_keep_it"
-source = '''
-unless a
-  b # A comment
-end
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_accepts_if_else_end"
-source = '''
-if args.last.is_a? Hash then args.pop else Hash.new end
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_accepts_if_elsif"
-source = '''
-if test
-  something
-elsif test2
-  something_else
-end
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_does_not_register_an_offense_when_using_match_var_in_body"
+name = "rubocopcopstyleifunlessmodifier_using_match_pattern_as_a_oneline_pattern_matching_behaves_like_oneline_pattern_matching_does_not_register_an_offense_when_using_match_var_in_body"
 source = '''
 if [42] in [x]
   x
@@ -383,7 +882,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_does_not_register_an_offense_when_using_some_match_var_in_body"
+name = "rubocopcopstyleifunlessmodifier_using_match_pattern_as_a_oneline_pattern_matching_behaves_like_oneline_pattern_matching_does_not_register_an_offense_when_using_some_match_var_in_body"
 source = '''
 if { x: 1, y: 2 } in { x:, y: }
   a && y
@@ -392,7 +891,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_does_not_register_an_offense_when_not_using_match_var_in_body"
+name = "rubocopcopstyleifunlessmodifier_using_match_pattern_as_a_oneline_pattern_matching_behaves_like_oneline_pattern_matching_does_not_register_an_offense_when_not_using_match_var_in_body"
 source = '''
 if [42] in [x]
   y
@@ -401,7 +900,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_does_not_register_an_offense_when_not_using_any_match_var_in_body"
+name = "rubocopcopstyleifunlessmodifier_using_match_pattern_as_a_oneline_pattern_matching_behaves_like_oneline_pattern_matching_does_not_register_an_offense_when_not_using_any_match_var_in_body"
 source = '''
 if { x: 1, y: 2 } in { x:, y: }
   a && b
@@ -410,27 +909,61 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_when_using_endless_method_definition_does_not_register_an_offense_when_using_method_definition_in_the_branch"
+name = "rubocopcopstyleifunlessmodifier_using_match_pattern_p_as_a_oneline_pattern_matching_behaves_like_oneline_pattern_matching_does_not_register_an_offense_when_using_match_var_in_body"
+source = '''
+if [42] in [x]
+  x
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_using_match_pattern_p_as_a_oneline_pattern_matching_behaves_like_oneline_pattern_matching_does_not_register_an_offense_when_using_some_match_var_in_body"
+source = '''
+if { x: 1, y: 2 } in { x:, y: }
+  a && y
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_using_match_pattern_p_as_a_oneline_pattern_matching_behaves_like_oneline_pattern_matching_does_not_register_an_offense_when_not_using_match_var_in_body"
+source = '''
+if [42] in [x]
+  y
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_using_match_pattern_p_as_a_oneline_pattern_matching_behaves_like_oneline_pattern_matching_does_not_register_an_offense_when_not_using_any_match_var_in_body"
+source = '''
+if { x: 1, y: 2 } in { x:, y: }
+  a && b
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_when_using_endless_method_definition_does_not_register_an_offense_when_using_method_definition_in_the_branch"
 source = '''
 if condition
   def method_name = body
 end
 '''
-ruby_version = ">= 3.0"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_when_using_endless_method_definition_does_not_register_an_offense_when_using_singleton_method_definition_in_the_branch"
+name = "rubocopcopstyleifunlessmodifier_when_using_endless_method_definition_does_not_register_an_offense_when_using_singleton_method_definition_in_the_branch"
 source = '''
 if condition
   def self.method_name = body
 end
 '''
-ruby_version = ">= 3.0"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_when_using_omitted_hash_values_in_an_assignment_registers_an_offense"
+name = "rubocopcopstyleifunlessmodifier_when_using_omitted_hash_values_in_an_assignment_registers_an_offense"
 source = '''
 if condition
   obj[:key] = { foo: }
@@ -439,7 +972,6 @@ end
 corrected = '''
 obj[:key] = { foo: } if condition
 '''
-ruby_version = ">= 3.1"
 
 [[tests.offenses]]
 line = 1
@@ -448,7 +980,7 @@ column_end = 2
 message = "Favor modifier `if` usage when having a single-line body. Another good alternative is the usage of control flow `&&`/`||`."
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_multiline_if_that_fits_on_one_line_and_using_hash_value_omission_syntax_registers_an_offense"
+name = "rubocopcopstyleifunlessmodifier_multiline_if_that_fits_on_one_line_and_using_hash_value_omission_syntax_registers_an_offense"
 source = '''
 if condition
   obj.do_something foo:
@@ -463,7 +995,6 @@ obj.do_something(foo:) if condition
 
 obj&.do_something(foo:) if condition
 '''
-ruby_version = ">= 3.1"
 
 [[tests.offenses]]
 line = 1
@@ -478,7 +1009,7 @@ column_end = 2
 message = "Favor modifier `if` usage when having a single-line body. Another good alternative is the usage of control flow `&&`/`||`."
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_multiline_if_that_fits_on_one_line_and_using_dot_method_call_with_hash_value_omission_syntax_corrects_it_to_normal_form1"
+name = "rubocopcopstyleifunlessmodifier_multiline_if_that_fits_on_one_line_and_using_dot_method_call_with_hash_value_omission_syntax_corrects_it_to_normal_form1"
 source = '''
 if condition
   obj.(attr:)
@@ -487,7 +1018,6 @@ end
 corrected = '''
 obj.(attr:) if condition
 '''
-ruby_version = ">= 3.1"
 
 [[tests.offenses]]
 line = 1
@@ -496,7 +1026,7 @@ column_end = 2
 message = "Favor modifier `if` usage when having a single-line body. Another good alternative is the usage of control flow `&&`/`||`."
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_multiline_if_that_fits_on_one_line_and_using_safe_navigation_dot_method_call_with_hash_value_omission_syntax_corrects_it_to_normal_form1"
+name = "rubocopcopstyleifunlessmodifier_multiline_if_that_fits_on_one_line_and_using_safe_navigation_dot_method_call_with_hash_value_omission_syntax_corrects_it_to_normal_form1"
 source = '''
 if condition
   obj&.(attr:)
@@ -505,7 +1035,6 @@ end
 corrected = '''
 obj&.(attr:) if condition
 '''
-ruby_version = ">= 3.1"
 
 [[tests.offenses]]
 line = 1
@@ -514,7 +1043,7 @@ column_end = 2
 message = "Favor modifier `if` usage when having a single-line body. Another good alternative is the usage of control flow `&&`/`||`."
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_using_defined_in_the_condition_registers_for_argument_value_is_defined"
+name = "rubocopcopstyleifunlessmodifier_using_defined_in_the_condition_registers_for_argument_value_is_defined"
 source = '''
 value = :custom
 
@@ -535,7 +1064,7 @@ column_end = 6
 message = "Favor modifier `unless` usage when having a single-line body. Another good alternative is the usage of control flow `&&`/`||`."
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_using_defined_in_the_condition_registers_for_argument_value_is_yield"
+name = "rubocopcopstyleifunlessmodifier_using_defined_in_the_condition_registers_for_argument_value_is_yield"
 source = '''
 unless defined?(yield)
   value = :default
@@ -552,7 +1081,7 @@ column_end = 6
 message = "Favor modifier `unless` usage when having a single-line body. Another good alternative is the usage of control flow `&&`/`||`."
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_using_defined_in_the_condition_registers_for_argument_value_is_super"
+name = "rubocopcopstyleifunlessmodifier_using_defined_in_the_condition_registers_for_argument_value_is_super"
 source = '''
 unless defined?(super)
   value = :default
@@ -569,7 +1098,7 @@ column_end = 6
 message = "Favor modifier `unless` usage when having a single-line body. Another good alternative is the usage of control flow `&&`/`||`."
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_using_defined_in_the_condition_accepts_defined_when_argument_value_is_undefined"
+name = "rubocopcopstyleifunlessmodifier_using_defined_in_the_condition_accepts_defined_when_argument_value_is_undefined"
 source = '''
 other_value = do_something
 
@@ -580,7 +1109,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_using_defined_in_the_condition_accepts_defined_when_argument_value_is_undefined_and_the_first_condition"
+name = "rubocopcopstyleifunlessmodifier_using_defined_in_the_condition_accepts_defined_when_argument_value_is_undefined_and_the_first_condition"
 source = '''
 other_value = do_something
 
@@ -591,7 +1120,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_using_defined_in_the_condition_accepts_defined_when_argument_value_is_undefined_and_the_last_condition"
+name = "rubocopcopstyleifunlessmodifier_using_defined_in_the_condition_accepts_defined_when_argument_value_is_undefined_and_the_last_condition"
 source = '''
 other_value = do_something
 
@@ -602,68 +1131,35 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_accepts_if_end_followed_by_a_chained_call_using"
+name = "rubocopcopstyleifunlessmodifier_with_implicit_match_conditional_when_a_multiline_if_fits_on_one_line_registers_an_offense"
 source = '''
-if test
-  something
-end.inspect
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_accepts_if_end_followed_by_a_chained_call_using"
-source = '''
-if test
-  something
-end&.inspect
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_adds_parens_in_autocorrect_when_if_end_used_with_operator"
-source = '''
-a || if b
-  1
+if /aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/
+  bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
 end
 '''
+base_indent = 2
 corrected = '''
-a || (1 if b)
+  bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb if /aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 5
-column_end = 7
-message = "Favor modifier `if` usage when having a single-line body. Another good alternative is the usage of control flow `&&`/`||`."
+column_start = 2
+column_end = 4
+message = "Favor modifier `if` usage when having a single-line body. [...]"
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_adds_parens_in_autocorrect_when_if_end_used_with_operator"
+name = "rubocopcopstyleifunlessmodifier_with_implicit_match_conditional_when_a_multiline_if_doesnt_fit_on_one_line_accepts"
 source = '''
-a && if b
-  1
+if /aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/
+  bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
 end
 '''
-corrected = '''
-a && (1 if b)
-'''
-
-[[tests.offenses]]
-line = 1
-column_start = 5
-column_end = 7
-message = "Favor modifier `if` usage when having a single-line body. Another good alternative is the usage of control flow `&&`/`||`."
-
-[[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_accepts_if_end_when_used_as_lhs_of_binary_arithmetic"
-source = '''
-if test
-  1
-end + 2
-'''
+base_indent = 2
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_if_end_is_argument_to_a_parenthesized_method_call_adds_parentheses_because_otherwise_it_would_cause_syntaxerror"
+name = "rubocopcopstyleifunlessmodifier_ifend_is_argument_to_a_parenthesized_method_call_adds_parentheses_because_otherwise_it_would_cause_syntaxerror"
 source = '''
 puts("string", if a
   1
@@ -680,7 +1176,7 @@ column_end = 17
 message = "Favor modifier `if` usage when having a single-line body. [...]"
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_if_end_is_argument_to_a_non_parenthesized_method_call_adds_parentheses_so_as_not_to_change_meaning"
+name = "rubocopcopstyleifunlessmodifier_ifend_is_argument_to_a_nonparenthesized_method_call_adds_parentheses_so_as_not_to_change_meaning"
 source = '''
 puts "string", if a
   1
@@ -697,7 +1193,7 @@ column_end = 17
 message = "Favor modifier `if` usage when having a single-line body. [...]"
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_if_end_with_conditional_as_body_accepts"
+name = "rubocopcopstyleifunlessmodifier_ifend_with_conditional_as_body_accepts"
 source = '''
 if condition
   foo ? "bar" : "baz"
@@ -706,7 +1202,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_unless_end_with_conditional_as_body_accepts"
+name = "rubocopcopstyleifunlessmodifier_unlessend_with_conditional_as_body_accepts"
 source = '''
 unless condition
   foo ? "bar" : "baz"
@@ -715,7 +1211,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_with_a_named_regexp_capture_on_the_lhs_does_not_register_an_offense"
+name = "rubocopcopstyleifunlessmodifier_with_a_named_regexp_capture_on_the_lhs_does_not_register_an_offense"
 source = '''
 if /(?<foo>d)/ =~ "bar"
   foo
@@ -724,37 +1220,63 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_with_tabs_used_for_indentation_it_fits_on_one_line_registers_an_offense"
+name = "rubocopcopstyleifunlessmodifier_with_tabs_used_for_indentation_with_layoutindentationstyle_indentationwidth_config_behaves_like_with_tabs_indentation_it_fits_on_one_line_registers_an_offense"
 source = '''
-%{indent}if #{condition}
-%{indent}	#{body}
-%{indent}end
+if aaa
+	bbb
+end
 '''
+base_indent = 6
 corrected = '''
-#{indent}#{body} if #{condition}
+						bbb if aaa
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
-column_start = 0
-column_end = 24
+column_start = 6
+column_end = 8
 message = "Favor modifier `if` usage when having a single-line body. [...]"
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_with_tabs_used_for_indentation_it_doesn_t_fit_on_one_line_doesn_t_register_an_offense"
+name = "rubocopcopstyleifunlessmodifier_with_tabs_used_for_indentation_with_layoutindentationstyle_indentationwidth_config_behaves_like_with_tabs_indentation_it_doesnt_fit_on_one_line_doesnt_register_an_offense"
 source = '''
-#{indent}if #{condition}
-#{indent}	#{body}
-#{indent}end
+if aaaa
+	bbb
+end
 '''
-interpolated = true
-verified = false
+base_indent = 6
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_when_layout_linelength_is_disabled_registers_an_offense_even_for_a_long_modifier_statement"
+name = "rubocopcopstyleifunlessmodifier_with_tabs_used_for_indentation_with_layoutindentationwidth_width_config_behaves_like_with_tabs_indentation_it_fits_on_one_line_registers_an_offense"
+source = '''
+if aaa
+	bbb
+end
+'''
+base_indent = 6
+corrected = '''
+						bbb if aaa
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 8
+message = "Favor modifier `if` usage when having a single-line body. [...]"
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_with_tabs_used_for_indentation_with_layoutindentationwidth_width_config_behaves_like_with_tabs_indentation_it_doesnt_fit_on_one_line_doesnt_register_an_offense"
+source = '''
+if aaaa
+	bbb
+end
+'''
+base_indent = 6
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_when_layoutlinelength_is_disabled_registers_an_offense_even_for_a_long_modifier_statement"
 source = '''
 if foo
   "This string would make the line longer than eighty characters if combined with the statement."
@@ -771,17 +1293,15 @@ column_end = 2
 message = "Favor modifier `if` usage when having a single-line body. Another good alternative is the usage of control flow `&&`/`||`."
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_when_if_end_condition_is_assigned_to_a_variable_with_variable_being_on_the_same_line_when_it_is_short_enough_to_fit_on_a_single_line_corrects_it_to_the_single_line_form"
+name = "rubocopcopstyleifunlessmodifier_when_ifend_condition_is_assigned_to_a_variable_with_variable_being_on_the_same_line_when_it_is_short_enough_to_fit_on_a_single_line_corrects_it_to_the_singleline_form"
 source = '''
 x = if a
-  %{body}
+  bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
 end
 '''
 corrected = '''
-x = (#{body} if a)
+x = (bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb if a)
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -790,30 +1310,26 @@ column_end = 6
 message = "Favor modifier `if` usage [...]"
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_when_if_end_condition_is_assigned_to_a_variable_with_variable_being_on_the_same_line_when_it_is_not_short_enough_to_fit_on_a_single_line_accepts_it_in_the_multiline_form"
+name = "rubocopcopstyleifunlessmodifier_when_ifend_condition_is_assigned_to_a_variable_with_variable_being_on_the_same_line_when_it_is_not_short_enough_to_fit_on_a_single_line_accepts_it_in_the_multiline_form"
 source = '''
 x = if a
-  #{body}
+  bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
 end
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_when_if_end_condition_is_assigned_to_a_variable_with_variable_being_on_the_previous_line_when_it_is_short_enough_to_fit_on_a_single_line_corrects_it_to_the_single_line_form"
+name = "rubocopcopstyleifunlessmodifier_when_ifend_condition_is_assigned_to_a_variable_with_variable_being_on_the_previous_line_when_it_is_short_enough_to_fit_on_a_single_line_corrects_it_to_the_singleline_form"
 source = '''
 x =
   if a
-    %{body}
+    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
   end
 '''
 corrected = '''
 x =
-  (#{body} if a)
+  (bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb if a)
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 2
@@ -822,33 +1338,29 @@ column_end = 4
 message = "Favor modifier `if` usage [...]"
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_when_if_end_condition_is_assigned_to_a_variable_with_variable_being_on_the_previous_line_when_it_is_not_short_enough_to_fit_on_a_single_line_accepts_it_in_the_multiline_form"
+name = "rubocopcopstyleifunlessmodifier_when_ifend_condition_is_assigned_to_a_variable_with_variable_being_on_the_previous_line_when_it_is_not_short_enough_to_fit_on_a_single_line_accepts_it_in_the_multiline_form"
 source = '''
 x =
   if a
-    #{body}
+    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
   end
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_when_if_end_condition_is_an_element_of_an_array_when_short_enough_to_fit_on_a_single_line_corrects_it_to_the_single_line_form"
+name = "rubocopcopstyleifunlessmodifier_when_ifend_condition_is_an_element_of_an_array_when_short_enough_to_fit_on_a_single_line_corrects_it_to_the_singleline_form"
 source = '''
 [
   if a
-    %{body}
+    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
   end
 ]
 '''
 corrected = '''
 [
-  (#{body} if a)
+  (bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb if a)
 ]
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 2
@@ -857,34 +1369,211 @@ column_end = 4
 message = "Favor modifier `if` usage [...]"
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_when_if_end_condition_is_an_element_of_an_array_when_not_short_enough_to_fit_on_a_single_line_accepts_it_in_the_multiline_form"
+name = "rubocopcopstyleifunlessmodifier_when_ifend_condition_is_an_element_of_an_array_when_not_short_enough_to_fit_on_a_single_line_accepts_it_in_the_multiline_form"
 source = '''
 [
   if a
-    #{body}
+    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
   end
 ]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_when_if_end_condition_is_a_value_in_a_hash_when_it_is_short_enough_to_fit_on_a_single_line_corrects_it_to_the_single_line_form"
+name = "rubocopcopstyleifunlessmodifier_when_ifend_condition_is_an_element_of_an_array_when_array_has_multiple_ifunless_elements_on_same_line_accepts_multiline_if_when_sibling_if_starts_on_end_line"
+source = '''
+[if a
+  b
+end, if c
+  d
+end]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_when_ifend_condition_is_an_element_of_an_array_when_array_has_multiple_ifunless_elements_on_same_line_accepts_multiline_if_when_sibling_unless_starts_on_end_line"
+source = '''
+[(if a
+  b
+end), (unless c
+  d
+end)]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_when_ifend_condition_is_an_element_of_an_array_when_array_has_single_if_element_corrects_to_modifier_form"
+source = '''
+[(if a
+  b
+end)]
+'''
+corrected = '''
+[(b if a)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 4
+message = "Favor modifier `if` usage [...]"
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_when_ifend_condition_is_an_element_of_an_array_when_array_has_multiple_ifs_on_separate_lines_corrects_to_modifier_form"
+source = '''
+[
+  (if a
+    b
+  end),
+  (if c
+    d
+  end)
+]
+'''
+corrected = '''
+[
+  (b if a),
+  (d if c)
+]
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 3
+column_end = 5
+message = "Favor modifier `if` usage [...]"
+
+[[tests.offenses]]
+line = 5
+column_start = 3
+column_end = 5
+message = "Favor modifier `if` usage [...]"
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_when_ifend_condition_is_an_element_of_an_array_when_array_has_nonif_begin_sibling_corrects_to_modifier_form"
+source = '''
+[
+  (1 + 2),
+  (if a
+    b
+  end)
+]
+'''
+corrected = '''
+[
+  (1 + 2),
+  (b if a)
+]
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 3
+column_end = 5
+message = "Favor modifier `if` usage [...]"
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_when_ifend_condition_is_an_element_of_an_array_when_ifs_are_in_nested_arrays_corrects_to_modifier_form"
+source = '''
+[
+  [(if a
+    b
+  end)],
+  [(if c
+    d
+  end)]
+]
+'''
+corrected = '''
+[
+  [(b if a)],
+  [(d if c)]
+]
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 4
+column_end = 6
+message = "Favor modifier `if` usage [...]"
+
+[[tests.offenses]]
+line = 5
+column_start = 4
+column_end = 6
+message = "Favor modifier `if` usage [...]"
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_when_ifend_condition_is_an_element_of_an_array_when_three_ifs_share_lines_accepts_all_multiline_ifs"
+source = '''
+[if a
+  b
+end, if c
+  d
+end, if e
+  f
+end]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_when_method_call_has_multiple_ifunless_arguments_on_same_line_accepts_multiline_if_when_sibling_if_starts_on_end_line"
+source = '''
+foo(if a
+  b
+end, if c
+  d
+end)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_when_method_call_has_multiple_ifunless_arguments_on_same_line_accepts_multiline_if_when_sibling_unless_starts_on_end_line"
+source = '''
+foo((if a
+  b
+end), (unless c
+  d
+end))
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_when_safe_navigation_method_call_has_multiple_if_arguments_on_same_line_accepts_multiline_if_when_sibling_if_starts_on_end_line"
+source = '''
+foo&.bar(if a
+  b
+end, if c
+  d
+end)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_when_safe_navigation_method_call_has_multiple_if_arguments_on_same_line_accepts_multiline_if_when_parenthesized_sibling_if_starts_on_end_line"
+source = '''
+foo&.bar((if a
+  b
+end), (if c
+  d
+end))
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_when_ifend_condition_is_a_value_in_a_hash_when_it_is_short_enough_to_fit_on_a_single_line_corrects_it_to_the_singleline_form"
 source = '''
 {
   x: if a
-       %{body}
+       bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
      end
 }
 '''
 corrected = '''
 {
-  x: (#{body} if a)
+  x: (bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb if a)
 }
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 2
@@ -893,30 +1582,138 @@ column_end = 7
 message = "Favor modifier `if` usage [...]"
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_when_if_end_condition_is_a_value_in_a_hash_when_it_is_not_short_enough_to_fit_on_a_single_line_accepts_it_in_the_multiline_form"
+name = "rubocopcopstyleifunlessmodifier_when_ifend_condition_is_a_value_in_a_hash_when_it_is_not_short_enough_to_fit_on_a_single_line_accepts_it_in_the_multiline_form"
 source = '''
 {
   x: if a
-       #{body}
+       bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
      end
 }
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_when_if_end_condition_has_a_first_line_comment_when_it_is_short_enough_to_fit_on_a_single_line_corrects_it_to_the_single_line_form"
+name = "rubocopcopstyleifunlessmodifier_when_ifend_condition_is_a_value_in_a_hash_when_hash_value_has_sibling_if_on_end_line_accepts_multiline_if_statements"
 source = '''
-if foo # %{comment}
+{
+  x: [(if a
+    b
+  end), (if c
+    d
+  end)]
+}
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_when_ifend_condition_is_a_value_in_a_hash_when_hash_has_multiple_if_values_on_same_line_accepts_multiline_if_statements"
+source = '''
+{
+  x: if a
+    b
+  end, y: if c
+    d
+  end
+}
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_when_ifend_condition_is_a_value_in_a_hash_when_hash_has_multiple_parenthesized_if_values_on_same_line_accepts_multiline_if_statements"
+source = '''
+{x: (if a
+  b
+end), y: (if c
+  d
+end)}
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_when_ifend_condition_is_a_value_in_a_hash_when_multiple_pairs_each_have_an_if_value_corrects_to_modifier_form"
+source = '''
+{
+  x: (if a
+    b
+  end),
+  y: (if c
+    d
+  end)
+}
+'''
+corrected = '''
+{
+  x: (b if a),
+  y: (d if c)
+}
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 8
+message = "Favor modifier `if` usage [...]"
+
+[[tests.offenses]]
+line = 5
+column_start = 6
+column_end = 8
+message = "Favor modifier `if` usage [...]"
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_when_ifend_condition_is_a_value_in_a_hash_when_single_if_is_direct_hash_value_corrects_to_modifier_form"
+source = '''
+{
+  x: if a
+    b
+  end
+}
+'''
+corrected = '''
+{
+  x: (b if a)
+}
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 5
+column_end = 7
+message = "Favor modifier `if` usage [...]"
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_when_ifend_condition_is_a_value_in_a_hash_when_the_first_value_uses_a_normal_if_and_the_others_use_modifier_if_corrects_to_modifier_form"
+source = '''
+{
+  first_key: if first_cond
+                  first_expr
+                end,
+  second_key: (second_expr if second_cond)
+}
+'''
+corrected = '''
+{
+  first_key: (first_expr if first_cond),
+  second_key: (second_expr if second_cond)
+}
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 13
+column_end = 15
+message = "Favor modifier `if` usage when having a single-line body. Another good alternative is the usage of control flow `&&`/`||`."
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_when_ifend_condition_has_a_first_line_comment_when_it_is_short_enough_to_fit_on_a_single_line_corrects_it_to_the_singleline_form"
+source = '''
+if foo # ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
   bar
 end
 '''
 corrected = '''
-bar if foo # #{comment}
+bar if foo # ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -925,32 +1722,28 @@ column_end = 2
 message = "Favor modifier `if` usage [...]"
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_when_if_end_condition_has_a_first_line_comment_when_it_is_not_short_enough_to_fit_on_a_single_line_accepts_it_in_the_multiline_form"
+name = "rubocopcopstyleifunlessmodifier_when_ifend_condition_has_a_first_line_comment_when_it_is_not_short_enough_to_fit_on_a_single_line_accepts_it_in_the_multiline_form"
 source = '''
-if foo # #{comment}
+if foo # cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
   bar
 end
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_when_if_end_condition_has_some_code_after_the_end_keyword_when_it_is_short_enough_to_fit_on_a_single_line_corrects_it_to_the_single_line_form"
+name = "rubocopcopstyleifunlessmodifier_when_ifend_condition_has_some_code_after_the_end_keyword_when_it_is_short_enough_to_fit_on_a_single_line_corrects_it_to_the_singleline_form"
 source = '''
 [
   1, if foo
-       %{body}
+       bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
      end, 300_000_000
 ]
 '''
 corrected = '''
 [
-  1, (#{body} if foo), 300_000_000
+  1, (bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb if foo), 300_000_000
 ]
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 2
@@ -959,14 +1752,12 @@ column_end = 7
 message = "Favor modifier `if` usage [...]"
 
 [[tests]]
-name = "rubocop_cop_style_ifunlessmodifier_when_if_end_condition_has_some_code_after_the_end_keyword_when_it_is_not_short_enough_to_fit_on_a_single_line_accepts_it_in_the_multiline_form"
+name = "rubocopcopstyleifunlessmodifier_when_ifend_condition_has_some_code_after_the_end_keyword_when_it_is_not_short_enough_to_fit_on_a_single_line_accepts_it_in_the_multiline_form"
 source = '''
 [
   1, if foo
-       #{body}
+       bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
      end, 300_000_000
 ]
 '''
-interpolated = true
-verified = false
 offenses = []

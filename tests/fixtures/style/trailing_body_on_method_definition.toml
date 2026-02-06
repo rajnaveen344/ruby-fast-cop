@@ -4,7 +4,7 @@ severity = "convention"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_style_trailingbodyonmethoddefinition_registers_an_offense_when_body_trails_after_method_definition"
+name = "rubocopcopstyletrailingbodyonmethoddefinition_registers_an_offense_when_body_trails_after_method_definition"
 source = '''
 def some_method; body
 end
@@ -14,18 +14,16 @@ def seven_times(stuff) 7.times { do_this(stuff) }
 end
 '''
 corrected = '''
-def some_method#{trailing_whitespace}
+def some_method 
   body
 end
-def extra_large#{trailing_whitespace}
+def extra_large 
   { size: 15 };
 end
-def seven_times(stuff)#{trailing_whitespace}
+def seven_times(stuff) 
   7.times { do_this(stuff) }
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -46,20 +44,18 @@ column_end = 49
 message = "Place the first line of a multi-line method definition's body on its own line."
 
 [[tests]]
-name = "rubocop_cop_style_trailingbodyonmethoddefinition_registers_when_body_starts_on_def_line_continues_one_more_line"
+name = "rubocopcopstyletrailingbodyonmethoddefinition_registers_when_body_starts_on_def_line__continues_one_more_line"
 source = '''
 def some_method; foo = {}
   more_body(foo)
 end
 '''
 corrected = '''
-def some_method#{trailing_whitespace}
+def some_method 
   foo = {}
   more_body(foo)
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -68,7 +64,7 @@ column_end = 25
 message = "Place the first line of a multi-line method definition's body on its own line."
 
 [[tests]]
-name = "rubocop_cop_style_trailingbodyonmethoddefinition_registers_when_body_starts_on_def_line_continues_many_more_lines"
+name = "rubocopcopstyletrailingbodyonmethoddefinition_registers_when_body_starts_on_def_line__continues_many_more_lines"
 source = '''
 def do_stuff(thing) process(thing)
   8.times { thing + 9 }
@@ -76,14 +72,12 @@ def do_stuff(thing) process(thing)
 end
 '''
 corrected = '''
-def do_stuff(thing)#{trailing_whitespace}
+def do_stuff(thing) 
   process(thing)
   8.times { thing + 9 }
   even_more(thing)
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -92,18 +86,16 @@ column_end = 34
 message = "Place the first line of a multi-line method definition's body on its own line."
 
 [[tests]]
-name = "rubocop_cop_style_trailingbodyonmethoddefinition_registers_an_offense_when_an_expression_precedes_a_method_definition_on_the_same_line_with_a_semicolon"
+name = "rubocopcopstyletrailingbodyonmethoddefinition_registers_an_offense_when_an_expression_precedes_a_method_definition_on_the_same_line_with_a_semicolon"
 source = '''
 foo;def some_method; body
 end
 '''
 corrected = '''
-foo;def some_method#{trailing_whitespace}
+foo;def some_method 
       body
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -112,7 +104,7 @@ column_end = 25
 message = "Place the first line of a multi-line method definition's body on its own line."
 
 [[tests]]
-name = "rubocop_cop_style_trailingbodyonmethoddefinition_accepts_a_method_with_one_line_of_body"
+name = "rubocopcopstyletrailingbodyonmethoddefinition_accepts_a_method_with_one_line_of_body"
 source = '''
 def some_method
   body
@@ -121,7 +113,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_trailingbodyonmethoddefinition_accepts_a_method_with_multiple_lines_of_body"
+name = "rubocopcopstyletrailingbodyonmethoddefinition_accepts_a_method_with_multiple_lines_of_body"
 source = '''
 def stuff_method
   stuff
@@ -132,7 +124,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_trailingbodyonmethoddefinition_does_not_register_offense_with_trailing_body_on_method_end"
+name = "rubocopcopstyletrailingbodyonmethoddefinition_does_not_register_offense_with_trailing_body_on_method_end"
 source = '''
 def some_method
   body
@@ -141,11 +133,89 @@ foo; end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_trailingbodyonmethoddefinition_ruby_3_0_or_higher_does_not_register_offense_when_endless_method_definition_body_is_after_newline_in_opening_parenthesis"
+name = "rubocopcopstyletrailingbodyonmethoddefinition_autocorrects_with_comment_after_body"
+source = '''
+def some_method; body # stuff
+end
+'''
+base_indent = 2
+corrected = '''
+  # stuff
+  def some_method 
+    body 
+  end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 19
+column_end = 23
+message = "Place the first line of a multi-line method definition's body on its own line."
+
+[[tests]]
+name = "rubocopcopstyletrailingbodyonmethoddefinition_autocorrects_body_with_method_definition_with_args_not_in_parens"
+source = '''
+def some_method arg1, arg2; body
+end
+'''
+base_indent = 2
+corrected = '''
+  def some_method arg1, arg2 
+    body
+  end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 30
+column_end = 34
+message = "Place the first line of a multi-line method definition's body on its own line."
+
+[[tests]]
+name = "rubocopcopstyletrailingbodyonmethoddefinition_removes_semicolon_from_method_definition_but_not_body_when_autocorrecting"
+source = '''
+def some_method; body; more_body;
+end
+'''
+base_indent = 2
+corrected = '''
+  def some_method 
+    body; more_body;
+  end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 19
+column_end = 23
+message = "Place the first line of a multi-line method definition's body on its own line."
+
+[[tests]]
+name = "rubocopcopstyletrailingbodyonmethoddefinition_ruby_30_or_higher_does_not_register_offense_when_endless_method_definition_body_is_after_newline_in_opening_parenthesis"
 source = '''
 def some_method = (
   body
 )
 '''
-ruby_version = ">= 3.0"
 offenses = []
+
+[[tests]]
+name = "rubocopcopstyletrailingbodyonmethoddefinition_when_method_is_not_on_first_line_of_processed_source_autocorrects_offense"
+source = '''
+
+def some_method; body
+end
+'''
+base_indent = 2
+corrected = '''
+
+  def some_method 
+    body
+  end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 19
+column_end = 23
+message = "Place the first line of a multi-line method definition's body on its own line."

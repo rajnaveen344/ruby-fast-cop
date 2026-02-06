@@ -4,14 +4,14 @@ severity = "convention"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_layout_elsealignment_accepts_a_ternary_if"
+name = "rubocopcoplayoutelsealignment_accepts_a_ternary_if"
 source = '''
 cond ? func1 : func2
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_elsealignment_with_if_statement_registers_an_offense_for_misaligned_else"
+name = "rubocopcoplayoutelsealignment_with_if_statement_registers_an_offense_for_misaligned_else"
 source = '''
 if cond
   func1
@@ -34,7 +34,31 @@ column_end = 5
 message = "Align `else` with `if`."
 
 [[tests]]
-name = "rubocop_cop_layout_elsealignment_with_if_statement_accepts_indentation_after_else_when_if_is_on_new_line_after_assignment"
+name = "rubocopcoplayoutelsealignment_with_if_statement_registers_an_offense_for_misaligned_elsif"
+source = '''
+  if a1
+    b1
+elsif a2
+    b2
+  end
+'''
+base_indent = 2
+corrected = '''
+    if a1
+      b1
+    elsif a2
+      b2
+    end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 7
+message = "Align `elsif` with `if`."
+
+[[tests]]
+name = "rubocopcoplayoutelsealignment_with_if_statement_accepts_indentation_after_else_when_if_is_on_new_line_after_assignment"
 source = '''
 Rails.application.config.ideal_postcodes_key =
   if Rails.env.production? || Rails.env.staging?
@@ -46,14 +70,14 @@ Rails.application.config.ideal_postcodes_key =
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_elsealignment_with_if_statement_accepts_a_one_line_if_statement"
+name = "rubocopcoplayoutelsealignment_with_if_statement_accepts_a_one_line_if_statement"
 source = '''
 if cond then func1 else func2 end
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_elsealignment_with_if_statement_accepts_a_correctly_aligned_if_elsif_else_end"
+name = "rubocopcoplayoutelsealignment_with_if_statement_accepts_a_correctly_aligned_ifelsifelseend"
 source = '''
 if a1
   b1
@@ -66,9 +90,20 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_elsealignment_with_if_statement_for_a_file_with_byte_order_mark_accepts_a_correctly_aligned_if_elsif_else_end"
+name = "rubocopcoplayoutelsealignment_with_if_statement_accepts_an_ifelse_branches_with_rescue_clauses"
 source = '''
-#{bom}if a1
+if a
+  a rescue nil
+else
+  a rescue nil
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplayoutelsealignment_with_if_statement_for_a_file_with_byte_order_mark_accepts_a_correctly_aligned_ifelsifelseend"
+source = '''
+﻿if a1
   b1
 elsif a2
   b2
@@ -76,12 +111,10 @@ else
   c
 end
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_elsealignment_with_if_statement_with_assignment_when_alignment_style_is_variable_and_end_is_aligned_with_variable_accepts_an_if_else_with_end_aligned_with_setter"
+name = "rubocopcoplayoutelsealignment_with_if_statement_with_assignment_when_alignment_style_is_variable_and_end_is_aligned_with_variable_accepts_an_ifelse_with_end_aligned_with_setter"
 source = '''
 foo.bar = if baz
   derp1
@@ -92,7 +125,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_elsealignment_with_if_statement_with_assignment_when_alignment_style_is_variable_and_end_is_aligned_with_variable_accepts_an_if_elsif_else_with_end_aligned_with_setter"
+name = "rubocopcoplayoutelsealignment_with_if_statement_with_assignment_when_alignment_style_is_variable_and_end_is_aligned_with_variable_accepts_an_ifelsifelse_with_end_aligned_with_setter"
 source = '''
 foo.bar = if baz
   derp1
@@ -105,7 +138,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_elsealignment_with_if_statement_with_assignment_when_alignment_style_is_variable_and_end_is_aligned_with_variable_accepts_an_if_with_end_aligned_with_element_assignment"
+name = "rubocopcoplayoutelsealignment_with_if_statement_with_assignment_when_alignment_style_is_variable_and_end_is_aligned_with_variable_accepts_an_if_with_end_aligned_with_element_assignment"
 source = '''
 foo[bar] = if baz
   derp
@@ -114,7 +147,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_elsealignment_with_if_statement_with_assignment_when_alignment_style_is_variable_and_end_is_aligned_with_variable_accepts_an_if_else"
+name = "rubocopcoplayoutelsealignment_with_if_statement_with_assignment_when_alignment_style_is_variable_and_end_is_aligned_with_variable_accepts_an_ifelse"
 source = '''
 var = if a
   0
@@ -125,7 +158,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_elsealignment_with_if_statement_with_assignment_when_alignment_style_is_variable_and_end_is_aligned_with_variable_accepts_an_if_else_with_chaining_after_the_end"
+name = "rubocopcoplayoutelsealignment_with_if_statement_with_assignment_when_alignment_style_is_variable_and_end_is_aligned_with_variable_accepts_an_ifelse_with_chaining_after_the_end"
 source = '''
 var = if a
   0
@@ -136,7 +169,7 @@ end.abc.join("")
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_elsealignment_with_if_statement_with_assignment_when_alignment_style_is_variable_and_end_is_aligned_with_variable_accepts_an_if_else_with_chaining_with_a_block_after_the_end"
+name = "rubocopcoplayoutelsealignment_with_if_statement_with_assignment_when_alignment_style_is_variable_and_end_is_aligned_with_variable_accepts_an_ifelse_with_chaining_with_a_block_after_the_end"
 source = '''
 var = if a
   0
@@ -147,7 +180,7 @@ end.abc.tap {}
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_elsealignment_with_if_statement_with_assignment_when_alignment_style_is_variable_and_end_is_aligned_with_keyword_registers_offenses_for_an_if_with_setter"
+name = "rubocopcoplayoutelsealignment_with_if_statement_with_assignment_when_alignment_style_is_variable_and_end_is_aligned_with_keyword_registers_offenses_for_an_if_with_setter"
 source = '''
 foo.bar = if baz
             derp1
@@ -171,7 +204,7 @@ column_end = 14
 message = "Align `else` with `foo.bar`."
 
 [[tests]]
-name = "rubocop_cop_layout_elsealignment_with_if_statement_with_assignment_when_alignment_style_is_variable_and_end_is_aligned_with_keyword_registers_an_offense_for_an_if_with_element_assignment"
+name = "rubocopcoplayoutelsealignment_with_if_statement_with_assignment_when_alignment_style_is_variable_and_end_is_aligned_with_keyword_registers_an_offense_for_an_if_with_element_assignment"
 source = '''
 foo[bar] = if baz
              derp1
@@ -187,7 +220,7 @@ column_end = 15
 message = "Align `else` with `foo[bar]`."
 
 [[tests]]
-name = "rubocop_cop_layout_elsealignment_with_if_statement_with_assignment_when_alignment_style_is_variable_and_end_is_aligned_with_keyword_registers_an_offense_for_an_if"
+name = "rubocopcoplayoutelsealignment_with_if_statement_with_assignment_when_alignment_style_is_variable_and_end_is_aligned_with_keyword_registers_an_offense_for_an_if"
 source = '''
 var = if a
         0
@@ -203,7 +236,7 @@ column_end = 10
 message = "Align `else` with `var`."
 
 [[tests]]
-name = "rubocop_cop_layout_elsealignment_with_if_statement_with_assignment_and_end_is_aligned_with_variable_registers_an_offense_for_an_if"
+name = "rubocopcoplayoutelsealignment_with_if_statement_with_assignment_when_alignment_style_is_keyword_by_choice_behaves_like_assignment_and_if_with_keyword_alignment_and_end_is_aligned_with_variable_registers_an_offense_for_an_if"
 source = '''
 var = if a
   0
@@ -226,7 +259,7 @@ column_end = 4
 message = "Align `else` with `if`."
 
 [[tests]]
-name = "rubocop_cop_layout_elsealignment_with_if_statement_with_assignment_and_end_is_aligned_with_variable_registers_an_offense_for_an_elsif"
+name = "rubocopcoplayoutelsealignment_with_if_statement_with_assignment_when_alignment_style_is_keyword_by_choice_behaves_like_assignment_and_if_with_keyword_alignment_and_end_is_aligned_with_variable_registers_an_offense_for_an_elsif"
 source = '''
 var = if a
   0
@@ -249,7 +282,7 @@ column_end = 5
 message = "Align `elsif` with `if`."
 
 [[tests]]
-name = "rubocop_cop_layout_elsealignment_with_if_statement_with_assignment_and_end_is_aligned_with_variable_registers_an_offense_for_an_case_when"
+name = "rubocopcoplayoutelsealignment_with_if_statement_with_assignment_when_alignment_style_is_keyword_by_choice_behaves_like_assignment_and_if_with_keyword_alignment_and_end_is_aligned_with_variable_registers_an_offense_for_an_casewhen"
 source = '''
 var = case condition
       when a
@@ -274,7 +307,7 @@ column_end = 4
 message = "Align `else` with `when`."
 
 [[tests]]
-name = "rubocop_cop_layout_elsealignment_with_if_statement_with_assignment_and_end_is_aligned_with_variable_registers_an_offense_for_an_case_in"
+name = "rubocopcoplayoutelsealignment_with_if_statement_with_assignment_when_alignment_style_is_keyword_by_choice_behaves_like_assignment_and_if_with_keyword_alignment_and_end_is_aligned_with_variable_registers_an_offense_for_an_casein"
 source = '''
 var = case expr
       in a
@@ -299,7 +332,7 @@ column_end = 4
 message = "Align `else` with `in`."
 
 [[tests]]
-name = "rubocop_cop_layout_elsealignment_with_if_statement_with_assignment_and_end_is_aligned_with_keyword_accepts_an_if_in_assignment"
+name = "rubocopcoplayoutelsealignment_with_if_statement_with_assignment_when_alignment_style_is_keyword_by_choice_behaves_like_assignment_and_if_with_keyword_alignment_and_end_is_aligned_with_keyword_accepts_an_if_in_assignment"
 source = '''
 var = if a
         0
@@ -308,7 +341,7 @@ var = if a
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_elsealignment_with_if_statement_with_assignment_and_end_is_aligned_with_keyword_accepts_an_if_else_in_assignment"
+name = "rubocopcoplayoutelsealignment_with_if_statement_with_assignment_when_alignment_style_is_keyword_by_choice_behaves_like_assignment_and_if_with_keyword_alignment_and_end_is_aligned_with_keyword_accepts_an_ifelse_in_assignment"
 source = '''
 var = if a
         0
@@ -319,7 +352,7 @@ var = if a
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_elsealignment_with_if_statement_with_assignment_and_end_is_aligned_with_keyword_accepts_an_if_else_in_assignment_on_next_line"
+name = "rubocopcoplayoutelsealignment_with_if_statement_with_assignment_when_alignment_style_is_keyword_by_choice_behaves_like_assignment_and_if_with_keyword_alignment_and_end_is_aligned_with_keyword_accepts_an_ifelse_in_assignment_on_next_line"
 source = '''
 var =
   if a
@@ -331,7 +364,7 @@ var =
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_elsealignment_with_if_statement_with_assignment_and_end_is_aligned_with_keyword_accepts_a_while_in_assignment"
+name = "rubocopcoplayoutelsealignment_with_if_statement_with_assignment_when_alignment_style_is_keyword_by_choice_behaves_like_assignment_and_if_with_keyword_alignment_and_end_is_aligned_with_keyword_accepts_a_while_in_assignment"
 source = '''
 var = while a
         b
@@ -340,7 +373,7 @@ var = while a
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_elsealignment_with_if_statement_with_assignment_and_end_is_aligned_with_keyword_accepts_an_until_in_assignment"
+name = "rubocopcoplayoutelsealignment_with_if_statement_with_assignment_when_alignment_style_is_keyword_by_choice_behaves_like_assignment_and_if_with_keyword_alignment_and_end_is_aligned_with_keyword_accepts_an_until_in_assignment"
 source = '''
 var = until a
         b
@@ -349,18 +382,7 @@ var = until a
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_elsealignment_with_if_statement_accepts_an_if_else_branches_with_rescue_clauses"
-source = '''
-if a
-  a rescue nil
-else
-  a rescue nil
-end
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_layout_elsealignment_with_unless_registers_an_offense_for_misaligned_else"
+name = "rubocopcoplayoutelsealignment_with_unless_registers_an_offense_for_misaligned_else"
 source = '''
 unless cond
    func1
@@ -376,7 +398,7 @@ column_end = 5
 message = "Align `else` with `unless`."
 
 [[tests]]
-name = "rubocop_cop_layout_elsealignment_with_unless_accepts_a_correctly_aligned_else_in_an_otherwise_empty_unless"
+name = "rubocopcoplayoutelsealignment_with_unless_accepts_a_correctly_aligned_else_in_an_otherwise_empty_unless"
 source = '''
 unless a
 else
@@ -385,7 +407,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_elsealignment_with_unless_accepts_an_empty_unless"
+name = "rubocopcoplayoutelsealignment_with_unless_accepts_an_empty_unless"
 source = '''
 unless a
 end
@@ -393,7 +415,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_elsealignment_with_case_registers_an_offense_for_misaligned_else"
+name = "rubocopcoplayoutelsealignment_with_case_registers_an_offense_for_misaligned_else"
 source = '''
 case a
 when b
@@ -412,7 +434,7 @@ column_end = 5
 message = "Align `else` with `when`."
 
 [[tests]]
-name = "rubocop_cop_layout_elsealignment_with_case_accepts_correctly_aligned_case_when_else"
+name = "rubocopcoplayoutelsealignment_with_case_accepts_correctly_aligned_casewhenelse"
 source = '''
 case a
 when b
@@ -426,7 +448,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_elsealignment_with_case_accepts_case_without_else"
+name = "rubocopcoplayoutelsealignment_with_case_accepts_case_without_else"
 source = '''
 case superclass
 when /\A(#{NAMESPACEMATCH})(?:\s|\Z)/
@@ -438,73 +460,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_elsealignment_with_case_ruby_2_7_with_case_match_registers_an_offense_for_misaligned_else"
-source = '''
-case 0
-in 0
-  foo
-in -1..1
-  bar
-in Integer
-  baz
- else
-  qux
-end
-'''
-ruby_version = ">= 2.7"
-
-[[tests.offenses]]
-line = 8
-column_start = 1
-column_end = 5
-message = "Align `else` with `in`."
-
-[[tests]]
-name = "rubocop_cop_layout_elsealignment_with_case_ruby_2_7_with_case_match_accepts_correctly_aligned_case_when_else"
-source = '''
-case 0
-in 0
-  foo
-in -1..1
-  bar
-in Integer
-  baz
-else
-  qux
-end
-'''
-ruby_version = ">= 2.7"
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_layout_elsealignment_with_case_ruby_2_7_with_case_match_accepts_correctly_aligned_empty_else"
-source = '''
-case 0
-in 0
-  foo
-in -1..1
-  bar
-in Integer
-  baz
-else
-end
-'''
-ruby_version = ">= 2.7"
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_layout_elsealignment_with_case_ruby_2_7_with_case_match_accepts_case_match_without_else"
-source = '''
-case 0
-in a
-  p a
-end
-'''
-ruby_version = ">= 2.7"
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_layout_elsealignment_with_case_accepts_else_aligned_with_when_but_not_with_case"
+name = "rubocopcoplayoutelsealignment_with_case_accepts_else_aligned_with_when_but_not_with_case"
 source = '''
 case code_type
   when 'ruby', 'sql', 'plain'
@@ -520,7 +476,69 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_elsealignment_with_def_defs_accepts_an_empty_def_body"
+name = "rubocopcoplayoutelsealignment_with_case__ruby_27_with_case_match_registers_an_offense_for_misaligned_else"
+source = '''
+case 0
+in 0
+  foo
+in -1..1
+  bar
+in Integer
+  baz
+ else
+  qux
+end
+'''
+
+[[tests.offenses]]
+line = 8
+column_start = 1
+column_end = 5
+message = "Align `else` with `in`."
+
+[[tests]]
+name = "rubocopcoplayoutelsealignment_with_case__ruby_27_with_case_match_accepts_correctly_aligned_casewhenelse"
+source = '''
+case 0
+in 0
+  foo
+in -1..1
+  bar
+in Integer
+  baz
+else
+  qux
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplayoutelsealignment_with_case__ruby_27_with_case_match_accepts_correctly_aligned_empty_else"
+source = '''
+case 0
+in 0
+  foo
+in -1..1
+  bar
+in Integer
+  baz
+else
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplayoutelsealignment_with_case__ruby_27_with_case_match_accepts_case_match_without_else"
+source = '''
+case 0
+in a
+  p a
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplayoutelsealignment_with_defdefs_accepts_an_empty_def_body"
 source = '''
 def test
 end
@@ -528,7 +546,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_elsealignment_with_def_defs_accepts_an_empty_defs_body"
+name = "rubocopcoplayoutelsealignment_with_defdefs_accepts_an_empty_defs_body"
 source = '''
 def self.test
 end
@@ -536,7 +554,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_elsealignment_with_def_defs_when_modifier_and_def_are_on_the_same_line_accepts_a_correctly_aligned_body"
+name = "rubocopcoplayoutelsealignment_with_defdefs_when_modifier_and_def_are_on_the_same_line_accepts_a_correctly_aligned_body"
 source = '''
 private def test
   something
@@ -549,7 +567,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_elsealignment_with_def_defs_when_modifier_and_def_are_on_the_same_line_registers_an_offense_for_else_not_aligned_with_private"
+name = "rubocopcoplayoutelsealignment_with_defdefs_when_modifier_and_def_are_on_the_same_line_registers_an_offense_for_else_not_aligned_with_private"
 source = '''
 private def test
           something
@@ -567,7 +585,7 @@ column_end = 12
 message = "Align `else` with `private`."
 
 [[tests]]
-name = "rubocop_cop_layout_elsealignment_with_begin_rescue_else_ensure_end_registers_an_offense_for_misaligned_else"
+name = "rubocopcoplayoutelsealignment_with_beginrescueelseensureend_registers_an_offense_for_misaligned_else"
 source = '''
 def my_func
   puts 'do something outside block'
@@ -592,7 +610,7 @@ column_end = 4
 message = "Align `else` with `begin`."
 
 [[tests]]
-name = "rubocop_cop_layout_elsealignment_with_begin_rescue_else_ensure_end_accepts_a_correctly_aligned_else"
+name = "rubocopcoplayoutelsealignment_with_beginrescueelseensureend_accepts_a_correctly_aligned_else"
 source = '''
 begin
   raise StandardError.new('Fail') if rand(2).odd?
@@ -605,7 +623,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_elsealignment_with_def_rescue_else_ensure_end_accepts_a_correctly_aligned_else"
+name = "rubocopcoplayoutelsealignment_with_defrescueelseensureend_accepts_a_correctly_aligned_else"
 source = '''
 def my_func(string)
   puts string
@@ -620,7 +638,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_elsealignment_with_def_rescue_else_ensure_end_registers_an_offense_for_misaligned_else"
+name = "rubocopcoplayoutelsealignment_with_defrescueelseensureend_registers_an_offense_for_misaligned_else"
 source = '''
 def my_func(string)
   puts string
@@ -640,7 +658,7 @@ column_end = 6
 message = "Align `else` with `def`."
 
 [[tests]]
-name = "rubocop_cop_layout_elsealignment_with_def_rescue_else_end_accepts_a_correctly_aligned_else"
+name = "rubocopcoplayoutelsealignment_with_defrescueelseend_accepts_a_correctly_aligned_else"
 source = '''
 def my_func
   puts 'do something error prone'
@@ -655,7 +673,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_elsealignment_with_def_rescue_else_end_registers_an_offense_for_misaligned_else"
+name = "rubocopcoplayoutelsealignment_with_defrescueelseend_registers_an_offense_for_misaligned_else"
 source = '''
 def my_func
   puts 'do something error prone'
@@ -675,7 +693,7 @@ column_end = 6
 message = "Align `else` with `def`."
 
 [[tests]]
-name = "rubocop_cop_layout_elsealignment_ensure_rescue_else_in_block_argument_accepts_a_correctly_aligned_else"
+name = "rubocopcoplayoutelsealignment_ensurerescueelse_in_block_argument_accepts_a_correctly_aligned_else"
 source = '''
 array_like.each do |n|
   puts 'do something error prone'
@@ -690,7 +708,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_elsealignment_ensure_rescue_else_in_block_argument_accepts_a_correctly_aligned_else_from_numblock"
+name = "rubocopcoplayoutelsealignment_ensurerescueelse_in_block_argument_accepts_a_correctly_aligned_else_from_numblock"
 source = '''
 array_like.each do
   _1
@@ -706,7 +724,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_elsealignment_ensure_rescue_else_in_block_argument_accepts_a_correctly_aligned_else_from_itblock"
+name = "rubocopcoplayoutelsealignment_ensurerescueelse_in_block_argument_accepts_a_correctly_aligned_else_from_itblock"
 source = '''
 array_like.each do
   it
@@ -719,11 +737,10 @@ else
   puts 'normal handling'
 end
 '''
-ruby_version = ">= 3.4"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_elsealignment_ensure_rescue_else_in_block_argument_accepts_a_correctly_aligned_else_with_assignment"
+name = "rubocopcoplayoutelsealignment_ensurerescueelse_in_block_argument_accepts_a_correctly_aligned_else_with_assignment"
 source = '''
 result = array_like.each do |n|
   puts 'do something error prone'
@@ -738,7 +755,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_elsealignment_ensure_rescue_else_in_block_argument_registers_an_offense_for_misaligned_else"
+name = "rubocopcoplayoutelsealignment_ensurerescueelse_in_block_argument_registers_an_offense_for_misaligned_else"
 source = '''
 array_like.each do |n|
   puts 'do something error prone'

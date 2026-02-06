@@ -77,24 +77,38 @@ Style/Documentation:
 | `Max` (metrics)               | Supported |
 | Glob patterns with `{a,b}`    | Supported |
 
-## Implemented Cops
+## Cop Coverage
 
-### Verified (passing all RuboCop parity tests)
+RuboCop (v1.84.1) has **631 cops** across 10 departments. We have **631 TOML test fixtures** — one per cop — with **26,968 test cases** extracted from RuboCop's own RSpec suite.
 
-- **Style/AutoResourceCleanup** - Checks for resources opened without block form
-- **Style/FormatStringToken** - Checks format string token style (annotated/template/unannotated)
-- **Style/MethodCalledOnDoEndBlock** - Checks for methods called on do...end blocks
-- **Style/RaiseArgs** - Checks style of raise/fail arguments (explode/compact)
-- **Style/RescueStandardError** - Checks rescue StandardError style (explicit/implicit)
-- **Style/StringMethods** - Checks for preferred string methods (intern vs to_sym)
+| Department      | Cops | Test Cases |
+| --------------- | ---- | ---------- |
+| Style           | 287  | 13,105     |
+| Lint            | 152  | 5,904      |
+| Layout          | 100  | 4,600      |
+| InternalAffairs | 38   | 474        |
+| Naming          | 19   | 2,217      |
+| Metrics         | 10   | 272        |
+| Gemspec         | 10   | 192        |
+| Bundler         | 7    | 94         |
+| Security        | 7    | 102        |
+| Migration       | 1    | 8          |
 
-### Partial Implementation (code exists, needs more config options)
+### Implemented Cops (11 of 631)
 
-- **Lint/AssignmentInCondition** - Checks for assignments in conditions
-- **Lint/Debugger** - Checks for debugger calls (needs DebuggerMethods config)
-- **Layout/LineLength** - Checks line length (needs tab width, AllowURI)
-- **Metrics/BlockLength** - Checks block length (needs AllowedMethods, CountAsOne)
-- **Style/HashSyntax** - Checks hash literal syntax (needs hash value omission support)
+| Cop                            | Tests | Status  |
+| ------------------------------ | ----- | ------- |
+| Style/RaiseArgs                | 35    | Passing |
+| Style/AutoResourceCleanup      | 7     | Passing |
+| Style/MethodCalledOnDoEndBlock | 10    | Passing |
+| Style/RescueStandardError      | 37    | Passing |
+| Style/StringMethods            | 2     | Passing |
+| Lint/AssignmentInCondition     | 69    | Partial |
+| Lint/Debugger                  | 97    | Partial |
+| Layout/LineLength              | 192   | Partial |
+| Metrics/BlockLength            | 38    | Partial |
+| Style/FormatStringToken        | 355   | Partial |
+| Style/HashSyntax               | 189   | Partial |
 
 ## Library Usage
 
@@ -166,23 +180,23 @@ cargo run -- src/
 # Check test fixture statistics
 cargo run --bin fixture_stats
 
-# Extract tests from RuboCop specs (for adding new cops)
-cargo run --bin extract-rubocop-tests -- /path/to/rubocop/spec/rubocop/cop
+# Re-sync test fixtures from RuboCop specs
+/rubocop-test-importer sync
 ```
 
 ## TODO
 
 ### High Priority
 
+- [ ] **More cops** - 11 of 631 implemented; focus on most-used cops first
+- [ ] **Fix partial cops** - 6 implemented cops have failing tests from newly resolved test data
 - [ ] **Auto-correct** - Implement `-a` (safe) and `-A` (all) correction flags
 - [ ] **Parallel processing** - Use rayon for multi-threaded file processing
-- [ ] **Verify more cops** - Mark implemented cops as passing tests
 
 ### Medium Priority
 
 - [ ] **JSON formatter** - `-f json` for CI integration
 - [ ] **`--only` / `--except` flags** - Filter cops at runtime
-- [ ] **More cops** - Style/StringLiterals, Style/FrozenStringLiteralComment, etc.
 
 ### Low Priority
 
@@ -197,16 +211,17 @@ cargo run --bin extract-rubocop-tests -- /path/to/rubocop/spec/rubocop/cop
 
 ## Comparison with RuboCop
 
-| Feature          | RuboCop  | ruby-fast-cop           |
-| ---------------- | -------- | ----------------------- |
-| Performance      | Baseline | 50-100x faster (target) |
-| Cop count        | ~500     | 6 verified, 5 partial   |
-| Custom Ruby cops | Yes      | No                      |
-| .rubocop.yml     | Yes      | Yes                     |
-| Auto-correct     | Yes      | Planned                 |
-| Library API      | Limited  | Yes                     |
-| inherit_from     | Yes      | Yes                     |
-| inherit_gem      | Yes      | Yes                     |
+| Feature          | RuboCop         | ruby-fast-cop           |
+| ---------------- | --------------- | ----------------------- |
+| Performance      | Baseline        | 50-100x faster (target) |
+| Cop count        | 631             | 11 implemented          |
+| Test coverage    | ~27k test cases | 631 fixtures (1:1)      |
+| Custom Ruby cops | Yes             | No                      |
+| .rubocop.yml     | Yes             | Yes                     |
+| Auto-correct     | Yes             | Planned                 |
+| Library API      | Limited         | Yes                     |
+| inherit_from     | Yes             | Yes                     |
+| inherit_gem      | Yes             | Yes                     |
 
 ## License
 

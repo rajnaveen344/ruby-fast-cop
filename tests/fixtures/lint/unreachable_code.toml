@@ -4,23 +4,1851 @@ severity = "warning"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_lint_unreachablecode"
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_return_before_other_statements"
+source = '''
+def something
+  array.each do |item|
+    return
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_return_in_begin"
+source = '''
+def something
+  array.each do |item|
+    begin
+      return
+      bar
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 6
+column_end = 9
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_return_in_all_if_branches"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      return
+    else
+      return
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 8
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_return_in_all_if_branches_with_other_expressions"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      return
+    else
+      something2
+      return
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 10
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_return_in_all_if_and_elsif_branches"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      return
+    elsif cond2
+      something2
+      return
+    else
+      something3
+      return
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 13
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_return_in_all_case_branches"
+source = '''
+def something
+  array.each do |item|
+    case cond
+    when 1
+      something
+      return
+    when 2
+      something2
+      return
+    else
+      something3
+      return
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 14
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_return_in_all_case_pattern_branches"
+source = '''
+def something
+  array.each do |item|
+    case cond
+    in 1
+      something
+      return
+    in 2
+      something2
+      return
+    else
+      something3
+      return
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 14
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_code_with_conditional_return"
+source = '''
+def something
+  array.each do |item|
+    return if cond
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_return_as_the_final_expression"
+source = '''
+def something
+  array.each do |item|
+    return if cond
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_return_is_in_all_if_branches"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      return
+    else
+      return
+    end
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_return_is_in_if_branch_only"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      return
+    else
+      something2
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_return_is_in_if_and_without_else"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      return
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_return_is_in_else_branch_only"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+    else
+      something2
+      return
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_return_is_not_in_elsif_branch"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      return
+    elsif cond2
+      something2
+    else
+      something3
+      return
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_return_is_in_case_branch_without_else"
+source = '''
+def something
+  array.each do |item|
+    case cond
+    when 1
+      something
+      return
+    when 2
+      something2
+      return
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_return_is_in_case_pattern_branch_without_else"
+source = '''
+def something
+  array.each do |item|
+    case cond
+    in 1
+      something
+      return
+    in 2
+      something2
+      return
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_next_before_other_statements"
+source = '''
+def something
+  array.each do |item|
+    next
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_next_in_begin"
+source = '''
+def something
+  array.each do |item|
+    begin
+      next
+      bar
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 6
+column_end = 9
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_next_in_all_if_branches"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      next
+    else
+      next
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 8
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_next_in_all_if_branches_with_other_expressions"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      next
+    else
+      something2
+      next
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 10
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_next_in_all_if_and_elsif_branches"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      next
+    elsif cond2
+      something2
+      next
+    else
+      something3
+      next
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 13
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_next_in_all_case_branches"
+source = '''
+def something
+  array.each do |item|
+    case cond
+    when 1
+      something
+      next
+    when 2
+      something2
+      next
+    else
+      something3
+      next
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 14
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_next_in_all_case_pattern_branches"
+source = '''
+def something
+  array.each do |item|
+    case cond
+    in 1
+      something
+      next
+    in 2
+      something2
+      next
+    else
+      something3
+      next
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 14
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_code_with_conditional_next"
+source = '''
+def something
+  array.each do |item|
+    next if cond
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_next_as_the_final_expression"
+source = '''
+def something
+  array.each do |item|
+    next if cond
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_next_is_in_all_if_branches"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      next
+    else
+      next
+    end
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_next_is_in_if_branch_only"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      next
+    else
+      something2
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_next_is_in_if_and_without_else"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      next
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_next_is_in_else_branch_only"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+    else
+      something2
+      next
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_next_is_not_in_elsif_branch"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      next
+    elsif cond2
+      something2
+    else
+      something3
+      next
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_next_is_in_case_branch_without_else"
+source = '''
+def something
+  array.each do |item|
+    case cond
+    when 1
+      something
+      next
+    when 2
+      something2
+      next
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_next_is_in_case_pattern_branch_without_else"
+source = '''
+def something
+  array.each do |item|
+    case cond
+    in 1
+      something
+      next
+    in 2
+      something2
+      next
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_break_before_other_statements"
+source = '''
+def something
+  array.each do |item|
+    break
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_break_in_begin"
+source = '''
+def something
+  array.each do |item|
+    begin
+      break
+      bar
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 6
+column_end = 9
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_break_in_all_if_branches"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      break
+    else
+      break
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 8
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_break_in_all_if_branches_with_other_expressions"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      break
+    else
+      something2
+      break
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 10
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_break_in_all_if_and_elsif_branches"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      break
+    elsif cond2
+      something2
+      break
+    else
+      something3
+      break
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 13
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_break_in_all_case_branches"
+source = '''
+def something
+  array.each do |item|
+    case cond
+    when 1
+      something
+      break
+    when 2
+      something2
+      break
+    else
+      something3
+      break
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 14
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_break_in_all_case_pattern_branches"
+source = '''
+def something
+  array.each do |item|
+    case cond
+    in 1
+      something
+      break
+    in 2
+      something2
+      break
+    else
+      something3
+      break
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 14
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_code_with_conditional_break"
+source = '''
+def something
+  array.each do |item|
+    break if cond
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_break_as_the_final_expression"
+source = '''
+def something
+  array.each do |item|
+    break if cond
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_break_is_in_all_if_branches"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      break
+    else
+      break
+    end
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_break_is_in_if_branch_only"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      break
+    else
+      something2
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_break_is_in_if_and_without_else"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      break
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_break_is_in_else_branch_only"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+    else
+      something2
+      break
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_break_is_not_in_elsif_branch"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      break
+    elsif cond2
+      something2
+    else
+      something3
+      break
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_break_is_in_case_branch_without_else"
+source = '''
+def something
+  array.each do |item|
+    case cond
+    when 1
+      something
+      break
+    when 2
+      something2
+      break
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_break_is_in_case_pattern_branch_without_else"
+source = '''
+def something
+  array.each do |item|
+    case cond
+    in 1
+      something
+      break
+    in 2
+      something2
+      break
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_retry_before_other_statements"
+source = '''
+def something
+  array.each do |item|
+    retry
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_retry_in_begin"
+source = '''
+def something
+  array.each do |item|
+    begin
+      retry
+      bar
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 6
+column_end = 9
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_retry_in_all_if_branches"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      retry
+    else
+      retry
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 8
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_retry_in_all_if_branches_with_other_expressions"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      retry
+    else
+      something2
+      retry
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 10
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_retry_in_all_if_and_elsif_branches"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      retry
+    elsif cond2
+      something2
+      retry
+    else
+      something3
+      retry
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 13
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_retry_in_all_case_branches"
+source = '''
+def something
+  array.each do |item|
+    case cond
+    when 1
+      something
+      retry
+    when 2
+      something2
+      retry
+    else
+      something3
+      retry
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 14
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_retry_in_all_case_pattern_branches"
+source = '''
+def something
+  array.each do |item|
+    case cond
+    in 1
+      something
+      retry
+    in 2
+      something2
+      retry
+    else
+      something3
+      retry
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 14
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_code_with_conditional_retry"
+source = '''
+def something
+  array.each do |item|
+    retry if cond
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_retry_as_the_final_expression"
+source = '''
+def something
+  array.each do |item|
+    retry if cond
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_retry_is_in_all_if_branches"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      retry
+    else
+      retry
+    end
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_retry_is_in_if_branch_only"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      retry
+    else
+      something2
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_retry_is_in_if_and_without_else"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      retry
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_retry_is_in_else_branch_only"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+    else
+      something2
+      retry
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_retry_is_not_in_elsif_branch"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      retry
+    elsif cond2
+      something2
+    else
+      something3
+      retry
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_retry_is_in_case_branch_without_else"
+source = '''
+def something
+  array.each do |item|
+    case cond
+    when 1
+      something
+      retry
+    when 2
+      something2
+      retry
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_retry_is_in_case_pattern_branch_without_else"
+source = '''
+def something
+  array.each do |item|
+    case cond
+    in 1
+      something
+      retry
+    in 2
+      something2
+      retry
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_redo_before_other_statements"
+source = '''
+def something
+  array.each do |item|
+    redo
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_redo_in_begin"
+source = '''
+def something
+  array.each do |item|
+    begin
+      redo
+      bar
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 6
+column_end = 9
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_redo_in_all_if_branches"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      redo
+    else
+      redo
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 8
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_redo_in_all_if_branches_with_other_expressions"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      redo
+    else
+      something2
+      redo
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 10
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_redo_in_all_if_and_elsif_branches"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      redo
+    elsif cond2
+      something2
+      redo
+    else
+      something3
+      redo
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 13
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_redo_in_all_case_branches"
+source = '''
+def something
+  array.each do |item|
+    case cond
+    when 1
+      something
+      redo
+    when 2
+      something2
+      redo
+    else
+      something3
+      redo
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 14
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_redo_in_all_case_pattern_branches"
+source = '''
+def something
+  array.each do |item|
+    case cond
+    in 1
+      something
+      redo
+    in 2
+      something2
+      redo
+    else
+      something3
+      redo
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 14
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_code_with_conditional_redo"
+source = '''
+def something
+  array.each do |item|
+    redo if cond
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_redo_as_the_final_expression"
+source = '''
+def something
+  array.each do |item|
+    redo if cond
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_redo_is_in_all_if_branches"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      redo
+    else
+      redo
+    end
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_redo_is_in_if_branch_only"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      redo
+    else
+      something2
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_redo_is_in_if_and_without_else"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      redo
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_redo_is_in_else_branch_only"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+    else
+      something2
+      redo
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_redo_is_not_in_elsif_branch"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      redo
+    elsif cond2
+      something2
+    else
+      something3
+      redo
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_redo_is_in_case_branch_without_else"
+source = '''
+def something
+  array.each do |item|
+    case cond
+    when 1
+      something
+      redo
+    when 2
+      something2
+      redo
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_redo_is_in_case_pattern_branch_without_else"
+source = '''
+def something
+  array.each do |item|
+    case cond
+    in 1
+      something
+      redo
+    in 2
+      something2
+      redo
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_throw_before_other_statements"
+source = '''
+def something
+  array.each do |item|
+    throw
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_throw_in_begin"
+source = '''
+def something
+  array.each do |item|
+    begin
+      throw
+      bar
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 6
+column_end = 9
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_throw_in_all_if_branches"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      throw
+    else
+      throw
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 8
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_throw_in_all_if_branches_with_other_expressions"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      throw
+    else
+      something2
+      throw
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 10
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_throw_in_all_if_and_elsif_branches"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      throw
+    elsif cond2
+      something2
+      throw
+    else
+      something3
+      throw
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 13
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_throw_in_all_case_branches"
+source = '''
+def something
+  array.each do |item|
+    case cond
+    when 1
+      something
+      throw
+    when 2
+      something2
+      throw
+    else
+      something3
+      throw
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 14
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_throw_in_all_case_pattern_branches"
+source = '''
+def something
+  array.each do |item|
+    case cond
+    in 1
+      something
+      throw
+    in 2
+      something2
+      throw
+    else
+      something3
+      throw
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 14
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_code_with_conditional_throw"
+source = '''
+def something
+  array.each do |item|
+    throw if cond
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_throw_as_the_final_expression"
+source = '''
+def something
+  array.each do |item|
+    throw if cond
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_throw_is_in_all_if_branches"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      throw
+    else
+      throw
+    end
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_throw_is_in_if_branch_only"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      throw
+    else
+      something2
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_throw_is_in_if_and_without_else"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      throw
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_throw_is_in_else_branch_only"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+    else
+      something2
+      throw
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_throw_is_not_in_elsif_branch"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      throw
+    elsif cond2
+      something2
+    else
+      something3
+      throw
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_throw_is_in_case_branch_without_else"
+source = '''
+def something
+  array.each do |item|
+    case cond
+    when 1
+      something
+      throw
+    when 2
+      something2
+      throw
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_throw_is_in_case_pattern_branch_without_else"
+source = '''
+def something
+  array.each do |item|
+    case cond
+    in 1
+      something
+      throw
+    in 2
+      something2
+      throw
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_throw_after_instance_eval"
 source = '''
 class Dummy
-  def #{t}; end
+  def throw; end
 end
 
 d = Dummy.new
 d.instance_eval do
-  #{t}
+  throw
   bar
 end
 
-#{t}
+throw
 bar
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 12
@@ -29,17 +1857,15 @@ column_end = 3
 message = "Unreachable code detected."
 
 [[tests]]
-name = "rubocop_cop_lint_unreachablecode"
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_throw_with_nested_redefinition"
 source = '''
 def foo
-  def #{t}; end
+  def throw; end
 end
 
-#{t}
+throw
 bar
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 6
@@ -48,17 +1874,45 @@ column_end = 3
 message = "Unreachable code detected."
 
 [[tests]]
-name = "rubocop_cop_lint_unreachablecode"
+name = "rubocopcoplintunreachablecode_accepts_throw_if_redefined"
+source = '''
+def something
+  array.each do |item|
+    def throw; end
+    throw
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_throw_if_redefined_even_if_its_called_recursively"
+source = '''
+def something
+  array.each do |item|
+    def throw
+      throw
+      bar
+    end
+    
+    throw
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_selfthrow_with_nested_redefinition"
 source = '''
 def foo
-  def self.#{t}; end
+  def self.throw; end
 end
 
-#{t}
+throw
 bar
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 6
@@ -67,87 +1921,106 @@ column_end = 3
 message = "Unreachable code detected."
 
 [[tests]]
-name = "rubocop_cop_lint_unreachablecode"
+name = "rubocopcoplintunreachablecode_accepts_selfthrow_if_redefined"
+source = '''
+def something
+  array.each do |item|
+    def self.throw; end
+    throw
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_selfthrow_if_redefined_even_if_its_called_recursively"
+source = '''
+def something
+  array.each do |item|
+    def self.throw
+      throw
+      bar
+    end
+    
+    throw
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_throw_if_called_in_instance_eval"
 source = '''
 class Dummy
-  def #{t}; end
+  def throw; end
 end
 
 d = Dummy.new
 d.instance_eval do
-  #{t}
+  throw
   bar
 end
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_unreachablecode"
+name = "rubocopcoplintunreachablecode_accepts_throw_if_called_in_instance_eval_with_numblock"
 source = '''
 class Dummy
-  def #{t}; end
+  def throw; end
 end
 
 d = Dummy.new
 d.instance_eval do
-  #{t}
+  throw
   _1
 end
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_unreachablecode"
+name = "rubocopcoplintunreachablecode_accepts_throw_if_called_in_instance_eval_with_itblock"
 source = '''
 class Dummy
-  def #{t}; end
+  def throw; end
 end
 
 d = Dummy.new
 d.instance_eval do
-  #{t}
+  throw
   it
 end
 '''
-ruby_version = ">= 3.4"
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_unreachablecode"
+name = "rubocopcoplintunreachablecode_accepts_throw_if_called_in_nested_instance_eval"
 source = '''
 class Dummy
-  def #{t}; end
+  def throw; end
 end
 
 d = Dummy.new
 d.instance_eval do
   d2 = Dummy.new
   d2.instance_eval do
-    #{t}
+    throw
     bar
   end
 end
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_unreachablecode"
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_redefined_throw_if_it_is_called_on_kernel"
 source = '''
-def #{t}; end
+def throw; end
 
-Kernel.#{t}
+Kernel.throw
 foo
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 4
@@ -156,32 +2029,28 @@ column_end = 3
 message = "Unreachable code detected."
 
 [[tests]]
-name = "rubocop_cop_lint_unreachablecode"
+name = "rubocopcoplintunreachablecode_accepts_redefined_throw_if_it_is_called_on_a_class_other_than_kernel"
 source = '''
-def #{t}; end
+def throw; end
 
-Dummy.#{t}
+Dummy.throw
 foo
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_unreachablecode"
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_throw_inside_instance_eval_if_it_is_called_on_kernel"
 source = '''
 class Dummy
-  def #{t}; end
+  def throw; end
 end
 
 d = Dummy.new
 d.instance_eval do
-  Kernel.#{t}
+  Kernel.throw
   foo
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 8
@@ -190,18 +2059,2741 @@ column_end = 5
 message = "Unreachable code detected."
 
 [[tests]]
-name = "rubocop_cop_lint_unreachablecode"
+name = "rubocopcoplintunreachablecode_accepts_throw_inside_instance_eval_if_it_is_called_on_a_class_other_than_kernel"
 source = '''
 class Dummy
-  def #{t}; end
+  def throw; end
 end
 
 d = Dummy.new
 d.instance_eval do
-  Dummy.#{t}
+  Dummy.throw
   foo
 end
 '''
-interpolated = true
-verified = false
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_raise_before_other_statements"
+source = '''
+def something
+  array.each do |item|
+    raise
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_raise_in_begin"
+source = '''
+def something
+  array.each do |item|
+    begin
+      raise
+      bar
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 6
+column_end = 9
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_raise_in_all_if_branches"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      raise
+    else
+      raise
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 8
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_raise_in_all_if_branches_with_other_expressions"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      raise
+    else
+      something2
+      raise
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 10
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_raise_in_all_if_and_elsif_branches"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      raise
+    elsif cond2
+      something2
+      raise
+    else
+      something3
+      raise
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 13
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_raise_in_all_case_branches"
+source = '''
+def something
+  array.each do |item|
+    case cond
+    when 1
+      something
+      raise
+    when 2
+      something2
+      raise
+    else
+      something3
+      raise
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 14
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_raise_in_all_case_pattern_branches"
+source = '''
+def something
+  array.each do |item|
+    case cond
+    in 1
+      something
+      raise
+    in 2
+      something2
+      raise
+    else
+      something3
+      raise
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 14
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_code_with_conditional_raise"
+source = '''
+def something
+  array.each do |item|
+    raise if cond
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_raise_as_the_final_expression"
+source = '''
+def something
+  array.each do |item|
+    raise if cond
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_raise_is_in_all_if_branches"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      raise
+    else
+      raise
+    end
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_raise_is_in_if_branch_only"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      raise
+    else
+      something2
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_raise_is_in_if_and_without_else"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      raise
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_raise_is_in_else_branch_only"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+    else
+      something2
+      raise
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_raise_is_not_in_elsif_branch"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      raise
+    elsif cond2
+      something2
+    else
+      something3
+      raise
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_raise_is_in_case_branch_without_else"
+source = '''
+def something
+  array.each do |item|
+    case cond
+    when 1
+      something
+      raise
+    when 2
+      something2
+      raise
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_raise_is_in_case_pattern_branch_without_else"
+source = '''
+def something
+  array.each do |item|
+    case cond
+    in 1
+      something
+      raise
+    in 2
+      something2
+      raise
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_raise_after_instance_eval"
+source = '''
+class Dummy
+  def raise; end
+end
+
+d = Dummy.new
+d.instance_eval do
+  raise
+  bar
+end
+
+raise
+bar
+'''
+
+[[tests.offenses]]
+line = 12
+column_start = 0
+column_end = 3
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_raise_with_nested_redefinition"
+source = '''
+def foo
+  def raise; end
+end
+
+raise
+bar
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 0
+column_end = 3
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_raise_if_redefined"
+source = '''
+def something
+  array.each do |item|
+    def raise; end
+    raise
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_raise_if_redefined_even_if_its_called_recursively"
+source = '''
+def something
+  array.each do |item|
+    def raise
+      raise
+      bar
+    end
+    
+    raise
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_selfraise_with_nested_redefinition"
+source = '''
+def foo
+  def self.raise; end
+end
+
+raise
+bar
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 0
+column_end = 3
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_selfraise_if_redefined"
+source = '''
+def something
+  array.each do |item|
+    def self.raise; end
+    raise
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_selfraise_if_redefined_even_if_its_called_recursively"
+source = '''
+def something
+  array.each do |item|
+    def self.raise
+      raise
+      bar
+    end
+    
+    raise
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_raise_if_called_in_instance_eval"
+source = '''
+class Dummy
+  def raise; end
+end
+
+d = Dummy.new
+d.instance_eval do
+  raise
+  bar
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_raise_if_called_in_instance_eval_with_numblock"
+source = '''
+class Dummy
+  def raise; end
+end
+
+d = Dummy.new
+d.instance_eval do
+  raise
+  _1
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_raise_if_called_in_instance_eval_with_itblock"
+source = '''
+class Dummy
+  def raise; end
+end
+
+d = Dummy.new
+d.instance_eval do
+  raise
+  it
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_raise_if_called_in_nested_instance_eval"
+source = '''
+class Dummy
+  def raise; end
+end
+
+d = Dummy.new
+d.instance_eval do
+  d2 = Dummy.new
+  d2.instance_eval do
+    raise
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_redefined_raise_if_it_is_called_on_kernel"
+source = '''
+def raise; end
+
+Kernel.raise
+foo
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 3
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_redefined_raise_if_it_is_called_on_a_class_other_than_kernel"
+source = '''
+def raise; end
+
+Dummy.raise
+foo
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_raise_inside_instance_eval_if_it_is_called_on_kernel"
+source = '''
+class Dummy
+  def raise; end
+end
+
+d = Dummy.new
+d.instance_eval do
+  Kernel.raise
+  foo
+end
+'''
+
+[[tests.offenses]]
+line = 8
+column_start = 2
+column_end = 5
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_raise_inside_instance_eval_if_it_is_called_on_a_class_other_than_kernel"
+source = '''
+class Dummy
+  def raise; end
+end
+
+d = Dummy.new
+d.instance_eval do
+  Dummy.raise
+  foo
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_fail_before_other_statements"
+source = '''
+def something
+  array.each do |item|
+    fail
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_fail_in_begin"
+source = '''
+def something
+  array.each do |item|
+    begin
+      fail
+      bar
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 6
+column_end = 9
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_fail_in_all_if_branches"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      fail
+    else
+      fail
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 8
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_fail_in_all_if_branches_with_other_expressions"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      fail
+    else
+      something2
+      fail
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 10
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_fail_in_all_if_and_elsif_branches"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      fail
+    elsif cond2
+      something2
+      fail
+    else
+      something3
+      fail
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 13
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_fail_in_all_case_branches"
+source = '''
+def something
+  array.each do |item|
+    case cond
+    when 1
+      something
+      fail
+    when 2
+      something2
+      fail
+    else
+      something3
+      fail
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 14
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_fail_in_all_case_pattern_branches"
+source = '''
+def something
+  array.each do |item|
+    case cond
+    in 1
+      something
+      fail
+    in 2
+      something2
+      fail
+    else
+      something3
+      fail
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 14
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_code_with_conditional_fail"
+source = '''
+def something
+  array.each do |item|
+    fail if cond
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_fail_as_the_final_expression"
+source = '''
+def something
+  array.each do |item|
+    fail if cond
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_fail_is_in_all_if_branches"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      fail
+    else
+      fail
+    end
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_fail_is_in_if_branch_only"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      fail
+    else
+      something2
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_fail_is_in_if_and_without_else"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      fail
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_fail_is_in_else_branch_only"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+    else
+      something2
+      fail
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_fail_is_not_in_elsif_branch"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      fail
+    elsif cond2
+      something2
+    else
+      something3
+      fail
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_fail_is_in_case_branch_without_else"
+source = '''
+def something
+  array.each do |item|
+    case cond
+    when 1
+      something
+      fail
+    when 2
+      something2
+      fail
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_fail_is_in_case_pattern_branch_without_else"
+source = '''
+def something
+  array.each do |item|
+    case cond
+    in 1
+      something
+      fail
+    in 2
+      something2
+      fail
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_fail_after_instance_eval"
+source = '''
+class Dummy
+  def fail; end
+end
+
+d = Dummy.new
+d.instance_eval do
+  fail
+  bar
+end
+
+fail
+bar
+'''
+
+[[tests.offenses]]
+line = 12
+column_start = 0
+column_end = 3
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_fail_with_nested_redefinition"
+source = '''
+def foo
+  def fail; end
+end
+
+fail
+bar
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 0
+column_end = 3
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_fail_if_redefined"
+source = '''
+def something
+  array.each do |item|
+    def fail; end
+    fail
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_fail_if_redefined_even_if_its_called_recursively"
+source = '''
+def something
+  array.each do |item|
+    def fail
+      fail
+      bar
+    end
+    
+    fail
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_selffail_with_nested_redefinition"
+source = '''
+def foo
+  def self.fail; end
+end
+
+fail
+bar
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 0
+column_end = 3
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_selffail_if_redefined"
+source = '''
+def something
+  array.each do |item|
+    def self.fail; end
+    fail
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_selffail_if_redefined_even_if_its_called_recursively"
+source = '''
+def something
+  array.each do |item|
+    def self.fail
+      fail
+      bar
+    end
+    
+    fail
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_fail_if_called_in_instance_eval"
+source = '''
+class Dummy
+  def fail; end
+end
+
+d = Dummy.new
+d.instance_eval do
+  fail
+  bar
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_fail_if_called_in_instance_eval_with_numblock"
+source = '''
+class Dummy
+  def fail; end
+end
+
+d = Dummy.new
+d.instance_eval do
+  fail
+  _1
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_fail_if_called_in_instance_eval_with_itblock"
+source = '''
+class Dummy
+  def fail; end
+end
+
+d = Dummy.new
+d.instance_eval do
+  fail
+  it
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_fail_if_called_in_nested_instance_eval"
+source = '''
+class Dummy
+  def fail; end
+end
+
+d = Dummy.new
+d.instance_eval do
+  d2 = Dummy.new
+  d2.instance_eval do
+    fail
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_redefined_fail_if_it_is_called_on_kernel"
+source = '''
+def fail; end
+
+Kernel.fail
+foo
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 3
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_redefined_fail_if_it_is_called_on_a_class_other_than_kernel"
+source = '''
+def fail; end
+
+Dummy.fail
+foo
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_fail_inside_instance_eval_if_it_is_called_on_kernel"
+source = '''
+class Dummy
+  def fail; end
+end
+
+d = Dummy.new
+d.instance_eval do
+  Kernel.fail
+  foo
+end
+'''
+
+[[tests.offenses]]
+line = 8
+column_start = 2
+column_end = 5
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_fail_inside_instance_eval_if_it_is_called_on_a_class_other_than_kernel"
+source = '''
+class Dummy
+  def fail; end
+end
+
+d = Dummy.new
+d.instance_eval do
+  Dummy.fail
+  foo
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_exit_before_other_statements"
+source = '''
+def something
+  array.each do |item|
+    exit
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_exit_in_begin"
+source = '''
+def something
+  array.each do |item|
+    begin
+      exit
+      bar
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 6
+column_end = 9
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_exit_in_all_if_branches"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      exit
+    else
+      exit
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 8
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_exit_in_all_if_branches_with_other_expressions"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      exit
+    else
+      something2
+      exit
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 10
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_exit_in_all_if_and_elsif_branches"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      exit
+    elsif cond2
+      something2
+      exit
+    else
+      something3
+      exit
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 13
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_exit_in_all_case_branches"
+source = '''
+def something
+  array.each do |item|
+    case cond
+    when 1
+      something
+      exit
+    when 2
+      something2
+      exit
+    else
+      something3
+      exit
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 14
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_exit_in_all_case_pattern_branches"
+source = '''
+def something
+  array.each do |item|
+    case cond
+    in 1
+      something
+      exit
+    in 2
+      something2
+      exit
+    else
+      something3
+      exit
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 14
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_code_with_conditional_exit"
+source = '''
+def something
+  array.each do |item|
+    exit if cond
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_exit_as_the_final_expression"
+source = '''
+def something
+  array.each do |item|
+    exit if cond
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_exit_is_in_all_if_branches"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      exit
+    else
+      exit
+    end
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_exit_is_in_if_branch_only"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      exit
+    else
+      something2
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_exit_is_in_if_and_without_else"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      exit
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_exit_is_in_else_branch_only"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+    else
+      something2
+      exit
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_exit_is_not_in_elsif_branch"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      exit
+    elsif cond2
+      something2
+    else
+      something3
+      exit
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_exit_is_in_case_branch_without_else"
+source = '''
+def something
+  array.each do |item|
+    case cond
+    when 1
+      something
+      exit
+    when 2
+      something2
+      exit
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_exit_is_in_case_pattern_branch_without_else"
+source = '''
+def something
+  array.each do |item|
+    case cond
+    in 1
+      something
+      exit
+    in 2
+      something2
+      exit
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_exit_after_instance_eval"
+source = '''
+class Dummy
+  def exit; end
+end
+
+d = Dummy.new
+d.instance_eval do
+  exit
+  bar
+end
+
+exit
+bar
+'''
+
+[[tests.offenses]]
+line = 12
+column_start = 0
+column_end = 3
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_exit_with_nested_redefinition"
+source = '''
+def foo
+  def exit; end
+end
+
+exit
+bar
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 0
+column_end = 3
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_exit_if_redefined"
+source = '''
+def something
+  array.each do |item|
+    def exit; end
+    exit
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_exit_if_redefined_even_if_its_called_recursively"
+source = '''
+def something
+  array.each do |item|
+    def exit
+      exit
+      bar
+    end
+    
+    exit
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_selfexit_with_nested_redefinition"
+source = '''
+def foo
+  def self.exit; end
+end
+
+exit
+bar
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 0
+column_end = 3
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_selfexit_if_redefined"
+source = '''
+def something
+  array.each do |item|
+    def self.exit; end
+    exit
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_selfexit_if_redefined_even_if_its_called_recursively"
+source = '''
+def something
+  array.each do |item|
+    def self.exit
+      exit
+      bar
+    end
+    
+    exit
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_exit_if_called_in_instance_eval"
+source = '''
+class Dummy
+  def exit; end
+end
+
+d = Dummy.new
+d.instance_eval do
+  exit
+  bar
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_exit_if_called_in_instance_eval_with_numblock"
+source = '''
+class Dummy
+  def exit; end
+end
+
+d = Dummy.new
+d.instance_eval do
+  exit
+  _1
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_exit_if_called_in_instance_eval_with_itblock"
+source = '''
+class Dummy
+  def exit; end
+end
+
+d = Dummy.new
+d.instance_eval do
+  exit
+  it
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_exit_if_called_in_nested_instance_eval"
+source = '''
+class Dummy
+  def exit; end
+end
+
+d = Dummy.new
+d.instance_eval do
+  d2 = Dummy.new
+  d2.instance_eval do
+    exit
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_redefined_exit_if_it_is_called_on_kernel"
+source = '''
+def exit; end
+
+Kernel.exit
+foo
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 3
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_redefined_exit_if_it_is_called_on_a_class_other_than_kernel"
+source = '''
+def exit; end
+
+Dummy.exit
+foo
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_exit_inside_instance_eval_if_it_is_called_on_kernel"
+source = '''
+class Dummy
+  def exit; end
+end
+
+d = Dummy.new
+d.instance_eval do
+  Kernel.exit
+  foo
+end
+'''
+
+[[tests.offenses]]
+line = 8
+column_start = 2
+column_end = 5
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_exit_inside_instance_eval_if_it_is_called_on_a_class_other_than_kernel"
+source = '''
+class Dummy
+  def exit; end
+end
+
+d = Dummy.new
+d.instance_eval do
+  Dummy.exit
+  foo
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_exit_before_other_statements_2"
+source = '''
+def something
+  array.each do |item|
+    exit!
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_exit_in_begin_2"
+source = '''
+def something
+  array.each do |item|
+    begin
+      exit!
+      bar
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 6
+column_end = 9
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_exit_in_all_if_branches_2"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      exit!
+    else
+      exit!
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 8
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_exit_in_all_if_branches_with_other_expressions_2"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      exit!
+    else
+      something2
+      exit!
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 10
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_exit_in_all_if_and_elsif_branches_2"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      exit!
+    elsif cond2
+      something2
+      exit!
+    else
+      something3
+      exit!
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 13
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_exit_in_all_case_branches_2"
+source = '''
+def something
+  array.each do |item|
+    case cond
+    when 1
+      something
+      exit!
+    when 2
+      something2
+      exit!
+    else
+      something3
+      exit!
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 14
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_exit_in_all_case_pattern_branches_2"
+source = '''
+def something
+  array.each do |item|
+    case cond
+    in 1
+      something
+      exit!
+    in 2
+      something2
+      exit!
+    else
+      something3
+      exit!
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 14
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_code_with_conditional_exit_2"
+source = '''
+def something
+  array.each do |item|
+    exit! if cond
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_exit_as_the_final_expression_2"
+source = '''
+def something
+  array.each do |item|
+    exit! if cond
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_exit_is_in_all_if_branches_2"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      exit!
+    else
+      exit!
+    end
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_exit_is_in_if_branch_only_2"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      exit!
+    else
+      something2
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_exit_is_in_if_and_without_else_2"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      exit!
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_exit_is_in_else_branch_only_2"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+    else
+      something2
+      exit!
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_exit_is_not_in_elsif_branch_2"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      exit!
+    elsif cond2
+      something2
+    else
+      something3
+      exit!
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_exit_is_in_case_branch_without_else_2"
+source = '''
+def something
+  array.each do |item|
+    case cond
+    when 1
+      something
+      exit!
+    when 2
+      something2
+      exit!
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_exit_is_in_case_pattern_branch_without_else_2"
+source = '''
+def something
+  array.each do |item|
+    case cond
+    in 1
+      something
+      exit!
+    in 2
+      something2
+      exit!
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_exit_after_instance_eval_2"
+source = '''
+class Dummy
+  def exit!; end
+end
+
+d = Dummy.new
+d.instance_eval do
+  exit!
+  bar
+end
+
+exit!
+bar
+'''
+
+[[tests.offenses]]
+line = 12
+column_start = 0
+column_end = 3
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_exit_with_nested_redefinition_2"
+source = '''
+def foo
+  def exit!; end
+end
+
+exit!
+bar
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 0
+column_end = 3
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_exit_if_redefined_2"
+source = '''
+def something
+  array.each do |item|
+    def exit!; end
+    exit!
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_exit_if_redefined_even_if_its_called_recursively_2"
+source = '''
+def something
+  array.each do |item|
+    def exit!
+      exit!
+      bar
+    end
+    
+    exit!
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_selfexit_with_nested_redefinition_2"
+source = '''
+def foo
+  def self.exit!; end
+end
+
+exit!
+bar
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 0
+column_end = 3
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_selfexit_if_redefined_2"
+source = '''
+def something
+  array.each do |item|
+    def self.exit!; end
+    exit!
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_selfexit_if_redefined_even_if_its_called_recursively_2"
+source = '''
+def something
+  array.each do |item|
+    def self.exit!
+      exit!
+      bar
+    end
+    
+    exit!
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_exit_if_called_in_instance_eval_2"
+source = '''
+class Dummy
+  def exit!; end
+end
+
+d = Dummy.new
+d.instance_eval do
+  exit!
+  bar
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_exit_if_called_in_instance_eval_with_numblock_2"
+source = '''
+class Dummy
+  def exit!; end
+end
+
+d = Dummy.new
+d.instance_eval do
+  exit!
+  _1
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_exit_if_called_in_instance_eval_with_itblock_2"
+source = '''
+class Dummy
+  def exit!; end
+end
+
+d = Dummy.new
+d.instance_eval do
+  exit!
+  it
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_exit_if_called_in_nested_instance_eval_2"
+source = '''
+class Dummy
+  def exit!; end
+end
+
+d = Dummy.new
+d.instance_eval do
+  d2 = Dummy.new
+  d2.instance_eval do
+    exit!
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_redefined_exit_if_it_is_called_on_kernel_2"
+source = '''
+def exit!; end
+
+Kernel.exit!
+foo
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 3
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_redefined_exit_if_it_is_called_on_a_class_other_than_kernel_2"
+source = '''
+def exit!; end
+
+Dummy.exit!
+foo
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_exit_inside_instance_eval_if_it_is_called_on_kernel_2"
+source = '''
+class Dummy
+  def exit!; end
+end
+
+d = Dummy.new
+d.instance_eval do
+  Kernel.exit!
+  foo
+end
+'''
+
+[[tests.offenses]]
+line = 8
+column_start = 2
+column_end = 5
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_exit_inside_instance_eval_if_it_is_called_on_a_class_other_than_kernel_2"
+source = '''
+class Dummy
+  def exit!; end
+end
+
+d = Dummy.new
+d.instance_eval do
+  Dummy.exit!
+  foo
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_abort_before_other_statements"
+source = '''
+def something
+  array.each do |item|
+    abort
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_abort_in_begin"
+source = '''
+def something
+  array.each do |item|
+    begin
+      abort
+      bar
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 6
+column_end = 9
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_abort_in_all_if_branches"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      abort
+    else
+      abort
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 8
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_abort_in_all_if_branches_with_other_expressions"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      abort
+    else
+      something2
+      abort
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 10
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_abort_in_all_if_and_elsif_branches"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      abort
+    elsif cond2
+      something2
+      abort
+    else
+      something3
+      abort
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 13
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_abort_in_all_case_branches"
+source = '''
+def something
+  array.each do |item|
+    case cond
+    when 1
+      something
+      abort
+    when 2
+      something2
+      abort
+    else
+      something3
+      abort
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 14
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_abort_in_all_case_pattern_branches"
+source = '''
+def something
+  array.each do |item|
+    case cond
+    in 1
+      something
+      abort
+    in 2
+      something2
+      abort
+    else
+      something3
+      abort
+    end
+    bar
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 14
+column_start = 4
+column_end = 7
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_code_with_conditional_abort"
+source = '''
+def something
+  array.each do |item|
+    abort if cond
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_abort_as_the_final_expression"
+source = '''
+def something
+  array.each do |item|
+    abort if cond
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_abort_is_in_all_if_branches"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      abort
+    else
+      abort
+    end
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_abort_is_in_if_branch_only"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      abort
+    else
+      something2
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_abort_is_in_if_and_without_else"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      abort
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_abort_is_in_else_branch_only"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+    else
+      something2
+      abort
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_abort_is_not_in_elsif_branch"
+source = '''
+def something
+  array.each do |item|
+    if cond
+      something
+      abort
+    elsif cond2
+      something2
+    else
+      something3
+      abort
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_abort_is_in_case_branch_without_else"
+source = '''
+def something
+  array.each do |item|
+    case cond
+    when 1
+      something
+      abort
+    when 2
+      something2
+      abort
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_abort_is_in_case_pattern_branch_without_else"
+source = '''
+def something
+  array.each do |item|
+    case cond
+    in 1
+      something
+      abort
+    in 2
+      something2
+      abort
+    end
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_abort_after_instance_eval"
+source = '''
+class Dummy
+  def abort; end
+end
+
+d = Dummy.new
+d.instance_eval do
+  abort
+  bar
+end
+
+abort
+bar
+'''
+
+[[tests.offenses]]
+line = 12
+column_start = 0
+column_end = 3
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_abort_with_nested_redefinition"
+source = '''
+def foo
+  def abort; end
+end
+
+abort
+bar
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 0
+column_end = 3
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_abort_if_redefined"
+source = '''
+def something
+  array.each do |item|
+    def abort; end
+    abort
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_abort_if_redefined_even_if_its_called_recursively"
+source = '''
+def something
+  array.each do |item|
+    def abort
+      abort
+      bar
+    end
+    
+    abort
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_selfabort_with_nested_redefinition"
+source = '''
+def foo
+  def self.abort; end
+end
+
+abort
+bar
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 0
+column_end = 3
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_selfabort_if_redefined"
+source = '''
+def something
+  array.each do |item|
+    def self.abort; end
+    abort
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_selfabort_if_redefined_even_if_its_called_recursively"
+source = '''
+def something
+  array.each do |item|
+    def self.abort
+      abort
+      bar
+    end
+    
+    abort
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_abort_if_called_in_instance_eval"
+source = '''
+class Dummy
+  def abort; end
+end
+
+d = Dummy.new
+d.instance_eval do
+  abort
+  bar
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_abort_if_called_in_instance_eval_with_numblock"
+source = '''
+class Dummy
+  def abort; end
+end
+
+d = Dummy.new
+d.instance_eval do
+  abort
+  _1
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_abort_if_called_in_instance_eval_with_itblock"
+source = '''
+class Dummy
+  def abort; end
+end
+
+d = Dummy.new
+d.instance_eval do
+  abort
+  it
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_abort_if_called_in_nested_instance_eval"
+source = '''
+class Dummy
+  def abort; end
+end
+
+d = Dummy.new
+d.instance_eval do
+  d2 = Dummy.new
+  d2.instance_eval do
+    abort
+    bar
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_redefined_abort_if_it_is_called_on_kernel"
+source = '''
+def abort; end
+
+Kernel.abort
+foo
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 3
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_redefined_abort_if_it_is_called_on_a_class_other_than_kernel"
+source = '''
+def abort; end
+
+Dummy.abort
+foo
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_registers_an_offense_for_abort_inside_instance_eval_if_it_is_called_on_kernel"
+source = '''
+class Dummy
+  def abort; end
+end
+
+d = Dummy.new
+d.instance_eval do
+  Kernel.abort
+  foo
+end
+'''
+
+[[tests.offenses]]
+line = 8
+column_start = 2
+column_end = 5
+message = "Unreachable code detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablecode_accepts_abort_inside_instance_eval_if_it_is_called_on_a_class_other_than_kernel"
+source = '''
+class Dummy
+  def abort; end
+end
+
+d = Dummy.new
+d.instance_eval do
+  Dummy.abort
+  foo
+end
+'''
 offenses = []

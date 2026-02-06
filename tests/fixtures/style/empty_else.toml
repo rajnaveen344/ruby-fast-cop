@@ -4,49 +4,234 @@ severity = "convention"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_given_an_if_statement_with_a_completely_empty_else_clause_using_semicolons_autocorrect_if"
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_given_an_ifstatement_with_a_completely_empty_elseclause_using_semicolons_behaves_like_autocorrect_missingelse_is_disabled_does_autocorrection"
 source = '''
-if
+if a; foo else end
 '''
-offenses = []
+corrected = '''
+if a; foo end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 14
+message = "Redundant `else`-clause."
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_given_an_if_statement_with_a_completely_empty_else_clause_not_using_semicolons_autocorrect_if"
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_given_an_ifstatement_with_a_completely_empty_elseclause_using_semicolons_behaves_like_autocorrect_missingelse_is_both_does_not_autocorrect"
 source = '''
-if
+if a; foo else end
 '''
-offenses = []
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 14
+message = "Redundant `else`-clause."
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_given_an_if_statement_with_an_else_clause_containing_only_the_literal_nil_doesn_t_register_an_offense"
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_given_an_ifstatement_with_a_completely_empty_elseclause_using_semicolons_behaves_like_autocorrect_missingelse_is_if_does_not_autocorrect"
+source = '''
+if a; foo else end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 14
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_given_an_ifstatement_with_a_completely_empty_elseclause_using_semicolons_behaves_like_autocorrect_missingelse_is_case_does_autocorrection"
+source = '''
+if a; foo else end
+'''
+corrected = '''
+if a; foo end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 14
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_given_an_ifstatement_with_a_completely_empty_elseclause_not_using_semicolons_behaves_like_autocorrect_missingelse_is_disabled_does_autocorrection"
+source = '''
+if a
+  foo
+else
+end
+'''
+corrected = '''
+if a
+  foo
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 4
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_given_an_ifstatement_with_a_completely_empty_elseclause_not_using_semicolons_behaves_like_autocorrect_missingelse_is_both_does_not_autocorrect"
+source = '''
+if a
+  foo
+else
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 4
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_given_an_ifstatement_with_a_completely_empty_elseclause_not_using_semicolons_behaves_like_autocorrect_missingelse_is_if_does_not_autocorrect"
+source = '''
+if a
+  foo
+else
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 4
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_given_an_ifstatement_with_a_completely_empty_elseclause_not_using_semicolons_behaves_like_autocorrect_missingelse_is_case_does_autocorrection"
+source = '''
+if a
+  foo
+else
+end
+'''
+corrected = '''
+if a
+  foo
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 4
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_given_an_ifstatement_with_an_elseclause_containing_only_the_literal_nil_doesnt_register_an_offense"
 source = '''
 if a; foo elsif b; bar else nil end
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_given_an_if_statement_with_an_else_clause_with_side_effects_doesn_t_register_an_offense"
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_given_an_ifstatement_with_an_elseclause_with_sideeffects_doesnt_register_an_offense"
 source = '''
 if cond; foo else bar; nil end
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_given_an_if_statement_with_no_else_clause_doesn_t_register_an_offense"
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_given_an_ifstatement_with_no_elseclause_doesnt_register_an_offense"
 source = '''
 if cond; foo end
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_given_an_if_statement_in_an_if_statement_autocorrect_if"
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_given_an_ifstatement_in_an_ifstatement_behaves_like_autocorrect_missingelse_is_disabled_does_autocorrection"
 source = '''
-if
+if cond
+  if cond2
+    something
+  else
+  end
+end
 '''
-offenses = []
+corrected = '''
+if cond
+  if cond2
+    something
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 6
+message = "Redundant `else`-clause."
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_given_an_if_statement_with_an_empty_comment_does_not_autocorrect"
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_given_an_ifstatement_in_an_ifstatement_behaves_like_autocorrect_missingelse_is_both_does_not_autocorrect"
+source = '''
+if cond
+  if cond2
+    something
+  else
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 6
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_given_an_ifstatement_in_an_ifstatement_behaves_like_autocorrect_missingelse_is_if_does_not_autocorrect"
+source = '''
+if cond
+  if cond2
+    something
+  else
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 6
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_given_an_ifstatement_in_an_ifstatement_behaves_like_autocorrect_missingelse_is_case_does_autocorrection"
+source = '''
+if cond
+  if cond2
+    something
+  else
+  end
+end
+'''
+corrected = '''
+if cond
+  if cond2
+    something
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 6
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_given_an_ifstatement_with_an_empty_comment_does_not_autocorrect"
 source = '''
 if cond
   something
@@ -62,266 +247,1120 @@ column_end = 4
 message = "Redundant `else`-clause."
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_given_an_unless_statement_with_a_completely_empty_else_clause_autocorrect_if"
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_given_an_unlessstatement_with_a_completely_empty_elseclause_behaves_like_autocorrect_missingelse_is_disabled_does_autocorrection"
 source = '''
-if
+unless cond; foo else end
 '''
-offenses = []
+corrected = '''
+unless cond; foo end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 21
+message = "Redundant `else`-clause."
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_given_an_unless_statement_with_an_else_clause_containing_only_the_literal_nil_doesn_t_register_an_offense"
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_given_an_unlessstatement_with_a_completely_empty_elseclause_behaves_like_autocorrect_missingelse_is_both_does_not_autocorrect"
+source = '''
+unless cond; foo else end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 21
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_given_an_unlessstatement_with_a_completely_empty_elseclause_behaves_like_autocorrect_missingelse_is_if_does_not_autocorrect"
+source = '''
+unless cond; foo else end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 21
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_given_an_unlessstatement_with_a_completely_empty_elseclause_behaves_like_autocorrect_missingelse_is_case_does_autocorrection"
+source = '''
+unless cond; foo else end
+'''
+corrected = '''
+unless cond; foo end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 21
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_given_an_unlessstatement_with_an_elseclause_containing_only_the_literal_nil_doesnt_register_an_offense"
 source = '''
 unless cond; foo else nil end
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_given_an_unless_statement_with_an_else_clause_with_side_effects_doesn_t_register_an_offense"
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_given_an_unlessstatement_with_an_elseclause_with_sideeffects_doesnt_register_an_offense"
 source = '''
 unless cond; foo else bar; nil end
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_given_an_unless_statement_with_no_else_clause_doesn_t_register_an_offense"
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_given_an_unlessstatement_with_no_elseclause_doesnt_register_an_offense"
 source = '''
 unless cond; foo end
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_given_a_case_statement_with_a_completely_empty_else_clause_autocorrect_case"
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_given_a_case_statement_with_a_completely_empty_elseclause_behaves_like_autocorrect_missingelse_is_disabled_does_autocorrection"
 source = '''
-case
+case v; when a; foo else end
 '''
-offenses = []
+corrected = '''
+case v; when a; foo end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 20
+column_end = 24
+message = "Redundant `else`-clause."
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_given_a_case_statement_with_an_else_clause_containing_only_the_literal_nil_doesn_t_register_an_offense"
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_given_a_case_statement_with_a_completely_empty_elseclause_behaves_like_autocorrect_missingelse_is_both_does_not_autocorrect"
+source = '''
+case v; when a; foo else end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 20
+column_end = 24
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_given_a_case_statement_with_a_completely_empty_elseclause_behaves_like_autocorrect_missingelse_is_if_does_autocorrection"
+source = '''
+case v; when a; foo else end
+'''
+corrected = '''
+case v; when a; foo end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 20
+column_end = 24
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_given_a_case_statement_with_a_completely_empty_elseclause_behaves_like_autocorrect_missingelse_is_case_does_not_autocorrect"
+source = '''
+case v; when a; foo else end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 20
+column_end = 24
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_given_a_case_statement_with_an_elseclause_containing_only_the_literal_nil_doesnt_register_an_offense"
 source = '''
 case v; when a; foo; when b; bar; else nil end
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_given_a_case_statement_with_an_else_clause_with_side_effects_doesn_t_register_an_offense"
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_given_a_case_statement_with_an_elseclause_with_sideeffects_doesnt_register_an_offense"
 source = '''
 case v; when a; foo; else b; nil end
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_given_a_case_statement_with_no_else_clause_doesn_t_register_an_offense"
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_given_a_case_statement_with_no_elseclause_doesnt_register_an_offense"
 source = '''
 case v; when a; foo; when b; bar; end
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_configured_to_warn_on_nil_in_else_given_an_if_statement_with_a_completely_empty_else_clause_doesn_t_register_an_offense"
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_nil_in_else_given_an_ifstatement_with_a_completely_empty_elseclause_doesnt_register_an_offense"
 source = '''
 if a; foo else end
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_configured_to_warn_on_nil_in_else_given_an_if_statement_with_an_else_clause_containing_only_the_literal_nil_when_standalone_autocorrect_if"
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_nil_in_else_given_an_ifstatement_with_an_elseclause_containing_only_the_literal_nil_when_standalone_behaves_like_autocorrect_missingelse_is_disabled_does_autocorrection"
 source = '''
-if
+if a
+  foo
+elsif b
+  bar
+else
+  nil
+end
 '''
-offenses = []
+corrected = '''
+if a
+  foo
+elsif b
+  bar
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 0
+column_end = 4
+message = "Redundant `else`-clause."
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_configured_to_warn_on_nil_in_else_given_an_if_statement_with_an_else_clause_containing_only_the_literal_nil_when_the_result_is_assigned_to_a_variable_autocorrect_if"
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_nil_in_else_given_an_ifstatement_with_an_elseclause_containing_only_the_literal_nil_when_standalone_behaves_like_autocorrect_missingelse_is_both_does_not_autocorrect"
 source = '''
-if
+if a
+  foo
+elsif b
+  bar
+else
+  nil
+end
 '''
-offenses = []
+
+[[tests.offenses]]
+line = 5
+column_start = 0
+column_end = 4
+message = "Redundant `else`-clause."
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_configured_to_warn_on_nil_in_else_given_an_if_statement_with_an_else_clause_containing_only_the_literal_nil_using_semicolons_with_one_elsif_autocorrect_if"
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_nil_in_else_given_an_ifstatement_with_an_elseclause_containing_only_the_literal_nil_when_standalone_behaves_like_autocorrect_missingelse_is_if_does_not_autocorrect"
 source = '''
-if
+if a
+  foo
+elsif b
+  bar
+else
+  nil
+end
 '''
-offenses = []
+
+[[tests.offenses]]
+line = 5
+column_start = 0
+column_end = 4
+message = "Redundant `else`-clause."
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_configured_to_warn_on_nil_in_else_given_an_if_statement_with_an_else_clause_containing_only_the_literal_nil_using_semicolons_with_multiple_elsifs_autocorrect_if"
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_nil_in_else_given_an_ifstatement_with_an_elseclause_containing_only_the_literal_nil_when_standalone_behaves_like_autocorrect_missingelse_is_case_does_autocorrection"
 source = '''
-if
+if a
+  foo
+elsif b
+  bar
+else
+  nil
+end
 '''
-offenses = []
+corrected = '''
+if a
+  foo
+elsif b
+  bar
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 0
+column_end = 4
+message = "Redundant `else`-clause."
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_configured_to_warn_on_nil_in_else_given_an_if_statement_with_an_else_clause_with_side_effects_doesn_t_register_an_offense"
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_nil_in_else_given_an_ifstatement_with_an_elseclause_containing_only_the_literal_nil_when_the_result_is_assigned_to_a_variable_behaves_like_autocorrect_missingelse_is_disabled_does_autocorrection"
+source = '''
+foobar = if a
+           foo
+         elsif b
+           bar
+         else
+           nil
+         end
+'''
+corrected = '''
+foobar = if a
+           foo
+         elsif b
+           bar
+         end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 9
+column_end = 13
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_nil_in_else_given_an_ifstatement_with_an_elseclause_containing_only_the_literal_nil_when_the_result_is_assigned_to_a_variable_behaves_like_autocorrect_missingelse_is_both_does_not_autocorrect"
+source = '''
+foobar = if a
+           foo
+         elsif b
+           bar
+         else
+           nil
+         end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 9
+column_end = 13
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_nil_in_else_given_an_ifstatement_with_an_elseclause_containing_only_the_literal_nil_when_the_result_is_assigned_to_a_variable_behaves_like_autocorrect_missingelse_is_if_does_not_autocorrect"
+source = '''
+foobar = if a
+           foo
+         elsif b
+           bar
+         else
+           nil
+         end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 9
+column_end = 13
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_nil_in_else_given_an_ifstatement_with_an_elseclause_containing_only_the_literal_nil_when_the_result_is_assigned_to_a_variable_behaves_like_autocorrect_missingelse_is_case_does_autocorrection"
+source = '''
+foobar = if a
+           foo
+         elsif b
+           bar
+         else
+           nil
+         end
+'''
+corrected = '''
+foobar = if a
+           foo
+         elsif b
+           bar
+         end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 9
+column_end = 13
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_nil_in_else_given_an_ifstatement_with_an_elseclause_containing_only_the_literal_nil_using_semicolons_with_one_elsif_behaves_like_autocorrect_missingelse_is_disabled_does_autocorrection"
+source = '''
+if a; foo elsif b; bar else nil end
+'''
+corrected = '''
+if a; foo elsif b; bar end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 23
+column_end = 27
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_nil_in_else_given_an_ifstatement_with_an_elseclause_containing_only_the_literal_nil_using_semicolons_with_one_elsif_behaves_like_autocorrect_missingelse_is_both_does_not_autocorrect"
+source = '''
+if a; foo elsif b; bar else nil end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 23
+column_end = 27
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_nil_in_else_given_an_ifstatement_with_an_elseclause_containing_only_the_literal_nil_using_semicolons_with_one_elsif_behaves_like_autocorrect_missingelse_is_if_does_not_autocorrect"
+source = '''
+if a; foo elsif b; bar else nil end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 23
+column_end = 27
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_nil_in_else_given_an_ifstatement_with_an_elseclause_containing_only_the_literal_nil_using_semicolons_with_one_elsif_behaves_like_autocorrect_missingelse_is_case_does_autocorrection"
+source = '''
+if a; foo elsif b; bar else nil end
+'''
+corrected = '''
+if a; foo elsif b; bar end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 23
+column_end = 27
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_nil_in_else_given_an_ifstatement_with_an_elseclause_containing_only_the_literal_nil_using_semicolons_with_multiple_elsifs_behaves_like_autocorrect_missingelse_is_disabled_does_autocorrection"
+source = '''
+if a; foo elsif b; bar; elsif c; bar else nil end
+'''
+corrected = '''
+if a; foo elsif b; bar; elsif c; bar end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 37
+column_end = 41
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_nil_in_else_given_an_ifstatement_with_an_elseclause_containing_only_the_literal_nil_using_semicolons_with_multiple_elsifs_behaves_like_autocorrect_missingelse_is_both_does_not_autocorrect"
+source = '''
+if a; foo elsif b; bar; elsif c; bar else nil end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 37
+column_end = 41
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_nil_in_else_given_an_ifstatement_with_an_elseclause_containing_only_the_literal_nil_using_semicolons_with_multiple_elsifs_behaves_like_autocorrect_missingelse_is_if_does_not_autocorrect"
+source = '''
+if a; foo elsif b; bar; elsif c; bar else nil end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 37
+column_end = 41
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_nil_in_else_given_an_ifstatement_with_an_elseclause_containing_only_the_literal_nil_using_semicolons_with_multiple_elsifs_behaves_like_autocorrect_missingelse_is_case_does_autocorrection"
+source = '''
+if a; foo elsif b; bar; elsif c; bar else nil end
+'''
+corrected = '''
+if a; foo elsif b; bar; elsif c; bar end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 37
+column_end = 41
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_nil_in_else_given_an_ifstatement_with_an_elseclause_with_sideeffects_doesnt_register_an_offense"
 source = '''
 if cond; foo else bar; nil end
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_configured_to_warn_on_nil_in_else_given_an_if_statement_with_no_else_clause_doesn_t_register_an_offense"
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_nil_in_else_given_an_ifstatement_with_no_elseclause_doesnt_register_an_offense"
 source = '''
 if cond; foo end
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_configured_to_warn_on_nil_in_else_given_an_unless_statement_with_a_completely_empty_else_clause_doesn_t_register_an_offense"
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_nil_in_else_given_an_unlessstatement_with_a_completely_empty_elseclause_doesnt_register_an_offense"
 source = '''
 unless cond; foo else end
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_configured_to_warn_on_nil_in_else_given_an_unless_statement_with_an_else_clause_containing_only_the_literal_nil_autocorrect_if"
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_nil_in_else_given_an_unlessstatement_with_an_elseclause_containing_only_the_literal_nil_behaves_like_autocorrect_missingelse_is_disabled_does_autocorrection"
 source = '''
-if
+unless cond; foo else nil end
 '''
-offenses = []
+corrected = '''
+unless cond; foo end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 21
+message = "Redundant `else`-clause."
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_configured_to_warn_on_nil_in_else_given_an_unless_statement_with_an_else_clause_with_side_effects_doesn_t_register_an_offense"
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_nil_in_else_given_an_unlessstatement_with_an_elseclause_containing_only_the_literal_nil_behaves_like_autocorrect_missingelse_is_both_does_not_autocorrect"
+source = '''
+unless cond; foo else nil end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 21
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_nil_in_else_given_an_unlessstatement_with_an_elseclause_containing_only_the_literal_nil_behaves_like_autocorrect_missingelse_is_if_does_not_autocorrect"
+source = '''
+unless cond; foo else nil end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 21
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_nil_in_else_given_an_unlessstatement_with_an_elseclause_containing_only_the_literal_nil_behaves_like_autocorrect_missingelse_is_case_does_autocorrection"
+source = '''
+unless cond; foo else nil end
+'''
+corrected = '''
+unless cond; foo end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 21
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_nil_in_else_given_an_unlessstatement_with_an_elseclause_with_sideeffects_doesnt_register_an_offense"
 source = '''
 unless cond; foo else bar; nil end
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_configured_to_warn_on_nil_in_else_given_an_unless_statement_with_no_else_clause_doesn_t_register_an_offense"
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_nil_in_else_given_an_unlessstatement_with_no_elseclause_doesnt_register_an_offense"
 source = '''
 unless cond; foo end
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_configured_to_warn_on_nil_in_else_given_a_case_statement_with_a_completely_empty_else_clause_doesn_t_register_an_offense"
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_nil_in_else_given_a_case_statement_with_a_completely_empty_elseclause_doesnt_register_an_offense"
 source = '''
 case v; when a; foo else end
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_configured_to_warn_on_nil_in_else_given_a_case_statement_with_an_else_clause_containing_only_the_literal_nil_using_semicolons_autocorrect_case"
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_nil_in_else_given_a_case_statement_with_an_elseclause_containing_only_the_literal_nil_using_semicolons_behaves_like_autocorrect_missingelse_is_disabled_does_autocorrection"
 source = '''
-case
+case v; when a; foo; when b; bar; else nil end
 '''
-offenses = []
+corrected = '''
+case v; when a; foo; when b; bar; end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 34
+column_end = 38
+message = "Redundant `else`-clause."
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_configured_to_warn_on_nil_in_else_given_a_case_statement_with_an_else_clause_containing_only_the_literal_nil_when_the_result_is_assigned_to_a_variable_autocorrect_case"
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_nil_in_else_given_a_case_statement_with_an_elseclause_containing_only_the_literal_nil_using_semicolons_behaves_like_autocorrect_missingelse_is_both_does_not_autocorrect"
 source = '''
-case
+case v; when a; foo; when b; bar; else nil end
 '''
-offenses = []
+
+[[tests.offenses]]
+line = 1
+column_start = 34
+column_end = 38
+message = "Redundant `else`-clause."
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_configured_to_warn_on_nil_in_else_given_a_case_statement_with_an_else_clause_with_side_effects_doesn_t_register_an_offense"
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_nil_in_else_given_a_case_statement_with_an_elseclause_containing_only_the_literal_nil_using_semicolons_behaves_like_autocorrect_missingelse_is_if_does_autocorrection"
+source = '''
+case v; when a; foo; when b; bar; else nil end
+'''
+corrected = '''
+case v; when a; foo; when b; bar; end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 34
+column_end = 38
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_nil_in_else_given_a_case_statement_with_an_elseclause_containing_only_the_literal_nil_using_semicolons_behaves_like_autocorrect_missingelse_is_case_does_not_autocorrect"
+source = '''
+case v; when a; foo; when b; bar; else nil end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 34
+column_end = 38
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_nil_in_else_given_a_case_statement_with_an_elseclause_containing_only_the_literal_nil_when_the_result_is_assigned_to_a_variable_behaves_like_autocorrect_missingelse_is_disabled_does_autocorrection"
+source = '''
+foobar = case v
+         when a
+           foo
+         when b
+           bar
+         else
+           nil
+         end
+'''
+corrected = '''
+foobar = case v
+         when a
+           foo
+         when b
+           bar
+         end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 9
+column_end = 13
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_nil_in_else_given_a_case_statement_with_an_elseclause_containing_only_the_literal_nil_when_the_result_is_assigned_to_a_variable_behaves_like_autocorrect_missingelse_is_both_does_not_autocorrect"
+source = '''
+foobar = case v
+         when a
+           foo
+         when b
+           bar
+         else
+           nil
+         end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 9
+column_end = 13
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_nil_in_else_given_a_case_statement_with_an_elseclause_containing_only_the_literal_nil_when_the_result_is_assigned_to_a_variable_behaves_like_autocorrect_missingelse_is_if_does_autocorrection"
+source = '''
+foobar = case v
+         when a
+           foo
+         when b
+           bar
+         else
+           nil
+         end
+'''
+corrected = '''
+foobar = case v
+         when a
+           foo
+         when b
+           bar
+         end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 9
+column_end = 13
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_nil_in_else_given_a_case_statement_with_an_elseclause_containing_only_the_literal_nil_when_the_result_is_assigned_to_a_variable_behaves_like_autocorrect_missingelse_is_case_does_not_autocorrect"
+source = '''
+foobar = case v
+         when a
+           foo
+         when b
+           bar
+         else
+           nil
+         end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 9
+column_end = 13
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_nil_in_else_given_a_case_statement_with_an_elseclause_with_sideeffects_doesnt_register_an_offense"
 source = '''
 case v; when a; foo; else b; nil end
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_configured_to_warn_on_nil_in_else_given_a_case_statement_with_no_else_clause_doesn_t_register_an_offense"
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_nil_in_else_given_a_case_statement_with_no_elseclause_doesnt_register_an_offense"
 source = '''
 case v; when a; foo; when b; bar; end
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_an_if_statement_with_a_completely_empty_else_clause_autocorrect_if"
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_an_ifstatement_with_a_completely_empty_elseclause_behaves_like_autocorrect_missingelse_is_disabled_does_autocorrection"
 source = '''
-if
+if a; foo else end
 '''
-offenses = []
+corrected = '''
+if a; foo end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 14
+message = "Redundant `else`-clause."
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_an_if_statement_with_an_else_clause_containing_only_the_literal_nil_with_one_elsif_autocorrect_if"
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_an_ifstatement_with_a_completely_empty_elseclause_behaves_like_autocorrect_missingelse_is_both_does_not_autocorrect"
 source = '''
-if
+if a; foo else end
 '''
-offenses = []
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 14
+message = "Redundant `else`-clause."
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_an_if_statement_with_an_else_clause_containing_only_the_literal_nil_with_multiple_elsifs_autocorrect_if"
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_an_ifstatement_with_a_completely_empty_elseclause_behaves_like_autocorrect_missingelse_is_if_does_not_autocorrect"
 source = '''
-if
+if a; foo else end
 '''
-offenses = []
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 14
+message = "Redundant `else`-clause."
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_an_if_statement_with_an_else_clause_with_side_effects_doesn_t_register_an_offense"
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_an_ifstatement_with_a_completely_empty_elseclause_behaves_like_autocorrect_missingelse_is_case_does_autocorrection"
+source = '''
+if a; foo else end
+'''
+corrected = '''
+if a; foo end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 14
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_an_ifstatement_with_an_elseclause_containing_only_the_literal_nil_with_one_elsif_behaves_like_autocorrect_missingelse_is_disabled_does_autocorrection"
+source = '''
+if a; foo elsif b; bar else nil end
+'''
+corrected = '''
+if a; foo elsif b; bar end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 23
+column_end = 27
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_an_ifstatement_with_an_elseclause_containing_only_the_literal_nil_with_one_elsif_behaves_like_autocorrect_missingelse_is_both_does_not_autocorrect"
+source = '''
+if a; foo elsif b; bar else nil end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 23
+column_end = 27
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_an_ifstatement_with_an_elseclause_containing_only_the_literal_nil_with_one_elsif_behaves_like_autocorrect_missingelse_is_if_does_not_autocorrect"
+source = '''
+if a; foo elsif b; bar else nil end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 23
+column_end = 27
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_an_ifstatement_with_an_elseclause_containing_only_the_literal_nil_with_one_elsif_behaves_like_autocorrect_missingelse_is_case_does_autocorrection"
+source = '''
+if a; foo elsif b; bar else nil end
+'''
+corrected = '''
+if a; foo elsif b; bar end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 23
+column_end = 27
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_an_ifstatement_with_an_elseclause_containing_only_the_literal_nil_with_multiple_elsifs_behaves_like_autocorrect_missingelse_is_disabled_does_autocorrection"
+source = '''
+if a; foo elsif b; bar; elsif c; bar else nil end
+'''
+corrected = '''
+if a; foo elsif b; bar; elsif c; bar end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 37
+column_end = 41
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_an_ifstatement_with_an_elseclause_containing_only_the_literal_nil_with_multiple_elsifs_behaves_like_autocorrect_missingelse_is_both_does_not_autocorrect"
+source = '''
+if a; foo elsif b; bar; elsif c; bar else nil end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 37
+column_end = 41
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_an_ifstatement_with_an_elseclause_containing_only_the_literal_nil_with_multiple_elsifs_behaves_like_autocorrect_missingelse_is_if_does_not_autocorrect"
+source = '''
+if a; foo elsif b; bar; elsif c; bar else nil end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 37
+column_end = 41
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_an_ifstatement_with_an_elseclause_containing_only_the_literal_nil_with_multiple_elsifs_behaves_like_autocorrect_missingelse_is_case_does_autocorrection"
+source = '''
+if a; foo elsif b; bar; elsif c; bar else nil end
+'''
+corrected = '''
+if a; foo elsif b; bar; elsif c; bar end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 37
+column_end = 41
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_an_ifstatement_with_an_elseclause_with_sideeffects_doesnt_register_an_offense"
 source = '''
 if cond; foo else bar; nil end
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_an_if_statement_with_no_else_clause_doesn_t_register_an_offense"
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_an_ifstatement_with_no_elseclause_doesnt_register_an_offense"
 source = '''
 if cond; foo end
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_an_unless_statement_with_a_completely_empty_else_clause_autocorrect_if"
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_an_unlessstatement_with_a_completely_empty_elseclause_behaves_like_autocorrect_missingelse_is_disabled_does_autocorrection"
 source = '''
-if
+unless cond; foo else end
 '''
-offenses = []
+corrected = '''
+unless cond; foo end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 21
+message = "Redundant `else`-clause."
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_an_unless_statement_with_an_else_clause_containing_only_the_literal_nil_autocorrect_if"
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_an_unlessstatement_with_a_completely_empty_elseclause_behaves_like_autocorrect_missingelse_is_both_does_not_autocorrect"
 source = '''
-if
+unless cond; foo else end
 '''
-offenses = []
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 21
+message = "Redundant `else`-clause."
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_an_unless_statement_with_an_else_clause_with_side_effects_doesn_t_register_an_offense"
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_an_unlessstatement_with_a_completely_empty_elseclause_behaves_like_autocorrect_missingelse_is_if_does_not_autocorrect"
+source = '''
+unless cond; foo else end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 21
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_an_unlessstatement_with_a_completely_empty_elseclause_behaves_like_autocorrect_missingelse_is_case_does_autocorrection"
+source = '''
+unless cond; foo else end
+'''
+corrected = '''
+unless cond; foo end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 21
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_an_unlessstatement_with_an_elseclause_containing_only_the_literal_nil_behaves_like_autocorrect_missingelse_is_disabled_does_autocorrection"
+source = '''
+unless cond; foo else nil end
+'''
+corrected = '''
+unless cond; foo end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 21
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_an_unlessstatement_with_an_elseclause_containing_only_the_literal_nil_behaves_like_autocorrect_missingelse_is_both_does_not_autocorrect"
+source = '''
+unless cond; foo else nil end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 21
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_an_unlessstatement_with_an_elseclause_containing_only_the_literal_nil_behaves_like_autocorrect_missingelse_is_if_does_not_autocorrect"
+source = '''
+unless cond; foo else nil end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 21
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_an_unlessstatement_with_an_elseclause_containing_only_the_literal_nil_behaves_like_autocorrect_missingelse_is_case_does_autocorrection"
+source = '''
+unless cond; foo else nil end
+'''
+corrected = '''
+unless cond; foo end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 21
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_an_unlessstatement_with_an_elseclause_with_sideeffects_doesnt_register_an_offense"
 source = '''
 unless cond; foo else bar; nil end
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_an_unless_statement_with_no_else_clause_doesn_t_register_an_offense"
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_an_unlessstatement_with_no_elseclause_doesnt_register_an_offense"
 source = '''
 unless cond; foo end
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_a_case_statement_with_a_completely_empty_else_clause_autocorrect_case"
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_a_case_statement_with_a_completely_empty_elseclause_behaves_like_autocorrect_missingelse_is_disabled_does_autocorrection"
 source = '''
-case
+case v; when a; foo else end
 '''
-offenses = []
+corrected = '''
+case v; when a; foo end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 20
+column_end = 24
+message = "Redundant `else`-clause."
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_a_case_statement_with_an_else_clause_containing_only_the_literal_nil_autocorrect_case"
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_a_case_statement_with_a_completely_empty_elseclause_behaves_like_autocorrect_missingelse_is_both_does_not_autocorrect"
 source = '''
-case
+case v; when a; foo else end
 '''
-offenses = []
+
+[[tests.offenses]]
+line = 1
+column_start = 20
+column_end = 24
+message = "Redundant `else`-clause."
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_a_case_statement_with_an_else_clause_with_side_effects_doesn_t_register_an_offense"
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_a_case_statement_with_a_completely_empty_elseclause_behaves_like_autocorrect_missingelse_is_if_does_autocorrection"
+source = '''
+case v; when a; foo else end
+'''
+corrected = '''
+case v; when a; foo end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 20
+column_end = 24
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_a_case_statement_with_a_completely_empty_elseclause_behaves_like_autocorrect_missingelse_is_case_does_not_autocorrect"
+source = '''
+case v; when a; foo else end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 20
+column_end = 24
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_a_case_statement_with_an_elseclause_containing_only_the_literal_nil_behaves_like_autocorrect_missingelse_is_disabled_does_autocorrection"
+source = '''
+case v; when a; foo; when b; bar; else nil end
+'''
+corrected = '''
+case v; when a; foo; when b; bar; end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 34
+column_end = 38
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_a_case_statement_with_an_elseclause_containing_only_the_literal_nil_behaves_like_autocorrect_missingelse_is_both_does_not_autocorrect"
+source = '''
+case v; when a; foo; when b; bar; else nil end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 34
+column_end = 38
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_a_case_statement_with_an_elseclause_containing_only_the_literal_nil_behaves_like_autocorrect_missingelse_is_if_does_autocorrection"
+source = '''
+case v; when a; foo; when b; bar; else nil end
+'''
+corrected = '''
+case v; when a; foo; when b; bar; end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 34
+column_end = 38
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_a_case_statement_with_an_elseclause_containing_only_the_literal_nil_behaves_like_autocorrect_missingelse_is_case_does_not_autocorrect"
+source = '''
+case v; when a; foo; when b; bar; else nil end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 34
+column_end = 38
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_a_case_statement_with_an_elseclause_with_sideeffects_doesnt_register_an_offense"
 source = '''
 case v; when a; foo; else b; nil end
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_a_case_statement_with_no_else_clause_doesn_t_register_an_offense"
+name = "rubocopcopstyleemptyelse_configured_to_warn_on_empty_else_and_nil_in_else_given_a_case_statement_with_no_elseclause_doesnt_register_an_offense"
 source = '''
 case v; when a; foo; when b; bar; end
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_when_allowcomments_true_given_an_if_statement_with_not_comment_and_empty_else_clause_registers_an_offense"
+name = "rubocopcopstyleemptyelse_when_allowcomments_true_given_an_ifstatement_with_not_comment_and_empty_elseclause_registers_an_offense"
 source = '''
 if condition
   statement
@@ -336,7 +1375,7 @@ column_end = 4
 message = "Redundant `else`-clause."
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_when_allowcomments_true_given_an_if_statement_with_no_comment_and_nil_else_clause_registers_an_offense"
+name = "rubocopcopstyleemptyelse_when_allowcomments_true_given_an_ifstatement_with_no_comment_and_nil_elseclause_registers_an_offense"
 source = '''
 if condition
   statement
@@ -352,7 +1391,7 @@ column_end = 4
 message = "Redundant `else`-clause."
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_when_allowcomments_true_given_an_if_statement_with_comment_and_empty_else_clause_doesn_t_register_an_offense"
+name = "rubocopcopstyleemptyelse_when_allowcomments_true_given_an_ifstatement_with_comment_and_empty_elseclause_doesnt_register_an_offense"
 source = '''
 if condition
   statement
@@ -363,7 +1402,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_when_allowcomments_true_given_an_if_statement_with_comment_and_nil_else_clause_doesn_t_register_an_offense"
+name = "rubocopcopstyleemptyelse_when_allowcomments_true_given_an_ifstatement_with_comment_and_nil_elseclause_doesnt_register_an_offense"
 source = '''
 if condition
   statement
@@ -374,7 +1413,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_when_allowcomments_true_given_an_if_statement_with_no_comment_and_empty_else_clause_after_elsif_registers_an_offense"
+name = "rubocopcopstyleemptyelse_when_allowcomments_true_given_an_ifstatement_with_no_comment_and_empty_elseclause_after_elsif_registers_an_offense"
 source = '''
 if condition
   foo
@@ -391,7 +1430,7 @@ column_end = 4
 message = "Redundant `else`-clause."
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_when_allowcomments_true_given_an_if_statement_with_no_comment_and_nil_else_clause_after_elsif_registers_an_offense"
+name = "rubocopcopstyleemptyelse_when_allowcomments_true_given_an_ifstatement_with_no_comment_and_nil_elseclause_after_elsif_registers_an_offense"
 source = '''
 if condition
   foo
@@ -409,7 +1448,7 @@ column_end = 4
 message = "Redundant `else`-clause."
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_when_allowcomments_true_given_an_if_statement_with_comment_and_empty_else_clause_after_elsif_doesn_t_register_an_offense"
+name = "rubocopcopstyleemptyelse_when_allowcomments_true_given_an_ifstatement_with_comment_and_empty_elseclause_after_elsif_doesnt_register_an_offense"
 source = '''
 if condition
   foo
@@ -422,7 +1461,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_when_allowcomments_true_given_an_if_statement_with_comment_and_nil_else_clause_after_elsif_doesn_t_register_an_offense"
+name = "rubocopcopstyleemptyelse_when_allowcomments_true_given_an_ifstatement_with_comment_and_nil_elseclause_after_elsif_doesnt_register_an_offense"
 source = '''
 if condition
   foo
@@ -435,7 +1474,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_when_allowcomments_true_given_an_if_statement_without_an_else_does_not_register_an_offense"
+name = "rubocopcopstyleemptyelse_when_allowcomments_true_given_an_ifstatement_without_an_else_does_not_register_an_offense"
 source = '''
 if condition
   statement
@@ -444,7 +1483,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_when_allowcomments_true_given_an_unless_statement_with_no_comment_and_empty_else_clause_registers_an_offense"
+name = "rubocopcopstyleemptyelse_when_allowcomments_true_given_an_unlessstatement_with_no_comment_and_empty_elseclause_registers_an_offense"
 source = '''
 unless condition
   statement
@@ -459,7 +1498,7 @@ column_end = 4
 message = "Redundant `else`-clause."
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_when_allowcomments_true_given_an_unless_statement_with_no_comment_and_nil_else_clause_registers_an_offense"
+name = "rubocopcopstyleemptyelse_when_allowcomments_true_given_an_unlessstatement_with_no_comment_and_nil_elseclause_registers_an_offense"
 source = '''
 unless condition
   statement
@@ -475,7 +1514,7 @@ column_end = 4
 message = "Redundant `else`-clause."
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_when_allowcomments_true_given_an_unless_statement_with_comment_and_empty_else_clause_doesn_t_register_an_offense"
+name = "rubocopcopstyleemptyelse_when_allowcomments_true_given_an_unlessstatement_with_comment_and_empty_elseclause_doesnt_register_an_offense"
 source = '''
 unless condition
   statement
@@ -486,7 +1525,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_when_allowcomments_true_given_an_unless_statement_with_comment_and_nil_else_clause_doesn_t_register_an_offense"
+name = "rubocopcopstyleemptyelse_when_allowcomments_true_given_an_unlessstatement_with_comment_and_nil_elseclause_doesnt_register_an_offense"
 source = '''
 unless condition
   statement
@@ -497,7 +1536,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_when_allowcomments_true_given_an_unless_statement_without_an_else_does_not_register_an_offense"
+name = "rubocopcopstyleemptyelse_when_allowcomments_true_given_an_unlessstatement_without_an_else_does_not_register_an_offense"
 source = '''
 unless condition
   statement
@@ -506,7 +1545,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_when_allowcomments_true_given_a_case_statement_with_no_comment_and_empty_else_clause_registers_an_offense"
+name = "rubocopcopstyleemptyelse_when_allowcomments_true_given_a_case_statement_with_no_comment_and_empty_elseclause_registers_an_offense"
 source = '''
 case a
 when condition
@@ -522,7 +1561,7 @@ column_end = 4
 message = "Redundant `else`-clause."
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_when_allowcomments_true_given_a_case_statement_with_no_comment_and_nil_else_clause_registers_an_offense"
+name = "rubocopcopstyleemptyelse_when_allowcomments_true_given_a_case_statement_with_no_comment_and_nil_elseclause_registers_an_offense"
 source = '''
 case a
 when condition
@@ -539,7 +1578,7 @@ column_end = 4
 message = "Redundant `else`-clause."
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_when_allowcomments_true_given_a_case_statement_with_comment_and_empty_else_clause_doesn_t_register_an_offense"
+name = "rubocopcopstyleemptyelse_when_allowcomments_true_given_a_case_statement_with_comment_and_empty_elseclause_doesnt_register_an_offense"
 source = '''
 case a
 when condition
@@ -551,7 +1590,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_when_allowcomments_true_given_a_case_statement_with_comment_and_nil_else_clause_doesn_t_register_an_offense"
+name = "rubocopcopstyleemptyelse_when_allowcomments_true_given_a_case_statement_with_comment_and_nil_elseclause_doesnt_register_an_offense"
 source = '''
 case a
 when condition
@@ -563,7 +1602,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_when_allowcomments_true_given_a_case_statement_without_an_else_does_not_register_an_offense"
+name = "rubocopcopstyleemptyelse_when_allowcomments_true_given_a_case_statement_without_an_else_does_not_register_an_offense"
 source = '''
 case a
 when condition
@@ -573,8 +1612,117 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_emptyelse_with_nested_if_and_case_statement_autocorrect_case"
+name = "rubocopcopstyleemptyelse_with_nested_if_and_case_statement_behaves_like_autocorrect_missingelse_is_disabled_does_autocorrection"
 source = '''
-case
+def foo
+  if @params
+    case @params[:x]
+    when :a
+      :b
+    else
+      nil
+    end
+  else
+    :c
+  end
+end
 '''
-offenses = []
+corrected = '''
+def foo
+  if @params
+    case @params[:x]
+    when :a
+      :b
+    end
+  else
+    :c
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 4
+column_end = 8
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_with_nested_if_and_case_statement_behaves_like_autocorrect_missingelse_is_both_does_not_autocorrect"
+source = '''
+def foo
+  if @params
+    case @params[:x]
+    when :a
+      :b
+    else
+      nil
+    end
+  else
+    :c
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 4
+column_end = 8
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_with_nested_if_and_case_statement_behaves_like_autocorrect_missingelse_is_if_does_autocorrection"
+source = '''
+def foo
+  if @params
+    case @params[:x]
+    when :a
+      :b
+    else
+      nil
+    end
+  else
+    :c
+  end
+end
+'''
+corrected = '''
+def foo
+  if @params
+    case @params[:x]
+    when :a
+      :b
+    end
+  else
+    :c
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 4
+column_end = 8
+message = "Redundant `else`-clause."
+
+[[tests]]
+name = "rubocopcopstyleemptyelse_with_nested_if_and_case_statement_behaves_like_autocorrect_missingelse_is_case_does_not_autocorrect"
+source = '''
+def foo
+  if @params
+    case @params[:x]
+    when :a
+      :b
+    else
+      nil
+    end
+  else
+    :c
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 4
+column_end = 8
+message = "Redundant `else`-clause."

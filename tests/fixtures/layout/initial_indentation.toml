@@ -4,7 +4,25 @@ severity = "convention"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_layout_initialindentation_accepts_unindented_method_definition"
+name = "rubocopcoplayoutinitialindentation_registers_an_offense_for_indented_method_definition"
+source = '''
+def f
+end
+'''
+base_indent = 2
+corrected = '''
+def f
+  end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 5
+message = "Indentation of first line in file detected."
+
+[[tests]]
+name = "rubocopcoplayoutinitialindentation_accepts_unindented_method_definition"
 source = '''
 def f
 end
@@ -12,14 +30,47 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_initialindentation_for_a_file_with_byte_order_mark_accepts_unindented_method_call"
+name = "rubocopcoplayoutinitialindentation_accepts_empty_file"
+source = '''
+
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplayoutinitialindentation_registers_an_offense_and_corrects_indented_assignment_disregarding_comment"
+source = '''
+# comment
+x = 1
+'''
+base_indent = 3
+corrected = '''
+   # comment
+x = 1
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 3
+column_end = 4
+message = "Indentation of first line in file detected."
+
+[[tests]]
+name = "rubocopcoplayoutinitialindentation_accepts_unindented_comment__assignment"
+source = '''
+# comment
+x = 1
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplayoutinitialindentation_for_a_file_with_byte_order_mark_accepts_unindented_method_call"
 source = '''
 ﻿puts 1
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_initialindentation_for_a_file_with_byte_order_mark_registers_an_offense_and_corrects_indented_method_call"
+name = "rubocopcoplayoutinitialindentation_for_a_file_with_byte_order_mark_registers_an_offense_and_corrects_indented_method_call"
 source = '''
 ﻿  puts 1
 '''
@@ -34,7 +85,7 @@ column_end = 7
 message = "Indentation of first line in file detected."
 
 [[tests]]
-name = "rubocop_cop_layout_initialindentation_for_a_file_with_byte_order_mark_registers_an_offense_and_corrects_indented_method_call_after_comment"
+name = "rubocopcoplayoutinitialindentation_for_a_file_with_byte_order_mark_registers_an_offense_and_corrects_indented_method_call_after_comment"
 source = '''
 ﻿# comment
   puts 1
@@ -49,11 +100,3 @@ line = 2
 column_start = 2
 column_end = 6
 message = "Indentation of first line in file detected."
-
-[[tests]]
-name = "rubocop_cop_layout_initialindentation_accepts_unindented_comment_assignment"
-source = '''
-# comment
-x = 1
-'''
-offenses = []

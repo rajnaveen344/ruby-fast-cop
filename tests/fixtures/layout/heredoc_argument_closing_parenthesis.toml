@@ -4,105 +4,91 @@ severity = "convention"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_layout_heredocargumentclosingparenthesis_correct_cases_accepts_simple_correct_case"
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_correct_cases_correct_cases_accepts_simple_correct_case"
 source = '''
-foo#{dot}bar(<<-SQL)
+foo.bar(<<-SQL)
   foo
 SQL
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_heredocargumentclosingparenthesis_correct_cases_accepts_double_correct_case"
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_correct_cases_correct_cases_accepts_double_correct_case"
 source = '''
-foo#{dot}bar(<<-SQL, <<-NOSQL)
+foo.bar(<<-SQL, <<-NOSQL)
   foo
 SQL
   bar
 NOSQL
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_heredocargumentclosingparenthesis_correct_cases_accepts_method_chain_with_heredoc_argument_correct_case"
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_correct_cases_correct_cases_accepts_method_chain_with_heredoc_argument_correct_case"
 source = '''
 do_something(
   Model
-    .foo#{dot}bar(<<~CODE)
+    .foo.bar(<<~CODE)
       code
     CODE
     .baz(<<~CODE))
       code
     CODE
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_heredocargumentclosingparenthesis_correct_cases_accepts_method_chain_with_safe_navigation_with_heredoc_argument_correct_case"
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_correct_cases_correct_cases_accepts_method_chain_with_safe_navigation_with_heredoc_argument_correct_case"
 source = '''
 do_something(
   Model
-    .foo#{dot}bar(<<~CODE)
+    .foo.bar(<<~CODE)
       code
     CODE
     &.baz(<<~CODE))
       code
     CODE
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_heredocargumentclosingparenthesis_correct_cases_accepts_method_with_heredoc_argument_of_proc_correct_case"
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_correct_cases_correct_cases_accepts_method_with_heredoc_argument_of_proc_correct_case"
 source = '''
 outer_method(-> {
-  inner_method#{dot}chain(<<~CODE)
+  inner_method.chain(<<~CODE)
     code
   CODE
 })
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_heredocargumentclosingparenthesis_correct_cases_accepts_double_correct_case_nested"
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_correct_cases_correct_cases_accepts_double_correct_case_nested"
 source = '''
-baz(bar(foo#{dot}bar(<<-SQL, <<-NOSQL)))
+baz(bar(foo.bar(<<-SQL, <<-NOSQL)))
   foo
 SQL
   bar
 NOSQL
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_heredocargumentclosingparenthesis_correct_cases_accepts_double_correct_case_new_line"
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_correct_cases_correct_cases_accepts_double_correct_case_new_line"
 source = '''
-foo#{dot}bar(
+foo.bar(
   <<-SQL, <<-NOSQL)
   foo
 SQL
   bar
 NOSQL
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_heredocargumentclosingparenthesis_correct_cases_accepts_when_there_is_an_argument_between_a_heredoc_argument_and_the_closing_parentheses"
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_correct_cases_correct_cases_accepts_when_there_is_an_argument_between_a_heredoc_argument_and_the_closing_parentheses"
 source = '''
-foo#{dot}bar(<<~TEXT,
+foo.bar(<<~TEXT,
     Lots of
     Lovely
     Text
@@ -110,134 +96,298 @@ foo#{dot}bar(<<~TEXT,
   some_arg: { foo: "bar" }
 )
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_heredocargumentclosingparenthesis_correct_cases_accepts_when_heredoc_is_a_method_argument_in_a_parenthesized_block_argument"
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_correct_cases_correct_cases_accepts_when_heredoc_is_a_method_argument_in_a_parenthesized_block_argument"
 source = '''
 foo(bar do
-  baz#{dot}quux <<~EOS
+  baz.quux <<~EOS
   EOS
 end)
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_heredocargumentclosingparenthesis_correct_cases_accepts_when_heredoc_is_a_branch_body_in_a_method_argument_of_a_parenthesized_argument"
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_correct_cases_correct_cases_accepts_when_heredoc_is_a_branch_body_in_a_method_argument_of_a_parenthesized_argument"
 source = '''
 foo(unless condition
-  bar#{dot}baz(<<~EOS)
+  bar.baz(<<~EOS)
     text
   EOS
 end)
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_heredocargumentclosingparenthesis_correct_cases_accepts_when_heredoc_is_a_branch_body_in_a_nested_method_argument_of_a_parenthesized_argument"
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_correct_cases_correct_cases_accepts_when_heredoc_is_a_branch_body_in_a_nested_method_argument_of_a_parenthesized_argument"
 source = '''
 foo(unless condition
-  bar(baz#{dot}quux(<<~EOS))
+  bar(baz.quux(<<~EOS))
     text
   EOS
 end)
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_heredocargumentclosingparenthesis_correct_cases_accepts_correct_case_with_other_param_after"
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_correct_cases_correct_cases_accepts_correct_case_with_other_param_after"
 source = '''
-foo#{dot}bar(<<-SQL, 123)
+foo.bar(<<-SQL, 123)
   foo
 SQL
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_heredocargumentclosingparenthesis_correct_cases_accepts_correct_case_with_other_param_before"
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_correct_cases_correct_cases_accepts_correct_case_with_other_param_before"
 source = '''
-foo#{dot}bar(123, <<-SQL)
+foo.bar(123, <<-SQL)
   foo
 SQL
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_heredocargumentclosingparenthesis_correct_cases_accepts_hash_correct_case"
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_correct_cases_correct_cases_accepts_hash_correct_case"
 source = '''
-foo#{dot}bar(foo: <<-SQL)
+foo.bar(foo: <<-SQL)
   foo
 SQL
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_heredocargumentclosingparenthesis_correct_cases_invocation_after_the_heredoc_ignores_tr"
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_correct_cases_correct_cases_invocation_after_the_heredoc_ignores_tr"
 source = '''
-foo#{dot}bar(
+foo.bar(
   <<-SQL.tr("z", "t"))
   baz
 SQL
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_heredocargumentclosingparenthesis_correct_cases_invocation_after_the_heredoc_ignores_random_call"
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_correct_cases_correct_cases_invocation_after_the_heredoc_ignores_random_call"
 source = '''
-foo#{dot}bar(
+foo.bar(
   <<-TEXT.foo)
   foobarbaz
 TEXT
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_heredocargumentclosingparenthesis_correct_cases_invocation_after_the_heredoc_ignores_random_call_after"
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_correct_cases_correct_cases_invocation_after_the_heredoc_ignores_random_call_after"
 source = '''
-foo#{dot}bar(
+foo.bar(
   <<-TEXT
   foobarbaz
 TEXT
 .foo
 )
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_heredocargumentclosingparenthesis_incorrect_cases_simple_incorrect_case_registers_an_offense"
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_correct_cases_correct_cases_accepts_simple_correct_case_2"
 source = '''
-foo#{dot}bar(<<-SQL
+foo&.bar(<<-SQL)
+  foo
+SQL
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_correct_cases_correct_cases_accepts_double_correct_case_2"
+source = '''
+foo&.bar(<<-SQL, <<-NOSQL)
+  foo
+SQL
+  bar
+NOSQL
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_correct_cases_correct_cases_accepts_method_chain_with_heredoc_argument_correct_case_2"
+source = '''
+do_something(
+  Model
+    .foo&.bar(<<~CODE)
+      code
+    CODE
+    .baz(<<~CODE))
+      code
+    CODE
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_correct_cases_correct_cases_accepts_method_chain_with_safe_navigation_with_heredoc_argument_correct_case_2"
+source = '''
+do_something(
+  Model
+    .foo&.bar(<<~CODE)
+      code
+    CODE
+    &.baz(<<~CODE))
+      code
+    CODE
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_correct_cases_correct_cases_accepts_method_with_heredoc_argument_of_proc_correct_case_2"
+source = '''
+outer_method(-> {
+  inner_method&.chain(<<~CODE)
+    code
+  CODE
+})
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_correct_cases_correct_cases_accepts_double_correct_case_nested_2"
+source = '''
+baz(bar(foo&.bar(<<-SQL, <<-NOSQL)))
+  foo
+SQL
+  bar
+NOSQL
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_correct_cases_correct_cases_accepts_double_correct_case_new_line_2"
+source = '''
+foo&.bar(
+  <<-SQL, <<-NOSQL)
+  foo
+SQL
+  bar
+NOSQL
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_correct_cases_correct_cases_accepts_when_there_is_an_argument_between_a_heredoc_argument_and_the_closing_parentheses_2"
+source = '''
+foo&.bar(<<~TEXT,
+    Lots of
+    Lovely
+    Text
+  TEXT
+  some_arg: { foo: "bar" }
+)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_correct_cases_correct_cases_accepts_when_heredoc_is_a_method_argument_in_a_parenthesized_block_argument_2"
+source = '''
+foo(bar do
+  baz&.quux <<~EOS
+  EOS
+end)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_correct_cases_correct_cases_accepts_when_heredoc_is_a_branch_body_in_a_method_argument_of_a_parenthesized_argument_2"
+source = '''
+foo(unless condition
+  bar&.baz(<<~EOS)
+    text
+  EOS
+end)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_correct_cases_correct_cases_accepts_when_heredoc_is_a_branch_body_in_a_nested_method_argument_of_a_parenthesized_argument_2"
+source = '''
+foo(unless condition
+  bar(baz&.quux(<<~EOS))
+    text
+  EOS
+end)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_correct_cases_correct_cases_accepts_correct_case_with_other_param_after_2"
+source = '''
+foo&.bar(<<-SQL, 123)
+  foo
+SQL
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_correct_cases_correct_cases_accepts_correct_case_with_other_param_before_2"
+source = '''
+foo&.bar(123, <<-SQL)
+  foo
+SQL
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_correct_cases_correct_cases_accepts_hash_correct_case_2"
+source = '''
+foo&.bar(foo: <<-SQL)
+  foo
+SQL
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_correct_cases_correct_cases_invocation_after_the_heredoc_ignores_tr_2"
+source = '''
+foo&.bar(
+  <<-SQL.tr("z", "t"))
+  baz
+SQL
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_correct_cases_correct_cases_invocation_after_the_heredoc_ignores_random_call_2"
+source = '''
+foo&.bar(
+  <<-TEXT.foo)
+  foobarbaz
+TEXT
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_correct_cases_correct_cases_invocation_after_the_heredoc_ignores_random_call_after_2"
+source = '''
+foo&.bar(
+  <<-TEXT
+  foobarbaz
+TEXT
+.foo
+)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_incorrect_cases_incorrect_cases_simple_incorrect_case_registers_an_offense"
+source = '''
+foo.bar(<<-SQL
   foo
 SQL
 )
 '''
 corrected = '''
-foo#{dot}bar(<<-SQL)
+foo.bar(<<-SQL)
   foo
 SQL
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 4
@@ -246,21 +396,19 @@ column_end = 1
 message = "Put the closing parenthesis for a method call with a HEREDOC parameter on the same line as the HEREDOC opening."
 
 [[tests]]
-name = "rubocop_cop_layout_heredocargumentclosingparenthesis_incorrect_cases_simple_incorrect_case_with_call_after_registers_an_offense"
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_incorrect_cases_incorrect_cases_simple_incorrect_case_with_call_after_registers_an_offense"
 source = '''
-foo#{dot}bar(<<~SQL
+foo.bar(<<~SQL
   foo
 SQL
 ).baz
 '''
 corrected = '''
-foo#{dot}bar(<<~SQL)
+foo.bar(<<~SQL)
   foo
 SQL
 .baz
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 4
@@ -269,21 +417,19 @@ column_end = 1
 message = "Put the closing parenthesis for a method call with a HEREDOC parameter on the same line as the HEREDOC opening."
 
 [[tests]]
-name = "rubocop_cop_layout_heredocargumentclosingparenthesis_incorrect_cases_simple_incorrect_case_with_call_after_with_safe_navigation_registers_an_offense"
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_incorrect_cases_incorrect_cases_simple_incorrect_case_with_call_after_with_safe_navigation_registers_an_offense"
 source = '''
-foo#{dot}bar(<<~SQL
+foo.bar(<<~SQL
   foo
 SQL
 )&.baz
 '''
 corrected = '''
-foo#{dot}bar(<<~SQL)
+foo.bar(<<~SQL)
   foo
 SQL
 &.baz
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 4
@@ -292,21 +438,19 @@ column_end = 1
 message = "Put the closing parenthesis for a method call with a HEREDOC parameter on the same line as the HEREDOC opening."
 
 [[tests]]
-name = "rubocop_cop_layout_heredocargumentclosingparenthesis_incorrect_cases_simple_incorrect_case_with_call_after_trailing_comma_registers_an_offense"
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_incorrect_cases_incorrect_cases_simple_incorrect_case_with_call_after_trailing_comma_registers_an_offense"
 source = '''
-foo#{dot}bar(<<~SQL,
+foo.bar(<<~SQL,
   foo
 SQL
 ).baz
 '''
 corrected = '''
-foo#{dot}bar(<<~SQL)
+foo.bar(<<~SQL)
   foo
 SQL
 .baz
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 4
@@ -315,20 +459,18 @@ column_end = 1
 message = "Put the closing parenthesis for a method call with a HEREDOC parameter on the same line as the HEREDOC opening."
 
 [[tests]]
-name = "rubocop_cop_layout_heredocargumentclosingparenthesis_incorrect_cases_simple_incorrect_case_hash_registers_an_offense"
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_incorrect_cases_incorrect_cases_simple_incorrect_case_hash_registers_an_offense"
 source = '''
-foo#{dot}bar(foo: <<-SQL
+foo.bar(foo: <<-SQL
   foo
 SQL
 )
 '''
 corrected = '''
-foo#{dot}bar(foo: <<-SQL)
+foo.bar(foo: <<-SQL)
   foo
 SQL
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 4
@@ -337,20 +479,18 @@ column_end = 1
 message = "Put the closing parenthesis for a method call with a HEREDOC parameter on the same line as the HEREDOC opening."
 
 [[tests]]
-name = "rubocop_cop_layout_heredocargumentclosingparenthesis_incorrect_cases_nested_incorrect_case_registers_an_offense"
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_incorrect_cases_incorrect_cases_nested_incorrect_case_registers_an_offense"
 source = '''
-foo(foo#{dot}bar(<<-SQL)
+foo(foo.bar(<<-SQL)
   foo
 SQL
 )
 '''
 corrected = '''
-foo(foo#{dot}bar(<<-SQL))
+foo(foo.bar(<<-SQL))
   foo
 SQL
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 4
@@ -359,20 +499,18 @@ column_end = 1
 message = "Put the closing parenthesis for a method call with a HEREDOC parameter on the same line as the HEREDOC opening."
 
 [[tests]]
-name = "rubocop_cop_layout_heredocargumentclosingparenthesis_incorrect_cases_simple_incorrect_case_squiggles_registers_an_offense"
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_incorrect_cases_incorrect_cases_simple_incorrect_case_squiggles_registers_an_offense"
 source = '''
-foo#{dot}bar(<<~SQL
+foo.bar(<<~SQL
   foo
 SQL
 )
 '''
 corrected = '''
-foo#{dot}bar(<<~SQL)
+foo.bar(<<~SQL)
   foo
 SQL
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 4
@@ -381,20 +519,18 @@ column_end = 1
 message = "Put the closing parenthesis for a method call with a HEREDOC parameter on the same line as the HEREDOC opening."
 
 [[tests]]
-name = "rubocop_cop_layout_heredocargumentclosingparenthesis_incorrect_cases_simple_incorrect_case_comma_registers_an_offense"
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_incorrect_cases_incorrect_cases_simple_incorrect_case_comma_registers_an_offense"
 source = '''
-foo#{dot}bar(<<-SQL,
+foo.bar(<<-SQL,
   foo
 SQL
 )
 '''
 corrected = '''
-foo#{dot}bar(<<-SQL)
+foo.bar(<<-SQL)
   foo
 SQL
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 4
@@ -403,20 +539,18 @@ column_end = 1
 message = "Put the closing parenthesis for a method call with a HEREDOC parameter on the same line as the HEREDOC opening."
 
 [[tests]]
-name = "rubocop_cop_layout_heredocargumentclosingparenthesis_incorrect_cases_simple_incorrect_case_comma_with_spaces_registers_an_offense"
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_incorrect_cases_incorrect_cases_simple_incorrect_case_comma_with_spaces_registers_an_offense"
 source = '''
-foo#{dot}bar(<<-SQL    ,
+foo.bar(<<-SQL    ,
   foo
 SQL
 )
 '''
 corrected = '''
-foo#{dot}bar(<<-SQL)
+foo.bar(<<-SQL)
   foo
 SQL
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 4
@@ -425,20 +559,18 @@ column_end = 1
 message = "Put the closing parenthesis for a method call with a HEREDOC parameter on the same line as the HEREDOC opening."
 
 [[tests]]
-name = "rubocop_cop_layout_heredocargumentclosingparenthesis_incorrect_cases_simple_incorrect_case_comma_with_spaces_and_comma_in_heredoc_registers_an_offense"
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_incorrect_cases_incorrect_cases_simple_incorrect_case_comma_with_spaces_and_comma_in_heredoc_registers_an_offense"
 source = '''
-foo#{dot}bar(<<-SQL    ,
+foo.bar(<<-SQL    ,
   foo,
 SQL
 )
 '''
 corrected = '''
-foo#{dot}bar(<<-SQL)
+foo.bar(<<-SQL)
   foo,
 SQL
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 4
@@ -447,9 +579,9 @@ column_end = 1
 message = "Put the closing parenthesis for a method call with a HEREDOC parameter on the same line as the HEREDOC opening."
 
 [[tests]]
-name = "rubocop_cop_layout_heredocargumentclosingparenthesis_incorrect_cases_double_incorrect_case_registers_an_offense"
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_incorrect_cases_incorrect_cases_double_incorrect_case_registers_an_offense"
 source = '''
-foo#{dot}bar(<<-SQL, <<-NOSQL
+foo.bar(<<-SQL, <<-NOSQL
   foo
 SQL
   bar
@@ -457,14 +589,12 @@ NOSQL
 )
 '''
 corrected = '''
-foo#{dot}bar(<<-SQL, <<-NOSQL)
+foo.bar(<<-SQL, <<-NOSQL)
   foo
 SQL
   bar
 NOSQL
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 6
@@ -473,9 +603,9 @@ column_end = 1
 message = "Put the closing parenthesis for a method call with a HEREDOC parameter on the same line as the HEREDOC opening."
 
 [[tests]]
-name = "rubocop_cop_layout_heredocargumentclosingparenthesis_incorrect_cases_double_incorrect_case_new_line_chained_calls_registers_an_offense"
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_incorrect_cases_incorrect_cases_double_incorrect_case_new_line_chained_calls_registers_an_offense"
 source = '''
-foo#{dot}bar(<<-SQL, <<-NOSQL
+foo.bar(<<-SQL, <<-NOSQL
   foo
 SQL
   bar
@@ -483,15 +613,13 @@ NOSQL
 ).baz(123).quux(456)
 '''
 corrected = '''
-foo#{dot}bar(<<-SQL, <<-NOSQL)
+foo.bar(<<-SQL, <<-NOSQL)
   foo
 SQL
   bar
 NOSQL
 .baz(123).quux(456)
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 6
@@ -500,20 +628,18 @@ column_end = 1
 message = "Put the closing parenthesis for a method call with a HEREDOC parameter on the same line as the HEREDOC opening."
 
 [[tests]]
-name = "rubocop_cop_layout_heredocargumentclosingparenthesis_incorrect_cases_incorrect_case_with_other_param_after_registers_an_offense"
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_incorrect_cases_incorrect_cases_incorrect_case_with_other_param_after_registers_an_offense"
 source = '''
-foo#{dot}bar(<<-SQL, 123
+foo.bar(<<-SQL, 123
   foo
 SQL
 )
 '''
 corrected = '''
-foo#{dot}bar(<<-SQL, 123)
+foo.bar(<<-SQL, 123)
   foo
 SQL
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 4
@@ -522,20 +648,18 @@ column_end = 1
 message = "Put the closing parenthesis for a method call with a HEREDOC parameter on the same line as the HEREDOC opening."
 
 [[tests]]
-name = "rubocop_cop_layout_heredocargumentclosingparenthesis_incorrect_cases_incorrect_case_with_other_param_before_registers_an_offense"
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_incorrect_cases_incorrect_cases_incorrect_case_with_other_param_before_registers_an_offense"
 source = '''
-foo#{dot}bar(123, <<-SQL
+foo.bar(123, <<-SQL
   foo
 SQL
 )
 '''
 corrected = '''
-foo#{dot}bar(123, <<-SQL)
+foo.bar(123, <<-SQL)
   foo
 SQL
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 4
@@ -544,7 +668,7 @@ column_end = 1
 message = "Put the closing parenthesis for a method call with a HEREDOC parameter on the same line as the HEREDOC opening."
 
 [[tests]]
-name = "rubocop_cop_layout_heredocargumentclosingparenthesis_incorrect_cases_incorrect_case_with_other_param_before_constructor_registers_an_offense"
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_incorrect_cases_incorrect_cases_incorrect_case_with_other_param_before_constructor_registers_an_offense"
 source = '''
 Foo.new(123, <<-SQL
   foo
@@ -564,7 +688,7 @@ column_end = 1
 message = "Put the closing parenthesis for a method call with a HEREDOC parameter on the same line as the HEREDOC opening."
 
 [[tests]]
-name = "rubocop_cop_layout_heredocargumentclosingparenthesis_incorrect_cases_incorrect_case_with_other_param_before_constructor_and_raise_call_registers_an_offense"
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_incorrect_cases_incorrect_cases_incorrect_case_with_other_param_before_constructor_and_raise_call_registers_an_offense"
 source = '''
 raise Foo.new(123, <<-SQL
   foo
@@ -584,10 +708,10 @@ column_end = 1
 message = "Put the closing parenthesis for a method call with a HEREDOC parameter on the same line as the HEREDOC opening."
 
 [[tests]]
-name = "rubocop_cop_layout_heredocargumentclosingparenthesis_incorrect_cases_incorrect_case_nested_method_call_with_comma_registers_an_offense"
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_incorrect_cases_incorrect_cases_incorrect_case_nested_method_call_with_comma_registers_an_offense"
 source = '''
 bar(
-  foo#{dot}bar(123, <<-SQL
+  foo.bar(123, <<-SQL
     foo
   SQL
   ),
@@ -597,15 +721,13 @@ bar(
 '''
 corrected = '''
 bar(
-  foo#{dot}bar(123, <<-SQL),
+  foo.bar(123, <<-SQL),
     foo
   SQL
   456,
   789,
 )
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 5
@@ -614,10 +736,10 @@ column_end = 3
 message = "Put the closing parenthesis for a method call with a HEREDOC parameter on the same line as the HEREDOC opening."
 
 [[tests]]
-name = "rubocop_cop_layout_heredocargumentclosingparenthesis_incorrect_cases_incorrect_case_in_array_with_spaced_out_comma_registers_an_offense"
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_incorrect_cases_incorrect_cases_incorrect_case_in_array_with_spaced_out_comma_registers_an_offense"
 source = '''
 [
-  foo#{dot}bar(123, <<-SQL
+  foo.bar(123, <<-SQL
     foo
   SQL
   )      ,
@@ -627,15 +749,13 @@ source = '''
 '''
 corrected = '''
 [
-  foo#{dot}bar(123, <<-SQL),
+  foo.bar(123, <<-SQL),
     foo
   SQL
   456,
   789,
 ]
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 5
@@ -644,10 +764,10 @@ column_end = 3
 message = "Put the closing parenthesis for a method call with a HEREDOC parameter on the same line as the HEREDOC opening."
 
 [[tests]]
-name = "rubocop_cop_layout_heredocargumentclosingparenthesis_incorrect_cases_incorrect_case_in_array_with_double_heredoc_and_spaced_out_comma_registers_an_offense"
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_incorrect_cases_incorrect_cases_incorrect_case_in_array_with_double_heredoc_and_spaced_out_comma_registers_an_offense"
 source = '''
 [
-  foo#{dot}bar(123, <<-SQL, 456, 789, <<-NOSQL,
+  foo.bar(123, <<-SQL, 456, 789, <<-NOSQL,
     foo
   SQL
     bar
@@ -659,7 +779,7 @@ source = '''
 '''
 corrected = '''
 [
-  foo#{dot}bar(123, <<-SQL, 456, 789, <<-NOSQL),
+  foo.bar(123, <<-SQL, 456, 789, <<-NOSQL),
     foo
   SQL
     bar
@@ -668,8 +788,6 @@ corrected = '''
   789,
 ]
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 7
@@ -678,10 +796,10 @@ column_end = 3
 message = "Put the closing parenthesis for a method call with a HEREDOC parameter on the same line as the HEREDOC opening."
 
 [[tests]]
-name = "rubocop_cop_layout_heredocargumentclosingparenthesis_incorrect_cases_incorrect_case_in_array_with_nested_calls_and_double_heredoc_and_spaced_out_comma_registers_an_offense"
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_incorrect_cases_incorrect_cases_incorrect_case_in_array_with_nested_calls_and_double_heredoc_and_spaced_out_comma_registers_an_offense"
 source = '''
 [
-  foo(foo(foo#{dot}bar(123, <<-SQL, 456, 789, <<-NOSQL), 456), 400,
+  foo(foo(foo.bar(123, <<-SQL, 456, 789, <<-NOSQL), 456), 400,
     foo
   SQL
     bar
@@ -693,7 +811,7 @@ source = '''
 '''
 corrected = '''
 [
-  foo(foo(foo#{dot}bar(123, <<-SQL, 456, 789, <<-NOSQL), 456), 400),
+  foo(foo(foo.bar(123, <<-SQL, 456, 789, <<-NOSQL), 456), 400),
     foo
   SQL
     bar
@@ -702,8 +820,6 @@ corrected = '''
   789,
 ]
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 7
@@ -712,21 +828,19 @@ column_end = 3
 message = "Put the closing parenthesis for a method call with a HEREDOC parameter on the same line as the HEREDOC opening."
 
 [[tests]]
-name = "rubocop_cop_layout_heredocargumentclosingparenthesis_incorrect_cases_complex_incorrect_case_with_multiple_calls_detects_and_fixes_the_first"
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_incorrect_cases_incorrect_cases_complex_incorrect_case_with_multiple_calls_detects_and_fixes_the_first"
 source = '''
-query.order(foo#{dot}bar(<<-SQL,
+query.order(foo.bar(<<-SQL,
   foo
 SQL
                     ))
 '''
 corrected = '''
-query.order(foo#{dot}bar(<<-SQL)
+query.order(foo.bar(<<-SQL)
   foo
 SQL
                     )
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 4
@@ -735,20 +849,18 @@ column_end = 21
 message = "Put the closing parenthesis for a method call with a HEREDOC parameter on the same line as the HEREDOC opening."
 
 [[tests]]
-name = "rubocop_cop_layout_heredocargumentclosingparenthesis_incorrect_cases_complex_incorrect_case_with_multiple_calls_detects_and_fixes_the_second"
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_incorrect_cases_incorrect_cases_complex_incorrect_case_with_multiple_calls_detects_and_fixes_the_second"
 source = '''
-query.order(foo#{dot}bar(<<-SQL)
+query.order(foo.bar(<<-SQL)
   foo
 SQL
                     )
 '''
 corrected = '''
-query.order(foo#{dot}bar(<<-SQL))
+query.order(foo.bar(<<-SQL))
   foo
 SQL
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 4
@@ -757,11 +869,11 @@ column_end = 21
 message = "Put the closing parenthesis for a method call with a HEREDOC parameter on the same line as the HEREDOC opening."
 
 [[tests]]
-name = "rubocop_cop_layout_heredocargumentclosingparenthesis_incorrect_cases_complex_chained_incorrect_case_with_multiple_calls_detects_and_fixes_the_first"
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_incorrect_cases_incorrect_cases_complex_chained_incorrect_case_with_multiple_calls_detects_and_fixes_the_first"
 source = '''
 query.joins({
   foo: []
-}).order(foo#{dot}bar(<<-SQL),
+}).order(foo.bar(<<-SQL),
   bar
 SQL
         )
@@ -769,12 +881,10 @@ SQL
 corrected = '''
 query.joins({
   foo: []
-}).order(foo#{dot}bar(<<-SQL))
+}).order(foo.bar(<<-SQL))
   bar
 SQL
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 6
@@ -783,9 +893,9 @@ column_end = 9
 message = "Put the closing parenthesis for a method call with a HEREDOC parameter on the same line as the HEREDOC opening."
 
 [[tests]]
-name = "rubocop_cop_layout_heredocargumentclosingparenthesis_incorrect_cases_double_case_new_line_detects_and_fixes"
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_incorrect_cases_incorrect_cases_double_case_new_line_detects_and_fixes"
 source = '''
-foo#{dot}bar(
+foo.bar(
   <<-SQL, <<-NOSQL
   foo
 SQL
@@ -794,15 +904,13 @@ NOSQL
 )
 '''
 corrected = '''
-foo#{dot}bar(
+foo.bar(
   <<-SQL, <<-NOSQL)
   foo
 SQL
   bar
 NOSQL
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 7
@@ -811,29 +919,544 @@ column_end = 1
 message = "Put the closing parenthesis for a method call with a HEREDOC parameter on the same line as the HEREDOC opening."
 
 [[tests]]
-name = "rubocop_cop_layout_heredocargumentclosingparenthesis_correct_cases"
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_incorrect_cases_incorrect_cases_simple_incorrect_case_registers_an_offense_2"
 source = '''
-.
+foo&.bar(<<-SQL
+  foo
+SQL
+)
 '''
-offenses = []
+corrected = '''
+foo&.bar(<<-SQL)
+  foo
+SQL
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 1
+message = "Put the closing parenthesis for a method call with a HEREDOC parameter on the same line as the HEREDOC opening."
 
 [[tests]]
-name = "rubocop_cop_layout_heredocargumentclosingparenthesis_correct_cases"
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_incorrect_cases_incorrect_cases_simple_incorrect_case_with_call_after_registers_an_offense_2"
 source = '''
-&.
+foo&.bar(<<~SQL
+  foo
+SQL
+).baz
 '''
-offenses = []
+corrected = '''
+foo&.bar(<<~SQL)
+  foo
+SQL
+.baz
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 1
+message = "Put the closing parenthesis for a method call with a HEREDOC parameter on the same line as the HEREDOC opening."
 
 [[tests]]
-name = "rubocop_cop_layout_heredocargumentclosingparenthesis_incorrect_cases"
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_incorrect_cases_incorrect_cases_simple_incorrect_case_with_call_after_with_safe_navigation_registers_an_offense_2"
 source = '''
-.
+foo&.bar(<<~SQL
+  foo
+SQL
+)&.baz
 '''
-offenses = []
+corrected = '''
+foo&.bar(<<~SQL)
+  foo
+SQL
+&.baz
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 1
+message = "Put the closing parenthesis for a method call with a HEREDOC parameter on the same line as the HEREDOC opening."
 
 [[tests]]
-name = "rubocop_cop_layout_heredocargumentclosingparenthesis_incorrect_cases"
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_incorrect_cases_incorrect_cases_simple_incorrect_case_with_call_after_trailing_comma_registers_an_offense_2"
 source = '''
-&.
+foo&.bar(<<~SQL,
+  foo
+SQL
+).baz
 '''
-offenses = []
+corrected = '''
+foo&.bar(<<~SQL)
+  foo
+SQL
+.baz
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 1
+message = "Put the closing parenthesis for a method call with a HEREDOC parameter on the same line as the HEREDOC opening."
+
+[[tests]]
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_incorrect_cases_incorrect_cases_simple_incorrect_case_hash_registers_an_offense_2"
+source = '''
+foo&.bar(foo: <<-SQL
+  foo
+SQL
+)
+'''
+corrected = '''
+foo&.bar(foo: <<-SQL)
+  foo
+SQL
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 1
+message = "Put the closing parenthesis for a method call with a HEREDOC parameter on the same line as the HEREDOC opening."
+
+[[tests]]
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_incorrect_cases_incorrect_cases_nested_incorrect_case_registers_an_offense_2"
+source = '''
+foo(foo&.bar(<<-SQL)
+  foo
+SQL
+)
+'''
+corrected = '''
+foo(foo&.bar(<<-SQL))
+  foo
+SQL
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 1
+message = "Put the closing parenthesis for a method call with a HEREDOC parameter on the same line as the HEREDOC opening."
+
+[[tests]]
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_incorrect_cases_incorrect_cases_simple_incorrect_case_squiggles_registers_an_offense_2"
+source = '''
+foo&.bar(<<~SQL
+  foo
+SQL
+)
+'''
+corrected = '''
+foo&.bar(<<~SQL)
+  foo
+SQL
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 1
+message = "Put the closing parenthesis for a method call with a HEREDOC parameter on the same line as the HEREDOC opening."
+
+[[tests]]
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_incorrect_cases_incorrect_cases_simple_incorrect_case_comma_registers_an_offense_2"
+source = '''
+foo&.bar(<<-SQL,
+  foo
+SQL
+)
+'''
+corrected = '''
+foo&.bar(<<-SQL)
+  foo
+SQL
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 1
+message = "Put the closing parenthesis for a method call with a HEREDOC parameter on the same line as the HEREDOC opening."
+
+[[tests]]
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_incorrect_cases_incorrect_cases_simple_incorrect_case_comma_with_spaces_registers_an_offense_2"
+source = '''
+foo&.bar(<<-SQL    ,
+  foo
+SQL
+)
+'''
+corrected = '''
+foo&.bar(<<-SQL)
+  foo
+SQL
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 1
+message = "Put the closing parenthesis for a method call with a HEREDOC parameter on the same line as the HEREDOC opening."
+
+[[tests]]
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_incorrect_cases_incorrect_cases_simple_incorrect_case_comma_with_spaces_and_comma_in_heredoc_registers_an_offense_2"
+source = '''
+foo&.bar(<<-SQL    ,
+  foo,
+SQL
+)
+'''
+corrected = '''
+foo&.bar(<<-SQL)
+  foo,
+SQL
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 1
+message = "Put the closing parenthesis for a method call with a HEREDOC parameter on the same line as the HEREDOC opening."
+
+[[tests]]
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_incorrect_cases_incorrect_cases_double_incorrect_case_registers_an_offense_2"
+source = '''
+foo&.bar(<<-SQL, <<-NOSQL
+  foo
+SQL
+  bar
+NOSQL
+)
+'''
+corrected = '''
+foo&.bar(<<-SQL, <<-NOSQL)
+  foo
+SQL
+  bar
+NOSQL
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 0
+column_end = 1
+message = "Put the closing parenthesis for a method call with a HEREDOC parameter on the same line as the HEREDOC opening."
+
+[[tests]]
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_incorrect_cases_incorrect_cases_double_incorrect_case_new_line_chained_calls_registers_an_offense_2"
+source = '''
+foo&.bar(<<-SQL, <<-NOSQL
+  foo
+SQL
+  bar
+NOSQL
+).baz(123).quux(456)
+'''
+corrected = '''
+foo&.bar(<<-SQL, <<-NOSQL)
+  foo
+SQL
+  bar
+NOSQL
+.baz(123).quux(456)
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 0
+column_end = 1
+message = "Put the closing parenthesis for a method call with a HEREDOC parameter on the same line as the HEREDOC opening."
+
+[[tests]]
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_incorrect_cases_incorrect_cases_incorrect_case_with_other_param_after_registers_an_offense_2"
+source = '''
+foo&.bar(<<-SQL, 123
+  foo
+SQL
+)
+'''
+corrected = '''
+foo&.bar(<<-SQL, 123)
+  foo
+SQL
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 1
+message = "Put the closing parenthesis for a method call with a HEREDOC parameter on the same line as the HEREDOC opening."
+
+[[tests]]
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_incorrect_cases_incorrect_cases_incorrect_case_with_other_param_before_registers_an_offense_2"
+source = '''
+foo&.bar(123, <<-SQL
+  foo
+SQL
+)
+'''
+corrected = '''
+foo&.bar(123, <<-SQL)
+  foo
+SQL
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 1
+message = "Put the closing parenthesis for a method call with a HEREDOC parameter on the same line as the HEREDOC opening."
+
+[[tests]]
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_incorrect_cases_incorrect_cases_incorrect_case_with_other_param_before_constructor_registers_an_offense_2"
+source = '''
+Foo.new(123, <<-SQL
+  foo
+SQL
+)
+'''
+corrected = '''
+Foo.new(123, <<-SQL)
+  foo
+SQL
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 1
+message = "Put the closing parenthesis for a method call with a HEREDOC parameter on the same line as the HEREDOC opening."
+
+[[tests]]
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_incorrect_cases_incorrect_cases_incorrect_case_with_other_param_before_constructor_and_raise_call_registers_an_offense_2"
+source = '''
+raise Foo.new(123, <<-SQL
+  foo
+SQL
+)
+'''
+corrected = '''
+raise Foo.new(123, <<-SQL)
+  foo
+SQL
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 1
+message = "Put the closing parenthesis for a method call with a HEREDOC parameter on the same line as the HEREDOC opening."
+
+[[tests]]
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_incorrect_cases_incorrect_cases_incorrect_case_nested_method_call_with_comma_registers_an_offense_2"
+source = '''
+bar(
+  foo&.bar(123, <<-SQL
+    foo
+  SQL
+  ),
+  456,
+  789,
+)
+'''
+corrected = '''
+bar(
+  foo&.bar(123, <<-SQL),
+    foo
+  SQL
+  456,
+  789,
+)
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 3
+message = "Put the closing parenthesis for a method call with a HEREDOC parameter on the same line as the HEREDOC opening."
+
+[[tests]]
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_incorrect_cases_incorrect_cases_incorrect_case_in_array_with_spaced_out_comma_registers_an_offense_2"
+source = '''
+[
+  foo&.bar(123, <<-SQL
+    foo
+  SQL
+  )      ,
+  456,
+  789,
+]
+'''
+corrected = '''
+[
+  foo&.bar(123, <<-SQL),
+    foo
+  SQL
+  456,
+  789,
+]
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 3
+message = "Put the closing parenthesis for a method call with a HEREDOC parameter on the same line as the HEREDOC opening."
+
+[[tests]]
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_incorrect_cases_incorrect_cases_incorrect_case_in_array_with_double_heredoc_and_spaced_out_comma_registers_an_offense_2"
+source = '''
+[
+  foo&.bar(123, <<-SQL, 456, 789, <<-NOSQL,
+    foo
+  SQL
+    bar
+  NOSQL
+  )      ,
+  456,
+  789,
+]
+'''
+corrected = '''
+[
+  foo&.bar(123, <<-SQL, 456, 789, <<-NOSQL),
+    foo
+  SQL
+    bar
+  NOSQL
+  456,
+  789,
+]
+'''
+
+[[tests.offenses]]
+line = 7
+column_start = 2
+column_end = 3
+message = "Put the closing parenthesis for a method call with a HEREDOC parameter on the same line as the HEREDOC opening."
+
+[[tests]]
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_incorrect_cases_incorrect_cases_incorrect_case_in_array_with_nested_calls_and_double_heredoc_and_spaced_out_comma_registers_an_offense_2"
+source = '''
+[
+  foo(foo(foo&.bar(123, <<-SQL, 456, 789, <<-NOSQL), 456), 400,
+    foo
+  SQL
+    bar
+  NOSQL
+  )      ,
+  456,
+  789,
+]
+'''
+corrected = '''
+[
+  foo(foo(foo&.bar(123, <<-SQL, 456, 789, <<-NOSQL), 456), 400),
+    foo
+  SQL
+    bar
+  NOSQL
+  456,
+  789,
+]
+'''
+
+[[tests.offenses]]
+line = 7
+column_start = 2
+column_end = 3
+message = "Put the closing parenthesis for a method call with a HEREDOC parameter on the same line as the HEREDOC opening."
+
+[[tests]]
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_incorrect_cases_incorrect_cases_complex_incorrect_case_with_multiple_calls_detects_and_fixes_the_first_2"
+source = '''
+query.order(foo&.bar(<<-SQL,
+  foo
+SQL
+                    ))
+'''
+corrected = '''
+query.order(foo&.bar(<<-SQL)
+  foo
+SQL
+                    )
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 20
+column_end = 21
+message = "Put the closing parenthesis for a method call with a HEREDOC parameter on the same line as the HEREDOC opening."
+
+[[tests]]
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_incorrect_cases_incorrect_cases_complex_incorrect_case_with_multiple_calls_detects_and_fixes_the_second_2"
+source = '''
+query.order(foo&.bar(<<-SQL)
+  foo
+SQL
+                    )
+'''
+corrected = '''
+query.order(foo&.bar(<<-SQL))
+  foo
+SQL
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 20
+column_end = 21
+message = "Put the closing parenthesis for a method call with a HEREDOC parameter on the same line as the HEREDOC opening."
+
+[[tests]]
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_incorrect_cases_incorrect_cases_complex_chained_incorrect_case_with_multiple_calls_detects_and_fixes_the_first_2"
+source = '''
+query.joins({
+  foo: []
+}).order(foo&.bar(<<-SQL),
+  bar
+SQL
+        )
+'''
+corrected = '''
+query.joins({
+  foo: []
+}).order(foo&.bar(<<-SQL))
+  bar
+SQL
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 8
+column_end = 9
+message = "Put the closing parenthesis for a method call with a HEREDOC parameter on the same line as the HEREDOC opening."
+
+[[tests]]
+name = "rubocopcoplayoutheredocargumentclosingparenthesis_behaves_like_incorrect_cases_incorrect_cases_double_case_new_line_detects_and_fixes_2"
+source = '''
+foo&.bar(
+  <<-SQL, <<-NOSQL
+  foo
+SQL
+  bar
+NOSQL
+)
+'''
+corrected = '''
+foo&.bar(
+  <<-SQL, <<-NOSQL)
+  foo
+SQL
+  bar
+NOSQL
+'''
+
+[[tests.offenses]]
+line = 7
+column_start = 0
+column_end = 1
+message = "Put the closing parenthesis for a method call with a HEREDOC parameter on the same line as the HEREDOC opening."

@@ -4,138 +4,76 @@ severity = "convention"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_style_hashtransformvalues_when_using_ruby_2_4_or_newer_with_inline_block_flags_each_with_object_when_transform_values_could_be_used"
-source = '''
-x.each_with_object({}) {|(k, v), h| h[k] = foo(v)}
-'''
-corrected = '''
-x.transform_values {|v| foo(v)}
-'''
-ruby_version = ">= 2.4"
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 50
-message = "Prefer `transform_values` over `each_with_object`."
-
-[[tests]]
-name = "rubocop_cop_style_hashtransformvalues_when_using_ruby_2_4_or_newer_with_multiline_block_flags_each_with_object_when_transform_values_could_be_used"
-source = '''
-some_hash.each_with_object({}) do |(key, val), memo|
-  memo[key] = val * val
-end
-'''
-corrected = '''
-some_hash.transform_values do |val|
-  val * val
-end
-'''
-ruby_version = ">= 2.4"
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 52
-message = "Prefer `transform_values` over `each_with_object`."
-
-[[tests]]
-name = "rubocop_cop_style_hashtransformvalues_when_using_ruby_2_4_or_newer_with_safe_navigation_operator_flags_each_with_object_when_transform_values_could_be_used"
-source = '''
-x&.each_with_object({}) {|(k, v), h| h[k] = foo(v)}
-'''
-corrected = '''
-x&.transform_values {|v| foo(v)}
-'''
-ruby_version = ">= 2.4"
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 51
-message = "Prefer `transform_values` over `each_with_object`."
-
-[[tests]]
-name = "rubocop_cop_style_hashtransformvalues_when_using_ruby_2_4_or_newer_does_not_flag_each_with_object_when_both_key_value_are_transformed"
+name = "rubocopcopstylehashtransformvalues_when_using_ruby_24_or_newer_does_not_flag_each_with_object_when_both_key__value_are_transformed"
 source = '''
 x.each_with_object({}) {|(k, v), h| h[k.to_sym] = foo(v)}
 '''
-ruby_version = ">= 2.4"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_hashtransformvalues_when_using_ruby_2_4_or_newer_does_not_flag_each_with_object_when_value_transformation_uses_key"
+name = "rubocopcopstylehashtransformvalues_when_using_ruby_24_or_newer_does_not_flag_each_with_object_when_value_transformation_uses_key"
 source = '''
 x.each_with_object({}) {|(k, v), h| h[k] = k.to_s}
 '''
-ruby_version = ">= 2.4"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_hashtransformvalues_when_using_ruby_2_4_or_newer_does_not_flag_each_with_object_when_no_transformation_occurs"
+name = "rubocopcopstylehashtransformvalues_when_using_ruby_24_or_newer_does_not_flag_each_with_object_when_no_transformation_occurs"
 source = '''
 x.each_with_object({}) {|(k, v), h| h[k] = v}
 '''
-ruby_version = ">= 2.4"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_hashtransformvalues_when_using_ruby_2_4_or_newer_does_not_flag_each_with_object_when_its_argument_is_not_modified"
+name = "rubocopcopstylehashtransformvalues_when_using_ruby_24_or_newer_does_not_flag_each_with_object_when_its_argument_is_not_modified"
 source = '''
 x.each_with_object({}) {|(k, v), h| other_h[k] = v * v}
 '''
-ruby_version = ">= 2.4"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_hashtransformvalues_when_using_ruby_2_4_or_newer_does_not_flag_each_with_object_when_its_argument_is_used_in_the_value"
+name = "rubocopcopstylehashtransformvalues_when_using_ruby_24_or_newer_does_not_flag_each_with_object_when_its_argument_is_used_in_the_value"
 source = '''
 x.each_with_object({}) { |(k, v), h| h[k] = h.count }
 '''
-ruby_version = ">= 2.4"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_hashtransformvalues_when_using_ruby_2_4_or_newer_does_not_flag_each_with_object_when_receiver_is_array_literal"
+name = "rubocopcopstylehashtransformvalues_when_using_ruby_24_or_newer_does_not_flag_each_with_object_when_receiver_is_array_literal"
 source = '''
 [1, 2, 3].each_with_object({}) {|(k, v), h| h[k] = foo(v)}
 '''
-ruby_version = ">= 2.4"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_hashtransformvalues_when_using_ruby_2_4_or_newer_does_not_flag_each_with_object_when_its_receiver_is_each_with_index"
+name = "rubocopcopstylehashtransformvalues_when_using_ruby_24_or_newer_does_not_flag_each_with_object_when_its_receiver_is_each_with_index"
 source = '''
 [1, 2, 3].each_with_index.each_with_object({}) { |(k, v), h| h[k] = foo(v) }
 '''
-ruby_version = ">= 2.4"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_hashtransformvalues_when_using_ruby_2_4_or_newer_does_not_flag_each_with_object_when_its_receiver_is_with_index"
+name = "rubocopcopstylehashtransformvalues_when_using_ruby_24_or_newer_does_not_flag_each_with_object_when_its_receiver_is_with_index"
 source = '''
 [1, 2, 3].each.with_index.each_with_object({}) { |(k, v), h| h[k] = foo(v) }
 '''
-ruby_version = ">= 2.4"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_hashtransformvalues_when_using_ruby_2_4_or_newer_does_not_flag_each_with_object_when_its_receiver_is_zip"
+name = "rubocopcopstylehashtransformvalues_when_using_ruby_24_or_newer_does_not_flag_each_with_object_when_its_receiver_is_zip"
 source = '''
 %i[a b c].zip([1, 2, 3]).each_with_object({}) { |(k, v), h| h[k] = foo(v) }
 '''
-ruby_version = ">= 2.4"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_hashtransformvalues_when_using_ruby_2_4_or_newer_flags_map_to_h_when_transform_values_could_be_used"
+name = "rubocopcopstylehashtransformvalues_when_using_ruby_24_or_newer_flags__map_to_h_when_transform_values_could_be_used"
 source = '''
 x.map {|k, v| [k, foo(v)]}.to_h
 '''
 corrected = '''
 x.transform_values {|v| foo(v)}
 '''
-ruby_version = ">= 2.4"
 
 [[tests.offenses]]
 line = 1
@@ -144,7 +82,7 @@ column_end = 31
 message = "Prefer `transform_values` over `map {...}.to_h`."
 
 [[tests]]
-name = "rubocop_cop_style_hashtransformvalues_when_using_ruby_2_4_or_newer_flags_map_to_h_when_transform_values_could_be_used_when_line_break_before_to_h"
+name = "rubocopcopstylehashtransformvalues_when_using_ruby_24_or_newer_flags__map_to_h_when_transform_values_could_be_used_when_line_break_before_to_h"
 source = '''
 x.map {|k, v| [k, foo(v)]}.
   to_h
@@ -152,7 +90,6 @@ x.map {|k, v| [k, foo(v)]}.
 corrected = '''
 x.transform_values {|v| foo(v)}
 '''
-ruby_version = ">= 2.4"
 
 [[tests.offenses]]
 line = 1
@@ -161,7 +98,7 @@ column_end = 27
 message = "Prefer `transform_values` over `map {...}.to_h`."
 
 [[tests]]
-name = "rubocop_cop_style_hashtransformvalues_when_using_ruby_2_4_or_newer_flags_map_to_h_when_transform_values_could_be_used_when_wrapped_in_another_block"
+name = "rubocopcopstylehashtransformvalues_when_using_ruby_24_or_newer_flags__map_to_h_when_transform_values_could_be_used_when_wrapped_in_another_block"
 source = '''
 wrapping do
   x.map do |k, v|
@@ -176,7 +113,6 @@ wrapping do
   end
 end
 '''
-ruby_version = ">= 2.4"
 
 [[tests.offenses]]
 line = 2
@@ -185,22 +121,20 @@ column_end = 17
 message = "Prefer `transform_values` over `map {...}.to_h`."
 
 [[tests]]
-name = "rubocop_cop_style_hashtransformvalues_when_using_ruby_2_4_or_newer_does_not_flag_map_to_h_when_both_key_value_are_transformed"
+name = "rubocopcopstylehashtransformvalues_when_using_ruby_24_or_newer_does_not_flag__mapto_h_when_both_key__value_are_transformed"
 source = '''
 x.map {|k, v| [k.to_sym, foo(v)]}.to_h
 '''
-ruby_version = ">= 2.4"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_hashtransformvalues_when_using_ruby_2_4_or_newer_flags_hash_map_when_transform_values_could_be_used"
+name = "rubocopcopstylehashtransformvalues_when_using_ruby_24_or_newer_flags_hash_map_when_transform_values_could_be_used"
 source = '''
 Hash[x.map {|k, v| [k, foo(v)]}]
 '''
 corrected = '''
 x.transform_values {|v| foo(v)}
 '''
-ruby_version = ">= 2.4"
 
 [[tests.offenses]]
 line = 1
@@ -209,70 +143,62 @@ column_end = 32
 message = "Prefer `transform_values` over `Hash[_.map {...}]`."
 
 [[tests]]
-name = "rubocop_cop_style_hashtransformvalues_when_using_ruby_2_4_or_newer_does_not_flag_hash_map_when_both_key_value_are_transformed"
+name = "rubocopcopstylehashtransformvalues_when_using_ruby_24_or_newer_does_not_flag_hash_map_when_both_key__value_are_transformed"
 source = '''
 Hash[x.map {|k, v| [k.to_sym, foo(v)]}]
 '''
-ruby_version = ">= 2.4"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_hashtransformvalues_when_using_ruby_2_4_or_newer_does_not_flag_map_to_h_when_value_block_argument_is_unused"
+name = "rubocopcopstylehashtransformvalues_when_using_ruby_24_or_newer_does_not_flag__map_to_h_when_value_block_argument_is_unused"
 source = '''
 x.map {|k, _v| [k, k]}.to_h
 '''
-ruby_version = ">= 2.4"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_hashtransformvalues_when_using_ruby_2_4_or_newer_does_not_flag_value_transformation_in_the_absence_of_to_h"
+name = "rubocopcopstylehashtransformvalues_when_using_ruby_24_or_newer_does_not_flag_value_transformation_in_the_absence_of_to_h"
 source = '''
 x.map {|k, v| [k, foo(v)]}
 '''
-ruby_version = ">= 2.4"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_hashtransformvalues_when_using_ruby_2_4_or_newer_does_not_flag_value_transformation_when_receiver_is_array_literal"
+name = "rubocopcopstylehashtransformvalues_when_using_ruby_24_or_newer_does_not_flag_value_transformation_when_receiver_is_array_literal"
 source = '''
 [1, 2, 3].map {|k, v| [k, foo(v)]}.to_h
 '''
-ruby_version = ">= 2.4"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_hashtransformvalues_when_using_ruby_2_4_or_newer_does_not_flag_map_to_h_when_its_receiver_is_each_with_index"
+name = "rubocopcopstylehashtransformvalues_when_using_ruby_24_or_newer_does_not_flag__mapto_h_when_its_receiver_is_each_with_index"
 source = '''
 [1, 2, 3].each_with_index.map { |k, v| [k, foo(v)] }.to_h
 '''
-ruby_version = ">= 2.4"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_hashtransformvalues_when_using_ruby_2_4_or_newer_does_not_flag_map_to_h_when_its_receiver_is_with_index"
+name = "rubocopcopstylehashtransformvalues_when_using_ruby_24_or_newer_does_not_flag__mapto_h_when_its_receiver_is_with_index"
 source = '''
 [1, 2, 3].each.with_index.map { |k, v| [k, foo(v)] }.to_h
 '''
-ruby_version = ">= 2.4"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_hashtransformvalues_when_using_ruby_2_4_or_newer_does_not_flag_map_to_h_when_its_receiver_is_zip"
+name = "rubocopcopstylehashtransformvalues_when_using_ruby_24_or_newer_does_not_flag__mapto_h_when_its_receiver_is_zip"
 source = '''
 %i[a b c].zip([1, 2, 3]).map { |k, v| [k, foo(v)] }.to_h
 '''
-ruby_version = ">= 2.4"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_hashtransformvalues_when_using_ruby_2_4_or_newer_correctly_autocorrects_map_to_h_with_block"
+name = "rubocopcopstylehashtransformvalues_when_using_ruby_24_or_newer_correctly_autocorrects__mapto_h_with_block"
 source = '''
 {a: 1, b: 2}.map {|k, v| [k, foo(v)]}.to_h {|k, v| [v, k]}
 '''
 corrected = '''
 {a: 1, b: 2}.transform_values {|v| foo(v)}.to_h {|k, v| [v, k]}
 '''
-ruby_version = ">= 2.4"
 
 [[tests.offenses]]
 line = 1
@@ -281,46 +207,90 @@ column_end = 42
 message = "Prefer `transform_values` over `map {...}.to_h`."
 
 [[tests]]
-name = "rubocop_cop_style_hashtransformvalues_when_using_ruby_2_4_or_newer_does_not_flag_hash_map_when_its_receiver_is_an_array_literal"
+name = "rubocopcopstylehashtransformvalues_when_using_ruby_24_or_newer_does_not_flag_hash_map_when_its_receiver_is_an_array_literal"
 source = '''
 Hash[[1, 2, 3].map { |k, v| [k, foo(v)] }]
 '''
-ruby_version = ">= 2.4"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_hashtransformvalues_when_using_ruby_2_4_or_newer_does_not_flag_hash_map_when_its_receiver_is_each_with_index"
+name = "rubocopcopstylehashtransformvalues_when_using_ruby_24_or_newer_does_not_flag_hash_map_when_its_receiver_is_each_with_index"
 source = '''
 Hash[[1, 2, 3].each_with_index.map { |k, v| [k, foo(v)] }]
 '''
-ruby_version = ">= 2.4"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_hashtransformvalues_when_using_ruby_2_4_or_newer_does_not_flag_hash_map_when_its_receiver_is_with_index"
+name = "rubocopcopstylehashtransformvalues_when_using_ruby_24_or_newer_does_not_flag_hash_map_when_its_receiver_is_with_index"
 source = '''
 Hash[[1, 2, 3].each.with_index.map { |k, v| [k, foo(v)] }]
 '''
-ruby_version = ">= 2.4"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_hashtransformvalues_when_using_ruby_2_4_or_newer_does_not_flag_hash_map_when_its_receiver_is_zip"
+name = "rubocopcopstylehashtransformvalues_when_using_ruby_24_or_newer_does_not_flag_hash_map_when_its_receiver_is_zip"
 source = '''
 Hash[%i[a b c].zip([1, 2, 3]).map { |k, v| [k, foo(v)] }]
 '''
-ruby_version = ">= 2.4"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_hashtransformvalues_when_using_ruby_2_6_or_newer_flags_to_h_when_transform_values_could_be_used"
+name = "rubocopcopstylehashtransformvalues_when_using_ruby_24_or_newer_with_inline_block_flags_each_with_object_when_transform_values_could_be_used"
+source = '''
+x.each_with_object({}) {|(k, v), h| h[k] = foo(v)}
+'''
+corrected = '''
+x.transform_values {|v| foo(v)}
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 50
+message = "Prefer `transform_values` over `each_with_object`."
+
+[[tests]]
+name = "rubocopcopstylehashtransformvalues_when_using_ruby_24_or_newer_with_multiline_block_flags_each_with_object_when_transform_values_could_be_used"
+source = '''
+some_hash.each_with_object({}) do |(key, val), memo|
+  memo[key] = val * val
+end
+'''
+corrected = '''
+some_hash.transform_values do |val|
+  val * val
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 52
+message = "Prefer `transform_values` over `each_with_object`."
+
+[[tests]]
+name = "rubocopcopstylehashtransformvalues_when_using_ruby_24_or_newer_with_safe_navigation_operator_flags_each_with_object_when_transform_values_could_be_used"
+source = '''
+x&.each_with_object({}) {|(k, v), h| h[k] = foo(v)}
+'''
+corrected = '''
+x&.transform_values {|v| foo(v)}
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 51
+message = "Prefer `transform_values` over `each_with_object`."
+
+[[tests]]
+name = "rubocopcopstylehashtransformvalues_when_using_ruby_26_or_newer_flags__to_h_when_transform_values_could_be_used"
 source = '''
 x.to_h {|k, v| [k, foo(v)]}
 '''
 corrected = '''
 x.transform_values {|v| foo(v)}
 '''
-ruby_version = ">= 2.6"
 
 [[tests.offenses]]
 line = 1
@@ -329,14 +299,13 @@ column_end = 27
 message = "Prefer `transform_values` over `to_h {...}`."
 
 [[tests]]
-name = "rubocop_cop_style_hashtransformvalues_when_using_ruby_2_6_or_newer_registers_and_corrects_an_offense_to_h_when_value_is_a_hash_literal_and_is_enclosed_in_braces"
+name = "rubocopcopstylehashtransformvalues_when_using_ruby_26_or_newer_registers_and_corrects_an_offense__to_h_when_value_is_a_hash_literal_and_is_enclosed_in_braces"
 source = '''
 {a: 1, b: 2}.to_h { |key, val| [key, { value: val }] }
 '''
 corrected = '''
 {a: 1, b: 2}.transform_values { |val| { value: val } }
 '''
-ruby_version = ">= 2.6"
 
 [[tests.offenses]]
 line = 1
@@ -345,14 +314,13 @@ column_end = 54
 message = "Prefer `transform_values` over `to_h {...}`."
 
 [[tests]]
-name = "rubocop_cop_style_hashtransformvalues_when_using_ruby_2_6_or_newer_registers_and_corrects_an_offense_to_h_when_value_is_a_hash_literal_and_is_not_enclosed_in_braces"
+name = "rubocopcopstylehashtransformvalues_when_using_ruby_26_or_newer_registers_and_corrects_an_offense__to_h_when_value_is_a_hash_literal_and_is_not_enclosed_in_braces"
 source = '''
 {a: 1, b: 2}.to_h { |key, val| [key, value: val] }
 '''
 corrected = '''
 {a: 1, b: 2}.transform_values { |val| { value: val } }
 '''
-ruby_version = ">= 2.6"
 
 [[tests.offenses]]
 line = 1
@@ -361,65 +329,57 @@ column_end = 50
 message = "Prefer `transform_values` over `to_h {...}`."
 
 [[tests]]
-name = "rubocop_cop_style_hashtransformvalues_when_using_ruby_2_6_or_newer_does_not_flag_to_h_when_both_key_value_are_transformed"
+name = "rubocopcopstylehashtransformvalues_when_using_ruby_26_or_newer_does_not_flag__to_h_when_both_key__value_are_transformed"
 source = '''
 x.to_h { |k, v| [k.to_sym, foo(v)] }
 '''
-ruby_version = ">= 2.6"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_hashtransformvalues_when_using_ruby_2_6_or_newer_does_not_flag_to_h_when_value_block_argument_is_unused"
+name = "rubocopcopstylehashtransformvalues_when_using_ruby_26_or_newer_does_not_flag__to_h__when_value_block_argument_is_unused"
 source = '''
 x.to_h {|k, _v| [k, k]}
 '''
-ruby_version = ">= 2.6"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_hashtransformvalues_when_using_ruby_2_6_or_newer_does_not_flag_to_h_when_its_receiver_is_an_array_literal"
+name = "rubocopcopstylehashtransformvalues_when_using_ruby_26_or_newer_does_not_flag__to_h_when_its_receiver_is_an_array_literal"
 source = '''
 [1, 2, 3].to_h { |k, v| [k, foo(v)] }
 '''
-ruby_version = ">= 2.6"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_hashtransformvalues_when_using_ruby_2_6_or_newer_does_not_flag_to_h_when_its_receiver_is_each_with_index"
+name = "rubocopcopstylehashtransformvalues_when_using_ruby_26_or_newer_does_not_flag__to_h_when_its_receiver_is_each_with_index"
 source = '''
 [1, 2, 3].each_with_index.to_h { |k, v| [k, foo(v)] }
 '''
-ruby_version = ">= 2.6"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_hashtransformvalues_when_using_ruby_2_6_or_newer_does_not_flag_to_h_when_its_receiver_is_with_index"
+name = "rubocopcopstylehashtransformvalues_when_using_ruby_26_or_newer_does_not_flag__to_h_when_its_receiver_is_with_index"
 source = '''
 [1, 2, 3].each.with_index.to_h { |k, v| [k, foo(v)] }
 '''
-ruby_version = ">= 2.6"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_hashtransformvalues_when_using_ruby_2_6_or_newer_does_not_flag_to_h_when_its_receiver_is_zip"
+name = "rubocopcopstylehashtransformvalues_when_using_ruby_26_or_newer_does_not_flag__to_h_when_its_receiver_is_zip"
 source = '''
 %i[a b c].zip([1, 2, 3]).to_h { |k, v| [k, foo(v)] }
 '''
-ruby_version = ">= 2.6"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_hashtransformvalues_below_ruby_2_4_does_not_flag_even_if_transform_values_could_be_used"
+name = "rubocopcopstylehashtransformvalues_below_ruby_24_does_not_flag_even_if_transform_values_could_be_used"
 source = '''
 x.each_with_object({}) {|(k, v), h| h[k] = foo(v)}
 '''
-ruby_version = ">= 2.3"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_hashtransformvalues_below_ruby_2_6_does_not_flag_to_h"
+name = "rubocopcopstylehashtransformvalues_below_ruby_26_does_not_flag__to_h"
 source = '''
 x.to_h {|k, v| [k, foo(v)]}
 '''
-ruby_version = ">= 2.5"
 offenses = []

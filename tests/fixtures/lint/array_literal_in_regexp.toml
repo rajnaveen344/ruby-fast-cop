@@ -4,32 +4,281 @@ severity = "warning"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp"
+name = "rubocopcoplintarrayliteralinregexp_does_not_register_an_offense_without_interpolation"
 source = '''
-/#{%{source}}/
+/[abc]/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintarrayliteralinregexp_does_not_register_an_offense_when_the_interpolated_value_is_not_an_array"
+source = '''
+/#{foo}/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintarrayliteralinregexp_does_not_register_an_offense_when_an_interpolated_array_is_inside_a_string"
+source = '''
+"#{%w[a b c]}"
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintarrayliteralinregexp_does_not_register_an_offense_with_empty_interpolation"
+source = '''
+/#{}/
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintarrayliteralinregexp_behaves_like_character_class_registers_an_offense_and_corrects_for_wa"
+source = '''
+/#{%w[a]}/
 '''
 corrected = '''
-#{correction}
+/[a]/
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 1
-column_end = 14
+column_end = 9
 message = "Use a character class instead of interpolating an array in a regexp."
 
 [[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp"
+name = "rubocopcoplintarrayliteralinregexp_behaves_like_character_class_registers_an_offense_and_corrects_for_wa_b_c"
 source = '''
-/#{%{source}}/
+/#{%w[a b c]}/
 '''
 corrected = '''
-#{correction}
+/[abc]/
 '''
-interpolated = true
-verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 1
+column_end = 13
+message = "Use a character class instead of interpolating an array in a regexp."
+
+[[tests]]
+name = "rubocopcoplintarrayliteralinregexp_behaves_like_character_class_registers_an_offense_and_corrects_for_a_b_c"
+source = '''
+/#{["a", "b", "c"]}/
+'''
+corrected = '''
+/[abc]/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 1
+column_end = 19
+message = "Use a character class instead of interpolating an array in a regexp."
+
+[[tests]]
+name = "rubocopcoplintarrayliteralinregexp_behaves_like_character_class_registers_an_offense_and_corrects_for_ia_b_c"
+source = '''
+/#{%i[a b c]}/
+'''
+corrected = '''
+/[abc]/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 1
+column_end = 13
+message = "Use a character class instead of interpolating an array in a regexp."
+
+[[tests]]
+name = "rubocopcoplintarrayliteralinregexp_behaves_like_character_class_registers_an_offense_and_corrects_for_a_b_c_2"
+source = '''
+/#{[:a, :b, :c]}/
+'''
+corrected = '''
+/[abc]/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 1
+column_end = 16
+message = "Use a character class instead of interpolating an array in a regexp."
+
+[[tests]]
+name = "rubocopcoplintarrayliteralinregexp_behaves_like_character_class_registers_an_offense_and_corrects_for_1_2_3"
+source = '''
+/#{[1, 2, 3]}/
+'''
+corrected = '''
+/[123]/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 1
+column_end = 13
+message = "Use a character class instead of interpolating an array in a regexp."
+
+[[tests]]
+name = "rubocopcoplintarrayliteralinregexp_behaves_like_character_class_registers_an_offense_and_corrects_for_w___"
+source = '''
+/#{%w[^ - $ |]}/
+'''
+corrected = '''
+/[\^\-\$\|]/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 1
+column_end = 15
+message = "Use a character class instead of interpolating an array in a regexp."
+
+[[tests]]
+name = "rubocopcoplintarrayliteralinregexp_behaves_like_character_class_registers_an_offense_and_corrects_for_w__"
+source = '''
+/#{%w[あ い 🐧]}/
+'''
+corrected = '''
+/[あい🐧]/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 1
+column_end = 13
+message = "Use a character class instead of interpolating an array in a regexp."
+
+[[tests]]
+name = "rubocopcoplintarrayliteralinregexp_behaves_like_alternation_registers_an_offense_and_corrects_for_wfoo"
+source = '''
+/#{%w[foo]}/
+'''
+corrected = '''
+/(?:foo)/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 1
+column_end = 11
+message = "Use alternation instead of interpolating an array in a regexp."
+
+[[tests]]
+name = "rubocopcoplintarrayliteralinregexp_behaves_like_alternation_registers_an_offense_and_corrects_for_wfoo_bar_baz"
+source = '''
+/#{%w[foo bar baz]}/
+'''
+corrected = '''
+/(?:foo|bar|baz)/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 1
+column_end = 19
+message = "Use alternation instead of interpolating an array in a regexp."
+
+[[tests]]
+name = "rubocopcoplintarrayliteralinregexp_behaves_like_alternation_registers_an_offense_and_corrects_for_wa_b_cat"
+source = '''
+/#{%w[a b cat]}/
+'''
+corrected = '''
+/(?:a|b|cat)/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 1
+column_end = 15
+message = "Use alternation instead of interpolating an array in a regexp."
+
+[[tests]]
+name = "rubocopcoplintarrayliteralinregexp_behaves_like_alternation_registers_an_offense_and_corrects_for_10_25_47"
+source = '''
+/#{[1.0, 2.5, 4.7]}/
+'''
+corrected = '''
+/(?:1\.0|2\.5|4\.7)/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 1
+column_end = 19
+message = "Use alternation instead of interpolating an array in a regexp."
+
+[[tests]]
+name = "rubocopcoplintarrayliteralinregexp_behaves_like_alternation_registers_an_offense_and_corrects_for_a_5_189"
+source = '''
+/#{["a", 5, 18.9]}/
+'''
+corrected = '''
+/(?:a|5|18\.9)/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 1
+column_end = 18
+message = "Use alternation instead of interpolating an array in a regexp."
+
+[[tests]]
+name = "rubocopcoplintarrayliteralinregexp_behaves_like_alternation_registers_an_offense_and_corrects_for_w_____"
+source = '''
+/#{%w[^^ -- $$ || ++ **]}/
+'''
+corrected = '''
+/(?:\^\^|\-\-|\$\$|\|\||\+\+|\*\*)/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 1
+column_end = 25
+message = "Use alternation instead of interpolating an array in a regexp."
+
+[[tests]]
+name = "rubocopcoplintarrayliteralinregexp_behaves_like_alternation_registers_an_offense_and_corrects_for_wtrue_false_nil"
+source = '''
+/#{%w[true false nil]}/
+'''
+corrected = '''
+/(?:true|false|nil)/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 1
+column_end = 22
+message = "Use alternation instead of interpolating an array in a regexp."
+
+[[tests]]
+name = "rubocopcoplintarrayliteralinregexp_behaves_like_alternation_registers_an_offense_and_corrects_for_true_false_nil"
+source = '''
+/#{[true, false, nil]}/
+'''
+corrected = '''
+/(?:true|false|nil)/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 1
+column_end = 22
+message = "Use alternation instead of interpolating an array in a regexp."
+
+[[tests]]
+name = "rubocopcoplintarrayliteralinregexp_behaves_like_alternation_registers_an_offense_and_corrects_for_w__"
+source = '''
+/#{%w[❤️ 💚 💙]}/
+'''
+corrected = '''
+/(?:❤️|💚|💙)/
+'''
 
 [[tests.offenses]]
 line = 1
@@ -38,9 +287,21 @@ column_end = 14
 message = "Use alternation instead of interpolating an array in a regexp."
 
 [[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp"
+name = "rubocopcoplintarrayliteralinregexp_behaves_like_offense_registers_an_offense_but_does_not_correct_for_foo"
 source = '''
-/#{%{source}}/
+/#{[foo]}/
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 1
+column_end = 9
+message = "Use alternation or a character class instead of interpolating an array in a regexp."
+
+[[tests]]
+name = "rubocopcoplintarrayliteralinregexp_behaves_like_offense_registers_an_offense_but_does_not_correct_for_foo_2"
+source = '''
+/#{["#{foo}"]}/
 '''
 
 [[tests.offenses]]
@@ -50,344 +311,109 @@ column_end = 14
 message = "Use alternation or a character class instead of interpolating an array in a regexp."
 
 [[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp_character_class_w_a"
+name = "rubocopcoplintarrayliteralinregexp_behaves_like_offense_registers_an_offense_but_does_not_correct_for_foo_3"
 source = '''
-%w[a]
+/#{[:"#{foo}"]}/
 '''
-offenses = []
+
+[[tests.offenses]]
+line = 1
+column_start = 1
+column_end = 15
+message = "Use alternation or a character class instead of interpolating an array in a regexp."
 
 [[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp_character_class_a"
+name = "rubocopcoplintarrayliteralinregexp_behaves_like_offense_registers_an_offense_but_does_not_correct_for_foo_4"
 source = '''
-/[a]/
+/#{[`foo`]}/
 '''
-offenses = []
+
+[[tests.offenses]]
+line = 1
+column_start = 1
+column_end = 11
+message = "Use alternation or a character class instead of interpolating an array in a regexp."
 
 [[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp_character_class_w_a_b_c"
+name = "rubocopcoplintarrayliteralinregexp_behaves_like_offense_registers_an_offense_but_does_not_correct_for_1r"
 source = '''
-%w[a b c]
+/#{[1r]}/
 '''
-offenses = []
+
+[[tests.offenses]]
+line = 1
+column_start = 1
+column_end = 8
+message = "Use alternation or a character class instead of interpolating an array in a regexp."
 
 [[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp_character_class_abc"
+name = "rubocopcoplintarrayliteralinregexp_behaves_like_offense_registers_an_offense_but_does_not_correct_for_1i"
 source = '''
-/[abc]/
+/#{[1i]}/
 '''
-offenses = []
+
+[[tests.offenses]]
+line = 1
+column_start = 1
+column_end = 8
+message = "Use alternation or a character class instead of interpolating an array in a regexp."
 
 [[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp_character_class_a_b_c"
+name = "rubocopcoplintarrayliteralinregexp_behaves_like_offense_registers_an_offense_but_does_not_correct_for_12"
 source = '''
-["a", "b", "c"]
+/#{[1..2]}/
 '''
-offenses = []
+
+[[tests.offenses]]
+line = 1
+column_start = 1
+column_end = 10
+message = "Use alternation or a character class instead of interpolating an array in a regexp."
 
 [[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp_character_class_abc"
+name = "rubocopcoplintarrayliteralinregexp_behaves_like_offense_registers_an_offense_but_does_not_correct_for_12_2"
 source = '''
-/[abc]/
+/#{[1...2]}/
 '''
-offenses = []
+
+[[tests.offenses]]
+line = 1
+column_start = 1
+column_end = 11
+message = "Use alternation or a character class instead of interpolating an array in a regexp."
 
 [[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp_character_class_i_a_b_c"
+name = "rubocopcoplintarrayliteralinregexp_behaves_like_offense_registers_an_offense_but_does_not_correct_for_abc"
 source = '''
-%i[a b c]
+/#{[/abc/]}/
 '''
-offenses = []
+
+[[tests.offenses]]
+line = 1
+column_start = 1
+column_end = 11
+message = "Use alternation or a character class instead of interpolating an array in a regexp."
 
 [[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp_character_class_abc"
+name = "rubocopcoplintarrayliteralinregexp_behaves_like_offense_registers_an_offense_but_does_not_correct_for_"
 source = '''
-/[abc]/
+/#{[[]]}/
 '''
-offenses = []
+
+[[tests.offenses]]
+line = 1
+column_start = 1
+column_end = 8
+message = "Use alternation or a character class instead of interpolating an array in a regexp."
 
 [[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp_character_class_a_b_c"
+name = "rubocopcoplintarrayliteralinregexp_behaves_like_offense_registers_an_offense_but_does_not_correct_for__2"
 source = '''
-[:a, :b, :c]
+/#{[{}]}/
 '''
-offenses = []
 
-[[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp_character_class_abc"
-source = '''
-/[abc]/
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp_character_class_1_2_3"
-source = '''
-[1, 2, 3]
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp_character_class_123"
-source = '''
-/[123]/
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp_character_class_w"
-source = '''
-%w[^ - $ |]
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp_character_class"
-source = '''
-/[\^\-\$\|]/
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp_character_class_w_あ_い"
-source = '''
-%w[あ い 🐧]
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp_character_class_あい"
-source = '''
-/[あい🐧]/
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp_alternation_w_foo"
-source = '''
-%w[foo]
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp_alternation_foo"
-source = '''
-/(?:foo)/
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp_alternation_w_foo_bar_baz"
-source = '''
-%w[foo bar baz]
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp_alternation_foo_bar_baz"
-source = '''
-/(?:foo|bar|baz)/
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp_alternation_w_a_b_cat"
-source = '''
-%w[a b cat]
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp_alternation_a_b_cat"
-source = '''
-/(?:a|b|cat)/
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp_alternation_1_0_2_5_4_7"
-source = '''
-[1.0, 2.5, 4.7]
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp_alternation_1_0_2_5_4_7"
-source = '''
-/(?:1\.0|2\.5|4\.7)/
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp_alternation_a_5_18_9"
-source = '''
-["a", 5, 18.9]
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp_alternation_a_5_18_9"
-source = '''
-/(?:a|5|18\.9)/
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp_alternation_w"
-source = '''
-%w[^^ -- $$ || ++ **]
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp_alternation"
-source = '''
-/(?:\^\^|\-\-|\$\$|\|\||\+\+|\*\*)/
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp_alternation_w_true_false_nil"
-source = '''
-%w[true false nil]
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp_alternation_true_false_nil"
-source = '''
-/(?:true|false|nil)/
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp_alternation_true_false_nil"
-source = '''
-[true, false, nil]
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp_alternation_true_false_nil"
-source = '''
-/(?:true|false|nil)/
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp_alternation_w"
-source = '''
-%w[❤️ 💚 💙]
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp_alternation"
-source = '''
-/(?:❤️|💚|💙)/
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp_offense_foo"
-source = '''
-[foo]
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp_offense_foo"
-source = '''
-["#{foo}"]
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp_offense_foo"
-source = '''
-[:"#{foo}"]
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp_offense_foo"
-source = '''
-[`foo`]
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp_offense_1r"
-source = '''
-[1r]
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp_offense_1i"
-source = '''
-[1i]
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp_offense_1_2"
-source = '''
-[1..2]
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp_offense_1_2"
-source = '''
-[1...2]
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp_offense_abc"
-source = '''
-[/abc/]
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp_offense"
-source = '''
-[[]]
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp_offense"
-source = '''
-[{}]
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp_does_not_register_an_offense_without_interpolation"
-source = '''
-/[abc]/
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp_does_not_register_an_offense_when_the_interpolated_value_is_not_an_array"
-source = '''
-/#{foo}/
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp_does_not_register_an_offense_when_an_interpolated_array_is_inside_a_string"
-source = '''
-"#{%w[a b c]}"
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_arrayliteralinregexp_does_not_register_an_offense_with_empty_interpolation"
-source = '''
-/#{}/
-'''
-offenses = []
+[[tests.offenses]]
+line = 1
+column_start = 1
+column_end = 8
+message = "Use alternation or a character class instead of interpolating an array in a regexp."

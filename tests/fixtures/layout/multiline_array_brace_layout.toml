@@ -4,44 +4,588 @@ severity = "convention"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_layout_multilinearraybracelayout_ignores_implicit_arrays"
+name = "rubocopcoplayoutmultilinearraybracelayout_ignores_implicit_arrays"
 source = '''
 foo = a,
 b
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:symmetrical"
+EnforcedStyle = "symmetrical"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinearraybracelayout_ignores_single_line_arrays"
+name = "rubocopcoplayoutmultilinearraybracelayout_ignores_singleline_arrays"
 source = '''
 [a, b, c]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:symmetrical"
+EnforcedStyle = "symmetrical"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinearraybracelayout_ignores_empty_arrays"
+name = "rubocopcoplayoutmultilinearraybracelayout_ignores_empty_arrays"
 source = '''
 []
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:symmetrical"
+EnforcedStyle = "symmetrical"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinearraybracelayout_when_comment_present_before_closing_brace_corrects_closing_brace_without_crashing"
+name = "rubocopcoplayoutmultilinearraybracelayout_behaves_like_multiline_literal_brace_layout_heredoc_ignores_heredocs_that_could_share_a_last_line"
+source = '''
+[a,
+<<-EOM
+baz
+EOM
+]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "same_line"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinearraybracelayout_behaves_like_multiline_literal_brace_layout_heredoc_detects_heredoc_structures_that_are_safe_to_add_to"
+source = '''
+[a,
+{
+a: <<-EOM
+baz
+EOM
+}
+]
+'''
+corrected = '''
+[a,
+{
+a: <<-EOM
+baz
+EOM
+}]
+'''
+
+[[tests.offenses]]
+line = 7
+column_start = 0
+column_end = 1
+message = "The closing array brace must be on the same line as the last array element."
+
+[tests.config]
+EnforcedStyle = "same_line"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinearraybracelayout_behaves_like_multiline_literal_brace_layout_symmetrical_style_opening_brace_on_same_line_as_first_element_allows_closing_brace_on_same_line_as_last_element"
+source = '''
+[a,
+b]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "symmetrical"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinearraybracelayout_behaves_like_multiline_literal_brace_layout_symmetrical_style_opening_brace_on_same_line_as_first_element_allows_closing_brace_on_same_line_as_last_multiline_element"
+source = '''
+[a,
+{
+foo: bar
+}]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "symmetrical"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinearraybracelayout_behaves_like_multiline_literal_brace_layout_symmetrical_style_opening_brace_on_same_line_as_first_element_detects_closing_brace_on_different_line_from_last_element"
+source = '''
+[a,
+b
+]
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 1
+message = "The closing array brace must be on the same line as the last array element when the opening brace is on the same line as the first array element."
+
+[tests.config]
+EnforcedStyle = "symmetrical"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinearraybracelayout_behaves_like_multiline_literal_brace_layout_symmetrical_style_opening_brace_on_same_line_as_first_element_autocorrects_closing_brace_on_different_line_from_last_element"
+source = '''
+[a, # a
+b # b
+]
+'''
+corrected = '''
+[a, # a
+b] # b
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 1
+message = "The closing array brace must be on the same line as the last array element when the opening brace is on the same line as the first array element."
+
+[tests.config]
+EnforcedStyle = "symmetrical"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinearraybracelayout_behaves_like_multiline_literal_brace_layout_symmetrical_style_opening_brace_on_same_line_as_first_element_with_a_chained_call_on_the_closing_brace_and_a_comment_after_the_last_element_detects_closing_brace_on_separate_line_from_last_elementbut_does_not_autocorrect_the_closing_brace"
+source = '''
+[a,
+b # comment b
+]
+.any?
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 1
+message = "The closing array brace must be on the same line as the last array element when the opening brace is on the same line as the first array element."
+
+[tests.config]
+EnforcedStyle = "symmetrical"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinearraybracelayout_behaves_like_multiline_literal_brace_layout_symmetrical_style_opening_brace_on_same_line_as_first_element_with_a_chained_call_on_the_closing_brace_but_no_comment_after_the_last_element_autocorrects_the_closing_brace"
+source = '''
+[a,
+b
+]
+.any?
+'''
+corrected = '''
+[a,
+b]
+.any?
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 1
+message = "The closing array brace must be on the same line as the last array element when the opening brace is on the same line as the first array element."
+
+[tests.config]
+EnforcedStyle = "symmetrical"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinearraybracelayout_behaves_like_multiline_literal_brace_layout_symmetrical_style_opening_brace_on_separate_line_from_first_element_allows_closing_brace_on_separate_line_from_last_element"
+source = '''
+[
+a,
+b
+]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "symmetrical"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinearraybracelayout_behaves_like_multiline_literal_brace_layout_symmetrical_style_opening_brace_on_separate_line_from_first_element_allows_closing_brace_on_separate_line_from_last_multiline_element"
+source = '''
+[
+a,
+{
+foo: bar
+}
+]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "symmetrical"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinearraybracelayout_behaves_like_multiline_literal_brace_layout_symmetrical_style_opening_brace_on_separate_line_from_first_element_detects_closing_brace_on_same_line_as_last_element"
+source = '''
+[
+a,
+b]
+'''
+corrected = '''
+[
+a,
+b
+]
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 1
+column_end = 2
+message = "The closing array brace must be on the line after the last array element when the opening brace is on a separate line from the first array element."
+
+[tests.config]
+EnforcedStyle = "symmetrical"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinearraybracelayout_behaves_like_multiline_literal_brace_layout_new_line_style_opening_brace_on_same_line_as_first_element_allows_closing_brace_on_different_line_from_last_element"
+source = '''
+[a,
+b
+]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "new_line"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinearraybracelayout_behaves_like_multiline_literal_brace_layout_new_line_style_opening_brace_on_same_line_as_first_element_allows_closing_brace_on_different_line_from_multiline_element"
+source = '''
+[a,
+{
+foo: bar
+}
+]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "new_line"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinearraybracelayout_behaves_like_multiline_literal_brace_layout_new_line_style_opening_brace_on_same_line_as_first_element_detects_closing_brace_on_same_line_as_last_multiline_element"
+source = '''
+[a,
+{
+foo: bar
+}]
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 1
+column_end = 2
+message = "The closing array brace must be on the line after the last array element."
+
+[tests.config]
+EnforcedStyle = "new_line"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinearraybracelayout_behaves_like_multiline_literal_brace_layout_new_line_style_opening_brace_on_same_line_as_first_element_autocorrects_closing_brace_on_same_line_as_last_element"
+source = '''
+[a, # a
+b] # b
+'''
+corrected = '''
+[a, # a
+b
+] # b
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 1
+column_end = 2
+message = "The closing array brace must be on the line after the last array element."
+
+[tests.config]
+EnforcedStyle = "new_line"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinearraybracelayout_behaves_like_multiline_literal_brace_layout_new_line_style_opening_brace_on_separate_line_from_first_element_allows_closing_brace_on_separate_line_from_last_element"
+source = '''
+[
+a,
+b
+]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "new_line"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinearraybracelayout_behaves_like_multiline_literal_brace_layout_new_line_style_opening_brace_on_separate_line_from_first_element_allows_closing_brace_on_separate_line_from_last_multiline_element"
+source = '''
+[
+a,
+{
+foo: bar
+}
+]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "new_line"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinearraybracelayout_behaves_like_multiline_literal_brace_layout_new_line_style_opening_brace_on_separate_line_from_first_element_detects_closing_brace_on_same_line_as_last_element"
+source = '''
+[
+a,
+b]
+'''
+corrected = '''
+[
+a,
+b
+]
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 1
+column_end = 2
+message = "The closing array brace must be on the line after the last array element."
+
+[tests.config]
+EnforcedStyle = "new_line"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinearraybracelayout_behaves_like_multiline_literal_brace_layout_same_line_style_opening_brace_on_same_line_as_first_element_allows_closing_brace_on_same_line_from_last_element"
+source = '''
+[a,
+b]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "same_line"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinearraybracelayout_behaves_like_multiline_literal_brace_layout_same_line_style_opening_brace_on_same_line_as_first_element_allows_closing_brace_on_same_line_as_multiline_element"
+source = '''
+[a,
+{
+foo: bar
+}]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "same_line"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinearraybracelayout_behaves_like_multiline_literal_brace_layout_same_line_style_opening_brace_on_same_line_as_first_element_detects_closing_brace_on_different_line_from_multiline_element"
+source = '''
+[a,
+{
+foo: bar
+}
+]
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 0
+column_end = 1
+message = "The closing array brace must be on the same line as the last array element."
+
+[tests.config]
+EnforcedStyle = "same_line"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinearraybracelayout_behaves_like_multiline_literal_brace_layout_same_line_style_opening_brace_on_same_line_as_first_element_autocorrects_closing_brace_on_different_line_as_last_element"
+source = '''
+[a, # a
+b # b
+]
+'''
+corrected = '''
+[a, # a
+b] # b
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 1
+message = "The closing array brace must be on the same line as the last array element."
+
+[tests.config]
+EnforcedStyle = "same_line"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinearraybracelayout_behaves_like_multiline_literal_brace_layout_same_line_style_opening_brace_on_same_line_as_first_element_with_a_chained_call_on_the_closing_brace_and_a_comment_after_the_last_element_detects_closing_brace_on_separate_line_from_last_elementbut_does_not_autocorrect_the_closing_brace"
+source = '''
+[a,
+b # comment b
+]
+.any?
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 1
+message = "The closing array brace must be on the same line as the last array element."
+
+[tests.config]
+EnforcedStyle = "same_line"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinearraybracelayout_behaves_like_multiline_literal_brace_layout_same_line_style_opening_brace_on_same_line_as_first_element_with_a_chained_call_on_the_closing_brace_but_no_comment_after_the_last_element_autocorrects_the_closing_brace"
+source = '''
+[a,
+b
+]
+.any?
+'''
+corrected = '''
+[a,
+b]
+.any?
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 1
+message = "The closing array brace must be on the same line as the last array element."
+
+[tests.config]
+EnforcedStyle = "same_line"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinearraybracelayout_behaves_like_multiline_literal_brace_layout_same_line_style_opening_brace_on_separate_line_from_first_element_allows_closing_brace_on_same_line_as_last_element"
+source = '''
+[
+a,
+b]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "same_line"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinearraybracelayout_behaves_like_multiline_literal_brace_layout_same_line_style_opening_brace_on_separate_line_from_first_element_allows_closing_brace_on_same_line_as_last_multiline_element"
+source = '''
+[
+a,
+{
+foo: bar
+}]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "same_line"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinearraybracelayout_behaves_like_multiline_literal_brace_layout_same_line_style_opening_brace_on_separate_line_from_first_element_detects_closing_brace_on_different_line_from_last_element"
+source = '''
+[
+a,
+b
+]
+'''
+corrected = '''
+[
+a,
+b]
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 1
+message = "The closing array brace must be on the same line as the last array element."
+
+[tests.config]
+EnforcedStyle = "same_line"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinearraybracelayout_behaves_like_multiline_literal_brace_layout_method_argument_when_arguments_to_a_method_and_a_comment_after_the_last_element_detects_closing_brace_on_separate_line_from_last_element"
+source = '''
+bar([a: 1,
+b: 2 # comment b
+]
+)
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 1
+message = "The closing array brace must be on the same line as the last array element when the opening brace is on the same line as the first array element."
+
+[tests.config]
+EnforcedStyle = "symmetrical"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinearraybracelayout_behaves_like_multiline_literal_brace_layout_method_argument_when_arguments_to_a_method_but_no_comment_after_the_last_element_autocorrects_the_closing_brace"
+source = '''
+bar([a: 1,
+b: 2
+]
+)
+'''
+corrected = '''
+bar([a: 1,
+b: 2]
+)
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 1
+message = "The closing array brace must be on the same line as the last array element when the opening brace is on the same line as the first array element."
+
+[tests.config]
+EnforcedStyle = "symmetrical"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinearraybracelayout_behaves_like_multiline_literal_brace_layout_trailing_comma_symmetrical_style_opening_brace_on_same_line_as_first_element_last_element_has_a_trailing_comma_autocorrects_closing_brace_on_different_line_from_last_element"
+source = '''
+[a, # a
+b, # b
+]
+'''
+corrected = '''
+[a, # a
+b,] # b
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 1
+message = "The closing array brace must be on the same line as the last array element when the opening [...]"
+
+[tests.config]
+EnforcedStyle = "symmetrical"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinearraybracelayout_behaves_like_multiline_literal_brace_layout_trailing_comma_same_line_style_opening_brace_on_same_line_as_first_element_last_element_has_a_trailing_comma_autocorrects_closing_brace_on_different_line_as_last_element"
+source = '''
+[a, # a
+b, # b
+]
+'''
+corrected = '''
+[a, # a
+b,] # b
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 1
+message = "The closing array brace must be on the same line as the last array element."
+
+[tests.config]
+EnforcedStyle = "same_line"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinearraybracelayout_when_comment_present_before_closing_brace_corrects_closing_brace_without_crashing"
 source = '''
 {
   key1: [a, # comment 1
@@ -57,8 +601,6 @@ corrected = '''
   key2: 'foo'
 }
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 4
@@ -67,4 +609,4 @@ column_end = 3
 message = "The closing array brace must be on the same line as the last array element when the opening brace is on the same line as the first array element."
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:symmetrical"
+EnforcedStyle = "symmetrical"

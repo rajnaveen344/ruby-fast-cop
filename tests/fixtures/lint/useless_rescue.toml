@@ -4,7 +4,7 @@ severity = "warning"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_lint_uselessrescue_registers_an_offense_when_single_rescue_which_only_anonymously_reraises"
+name = "rubocopcoplintuselessrescue_registers_an_offense_when_single_rescue_which_only_anonymously_reraises"
 source = '''
 def foo
   do_something
@@ -20,7 +20,39 @@ column_end = 6
 message = "Useless `rescue` detected."
 
 [[tests]]
-name = "rubocop_cop_lint_uselessrescue_registers_an_offense_when_single_rescue_which_only_reraises_exception_variable"
+name = "rubocopcoplintuselessrescue_registers_an_offense_when_single_rescue_which_only_reraises_exception_variable"
+source = '''
+def foo
+  do_something
+rescue => e
+  raise e
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 11
+message = "Useless `rescue` detected."
+
+[[tests]]
+name = "rubocopcoplintuselessrescue_registers_an_offense_when_single_rescue_which_only_reraises_exception_variable_2"
+source = '''
+def foo
+  do_something
+rescue
+  raise $!
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 6
+message = "Useless `rescue` detected."
+
+[[tests]]
+name = "rubocopcoplintuselessrescue_registers_an_offense_when_single_rescue_which_only_reraises_exception_variable_3"
 source = '''
 def foo
   do_something
@@ -36,7 +68,7 @@ column_end = 6
 message = "Useless `rescue` detected."
 
 [[tests]]
-name = "rubocop_cop_lint_uselessrescue_does_not_register_an_offense_when_rescue_not_only_reraises"
+name = "rubocopcoplintuselessrescue_does_not_register_an_offense_when_rescue_not_only_reraises"
 source = '''
 def foo
   do_something
@@ -48,7 +80,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_uselessrescue_does_not_register_an_offense_when_rescue_only_reraises_but_not_exception_variable"
+name = "rubocopcoplintuselessrescue_does_not_register_an_offense_when_rescue_only_reraises_but_not_exception_variable"
 source = '''
 def foo
   do_something
@@ -59,7 +91,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_uselessrescue_does_not_register_an_offense_when_rescue_does_not_exception_variable_and_ensure_has_empty_body"
+name = "rubocopcoplintuselessrescue_does_not_register_an_offense_when_rescue_does_not_exception_variable_and_ensure_has_empty_body"
 source = '''
 def foo
 rescue => e
@@ -69,7 +101,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_uselessrescue_does_not_register_an_offense_when_using_exception_variable_in_ensure_clause"
+name = "rubocopcoplintuselessrescue_does_not_register_an_offense_when_using_exception_variable_in_ensure_clause"
 source = '''
 def foo
   do_something
@@ -82,7 +114,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_uselessrescue_registers_an_offense_when_multiple_rescue_s_and_last_is_only_reraises"
+name = "rubocopcoplintuselessrescue_registers_an_offense_when_multiple_rescues_and_last_is_only_reraises"
 source = '''
 def foo
   do_something
@@ -100,7 +132,7 @@ column_end = 6
 message = "Useless `rescue` detected."
 
 [[tests]]
-name = "rubocop_cop_lint_uselessrescue_does_not_register_an_offense_when_multiple_rescue_s_and_not_last_is_only_reraises"
+name = "rubocopcoplintuselessrescue_does_not_register_an_offense_when_multiple_rescues_and_not_last_is_only_reraises"
 source = '''
 def foo
   do_something
@@ -113,7 +145,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_uselessrescue_does_not_register_an_offense_when_using_thread_raise_in_rescue_clause"
+name = "rubocopcoplintuselessrescue_does_not_register_an_offense_when_using_threadraise_in_rescue_clause"
 source = '''
 def foo
   do_something
@@ -124,7 +156,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_uselessrescue_does_not_register_an_offense_when_using_modifier_rescue"
+name = "rubocopcoplintuselessrescue_does_not_register_an_offense_when_using_modifier_rescue"
 source = '''
 do_something rescue nil
 '''

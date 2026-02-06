@@ -4,7 +4,7 @@ severity = "convention"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_style_copyright_does_not_register_an_offense_when_the_notice_is_present"
+name = "rubocopcopstylecopyright_does_not_register_an_offense_when_the_notice_is_present"
 source = '''
 # Copyright 2015 Acme Inc.
 # test2
@@ -17,7 +17,7 @@ offenses = []
 Notice = "Copyright (\\(c\\) )?2015 Acme Inc"
 
 [[tests]]
-name = "rubocop_cop_style_copyright_does_not_register_an_offense_when_the_notice_is_not_the_first_comment"
+name = "rubocopcopstylecopyright_does_not_register_an_offense_when_the_notice_is_not_the_first_comment"
 source = '''
 # test2
 # Copyright 2015 Acme Inc.
@@ -30,7 +30,7 @@ offenses = []
 Notice = "Copyright (\\(c\\) )?2015 Acme Inc"
 
 [[tests]]
-name = "rubocop_cop_style_copyright_does_not_register_an_offense_when_the_notice_is_in_a_block_comment"
+name = "rubocopcopstylecopyright_does_not_register_an_offense_when_the_notice_is_in_a_block_comment"
 source = '''
 =begin
 blah, blah, blah
@@ -45,7 +45,7 @@ offenses = []
 Notice = "Copyright (\\(c\\) )?2015 Acme Inc"
 
 [[tests]]
-name = "rubocop_cop_style_copyright_when_multiline_copyright_notice_does_not_register_an_offense_when_the_multiline_copyright_notice_is_present"
+name = "rubocopcopstylecopyright_when_multiline_copyright_notice_does_not_register_an_offense_when_the_multiline_copyright_notice_is_present"
 source = '''
 # Copyright 2015 Acme Inc.
 #
@@ -56,10 +56,11 @@ end
 offenses = []
 
 [tests.config]
-Notice = "<<~'COPYRIGHT'"
+AutocorrectNotice = "# Copyright (c) 2015 Acme Inc.\n#\n# License details...\n"
+Notice = "Copyright (\\(c\\) )?2015 Acme Inc.\n\nLicense details\\.\\.\\.\n"
 
 [[tests]]
-name = "rubocop_cop_style_copyright_when_multiline_copyright_notice_registers_an_offense_when_the_multiline_copyright_notice_is_missing"
+name = "rubocopcopstylecopyright_when_multiline_copyright_notice_registers_an_offense_when_the_multiline_copyright_notice_is_missing"
 source = '''
 # Comment
 class Foo
@@ -82,10 +83,75 @@ column_end = 1
 message = "Include a copyright notice matching [...]"
 
 [tests.config]
-Notice = "<<~'COPYRIGHT'"
+AutocorrectNotice = "# Copyright (c) 2015 Acme Inc.\n#\n# License details...\n"
+Notice = "Copyright (\\(c\\) )?2015 Acme Inc.\n\nLicense details\\.\\.\\.\n"
 
 [[tests]]
-name = "rubocop_cop_style_copyright_when_the_copyright_notice_comes_after_any_code_adds_an_offense"
+name = "rubocopcopstylecopyright_when_the_copyright_notice_is_missing_adds_an_offense"
+source = '''
+# test
+# test2
+names = Array.new
+names << 'James'
+'''
+corrected = '''
+# Copyright (c) 2015 Acme Inc.
+# test
+# test2
+names = Array.new
+names << 'James'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 1
+message = "Include a copyright notice matching [...]"
+
+[tests.config]
+AutocorrectNotice = "# Copyright (c) 2015 Acme Inc."
+Notice = "Copyright (\\(c\\) )?2015 Acme Inc"
+
+[[tests]]
+name = "rubocopcopstylecopyright_when_the_copyright_notice_is_missing_fails_to_autocorrect_when_the_autocorrectnotice_does_not_match_the_notice_pattern"
+source = '''
+# test
+# test2
+names = Array.new
+names << 'James'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 1
+message = "Include a copyright notice matching [...]"
+
+[tests.config]
+AutocorrectNotice = "# Copyleft (c) 2015 Acme Inc."
+Notice = "Copyright (\\(c\\) )?2015 Acme Inc"
+
+[[tests]]
+name = "rubocopcopstylecopyright_when_the_copyright_notice_is_missing_fails_to_autocorrect_if_no_autocorrectnotice_is_given"
+source = '''
+# test
+# test2
+names = Array.new
+names << 'James'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 1
+message = "Include a copyright notice matching [...]"
+
+[tests.config]
+AutocorrectNotice = ""
+Notice = "Copyright (\\(c\\) )?2015 Acme Inc"
+
+[[tests]]
+name = "rubocopcopstylecopyright_when_the_copyright_notice_comes_after_any_code_adds_an_offense"
 source = '''
 # test2
 names = Array.new
@@ -107,10 +173,27 @@ column_end = 1
 message = "Include a copyright notice matching [...]"
 
 [tests.config]
-Notice = "<<~'COPYRIGHT'"
+AutocorrectNotice = "# Copyright (c) 2015 Acme Inc."
+Notice = "Copyright (\\(c\\) )?2015 Acme Inc"
 
 [[tests]]
-name = "rubocop_cop_style_copyright_when_the_copyright_notice_is_missing_and_the_source_code_file_starts_with_a_shebang_adds_an_offense"
+name = "rubocopcopstylecopyright_when_the_source_code_file_is_empty_adds_an_offense"
+source = '''
+
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 1
+message = "{} Include a copyright notice matching [...]"
+
+[tests.config]
+AutocorrectNotice = "# Copyright (c) 2015 Acme Inc."
+Notice = "Copyright (\\(c\\) )?2015 Acme Inc"
+
+[[tests]]
+name = "rubocopcopstylecopyright_when_the_copyright_notice_is_missing_and_the_source_code_file_starts_with_a_shebang_adds_an_offense"
 source = '''
 #!/usr/bin/env ruby
 names = Array.new
@@ -130,10 +213,11 @@ column_end = 1
 message = "Include a copyright notice matching [...]"
 
 [tests.config]
-Notice = "<<~'COPYRIGHT'"
+AutocorrectNotice = "# Copyright (c) 2015 Acme Inc."
+Notice = "Copyright (\\(c\\) )?2015 Acme Inc"
 
 [[tests]]
-name = "rubocop_cop_style_copyright_adds_an_offense"
+name = "rubocopcopstylecopyright_when_the_copyright_notice_is_missing_and_the_source_code_file_starts_with_an_encoding_comment_adds_an_offense"
 source = '''
 # encoding: utf-8
 names = Array.new
@@ -153,10 +237,11 @@ column_end = 1
 message = "Include a copyright notice matching [...]"
 
 [tests.config]
-Notice = "<<~'COPYRIGHT'"
+AutocorrectNotice = "# Copyright (c) 2015 Acme Inc."
+Notice = "Copyright (\\(c\\) )?2015 Acme Inc"
 
 [[tests]]
-name = "rubocop_cop_style_copyright_adds_an_offense"
+name = "rubocopcopstylecopyright_when_the_copyright_notice_is_missing_and_the_source_code_file_starts_with_shebang_and_an_encoding_comment_adds_an_offense"
 source = '''
 #!/usr/bin/env ruby
 # encoding: utf-8
@@ -178,4 +263,5 @@ column_end = 1
 message = "Include a copyright notice matching [...]"
 
 [tests.config]
-Notice = "<<~'COPYRIGHT'"
+AutocorrectNotice = "# Copyright (c) 2015 Acme Inc."
+Notice = "Copyright (\\(c\\) )?2015 Acme Inc"

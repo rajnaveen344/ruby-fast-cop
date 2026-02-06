@@ -4,7 +4,18 @@ severity = "convention"
 implemented = true
 
 [[tests]]
-name = "rubocop_cop_style_rescuestandarderror_implicit_when_rescuing_in_a_begin_block_accepts_rescuing_no_error_class"
+name = "rubocopcopstylerescuestandarderror_implicit_accepts_rescue_modifier"
+source = '''
+foo rescue 42
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "implicit"
+SupportedStyles = ["implicit", "explicit"]
+
+[[tests]]
+name = "rubocopcopstylerescuestandarderror_implicit_when_rescuing_in_a_begin_block_accepts_rescuing_no_error_class"
 source = '''
 begin
   foo
@@ -19,7 +30,7 @@ EnforcedStyle = "implicit"
 SupportedStyles = ["implicit", "explicit"]
 
 [[tests]]
-name = "rubocop_cop_style_rescuestandarderror_implicit_when_rescuing_in_a_begin_block_accepts_rescuing_no_error_class_assigned_to_a_variable"
+name = "rubocopcopstylerescuestandarderror_implicit_when_rescuing_in_a_begin_block_accepts_rescuing_no_error_class_assigned_to_a_variable"
 source = '''
 begin
   foo
@@ -34,7 +45,7 @@ EnforcedStyle = "implicit"
 SupportedStyles = ["implicit", "explicit"]
 
 [[tests]]
-name = "rubocop_cop_style_rescuestandarderror_implicit_when_rescuing_in_a_begin_block_accepts_rescuing_a_single_error_class_other_than_standarderror"
+name = "rubocopcopstylerescuestandarderror_implicit_when_rescuing_in_a_begin_block_accepts_rescuing_a_single_error_class_other_than_standarderror"
 source = '''
 begin
   foo
@@ -49,7 +60,7 @@ EnforcedStyle = "implicit"
 SupportedStyles = ["implicit", "explicit"]
 
 [[tests]]
-name = "rubocop_cop_style_rescuestandarderror_implicit_when_rescuing_in_a_begin_block_accepts_rescuing_a_single_error_class_other_than_standarderror_assigned_to_a_variable"
+name = "rubocopcopstylerescuestandarderror_implicit_when_rescuing_in_a_begin_block_accepts_rescuing_a_single_error_class_other_than_standarderror_assigned_to_a_variable"
 source = '''
 begin
   foo
@@ -64,7 +75,58 @@ EnforcedStyle = "implicit"
 SupportedStyles = ["implicit", "explicit"]
 
 [[tests]]
-name = "rubocop_cop_style_rescuestandarderror_implicit_when_rescuing_in_a_begin_block_when_rescuing_standarderror_by_itself_registers_an_offense"
+name = "rubocopcopstylerescuestandarderror_implicit_when_rescuing_in_a_begin_block_accepts_rescuing_standarderror_with_other_errors"
+source = '''
+begin
+  foo
+rescue StandardError, BarError
+  bar
+rescue BazError, StandardError
+  baz
+end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "implicit"
+SupportedStyles = ["implicit", "explicit"]
+
+[[tests]]
+name = "rubocopcopstylerescuestandarderror_implicit_when_rescuing_in_a_begin_block_accepts_rescuing_standarderror_with_other_errors_2"
+source = '''
+begin
+  foo
+rescue ::StandardError, BarError
+  bar
+rescue ::BazError, ::StandardError
+  baz
+end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "implicit"
+SupportedStyles = ["implicit", "explicit"]
+
+[[tests]]
+name = "rubocopcopstylerescuestandarderror_implicit_when_rescuing_in_a_begin_block_accepts_rescuing_standarderror_with_other_errors_assigned_to_a_variable"
+source = '''
+begin
+  foo
+rescue StandardError, BarError => e
+  bar
+rescue BazError, StandardError => e
+  baz
+end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "implicit"
+SupportedStyles = ["implicit", "explicit"]
+
+[[tests]]
+name = "rubocopcopstylerescuestandarderror_implicit_when_rescuing_in_a_begin_block_when_rescuing_standarderror_by_itself_registers_an_offense"
 source = '''
 begin
   foo
@@ -91,7 +153,7 @@ EnforcedStyle = "implicit"
 SupportedStyles = ["implicit", "explicit"]
 
 [[tests]]
-name = "rubocop_cop_style_rescuestandarderror_implicit_when_rescuing_in_a_begin_block_when_rescuing_standarderror_by_itself_with_standarderror_registers_an_offense"
+name = "rubocopcopstylerescuestandarderror_implicit_when_rescuing_in_a_begin_block_when_rescuing_standarderror_by_itself_with_standarderror_registers_an_offense"
 source = '''
 begin
   foo
@@ -118,7 +180,7 @@ EnforcedStyle = "implicit"
 SupportedStyles = ["implicit", "explicit"]
 
 [[tests]]
-name = "rubocop_cop_style_rescuestandarderror_implicit_when_rescuing_in_a_begin_block_when_rescuing_standarderror_by_itself_when_the_error_is_assigned_to_a_variable_registers_an_offense"
+name = "rubocopcopstylerescuestandarderror_implicit_when_rescuing_in_a_begin_block_when_rescuing_standarderror_by_itself_when_the_error_is_assigned_to_a_variable_registers_an_offense"
 source = '''
 begin
   foo
@@ -145,7 +207,7 @@ EnforcedStyle = "implicit"
 SupportedStyles = ["implicit", "explicit"]
 
 [[tests]]
-name = "rubocop_cop_style_rescuestandarderror_implicit_when_rescuing_in_a_begin_block_when_rescuing_standarderror_by_itself_when_the_error_is_assigned_to_a_variable_with_standarderror_registers_an_offense"
+name = "rubocopcopstylerescuestandarderror_implicit_when_rescuing_in_a_begin_block_when_rescuing_standarderror_by_itself_when_the_error_is_assigned_to_a_variable_with_standarderror_registers_an_offense"
 source = '''
 begin
   foo
@@ -165,58 +227,7 @@ EnforcedStyle = "implicit"
 SupportedStyles = ["implicit", "explicit"]
 
 [[tests]]
-name = "rubocop_cop_style_rescuestandarderror_implicit_when_rescuing_in_a_begin_block_accepts_rescuing_standarderror_with_other_errors"
-source = '''
-begin
-  foo
-rescue StandardError, BarError
-  bar
-rescue BazError, StandardError
-  baz
-end
-'''
-offenses = []
-
-[tests.config]
-EnforcedStyle = "implicit"
-SupportedStyles = ["implicit", "explicit"]
-
-[[tests]]
-name = "rubocop_cop_style_rescuestandarderror_implicit_when_rescuing_in_a_begin_block_accepts_rescuing_standarderror_with_other_errors"
-source = '''
-begin
-  foo
-rescue ::StandardError, BarError
-  bar
-rescue ::BazError, ::StandardError
-  baz
-end
-'''
-offenses = []
-
-[tests.config]
-EnforcedStyle = "implicit"
-SupportedStyles = ["implicit", "explicit"]
-
-[[tests]]
-name = "rubocop_cop_style_rescuestandarderror_implicit_when_rescuing_in_a_begin_block_accepts_rescuing_standarderror_with_other_errors_assigned_to_a_variable"
-source = '''
-begin
-  foo
-rescue StandardError, BarError => e
-  bar
-rescue BazError, StandardError => e
-  baz
-end
-'''
-offenses = []
-
-[tests.config]
-EnforcedStyle = "implicit"
-SupportedStyles = ["implicit", "explicit"]
-
-[[tests]]
-name = "rubocop_cop_style_rescuestandarderror_implicit_when_rescuing_in_a_method_definition_accepts_rescuing_no_error_class"
+name = "rubocopcopstylerescuestandarderror_implicit_when_rescuing_in_a_method_definition_accepts_rescuing_no_error_class"
 source = '''
 def baz
   foo
@@ -231,7 +242,7 @@ EnforcedStyle = "implicit"
 SupportedStyles = ["implicit", "explicit"]
 
 [[tests]]
-name = "rubocop_cop_style_rescuestandarderror_implicit_when_rescuing_in_a_method_definition_accepts_rescuing_no_error_class_assigned_to_a_variable"
+name = "rubocopcopstylerescuestandarderror_implicit_when_rescuing_in_a_method_definition_accepts_rescuing_no_error_class_assigned_to_a_variable"
 source = '''
 def baz
   foo
@@ -246,7 +257,7 @@ EnforcedStyle = "implicit"
 SupportedStyles = ["implicit", "explicit"]
 
 [[tests]]
-name = "rubocop_cop_style_rescuestandarderror_implicit_when_rescuing_in_a_method_definition_accepts_rescuing_a_single_error_other_than_standarderror"
+name = "rubocopcopstylerescuestandarderror_implicit_when_rescuing_in_a_method_definition_accepts_rescuing_a_single_error_other_than_standarderror"
 source = '''
 def baz
   foo
@@ -261,7 +272,7 @@ EnforcedStyle = "implicit"
 SupportedStyles = ["implicit", "explicit"]
 
 [[tests]]
-name = "rubocop_cop_style_rescuestandarderror_implicit_when_rescuing_in_a_method_definition_accepts_rescuing_a_single_error_other_than_standarderror_assigned_to_a_variable"
+name = "rubocopcopstylerescuestandarderror_implicit_when_rescuing_in_a_method_definition_accepts_rescuing_a_single_error_other_than_standarderror_assigned_to_a_variable"
 source = '''
 def baz
   foo
@@ -276,7 +287,41 @@ EnforcedStyle = "implicit"
 SupportedStyles = ["implicit", "explicit"]
 
 [[tests]]
-name = "rubocop_cop_style_rescuestandarderror_implicit_when_rescuing_in_a_method_definition_when_rescuing_standarderror_by_itself_registers_an_offense"
+name = "rubocopcopstylerescuestandarderror_implicit_when_rescuing_in_a_method_definition_accepts_rescuing_standarderror_with_other_errors"
+source = '''
+def foobar
+  foo
+rescue StandardError, BarError
+  bar
+rescue BazError, StandardError
+  baz
+end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "implicit"
+SupportedStyles = ["implicit", "explicit"]
+
+[[tests]]
+name = "rubocopcopstylerescuestandarderror_implicit_when_rescuing_in_a_method_definition_accepts_rescuing_standarderror_with_other_errors_assigned_to_a_variable"
+source = '''
+def foobar
+  foo
+rescue StandardError, BarError => e
+  bar
+rescue BazError, StandardError => e
+  baz
+end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "implicit"
+SupportedStyles = ["implicit", "explicit"]
+
+[[tests]]
+name = "rubocopcopstylerescuestandarderror_implicit_when_rescuing_in_a_method_definition_when_rescuing_standarderror_by_itself_registers_an_offense"
 source = '''
 def foobar
   foo
@@ -303,7 +348,7 @@ EnforcedStyle = "implicit"
 SupportedStyles = ["implicit", "explicit"]
 
 [[tests]]
-name = "rubocop_cop_style_rescuestandarderror_implicit_when_rescuing_in_a_method_definition_when_rescuing_standarderror_by_itself_when_the_error_is_assigned_to_a_variable_registers_an_offense"
+name = "rubocopcopstylerescuestandarderror_implicit_when_rescuing_in_a_method_definition_when_rescuing_standarderror_by_itself_when_the_error_is_assigned_to_a_variable_registers_an_offense"
 source = '''
 def foobar
   foo
@@ -330,9 +375,80 @@ EnforcedStyle = "implicit"
 SupportedStyles = ["implicit", "explicit"]
 
 [[tests]]
-name = "rubocop_cop_style_rescuestandarderror_implicit_when_rescuing_in_a_method_definition_accepts_rescuing_standarderror_with_other_errors"
+name = "rubocopcopstylerescuestandarderror_explicit_accepts_rescue_modifier"
 source = '''
-def foobar
+foo rescue 42
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "explicit"
+SupportedStyles = ["implicit", "explicit"]
+
+[[tests]]
+name = "rubocopcopstylerescuestandarderror_explicit_when_rescuing_in_a_begin_block_accepts_rescuing_a_single_error_other_than_standarderror"
+source = '''
+begin
+  foo
+rescue BarError
+  bar
+end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "explicit"
+SupportedStyles = ["implicit", "explicit"]
+
+[[tests]]
+name = "rubocopcopstylerescuestandarderror_explicit_when_rescuing_in_a_begin_block_accepts_rescuing_a_single_error_other_than_standarderror_assigned_to_a_variable"
+source = '''
+begin
+  foo
+rescue BarError => e
+  bar
+end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "explicit"
+SupportedStyles = ["implicit", "explicit"]
+
+[[tests]]
+name = "rubocopcopstylerescuestandarderror_explicit_when_rescuing_in_a_begin_block_accepts_rescuing_standarderror_by_itself"
+source = '''
+begin
+  foo
+rescue StandardError
+  bar
+end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "explicit"
+SupportedStyles = ["implicit", "explicit"]
+
+[[tests]]
+name = "rubocopcopstylerescuestandarderror_explicit_when_rescuing_in_a_begin_block_accepts_rescuing_standarderror_by_itself_assigned_to_a_variable"
+source = '''
+begin
+  foo
+rescue StandardError => e
+  bar
+end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "explicit"
+SupportedStyles = ["implicit", "explicit"]
+
+[[tests]]
+name = "rubocopcopstylerescuestandarderror_explicit_when_rescuing_in_a_begin_block_accepts_rescuing_standarderror_with_other_errors"
+source = '''
+begin
   foo
 rescue StandardError, BarError
   bar
@@ -343,13 +459,13 @@ end
 offenses = []
 
 [tests.config]
-EnforcedStyle = "implicit"
+EnforcedStyle = "explicit"
 SupportedStyles = ["implicit", "explicit"]
 
 [[tests]]
-name = "rubocop_cop_style_rescuestandarderror_implicit_when_rescuing_in_a_method_definition_accepts_rescuing_standarderror_with_other_errors_assigned_to_a_variable"
+name = "rubocopcopstylerescuestandarderror_explicit_when_rescuing_in_a_begin_block_accepts_rescuing_standarderror_with_other_errors_assigned_to_a_variable"
 source = '''
-def foobar
+begin
   foo
 rescue StandardError, BarError => e
   bar
@@ -360,22 +476,11 @@ end
 offenses = []
 
 [tests.config]
-EnforcedStyle = "implicit"
+EnforcedStyle = "explicit"
 SupportedStyles = ["implicit", "explicit"]
 
 [[tests]]
-name = "rubocop_cop_style_rescuestandarderror_implicit_accepts_rescue_modifier"
-source = '''
-foo rescue 42
-'''
-offenses = []
-
-[tests.config]
-EnforcedStyle = "implicit"
-SupportedStyles = ["implicit", "explicit"]
-
-[[tests]]
-name = "rubocop_cop_style_rescuestandarderror_explicit_when_rescuing_in_a_begin_block_when_calling_rescue_without_an_error_class_registers_an_offense"
+name = "rubocopcopstylerescuestandarderror_explicit_when_rescuing_in_a_begin_block_when_calling_rescue_without_an_error_class_registers_an_offense"
 source = '''
 begin
   foo
@@ -402,7 +507,7 @@ EnforcedStyle = "explicit"
 SupportedStyles = ["implicit", "explicit"]
 
 [[tests]]
-name = "rubocop_cop_style_rescuestandarderror_explicit_when_rescuing_in_a_begin_block_when_calling_rescue_without_an_error_class_when_the_error_is_assigned_to_a_variable_registers_an_offense"
+name = "rubocopcopstylerescuestandarderror_explicit_when_rescuing_in_a_begin_block_when_calling_rescue_without_an_error_class_when_the_error_is_assigned_to_a_variable_registers_an_offense"
 source = '''
 begin
   foo
@@ -429,9 +534,9 @@ EnforcedStyle = "explicit"
 SupportedStyles = ["implicit", "explicit"]
 
 [[tests]]
-name = "rubocop_cop_style_rescuestandarderror_explicit_when_rescuing_in_a_begin_block_accepts_rescuing_a_single_error_other_than_standarderror"
+name = "rubocopcopstylerescuestandarderror_explicit_when_rescuing_in_a_method_definition_accepts_rescuing_a_single_error_other_than_standarderror"
 source = '''
-begin
+def baz
   foo
 rescue BarError
   bar
@@ -444,9 +549,9 @@ EnforcedStyle = "explicit"
 SupportedStyles = ["implicit", "explicit"]
 
 [[tests]]
-name = "rubocop_cop_style_rescuestandarderror_explicit_when_rescuing_in_a_begin_block_accepts_rescuing_a_single_error_other_than_standarderror_assigned_to_a_variable"
+name = "rubocopcopstylerescuestandarderror_explicit_when_rescuing_in_a_method_definition_accepts_rescuing_a_single_error_other_than_standarderror_assigned_to_a_variable"
 source = '''
-begin
+def baz
   foo
 rescue BarError => e
   bar
@@ -459,9 +564,9 @@ EnforcedStyle = "explicit"
 SupportedStyles = ["implicit", "explicit"]
 
 [[tests]]
-name = "rubocop_cop_style_rescuestandarderror_explicit_when_rescuing_in_a_begin_block_accepts_rescuing_standarderror_by_itself"
+name = "rubocopcopstylerescuestandarderror_explicit_when_rescuing_in_a_method_definition_accepts_rescuing_standarderror_by_itself"
 source = '''
-begin
+def foobar
   foo
 rescue StandardError
   bar
@@ -474,9 +579,9 @@ EnforcedStyle = "explicit"
 SupportedStyles = ["implicit", "explicit"]
 
 [[tests]]
-name = "rubocop_cop_style_rescuestandarderror_explicit_when_rescuing_in_a_begin_block_accepts_rescuing_standarderror_by_itself_assigned_to_a_variable"
+name = "rubocopcopstylerescuestandarderror_explicit_when_rescuing_in_a_method_definition_accepts_rescuing_standarderror_by_itself_assigned_to_a_variable"
 source = '''
-begin
+def foobar
   foo
 rescue StandardError => e
   bar
@@ -489,9 +594,9 @@ EnforcedStyle = "explicit"
 SupportedStyles = ["implicit", "explicit"]
 
 [[tests]]
-name = "rubocop_cop_style_rescuestandarderror_explicit_when_rescuing_in_a_begin_block_accepts_rescuing_standarderror_with_other_errors"
+name = "rubocopcopstylerescuestandarderror_explicit_when_rescuing_in_a_method_definition_accepts_rescuing_standarderror_with_other_errors"
 source = '''
-begin
+def foobar
   foo
 rescue StandardError, BarError
   bar
@@ -506,9 +611,9 @@ EnforcedStyle = "explicit"
 SupportedStyles = ["implicit", "explicit"]
 
 [[tests]]
-name = "rubocop_cop_style_rescuestandarderror_explicit_when_rescuing_in_a_begin_block_accepts_rescuing_standarderror_with_other_errors_assigned_to_a_variable"
+name = "rubocopcopstylerescuestandarderror_explicit_when_rescuing_in_a_method_definition_accepts_rescuing_standarderror_with_other_errors_assigned_to_a_variable"
 source = '''
-begin
+def foobar
   foo
 rescue StandardError, BarError => e
   bar
@@ -523,7 +628,7 @@ EnforcedStyle = "explicit"
 SupportedStyles = ["implicit", "explicit"]
 
 [[tests]]
-name = "rubocop_cop_style_rescuestandarderror_explicit_when_rescuing_in_a_method_definition_when_rescue_is_called_without_an_error_class_registers_an_offense"
+name = "rubocopcopstylerescuestandarderror_explicit_when_rescuing_in_a_method_definition_when_rescue_is_called_without_an_error_class_registers_an_offense"
 source = '''
 def baz
   foo
@@ -550,7 +655,7 @@ EnforcedStyle = "explicit"
 SupportedStyles = ["implicit", "explicit"]
 
 [[tests]]
-name = "rubocop_cop_style_rescuestandarderror_explicit_when_rescuing_in_a_method_definition_when_the_error_is_assigned_to_a_variable_registers_an_offense"
+name = "rubocopcopstylerescuestandarderror_explicit_when_rescuing_in_a_method_definition_when_the_error_is_assigned_to_a_variable_registers_an_offense"
 source = '''
 def baz
   foo
@@ -571,111 +676,6 @@ line = 3
 column_start = 0
 column_end = 6
 message = "Avoid rescuing without specifying an error class."
-
-[tests.config]
-EnforcedStyle = "explicit"
-SupportedStyles = ["implicit", "explicit"]
-
-[[tests]]
-name = "rubocop_cop_style_rescuestandarderror_explicit_when_rescuing_in_a_method_definition_accepts_rescuing_a_single_error_other_than_standarderror"
-source = '''
-def baz
-  foo
-rescue BarError
-  bar
-end
-'''
-offenses = []
-
-[tests.config]
-EnforcedStyle = "explicit"
-SupportedStyles = ["implicit", "explicit"]
-
-[[tests]]
-name = "rubocop_cop_style_rescuestandarderror_explicit_when_rescuing_in_a_method_definition_accepts_rescuing_a_single_error_other_than_standarderror_assigned_to_a_variable"
-source = '''
-def baz
-  foo
-rescue BarError => e
-  bar
-end
-'''
-offenses = []
-
-[tests.config]
-EnforcedStyle = "explicit"
-SupportedStyles = ["implicit", "explicit"]
-
-[[tests]]
-name = "rubocop_cop_style_rescuestandarderror_explicit_when_rescuing_in_a_method_definition_accepts_rescuing_standarderror_by_itself"
-source = '''
-def foobar
-  foo
-rescue StandardError
-  bar
-end
-'''
-offenses = []
-
-[tests.config]
-EnforcedStyle = "explicit"
-SupportedStyles = ["implicit", "explicit"]
-
-[[tests]]
-name = "rubocop_cop_style_rescuestandarderror_explicit_when_rescuing_in_a_method_definition_accepts_rescuing_standarderror_by_itself_assigned_to_a_variable"
-source = '''
-def foobar
-  foo
-rescue StandardError => e
-  bar
-end
-'''
-offenses = []
-
-[tests.config]
-EnforcedStyle = "explicit"
-SupportedStyles = ["implicit", "explicit"]
-
-[[tests]]
-name = "rubocop_cop_style_rescuestandarderror_explicit_when_rescuing_in_a_method_definition_accepts_rescuing_standarderror_with_other_errors"
-source = '''
-def foobar
-  foo
-rescue StandardError, BarError
-  bar
-rescue BazError, StandardError
-  baz
-end
-'''
-offenses = []
-
-[tests.config]
-EnforcedStyle = "explicit"
-SupportedStyles = ["implicit", "explicit"]
-
-[[tests]]
-name = "rubocop_cop_style_rescuestandarderror_explicit_when_rescuing_in_a_method_definition_accepts_rescuing_standarderror_with_other_errors_assigned_to_a_variable"
-source = '''
-def foobar
-  foo
-rescue StandardError, BarError => e
-  bar
-rescue BazError, StandardError => e
-  baz
-end
-'''
-offenses = []
-
-[tests.config]
-EnforcedStyle = "explicit"
-SupportedStyles = ["implicit", "explicit"]
-
-[[tests]]
-name = "rubocop_cop_style_rescuestandarderror_explicit_accepts_rescue_modifier"
-source = '''
-foo rescue 42
-'''
-offenses = []
 
 [tests.config]
 EnforcedStyle = "explicit"

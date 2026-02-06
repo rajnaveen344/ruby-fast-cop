@@ -4,1635 +4,4237 @@ severity = "convention"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex"
+name = "rubocopcopstylenegativearrayindex_does_not_register_an_offense_when_using_self_as_array_with_local_variable_receiver_for_length"
 source = '''
-#{code}
-#{indent}#{carets} Use `#{array_receiver}[-#{n}]` instead of `#{code}`.
+length = do_something
+self[length - 1]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_registers_an_offense_when_using_self_as_array_with_implicit_receiver_for_length"
+source = '''
+self[length - 1]
 '''
 corrected = '''
-#{array_receiver}[-#{n}]
+self[-1]
 '''
-interpolated = true
-verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 15
+message = "Use `self[-1]` instead of `self[length - 1]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_does_not_register_an_offense_when_using_self_as_array_with_local_variable_receiver_for_size"
+source = '''
+size = do_something
+self[size - 1]
+'''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense"
+name = "rubocopcopstylenegativearrayindex_registers_an_offense_when_using_self_as_array_with_implicit_receiver_for_size"
 source = '''
-#{code}
-#{indent}#{carets} Use `#{receiver}[-#{n}]` instead of `#{receiver}[#{receiver}.#{method_name} - #{n}]`.
+self[size - 1]
 '''
 corrected = '''
-#{code.gsub("#{receiver}.#{method_name} - #{n}", "-#{n}")}
+self[-1]
 '''
-interpolated = true
-verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 13
+message = "Use `self[-1]` instead of `self[size - 1]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_does_not_register_an_offense_when_using_self_as_array_with_local_variable_receiver_for_count"
+source = '''
+count = do_something
+self[count - 1]
+'''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex"
+name = "rubocopcopstylenegativearrayindex_registers_an_offense_when_using_self_as_array_with_implicit_receiver_for_count"
 source = '''
-#{code}
-#{indent}#{carets} Use `#{correction}` instead of `#{code}`.
+self[count - 1]
 '''
 corrected = '''
-#{correction}
+self[-1]
 '''
-interpolated = true
-verified = false
-offenses = []
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 14
+message = "Use `self[-1]` instead of `self[count - 1]`."
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex"
-source = '''
-#{code}
-#{indent}#{carets} Use `#{correction}` instead of `#{code}`.
-'''
-corrected = '''
-#{correction}
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex"
-source = '''
-#{code}
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr"
 source = '''
 arr[]
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_index"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrindex"
 source = '''
 arr[index]
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_1"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr1"
 source = '''
 arr[1]
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_2"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr2"
 source = '''
 arr[-2]
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_2"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr2_2"
 source = '''
 arr[..-2]
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_id_1"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr_id1"
 source = '''
 arr['_id'][1..]
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_uniq_arr_uniq_co"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arruniqarruniqcompactlength__2"
 source = '''
-arr.uniq[arr.uniq.compact.#{method_name} - 2]
+arr.uniq[arr.uniq.compact.length - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_flatten_arr_flat"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrflattenarrflattenmapto_slength__2"
 source = '''
-arr.flatten[arr.flatten.map(&:to_s).#{method_name} - 2]
+arr.flatten[arr.flatten.map(&:to_s).length - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_method_name"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrlength__2"
 source = '''
-arr[#{method_name} - 2]
+arr[length - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_other_method_n"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrotherlength__2"
 source = '''
-arr[other.#{method_name} - 2]
+arr[other.length - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_other_method"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrotherlength__2_2"
 source = '''
-@arr[@other.#{method_name} - 2]
+@arr[@other.length - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_const_other_method"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_constotherlength__2"
 source = '''
-CONST[OTHER.#{method_name} - 2]
+CONST[OTHER.length - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_compact_arr_comp"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrcompactarrcompactuniqlength__2"
 source = '''
-arr.compact[arr.compact.uniq.#{method_name} - 2]
+arr.compact[arr.compact.uniq.length - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_0_other_meth"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0otherlength__2"
 source = '''
-arr[0..(other.#{method_name} - 2)]
+arr[0..(other.length - 2)]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_0_other_metho"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0_otherlength__2"
 source = '''
-arr[0, other.#{method_name} - 2]
+arr[0, other.length - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_arr_method_nam"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrlength__0"
 source = '''
-arr[arr.#{method_name} - 0]
+arr[arr.length - 0]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_arr_method_nam"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrlength__n"
 source = '''
-arr[arr.#{method_name} - n]
+arr[arr.length - n]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_0_1_arr_meth"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0_1_arrlength__2"
 source = '''
-arr[0, 1, arr.#{method_name} - 2]
+arr[0, 1, arr.length - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_0_arr_method"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0arrlength__n"
 source = '''
-arr[0..(arr.#{method_name} - n)]
+arr[0..(arr.length - n)]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_0_arr_method"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0_arrlength__n"
 source = '''
-arr[0, arr.#{method_name} - n]
+arr[0, arr.length - n]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_arr_method_met"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrmethodlength__2"
 source = '''
-arr[arr.method.#{method_name} - 2]
+arr[arr.method.length - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_arr_sort_metho"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrsortlength__2"
 source = '''
-arr[arr.sort.#{method_name} - 2]
+arr[arr.sort.length - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_0_arr_method"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0arrmethodlength__2"
 source = '''
-arr[0..(arr.method.#{method_name} - 2)]
+arr[0..(arr.method.length - 2)]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_0_arr_method"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0_arrmethodlength__2"
 source = '''
-arr[0, arr.method.#{method_name} - 2]
+arr[0, arr.method.length - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_arr_reverse_me"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrreverselength__2"
 source = '''
-arr[arr.reverse.#{method_name} - 2]
+arr[arr.reverse.length - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_arr_map_to_s"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrmapto_slength__2"
 source = '''
-arr[arr.map(&:to_s).#{method_name} - 2]
+arr[arr.map(&:to_s).length - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_arr_method_nam"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrlength__2__value"
 source = '''
-arr[arr.#{method_name} - 2] = value
+arr[arr.length - 2] = value
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_arr_select_eve"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrselectevenlength__2"
 source = '''
-arr[arr.select(&:even?).#{method_name} - 2]
+arr[arr.select(&:even?).length - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_arr_filter_map"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrfilter_mapto_ilength__2"
 source = '''
-arr[arr.filter_map(&:to_i).#{method_name} - 2]
+arr[arr.filter_map(&:to_i).length - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_0_arr_reverse"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0arrreverselength__2"
 source = '''
-arr[0..(arr.reverse.#{method_name} - 2)]
+arr[0..(arr.reverse.length - 2)]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_0_arr_map_t"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0arrmapto_slength__2"
 source = '''
-arr[0...(arr.map(&:to_s).#{method_name} - 2)]
+arr[0...(arr.map(&:to_s).length - 2)]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_0_arr_reverse"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0_arrreverselength__2"
 source = '''
-arr[0, arr.reverse.#{method_name} - 2]
+arr[0, arr.reverse.length - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_0_arr_map_to"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0_arrmapto_slength__2"
 source = '''
-arr[0, arr.map(&:to_s).#{method_name} - 2]
+arr[0, arr.map(&:to_s).length - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_sort_0_arr_meth"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrsort0_arrmethodlength__2"
 source = '''
-arr.sort[0, arr.method.#{method_name} - 2]
+arr.sort[0, arr.method.length - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_arr_chained_meth"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrchainedmethodlength__2"
 source = '''
-arr[arr.chained.method.#{method_name} - 2]
+arr[arr.chained.method.length - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_arr_deeply_neste"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrdeeplynestedmethodlength__2"
 source = '''
-arr[arr.deeply.nested.method.#{method_name} - 2]
+arr[arr.deeply.nested.method.length - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_arr_method_nam"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrlength__2"
 source = '''
-arr[arr.#{method_name} + 2]
+arr[arr.length + 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_2_arr_method"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr2__arrlength"
 source = '''
-arr[2 - arr.#{method_name}]
+arr[2 - arr.length]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_arr_method_nam"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrlength__2_2"
 source = '''
-arr[arr.#{method_name} * 2]
+arr[arr.length * 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_arr_method_nam"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrlength__2_3"
 source = '''
-arr[arr.#{method_name} / 2]
+arr[arr.length / 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_0_arr_method"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0_arrlength__2"
 source = '''
-arr[0, arr.#{method_name} - 2]
+arr[0, arr.length - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_map_to_s_0_a"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrmapto_s0_arrlength__2"
 source = '''
-arr.map(&:to_s)[0, arr.#{method_name} - 2]
+arr.map(&:to_s)[0, arr.length - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_select_even"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrselecteven0_arrlength__2"
 source = '''
-arr.select(&:even?)[0, arr.#{method_name} - 2]
+arr.select(&:even?)[0, arr.length - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_filter_map_to"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrfilter_mapto_i0_arrlength__2"
 source = '''
-arr.filter_map(&:to_i)[0, arr.#{method_name} - 2]
+arr.filter_map(&:to_i)[0, arr.length - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_2_arr_method"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr2_arrlength__2"
 source = '''
-arr[2, arr.#{method_name} - 2]
+arr[2, arr.length - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_0_arr_method"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0_arrlength__0"
 source = '''
-arr[0, arr.#{method_name} - 0]
+arr[0, arr.length - 0]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_0_arr_method"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0arrlength__0"
 source = '''
-arr[0..(arr.#{method_name} - 0)]
+arr[0..(arr.length - 0)]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_sort_reverse_arr"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrsortreversearrsortmapto_slength__2"
 source = '''
-arr.sort.reverse[arr.sort.map(&:to_s).#{method_name} - 2]
+arr.sort.reverse[arr.sort.map(&:to_s).length - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_sort_uniq_arr_so"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrsortuniqarrsortlength__2"
 source = '''
-arr.sort.uniq[arr.sort.#{method_name} - 2]
+arr.sort.uniq[arr.sort.length - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_reject_nil_c"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrrejectnilcompactarrrejectnillength__2"
 source = '''
-arr.reject(&:nil?).compact[arr.reject(&:nil?).#{method_name} - 2]
+arr.reject(&:nil?).compact[arr.reject(&:nil?).length - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_compact_uniq_arr"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrcompactuniqarrcompactlength__2"
 source = '''
-arr.compact.uniq[arr.compact.#{method_name} - 2]
+arr.compact.uniq[arr.compact.length - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_uniq_compact_arr"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arruniqcompactarruniqlength__2"
 source = '''
-arr.uniq.compact[arr.uniq.#{method_name} - 2]
+arr.uniq.compact[arr.uniq.length - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_map_to_s_arr"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrmapto_sarrselectevenlength__2"
 source = '''
-arr.map(&:to_s)[arr.select(&:even?).#{method_name} - 2]
+arr.map(&:to_s)[arr.select(&:even?).length - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_sort_arr_method"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrsortarrmethodlength__2"
 source = '''
-arr.sort[arr.method.#{method_name} - 2]
+arr.sort[arr.method.length - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_select_even"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrselectevenarrrejectevenlength__2"
 source = '''
-arr.select(&:even?)[arr.reject(&:even?).#{method_name} - 2]
+arr.select(&:even?)[arr.reject(&:even?).length - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_map_to_i_sele"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrmapto_iselectevenarrmapto_ilength__2"
 source = '''
-arr.map(&:to_i).select(&:even?)[arr.map(&:to_i).#{method_name} - 2]
+arr.map(&:to_i).select(&:even?)[arr.map(&:to_i).length - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_map_to_s_arr"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrmapto_sarrmapto_ilength__2"
 source = '''
-arr.map(&:to_s)[arr.map(&:to_i).#{method_name} - 2]
+arr.map(&:to_s)[arr.map(&:to_i).length - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_select_even"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrselectevenrejectnilarrselectevenlength__2"
 source = '''
-arr.select(&:even?).reject(&:nil?)[arr.select(&:even?).#{method_name} - 2]
+arr.select(&:even?).reject(&:nil?)[arr.select(&:even?).length - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_select_even"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrselectevenmapto_sarrselectevenlength__2"
 source = '''
-arr.select(&:even?).map(&:to_s)[arr.select(&:even?).#{method_name} - 2]
+arr.select(&:even?).map(&:to_s)[arr.select(&:even?).length - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_uniq_0_arr_uni"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arruniq0arruniqlength__2"
 source = '''
-arr.uniq[0..(arr.uniq.#{method_name} - 2)]
+arr.uniq[0..(arr.uniq.length - 2)]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_flatten_arr_flat"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrflattenarrflattenlength__2"
 source = '''
-arr.flatten[arr.flatten.#{method_name} - 2]
+arr.flatten[arr.flatten.length - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_slice_1_arr_sli"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrslice1arrslice1length__2"
 source = '''
-arr.slice(1)[arr.slice(1).#{method_name} - 2]
+arr.slice(1)[arr.slice(1).length - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_take_3_arr_take"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrtake3arrtake3length__2"
 source = '''
-arr.take(3)[arr.take(3).#{method_name} - 2]
+arr.take(3)[arr.take(3).length - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_drop_2_arr_drop"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrdrop2arrdrop2length__2"
 source = '''
-arr.drop(2)[arr.drop(2).#{method_name} - 2]
+arr.drop(2)[arr.drop(2).length - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_sort_flatten_arr"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrsortflattenarrsortflattenlength__2"
 source = '''
-arr.sort.flatten[arr.sort.flatten.#{method_name} - 2]
+arr.sort.flatten[arr.sort.flatten.length - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_reverse_slice_1"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrreverseslice1arrreverseslice1length__2"
 source = '''
-arr.reverse.slice(1)[arr.reverse.slice(1).#{method_name} - 2]
+arr.reverse.slice(1)[arr.reverse.slice(1).length - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_shuffle_take_3"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrshuffletake3arrshuffletake3length__2"
 source = '''
-arr.shuffle.take(3)[arr.shuffle.take(3).#{method_name} - 2]
+arr.shuffle.take(3)[arr.shuffle.take(3).length - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_rotate_drop_2_a"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrrotatedrop2arrrotatedrop2length__2"
 source = '''
-arr.rotate.drop(2)[arr.rotate.drop(2).#{method_name} - 2]
+arr.rotate.drop(2)[arr.rotate.drop(2).length - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_rand_arr_metho"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrrandarrlength__2"
 source = '''
-arr[rand(arr.#{method_name} - 2)]
+arr[rand(arr.length - 2)]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_arr_method_nam"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrlength__41"
 source = '''
-arr[arr.#{method_name} - 4..-1]
+arr[arr.length - 4..-1]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_map_0_arr_map"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrmap0arrmaplength__2"
 source = '''
-arr.map[(0..(arr.map.#{method_name} - 2))]
+arr.map[(0..(arr.map.length - 2))]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_sort_0_other"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrsort0otherlength__2"
 source = '''
-arr.sort[(0..(other.#{method_name} - 2))]
+arr.sort[(0..(other.length - 2))]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_0_arr_metho"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0arrlength__0_2"
 source = '''
-arr[(0..(arr.#{method_name} - 0))]
+arr[(0..(arr.length - 0))]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_0_arr_metho"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0arrlength__2"
 source = '''
-arr[(0..(arr.#{method_name} - (-2)))]
+arr[(0..(arr.length - (-2)))]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_0_arr_metho"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0arrlength__n_2"
 source = '''
-arr[(0..(arr.#{method_name} - n))]
+arr[(0..(arr.length - n))]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_sort_0_arr_re"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrsort0arrreverselength__2"
 source = '''
-arr.sort[(0..(arr.reverse.#{method_name} - 2))]
+arr.sort[(0..(arr.reverse.length - 2))]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_arr_method_nam"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrlength__2__1"
 source = '''
-arr[arr.#{method_name} - 2 + 1]
+arr[arr.length - 2 + 1]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_arr_method_nam"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrlength__2__1_2"
 source = '''
-arr[arr.#{method_name} - 2 - 1]
+arr[arr.length - 2 - 1]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_arr_method_nam"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrlength__2__2"
 source = '''
-arr[arr.#{method_name} * 2 - 2]
+arr[arr.length * 2 - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_arr_method_na"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrlength__2__2_2"
 source = '''
-arr[(arr.#{method_name} - 2) / 2]
+arr[(arr.length - 2) / 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_arr_method_nam"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrlength1__2"
 source = '''
-arr[arr.#{method_name}(1) - 2]
+arr[arr.length(1) - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_arr_select_x"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrselect__x_x__0_length__2"
 source = '''
-arr[arr.select { |x| x > 0 }.#{method_name} - 2]
+arr[arr.select { |x| x > 0 }.length - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_arr_0_method"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarr0length__2"
 source = '''
-arr[arr[0].#{method_name} - 2]
+arr[arr[0].length - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_hash_key_met"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrhashkeylength__2"
 source = '''
-arr[hash[:key].#{method_name} - 2]
+arr[hash[:key].length - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_const_method_n"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrconstlength__2"
 source = '''
-arr[CONST.#{method_name} - 2]
+arr[CONST.length - 2]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_0_arr_metho"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0arrlength__n_3"
 source = '''
-arr[(0..(arr.#{method_name} - n))]
+arr[(0..(arr.length - n))]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_arr_method_ar"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrmethodarrlength__2"
 source = '''
-arr[(arr.method..(arr.#{method_name} - 2))]
+arr[(arr.method..(arr.length - 2))]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_arr_map_to_s"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrmapto_sarrlength__2"
 source = '''
-arr[(arr.map(&:to_s)..(arr.#{method_name} - 2))]
+arr[(arr.map(&:to_s)..(arr.length - 2))]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_arr_select_ev"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrselectevencompactarrlength__2"
 source = '''
-arr[(arr.select(&:even?).compact..(arr.#{method_name} - 2))]
+arr[(arr.select(&:even?).compact..(arr.length - 2))]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_sort_0_arr_ma"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrsort0arrmaplength__2"
 source = '''
-arr.sort[(0..(arr.map.#{method_name} - 2))]
+arr.sort[(0..(arr.map.length - 2))]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_does_not_register_an_offense_arr_sort_0_other"
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrsort0otherlength__2_2"
 source = '''
-arr.sort[(0..(other.#{method_name} - 2))]
+arr.sort[(0..(other.length - 2))]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_simple_index_const"
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_constconstlength__2"
 source = '''
-CONST
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_simple_index_const"
-source = '''
-CONST
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_simple_index_arr"
-source = '''
-@arr
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_simple_index_arr"
-source = '''
-@arr
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_simple_index_arr"
-source = '''
-arr
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_simple_index_arr"
-source = '''
-arr
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_simple_index_arr_sort"
-source = '''
-@@arr.sort
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_simple_index_arr"
-source = '''
-@@arr
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_simple_index_arr_sort"
-source = '''
-arr.sort
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_simple_index_arr"
-source = '''
-arr
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_simple_index_arr_sort"
-source = '''
-arr.sort
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_simple_index_arr_sort"
-source = '''
-arr.sort
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_simple_index_arr_sort"
-source = '''
-arr.sort
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_simple_index_arr_reverse"
-source = '''
-arr.reverse
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_simple_index_arr_reverse"
-source = '''
-@arr.reverse
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_simple_index_arr_reverse"
-source = '''
-@arr.reverse
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_simple_index_arr_reverse"
-source = '''
-arr.reverse
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_simple_index_arr_sort"
-source = '''
-arr.sort
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_simple_index_arr_shuffle"
-source = '''
-arr.shuffle
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_simple_index_arr_sort"
-source = '''
-arr.sort
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_simple_index_arr_rotate"
-source = '''
-arr.rotate
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_simple_index_arr_reverse"
-source = '''
-arr.reverse
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_simple_index_arr_reverse"
-source = '''
-@arr.reverse
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_simple_index_arr_sort"
-source = '''
-@arr.sort
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_simple_index_arr_reverse"
-source = '''
-@arr.reverse
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_simple_index_arr"
-source = '''
-@arr
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_simple_index_arr_reverse"
-source = '''
-arr.reverse
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_simple_index_arr_reverse"
-source = '''
-arr.reverse
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_simple_index_arr_sort"
-source = '''
-arr.sort
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_simple_index_arr_sort"
-source = '''
-arr.sort
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_simple_index_arr_shuffle"
-source = '''
-arr.shuffle
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_simple_index_arr_shuffle"
-source = '''
-arr.shuffle
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_simple_index_arr_rotate"
-source = '''
-arr.rotate
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_simple_index_arr_rotate"
-source = '''
-arr.rotate
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_simple_index_arr_sort_reverse"
-source = '''
-arr.sort.reverse
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_simple_index_arr_sort_reverse"
-source = '''
-arr.sort.reverse
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_simple_index_arr_sort_shuffle"
-source = '''
-arr.sort.shuffle
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_simple_index_arr_sort_shuffle"
-source = '''
-arr.sort.shuffle
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_simple_index_arr_reverse_rotate"
-source = '''
-arr.reverse.rotate
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_simple_index_arr_reverse_rotate"
-source = '''
-arr.reverse.rotate
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_simple_index_arr_sort_reverse"
-source = '''
-arr.sort.reverse
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_simple_index_arr_sort"
-source = '''
-arr.sort
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_simple_index_arr_sort_reverse"
-source = '''
-arr.sort.reverse
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_simple_index_arr_sort_reverse"
-source = '''
-arr.sort.reverse
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_bracket_method_call_arr_arr_method"
-source = '''
-arr.[](arr.#{method_name} - 2)
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_bracket_method_call_arr_arr_method"
-source = '''
-arr&.[](arr.#{method_name} - 2)
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses_arr"
-source = '''
-arr
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses"
-source = '''
-..
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses_arr"
-source = '''
-arr
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses"
-source = '''
-..
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses_arr"
-source = '''
-arr
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses"
-source = '''
-...
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses_arr"
-source = '''
-arr
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses"
-source = '''
-..
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses_arr"
-source = '''
-arr
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses"
-source = '''
-...
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses_arr"
-source = '''
-arr
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses"
-source = '''
-..
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses_arr"
-source = '''
-arr
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses"
-source = '''
-...
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses_arr"
-source = '''
-arr
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses_n"
-source = '''
-n
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses"
-source = '''
-..
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses_arr"
-source = '''
-arr
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses_arr_sort"
-source = '''
-arr.sort
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses"
-source = '''
-..
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses_arr"
-source = '''
-arr
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses_arr_sort_reverse"
-source = '''
-arr.sort.reverse
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses"
-source = '''
-..
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses_const"
-source = '''
-CONST
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses"
-source = '''
-..
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses_arr"
-source = '''
-@arr
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses"
-source = '''
-..
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses_arr"
-source = '''
-$arr
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses"
-source = '''
-..
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses_arr"
-source = '''
-@@arr
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses"
-source = '''
-..
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses_arr_reverse"
-source = '''
-arr.reverse
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses"
-source = '''
-..
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses_arr_reverse"
-source = '''
-arr.reverse
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses"
-source = '''
-..
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses_arr_sort"
-source = '''
-arr.sort
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses"
-source = '''
-..
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses_arr_sort"
-source = '''
-arr.sort
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses"
-source = '''
-...
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses_arr_shuffle"
-source = '''
-arr.shuffle
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses"
-source = '''
-..
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses_arr_shuffle"
-source = '''
-arr.shuffle
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses"
-source = '''
-..
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses_arr_rotate"
-source = '''
-arr.rotate
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses"
-source = '''
-..
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses_arr_rotate"
-source = '''
-arr.rotate
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses"
-source = '''
-...
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses_arr_sort_reverse"
-source = '''
-arr.sort.reverse
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses"
-source = '''
-..
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses_but_without_expression_parentheses_arr"
-source = '''
-arr
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses_but_without_expression_parentheses"
-source = '''
-..
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses_but_without_expression_parentheses_arr"
-source = '''
-arr
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses_but_without_expression_parentheses"
-source = '''
-...
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses_but_without_expression_parentheses_arr"
-source = '''
-arr
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses_but_without_expression_parentheses"
-source = '''
-..
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses_but_without_expression_parentheses_arr_sort"
-source = '''
-arr.sort
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses_but_without_expression_parentheses"
-source = '''
-..
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses_but_without_expression_parentheses_arr_reverse"
-source = '''
-arr.reverse
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex_registers_an_offense_for_range_with_parentheses_but_without_expression_parentheses"
-source = '''
-..
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex"
-source = '''
-#{method_name} = do_something
-self[#{method_name} - 1]
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negativearrayindex"
-source = '''
-self[%{method_name} - 1]
+CONST[CONST.length - 2]
 '''
 corrected = '''
-self[-1]
+CONST[-2]
 '''
-interpolated = true
-verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 22
+message = "Use `CONST[-2]` instead of `CONST[CONST.length - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrarrlength__2"
+source = '''
+@arr[@arr.length - 2]
+'''
+corrected = '''
+@arr[-2]
+'''
 
 [[tests.offenses]]
 line = 1
 column_start = 5
+column_end = 20
+message = "Use `@arr[-2]` instead of `@arr[@arr.length - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrarrlength__2_2"
+source = '''
+arr[arr.length - 2]
+'''
+corrected = '''
+arr[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 18
+message = "Use `arr[-2]` instead of `arr[arr.length - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrsortarrlength__2"
+source = '''
+@@arr.sort[@@arr.length - 2]
+'''
+corrected = '''
+@@arr.sort[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 27
+message = "Use `@@arr.sort[-2]` instead of `@@arr.sort[@@arr.length - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrsortarrlength__2_2"
+source = '''
+arr.sort[arr.length - 2]
+'''
+corrected = '''
+arr.sort[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 23
+message = "Use `arr.sort[-2]` instead of `arr.sort[arr.length - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrsortarrsortlength__2"
+source = '''
+arr.sort[arr.sort.length - 2]
+'''
+corrected = '''
+arr.sort[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 28
+message = "Use `arr.sort[-2]` instead of `arr.sort[arr.sort.length - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrsortarrreverselength__2"
+source = '''
+arr.sort[arr.reverse.length - 2]
+'''
+corrected = '''
+arr.sort[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 31
+message = "Use `arr.sort[-2]` instead of `arr.sort[arr.reverse.length - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrreversearrreverselength__2"
+source = '''
+@arr.reverse[@arr.reverse.length - 2]
+'''
+corrected = '''
+@arr.reverse[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 36
+message = "Use `@arr.reverse[-2]` instead of `@arr.reverse[@arr.reverse.length - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrreversearrsortlength__2"
+source = '''
+arr.reverse[arr.sort.length - 2]
+'''
+corrected = '''
+arr.reverse[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 12
+column_end = 31
+message = "Use `arr.reverse[-2]` instead of `arr.reverse[arr.sort.length - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrshufflearrsortlength__2"
+source = '''
+arr.shuffle[arr.sort.length - 2]
+'''
+corrected = '''
+arr.shuffle[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 12
+column_end = 31
+message = "Use `arr.shuffle[-2]` instead of `arr.shuffle[arr.sort.length - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrrotatearrreverselength__2"
+source = '''
+arr.rotate[arr.reverse.length - 2]
+'''
+corrected = '''
+arr.rotate[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 33
+message = "Use `arr.rotate[-2]` instead of `arr.rotate[arr.reverse.length - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrreversearrsortlength__2_2"
+source = '''
+@arr.reverse[@arr.sort.length - 2]
+'''
+corrected = '''
+@arr.reverse[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 33
+message = "Use `@arr.reverse[-2]` instead of `@arr.reverse[@arr.sort.length - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrreversearrlength__2"
+source = '''
+@arr.reverse[@arr.length - 2]
+'''
+corrected = '''
+@arr.reverse[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 28
+message = "Use `@arr.reverse[-2]` instead of `@arr.reverse[@arr.length - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrreversearrreverselength__2_2"
+source = '''
+arr.reverse[arr.reverse.length - 2]
+'''
+corrected = '''
+arr.reverse[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 12
+column_end = 34
+message = "Use `arr.reverse[-2]` instead of `arr.reverse[arr.reverse.length - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrsortarrsortlength__2_2"
+source = '''
+arr.sort[arr.sort.length - 2]
+'''
+corrected = '''
+arr.sort[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 28
+message = "Use `arr.sort[-2]` instead of `arr.sort[arr.sort.length - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrshufflearrshufflelength__2"
+source = '''
+arr.shuffle[arr.shuffle.length - 2]
+'''
+corrected = '''
+arr.shuffle[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 12
+column_end = 34
+message = "Use `arr.shuffle[-2]` instead of `arr.shuffle[arr.shuffle.length - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrrotatearrrotatelength__2"
+source = '''
+arr.rotate[arr.rotate.length - 2]
+'''
+corrected = '''
+arr.rotate[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 32
+message = "Use `arr.rotate[-2]` instead of `arr.rotate[arr.rotate.length - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrsortreversearrsortreverselength__2"
+source = '''
+arr.sort.reverse[arr.sort.reverse.length - 2]
+'''
+corrected = '''
+arr.sort.reverse[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 44
+message = "Use `arr.sort.reverse[-2]` instead of `arr.sort.reverse[arr.sort.reverse.length - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrsortshufflearrsortshufflelength__2"
+source = '''
+arr.sort.shuffle[arr.sort.shuffle.length - 2]
+'''
+corrected = '''
+arr.sort.shuffle[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 44
+message = "Use `arr.sort.shuffle[-2]` instead of `arr.sort.shuffle[arr.sort.shuffle.length - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrreverserotatearrreverserotatelength__2"
+source = '''
+arr.reverse.rotate[arr.reverse.rotate.length - 2]
+'''
+corrected = '''
+arr.reverse.rotate[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 19
+column_end = 48
+message = "Use `arr.reverse.rotate[-2]` instead of `arr.reverse.rotate[arr.reverse.rotate.length - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrsortreversearrsortlength__2"
+source = '''
+arr.sort.reverse[arr.sort.length - 2]
+'''
+corrected = '''
+arr.sort.reverse[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 36
+message = "Use `arr.sort.reverse[-2]` instead of `arr.sort.reverse[arr.sort.length - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrsortreversearrsortreverselength__2_2"
+source = '''
+arr.sort.reverse[arr.sort.reverse.length - 2]
+'''
+corrected = '''
+arr.sort.reverse[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 44
+message = "Use `arr.sort.reverse[-2]` instead of `arr.sort.reverse[arr.sort.reverse.length - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_bracket_method_call_registers_an_offense"
+source = '''
+arr.[](arr.length - 2)
+'''
+corrected = '''
+arr.[](-2)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 21
+message = "Use `arr[-2]` instead of `arr[arr.length - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_bracket_method_call_registers_an_offense_2"
+source = '''
+arr&.[](arr.length - 2)
+'''
+corrected = '''
+arr&.[](-2)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 22
+message = "Use `arr[-2]` instead of `arr[arr.length - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arr0arrlength__2"
+source = '''
+arr[(0..(arr.length - 2))]
+'''
+corrected = '''
+arr[(0..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
 column_end = 24
-message = "Use `self[-1]` instead of `self[#{method_name} - 1]`."
+message = "Use `arr[(0..-2)]` instead of `arr[(0..(arr.length - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arr5arrlength__2"
+source = '''
+arr[(-5..(arr.length - 2))]
+'''
+corrected = '''
+arr[(-5..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 25
+message = "Use `arr[(-5..-2)]` instead of `arr[(-5..(arr.length - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arr1arrlength__2"
+source = '''
+arr[(1...(arr.length - 2))]
+'''
+corrected = '''
+arr[(1...-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 25
+message = "Use `arr[(1...-2)]` instead of `arr[(1...(arr.length - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arr0arrlength__100"
+source = '''
+arr[(0..(arr.length - 100))]
+'''
+corrected = '''
+arr[(0..-100)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 26
+message = "Use `arr[(0..-100)]` instead of `arr[(0..(arr.length - 100))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arr0arrlength__2_2"
+source = '''
+arr[(0...(arr.length - 2))]
+'''
+corrected = '''
+arr[(0...-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 25
+message = "Use `arr[(0...-2)]` instead of `arr[(0...(arr.length - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arr2arrlength__2"
+source = '''
+arr[(2..(arr.length - 2))]
+'''
+corrected = '''
+arr[(2..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 24
+message = "Use `arr[(2..-2)]` instead of `arr[(2..(arr.length - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arr2arrlength__2_2"
+source = '''
+arr[(2...(arr.length - 2))]
+'''
+corrected = '''
+arr[(2...-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 25
+message = "Use `arr[(2...-2)]` instead of `arr[(2...(arr.length - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arrnarrlength__2"
+source = '''
+arr[(n..(arr.length - 2))]
+'''
+corrected = '''
+arr[(n..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 24
+message = "Use `arr[(n..-2)]` instead of `arr[(n..(arr.length - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arrarrsortarrlength__2"
+source = '''
+arr[(arr.sort..(arr.length - 2))]
+'''
+corrected = '''
+arr[(arr.sort..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 31
+message = "Use `arr[(arr.sort..-2)]` instead of `arr[(arr.sort..(arr.length - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arrarrsortreversearrlength__2"
+source = '''
+arr[(arr.sort.reverse..(arr.length - 2))]
+'''
+corrected = '''
+arr[(arr.sort.reverse..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 23
+column_end = 39
+message = "Use `arr[(arr.sort.reverse..-2)]` instead of `arr[(arr.sort.reverse..(arr.length - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_const0constlength__2"
+source = '''
+CONST[(0..(CONST.length - 2))]
+'''
+corrected = '''
+CONST[(0..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 28
+message = "Use `CONST[(0..-2)]` instead of `CONST[(0..(CONST.length - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arr0arrlength__2_3"
+source = '''
+@arr[(0..(@arr.length - 2))]
+'''
+corrected = '''
+@arr[(0..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 26
+message = "Use `@arr[(0..-2)]` instead of `@arr[(0..(@arr.length - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arr0arrlength__2_4"
+source = '''
+$arr[(0..($arr.length - 2))]
+'''
+corrected = '''
+$arr[(0..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 26
+message = "Use `$arr[(0..-2)]` instead of `$arr[(0..($arr.length - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arr0arrlength__2_5"
+source = '''
+@@arr[(0..(@@arr.length - 2))]
+'''
+corrected = '''
+@@arr[(0..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 28
+message = "Use `@@arr[(0..-2)]` instead of `@@arr[(0..(@@arr.length - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arrreverse0arrreverselength__2"
+source = '''
+arr.reverse[(0..(arr.reverse.length - 2))]
+'''
+corrected = '''
+arr.reverse[(0..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 16
+column_end = 40
+message = "Use `arr.reverse[(0..-2)]` instead of `arr.reverse[(0..(arr.reverse.length - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arrreverse2arrreverselength__2"
+source = '''
+arr.reverse[(2..(arr.reverse.length - 2))]
+'''
+corrected = '''
+arr.reverse[(2..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 16
+column_end = 40
+message = "Use `arr.reverse[(2..-2)]` instead of `arr.reverse[(2..(arr.reverse.length - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arrsort0arrsortlength__2"
+source = '''
+arr.sort[(0..(arr.sort.length - 2))]
+'''
+corrected = '''
+arr.sort[(0..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 34
+message = "Use `arr.sort[(0..-2)]` instead of `arr.sort[(0..(arr.sort.length - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arrsort2arrsortlength__2"
+source = '''
+arr.sort[(2...(arr.sort.length - 2))]
+'''
+corrected = '''
+arr.sort[(2...-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 14
+column_end = 35
+message = "Use `arr.sort[(2...-2)]` instead of `arr.sort[(2...(arr.sort.length - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arrshuffle0arrshufflelength__2"
+source = '''
+arr.shuffle[(0..(arr.shuffle.length - 2))]
+'''
+corrected = '''
+arr.shuffle[(0..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 16
+column_end = 40
+message = "Use `arr.shuffle[(0..-2)]` instead of `arr.shuffle[(0..(arr.shuffle.length - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arrshuffle1arrshufflelength__2"
+source = '''
+arr.shuffle[(1..(arr.shuffle.length - 2))]
+'''
+corrected = '''
+arr.shuffle[(1..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 16
+column_end = 40
+message = "Use `arr.shuffle[(1..-2)]` instead of `arr.shuffle[(1..(arr.shuffle.length - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arrrotate0arrrotatelength__2"
+source = '''
+arr.rotate[(0..(arr.rotate.length - 2))]
+'''
+corrected = '''
+arr.rotate[(0..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 38
+message = "Use `arr.rotate[(0..-2)]` instead of `arr.rotate[(0..(arr.rotate.length - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arrrotate3arrrotatelength__2"
+source = '''
+arr.rotate[(3...(arr.rotate.length - 2))]
+'''
+corrected = '''
+arr.rotate[(3...-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 16
+column_end = 39
+message = "Use `arr.rotate[(3...-2)]` instead of `arr.rotate[(3...(arr.rotate.length - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arrsortreverse0arrsortreverselength__2"
+source = '''
+arr.sort.reverse[(0..(arr.sort.reverse.length - 2))]
+'''
+corrected = '''
+arr.sort.reverse[(0..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 21
+column_end = 50
+message = "Use `arr.sort.reverse[(0..-2)]` instead of `arr.sort.reverse[(0..(arr.sort.reverse.length - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_but_without_expression_parentheses_registers_an_offense_for_arr0arrlength__2"
+source = '''
+arr[(0..arr.length - 2)]
+'''
+corrected = '''
+arr[(0..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 22
+message = "Use `arr[(0..-2)]` instead of `arr[(0..arr.length - 2)]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_but_without_expression_parentheses_registers_an_offense_for_arr0arrlength__2_2"
+source = '''
+arr[(0...arr.length - 2)]
+'''
+corrected = '''
+arr[(0...-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 23
+message = "Use `arr[(0...-2)]` instead of `arr[(0...arr.length - 2)]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_but_without_expression_parentheses_registers_an_offense_for_arr2arrlength__2"
+source = '''
+arr[(2..arr.length - 2)]
+'''
+corrected = '''
+arr[(2..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 22
+message = "Use `arr[(2..-2)]` instead of `arr[(2..arr.length - 2)]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_but_without_expression_parentheses_registers_an_offense_for_arrsort0arrsortlength__2"
+source = '''
+arr.sort[(0..arr.sort.length - 2)]
+'''
+corrected = '''
+arr.sort[(0..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 32
+message = "Use `arr.sort[(0..-2)]` instead of `arr.sort[(0..arr.sort.length - 2)]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_but_without_expression_parentheses_registers_an_offense_for_arrreverse0arrreverselength__2"
+source = '''
+arr.reverse[(0..arr.reverse.length - 2)]
+'''
+corrected = '''
+arr.reverse[(0..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 16
+column_end = 38
+message = "Use `arr.reverse[(0..-2)]` instead of `arr.reverse[(0..arr.reverse.length - 2)]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arruniqarruniqcompactsize__2"
+source = '''
+arr.uniq[arr.uniq.compact.size - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrflattenarrflattenmapto_ssize__2"
+source = '''
+arr.flatten[arr.flatten.map(&:to_s).size - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrsize__2"
+source = '''
+arr[size - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrothersize__2"
+source = '''
+arr[other.size - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrothersize__2_2"
+source = '''
+@arr[@other.size - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_constothersize__2"
+source = '''
+CONST[OTHER.size - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrcompactarrcompactuniqsize__2"
+source = '''
+arr.compact[arr.compact.uniq.size - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0othersize__2"
+source = '''
+arr[0..(other.size - 2)]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0_othersize__2"
+source = '''
+arr[0, other.size - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrsize__0"
+source = '''
+arr[arr.size - 0]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrsize__n"
+source = '''
+arr[arr.size - n]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0_1_arrsize__2"
+source = '''
+arr[0, 1, arr.size - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0arrsize__n"
+source = '''
+arr[0..(arr.size - n)]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0_arrsize__n"
+source = '''
+arr[0, arr.size - n]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrmethodsize__2"
+source = '''
+arr[arr.method.size - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrsortsize__2"
+source = '''
+arr[arr.sort.size - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0arrmethodsize__2"
+source = '''
+arr[0..(arr.method.size - 2)]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0_arrmethodsize__2"
+source = '''
+arr[0, arr.method.size - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrreversesize__2"
+source = '''
+arr[arr.reverse.size - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrmapto_ssize__2"
+source = '''
+arr[arr.map(&:to_s).size - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrsize__2__value"
+source = '''
+arr[arr.size - 2] = value
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrselectevensize__2"
+source = '''
+arr[arr.select(&:even?).size - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrfilter_mapto_isize__2"
+source = '''
+arr[arr.filter_map(&:to_i).size - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0arrreversesize__2"
+source = '''
+arr[0..(arr.reverse.size - 2)]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0arrmapto_ssize__2"
+source = '''
+arr[0...(arr.map(&:to_s).size - 2)]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0_arrreversesize__2"
+source = '''
+arr[0, arr.reverse.size - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0_arrmapto_ssize__2"
+source = '''
+arr[0, arr.map(&:to_s).size - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrsort0_arrmethodsize__2"
+source = '''
+arr.sort[0, arr.method.size - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrchainedmethodsize__2"
+source = '''
+arr[arr.chained.method.size - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrdeeplynestedmethodsize__2"
+source = '''
+arr[arr.deeply.nested.method.size - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrsize__2"
+source = '''
+arr[arr.size + 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr2__arrsize"
+source = '''
+arr[2 - arr.size]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrsize__2_2"
+source = '''
+arr[arr.size * 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrsize__2_3"
+source = '''
+arr[arr.size / 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0_arrsize__2"
+source = '''
+arr[0, arr.size - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrmapto_s0_arrsize__2"
+source = '''
+arr.map(&:to_s)[0, arr.size - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrselecteven0_arrsize__2"
+source = '''
+arr.select(&:even?)[0, arr.size - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrfilter_mapto_i0_arrsize__2"
+source = '''
+arr.filter_map(&:to_i)[0, arr.size - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr2_arrsize__2"
+source = '''
+arr[2, arr.size - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0_arrsize__0"
+source = '''
+arr[0, arr.size - 0]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0arrsize__0"
+source = '''
+arr[0..(arr.size - 0)]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrsortreversearrsortmapto_ssize__2"
+source = '''
+arr.sort.reverse[arr.sort.map(&:to_s).size - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrsortuniqarrsortsize__2"
+source = '''
+arr.sort.uniq[arr.sort.size - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrrejectnilcompactarrrejectnilsize__2"
+source = '''
+arr.reject(&:nil?).compact[arr.reject(&:nil?).size - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrcompactuniqarrcompactsize__2"
+source = '''
+arr.compact.uniq[arr.compact.size - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arruniqcompactarruniqsize__2"
+source = '''
+arr.uniq.compact[arr.uniq.size - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrmapto_sarrselectevensize__2"
+source = '''
+arr.map(&:to_s)[arr.select(&:even?).size - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrsortarrmethodsize__2"
+source = '''
+arr.sort[arr.method.size - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrselectevenarrrejectevensize__2"
+source = '''
+arr.select(&:even?)[arr.reject(&:even?).size - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrmapto_iselectevenarrmapto_isize__2"
+source = '''
+arr.map(&:to_i).select(&:even?)[arr.map(&:to_i).size - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrmapto_sarrmapto_isize__2"
+source = '''
+arr.map(&:to_s)[arr.map(&:to_i).size - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrselectevenrejectnilarrselectevensize__2"
+source = '''
+arr.select(&:even?).reject(&:nil?)[arr.select(&:even?).size - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrselectevenmapto_sarrselectevensize__2"
+source = '''
+arr.select(&:even?).map(&:to_s)[arr.select(&:even?).size - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arruniq0arruniqsize__2"
+source = '''
+arr.uniq[0..(arr.uniq.size - 2)]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrflattenarrflattensize__2"
+source = '''
+arr.flatten[arr.flatten.size - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrslice1arrslice1size__2"
+source = '''
+arr.slice(1)[arr.slice(1).size - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrtake3arrtake3size__2"
+source = '''
+arr.take(3)[arr.take(3).size - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrdrop2arrdrop2size__2"
+source = '''
+arr.drop(2)[arr.drop(2).size - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrsortflattenarrsortflattensize__2"
+source = '''
+arr.sort.flatten[arr.sort.flatten.size - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrreverseslice1arrreverseslice1size__2"
+source = '''
+arr.reverse.slice(1)[arr.reverse.slice(1).size - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrshuffletake3arrshuffletake3size__2"
+source = '''
+arr.shuffle.take(3)[arr.shuffle.take(3).size - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrrotatedrop2arrrotatedrop2size__2"
+source = '''
+arr.rotate.drop(2)[arr.rotate.drop(2).size - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrrandarrsize__2"
+source = '''
+arr[rand(arr.size - 2)]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrsize__41"
+source = '''
+arr[arr.size - 4..-1]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrmap0arrmapsize__2"
+source = '''
+arr.map[(0..(arr.map.size - 2))]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrsort0othersize__2"
+source = '''
+arr.sort[(0..(other.size - 2))]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0arrsize__0_2"
+source = '''
+arr[(0..(arr.size - 0))]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0arrsize__2"
+source = '''
+arr[(0..(arr.size - (-2)))]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0arrsize__n_2"
+source = '''
+arr[(0..(arr.size - n))]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrsort0arrreversesize__2"
+source = '''
+arr.sort[(0..(arr.reverse.size - 2))]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrsize__2__1"
+source = '''
+arr[arr.size - 2 + 1]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrsize__2__1_2"
+source = '''
+arr[arr.size - 2 - 1]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrsize__2__2"
+source = '''
+arr[arr.size * 2 - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrsize__2__2_2"
+source = '''
+arr[(arr.size - 2) / 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrsize1__2"
+source = '''
+arr[arr.size(1) - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrselect__x_x__0_size__2"
+source = '''
+arr[arr.select { |x| x > 0 }.size - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarr0size__2"
+source = '''
+arr[arr[0].size - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrhashkeysize__2"
+source = '''
+arr[hash[:key].size - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrconstsize__2"
+source = '''
+arr[CONST.size - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0arrsize__n_3"
+source = '''
+arr[(0..(arr.size - n))]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrmethodarrsize__2"
+source = '''
+arr[(arr.method..(arr.size - 2))]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrmapto_sarrsize__2"
+source = '''
+arr[(arr.map(&:to_s)..(arr.size - 2))]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrselectevencompactarrsize__2"
+source = '''
+arr[(arr.select(&:even?).compact..(arr.size - 2))]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrsort0arrmapsize__2"
+source = '''
+arr.sort[(0..(arr.map.size - 2))]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrsort0othersize__2_2"
+source = '''
+arr.sort[(0..(other.size - 2))]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_constconstsize__2"
+source = '''
+CONST[CONST.size - 2]
+'''
+corrected = '''
+CONST[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 20
+message = "Use `CONST[-2]` instead of `CONST[CONST.size - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrarrsize__2"
+source = '''
+@arr[@arr.size - 2]
+'''
+corrected = '''
+@arr[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 18
+message = "Use `@arr[-2]` instead of `@arr[@arr.size - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrarrsize__2_2"
+source = '''
+arr[arr.size - 2]
+'''
+corrected = '''
+arr[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 16
+message = "Use `arr[-2]` instead of `arr[arr.size - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrsortarrsize__2"
+source = '''
+@@arr.sort[@@arr.size - 2]
+'''
+corrected = '''
+@@arr.sort[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 25
+message = "Use `@@arr.sort[-2]` instead of `@@arr.sort[@@arr.size - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrsortarrsize__2_2"
+source = '''
+arr.sort[arr.size - 2]
+'''
+corrected = '''
+arr.sort[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 21
+message = "Use `arr.sort[-2]` instead of `arr.sort[arr.size - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrsortarrsortsize__2"
+source = '''
+arr.sort[arr.sort.size - 2]
+'''
+corrected = '''
+arr.sort[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 26
+message = "Use `arr.sort[-2]` instead of `arr.sort[arr.sort.size - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrsortarrreversesize__2"
+source = '''
+arr.sort[arr.reverse.size - 2]
+'''
+corrected = '''
+arr.sort[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 29
+message = "Use `arr.sort[-2]` instead of `arr.sort[arr.reverse.size - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrreversearrreversesize__2"
+source = '''
+@arr.reverse[@arr.reverse.size - 2]
+'''
+corrected = '''
+@arr.reverse[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 34
+message = "Use `@arr.reverse[-2]` instead of `@arr.reverse[@arr.reverse.size - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrreversearrsortsize__2"
+source = '''
+arr.reverse[arr.sort.size - 2]
+'''
+corrected = '''
+arr.reverse[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 12
+column_end = 29
+message = "Use `arr.reverse[-2]` instead of `arr.reverse[arr.sort.size - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrshufflearrsortsize__2"
+source = '''
+arr.shuffle[arr.sort.size - 2]
+'''
+corrected = '''
+arr.shuffle[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 12
+column_end = 29
+message = "Use `arr.shuffle[-2]` instead of `arr.shuffle[arr.sort.size - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrrotatearrreversesize__2"
+source = '''
+arr.rotate[arr.reverse.size - 2]
+'''
+corrected = '''
+arr.rotate[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 31
+message = "Use `arr.rotate[-2]` instead of `arr.rotate[arr.reverse.size - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrreversearrsortsize__2_2"
+source = '''
+@arr.reverse[@arr.sort.size - 2]
+'''
+corrected = '''
+@arr.reverse[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 31
+message = "Use `@arr.reverse[-2]` instead of `@arr.reverse[@arr.sort.size - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrreversearrsize__2"
+source = '''
+@arr.reverse[@arr.size - 2]
+'''
+corrected = '''
+@arr.reverse[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 26
+message = "Use `@arr.reverse[-2]` instead of `@arr.reverse[@arr.size - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrreversearrreversesize__2_2"
+source = '''
+arr.reverse[arr.reverse.size - 2]
+'''
+corrected = '''
+arr.reverse[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 12
+column_end = 32
+message = "Use `arr.reverse[-2]` instead of `arr.reverse[arr.reverse.size - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrsortarrsortsize__2_2"
+source = '''
+arr.sort[arr.sort.size - 2]
+'''
+corrected = '''
+arr.sort[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 26
+message = "Use `arr.sort[-2]` instead of `arr.sort[arr.sort.size - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrshufflearrshufflesize__2"
+source = '''
+arr.shuffle[arr.shuffle.size - 2]
+'''
+corrected = '''
+arr.shuffle[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 12
+column_end = 32
+message = "Use `arr.shuffle[-2]` instead of `arr.shuffle[arr.shuffle.size - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrrotatearrrotatesize__2"
+source = '''
+arr.rotate[arr.rotate.size - 2]
+'''
+corrected = '''
+arr.rotate[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 30
+message = "Use `arr.rotate[-2]` instead of `arr.rotate[arr.rotate.size - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrsortreversearrsortreversesize__2"
+source = '''
+arr.sort.reverse[arr.sort.reverse.size - 2]
+'''
+corrected = '''
+arr.sort.reverse[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 42
+message = "Use `arr.sort.reverse[-2]` instead of `arr.sort.reverse[arr.sort.reverse.size - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrsortshufflearrsortshufflesize__2"
+source = '''
+arr.sort.shuffle[arr.sort.shuffle.size - 2]
+'''
+corrected = '''
+arr.sort.shuffle[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 42
+message = "Use `arr.sort.shuffle[-2]` instead of `arr.sort.shuffle[arr.sort.shuffle.size - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrreverserotatearrreverserotatesize__2"
+source = '''
+arr.reverse.rotate[arr.reverse.rotate.size - 2]
+'''
+corrected = '''
+arr.reverse.rotate[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 19
+column_end = 46
+message = "Use `arr.reverse.rotate[-2]` instead of `arr.reverse.rotate[arr.reverse.rotate.size - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrsortreversearrsortsize__2"
+source = '''
+arr.sort.reverse[arr.sort.size - 2]
+'''
+corrected = '''
+arr.sort.reverse[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 34
+message = "Use `arr.sort.reverse[-2]` instead of `arr.sort.reverse[arr.sort.size - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrsortreversearrsortreversesize__2_2"
+source = '''
+arr.sort.reverse[arr.sort.reverse.size - 2]
+'''
+corrected = '''
+arr.sort.reverse[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 42
+message = "Use `arr.sort.reverse[-2]` instead of `arr.sort.reverse[arr.sort.reverse.size - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_bracket_method_call_registers_an_offense_3"
+source = '''
+arr.[](arr.size - 2)
+'''
+corrected = '''
+arr.[](-2)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 19
+message = "Use `arr[-2]` instead of `arr[arr.size - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_bracket_method_call_registers_an_offense_4"
+source = '''
+arr&.[](arr.size - 2)
+'''
+corrected = '''
+arr&.[](-2)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 20
+message = "Use `arr[-2]` instead of `arr[arr.size - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arr0arrsize__2"
+source = '''
+arr[(0..(arr.size - 2))]
+'''
+corrected = '''
+arr[(0..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 22
+message = "Use `arr[(0..-2)]` instead of `arr[(0..(arr.size - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arr5arrsize__2"
+source = '''
+arr[(-5..(arr.size - 2))]
+'''
+corrected = '''
+arr[(-5..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 23
+message = "Use `arr[(-5..-2)]` instead of `arr[(-5..(arr.size - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arr1arrsize__2"
+source = '''
+arr[(1...(arr.size - 2))]
+'''
+corrected = '''
+arr[(1...-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 23
+message = "Use `arr[(1...-2)]` instead of `arr[(1...(arr.size - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arr0arrsize__100"
+source = '''
+arr[(0..(arr.size - 100))]
+'''
+corrected = '''
+arr[(0..-100)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 24
+message = "Use `arr[(0..-100)]` instead of `arr[(0..(arr.size - 100))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arr0arrsize__2_2"
+source = '''
+arr[(0...(arr.size - 2))]
+'''
+corrected = '''
+arr[(0...-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 23
+message = "Use `arr[(0...-2)]` instead of `arr[(0...(arr.size - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arr2arrsize__2"
+source = '''
+arr[(2..(arr.size - 2))]
+'''
+corrected = '''
+arr[(2..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 22
+message = "Use `arr[(2..-2)]` instead of `arr[(2..(arr.size - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arr2arrsize__2_2"
+source = '''
+arr[(2...(arr.size - 2))]
+'''
+corrected = '''
+arr[(2...-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 23
+message = "Use `arr[(2...-2)]` instead of `arr[(2...(arr.size - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arrnarrsize__2"
+source = '''
+arr[(n..(arr.size - 2))]
+'''
+corrected = '''
+arr[(n..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 22
+message = "Use `arr[(n..-2)]` instead of `arr[(n..(arr.size - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arrarrsortarrsize__2"
+source = '''
+arr[(arr.sort..(arr.size - 2))]
+'''
+corrected = '''
+arr[(arr.sort..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 29
+message = "Use `arr[(arr.sort..-2)]` instead of `arr[(arr.sort..(arr.size - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arrarrsortreversearrsize__2"
+source = '''
+arr[(arr.sort.reverse..(arr.size - 2))]
+'''
+corrected = '''
+arr[(arr.sort.reverse..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 23
+column_end = 37
+message = "Use `arr[(arr.sort.reverse..-2)]` instead of `arr[(arr.sort.reverse..(arr.size - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_const0constsize__2"
+source = '''
+CONST[(0..(CONST.size - 2))]
+'''
+corrected = '''
+CONST[(0..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 26
+message = "Use `CONST[(0..-2)]` instead of `CONST[(0..(CONST.size - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arr0arrsize__2_3"
+source = '''
+@arr[(0..(@arr.size - 2))]
+'''
+corrected = '''
+@arr[(0..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 24
+message = "Use `@arr[(0..-2)]` instead of `@arr[(0..(@arr.size - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arr0arrsize__2_4"
+source = '''
+$arr[(0..($arr.size - 2))]
+'''
+corrected = '''
+$arr[(0..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 24
+message = "Use `$arr[(0..-2)]` instead of `$arr[(0..($arr.size - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arr0arrsize__2_5"
+source = '''
+@@arr[(0..(@@arr.size - 2))]
+'''
+corrected = '''
+@@arr[(0..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 26
+message = "Use `@@arr[(0..-2)]` instead of `@@arr[(0..(@@arr.size - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arrreverse0arrreversesize__2"
+source = '''
+arr.reverse[(0..(arr.reverse.size - 2))]
+'''
+corrected = '''
+arr.reverse[(0..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 16
+column_end = 38
+message = "Use `arr.reverse[(0..-2)]` instead of `arr.reverse[(0..(arr.reverse.size - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arrreverse2arrreversesize__2"
+source = '''
+arr.reverse[(2..(arr.reverse.size - 2))]
+'''
+corrected = '''
+arr.reverse[(2..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 16
+column_end = 38
+message = "Use `arr.reverse[(2..-2)]` instead of `arr.reverse[(2..(arr.reverse.size - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arrsort0arrsortsize__2"
+source = '''
+arr.sort[(0..(arr.sort.size - 2))]
+'''
+corrected = '''
+arr.sort[(0..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 32
+message = "Use `arr.sort[(0..-2)]` instead of `arr.sort[(0..(arr.sort.size - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arrsort2arrsortsize__2"
+source = '''
+arr.sort[(2...(arr.sort.size - 2))]
+'''
+corrected = '''
+arr.sort[(2...-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 14
+column_end = 33
+message = "Use `arr.sort[(2...-2)]` instead of `arr.sort[(2...(arr.sort.size - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arrshuffle0arrshufflesize__2"
+source = '''
+arr.shuffle[(0..(arr.shuffle.size - 2))]
+'''
+corrected = '''
+arr.shuffle[(0..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 16
+column_end = 38
+message = "Use `arr.shuffle[(0..-2)]` instead of `arr.shuffle[(0..(arr.shuffle.size - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arrshuffle1arrshufflesize__2"
+source = '''
+arr.shuffle[(1..(arr.shuffle.size - 2))]
+'''
+corrected = '''
+arr.shuffle[(1..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 16
+column_end = 38
+message = "Use `arr.shuffle[(1..-2)]` instead of `arr.shuffle[(1..(arr.shuffle.size - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arrrotate0arrrotatesize__2"
+source = '''
+arr.rotate[(0..(arr.rotate.size - 2))]
+'''
+corrected = '''
+arr.rotate[(0..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 36
+message = "Use `arr.rotate[(0..-2)]` instead of `arr.rotate[(0..(arr.rotate.size - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arrrotate3arrrotatesize__2"
+source = '''
+arr.rotate[(3...(arr.rotate.size - 2))]
+'''
+corrected = '''
+arr.rotate[(3...-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 16
+column_end = 37
+message = "Use `arr.rotate[(3...-2)]` instead of `arr.rotate[(3...(arr.rotate.size - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arrsortreverse0arrsortreversesize__2"
+source = '''
+arr.sort.reverse[(0..(arr.sort.reverse.size - 2))]
+'''
+corrected = '''
+arr.sort.reverse[(0..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 21
+column_end = 48
+message = "Use `arr.sort.reverse[(0..-2)]` instead of `arr.sort.reverse[(0..(arr.sort.reverse.size - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_but_without_expression_parentheses_registers_an_offense_for_arr0arrsize__2"
+source = '''
+arr[(0..arr.size - 2)]
+'''
+corrected = '''
+arr[(0..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 20
+message = "Use `arr[(0..-2)]` instead of `arr[(0..arr.size - 2)]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_but_without_expression_parentheses_registers_an_offense_for_arr0arrsize__2_2"
+source = '''
+arr[(0...arr.size - 2)]
+'''
+corrected = '''
+arr[(0...-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 21
+message = "Use `arr[(0...-2)]` instead of `arr[(0...arr.size - 2)]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_but_without_expression_parentheses_registers_an_offense_for_arr2arrsize__2"
+source = '''
+arr[(2..arr.size - 2)]
+'''
+corrected = '''
+arr[(2..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 20
+message = "Use `arr[(2..-2)]` instead of `arr[(2..arr.size - 2)]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_but_without_expression_parentheses_registers_an_offense_for_arrsort0arrsortsize__2"
+source = '''
+arr.sort[(0..arr.sort.size - 2)]
+'''
+corrected = '''
+arr.sort[(0..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 30
+message = "Use `arr.sort[(0..-2)]` instead of `arr.sort[(0..arr.sort.size - 2)]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_but_without_expression_parentheses_registers_an_offense_for_arrreverse0arrreversesize__2"
+source = '''
+arr.reverse[(0..arr.reverse.size - 2)]
+'''
+corrected = '''
+arr.reverse[(0..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 16
+column_end = 36
+message = "Use `arr.reverse[(0..-2)]` instead of `arr.reverse[(0..arr.reverse.size - 2)]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arruniqarruniqcompactcount__2"
+source = '''
+arr.uniq[arr.uniq.compact.count - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrflattenarrflattenmapto_scount__2"
+source = '''
+arr.flatten[arr.flatten.map(&:to_s).count - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrcount__2"
+source = '''
+arr[count - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrothercount__2"
+source = '''
+arr[other.count - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrothercount__2_2"
+source = '''
+@arr[@other.count - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_constothercount__2"
+source = '''
+CONST[OTHER.count - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrcompactarrcompactuniqcount__2"
+source = '''
+arr.compact[arr.compact.uniq.count - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0othercount__2"
+source = '''
+arr[0..(other.count - 2)]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0_othercount__2"
+source = '''
+arr[0, other.count - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrcount__0"
+source = '''
+arr[arr.count - 0]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrcount__n"
+source = '''
+arr[arr.count - n]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0_1_arrcount__2"
+source = '''
+arr[0, 1, arr.count - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0arrcount__n"
+source = '''
+arr[0..(arr.count - n)]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0_arrcount__n"
+source = '''
+arr[0, arr.count - n]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrmethodcount__2"
+source = '''
+arr[arr.method.count - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrsortcount__2"
+source = '''
+arr[arr.sort.count - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0arrmethodcount__2"
+source = '''
+arr[0..(arr.method.count - 2)]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0_arrmethodcount__2"
+source = '''
+arr[0, arr.method.count - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrreversecount__2"
+source = '''
+arr[arr.reverse.count - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrmapto_scount__2"
+source = '''
+arr[arr.map(&:to_s).count - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrcount__2__value"
+source = '''
+arr[arr.count - 2] = value
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrselectevencount__2"
+source = '''
+arr[arr.select(&:even?).count - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrfilter_mapto_icount__2"
+source = '''
+arr[arr.filter_map(&:to_i).count - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0arrreversecount__2"
+source = '''
+arr[0..(arr.reverse.count - 2)]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0arrmapto_scount__2"
+source = '''
+arr[0...(arr.map(&:to_s).count - 2)]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0_arrreversecount__2"
+source = '''
+arr[0, arr.reverse.count - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0_arrmapto_scount__2"
+source = '''
+arr[0, arr.map(&:to_s).count - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrsort0_arrmethodcount__2"
+source = '''
+arr.sort[0, arr.method.count - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrchainedmethodcount__2"
+source = '''
+arr[arr.chained.method.count - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrdeeplynestedmethodcount__2"
+source = '''
+arr[arr.deeply.nested.method.count - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrcount__2"
+source = '''
+arr[arr.count + 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr2__arrcount"
+source = '''
+arr[2 - arr.count]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrcount__2_2"
+source = '''
+arr[arr.count * 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrcount__2_3"
+source = '''
+arr[arr.count / 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0_arrcount__2"
+source = '''
+arr[0, arr.count - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrmapto_s0_arrcount__2"
+source = '''
+arr.map(&:to_s)[0, arr.count - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrselecteven0_arrcount__2"
+source = '''
+arr.select(&:even?)[0, arr.count - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrfilter_mapto_i0_arrcount__2"
+source = '''
+arr.filter_map(&:to_i)[0, arr.count - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr2_arrcount__2"
+source = '''
+arr[2, arr.count - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0_arrcount__0"
+source = '''
+arr[0, arr.count - 0]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0arrcount__0"
+source = '''
+arr[0..(arr.count - 0)]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrsortreversearrsortmapto_scount__2"
+source = '''
+arr.sort.reverse[arr.sort.map(&:to_s).count - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrsortuniqarrsortcount__2"
+source = '''
+arr.sort.uniq[arr.sort.count - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrrejectnilcompactarrrejectnilcount__2"
+source = '''
+arr.reject(&:nil?).compact[arr.reject(&:nil?).count - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrcompactuniqarrcompactcount__2"
+source = '''
+arr.compact.uniq[arr.compact.count - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arruniqcompactarruniqcount__2"
+source = '''
+arr.uniq.compact[arr.uniq.count - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrmapto_sarrselectevencount__2"
+source = '''
+arr.map(&:to_s)[arr.select(&:even?).count - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrsortarrmethodcount__2"
+source = '''
+arr.sort[arr.method.count - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrselectevenarrrejectevencount__2"
+source = '''
+arr.select(&:even?)[arr.reject(&:even?).count - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrmapto_iselectevenarrmapto_icount__2"
+source = '''
+arr.map(&:to_i).select(&:even?)[arr.map(&:to_i).count - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrmapto_sarrmapto_icount__2"
+source = '''
+arr.map(&:to_s)[arr.map(&:to_i).count - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrselectevenrejectnilarrselectevencount__2"
+source = '''
+arr.select(&:even?).reject(&:nil?)[arr.select(&:even?).count - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrselectevenmapto_sarrselectevencount__2"
+source = '''
+arr.select(&:even?).map(&:to_s)[arr.select(&:even?).count - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arruniq0arruniqcount__2"
+source = '''
+arr.uniq[0..(arr.uniq.count - 2)]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrflattenarrflattencount__2"
+source = '''
+arr.flatten[arr.flatten.count - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrslice1arrslice1count__2"
+source = '''
+arr.slice(1)[arr.slice(1).count - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrtake3arrtake3count__2"
+source = '''
+arr.take(3)[arr.take(3).count - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrdrop2arrdrop2count__2"
+source = '''
+arr.drop(2)[arr.drop(2).count - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrsortflattenarrsortflattencount__2"
+source = '''
+arr.sort.flatten[arr.sort.flatten.count - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrreverseslice1arrreverseslice1count__2"
+source = '''
+arr.reverse.slice(1)[arr.reverse.slice(1).count - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrshuffletake3arrshuffletake3count__2"
+source = '''
+arr.shuffle.take(3)[arr.shuffle.take(3).count - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrrotatedrop2arrrotatedrop2count__2"
+source = '''
+arr.rotate.drop(2)[arr.rotate.drop(2).count - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrrandarrcount__2"
+source = '''
+arr[rand(arr.count - 2)]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrcount__41"
+source = '''
+arr[arr.count - 4..-1]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrmap0arrmapcount__2"
+source = '''
+arr.map[(0..(arr.map.count - 2))]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrsort0othercount__2"
+source = '''
+arr.sort[(0..(other.count - 2))]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0arrcount__0_2"
+source = '''
+arr[(0..(arr.count - 0))]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0arrcount__2"
+source = '''
+arr[(0..(arr.count - (-2)))]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0arrcount__n_2"
+source = '''
+arr[(0..(arr.count - n))]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrsort0arrreversecount__2"
+source = '''
+arr.sort[(0..(arr.reverse.count - 2))]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrcount__2__1"
+source = '''
+arr[arr.count - 2 + 1]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrcount__2__1_2"
+source = '''
+arr[arr.count - 2 - 1]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrcount__2__2"
+source = '''
+arr[arr.count * 2 - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrcount__2__2_2"
+source = '''
+arr[(arr.count - 2) / 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrcount1__2"
+source = '''
+arr[arr.count(1) - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrselect__x_x__0_count__2"
+source = '''
+arr[arr.select { |x| x > 0 }.count - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarr0count__2"
+source = '''
+arr[arr[0].count - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrhashkeycount__2"
+source = '''
+arr[hash[:key].count - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrconstcount__2"
+source = '''
+arr[CONST.count - 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arr0arrcount__n_3"
+source = '''
+arr[(0..(arr.count - n))]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrmethodarrcount__2"
+source = '''
+arr[(arr.method..(arr.count - 2))]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrmapto_sarrcount__2"
+source = '''
+arr[(arr.map(&:to_s)..(arr.count - 2))]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrarrselectevencompactarrcount__2"
+source = '''
+arr[(arr.select(&:even?).compact..(arr.count - 2))]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrsort0arrmapcount__2"
+source = '''
+arr.sort[(0..(arr.map.count - 2))]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_does_not_register_an_offense_does_not_register_an_offense_when_using_arrsort0othercount__2_2"
+source = '''
+arr.sort[(0..(other.count - 2))]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_constconstcount__2"
+source = '''
+CONST[CONST.count - 2]
+'''
+corrected = '''
+CONST[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 21
+message = "Use `CONST[-2]` instead of `CONST[CONST.count - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrarrcount__2"
+source = '''
+@arr[@arr.count - 2]
+'''
+corrected = '''
+@arr[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 19
+message = "Use `@arr[-2]` instead of `@arr[@arr.count - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrarrcount__2_2"
+source = '''
+arr[arr.count - 2]
+'''
+corrected = '''
+arr[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 17
+message = "Use `arr[-2]` instead of `arr[arr.count - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrsortarrcount__2"
+source = '''
+@@arr.sort[@@arr.count - 2]
+'''
+corrected = '''
+@@arr.sort[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 26
+message = "Use `@@arr.sort[-2]` instead of `@@arr.sort[@@arr.count - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrsortarrcount__2_2"
+source = '''
+arr.sort[arr.count - 2]
+'''
+corrected = '''
+arr.sort[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 22
+message = "Use `arr.sort[-2]` instead of `arr.sort[arr.count - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrsortarrsortcount__2"
+source = '''
+arr.sort[arr.sort.count - 2]
+'''
+corrected = '''
+arr.sort[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 27
+message = "Use `arr.sort[-2]` instead of `arr.sort[arr.sort.count - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrsortarrreversecount__2"
+source = '''
+arr.sort[arr.reverse.count - 2]
+'''
+corrected = '''
+arr.sort[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 30
+message = "Use `arr.sort[-2]` instead of `arr.sort[arr.reverse.count - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrreversearrreversecount__2"
+source = '''
+@arr.reverse[@arr.reverse.count - 2]
+'''
+corrected = '''
+@arr.reverse[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 35
+message = "Use `@arr.reverse[-2]` instead of `@arr.reverse[@arr.reverse.count - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrreversearrsortcount__2"
+source = '''
+arr.reverse[arr.sort.count - 2]
+'''
+corrected = '''
+arr.reverse[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 12
+column_end = 30
+message = "Use `arr.reverse[-2]` instead of `arr.reverse[arr.sort.count - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrshufflearrsortcount__2"
+source = '''
+arr.shuffle[arr.sort.count - 2]
+'''
+corrected = '''
+arr.shuffle[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 12
+column_end = 30
+message = "Use `arr.shuffle[-2]` instead of `arr.shuffle[arr.sort.count - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrrotatearrreversecount__2"
+source = '''
+arr.rotate[arr.reverse.count - 2]
+'''
+corrected = '''
+arr.rotate[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 32
+message = "Use `arr.rotate[-2]` instead of `arr.rotate[arr.reverse.count - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrreversearrsortcount__2_2"
+source = '''
+@arr.reverse[@arr.sort.count - 2]
+'''
+corrected = '''
+@arr.reverse[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 32
+message = "Use `@arr.reverse[-2]` instead of `@arr.reverse[@arr.sort.count - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrreversearrcount__2"
+source = '''
+@arr.reverse[@arr.count - 2]
+'''
+corrected = '''
+@arr.reverse[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 27
+message = "Use `@arr.reverse[-2]` instead of `@arr.reverse[@arr.count - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrreversearrreversecount__2_2"
+source = '''
+arr.reverse[arr.reverse.count - 2]
+'''
+corrected = '''
+arr.reverse[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 12
+column_end = 33
+message = "Use `arr.reverse[-2]` instead of `arr.reverse[arr.reverse.count - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrsortarrsortcount__2_2"
+source = '''
+arr.sort[arr.sort.count - 2]
+'''
+corrected = '''
+arr.sort[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 27
+message = "Use `arr.sort[-2]` instead of `arr.sort[arr.sort.count - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrshufflearrshufflecount__2"
+source = '''
+arr.shuffle[arr.shuffle.count - 2]
+'''
+corrected = '''
+arr.shuffle[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 12
+column_end = 33
+message = "Use `arr.shuffle[-2]` instead of `arr.shuffle[arr.shuffle.count - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrrotatearrrotatecount__2"
+source = '''
+arr.rotate[arr.rotate.count - 2]
+'''
+corrected = '''
+arr.rotate[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 31
+message = "Use `arr.rotate[-2]` instead of `arr.rotate[arr.rotate.count - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrsortreversearrsortreversecount__2"
+source = '''
+arr.sort.reverse[arr.sort.reverse.count - 2]
+'''
+corrected = '''
+arr.sort.reverse[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 43
+message = "Use `arr.sort.reverse[-2]` instead of `arr.sort.reverse[arr.sort.reverse.count - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrsortshufflearrsortshufflecount__2"
+source = '''
+arr.sort.shuffle[arr.sort.shuffle.count - 2]
+'''
+corrected = '''
+arr.sort.shuffle[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 43
+message = "Use `arr.sort.shuffle[-2]` instead of `arr.sort.shuffle[arr.sort.shuffle.count - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrreverserotatearrreverserotatecount__2"
+source = '''
+arr.reverse.rotate[arr.reverse.rotate.count - 2]
+'''
+corrected = '''
+arr.reverse.rotate[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 19
+column_end = 47
+message = "Use `arr.reverse.rotate[-2]` instead of `arr.reverse.rotate[arr.reverse.rotate.count - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrsortreversearrsortcount__2"
+source = '''
+arr.sort.reverse[arr.sort.count - 2]
+'''
+corrected = '''
+arr.sort.reverse[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 35
+message = "Use `arr.sort.reverse[-2]` instead of `arr.sort.reverse[arr.sort.count - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_simple_index_registers_an_offense_for_arrsortreversearrsortreversecount__2_2"
+source = '''
+arr.sort.reverse[arr.sort.reverse.count - 2]
+'''
+corrected = '''
+arr.sort.reverse[-2]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 43
+message = "Use `arr.sort.reverse[-2]` instead of `arr.sort.reverse[arr.sort.reverse.count - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_bracket_method_call_registers_an_offense_5"
+source = '''
+arr.[](arr.count - 2)
+'''
+corrected = '''
+arr.[](-2)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 20
+message = "Use `arr[-2]` instead of `arr[arr.count - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_bracket_method_call_registers_an_offense_6"
+source = '''
+arr&.[](arr.count - 2)
+'''
+corrected = '''
+arr&.[](-2)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 21
+message = "Use `arr[-2]` instead of `arr[arr.count - 2]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arr0arrcount__2"
+source = '''
+arr[(0..(arr.count - 2))]
+'''
+corrected = '''
+arr[(0..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 23
+message = "Use `arr[(0..-2)]` instead of `arr[(0..(arr.count - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arr5arrcount__2"
+source = '''
+arr[(-5..(arr.count - 2))]
+'''
+corrected = '''
+arr[(-5..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 24
+message = "Use `arr[(-5..-2)]` instead of `arr[(-5..(arr.count - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arr1arrcount__2"
+source = '''
+arr[(1...(arr.count - 2))]
+'''
+corrected = '''
+arr[(1...-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 24
+message = "Use `arr[(1...-2)]` instead of `arr[(1...(arr.count - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arr0arrcount__100"
+source = '''
+arr[(0..(arr.count - 100))]
+'''
+corrected = '''
+arr[(0..-100)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 25
+message = "Use `arr[(0..-100)]` instead of `arr[(0..(arr.count - 100))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arr0arrcount__2_2"
+source = '''
+arr[(0...(arr.count - 2))]
+'''
+corrected = '''
+arr[(0...-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 24
+message = "Use `arr[(0...-2)]` instead of `arr[(0...(arr.count - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arr2arrcount__2"
+source = '''
+arr[(2..(arr.count - 2))]
+'''
+corrected = '''
+arr[(2..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 23
+message = "Use `arr[(2..-2)]` instead of `arr[(2..(arr.count - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arr2arrcount__2_2"
+source = '''
+arr[(2...(arr.count - 2))]
+'''
+corrected = '''
+arr[(2...-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 24
+message = "Use `arr[(2...-2)]` instead of `arr[(2...(arr.count - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arrnarrcount__2"
+source = '''
+arr[(n..(arr.count - 2))]
+'''
+corrected = '''
+arr[(n..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 23
+message = "Use `arr[(n..-2)]` instead of `arr[(n..(arr.count - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arrarrsortarrcount__2"
+source = '''
+arr[(arr.sort..(arr.count - 2))]
+'''
+corrected = '''
+arr[(arr.sort..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 30
+message = "Use `arr[(arr.sort..-2)]` instead of `arr[(arr.sort..(arr.count - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arrarrsortreversearrcount__2"
+source = '''
+arr[(arr.sort.reverse..(arr.count - 2))]
+'''
+corrected = '''
+arr[(arr.sort.reverse..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 23
+column_end = 38
+message = "Use `arr[(arr.sort.reverse..-2)]` instead of `arr[(arr.sort.reverse..(arr.count - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_const0constcount__2"
+source = '''
+CONST[(0..(CONST.count - 2))]
+'''
+corrected = '''
+CONST[(0..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 27
+message = "Use `CONST[(0..-2)]` instead of `CONST[(0..(CONST.count - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arr0arrcount__2_3"
+source = '''
+@arr[(0..(@arr.count - 2))]
+'''
+corrected = '''
+@arr[(0..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 25
+message = "Use `@arr[(0..-2)]` instead of `@arr[(0..(@arr.count - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arr0arrcount__2_4"
+source = '''
+$arr[(0..($arr.count - 2))]
+'''
+corrected = '''
+$arr[(0..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 25
+message = "Use `$arr[(0..-2)]` instead of `$arr[(0..($arr.count - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arr0arrcount__2_5"
+source = '''
+@@arr[(0..(@@arr.count - 2))]
+'''
+corrected = '''
+@@arr[(0..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 27
+message = "Use `@@arr[(0..-2)]` instead of `@@arr[(0..(@@arr.count - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arrreverse0arrreversecount__2"
+source = '''
+arr.reverse[(0..(arr.reverse.count - 2))]
+'''
+corrected = '''
+arr.reverse[(0..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 16
+column_end = 39
+message = "Use `arr.reverse[(0..-2)]` instead of `arr.reverse[(0..(arr.reverse.count - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arrreverse2arrreversecount__2"
+source = '''
+arr.reverse[(2..(arr.reverse.count - 2))]
+'''
+corrected = '''
+arr.reverse[(2..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 16
+column_end = 39
+message = "Use `arr.reverse[(2..-2)]` instead of `arr.reverse[(2..(arr.reverse.count - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arrsort0arrsortcount__2"
+source = '''
+arr.sort[(0..(arr.sort.count - 2))]
+'''
+corrected = '''
+arr.sort[(0..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 33
+message = "Use `arr.sort[(0..-2)]` instead of `arr.sort[(0..(arr.sort.count - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arrsort2arrsortcount__2"
+source = '''
+arr.sort[(2...(arr.sort.count - 2))]
+'''
+corrected = '''
+arr.sort[(2...-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 14
+column_end = 34
+message = "Use `arr.sort[(2...-2)]` instead of `arr.sort[(2...(arr.sort.count - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arrshuffle0arrshufflecount__2"
+source = '''
+arr.shuffle[(0..(arr.shuffle.count - 2))]
+'''
+corrected = '''
+arr.shuffle[(0..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 16
+column_end = 39
+message = "Use `arr.shuffle[(0..-2)]` instead of `arr.shuffle[(0..(arr.shuffle.count - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arrshuffle1arrshufflecount__2"
+source = '''
+arr.shuffle[(1..(arr.shuffle.count - 2))]
+'''
+corrected = '''
+arr.shuffle[(1..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 16
+column_end = 39
+message = "Use `arr.shuffle[(1..-2)]` instead of `arr.shuffle[(1..(arr.shuffle.count - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arrrotate0arrrotatecount__2"
+source = '''
+arr.rotate[(0..(arr.rotate.count - 2))]
+'''
+corrected = '''
+arr.rotate[(0..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 37
+message = "Use `arr.rotate[(0..-2)]` instead of `arr.rotate[(0..(arr.rotate.count - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arrrotate3arrrotatecount__2"
+source = '''
+arr.rotate[(3...(arr.rotate.count - 2))]
+'''
+corrected = '''
+arr.rotate[(3...-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 16
+column_end = 38
+message = "Use `arr.rotate[(3...-2)]` instead of `arr.rotate[(3...(arr.rotate.count - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_registers_an_offense_for_arrsortreverse0arrsortreversecount__2"
+source = '''
+arr.sort.reverse[(0..(arr.sort.reverse.count - 2))]
+'''
+corrected = '''
+arr.sort.reverse[(0..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 21
+column_end = 49
+message = "Use `arr.sort.reverse[(0..-2)]` instead of `arr.sort.reverse[(0..(arr.sort.reverse.count - 2))]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_but_without_expression_parentheses_registers_an_offense_for_arr0arrcount__2"
+source = '''
+arr[(0..arr.count - 2)]
+'''
+corrected = '''
+arr[(0..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 21
+message = "Use `arr[(0..-2)]` instead of `arr[(0..arr.count - 2)]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_but_without_expression_parentheses_registers_an_offense_for_arr0arrcount__2_2"
+source = '''
+arr[(0...arr.count - 2)]
+'''
+corrected = '''
+arr[(0...-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 22
+message = "Use `arr[(0...-2)]` instead of `arr[(0...arr.count - 2)]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_but_without_expression_parentheses_registers_an_offense_for_arr2arrcount__2"
+source = '''
+arr[(2..arr.count - 2)]
+'''
+corrected = '''
+arr[(2..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 21
+message = "Use `arr[(2..-2)]` instead of `arr[(2..arr.count - 2)]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_but_without_expression_parentheses_registers_an_offense_for_arrsort0arrsortcount__2"
+source = '''
+arr.sort[(0..arr.sort.count - 2)]
+'''
+corrected = '''
+arr.sort[(0..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 31
+message = "Use `arr.sort[(0..-2)]` instead of `arr.sort[(0..arr.sort.count - 2)]`."
+
+[[tests]]
+name = "rubocopcopstylenegativearrayindex_behaves_like_registers_an_offense_for_range_with_parentheses_but_without_expression_parentheses_registers_an_offense_for_arrreverse0arrreversecount__2"
+source = '''
+arr.reverse[(0..arr.reverse.count - 2)]
+'''
+corrected = '''
+arr.reverse[(0..-2)]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 16
+column_end = 37
+message = "Use `arr.reverse[(0..-2)]` instead of `arr.reverse[(0..arr.reverse.count - 2)]`."

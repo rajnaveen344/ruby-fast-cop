@@ -4,143 +4,7 @@ severity = "convention"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_layout_caseindentation_with_enforcedstyle_case_with_indentonestep_false_case_when_with_everything_on_a_single_line_does_not_register_an_offense"
-source = '''
-case foo; when :bar then 1; else 0; end
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:case"
-IndentOneStep = false
-
-[[tests]]
-name = "rubocop_cop_layout_caseindentation_with_enforcedstyle_case_with_indentonestep_false_case_when_regarding_assignment_where_the_right_hand_side_is_a_case_accepts_a_correctly_indented_assignment"
-source = '''
-output = case variable
-         when 'value1'
-           'output1'
-         else
-           'output2'
-         end
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:case"
-IndentOneStep = false
-
-[[tests]]
-name = "rubocop_cop_layout_caseindentation_with_enforcedstyle_case_with_indentonestep_false_case_when_regarding_assignment_where_the_right_hand_side_is_a_case_registers_an_offense_and_corrects_assignment_indented_as_end"
-source = '''
-output = case variable
-when 'value1'
-  'output1'
-else
-  'output2'
-end
-'''
-corrected = '''
-output = case variable
-         when 'value1'
-  'output1'
-else
-  'output2'
-end
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 2
-column_start = 0
-column_end = 4
-message = "Indent `when` as deep as `case`."
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:case"
-IndentOneStep = false
-
-[[tests]]
-name = "rubocop_cop_layout_caseindentation_with_enforcedstyle_case_with_indentonestep_false_case_when_regarding_assignment_where_the_right_hand_side_is_a_case_registers_an_offense_and_corrects_assignment_indented_some_other_way"
-source = '''
-output = case variable
-  when 'value1'
-    'output1'
-  else
-    'output2'
-end
-'''
-corrected = '''
-output = case variable
-         when 'value1'
-    'output1'
-  else
-    'output2'
-end
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 2
-column_start = 2
-column_end = 6
-message = "Indent `when` as deep as `case`."
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:case"
-IndentOneStep = false
-
-[[tests]]
-name = "rubocop_cop_layout_caseindentation_with_enforcedstyle_case_with_indentonestep_false_case_when_regarding_assignment_where_the_right_hand_side_is_a_case_registers_an_offense_and_corrects_correct_opposite_style"
-source = '''
-output = case variable
-         when 'value1'
-           'output1'
-         else
-           'output2'
-         end
-output = case variable
-when 'value1'
-  'output1'
-else
-  'output2'
-end
-'''
-corrected = '''
-output = case variable
-         when 'value1'
-           'output1'
-         else
-           'output2'
-         end
-output = case variable
-         when 'value1'
-  'output1'
-else
-  'output2'
-end
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 8
-column_start = 0
-column_end = 4
-message = "Indent `when` as deep as `case`."
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:case"
-IndentOneStep = false
-
-[[tests]]
-name = "rubocop_cop_layout_caseindentation_with_enforcedstyle_case_with_indentonestep_false_case_when_registers_an_offense_and_corrects_a_when_clause_that_is_indented_deeper_than_case"
+name = "rubocopcoplayoutcaseindentation_with_enforcedstyle_case_with_indentonestep_false_case__when_registers_an_offense_and_corrects_a_when_clause_that_is_indented_deeper_than_case"
 source = '''
 case a
     when 0 then return
@@ -159,8 +23,6 @@ when 0 then return
         end
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 2
@@ -175,11 +37,11 @@ column_end = 13
 message = "Indent `when` as deep as `case`."
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:case"
+EnforcedStyle = "case"
 IndentOneStep = false
 
 [[tests]]
-name = "rubocop_cop_layout_caseindentation_with_enforcedstyle_case_with_indentonestep_false_case_when_accepts_a_when_clause_that_s_equally_indented_with_case"
+name = "rubocopcoplayoutcaseindentation_with_enforcedstyle_case_with_indentonestep_false_case__when_accepts_a_when_clause_thats_equally_indented_with_case"
 source = '''
 y = case a
     when 0 then raise
@@ -194,32 +56,28 @@ case c
 when 2 then encoding
 end
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:case"
+EnforcedStyle = "case"
 IndentOneStep = false
 
 [[tests]]
-name = "rubocop_cop_layout_caseindentation_with_enforcedstyle_case_with_indentonestep_false_case_when_doesn_t_get_confused_by_strings_with_case_in_them"
+name = "rubocopcoplayoutcaseindentation_with_enforcedstyle_case_with_indentonestep_false_case__when_doesnt_get_confused_by_strings_with_case_in_them"
 source = '''
 a = "case"
 case x
 when 0
 end
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:case"
+EnforcedStyle = "case"
 IndentOneStep = false
 
 [[tests]]
-name = "rubocop_cop_layout_caseindentation_with_enforcedstyle_case_with_indentonestep_false_case_when_doesn_t_get_confused_by_symbols_named_case_or_when"
+name = "rubocopcoplayoutcaseindentation_with_enforcedstyle_case_with_indentonestep_false_case__when_doesnt_get_confused_by_symbols_named_case_or_when"
 source = '''
 KEYWORDS = { :case => true, :when => true }
 case type
@@ -229,16 +87,14 @@ when 1
   MethodCallNode
 end
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:case"
+EnforcedStyle = "case"
 IndentOneStep = false
 
 [[tests]]
-name = "rubocop_cop_layout_caseindentation_with_enforcedstyle_case_with_indentonestep_false_case_when_accepts_correctly_indented_whens_in_complex_combinations"
+name = "rubocopcoplayoutcaseindentation_with_enforcedstyle_case_with_indentonestep_false_case__when_accepts_correctly_indented_whens_in_complex_combinations"
 source = '''
 each {
   case state
@@ -258,52 +114,44 @@ case s
 when Array
 end
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:case"
+EnforcedStyle = "case"
 IndentOneStep = false
 
 [[tests]]
-name = "rubocop_cop_layout_caseindentation_with_enforcedstyle_case_with_indentonestep_false_case_in_with_everything_on_a_single_line_does_not_register_an_offense"
+name = "rubocopcoplayoutcaseindentation_with_enforcedstyle_case_with_indentonestep_false_case__when_with_everything_on_a_single_line_does_not_register_an_offense"
 source = '''
-case foo; in pattern then 1; else 0; end
+case foo; when :bar then 1; else 0; end
 '''
-ruby_version = ">= 2.7"
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:case"
+EnforcedStyle = "case"
 IndentOneStep = false
 
 [[tests]]
-name = "rubocop_cop_layout_caseindentation_with_enforcedstyle_case_with_indentonestep_false_case_in_regarding_assignment_where_the_right_hand_side_is_a_case_accepts_a_correctly_indented_assignment"
+name = "rubocopcoplayoutcaseindentation_with_enforcedstyle_case_with_indentonestep_false_case__when_regarding_assignment_where_the_right_hand_side_is_a_case_accepts_a_correctly_indented_assignment"
 source = '''
 output = case variable
-         in pattern
+         when 'value1'
            'output1'
          else
            'output2'
          end
 '''
-ruby_version = ">= 2.7"
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:case"
+EnforcedStyle = "case"
 IndentOneStep = false
 
 [[tests]]
-name = "rubocop_cop_layout_caseindentation_with_enforcedstyle_case_with_indentonestep_false_case_in_regarding_assignment_where_the_right_hand_side_is_a_case_registers_an_offense_and_corrects_assignment_indented_as_end"
+name = "rubocopcoplayoutcaseindentation_with_enforcedstyle_case_with_indentonestep_false_case__when_regarding_assignment_where_the_right_hand_side_is_a_case_registers_an_offense_and_corrects_assignment_indented_as_end"
 source = '''
 output = case variable
-in pattern
+when 'value1'
   'output1'
 else
   'output2'
@@ -311,31 +159,28 @@ end
 '''
 corrected = '''
 output = case variable
-         in pattern
+         when 'value1'
   'output1'
 else
   'output2'
 end
 '''
-ruby_version = ">= 2.7"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 2
 column_start = 0
-column_end = 2
-message = "Indent `in` as deep as `case`."
+column_end = 4
+message = "Indent `when` as deep as `case`."
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:case"
+EnforcedStyle = "case"
 IndentOneStep = false
 
 [[tests]]
-name = "rubocop_cop_layout_caseindentation_with_enforcedstyle_case_with_indentonestep_false_case_in_regarding_assignment_where_the_right_hand_side_is_a_case_registers_an_offense_and_corrects_assignment_indented_some_other_way"
+name = "rubocopcoplayoutcaseindentation_with_enforcedstyle_case_with_indentonestep_false_case__when_regarding_assignment_where_the_right_hand_side_is_a_case_registers_an_offense_and_corrects_assignment_indented_some_other_way"
 source = '''
 output = case variable
-  in pattern
+  when 'value1'
     'output1'
   else
     'output2'
@@ -343,37 +188,34 @@ end
 '''
 corrected = '''
 output = case variable
-         in pattern
+         when 'value1'
     'output1'
   else
     'output2'
 end
 '''
-ruby_version = ">= 2.7"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 2
 column_start = 2
-column_end = 4
-message = "Indent `in` as deep as `case`."
+column_end = 6
+message = "Indent `when` as deep as `case`."
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:case"
+EnforcedStyle = "case"
 IndentOneStep = false
 
 [[tests]]
-name = "rubocop_cop_layout_caseindentation_with_enforcedstyle_case_with_indentonestep_false_case_in_regarding_assignment_where_the_right_hand_side_is_a_case_registers_an_offense_and_corrects_correct_opposite_style"
+name = "rubocopcoplayoutcaseindentation_with_enforcedstyle_case_with_indentonestep_false_case__when_regarding_assignment_where_the_right_hand_side_is_a_case_registers_an_offense_and_corrects_correct__opposite_style"
 source = '''
 output = case variable
-         in pattern
+         when 'value1'
            'output1'
          else
            'output2'
          end
 output = case variable
-in pattern
+when 'value1'
   'output1'
 else
   'output2'
@@ -381,34 +223,31 @@ end
 '''
 corrected = '''
 output = case variable
-         in pattern
+         when 'value1'
            'output1'
          else
            'output2'
          end
 output = case variable
-         in pattern
+         when 'value1'
   'output1'
 else
   'output2'
 end
 '''
-ruby_version = ">= 2.7"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 8
 column_start = 0
-column_end = 2
-message = "Indent `in` as deep as `case`."
+column_end = 4
+message = "Indent `when` as deep as `case`."
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:case"
+EnforcedStyle = "case"
 IndentOneStep = false
 
 [[tests]]
-name = "rubocop_cop_layout_caseindentation_with_enforcedstyle_case_with_indentonestep_false_case_in_registers_an_offense_and_corrects_an_in_clause_that_is_indented_deeper_than_case"
+name = "rubocopcoplayoutcaseindentation_with_enforcedstyle_case_with_indentonestep_false_case__in_registers_an_offense_and_corrects_an_in_clause_that_is_indented_deeper_than_case"
 source = '''
 case a
     in 0 then return
@@ -427,9 +266,6 @@ in 0 then return
         end
 end
 '''
-ruby_version = ">= 2.7"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 2
@@ -444,11 +280,11 @@ column_end = 11
 message = "Indent `in` as deep as `case`."
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:case"
+EnforcedStyle = "case"
 IndentOneStep = false
 
 [[tests]]
-name = "rubocop_cop_layout_caseindentation_with_enforcedstyle_case_with_indentonestep_false_case_in_accepts_an_in_clause_that_s_equally_indented_with_case"
+name = "rubocopcoplayoutcaseindentation_with_enforcedstyle_case_with_indentonestep_false_case__in_accepts_an_in_clause_thats_equally_indented_with_case"
 source = '''
 y = case a
     in 0 then raise
@@ -463,34 +299,28 @@ case c
 in 2 then encoding
 end
 '''
-ruby_version = ">= 2.7"
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:case"
+EnforcedStyle = "case"
 IndentOneStep = false
 
 [[tests]]
-name = "rubocop_cop_layout_caseindentation_with_enforcedstyle_case_with_indentonestep_false_case_in_doesn_t_get_confused_by_strings_with_case_in_them"
+name = "rubocopcoplayoutcaseindentation_with_enforcedstyle_case_with_indentonestep_false_case__in_doesnt_get_confused_by_strings_with_case_in_them"
 source = '''
 a = "case"
 case x
 when 0
 end
 '''
-ruby_version = ">= 2.7"
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:case"
+EnforcedStyle = "case"
 IndentOneStep = false
 
 [[tests]]
-name = "rubocop_cop_layout_caseindentation_with_enforcedstyle_case_with_indentonestep_false_case_in_doesn_t_get_confused_by_symbols_named_case_or_in"
+name = "rubocopcoplayoutcaseindentation_with_enforcedstyle_case_with_indentonestep_false_case__in_doesnt_get_confused_by_symbols_named_case_or_in"
 source = '''
 KEYWORDS = { :case => true, :in => true }
 case type
@@ -500,17 +330,14 @@ in 1
   MethodCallNode
 end
 '''
-ruby_version = ">= 2.7"
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:case"
+EnforcedStyle = "case"
 IndentOneStep = false
 
 [[tests]]
-name = "rubocop_cop_layout_caseindentation_with_enforcedstyle_case_with_indentonestep_false_case_in_accepts_correctly_indented_whens_in_complex_combinations"
+name = "rubocopcoplayoutcaseindentation_with_enforcedstyle_case_with_indentonestep_false_case__in_accepts_correctly_indented_whens_in_complex_combinations"
 source = '''
 each {
   case state
@@ -530,79 +357,140 @@ case s
 in Array
 end
 '''
-ruby_version = ">= 2.7"
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:case"
+EnforcedStyle = "case"
 IndentOneStep = false
 
 [[tests]]
-name = "rubocop_cop_layout_caseindentation_with_enforcedstyle_case_with_indentonestep_true_case_when_with_everything_on_a_single_line_does_not_register_an_offense"
+name = "rubocopcoplayoutcaseindentation_with_enforcedstyle_case_with_indentonestep_false_case__in_with_everything_on_a_single_line_does_not_register_an_offense"
 source = '''
-case foo; when :bar then 1; else 0; end
+case foo; in pattern then 1; else 0; end
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:case"
-IndentOneStep = true
+EnforcedStyle = "case"
+IndentOneStep = false
 
 [[tests]]
-name = "rubocop_cop_layout_caseindentation_with_enforcedstyle_case_with_indentonestep_true_case_when_regarding_assignment_where_the_right_hand_side_is_a_case_accepts_a_correctly_indented_assignment"
+name = "rubocopcoplayoutcaseindentation_with_enforcedstyle_case_with_indentonestep_false_case__in_regarding_assignment_where_the_right_hand_side_is_a_case_accepts_a_correctly_indented_assignment"
 source = '''
 output = case variable
-           when 'value1'
-             'output1'
-           else
-             'output2'
-         end
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:case"
-IndentOneStep = true
-
-[[tests]]
-name = "rubocop_cop_layout_caseindentation_with_enforcedstyle_case_with_indentonestep_true_case_when_regarding_assignment_where_the_right_hand_side_is_a_case_registers_an_offense_and_corrects_an_assignment_indented_some_other_way"
-source = '''
-output = case variable
-         when 'value1'
+         in pattern
            'output1'
          else
            'output2'
          end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "case"
+IndentOneStep = false
+
+[[tests]]
+name = "rubocopcoplayoutcaseindentation_with_enforcedstyle_case_with_indentonestep_false_case__in_regarding_assignment_where_the_right_hand_side_is_a_case_registers_an_offense_and_corrects_assignment_indented_as_end"
+source = '''
+output = case variable
+in pattern
+  'output1'
+else
+  'output2'
+end
 '''
 corrected = '''
 output = case variable
-           when 'value1'
+         in pattern
+  'output1'
+else
+  'output2'
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 2
+message = "Indent `in` as deep as `case`."
+
+[tests.config]
+EnforcedStyle = "case"
+IndentOneStep = false
+
+[[tests]]
+name = "rubocopcoplayoutcaseindentation_with_enforcedstyle_case_with_indentonestep_false_case__in_regarding_assignment_where_the_right_hand_side_is_a_case_registers_an_offense_and_corrects_assignment_indented_some_other_way"
+source = '''
+output = case variable
+  in pattern
+    'output1'
+  else
+    'output2'
+end
+'''
+corrected = '''
+output = case variable
+         in pattern
+    'output1'
+  else
+    'output2'
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 4
+message = "Indent `in` as deep as `case`."
+
+[tests.config]
+EnforcedStyle = "case"
+IndentOneStep = false
+
+[[tests]]
+name = "rubocopcoplayoutcaseindentation_with_enforcedstyle_case_with_indentonestep_false_case__in_regarding_assignment_where_the_right_hand_side_is_a_case_registers_an_offense_and_corrects_correct__opposite_style"
+source = '''
+output = case variable
+         in pattern
            'output1'
          else
            'output2'
          end
+output = case variable
+in pattern
+  'output1'
+else
+  'output2'
+end
 '''
-interpolated = true
-verified = false
+corrected = '''
+output = case variable
+         in pattern
+           'output1'
+         else
+           'output2'
+         end
+output = case variable
+         in pattern
+  'output1'
+else
+  'output2'
+end
+'''
 
 [[tests.offenses]]
-line = 2
-column_start = 9
-column_end = 13
-message = "Indent `when` one step more than `case`."
+line = 8
+column_start = 0
+column_end = 2
+message = "Indent `in` as deep as `case`."
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:case"
-IndentOneStep = true
+EnforcedStyle = "case"
+IndentOneStep = false
 
 [[tests]]
-name = "rubocop_cop_layout_caseindentation_with_enforcedstyle_case_with_indentonestep_true_case_when_accepts_a_when_clause_that_s_2_spaces_deeper_than_case"
+name = "rubocopcoplayoutcaseindentation_with_enforcedstyle_case_with_indentonestep_true_case__when_accepts_a_when_clause_thats_2_spaces_deeper_than_case"
 source = '''
 case a
   when 0 then return
@@ -612,16 +500,14 @@ case a
         end
 end
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:case"
+EnforcedStyle = "case"
 IndentOneStep = true
 
 [[tests]]
-name = "rubocop_cop_layout_caseindentation_with_enforcedstyle_case_with_indentonestep_true_case_when_registers_an_offense_and_corrects_a_when_clause_that_is_equally_indented_with_case"
+name = "rubocopcoplayoutcaseindentation_with_enforcedstyle_case_with_indentonestep_true_case__when_registers_an_offense_and_corrects_a_when_clause_that_is_equally_indented_with_case"
 source = '''
 y = case a
     when 0 then raise
@@ -648,8 +534,6 @@ case c
   when 2 then encoding
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 2
@@ -682,11 +566,67 @@ column_end = 4
 message = "Indent `when` one step more than `case`."
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:case"
+EnforcedStyle = "case"
 IndentOneStep = true
 
 [[tests]]
-name = "rubocop_cop_layout_caseindentation_with_enforcedstyle_case_with_indentonestep_true_case_when_when_indentation_width_is_overridden_for_this_cop_only_respects_cop_specific_indentationwidth"
+name = "rubocopcoplayoutcaseindentation_with_enforcedstyle_case_with_indentonestep_true_case__when_with_everything_on_a_single_line_does_not_register_an_offense"
+source = '''
+case foo; when :bar then 1; else 0; end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "case"
+IndentOneStep = true
+
+[[tests]]
+name = "rubocopcoplayoutcaseindentation_with_enforcedstyle_case_with_indentonestep_true_case__when_regarding_assignment_where_the_right_hand_side_is_a_case_accepts_a_correctly_indented_assignment"
+source = '''
+output = case variable
+           when 'value1'
+             'output1'
+           else
+             'output2'
+         end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "case"
+IndentOneStep = true
+
+[[tests]]
+name = "rubocopcoplayoutcaseindentation_with_enforcedstyle_case_with_indentonestep_true_case__when_regarding_assignment_where_the_right_hand_side_is_a_case_registers_an_offense_and_corrects_an_assignment_indented_some_other_way"
+source = '''
+output = case variable
+         when 'value1'
+           'output1'
+         else
+           'output2'
+         end
+'''
+corrected = '''
+output = case variable
+           when 'value1'
+           'output1'
+         else
+           'output2'
+         end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 9
+column_end = 13
+message = "Indent `when` one step more than `case`."
+
+[tests.config]
+EnforcedStyle = "case"
+IndentOneStep = true
+
+[[tests]]
+name = "rubocopcoplayoutcaseindentation_with_enforcedstyle_case_with_indentonestep_true_case__when_when_indentation_width_is_overridden_for_this_cop_only_respects_copspecific_indentationwidth"
 source = '''
 output = case variable
               when 'value1'
@@ -695,85 +635,15 @@ output = case variable
              'output2'
          end
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:case"
+EnforcedStyle = "case"
 IndentOneStep = true
 IndentationWidth = 5
 
 [[tests]]
-name = "rubocop_cop_layout_caseindentation_with_enforcedstyle_case_with_indentonestep_true_case_in_with_everything_on_a_single_line_does_not_register_an_offense"
-source = '''
-case foo; in pattern then 1; else 0; end
-'''
-ruby_version = ">= 2.7"
-interpolated = true
-verified = false
-offenses = []
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:case"
-IndentOneStep = true
-IndentationWidth = 5
-
-[[tests]]
-name = "rubocop_cop_layout_caseindentation_with_enforcedstyle_case_with_indentonestep_true_case_in_regarding_assignment_where_the_right_hand_side_is_a_case_accepts_a_correctly_indented_assignment"
-source = '''
-output = case variable
-           in pattern
-             'output1'
-           else
-             'output2'
-         end
-'''
-ruby_version = ">= 2.7"
-interpolated = true
-verified = false
-offenses = []
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:case"
-IndentOneStep = true
-IndentationWidth = 5
-
-[[tests]]
-name = "rubocop_cop_layout_caseindentation_with_enforcedstyle_case_with_indentonestep_true_case_in_regarding_assignment_where_the_right_hand_side_is_a_case_registers_an_offense_and_corrects_an_assignment_indented_some_other_way"
-source = '''
-output = case variable
-         in pattern
-           'output1'
-         else
-           'output2'
-         end
-'''
-corrected = '''
-output = case variable
-           in pattern
-           'output1'
-         else
-           'output2'
-         end
-'''
-ruby_version = ">= 2.7"
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 2
-column_start = 9
-column_end = 11
-message = "Indent `in` one step more than `case`."
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:case"
-IndentOneStep = true
-IndentationWidth = 5
-
-[[tests]]
-name = "rubocop_cop_layout_caseindentation_with_enforcedstyle_case_with_indentonestep_true_case_in_accepts_an_in_clause_that_s_2_spaces_deeper_than_case"
+name = "rubocopcoplayoutcaseindentation_with_enforcedstyle_case_with_indentonestep_true_case__in_accepts_an_in_clause_thats_2_spaces_deeper_than_case"
 source = '''
 case a
   in 0 then return
@@ -783,18 +653,14 @@ case a
         end
 end
 '''
-ruby_version = ">= 2.7"
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:case"
+EnforcedStyle = "case"
 IndentOneStep = true
-IndentationWidth = 5
 
 [[tests]]
-name = "rubocop_cop_layout_caseindentation_with_enforcedstyle_case_with_indentonestep_true_case_in_registers_an_offense_and_corrects_an_in_clause_that_is_equally_indented_with_case"
+name = "rubocopcoplayoutcaseindentation_with_enforcedstyle_case_with_indentonestep_true_case__in_registers_an_offense_and_corrects_an_in_clause_that_is_equally_indented_with_case"
 source = '''
 y = case a
     in 0 then raise
@@ -821,9 +687,6 @@ case c
   in 2 then encoding
 end
 '''
-ruby_version = ">= 2.7"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 2
@@ -856,347 +719,38 @@ column_end = 2
 message = "Indent `in` one step more than `case`."
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:case"
+EnforcedStyle = "case"
 IndentOneStep = true
-IndentationWidth = 5
 
 [[tests]]
-name = "rubocop_cop_layout_caseindentation_with_enforcedstyle_case_with_indentonestep_true_case_in_when_indentation_width_is_overridden_for_this_cop_only_respects_cop_specific_indentationwidth"
+name = "rubocopcoplayoutcaseindentation_with_enforcedstyle_case_with_indentonestep_true_case__in_with_everything_on_a_single_line_does_not_register_an_offense"
+source = '''
+case foo; in pattern then 1; else 0; end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "case"
+IndentOneStep = true
+
+[[tests]]
+name = "rubocopcoplayoutcaseindentation_with_enforcedstyle_case_with_indentonestep_true_case__in_regarding_assignment_where_the_right_hand_side_is_a_case_accepts_a_correctly_indented_assignment"
 source = '''
 output = case variable
-              in pattern
+           in pattern
              'output1'
-              else
+           else
              'output2'
          end
 '''
-ruby_version = ">= 2.7"
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:case"
+EnforcedStyle = "case"
 IndentOneStep = true
-IndentationWidth = 5
 
 [[tests]]
-name = "rubocop_cop_layout_caseindentation_with_enforcedstyle_end_with_indentonestep_false_case_when_with_everything_on_a_single_line_does_not_register_an_offense"
-source = '''
-case foo; when :bar then 1; else 0; end
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:end"
-IndentOneStep = false
-IndentationWidth = 5
-
-[[tests]]
-name = "rubocop_cop_layout_caseindentation_with_enforcedstyle_end_with_indentonestep_false_case_when_else_and_end_same_line_does_not_register_an_offense"
-source = '''
-case variable
-when 'value1'
-when 'value2'
-else 'value3' end
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:end"
-IndentOneStep = false
-IndentationWidth = 5
-
-[[tests]]
-name = "rubocop_cop_layout_caseindentation_with_enforcedstyle_end_with_indentonestep_false_case_when_when_and_end_same_line_does_not_register_an_offense"
-source = '''
-case variable
-when 'value1' then 'then1'
-when 'value2' then 'then2' end
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:end"
-IndentOneStep = false
-IndentationWidth = 5
-
-[[tests]]
-name = "rubocop_cop_layout_caseindentation_with_enforcedstyle_end_with_indentonestep_false_case_when_regarding_assignment_where_the_right_hand_side_is_a_case_accepts_a_correctly_indented_assignment"
-source = '''
-output = case variable
-when 'value1'
-  'output1'
-else
-  'output2'
-end
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:end"
-IndentOneStep = false
-IndentationWidth = 5
-
-[[tests]]
-name = "rubocop_cop_layout_caseindentation_with_enforcedstyle_end_with_indentonestep_false_case_when_regarding_assignment_where_the_right_hand_side_is_a_case_registers_an_offense_and_corrects_an_assignment_indented_some_other_way"
-source = '''
-output = case variable
-  when 'value1'
-    'output1'
-  else
-    'output2'
-end
-'''
-corrected = '''
-output = case variable
-when 'value1'
-    'output1'
-  else
-    'output2'
-end
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 2
-column_start = 2
-column_end = 6
-message = "Indent `when` as deep as `end`."
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:end"
-IndentOneStep = false
-IndentationWidth = 5
-
-[[tests]]
-name = "rubocop_cop_layout_caseindentation_with_enforcedstyle_end_with_indentonestep_false_case_in_with_everything_on_a_single_line_does_not_register_an_offense"
-source = '''
-case foo; in pattern then 1; else 0; end
-'''
-ruby_version = ">= 2.7"
-interpolated = true
-verified = false
-offenses = []
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:end"
-IndentOneStep = false
-IndentationWidth = 5
-
-[[tests]]
-name = "rubocop_cop_layout_caseindentation_with_enforcedstyle_end_with_indentonestep_false_case_in_in_and_end_same_line_does_not_register_an_offense"
-source = '''
-case variable
-in pattern then 'output1'
-in pattern then 'output2' end
-'''
-ruby_version = ">= 2.7"
-interpolated = true
-verified = false
-offenses = []
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:end"
-IndentOneStep = false
-IndentationWidth = 5
-
-[[tests]]
-name = "rubocop_cop_layout_caseindentation_with_enforcedstyle_end_with_indentonestep_false_case_in_regarding_assignment_where_the_right_hand_side_is_a_case_accepts_a_correctly_indented_assignment"
-source = '''
-output = case variable
-in pattern
-  'output1'
-else
-  'output2'
-end
-'''
-ruby_version = ">= 2.7"
-interpolated = true
-verified = false
-offenses = []
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:end"
-IndentOneStep = false
-IndentationWidth = 5
-
-[[tests]]
-name = "rubocop_cop_layout_caseindentation_with_enforcedstyle_end_with_indentonestep_false_case_in_regarding_assignment_where_the_right_hand_side_is_a_case_registers_an_offense_and_corrects_an_assignment_indented_some_other_way"
-source = '''
-output = case variable
-  in pattern
-    'output1'
-  else
-    'output2'
-end
-'''
-corrected = '''
-output = case variable
-in pattern
-    'output1'
-  else
-    'output2'
-end
-'''
-ruby_version = ">= 2.7"
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 2
-column_start = 2
-column_end = 4
-message = "Indent `in` as deep as `end`."
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:end"
-IndentOneStep = false
-IndentationWidth = 5
-
-[[tests]]
-name = "rubocop_cop_layout_caseindentation_with_enforcedstyle_end_with_indentonestep_true_case_when_with_everything_on_a_single_line_does_not_register_an_offense"
-source = '''
-case foo; when :bar then 1; else 0; end
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:end"
-IndentOneStep = true
-IndentationWidth = 5
-
-[[tests]]
-name = "rubocop_cop_layout_caseindentation_with_enforcedstyle_end_with_indentonestep_true_case_when_regarding_assignment_where_the_right_hand_side_is_a_case_accepts_a_correctly_indented_assignment"
-source = '''
-output = case variable
-  when 'value1'
-    'output1'
-  else
-    'output2'
-end
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:end"
-IndentOneStep = true
-IndentationWidth = 5
-
-[[tests]]
-name = "rubocop_cop_layout_caseindentation_with_enforcedstyle_end_with_indentonestep_true_case_when_regarding_assignment_where_the_right_hand_side_is_a_case_registers_an_offense_and_corrects_an_assignment_indented_as_case"
-source = '''
-output = case variable
-         when 'value1'
-           'output1'
-         else
-           'output2'
-         end
-'''
-corrected = '''
-output = case variable
-           when 'value1'
-           'output1'
-         else
-           'output2'
-         end
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 2
-column_start = 9
-column_end = 13
-message = "Indent `when` one step more than `end`."
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:end"
-IndentOneStep = true
-IndentationWidth = 5
-
-[[tests]]
-name = "rubocop_cop_layout_caseindentation_with_enforcedstyle_end_with_indentonestep_true_case_when_regarding_assignment_where_the_right_hand_side_is_a_case_registers_an_offense_and_corrects_an_assignment_indented_some_other_way"
-source = '''
-output = case variable
-       when 'value1'
-         'output1'
-       else
-         'output2'
-       end
-'''
-corrected = '''
-output = case variable
-         when 'value1'
-         'output1'
-       else
-         'output2'
-       end
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 2
-column_start = 7
-column_end = 11
-message = "Indent `when` one step more than `end`."
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:end"
-IndentOneStep = true
-IndentationWidth = 5
-
-[[tests]]
-name = "rubocop_cop_layout_caseindentation_with_enforcedstyle_end_with_indentonestep_true_case_in_with_everything_on_a_single_line_does_not_register_an_offense"
-source = '''
-case foo; in pattern then 1; else 0; end
-'''
-ruby_version = ">= 2.7"
-interpolated = true
-verified = false
-offenses = []
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:end"
-IndentOneStep = true
-IndentationWidth = 5
-
-[[tests]]
-name = "rubocop_cop_layout_caseindentation_with_enforcedstyle_end_with_indentonestep_true_case_in_regarding_assignment_where_the_right_hand_side_is_a_case_accepts_a_correctly_indented_assignment"
-source = '''
-output = case variable
-  in pattern
-    'output1'
-  else
-    'output2'
-end
-'''
-ruby_version = ">= 2.7"
-interpolated = true
-verified = false
-offenses = []
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:end"
-IndentOneStep = true
-IndentationWidth = 5
-
-[[tests]]
-name = "rubocop_cop_layout_caseindentation_with_enforcedstyle_end_with_indentonestep_true_case_in_regarding_assignment_where_the_right_hand_side_is_a_case_registers_an_offense_and_corrects_an_assignment_indented_as_case"
+name = "rubocopcoplayoutcaseindentation_with_enforcedstyle_case_with_indentonestep_true_case__in_regarding_assignment_where_the_right_hand_side_is_a_case_registers_an_offense_and_corrects_an_assignment_indented_some_other_way"
 source = '''
 output = case variable
          in pattern
@@ -1213,9 +767,316 @@ output = case variable
            'output2'
          end
 '''
-ruby_version = ">= 2.7"
-interpolated = true
-verified = false
+
+[[tests.offenses]]
+line = 2
+column_start = 9
+column_end = 11
+message = "Indent `in` one step more than `case`."
+
+[tests.config]
+EnforcedStyle = "case"
+IndentOneStep = true
+
+[[tests]]
+name = "rubocopcoplayoutcaseindentation_with_enforcedstyle_case_with_indentonestep_true_case__in_when_indentation_width_is_overridden_for_this_cop_only_respects_copspecific_indentationwidth"
+source = '''
+output = case variable
+              in pattern
+             'output1'
+              else
+             'output2'
+         end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "case"
+IndentOneStep = true
+IndentationWidth = 5
+
+[[tests]]
+name = "rubocopcoplayoutcaseindentation_with_enforcedstyle_end_with_indentonestep_false_case__when_with_everything_on_a_single_line_does_not_register_an_offense"
+source = '''
+case foo; when :bar then 1; else 0; end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "end"
+IndentOneStep = false
+
+[[tests]]
+name = "rubocopcoplayoutcaseindentation_with_enforcedstyle_end_with_indentonestep_false_case__when_else_and_end_same_line_does_not_register_an_offense"
+source = '''
+case variable
+when 'value1'
+when 'value2'
+else 'value3' end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "end"
+IndentOneStep = false
+
+[[tests]]
+name = "rubocopcoplayoutcaseindentation_with_enforcedstyle_end_with_indentonestep_false_case__when_when_and_end_same_line_does_not_register_an_offense"
+source = '''
+case variable
+when 'value1' then 'then1'
+when 'value2' then 'then2' end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "end"
+IndentOneStep = false
+
+[[tests]]
+name = "rubocopcoplayoutcaseindentation_with_enforcedstyle_end_with_indentonestep_false_case__when_regarding_assignment_where_the_right_hand_side_is_a_case_accepts_a_correctly_indented_assignment"
+source = '''
+output = case variable
+when 'value1'
+  'output1'
+else
+  'output2'
+end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "end"
+IndentOneStep = false
+
+[[tests]]
+name = "rubocopcoplayoutcaseindentation_with_enforcedstyle_end_with_indentonestep_false_case__when_regarding_assignment_where_the_right_hand_side_is_a_case_registers_an_offense_and_corrects_an_assignment_indented_some_other_way"
+source = '''
+output = case variable
+  when 'value1'
+    'output1'
+  else
+    'output2'
+end
+'''
+corrected = '''
+output = case variable
+when 'value1'
+    'output1'
+  else
+    'output2'
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 6
+message = "Indent `when` as deep as `end`."
+
+[tests.config]
+EnforcedStyle = "end"
+IndentOneStep = false
+
+[[tests]]
+name = "rubocopcoplayoutcaseindentation_with_enforcedstyle_end_with_indentonestep_false_case__in_with_everything_on_a_single_line_does_not_register_an_offense"
+source = '''
+case foo; in pattern then 1; else 0; end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "end"
+IndentOneStep = false
+
+[[tests]]
+name = "rubocopcoplayoutcaseindentation_with_enforcedstyle_end_with_indentonestep_false_case__in_in_and_end_same_line_does_not_register_an_offense"
+source = '''
+case variable
+in pattern then 'output1'
+in pattern then 'output2' end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "end"
+IndentOneStep = false
+
+[[tests]]
+name = "rubocopcoplayoutcaseindentation_with_enforcedstyle_end_with_indentonestep_false_case__in_regarding_assignment_where_the_right_hand_side_is_a_case_accepts_a_correctly_indented_assignment"
+source = '''
+output = case variable
+in pattern
+  'output1'
+else
+  'output2'
+end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "end"
+IndentOneStep = false
+
+[[tests]]
+name = "rubocopcoplayoutcaseindentation_with_enforcedstyle_end_with_indentonestep_false_case__in_regarding_assignment_where_the_right_hand_side_is_a_case_registers_an_offense_and_corrects_an_assignment_indented_some_other_way"
+source = '''
+output = case variable
+  in pattern
+    'output1'
+  else
+    'output2'
+end
+'''
+corrected = '''
+output = case variable
+in pattern
+    'output1'
+  else
+    'output2'
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 4
+message = "Indent `in` as deep as `end`."
+
+[tests.config]
+EnforcedStyle = "end"
+IndentOneStep = false
+
+[[tests]]
+name = "rubocopcoplayoutcaseindentation_with_enforcedstyle_end_with_indentonestep_true_case__when_with_everything_on_a_single_line_does_not_register_an_offense"
+source = '''
+case foo; when :bar then 1; else 0; end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "end"
+IndentOneStep = true
+
+[[tests]]
+name = "rubocopcoplayoutcaseindentation_with_enforcedstyle_end_with_indentonestep_true_case__when_regarding_assignment_where_the_right_hand_side_is_a_case_accepts_a_correctly_indented_assignment"
+source = '''
+output = case variable
+  when 'value1'
+    'output1'
+  else
+    'output2'
+end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "end"
+IndentOneStep = true
+
+[[tests]]
+name = "rubocopcoplayoutcaseindentation_with_enforcedstyle_end_with_indentonestep_true_case__when_regarding_assignment_where_the_right_hand_side_is_a_case_registers_an_offense_and_corrects_an_assignment_indented_as_case"
+source = '''
+output = case variable
+         when 'value1'
+           'output1'
+         else
+           'output2'
+         end
+'''
+corrected = '''
+output = case variable
+           when 'value1'
+           'output1'
+         else
+           'output2'
+         end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 9
+column_end = 13
+message = "Indent `when` one step more than `end`."
+
+[tests.config]
+EnforcedStyle = "end"
+IndentOneStep = true
+
+[[tests]]
+name = "rubocopcoplayoutcaseindentation_with_enforcedstyle_end_with_indentonestep_true_case__when_regarding_assignment_where_the_right_hand_side_is_a_case_registers_an_offense_and_corrects_an_assignment_indented_some_other_way"
+source = '''
+output = case variable
+       when 'value1'
+         'output1'
+       else
+         'output2'
+       end
+'''
+corrected = '''
+output = case variable
+         when 'value1'
+         'output1'
+       else
+         'output2'
+       end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 7
+column_end = 11
+message = "Indent `when` one step more than `end`."
+
+[tests.config]
+EnforcedStyle = "end"
+IndentOneStep = true
+
+[[tests]]
+name = "rubocopcoplayoutcaseindentation_with_enforcedstyle_end_with_indentonestep_true_case__in_with_everything_on_a_single_line_does_not_register_an_offense"
+source = '''
+case foo; in pattern then 1; else 0; end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "end"
+IndentOneStep = true
+
+[[tests]]
+name = "rubocopcoplayoutcaseindentation_with_enforcedstyle_end_with_indentonestep_true_case__in_regarding_assignment_where_the_right_hand_side_is_a_case_accepts_a_correctly_indented_assignment"
+source = '''
+output = case variable
+  in pattern
+    'output1'
+  else
+    'output2'
+end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "end"
+IndentOneStep = true
+
+[[tests]]
+name = "rubocopcoplayoutcaseindentation_with_enforcedstyle_end_with_indentonestep_true_case__in_regarding_assignment_where_the_right_hand_side_is_a_case_registers_an_offense_and_corrects_an_assignment_indented_as_case"
+source = '''
+output = case variable
+         in pattern
+           'output1'
+         else
+           'output2'
+         end
+'''
+corrected = '''
+output = case variable
+           in pattern
+           'output1'
+         else
+           'output2'
+         end
+'''
 
 [[tests.offenses]]
 line = 2
@@ -1224,12 +1085,11 @@ column_end = 11
 message = "Indent `in` one step more than `end`."
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:end"
+EnforcedStyle = "end"
 IndentOneStep = true
-IndentationWidth = 5
 
 [[tests]]
-name = "rubocop_cop_layout_caseindentation_with_enforcedstyle_end_with_indentonestep_true_case_in_regarding_assignment_where_the_right_hand_side_is_a_case_registers_an_offense_and_corrects_an_assignment_indented_some_other_way"
+name = "rubocopcoplayoutcaseindentation_with_enforcedstyle_end_with_indentonestep_true_case__in_regarding_assignment_where_the_right_hand_side_is_a_case_registers_an_offense_and_corrects_an_assignment_indented_some_other_way"
 source = '''
 output = case variable
        in pattern
@@ -1246,9 +1106,6 @@ output = case variable
          'output2'
        end
 '''
-ruby_version = ">= 2.7"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 2
@@ -1257,26 +1114,18 @@ column_end = 9
 message = "Indent `in` one step more than `end`."
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:end"
+EnforcedStyle = "end"
 IndentOneStep = true
-IndentationWidth = 5
 
 [[tests]]
-name = "rubocop_cop_layout_caseindentation_when_when_is_on_the_same_line_as_case_registers_an_offense_but_does_not_autocorrect"
+name = "rubocopcoplayoutcaseindentation_when_when_is_on_the_same_line_as_case_registers_an_offense_but_does_not_autocorrect"
 source = '''
 case test when something
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 10
 column_end = 14
 message = "Indent `when` as deep as `case`."
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:end"
-IndentOneStep = true
-IndentationWidth = 5

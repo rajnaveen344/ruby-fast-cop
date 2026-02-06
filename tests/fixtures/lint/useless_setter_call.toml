@@ -4,7 +4,28 @@ severity = "warning"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_lint_uselesssettercall_with_method_ending_with_setter_call_on_local_object_registers_an_offense_and_corrects"
+name = "rubocopcoplintuselesssettercall_is_not_confused_by_operators_ending_with_"
+source = '''
+def test
+  top.attr == 5
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselesssettercall_accepts_exception_assignments_without_exploding"
+source = '''
+def foo(bar)
+  begin
+  rescue StandardError => _
+  end
+  bar[:baz] = true
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselesssettercall_with_method_ending_with_setter_call_on_local_object_registers_an_offense_and_corrects"
 source = '''
 def test
   top = Top.new
@@ -26,7 +47,7 @@ column_end = 5
 message = "Useless setter call to local variable `top`."
 
 [[tests]]
-name = "rubocop_cop_lint_uselesssettercall_with_singleton_method_ending_with_setter_call_on_local_object_registers_an_offense_and_corrects"
+name = "rubocopcoplintuselesssettercall_with_singleton_method_ending_with_setter_call_on_local_object_registers_an_offense_and_corrects"
 source = '''
 def Top.test
   top = Top.new
@@ -48,7 +69,7 @@ column_end = 5
 message = "Useless setter call to local variable `top`."
 
 [[tests]]
-name = "rubocop_cop_lint_uselesssettercall_with_method_ending_with_square_bracket_setter_on_local_object_registers_an_offense_and_corrects"
+name = "rubocopcoplintuselesssettercall_with_method_ending_with_square_bracket_setter_on_local_object_registers_an_offense_and_corrects"
 source = '''
 def test
   top = Top.new
@@ -70,7 +91,7 @@ column_end = 5
 message = "Useless setter call to local variable `top`."
 
 [[tests]]
-name = "rubocop_cop_lint_uselesssettercall_with_method_ending_with_ivar_assignment_accepts"
+name = "rubocopcoplintuselesssettercall_with_method_ending_with_ivar_assignment_accepts"
 source = '''
 def test
   something
@@ -80,7 +101,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_uselesssettercall_with_method_ending_with_setter_call_on_ivar_accepts"
+name = "rubocopcoplintuselesssettercall_with_method_ending_with_setter_call_on_ivar_accepts"
 source = '''
 def test
   something
@@ -90,7 +111,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_uselesssettercall_with_method_ending_with_cvar_assignment_accepts"
+name = "rubocopcoplintuselesssettercall_with_method_ending_with_cvar_assignment_accepts"
 source = '''
 def test
   something
@@ -100,7 +121,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_uselesssettercall_with_method_ending_with_setter_call_on_cvar_accepts"
+name = "rubocopcoplintuselesssettercall_with_method_ending_with_setter_call_on_cvar_accepts"
 source = '''
 def test
   something
@@ -110,7 +131,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_uselesssettercall_with_method_ending_with_gvar_assignment_accepts"
+name = "rubocopcoplintuselesssettercall_with_method_ending_with_gvar_assignment_accepts"
 source = '''
 def test
   something
@@ -120,7 +141,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_uselesssettercall_with_method_ending_with_setter_call_on_gvar_accepts"
+name = "rubocopcoplintuselesssettercall_with_method_ending_with_setter_call_on_gvar_accepts"
 source = '''
 def test
   something
@@ -130,7 +151,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_uselesssettercall_with_method_ending_with_setter_call_on_argument_accepts"
+name = "rubocopcoplintuselesssettercall_with_method_ending_with_setter_call_on_argument_accepts"
 source = '''
 def test(some_arg)
   unrelated_local_variable = Top.new
@@ -140,7 +161,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_uselesssettercall_when_a_lvar_contains_an_object_passed_as_argument_at_the_end_of_the_method_accepts_the_setter_call_on_the_lvar"
+name = "rubocopcoplintuselesssettercall_when_a_lvar_contains_an_object_passed_as_argument_at_the_end_of_the_method_accepts_the_setter_call_on_the_lvar"
 source = '''
 def test(some_arg)
   @some_ivar = some_arg
@@ -153,7 +174,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_uselesssettercall_accepts_the_setter_call_on_the_lvar"
+name = "rubocopcoplintuselesssettercall_when_a_lvar_contains_an_object_passed_as_argument_by_multipleassignment_at_the_end_of_the_method_accepts_the_setter_call_on_the_lvar"
 source = '''
 def test(some_arg)
   _first, some_lvar, _third  = 1, some_arg, 3
@@ -163,7 +184,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_uselesssettercall_registers_an_offense_and_corrects"
+name = "rubocopcoplintuselesssettercall_when_a_lvar_does_not_contain_any_object_passed_as_argument_with_multipleassignment_at_the_end_of_the_method_registers_an_offense_and_corrects"
 source = '''
 def test(some_arg)
   _first, some_lvar, _third  = do_something
@@ -185,7 +206,7 @@ column_end = 11
 message = "Useless setter call to local variable `some_lvar`."
 
 [[tests]]
-name = "rubocop_cop_lint_uselesssettercall_accepts_the_setter_call_on_the_lvar"
+name = "rubocopcoplintuselesssettercall_when_a_lvar_possibly_contains_an_object_passed_as_argument_by_logicaloperatorassignment_at_the_end_of_the_method_accepts_the_setter_call_on_the_lvar"
 source = '''
 def test(some_arg)
   some_lvar = nil
@@ -196,7 +217,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_uselesssettercall_registers_an_offense_and_corrects"
+name = "rubocopcoplintuselesssettercall_when_a_lvar_does_not_contain_any_object_passed_as_argument_by_binaryoperatorassignment_at_the_end_of_the_method_registers_an_offense_and_corrects"
 source = '''
 def test(some_arg)
   some_lvar = some_arg
@@ -220,7 +241,7 @@ column_end = 11
 message = "Useless setter call to local variable `some_lvar`."
 
 [[tests]]
-name = "rubocop_cop_lint_uselesssettercall_registers_an_offense_and_corrects_for_the_setter_call_on_the_lvar"
+name = "rubocopcoplintuselesssettercall_when_a_lvar_declared_as_an_argument_is_no_longer_the_passed_object_at_the_end_of_the_method_registers_an_offense_and_corrects_for_the_setter_call_on_the_lvar"
 source = '''
 def test(some_arg)
   some_arg = Top.new
@@ -242,7 +263,7 @@ column_end = 10
 message = "Useless setter call to local variable `some_arg`."
 
 [[tests]]
-name = "rubocop_cop_lint_uselesssettercall_when_a_lvar_contains_a_local_object_instantiated_with_literal_registers_an_offense_and_corrects_for_the_setter_call_on_the_lvar"
+name = "rubocopcoplintuselesssettercall_when_a_lvar_contains_a_local_object_instantiated_with_literal_registers_an_offense_and_corrects_for_the_setter_call_on_the_lvar"
 source = '''
 def test
   some_arg = {}
@@ -264,32 +285,11 @@ column_end = 10
 message = "Useless setter call to local variable `some_arg`."
 
 [[tests]]
-name = "rubocop_cop_lint_uselesssettercall_when_a_lvar_contains_a_non_local_object_returned_by_a_method_accepts"
+name = "rubocopcoplintuselesssettercall_when_a_lvar_contains_a_nonlocal_object_returned_by_a_method_accepts"
 source = '''
 def test
   some_lvar = Foo.shared_object
   some_lvar[:attr] = 1
-end
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_uselesssettercall_is_not_confused_by_operators_ending_with"
-source = '''
-def test
-  top.attr == 5
-end
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_uselesssettercall_accepts_exception_assignments_without_exploding"
-source = '''
-def foo(bar)
-  begin
-  rescue StandardError => _
-  end
-  bar[:baz] = true
 end
 '''
 offenses = []

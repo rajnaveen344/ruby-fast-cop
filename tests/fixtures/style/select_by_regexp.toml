@@ -4,1543 +4,4093 @@ severity = "convention"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_match"
+name = "rubocopcopstyleselectbyregexp_when_ruby__34_behaves_like_regexp_match_with_itblocks_registers_an_offense_and_corrects_for_match"
 source = '''
-array.#{method} { |x| x.match? /regexp/ }
+array.select { it.match? /regexp/ }
 '''
 corrected = '''
-array.#{correction}(/regexp/)
+array.grep(/regexp/)
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
-column_start = 0
-column_end = 41
-message = "#{message}"
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_regexp_match"
-source = '''
-array.#{method} { |x| /regexp/.match? x }
-'''
-corrected = '''
-array.#{correction}(/regexp/)
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 41
-message = "#{message}"
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_blockvar_regexp"
-source = '''
-array.#{method} { |x| x =~ /regexp/ }
-'''
-corrected = '''
-array.#{correction}(/regexp/)
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 37
-message = "#{message}"
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_blockvar_lvar"
-source = '''
-lvar = /regexp/
-array.#{method} { |x| x =~ lvar }
-'''
-corrected = '''
-lvar = /regexp/
-array.#{correction}(lvar)
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 2
-column_start = 0
-column_end = 33
-message = "#{message}"
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_regexp_blockvar"
-source = '''
-array.#{method} { |x| /regexp/ =~ x }
-'''
-corrected = '''
-array.#{correction}(/regexp/)
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 37
-message = "#{message}"
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_lvar_blockvar"
-source = '''
-lvar = /regexp/
-array.#{method} { |x| lvar =~ x }
-'''
-corrected = '''
-lvar = /regexp/
-array.#{correction}(lvar)
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 2
-column_start = 0
-column_end = 33
-message = "#{message}"
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_when_there_is_no_explicit_regexp"
-source = '''
-array.#{method} { |x| x =~ y }
-array.#{method} { |x| x =~ REGEXP }
-array.#{method} { |x| x =~ foo.bar.baz(quux) }
-'''
-corrected = '''
-array.#{correction}(y)
-array.#{correction}(REGEXP)
-array.#{correction}(foo.bar.baz(quux))
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 30
-message = "#{message}"
-
-[[tests.offenses]]
-line = 2
 column_start = 0
 column_end = 35
-message = "#{message}"
-
-[[tests.offenses]]
-line = 3
-column_start = 0
-column_end = 46
-message = "#{message}"
+message = "Prefer `grep` to `select` with a regexp match."
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_with_a_multiline_block"
+name = "rubocopcopstyleselectbyregexp_when_ruby__34_behaves_like_regexp_match_with_itblocks_registers_an_offense_and_corrects_for_match_with_safe_navigation"
 source = '''
-array.#{method} do |x|
-  x.match? /regexp/
-end
+array&.select { it.match? /regexp/ }
 '''
 corrected = '''
-array.#{correction}(/regexp/)
+array&.grep(/regexp/)
 '''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 22
-message = "#{message}"
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_does_not_register_an_offense_when_there_is_no_block"
-source = '''
-array.#{method}
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_does_not_register_an_offense_when_given_a_proc"
-source = '''
-array.#{method}(&:even?)
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_does_not_register_an_offense_when_the_block_does_not_match_a_regexp"
-source = '''
-array.#{method} { |x| x.even? }
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_does_not_register_an_offense_when_the_block_has_multiple_expressions"
-source = '''
-array.#{method} do |x|
-  next if x.even?
-  x.match? /regexp/
-end
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_does_not_register_an_offense_when_the_block_arity_is_not_1"
-source = '''
-obj.#{method} { |x, y| y.match? /regexp/ }
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_does_not_register_an_offense_when_the_block_uses_an_external_variable_in_a_regexp_match"
-source = '''
-array.#{method} { |x| y.match? /regexp/ }
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_does_not_register_an_offense_when_the_block_param_is_a_method_argument"
-source = '''
-array.#{method} { |x| /regexp/.match?(foo(x)) }
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_does_not_register_an_offense_when_the_block_body_is_empty"
-source = '''
-array.#{method} { }
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_without_a_receiver"
-source = '''
-#{method} { |x| x.match?(/regexp/) }
-'''
-corrected = '''
-#{correction}(/regexp/)
-'''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 0
 column_end = 36
-message = "#{message}"
+message = "Prefer `grep` to `select` with a regexp match."
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_when_the_receiver_is_an_array"
+name = "rubocopcopstyleselectbyregexp_when_ruby__34_behaves_like_regexp_match_with_itblocks_registers_an_offense_and_corrects_for_regexpmatch"
 source = '''
-[].#{method} { |x| x.match?(/regexp/) }
-foo.to_a.#{method} { |x| x.match?(/regexp/) }
+array.select { /regexp/.match?(it) }
 '''
 corrected = '''
-[].#{correction}(/regexp/)
-foo.to_a.#{correction}(/regexp/)
+array.grep(/regexp/)
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 0
-column_end = 39
-message = "#{message}"
-
-[[tests.offenses]]
-line = 2
-column_start = 0
-column_end = 45
-message = "#{message}"
+column_end = 36
+message = "Prefer `grep` to `select` with a regexp match."
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_when_the_receiver_is_a_range"
+name = "rubocopcopstyleselectbyregexp_when_ruby__34_behaves_like_regexp_match_with_itblocks_registers_an_offense_and_corrects_for_blockvar__regexp"
 source = '''
-('aaa'...'abc').#{method} { |x| x.match?(/ab/) }
+array.select { it =~ /regexp/ }
 '''
 corrected = '''
-('aaa'...'abc').#{correction}(/ab/)
+array.grep(/regexp/)
 '''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 48
-message = "#{message}"
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_when_the_receiver_is_a_set"
-source = '''
-Set.new.#{method} { |x| x.match?(/regexp/) }
-[].to_set.#{method} { |x| x.match?(/regexp/) }
-'''
-corrected = '''
-Set.new.#{correction}(/regexp/)
-[].to_set.#{correction}(/regexp/)
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 44
-message = "#{message}"
-
-[[tests.offenses]]
-line = 2
-column_start = 0
-column_end = 46
-message = "#{message}"
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_does_not_register_an_offense_when_the_receiver_is_a_hash_literal"
-source = '''
-{}.#{method} { |x| x.match? /regexp/ }
-{ foo: :bar }.#{method} { |x| x.match? /regexp/ }
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_does_not_register_an_offense_when_the_receiver_is_hash_new"
-source = '''
-Hash.new.#{method} { |x| x.match? /regexp/ }
-Hash.new(:default).#{method} { |x| x.match? /regexp/ }
-Hash.new { |hash, key| :default }.#{method} { |x| x.match? /regexp/ }
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_does_not_register_an_offense_when_the_receiver_is_hash"
-source = '''
-Hash[h].#{method} { |x| x.match? /regexp/ }
-Hash[:foo, 0, :bar, 1].#{method} { |x| x.match? /regexp/ }
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_does_not_register_an_offense_when_the_receiver_is_to_h"
-source = '''
-to_h.#{method} { |x| x.match? /regexp/ }
-foo.to_h.#{method} { |x| x.match? /regexp/ }
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_does_not_register_an_offense_when_the_receiver_is_to_hash"
-source = '''
-to_hash.#{method} { |x| x.match? /regexp/ }
-foo.to_hash.#{method} { |x| x.match? /regexp/ }
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_registers_an_offense_if_to_h_is_in_the_receiver_chain_but_not_the_actual_receiver"
-source = '''
-foo.to_h.bar.#{method} { |x| x.match? /regexp/ }
-'''
-corrected = '''
-foo.to_h.bar.#{correction}(/regexp/)
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 48
-message = "#{message}"
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_does_not_register_an_offense_when_the_receiver_is_env"
-source = '''
-ENV.#{method} { |x| x.match? /regexp/ }
-::ENV.#{method} { |x| x.match? /regexp/ }
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_match"
-source = '''
-array.#{method} { _1.match? /regexp/ }
-'''
-corrected = '''
-array.#{correction}(/regexp/)
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 38
-message = "#{message}"
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_match_with_safe_navigation"
-source = '''
-array&.#{method} { _1.match? /regexp/ }
-'''
-corrected = '''
-array&.#{correction}(/regexp/)
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 39
-message = "#{message}"
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_regexp_match"
-source = '''
-array.#{method} { /regexp/.match?(_1) }
-'''
-corrected = '''
-array.#{correction}(/regexp/)
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 39
-message = "#{message}"
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_blockvar_regexp"
-source = '''
-array.#{method} { _1 =~ /regexp/ }
-'''
-corrected = '''
-array.#{correction}(/regexp/)
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 34
-message = "#{message}"
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_regexp_blockvar"
-source = '''
-array.#{method} { /regexp/ =~ _1 }
-'''
-corrected = '''
-array.#{correction}(/regexp/)
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 34
-message = "#{message}"
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_does_not_register_an_offense_if_there_is_more_than_one_numbered_param"
-source = '''
-array.#{method} { _1 =~ _2 }
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_does_not_register_an_offense_when_the_param_is_a_method_argument"
-source = '''
-array.#{method} { /regexp/.match?(foo(_1)) }
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_does_not_register_an_offense_when_using_match_without_a_receiver"
-source = '''
-array.#{method} { |item| match?(item) }
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_match"
-source = '''
-array.#{method} { it.match? /regexp/ }
-'''
-corrected = '''
-array.#{correction}(/regexp/)
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 38
-message = "#{message}"
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_match_with_safe_navigation"
-source = '''
-array&.#{method} { it.match? /regexp/ }
-'''
-corrected = '''
-array&.#{correction}(/regexp/)
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 39
-message = "#{message}"
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_regexp_match"
-source = '''
-array.#{method} { /regexp/.match?(it) }
-'''
-corrected = '''
-array.#{correction}(/regexp/)
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 39
-message = "#{message}"
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_blockvar_regexp"
-source = '''
-array.#{method} { it =~ /regexp/ }
-'''
-corrected = '''
-array.#{correction}(/regexp/)
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 34
-message = "#{message}"
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_regexp_blockvar"
-source = '''
-array.#{method} { /regexp/ =~ it }
-'''
-corrected = '''
-array.#{correction}(/regexp/)
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 34
-message = "#{message}"
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_does_not_register_an_offense_when_the_param_is_a_method_argument"
-source = '''
-array.#{method} { /regexp/.match?(foo(it)) }
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_does_not_register_an_offense_when_using_match_without_a_receiver"
-source = '''
-array.#{method} { |item| match?(item) }
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_match"
-source = '''
-array&.#{method} { |x| x.match? /regexp/ }
-'''
-corrected = '''
-array&.#{correction}(/regexp/)
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 42
-message = "#{message}"
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_does_not_register_an_offense_when_the_receiver_is_hash_new"
-source = '''
-Hash&.new.#{method} { |x| x.match? /regexp/ }
-Hash&.new { |hash, key| :default }.#{method} { |x| x.match? /regexp/ }
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_does_not_register_an_offense_when_the_receiver_is_to_h"
-source = '''
-foo&.to_h.#{method} { |x| x.match? /regexp/ }
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_does_not_register_an_offense_when_the_receiver_is_to_hash"
-source = '''
-foo&.to_hash.#{method} { |x| x.match? /regexp/ }
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_blockvar_regexp"
-source = '''
-array.#{method} { |x| x !~ /regexp/ }
-'''
-corrected = '''
-array.#{correction}(/regexp/)
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 37
-message = "#{message}"
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_blockvar_lvar"
-source = '''
-lvar = /regexp/
-array.#{method} { |x| x !~ lvar }
-'''
-corrected = '''
-lvar = /regexp/
-array.#{correction}(lvar)
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 2
-column_start = 0
-column_end = 33
-message = "#{message}"
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_regexp_blockvar"
-source = '''
-array.#{method} { |x| /regexp/ !~ x }
-'''
-corrected = '''
-array.#{correction}(/regexp/)
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 37
-message = "#{message}"
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_lvar_blockvar"
-source = '''
-lvar = /regexp/
-array.#{method} { |x| lvar !~ x }
-'''
-corrected = '''
-lvar = /regexp/
-array.#{correction}(lvar)
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 2
-column_start = 0
-column_end = 33
-message = "#{message}"
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_when_there_is_no_explicit_regexp"
-source = '''
-array.#{method} { |x| x !~ y }
-array.#{method} { |x| x !~ REGEXP }
-array.#{method} { |x| x !~ foo.bar.baz(quux) }
-'''
-corrected = '''
-array.#{correction}(y)
-array.#{correction}(REGEXP)
-array.#{correction}(foo.bar.baz(quux))
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 30
-message = "#{message}"
-
-[[tests.offenses]]
-line = 2
-column_start = 0
-column_end = 35
-message = "#{message}"
-
-[[tests.offenses]]
-line = 3
-column_start = 0
-column_end = 46
-message = "#{message}"
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_blockvar_regexp"
-source = '''
-array.#{method} { _1 !~ /regexp/ }
-'''
-corrected = '''
-array.#{correction}(/regexp/)
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 34
-message = "#{message}"
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_regexp_blockvar"
-source = '''
-array.#{method} { /regexp/ !~ _1 }
-'''
-corrected = '''
-array.#{correction}(/regexp/)
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 34
-message = "#{message}"
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_does_not_register_an_offense_if_there_is_more_than_one_numbered_param"
-source = '''
-array.#{method} { _1 !~ _2 }
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_blockvar_regexp"
-source = '''
-array.#{method} { it !~ /regexp/ }
-'''
-corrected = '''
-array.#{correction}(/regexp/)
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 34
-message = "#{message}"
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_regexp_blockvar"
-source = '''
-array.#{method} { /regexp/ !~ it }
-'''
-corrected = '''
-array.#{correction}(/regexp/)
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 34
-message = "#{message}"
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_blockvar_regexp"
-source = '''
-array&.#{method} { |x| x !~ /regexp/ }
-'''
-corrected = '''
-array&.#{correction}(/regexp/)
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 38
-message = "#{message}"
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_blockvar_lvar"
-source = '''
-lvar = /regexp/
-array&.#{method} { |x| x !~ lvar }
-'''
-corrected = '''
-lvar = /regexp/
-array&.#{correction}(lvar)
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 2
-column_start = 0
-column_end = 34
-message = "#{message}"
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_regexp_blockvar"
-source = '''
-array&.#{method} { |x| /regexp/ !~ x }
-'''
-corrected = '''
-array&.#{correction}(/regexp/)
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 38
-message = "#{message}"
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_for_lvar_blockvar"
-source = '''
-lvar = /regexp/
-array&.#{method} { |x| lvar !~ x }
-'''
-corrected = '''
-lvar = /regexp/
-array&.#{correction}(lvar)
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 2
-column_start = 0
-column_end = 34
-message = "#{message}"
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_registers_an_offense_and_corrects_when_there_is_no_explicit_regexp"
-source = '''
-array&.#{method} { |x| x !~ y }
-array&.#{method} { |x| x !~ REGEXP }
-array&.#{method} { |x| x !~ foo.bar.baz(quux) }
-'''
-corrected = '''
-array&.#{correction}(y)
-array&.#{correction}(REGEXP)
-array&.#{correction}(foo.bar.baz(quux))
-'''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 0
 column_end = 31
-message = "#{message}"
+message = "Prefer `grep` to `select` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__34_behaves_like_regexp_match_with_itblocks_registers_an_offense_and_corrects_for_regexp__blockvar"
+source = '''
+array.select { /regexp/ =~ it }
+'''
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 31
+message = "Prefer `grep` to `select` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__34_behaves_like_regexp_match_with_itblocks_does_not_register_an_offense_when_the_param_is_a_method_argument"
+source = '''
+array.select { /regexp/.match?(foo(it)) }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__34_behaves_like_regexp_match_with_itblocks_does_not_register_an_offense_when_using_match_without_a_receiver"
+source = '''
+array.select { |item| match?(item) }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__34_behaves_like_regexp_match_with_itblocks_registers_an_offense_and_corrects_for_match_2"
+source = '''
+array.find_all { it.match? /regexp/ }
+'''
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 37
+message = "Prefer `grep` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__34_behaves_like_regexp_match_with_itblocks_registers_an_offense_and_corrects_for_match_with_safe_navigation_2"
+source = '''
+array&.find_all { it.match? /regexp/ }
+'''
+corrected = '''
+array&.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 38
+message = "Prefer `grep` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__34_behaves_like_regexp_match_with_itblocks_registers_an_offense_and_corrects_for_regexpmatch_2"
+source = '''
+array.find_all { /regexp/.match?(it) }
+'''
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 38
+message = "Prefer `grep` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__34_behaves_like_regexp_match_with_itblocks_registers_an_offense_and_corrects_for_blockvar__regexp_2"
+source = '''
+array.find_all { it =~ /regexp/ }
+'''
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 33
+message = "Prefer `grep` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__34_behaves_like_regexp_match_with_itblocks_registers_an_offense_and_corrects_for_regexp__blockvar_2"
+source = '''
+array.find_all { /regexp/ =~ it }
+'''
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 33
+message = "Prefer `grep` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__34_behaves_like_regexp_match_with_itblocks_does_not_register_an_offense_when_the_param_is_a_method_argument_2"
+source = '''
+array.find_all { /regexp/.match?(foo(it)) }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__34_behaves_like_regexp_match_with_itblocks_does_not_register_an_offense_when_using_match_without_a_receiver_2"
+source = '''
+array.find_all { |item| match?(item) }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__34_behaves_like_regexp_match_with_itblocks_registers_an_offense_and_corrects_for_match_3"
+source = '''
+array.filter { it.match? /regexp/ }
+'''
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 35
+message = "Prefer `grep` to `filter` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__34_behaves_like_regexp_match_with_itblocks_registers_an_offense_and_corrects_for_match_with_safe_navigation_3"
+source = '''
+array&.filter { it.match? /regexp/ }
+'''
+corrected = '''
+array&.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 36
+message = "Prefer `grep` to `filter` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__34_behaves_like_regexp_match_with_itblocks_registers_an_offense_and_corrects_for_regexpmatch_3"
+source = '''
+array.filter { /regexp/.match?(it) }
+'''
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 36
+message = "Prefer `grep` to `filter` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__34_behaves_like_regexp_match_with_itblocks_registers_an_offense_and_corrects_for_blockvar__regexp_3"
+source = '''
+array.filter { it =~ /regexp/ }
+'''
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 31
+message = "Prefer `grep` to `filter` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__34_behaves_like_regexp_match_with_itblocks_registers_an_offense_and_corrects_for_regexp__blockvar_3"
+source = '''
+array.filter { /regexp/ =~ it }
+'''
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 31
+message = "Prefer `grep` to `filter` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__34_behaves_like_regexp_match_with_itblocks_does_not_register_an_offense_when_the_param_is_a_method_argument_3"
+source = '''
+array.filter { /regexp/.match?(foo(it)) }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__34_behaves_like_regexp_match_with_itblocks_does_not_register_an_offense_when_using_match_without_a_receiver_3"
+source = '''
+array.filter { |item| match?(item) }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__34_behaves_like_regexp_mismatch_with_itblocks_registers_an_offense_and_corrects_for_blockvar__regexp"
+source = '''
+array.reject { it !~ /regexp/ }
+'''
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 31
+message = "Prefer `grep` to `reject` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__34_behaves_like_regexp_mismatch_with_itblocks_registers_an_offense_and_corrects_for_regexp__blockvar"
+source = '''
+array.reject { /regexp/ !~ it }
+'''
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 31
+message = "Prefer `grep` to `reject` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__34_behaves_like_regexp_match_with_itblocks_registers_an_offense_and_corrects_for_match_4"
+source = '''
+array.reject { it.match? /regexp/ }
+'''
+corrected = '''
+array.grep_v(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 35
+message = "Prefer `grep_v` to `reject` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__34_behaves_like_regexp_match_with_itblocks_registers_an_offense_and_corrects_for_match_with_safe_navigation_4"
+source = '''
+array&.reject { it.match? /regexp/ }
+'''
+corrected = '''
+array&.grep_v(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 36
+message = "Prefer `grep_v` to `reject` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__34_behaves_like_regexp_match_with_itblocks_registers_an_offense_and_corrects_for_regexpmatch_4"
+source = '''
+array.reject { /regexp/.match?(it) }
+'''
+corrected = '''
+array.grep_v(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 36
+message = "Prefer `grep_v` to `reject` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__34_behaves_like_regexp_match_with_itblocks_registers_an_offense_and_corrects_for_blockvar__regexp_4"
+source = '''
+array.reject { it =~ /regexp/ }
+'''
+corrected = '''
+array.grep_v(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 31
+message = "Prefer `grep_v` to `reject` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__34_behaves_like_regexp_match_with_itblocks_registers_an_offense_and_corrects_for_regexp__blockvar_4"
+source = '''
+array.reject { /regexp/ =~ it }
+'''
+corrected = '''
+array.grep_v(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 31
+message = "Prefer `grep_v` to `reject` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__34_behaves_like_regexp_match_with_itblocks_does_not_register_an_offense_when_the_param_is_a_method_argument_4"
+source = '''
+array.reject { /regexp/.match?(foo(it)) }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__34_behaves_like_regexp_match_with_itblocks_does_not_register_an_offense_when_using_match_without_a_receiver_4"
+source = '''
+array.reject { |item| match?(item) }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__34_behaves_like_regexp_mismatch_with_itblocks_registers_an_offense_and_corrects_for_blockvar__regexp_2"
+source = '''
+array.select { it !~ /regexp/ }
+'''
+corrected = '''
+array.grep_v(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 31
+message = "Prefer `grep_v` to `select` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__34_behaves_like_regexp_mismatch_with_itblocks_registers_an_offense_and_corrects_for_regexp__blockvar_2"
+source = '''
+array.select { /regexp/ !~ it }
+'''
+corrected = '''
+array.grep_v(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 31
+message = "Prefer `grep_v` to `select` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__34_behaves_like_regexp_mismatch_with_itblocks_registers_an_offense_and_corrects_for_blockvar__regexp_3"
+source = '''
+array.find_all { it !~ /regexp/ }
+'''
+corrected = '''
+array.grep_v(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 33
+message = "Prefer `grep_v` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__34_behaves_like_regexp_mismatch_with_itblocks_registers_an_offense_and_corrects_for_regexp__blockvar_3"
+source = '''
+array.find_all { /regexp/ !~ it }
+'''
+corrected = '''
+array.grep_v(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 33
+message = "Prefer `grep_v` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__34_behaves_like_regexp_mismatch_with_itblocks_registers_an_offense_and_corrects_for_blockvar__regexp_4"
+source = '''
+array.filter { it !~ /regexp/ }
+'''
+corrected = '''
+array.grep_v(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 31
+message = "Prefer `grep_v` to `filter` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__34_behaves_like_regexp_mismatch_with_itblocks_registers_an_offense_and_corrects_for_regexp__blockvar_4"
+source = '''
+array.filter { /regexp/ !~ it }
+'''
+corrected = '''
+array.grep_v(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 31
+message = "Prefer `grep_v` to `filter` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__27_behaves_like_regexp_match_with_numblocks_registers_an_offense_and_corrects_for_match"
+source = '''
+array.select { _1.match? /regexp/ }
+'''
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 35
+message = "Prefer `grep` to `select` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__27_behaves_like_regexp_match_with_numblocks_registers_an_offense_and_corrects_for_match_with_safe_navigation"
+source = '''
+array&.select { _1.match? /regexp/ }
+'''
+corrected = '''
+array&.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 36
+message = "Prefer `grep` to `select` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__27_behaves_like_regexp_match_with_numblocks_registers_an_offense_and_corrects_for_regexpmatch"
+source = '''
+array.select { /regexp/.match?(_1) }
+'''
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 36
+message = "Prefer `grep` to `select` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__27_behaves_like_regexp_match_with_numblocks_registers_an_offense_and_corrects_for_blockvar__regexp"
+source = '''
+array.select { _1 =~ /regexp/ }
+'''
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 31
+message = "Prefer `grep` to `select` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__27_behaves_like_regexp_match_with_numblocks_registers_an_offense_and_corrects_for_regexp__blockvar"
+source = '''
+array.select { /regexp/ =~ _1 }
+'''
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 31
+message = "Prefer `grep` to `select` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__27_behaves_like_regexp_match_with_numblocks_does_not_register_an_offense_if_there_is_more_than_one_numbered_param"
+source = '''
+array.select { _1 =~ _2 }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__27_behaves_like_regexp_match_with_numblocks_does_not_register_an_offense_when_the_param_is_a_method_argument"
+source = '''
+array.select { /regexp/.match?(foo(_1)) }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__27_behaves_like_regexp_match_with_numblocks_does_not_register_an_offense_when_using_match_without_a_receiver"
+source = '''
+array.select { |item| match?(item) }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__27_behaves_like_regexp_match_with_numblocks_registers_an_offense_and_corrects_for_match_2"
+source = '''
+array.find_all { _1.match? /regexp/ }
+'''
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 37
+message = "Prefer `grep` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__27_behaves_like_regexp_match_with_numblocks_registers_an_offense_and_corrects_for_match_with_safe_navigation_2"
+source = '''
+array&.find_all { _1.match? /regexp/ }
+'''
+corrected = '''
+array&.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 38
+message = "Prefer `grep` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__27_behaves_like_regexp_match_with_numblocks_registers_an_offense_and_corrects_for_regexpmatch_2"
+source = '''
+array.find_all { /regexp/.match?(_1) }
+'''
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 38
+message = "Prefer `grep` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__27_behaves_like_regexp_match_with_numblocks_registers_an_offense_and_corrects_for_blockvar__regexp_2"
+source = '''
+array.find_all { _1 =~ /regexp/ }
+'''
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 33
+message = "Prefer `grep` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__27_behaves_like_regexp_match_with_numblocks_registers_an_offense_and_corrects_for_regexp__blockvar_2"
+source = '''
+array.find_all { /regexp/ =~ _1 }
+'''
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 33
+message = "Prefer `grep` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__27_behaves_like_regexp_match_with_numblocks_does_not_register_an_offense_if_there_is_more_than_one_numbered_param_2"
+source = '''
+array.find_all { _1 =~ _2 }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__27_behaves_like_regexp_match_with_numblocks_does_not_register_an_offense_when_the_param_is_a_method_argument_2"
+source = '''
+array.find_all { /regexp/.match?(foo(_1)) }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__27_behaves_like_regexp_match_with_numblocks_does_not_register_an_offense_when_using_match_without_a_receiver_2"
+source = '''
+array.find_all { |item| match?(item) }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__27_behaves_like_regexp_match_with_numblocks_registers_an_offense_and_corrects_for_match_3"
+source = '''
+array.filter { _1.match? /regexp/ }
+'''
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 35
+message = "Prefer `grep` to `filter` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__27_behaves_like_regexp_match_with_numblocks_registers_an_offense_and_corrects_for_match_with_safe_navigation_3"
+source = '''
+array&.filter { _1.match? /regexp/ }
+'''
+corrected = '''
+array&.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 36
+message = "Prefer `grep` to `filter` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__27_behaves_like_regexp_match_with_numblocks_registers_an_offense_and_corrects_for_regexpmatch_3"
+source = '''
+array.filter { /regexp/.match?(_1) }
+'''
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 36
+message = "Prefer `grep` to `filter` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__27_behaves_like_regexp_match_with_numblocks_registers_an_offense_and_corrects_for_blockvar__regexp_3"
+source = '''
+array.filter { _1 =~ /regexp/ }
+'''
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 31
+message = "Prefer `grep` to `filter` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__27_behaves_like_regexp_match_with_numblocks_registers_an_offense_and_corrects_for_regexp__blockvar_3"
+source = '''
+array.filter { /regexp/ =~ _1 }
+'''
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 31
+message = "Prefer `grep` to `filter` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__27_behaves_like_regexp_match_with_numblocks_does_not_register_an_offense_if_there_is_more_than_one_numbered_param_3"
+source = '''
+array.filter { _1 =~ _2 }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__27_behaves_like_regexp_match_with_numblocks_does_not_register_an_offense_when_the_param_is_a_method_argument_3"
+source = '''
+array.filter { /regexp/.match?(foo(_1)) }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__27_behaves_like_regexp_match_with_numblocks_does_not_register_an_offense_when_using_match_without_a_receiver_3"
+source = '''
+array.filter { |item| match?(item) }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__27_behaves_like_regexp_mismatch_with_numblocks_registers_an_offense_and_corrects_for_blockvar__regexp"
+source = '''
+array.reject { _1 !~ /regexp/ }
+'''
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 31
+message = "Prefer `grep` to `reject` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__27_behaves_like_regexp_mismatch_with_numblocks_registers_an_offense_and_corrects_for_regexp__blockvar"
+source = '''
+array.reject { /regexp/ !~ _1 }
+'''
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 31
+message = "Prefer `grep` to `reject` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__27_behaves_like_regexp_mismatch_with_numblocks_does_not_register_an_offense_if_there_is_more_than_one_numbered_param"
+source = '''
+array.reject { _1 !~ _2 }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__27_behaves_like_regexp_match_with_numblocks_registers_an_offense_and_corrects_for_match_4"
+source = '''
+array.reject { _1.match? /regexp/ }
+'''
+corrected = '''
+array.grep_v(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 35
+message = "Prefer `grep_v` to `reject` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__27_behaves_like_regexp_match_with_numblocks_registers_an_offense_and_corrects_for_match_with_safe_navigation_4"
+source = '''
+array&.reject { _1.match? /regexp/ }
+'''
+corrected = '''
+array&.grep_v(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 36
+message = "Prefer `grep_v` to `reject` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__27_behaves_like_regexp_match_with_numblocks_registers_an_offense_and_corrects_for_regexpmatch_4"
+source = '''
+array.reject { /regexp/.match?(_1) }
+'''
+corrected = '''
+array.grep_v(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 36
+message = "Prefer `grep_v` to `reject` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__27_behaves_like_regexp_match_with_numblocks_registers_an_offense_and_corrects_for_blockvar__regexp_4"
+source = '''
+array.reject { _1 =~ /regexp/ }
+'''
+corrected = '''
+array.grep_v(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 31
+message = "Prefer `grep_v` to `reject` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__27_behaves_like_regexp_match_with_numblocks_registers_an_offense_and_corrects_for_regexp__blockvar_4"
+source = '''
+array.reject { /regexp/ =~ _1 }
+'''
+corrected = '''
+array.grep_v(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 31
+message = "Prefer `grep_v` to `reject` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__27_behaves_like_regexp_match_with_numblocks_does_not_register_an_offense_if_there_is_more_than_one_numbered_param_4"
+source = '''
+array.reject { _1 =~ _2 }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__27_behaves_like_regexp_match_with_numblocks_does_not_register_an_offense_when_the_param_is_a_method_argument_4"
+source = '''
+array.reject { /regexp/.match?(foo(_1)) }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__27_behaves_like_regexp_match_with_numblocks_does_not_register_an_offense_when_using_match_without_a_receiver_4"
+source = '''
+array.reject { |item| match?(item) }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__27_behaves_like_regexp_mismatch_with_numblocks_registers_an_offense_and_corrects_for_blockvar__regexp_2"
+source = '''
+array.select { _1 !~ /regexp/ }
+'''
+corrected = '''
+array.grep_v(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 31
+message = "Prefer `grep_v` to `select` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__27_behaves_like_regexp_mismatch_with_numblocks_registers_an_offense_and_corrects_for_regexp__blockvar_2"
+source = '''
+array.select { /regexp/ !~ _1 }
+'''
+corrected = '''
+array.grep_v(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 31
+message = "Prefer `grep_v` to `select` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__27_behaves_like_regexp_mismatch_with_numblocks_does_not_register_an_offense_if_there_is_more_than_one_numbered_param_2"
+source = '''
+array.select { _1 !~ _2 }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__27_behaves_like_regexp_mismatch_with_numblocks_registers_an_offense_and_corrects_for_blockvar__regexp_3"
+source = '''
+array.find_all { _1 !~ /regexp/ }
+'''
+corrected = '''
+array.grep_v(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 33
+message = "Prefer `grep_v` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__27_behaves_like_regexp_mismatch_with_numblocks_registers_an_offense_and_corrects_for_regexp__blockvar_3"
+source = '''
+array.find_all { /regexp/ !~ _1 }
+'''
+corrected = '''
+array.grep_v(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 33
+message = "Prefer `grep_v` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__27_behaves_like_regexp_mismatch_with_numblocks_does_not_register_an_offense_if_there_is_more_than_one_numbered_param_3"
+source = '''
+array.find_all { _1 !~ _2 }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__27_behaves_like_regexp_mismatch_with_numblocks_registers_an_offense_and_corrects_for_blockvar__regexp_4"
+source = '''
+array.filter { _1 !~ /regexp/ }
+'''
+corrected = '''
+array.grep_v(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 31
+message = "Prefer `grep_v` to `filter` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__27_behaves_like_regexp_mismatch_with_numblocks_registers_an_offense_and_corrects_for_regexp__blockvar_4"
+source = '''
+array.filter { /regexp/ !~ _1 }
+'''
+corrected = '''
+array.grep_v(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 31
+message = "Prefer `grep_v` to `filter` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__27_behaves_like_regexp_mismatch_with_numblocks_does_not_register_an_offense_if_there_is_more_than_one_numbered_param_4"
+source = '''
+array.filter { _1 !~ _2 }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__26_behaves_like_regexp_match_with_filter_registers_an_offense_and_corrects_for_match"
+source = '''
+array.filter { |x| x.match? /regexp/ }
+'''
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 38
+message = "Prefer `grep` to `filter` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__26_behaves_like_regexp_match_with_filter_registers_an_offense_and_corrects_for_regexpmatch"
+source = '''
+array.filter { |x| /regexp/.match? x }
+'''
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 38
+message = "Prefer `grep` to `filter` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__26_behaves_like_regexp_match_with_filter_registers_an_offense_and_corrects_for_blockvar__regexp"
+source = '''
+array.filter { |x| x =~ /regexp/ }
+'''
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 34
+message = "Prefer `grep` to `filter` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__26_behaves_like_regexp_match_with_filter_registers_an_offense_and_corrects_for_blockvar__lvar"
+source = '''
+lvar = /regexp/
+array.filter { |x| x =~ lvar }
+'''
+corrected = '''
+lvar = /regexp/
+array.grep(lvar)
+'''
 
 [[tests.offenses]]
 line = 2
 column_start = 0
-column_end = 36
-message = "#{message}"
+column_end = 30
+message = "Prefer `grep` to `filter` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__26_behaves_like_regexp_match_with_filter_registers_an_offense_and_corrects_for_regexp__blockvar"
+source = '''
+array.filter { |x| /regexp/ =~ x }
+'''
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 34
+message = "Prefer `grep` to `filter` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__26_behaves_like_regexp_match_with_filter_registers_an_offense_and_corrects_for_lvar__blockvar"
+source = '''
+lvar = /regexp/
+array.filter { |x| lvar =~ x }
+'''
+corrected = '''
+lvar = /regexp/
+array.grep(lvar)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 30
+message = "Prefer `grep` to `filter` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__26_behaves_like_regexp_match_with_filter_registers_an_offense_and_corrects_when_there_is_no_explicit_regexp"
+source = '''
+array.filter { |x| x =~ y }
+array.filter { |x| x =~ REGEXP }
+array.filter { |x| x =~ foo.bar.baz(quux) }
+'''
+corrected = '''
+array.grep(y)
+array.grep(REGEXP)
+array.grep(foo.bar.baz(quux))
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 27
+message = "Prefer `grep` to `filter` with a regexp match."
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 32
+message = "Prefer `grep` to `filter` with a regexp match."
 
 [[tests.offenses]]
 line = 3
 column_start = 0
-column_end = 47
-message = "#{message}"
+column_end = 43
+message = "Prefer `grep` to `filter` with a regexp match."
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_3_4_regexp_match_with_itblock_s_select"
+name = "rubocopcopstyleselectbyregexp_when_ruby__26_behaves_like_regexp_match_with_filter_registers_an_offense_and_corrects_with_a_multiline_block"
 source = '''
-select
+array.filter do |x|
+  x.match? /regexp/
+end
 '''
-ruby_version = ">= 3.4"
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 19
+message = "Prefer `grep` to `filter` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__26_behaves_like_regexp_match_with_filter_does_not_register_an_offense_when_there_is_no_block"
+source = '''
+array.filter
+'''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_3_4_regexp_match_with_itblock_s_grep"
+name = "rubocopcopstyleselectbyregexp_when_ruby__26_behaves_like_regexp_match_with_filter_does_not_register_an_offense_when_given_a_proc"
 source = '''
-grep
+array.filter(&:even?)
 '''
-ruby_version = ">= 3.4"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_3_4_regexp_match_with_itblock_s_find_all"
+name = "rubocopcopstyleselectbyregexp_when_ruby__26_behaves_like_regexp_match_with_filter_does_not_register_an_offense_when_the_block_does_not_match_a_regexp"
 source = '''
-find_all
+array.filter { |x| x.even? }
 '''
-ruby_version = ">= 3.4"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_3_4_regexp_match_with_itblock_s_grep"
+name = "rubocopcopstyleselectbyregexp_when_ruby__26_behaves_like_regexp_match_with_filter_does_not_register_an_offense_when_the_block_has_multiple_expressions"
 source = '''
-grep
+array.filter do |x|
+  next if x.even?
+  x.match? /regexp/
+end
 '''
-ruby_version = ">= 3.4"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_3_4_regexp_match_with_itblock_s_filter"
+name = "rubocopcopstyleselectbyregexp_when_ruby__26_behaves_like_regexp_match_with_filter_does_not_register_an_offense_when_the_block_arity_is_not_1"
 source = '''
-filter
+obj.filter { |x, y| y.match? /regexp/ }
 '''
-ruby_version = ">= 3.4"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_3_4_regexp_match_with_itblock_s_grep"
+name = "rubocopcopstyleselectbyregexp_when_ruby__26_behaves_like_regexp_match_with_filter_does_not_register_an_offense_when_the_block_uses_an_external_variable_in_a_regexp_match"
 source = '''
-grep
+array.filter { |x| y.match? /regexp/ }
 '''
-ruby_version = ">= 3.4"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_3_4_regexp_mismatch_with_itblock_s_reject"
+name = "rubocopcopstyleselectbyregexp_when_ruby__26_behaves_like_regexp_match_with_filter_does_not_register_an_offense_when_the_block_param_is_a_method_argument"
 source = '''
-reject
+array.filter { |x| /regexp/.match?(foo(x)) }
 '''
-ruby_version = ">= 3.4"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_3_4_regexp_mismatch_with_itblock_s_grep"
+name = "rubocopcopstyleselectbyregexp_when_ruby__26_behaves_like_regexp_match_with_filter_does_not_register_an_offense_when_the_block_body_is_empty"
 source = '''
-grep
+array.filter { }
 '''
-ruby_version = ">= 3.4"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_3_4_regexp_match_with_itblock_s_reject"
+name = "rubocopcopstyleselectbyregexp_when_ruby__26_behaves_like_regexp_match_with_filter_registers_an_offense_and_corrects_without_a_receiver"
 source = '''
-reject
+filter { |x| x.match?(/regexp/) }
 '''
-ruby_version = ">= 3.4"
+corrected = '''
+grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 33
+message = "Prefer `grep` to `filter` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__26_behaves_like_regexp_match_with_filter_registers_an_offense_and_corrects_when_the_receiver_is_an_array"
+source = '''
+[].filter { |x| x.match?(/regexp/) }
+foo.to_a.filter { |x| x.match?(/regexp/) }
+'''
+corrected = '''
+[].grep(/regexp/)
+foo.to_a.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 36
+message = "Prefer `grep` to `filter` with a regexp match."
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 42
+message = "Prefer `grep` to `filter` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__26_behaves_like_regexp_match_with_filter_registers_an_offense_and_corrects_when_the_receiver_is_a_range"
+source = '''
+('aaa'...'abc').filter { |x| x.match?(/ab/) }
+'''
+corrected = '''
+('aaa'...'abc').grep(/ab/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 45
+message = "Prefer `grep` to `filter` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__26_behaves_like_regexp_match_with_filter_registers_an_offense_and_corrects_when_the_receiver_is_a_set"
+source = '''
+Set.new.filter { |x| x.match?(/regexp/) }
+[].to_set.filter { |x| x.match?(/regexp/) }
+'''
+corrected = '''
+Set.new.grep(/regexp/)
+[].to_set.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 41
+message = "Prefer `grep` to `filter` with a regexp match."
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 43
+message = "Prefer `grep` to `filter` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__26_behaves_like_regexp_match_with_filter_does_not_register_an_offense_when_the_receiver_is_a_hash_literal"
+source = '''
+{}.filter { |x| x.match? /regexp/ }
+{ foo: :bar }.filter { |x| x.match? /regexp/ }
+'''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_3_4_regexp_match_with_itblock_s_grep_v"
+name = "rubocopcopstyleselectbyregexp_when_ruby__26_behaves_like_regexp_match_with_filter_does_not_register_an_offense_when_the_receiver_is_hashnew"
 source = '''
-grep_v
+Hash.new.filter { |x| x.match? /regexp/ }
+Hash.new(:default).filter { |x| x.match? /regexp/ }
+Hash.new { |hash, key| :default }.filter { |x| x.match? /regexp/ }
 '''
-ruby_version = ">= 3.4"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_3_4_regexp_mismatch_with_itblock_s_select"
+name = "rubocopcopstyleselectbyregexp_when_ruby__26_behaves_like_regexp_match_with_filter_does_not_register_an_offense_when_the_receiver_is_hash"
 source = '''
-select
+Hash[h].filter { |x| x.match? /regexp/ }
+Hash[:foo, 0, :bar, 1].filter { |x| x.match? /regexp/ }
 '''
-ruby_version = ">= 3.4"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_3_4_regexp_mismatch_with_itblock_s_grep_v"
+name = "rubocopcopstyleselectbyregexp_when_ruby__26_behaves_like_regexp_match_with_filter_does_not_register_an_offense_when_the_receiver_is_to_h"
 source = '''
-grep_v
+to_h.filter { |x| x.match? /regexp/ }
+foo.to_h.filter { |x| x.match? /regexp/ }
 '''
-ruby_version = ">= 3.4"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_3_4_regexp_mismatch_with_itblock_s_find_all"
+name = "rubocopcopstyleselectbyregexp_when_ruby__26_behaves_like_regexp_match_with_filter_does_not_register_an_offense_when_the_receiver_is_to_hash"
 source = '''
-find_all
+to_hash.filter { |x| x.match? /regexp/ }
+foo.to_hash.filter { |x| x.match? /regexp/ }
 '''
-ruby_version = ">= 3.4"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_3_4_regexp_mismatch_with_itblock_s_grep_v"
+name = "rubocopcopstyleselectbyregexp_when_ruby__26_behaves_like_regexp_match_with_filter_registers_an_offense_if_to_h_is_in_the_receiver_chain_but_not_the_actual_receiver"
 source = '''
-grep_v
+foo.to_h.bar.filter { |x| x.match? /regexp/ }
 '''
-ruby_version = ">= 3.4"
+corrected = '''
+foo.to_h.bar.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 45
+message = "Prefer `grep` to `filter` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__26_behaves_like_regexp_match_with_filter_does_not_register_an_offense_when_the_receiver_is_env"
+source = '''
+ENV.filter { |x| x.match? /regexp/ }
+::ENV.filter { |x| x.match? /regexp/ }
+'''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_3_4_regexp_mismatch_with_itblock_s_filter"
+name = "rubocopcopstyleselectbyregexp_when_ruby__26_behaves_like_regexp_match_with_safe_navigation_registers_an_offense_and_corrects_for_match"
 source = '''
-filter
+array&.filter { |x| x.match? /regexp/ }
 '''
-ruby_version = ">= 3.4"
+corrected = '''
+array&.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 39
+message = "Prefer `grep` to `filter` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__26_behaves_like_regexp_match_with_safe_navigation_does_not_register_an_offense_when_the_receiver_is_hashnew"
+source = '''
+Hash&.new.filter { |x| x.match? /regexp/ }
+Hash&.new { |hash, key| :default }.filter { |x| x.match? /regexp/ }
+'''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_3_4_regexp_mismatch_with_itblock_s_grep_v"
+name = "rubocopcopstyleselectbyregexp_when_ruby__26_behaves_like_regexp_match_with_safe_navigation_does_not_register_an_offense_when_the_receiver_is_to_h"
 source = '''
-grep_v
+foo&.to_h.filter { |x| x.match? /regexp/ }
 '''
-ruby_version = ">= 3.4"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_7_regexp_match_with_numblock_s_select"
+name = "rubocopcopstyleselectbyregexp_when_ruby__26_behaves_like_regexp_match_with_safe_navigation_does_not_register_an_offense_when_the_receiver_is_to_hash"
 source = '''
-select
+foo&.to_hash.filter { |x| x.match? /regexp/ }
 '''
-ruby_version = ">= 2.7"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_7_regexp_match_with_numblock_s_grep"
-source = '''
-grep
-'''
-ruby_version = ">= 2.7"
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_7_regexp_match_with_numblock_s_find_all"
-source = '''
-find_all
-'''
-ruby_version = ">= 2.7"
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_7_regexp_match_with_numblock_s_grep"
-source = '''
-grep
-'''
-ruby_version = ">= 2.7"
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_7_regexp_match_with_numblock_s_filter"
-source = '''
-filter
-'''
-ruby_version = ">= 2.7"
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_7_regexp_match_with_numblock_s_grep"
-source = '''
-grep
-'''
-ruby_version = ">= 2.7"
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_7_regexp_mismatch_with_numblock_s_reject"
-source = '''
-reject
-'''
-ruby_version = ">= 2.7"
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_7_regexp_mismatch_with_numblock_s_grep"
-source = '''
-grep
-'''
-ruby_version = ">= 2.7"
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_7_regexp_match_with_numblock_s_reject"
-source = '''
-reject
-'''
-ruby_version = ">= 2.7"
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_7_regexp_match_with_numblock_s_grep_v"
-source = '''
-grep_v
-'''
-ruby_version = ">= 2.7"
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_7_regexp_mismatch_with_numblock_s_select"
-source = '''
-select
-'''
-ruby_version = ">= 2.7"
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_7_regexp_mismatch_with_numblock_s_grep_v"
-source = '''
-grep_v
-'''
-ruby_version = ">= 2.7"
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_7_regexp_mismatch_with_numblock_s_find_all"
-source = '''
-find_all
-'''
-ruby_version = ">= 2.7"
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_7_regexp_mismatch_with_numblock_s_grep_v"
-source = '''
-grep_v
-'''
-ruby_version = ">= 2.7"
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_7_regexp_mismatch_with_numblock_s_filter"
-source = '''
-filter
-'''
-ruby_version = ">= 2.7"
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_7_regexp_mismatch_with_numblock_s_grep_v"
-source = '''
-grep_v
-'''
-ruby_version = ">= 2.7"
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_6_regexp_match_filter"
-source = '''
-filter
-'''
-ruby_version = ">= 2.6"
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_6_regexp_match_grep"
-source = '''
-grep
-'''
-ruby_version = ">= 2.6"
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_6_regexp_match_with_safe_navigation_filter"
-source = '''
-filter
-'''
-ruby_version = ">= 2.6"
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_6_regexp_match_with_safe_navigation_grep"
-source = '''
-grep
-'''
-ruby_version = ">= 2.6"
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_6_regexp_mismatch_filter"
-source = '''
-filter
-'''
-ruby_version = ">= 2.6"
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_6_regexp_mismatch_grep_v"
-source = '''
-grep_v
-'''
-ruby_version = ">= 2.6"
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_6_regexp_mismatch_with_safe_navigation_filter"
-source = '''
-filter
-'''
-ruby_version = ">= 2.6"
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_6_regexp_mismatch_with_safe_navigation_grep_v"
-source = '''
-grep_v
-'''
-ruby_version = ">= 2.6"
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_5_does_not_register_an_offense_when_filter_with_regexp_match"
-source = '''
-array.filter { |x| x =~ /regexp/ }
-'''
-ruby_version = ">= 2.5"
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_5_does_not_register_an_offense_when_filter_with_regexp_mismatch"
+name = "rubocopcopstyleselectbyregexp_when_ruby__26_behaves_like_regexp_mismatch_with_filter_registers_an_offense_and_corrects_for_blockvar__regexp"
 source = '''
 array.filter { |x| x !~ /regexp/ }
 '''
-ruby_version = ">= 2.5"
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_3_regexp_match_select"
-source = '''
-select
+corrected = '''
+array.grep_v(/regexp/)
 '''
-ruby_version = ">= 2.3"
-offenses = []
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 34
+message = "Prefer `grep_v` to `filter` with a regexp match."
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_3_regexp_match_grep"
+name = "rubocopcopstyleselectbyregexp_when_ruby__26_behaves_like_regexp_mismatch_with_filter_registers_an_offense_and_corrects_for_blockvar__lvar"
 source = '''
-grep
+lvar = /regexp/
+array.filter { |x| x !~ lvar }
 '''
-ruby_version = ">= 2.3"
-offenses = []
+corrected = '''
+lvar = /regexp/
+array.grep_v(lvar)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 30
+message = "Prefer `grep_v` to `filter` with a regexp match."
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_3_regexp_match_with_safe_navigation_select"
+name = "rubocopcopstyleselectbyregexp_when_ruby__26_behaves_like_regexp_mismatch_with_filter_registers_an_offense_and_corrects_for_regexp__blockvar"
 source = '''
-select
+array.filter { |x| /regexp/ !~ x }
 '''
-ruby_version = ">= 2.3"
-offenses = []
+corrected = '''
+array.grep_v(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 34
+message = "Prefer `grep_v` to `filter` with a regexp match."
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_3_regexp_match_with_safe_navigation_grep"
+name = "rubocopcopstyleselectbyregexp_when_ruby__26_behaves_like_regexp_mismatch_with_filter_registers_an_offense_and_corrects_for_lvar__blockvar"
 source = '''
-grep
+lvar = /regexp/
+array.filter { |x| lvar !~ x }
 '''
-ruby_version = ">= 2.3"
-offenses = []
+corrected = '''
+lvar = /regexp/
+array.grep_v(lvar)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 30
+message = "Prefer `grep_v` to `filter` with a regexp match."
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_3_regexp_match_find_all"
+name = "rubocopcopstyleselectbyregexp_when_ruby__26_behaves_like_regexp_mismatch_with_filter_registers_an_offense_and_corrects_when_there_is_no_explicit_regexp"
 source = '''
-find_all
+array.filter { |x| x !~ y }
+array.filter { |x| x !~ REGEXP }
+array.filter { |x| x !~ foo.bar.baz(quux) }
 '''
-ruby_version = ">= 2.3"
-offenses = []
+corrected = '''
+array.grep_v(y)
+array.grep_v(REGEXP)
+array.grep_v(foo.bar.baz(quux))
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 27
+message = "Prefer `grep_v` to `filter` with a regexp match."
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 32
+message = "Prefer `grep_v` to `filter` with a regexp match."
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 43
+message = "Prefer `grep_v` to `filter` with a regexp match."
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_3_regexp_match_grep"
+name = "rubocopcopstyleselectbyregexp_when_ruby__26_behaves_like_regexp_mismatch_with_safe_navigation_with_filter_registers_an_offense_and_corrects_for_blockvar__regexp"
 source = '''
-grep
+array&.filter { |x| x !~ /regexp/ }
 '''
-ruby_version = ">= 2.3"
-offenses = []
+corrected = '''
+array&.grep_v(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 35
+message = "Prefer `grep_v` to `filter` with a regexp match."
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_3_regexp_match_with_safe_navigation_find_all"
+name = "rubocopcopstyleselectbyregexp_when_ruby__26_behaves_like_regexp_mismatch_with_safe_navigation_with_filter_registers_an_offense_and_corrects_for_blockvar__lvar"
 source = '''
-find_all
+lvar = /regexp/
+array&.filter { |x| x !~ lvar }
 '''
-ruby_version = ">= 2.3"
-offenses = []
+corrected = '''
+lvar = /regexp/
+array&.grep_v(lvar)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 31
+message = "Prefer `grep_v` to `filter` with a regexp match."
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_3_regexp_match_with_safe_navigation_grep"
+name = "rubocopcopstyleselectbyregexp_when_ruby__26_behaves_like_regexp_mismatch_with_safe_navigation_with_filter_registers_an_offense_and_corrects_for_regexp__blockvar"
 source = '''
-grep
+array&.filter { |x| /regexp/ !~ x }
 '''
-ruby_version = ">= 2.3"
-offenses = []
+corrected = '''
+array&.grep_v(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 35
+message = "Prefer `grep_v` to `filter` with a regexp match."
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_3_regexp_mismatch_reject"
+name = "rubocopcopstyleselectbyregexp_when_ruby__26_behaves_like_regexp_mismatch_with_safe_navigation_with_filter_registers_an_offense_and_corrects_for_lvar__blockvar"
 source = '''
-reject
+lvar = /regexp/
+array&.filter { |x| lvar !~ x }
 '''
-ruby_version = ">= 2.3"
-offenses = []
+corrected = '''
+lvar = /regexp/
+array&.grep_v(lvar)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 31
+message = "Prefer `grep_v` to `filter` with a regexp match."
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_3_regexp_mismatch_grep"
+name = "rubocopcopstyleselectbyregexp_when_ruby__26_behaves_like_regexp_mismatch_with_safe_navigation_with_filter_registers_an_offense_and_corrects_when_there_is_no_explicit_regexp"
 source = '''
-grep
+array&.filter { |x| x !~ y }
+array&.filter { |x| x !~ REGEXP }
+array&.filter { |x| x !~ foo.bar.baz(quux) }
 '''
-ruby_version = ">= 2.3"
-offenses = []
+corrected = '''
+array&.grep_v(y)
+array&.grep_v(REGEXP)
+array&.grep_v(foo.bar.baz(quux))
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 28
+message = "Prefer `grep_v` to `filter` with a regexp match."
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 33
+message = "Prefer `grep_v` to `filter` with a regexp match."
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 44
+message = "Prefer `grep_v` to `filter` with a regexp match."
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_3_regexp_mismatch_with_safe_navigation_reject"
+name = "rubocopcopstyleselectbyregexp_when_ruby__25_does_not_register_an_offense_when_filter_with_regexp_match"
 source = '''
-reject
+array.filter { |x| x =~ /regexp/ }
 '''
-ruby_version = ">= 2.3"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_3_regexp_mismatch_with_safe_navigation_grep"
+name = "rubocopcopstyleselectbyregexp_when_ruby__25_does_not_register_an_offense_when_filter_with_regexp_mismatch"
 source = '''
-grep
+array.filter { |x| x !~ /regexp/ }
 '''
-ruby_version = ">= 2.3"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_3_regexp_match_reject"
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_select_registers_an_offense_and_corrects_for_match"
 source = '''
-reject
+array.select { |x| x.match? /regexp/ }
 '''
-ruby_version = ">= 2.3"
-offenses = []
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 38
+message = "Prefer `grep` to `select` with a regexp match."
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_3_regexp_match_grep_v"
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_select_registers_an_offense_and_corrects_for_regexpmatch"
 source = '''
-grep_v
+array.select { |x| /regexp/.match? x }
 '''
-ruby_version = ">= 2.3"
-offenses = []
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 38
+message = "Prefer `grep` to `select` with a regexp match."
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_3_regexp_match_with_safe_navigation_reject"
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_select_registers_an_offense_and_corrects_for_blockvar__regexp"
 source = '''
-reject
+array.select { |x| x =~ /regexp/ }
 '''
-ruby_version = ">= 2.3"
-offenses = []
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 34
+message = "Prefer `grep` to `select` with a regexp match."
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_3_regexp_match_with_safe_navigation_grep_v"
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_select_registers_an_offense_and_corrects_for_blockvar__lvar"
 source = '''
-grep_v
+lvar = /regexp/
+array.select { |x| x =~ lvar }
 '''
-ruby_version = ">= 2.3"
-offenses = []
+corrected = '''
+lvar = /regexp/
+array.grep(lvar)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 30
+message = "Prefer `grep` to `select` with a regexp match."
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_3_regexp_mismatch_select"
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_select_registers_an_offense_and_corrects_for_regexp__blockvar"
 source = '''
-select
+array.select { |x| /regexp/ =~ x }
 '''
-ruby_version = ">= 2.3"
-offenses = []
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 34
+message = "Prefer `grep` to `select` with a regexp match."
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_3_regexp_mismatch_grep_v"
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_select_registers_an_offense_and_corrects_for_lvar__blockvar"
 source = '''
-grep_v
+lvar = /regexp/
+array.select { |x| lvar =~ x }
 '''
-ruby_version = ">= 2.3"
-offenses = []
+corrected = '''
+lvar = /regexp/
+array.grep(lvar)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 30
+message = "Prefer `grep` to `select` with a regexp match."
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_3_regexp_mismatch_with_safe_navigation_select"
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_select_registers_an_offense_and_corrects_when_there_is_no_explicit_regexp"
 source = '''
-select
+array.select { |x| x =~ y }
+array.select { |x| x =~ REGEXP }
+array.select { |x| x =~ foo.bar.baz(quux) }
 '''
-ruby_version = ">= 2.3"
-offenses = []
+corrected = '''
+array.grep(y)
+array.grep(REGEXP)
+array.grep(foo.bar.baz(quux))
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 27
+message = "Prefer `grep` to `select` with a regexp match."
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 32
+message = "Prefer `grep` to `select` with a regexp match."
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 43
+message = "Prefer `grep` to `select` with a regexp match."
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_3_regexp_mismatch_with_safe_navigation_grep_v"
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_select_registers_an_offense_and_corrects_with_a_multiline_block"
 source = '''
-grep_v
+array.select do |x|
+  x.match? /regexp/
+end
 '''
-ruby_version = ">= 2.3"
-offenses = []
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 19
+message = "Prefer `grep` to `select` with a regexp match."
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_3_regexp_mismatch_find_all"
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_select_does_not_register_an_offense_when_there_is_no_block"
 source = '''
-find_all
+array.select
 '''
-ruby_version = ">= 2.3"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_3_regexp_mismatch_grep_v"
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_select_does_not_register_an_offense_when_given_a_proc"
 source = '''
-grep_v
+array.select(&:even?)
 '''
-ruby_version = ">= 2.3"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_3_regexp_mismatch_with_safe_navigation_find_all"
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_select_does_not_register_an_offense_when_the_block_does_not_match_a_regexp"
 source = '''
-find_all
+array.select { |x| x.even? }
 '''
-ruby_version = ">= 2.3"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_3_regexp_mismatch_with_safe_navigation_grep_v"
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_select_does_not_register_an_offense_when_the_block_has_multiple_expressions"
 source = '''
-grep_v
+array.select do |x|
+  next if x.even?
+  x.match? /regexp/
+end
 '''
-ruby_version = ">= 2.3"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_2_regexp_match_select"
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_select_does_not_register_an_offense_when_the_block_arity_is_not_1"
 source = '''
-select
+obj.select { |x, y| y.match? /regexp/ }
 '''
-ruby_version = ">= 2.2"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_2_regexp_match_grep"
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_select_does_not_register_an_offense_when_the_block_uses_an_external_variable_in_a_regexp_match"
 source = '''
-grep
+array.select { |x| y.match? /regexp/ }
 '''
-ruby_version = ">= 2.2"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_2_regexp_match_find_all"
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_select_does_not_register_an_offense_when_the_block_param_is_a_method_argument"
 source = '''
-find_all
+array.select { |x| /regexp/.match?(foo(x)) }
 '''
-ruby_version = ">= 2.2"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_2_regexp_match_grep"
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_select_does_not_register_an_offense_when_the_block_body_is_empty"
 source = '''
-grep
+array.select { }
 '''
-ruby_version = ">= 2.2"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_2_regexp_mismatch_reject"
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_select_registers_an_offense_and_corrects_without_a_receiver"
 source = '''
-reject
+select { |x| x.match?(/regexp/) }
 '''
-ruby_version = ">= 2.2"
-offenses = []
+corrected = '''
+grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 33
+message = "Prefer `grep` to `select` with a regexp match."
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_2_regexp_mismatch_grep"
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_select_registers_an_offense_and_corrects_when_the_receiver_is_an_array"
 source = '''
-grep
+[].select { |x| x.match?(/regexp/) }
+foo.to_a.select { |x| x.match?(/regexp/) }
 '''
-ruby_version = ">= 2.2"
+corrected = '''
+[].grep(/regexp/)
+foo.to_a.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 36
+message = "Prefer `grep` to `select` with a regexp match."
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 42
+message = "Prefer `grep` to `select` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_select_registers_an_offense_and_corrects_when_the_receiver_is_a_range"
+source = '''
+('aaa'...'abc').select { |x| x.match?(/ab/) }
+'''
+corrected = '''
+('aaa'...'abc').grep(/ab/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 45
+message = "Prefer `grep` to `select` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_select_registers_an_offense_and_corrects_when_the_receiver_is_a_set"
+source = '''
+Set.new.select { |x| x.match?(/regexp/) }
+[].to_set.select { |x| x.match?(/regexp/) }
+'''
+corrected = '''
+Set.new.grep(/regexp/)
+[].to_set.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 41
+message = "Prefer `grep` to `select` with a regexp match."
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 43
+message = "Prefer `grep` to `select` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_select_does_not_register_an_offense_when_the_receiver_is_a_hash_literal"
+source = '''
+{}.select { |x| x.match? /regexp/ }
+{ foo: :bar }.select { |x| x.match? /regexp/ }
+'''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_2_does_not_register_an_offense_when_reject_with_regexp_match"
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_select_does_not_register_an_offense_when_the_receiver_is_hashnew"
+source = '''
+Hash.new.select { |x| x.match? /regexp/ }
+Hash.new(:default).select { |x| x.match? /regexp/ }
+Hash.new { |hash, key| :default }.select { |x| x.match? /regexp/ }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_select_does_not_register_an_offense_when_the_receiver_is_hash"
+source = '''
+Hash[h].select { |x| x.match? /regexp/ }
+Hash[:foo, 0, :bar, 1].select { |x| x.match? /regexp/ }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_select_does_not_register_an_offense_when_the_receiver_is_to_h"
+source = '''
+to_h.select { |x| x.match? /regexp/ }
+foo.to_h.select { |x| x.match? /regexp/ }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_select_does_not_register_an_offense_when_the_receiver_is_to_hash"
+source = '''
+to_hash.select { |x| x.match? /regexp/ }
+foo.to_hash.select { |x| x.match? /regexp/ }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_select_registers_an_offense_if_to_h_is_in_the_receiver_chain_but_not_the_actual_receiver"
+source = '''
+foo.to_h.bar.select { |x| x.match? /regexp/ }
+'''
+corrected = '''
+foo.to_h.bar.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 45
+message = "Prefer `grep` to `select` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_select_does_not_register_an_offense_when_the_receiver_is_env"
+source = '''
+ENV.select { |x| x.match? /regexp/ }
+::ENV.select { |x| x.match? /regexp/ }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_safe_navigation_registers_an_offense_and_corrects_for_match"
+source = '''
+array&.select { |x| x.match? /regexp/ }
+'''
+corrected = '''
+array&.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 39
+message = "Prefer `grep` to `select` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_safe_navigation_does_not_register_an_offense_when_the_receiver_is_hashnew"
+source = '''
+Hash&.new.select { |x| x.match? /regexp/ }
+Hash&.new { |hash, key| :default }.select { |x| x.match? /regexp/ }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_safe_navigation_does_not_register_an_offense_when_the_receiver_is_to_h"
+source = '''
+foo&.to_h.select { |x| x.match? /regexp/ }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_safe_navigation_does_not_register_an_offense_when_the_receiver_is_to_hash"
+source = '''
+foo&.to_hash.select { |x| x.match? /regexp/ }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_find_all_registers_an_offense_and_corrects_for_match"
+source = '''
+array.find_all { |x| x.match? /regexp/ }
+'''
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 40
+message = "Prefer `grep` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_find_all_registers_an_offense_and_corrects_for_regexpmatch"
+source = '''
+array.find_all { |x| /regexp/.match? x }
+'''
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 40
+message = "Prefer `grep` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_find_all_registers_an_offense_and_corrects_for_blockvar__regexp"
+source = '''
+array.find_all { |x| x =~ /regexp/ }
+'''
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 36
+message = "Prefer `grep` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_find_all_registers_an_offense_and_corrects_for_blockvar__lvar"
+source = '''
+lvar = /regexp/
+array.find_all { |x| x =~ lvar }
+'''
+corrected = '''
+lvar = /regexp/
+array.grep(lvar)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 32
+message = "Prefer `grep` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_find_all_registers_an_offense_and_corrects_for_regexp__blockvar"
+source = '''
+array.find_all { |x| /regexp/ =~ x }
+'''
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 36
+message = "Prefer `grep` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_find_all_registers_an_offense_and_corrects_for_lvar__blockvar"
+source = '''
+lvar = /regexp/
+array.find_all { |x| lvar =~ x }
+'''
+corrected = '''
+lvar = /regexp/
+array.grep(lvar)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 32
+message = "Prefer `grep` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_find_all_registers_an_offense_and_corrects_when_there_is_no_explicit_regexp"
+source = '''
+array.find_all { |x| x =~ y }
+array.find_all { |x| x =~ REGEXP }
+array.find_all { |x| x =~ foo.bar.baz(quux) }
+'''
+corrected = '''
+array.grep(y)
+array.grep(REGEXP)
+array.grep(foo.bar.baz(quux))
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 29
+message = "Prefer `grep` to `find_all` with a regexp match."
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 34
+message = "Prefer `grep` to `find_all` with a regexp match."
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 45
+message = "Prefer `grep` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_find_all_registers_an_offense_and_corrects_with_a_multiline_block"
+source = '''
+array.find_all do |x|
+  x.match? /regexp/
+end
+'''
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 21
+message = "Prefer `grep` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_find_all_does_not_register_an_offense_when_there_is_no_block"
+source = '''
+array.find_all
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_find_all_does_not_register_an_offense_when_given_a_proc"
+source = '''
+array.find_all(&:even?)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_find_all_does_not_register_an_offense_when_the_block_does_not_match_a_regexp"
+source = '''
+array.find_all { |x| x.even? }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_find_all_does_not_register_an_offense_when_the_block_has_multiple_expressions"
+source = '''
+array.find_all do |x|
+  next if x.even?
+  x.match? /regexp/
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_find_all_does_not_register_an_offense_when_the_block_arity_is_not_1"
+source = '''
+obj.find_all { |x, y| y.match? /regexp/ }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_find_all_does_not_register_an_offense_when_the_block_uses_an_external_variable_in_a_regexp_match"
+source = '''
+array.find_all { |x| y.match? /regexp/ }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_find_all_does_not_register_an_offense_when_the_block_param_is_a_method_argument"
+source = '''
+array.find_all { |x| /regexp/.match?(foo(x)) }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_find_all_does_not_register_an_offense_when_the_block_body_is_empty"
+source = '''
+array.find_all { }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_find_all_registers_an_offense_and_corrects_without_a_receiver"
+source = '''
+find_all { |x| x.match?(/regexp/) }
+'''
+corrected = '''
+grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 35
+message = "Prefer `grep` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_find_all_registers_an_offense_and_corrects_when_the_receiver_is_an_array"
+source = '''
+[].find_all { |x| x.match?(/regexp/) }
+foo.to_a.find_all { |x| x.match?(/regexp/) }
+'''
+corrected = '''
+[].grep(/regexp/)
+foo.to_a.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 38
+message = "Prefer `grep` to `find_all` with a regexp match."
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 44
+message = "Prefer `grep` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_find_all_registers_an_offense_and_corrects_when_the_receiver_is_a_range"
+source = '''
+('aaa'...'abc').find_all { |x| x.match?(/ab/) }
+'''
+corrected = '''
+('aaa'...'abc').grep(/ab/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 47
+message = "Prefer `grep` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_find_all_registers_an_offense_and_corrects_when_the_receiver_is_a_set"
+source = '''
+Set.new.find_all { |x| x.match?(/regexp/) }
+[].to_set.find_all { |x| x.match?(/regexp/) }
+'''
+corrected = '''
+Set.new.grep(/regexp/)
+[].to_set.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 43
+message = "Prefer `grep` to `find_all` with a regexp match."
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 45
+message = "Prefer `grep` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_find_all_does_not_register_an_offense_when_the_receiver_is_a_hash_literal"
+source = '''
+{}.find_all { |x| x.match? /regexp/ }
+{ foo: :bar }.find_all { |x| x.match? /regexp/ }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_find_all_does_not_register_an_offense_when_the_receiver_is_hashnew"
+source = '''
+Hash.new.find_all { |x| x.match? /regexp/ }
+Hash.new(:default).find_all { |x| x.match? /regexp/ }
+Hash.new { |hash, key| :default }.find_all { |x| x.match? /regexp/ }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_find_all_does_not_register_an_offense_when_the_receiver_is_hash"
+source = '''
+Hash[h].find_all { |x| x.match? /regexp/ }
+Hash[:foo, 0, :bar, 1].find_all { |x| x.match? /regexp/ }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_find_all_does_not_register_an_offense_when_the_receiver_is_to_h"
+source = '''
+to_h.find_all { |x| x.match? /regexp/ }
+foo.to_h.find_all { |x| x.match? /regexp/ }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_find_all_does_not_register_an_offense_when_the_receiver_is_to_hash"
+source = '''
+to_hash.find_all { |x| x.match? /regexp/ }
+foo.to_hash.find_all { |x| x.match? /regexp/ }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_find_all_registers_an_offense_if_to_h_is_in_the_receiver_chain_but_not_the_actual_receiver"
+source = '''
+foo.to_h.bar.find_all { |x| x.match? /regexp/ }
+'''
+corrected = '''
+foo.to_h.bar.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 47
+message = "Prefer `grep` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_find_all_does_not_register_an_offense_when_the_receiver_is_env"
+source = '''
+ENV.find_all { |x| x.match? /regexp/ }
+::ENV.find_all { |x| x.match? /regexp/ }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_safe_navigation_registers_an_offense_and_corrects_for_match_2"
+source = '''
+array&.find_all { |x| x.match? /regexp/ }
+'''
+corrected = '''
+array&.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 41
+message = "Prefer `grep` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_safe_navigation_does_not_register_an_offense_when_the_receiver_is_hashnew_2"
+source = '''
+Hash&.new.find_all { |x| x.match? /regexp/ }
+Hash&.new { |hash, key| :default }.find_all { |x| x.match? /regexp/ }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_safe_navigation_does_not_register_an_offense_when_the_receiver_is_to_h_2"
+source = '''
+foo&.to_h.find_all { |x| x.match? /regexp/ }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_safe_navigation_does_not_register_an_offense_when_the_receiver_is_to_hash_2"
+source = '''
+foo&.to_hash.find_all { |x| x.match? /regexp/ }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_mismatch_with_reject_registers_an_offense_and_corrects_for_blockvar__regexp"
+source = '''
+array.reject { |x| x !~ /regexp/ }
+'''
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 34
+message = "Prefer `grep` to `reject` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_mismatch_with_reject_registers_an_offense_and_corrects_for_blockvar__lvar"
+source = '''
+lvar = /regexp/
+array.reject { |x| x !~ lvar }
+'''
+corrected = '''
+lvar = /regexp/
+array.grep(lvar)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 30
+message = "Prefer `grep` to `reject` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_mismatch_with_reject_registers_an_offense_and_corrects_for_regexp__blockvar"
+source = '''
+array.reject { |x| /regexp/ !~ x }
+'''
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 34
+message = "Prefer `grep` to `reject` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_mismatch_with_reject_registers_an_offense_and_corrects_for_lvar__blockvar"
+source = '''
+lvar = /regexp/
+array.reject { |x| lvar !~ x }
+'''
+corrected = '''
+lvar = /regexp/
+array.grep(lvar)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 30
+message = "Prefer `grep` to `reject` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_mismatch_with_reject_registers_an_offense_and_corrects_when_there_is_no_explicit_regexp"
+source = '''
+array.reject { |x| x !~ y }
+array.reject { |x| x !~ REGEXP }
+array.reject { |x| x !~ foo.bar.baz(quux) }
+'''
+corrected = '''
+array.grep(y)
+array.grep(REGEXP)
+array.grep(foo.bar.baz(quux))
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 27
+message = "Prefer `grep` to `reject` with a regexp match."
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 32
+message = "Prefer `grep` to `reject` with a regexp match."
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 43
+message = "Prefer `grep` to `reject` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_mismatch_with_safe_navigation_with_reject_registers_an_offense_and_corrects_for_blockvar__regexp"
+source = '''
+array&.reject { |x| x !~ /regexp/ }
+'''
+corrected = '''
+array&.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 35
+message = "Prefer `grep` to `reject` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_mismatch_with_safe_navigation_with_reject_registers_an_offense_and_corrects_for_blockvar__lvar"
+source = '''
+lvar = /regexp/
+array&.reject { |x| x !~ lvar }
+'''
+corrected = '''
+lvar = /regexp/
+array&.grep(lvar)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 31
+message = "Prefer `grep` to `reject` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_mismatch_with_safe_navigation_with_reject_registers_an_offense_and_corrects_for_regexp__blockvar"
+source = '''
+array&.reject { |x| /regexp/ !~ x }
+'''
+corrected = '''
+array&.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 35
+message = "Prefer `grep` to `reject` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_mismatch_with_safe_navigation_with_reject_registers_an_offense_and_corrects_for_lvar__blockvar"
+source = '''
+lvar = /regexp/
+array&.reject { |x| lvar !~ x }
+'''
+corrected = '''
+lvar = /regexp/
+array&.grep(lvar)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 31
+message = "Prefer `grep` to `reject` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_mismatch_with_safe_navigation_with_reject_registers_an_offense_and_corrects_when_there_is_no_explicit_regexp"
+source = '''
+array&.reject { |x| x !~ y }
+array&.reject { |x| x !~ REGEXP }
+array&.reject { |x| x !~ foo.bar.baz(quux) }
+'''
+corrected = '''
+array&.grep(y)
+array&.grep(REGEXP)
+array&.grep(foo.bar.baz(quux))
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 28
+message = "Prefer `grep` to `reject` with a regexp match."
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 33
+message = "Prefer `grep` to `reject` with a regexp match."
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 44
+message = "Prefer `grep` to `reject` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_reject_registers_an_offense_and_corrects_for_match"
+source = '''
+array.reject { |x| x.match? /regexp/ }
+'''
+corrected = '''
+array.grep_v(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 38
+message = "Prefer `grep_v` to `reject` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_reject_registers_an_offense_and_corrects_for_regexpmatch"
+source = '''
+array.reject { |x| /regexp/.match? x }
+'''
+corrected = '''
+array.grep_v(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 38
+message = "Prefer `grep_v` to `reject` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_reject_registers_an_offense_and_corrects_for_blockvar__regexp"
 source = '''
 array.reject { |x| x =~ /regexp/ }
 '''
-ruby_version = ">= 2.2"
+corrected = '''
+array.grep_v(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 34
+message = "Prefer `grep_v` to `reject` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_reject_registers_an_offense_and_corrects_for_blockvar__lvar"
+source = '''
+lvar = /regexp/
+array.reject { |x| x =~ lvar }
+'''
+corrected = '''
+lvar = /regexp/
+array.grep_v(lvar)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 30
+message = "Prefer `grep_v` to `reject` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_reject_registers_an_offense_and_corrects_for_regexp__blockvar"
+source = '''
+array.reject { |x| /regexp/ =~ x }
+'''
+corrected = '''
+array.grep_v(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 34
+message = "Prefer `grep_v` to `reject` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_reject_registers_an_offense_and_corrects_for_lvar__blockvar"
+source = '''
+lvar = /regexp/
+array.reject { |x| lvar =~ x }
+'''
+corrected = '''
+lvar = /regexp/
+array.grep_v(lvar)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 30
+message = "Prefer `grep_v` to `reject` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_reject_registers_an_offense_and_corrects_when_there_is_no_explicit_regexp"
+source = '''
+array.reject { |x| x =~ y }
+array.reject { |x| x =~ REGEXP }
+array.reject { |x| x =~ foo.bar.baz(quux) }
+'''
+corrected = '''
+array.grep_v(y)
+array.grep_v(REGEXP)
+array.grep_v(foo.bar.baz(quux))
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 27
+message = "Prefer `grep_v` to `reject` with a regexp match."
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 32
+message = "Prefer `grep_v` to `reject` with a regexp match."
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 43
+message = "Prefer `grep_v` to `reject` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_reject_registers_an_offense_and_corrects_with_a_multiline_block"
+source = '''
+array.reject do |x|
+  x.match? /regexp/
+end
+'''
+corrected = '''
+array.grep_v(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 19
+message = "Prefer `grep_v` to `reject` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_reject_does_not_register_an_offense_when_there_is_no_block"
+source = '''
+array.reject
+'''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_2_does_not_register_an_offense_when_select_with_regexp_mismatch"
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_reject_does_not_register_an_offense_when_given_a_proc"
+source = '''
+array.reject(&:even?)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_reject_does_not_register_an_offense_when_the_block_does_not_match_a_regexp"
+source = '''
+array.reject { |x| x.even? }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_reject_does_not_register_an_offense_when_the_block_has_multiple_expressions"
+source = '''
+array.reject do |x|
+  next if x.even?
+  x.match? /regexp/
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_reject_does_not_register_an_offense_when_the_block_arity_is_not_1"
+source = '''
+obj.reject { |x, y| y.match? /regexp/ }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_reject_does_not_register_an_offense_when_the_block_uses_an_external_variable_in_a_regexp_match"
+source = '''
+array.reject { |x| y.match? /regexp/ }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_reject_does_not_register_an_offense_when_the_block_param_is_a_method_argument"
+source = '''
+array.reject { |x| /regexp/.match?(foo(x)) }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_reject_does_not_register_an_offense_when_the_block_body_is_empty"
+source = '''
+array.reject { }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_reject_registers_an_offense_and_corrects_without_a_receiver"
+source = '''
+reject { |x| x.match?(/regexp/) }
+'''
+corrected = '''
+grep_v(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 33
+message = "Prefer `grep_v` to `reject` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_reject_registers_an_offense_and_corrects_when_the_receiver_is_an_array"
+source = '''
+[].reject { |x| x.match?(/regexp/) }
+foo.to_a.reject { |x| x.match?(/regexp/) }
+'''
+corrected = '''
+[].grep_v(/regexp/)
+foo.to_a.grep_v(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 36
+message = "Prefer `grep_v` to `reject` with a regexp match."
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 42
+message = "Prefer `grep_v` to `reject` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_reject_registers_an_offense_and_corrects_when_the_receiver_is_a_range"
+source = '''
+('aaa'...'abc').reject { |x| x.match?(/ab/) }
+'''
+corrected = '''
+('aaa'...'abc').grep_v(/ab/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 45
+message = "Prefer `grep_v` to `reject` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_reject_registers_an_offense_and_corrects_when_the_receiver_is_a_set"
+source = '''
+Set.new.reject { |x| x.match?(/regexp/) }
+[].to_set.reject { |x| x.match?(/regexp/) }
+'''
+corrected = '''
+Set.new.grep_v(/regexp/)
+[].to_set.grep_v(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 41
+message = "Prefer `grep_v` to `reject` with a regexp match."
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 43
+message = "Prefer `grep_v` to `reject` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_reject_does_not_register_an_offense_when_the_receiver_is_a_hash_literal"
+source = '''
+{}.reject { |x| x.match? /regexp/ }
+{ foo: :bar }.reject { |x| x.match? /regexp/ }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_reject_does_not_register_an_offense_when_the_receiver_is_hashnew"
+source = '''
+Hash.new.reject { |x| x.match? /regexp/ }
+Hash.new(:default).reject { |x| x.match? /regexp/ }
+Hash.new { |hash, key| :default }.reject { |x| x.match? /regexp/ }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_reject_does_not_register_an_offense_when_the_receiver_is_hash"
+source = '''
+Hash[h].reject { |x| x.match? /regexp/ }
+Hash[:foo, 0, :bar, 1].reject { |x| x.match? /regexp/ }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_reject_does_not_register_an_offense_when_the_receiver_is_to_h"
+source = '''
+to_h.reject { |x| x.match? /regexp/ }
+foo.to_h.reject { |x| x.match? /regexp/ }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_reject_does_not_register_an_offense_when_the_receiver_is_to_hash"
+source = '''
+to_hash.reject { |x| x.match? /regexp/ }
+foo.to_hash.reject { |x| x.match? /regexp/ }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_reject_registers_an_offense_if_to_h_is_in_the_receiver_chain_but_not_the_actual_receiver"
+source = '''
+foo.to_h.bar.reject { |x| x.match? /regexp/ }
+'''
+corrected = '''
+foo.to_h.bar.grep_v(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 45
+message = "Prefer `grep_v` to `reject` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_reject_does_not_register_an_offense_when_the_receiver_is_env"
+source = '''
+ENV.reject { |x| x.match? /regexp/ }
+::ENV.reject { |x| x.match? /regexp/ }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_safe_navigation_registers_an_offense_and_corrects_for_match_3"
+source = '''
+array&.reject { |x| x.match? /regexp/ }
+'''
+corrected = '''
+array&.grep_v(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 39
+message = "Prefer `grep_v` to `reject` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_safe_navigation_does_not_register_an_offense_when_the_receiver_is_hashnew_3"
+source = '''
+Hash&.new.reject { |x| x.match? /regexp/ }
+Hash&.new { |hash, key| :default }.reject { |x| x.match? /regexp/ }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_safe_navigation_does_not_register_an_offense_when_the_receiver_is_to_h_3"
+source = '''
+foo&.to_h.reject { |x| x.match? /regexp/ }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_match_with_safe_navigation_does_not_register_an_offense_when_the_receiver_is_to_hash_3"
+source = '''
+foo&.to_hash.reject { |x| x.match? /regexp/ }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_mismatch_with_select_registers_an_offense_and_corrects_for_blockvar__regexp"
 source = '''
 array.select { |x| x !~ /regexp/ }
 '''
-ruby_version = ">= 2.2"
-offenses = []
+corrected = '''
+array.grep_v(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 34
+message = "Prefer `grep_v` to `select` with a regexp match."
 
 [[tests]]
-name = "rubocop_cop_style_selectbyregexp_when_ruby_2_2_does_not_register_an_offense_when_find_all_with_regexp_mismatch"
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_mismatch_with_select_registers_an_offense_and_corrects_for_blockvar__lvar"
+source = '''
+lvar = /regexp/
+array.select { |x| x !~ lvar }
+'''
+corrected = '''
+lvar = /regexp/
+array.grep_v(lvar)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 30
+message = "Prefer `grep_v` to `select` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_mismatch_with_select_registers_an_offense_and_corrects_for_regexp__blockvar"
+source = '''
+array.select { |x| /regexp/ !~ x }
+'''
+corrected = '''
+array.grep_v(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 34
+message = "Prefer `grep_v` to `select` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_mismatch_with_select_registers_an_offense_and_corrects_for_lvar__blockvar"
+source = '''
+lvar = /regexp/
+array.select { |x| lvar !~ x }
+'''
+corrected = '''
+lvar = /regexp/
+array.grep_v(lvar)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 30
+message = "Prefer `grep_v` to `select` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_mismatch_with_select_registers_an_offense_and_corrects_when_there_is_no_explicit_regexp"
+source = '''
+array.select { |x| x !~ y }
+array.select { |x| x !~ REGEXP }
+array.select { |x| x !~ foo.bar.baz(quux) }
+'''
+corrected = '''
+array.grep_v(y)
+array.grep_v(REGEXP)
+array.grep_v(foo.bar.baz(quux))
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 27
+message = "Prefer `grep_v` to `select` with a regexp match."
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 32
+message = "Prefer `grep_v` to `select` with a regexp match."
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 43
+message = "Prefer `grep_v` to `select` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_mismatch_with_safe_navigation_with_select_registers_an_offense_and_corrects_for_blockvar__regexp"
+source = '''
+array&.select { |x| x !~ /regexp/ }
+'''
+corrected = '''
+array&.grep_v(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 35
+message = "Prefer `grep_v` to `select` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_mismatch_with_safe_navigation_with_select_registers_an_offense_and_corrects_for_blockvar__lvar"
+source = '''
+lvar = /regexp/
+array&.select { |x| x !~ lvar }
+'''
+corrected = '''
+lvar = /regexp/
+array&.grep_v(lvar)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 31
+message = "Prefer `grep_v` to `select` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_mismatch_with_safe_navigation_with_select_registers_an_offense_and_corrects_for_regexp__blockvar"
+source = '''
+array&.select { |x| /regexp/ !~ x }
+'''
+corrected = '''
+array&.grep_v(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 35
+message = "Prefer `grep_v` to `select` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_mismatch_with_safe_navigation_with_select_registers_an_offense_and_corrects_for_lvar__blockvar"
+source = '''
+lvar = /regexp/
+array&.select { |x| lvar !~ x }
+'''
+corrected = '''
+lvar = /regexp/
+array&.grep_v(lvar)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 31
+message = "Prefer `grep_v` to `select` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_mismatch_with_safe_navigation_with_select_registers_an_offense_and_corrects_when_there_is_no_explicit_regexp"
+source = '''
+array&.select { |x| x !~ y }
+array&.select { |x| x !~ REGEXP }
+array&.select { |x| x !~ foo.bar.baz(quux) }
+'''
+corrected = '''
+array&.grep_v(y)
+array&.grep_v(REGEXP)
+array&.grep_v(foo.bar.baz(quux))
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 28
+message = "Prefer `grep_v` to `select` with a regexp match."
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 33
+message = "Prefer `grep_v` to `select` with a regexp match."
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 44
+message = "Prefer `grep_v` to `select` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_mismatch_with_find_all_registers_an_offense_and_corrects_for_blockvar__regexp"
 source = '''
 array.find_all { |x| x !~ /regexp/ }
 '''
-ruby_version = ">= 2.2"
+corrected = '''
+array.grep_v(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 36
+message = "Prefer `grep_v` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_mismatch_with_find_all_registers_an_offense_and_corrects_for_blockvar__lvar"
+source = '''
+lvar = /regexp/
+array.find_all { |x| x !~ lvar }
+'''
+corrected = '''
+lvar = /regexp/
+array.grep_v(lvar)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 32
+message = "Prefer `grep_v` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_mismatch_with_find_all_registers_an_offense_and_corrects_for_regexp__blockvar"
+source = '''
+array.find_all { |x| /regexp/ !~ x }
+'''
+corrected = '''
+array.grep_v(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 36
+message = "Prefer `grep_v` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_mismatch_with_find_all_registers_an_offense_and_corrects_for_lvar__blockvar"
+source = '''
+lvar = /regexp/
+array.find_all { |x| lvar !~ x }
+'''
+corrected = '''
+lvar = /regexp/
+array.grep_v(lvar)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 32
+message = "Prefer `grep_v` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_mismatch_with_find_all_registers_an_offense_and_corrects_when_there_is_no_explicit_regexp"
+source = '''
+array.find_all { |x| x !~ y }
+array.find_all { |x| x !~ REGEXP }
+array.find_all { |x| x !~ foo.bar.baz(quux) }
+'''
+corrected = '''
+array.grep_v(y)
+array.grep_v(REGEXP)
+array.grep_v(foo.bar.baz(quux))
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 29
+message = "Prefer `grep_v` to `find_all` with a regexp match."
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 34
+message = "Prefer `grep_v` to `find_all` with a regexp match."
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 45
+message = "Prefer `grep_v` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_mismatch_with_safe_navigation_with_find_all_registers_an_offense_and_corrects_for_blockvar__regexp"
+source = '''
+array&.find_all { |x| x !~ /regexp/ }
+'''
+corrected = '''
+array&.grep_v(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 37
+message = "Prefer `grep_v` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_mismatch_with_safe_navigation_with_find_all_registers_an_offense_and_corrects_for_blockvar__lvar"
+source = '''
+lvar = /regexp/
+array&.find_all { |x| x !~ lvar }
+'''
+corrected = '''
+lvar = /regexp/
+array&.grep_v(lvar)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 33
+message = "Prefer `grep_v` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_mismatch_with_safe_navigation_with_find_all_registers_an_offense_and_corrects_for_regexp__blockvar"
+source = '''
+array&.find_all { |x| /regexp/ !~ x }
+'''
+corrected = '''
+array&.grep_v(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 37
+message = "Prefer `grep_v` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_mismatch_with_safe_navigation_with_find_all_registers_an_offense_and_corrects_for_lvar__blockvar"
+source = '''
+lvar = /regexp/
+array&.find_all { |x| lvar !~ x }
+'''
+corrected = '''
+lvar = /regexp/
+array&.grep_v(lvar)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 33
+message = "Prefer `grep_v` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__23_behaves_like_regexp_mismatch_with_safe_navigation_with_find_all_registers_an_offense_and_corrects_when_there_is_no_explicit_regexp"
+source = '''
+array&.find_all { |x| x !~ y }
+array&.find_all { |x| x !~ REGEXP }
+array&.find_all { |x| x !~ foo.bar.baz(quux) }
+'''
+corrected = '''
+array&.grep_v(y)
+array&.grep_v(REGEXP)
+array&.grep_v(foo.bar.baz(quux))
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 30
+message = "Prefer `grep_v` to `find_all` with a regexp match."
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 35
+message = "Prefer `grep_v` to `find_all` with a regexp match."
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 46
+message = "Prefer `grep_v` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_does_not_register_an_offense_when_reject_with_regexp_match"
+source = '''
+array.reject { |x| x =~ /regexp/ }
+'''
 offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_does_not_register_an_offense_when_select_with_regexp_mismatch"
+source = '''
+array.select { |x| x !~ /regexp/ }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_does_not_register_an_offense_when_find_all_with_regexp_mismatch"
+source = '''
+array.find_all { |x| x !~ /regexp/ }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_select_registers_an_offense_and_corrects_for_match"
+source = '''
+array.select { |x| x.match? /regexp/ }
+'''
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 38
+message = "Prefer `grep` to `select` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_select_registers_an_offense_and_corrects_for_regexpmatch"
+source = '''
+array.select { |x| /regexp/.match? x }
+'''
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 38
+message = "Prefer `grep` to `select` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_select_registers_an_offense_and_corrects_for_blockvar__regexp"
+source = '''
+array.select { |x| x =~ /regexp/ }
+'''
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 34
+message = "Prefer `grep` to `select` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_select_registers_an_offense_and_corrects_for_blockvar__lvar"
+source = '''
+lvar = /regexp/
+array.select { |x| x =~ lvar }
+'''
+corrected = '''
+lvar = /regexp/
+array.grep(lvar)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 30
+message = "Prefer `grep` to `select` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_select_registers_an_offense_and_corrects_for_regexp__blockvar"
+source = '''
+array.select { |x| /regexp/ =~ x }
+'''
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 34
+message = "Prefer `grep` to `select` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_select_registers_an_offense_and_corrects_for_lvar__blockvar"
+source = '''
+lvar = /regexp/
+array.select { |x| lvar =~ x }
+'''
+corrected = '''
+lvar = /regexp/
+array.grep(lvar)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 30
+message = "Prefer `grep` to `select` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_select_registers_an_offense_and_corrects_when_there_is_no_explicit_regexp"
+source = '''
+array.select { |x| x =~ y }
+array.select { |x| x =~ REGEXP }
+array.select { |x| x =~ foo.bar.baz(quux) }
+'''
+corrected = '''
+array.grep(y)
+array.grep(REGEXP)
+array.grep(foo.bar.baz(quux))
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 27
+message = "Prefer `grep` to `select` with a regexp match."
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 32
+message = "Prefer `grep` to `select` with a regexp match."
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 43
+message = "Prefer `grep` to `select` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_select_registers_an_offense_and_corrects_with_a_multiline_block"
+source = '''
+array.select do |x|
+  x.match? /regexp/
+end
+'''
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 19
+message = "Prefer `grep` to `select` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_select_does_not_register_an_offense_when_there_is_no_block"
+source = '''
+array.select
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_select_does_not_register_an_offense_when_given_a_proc"
+source = '''
+array.select(&:even?)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_select_does_not_register_an_offense_when_the_block_does_not_match_a_regexp"
+source = '''
+array.select { |x| x.even? }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_select_does_not_register_an_offense_when_the_block_has_multiple_expressions"
+source = '''
+array.select do |x|
+  next if x.even?
+  x.match? /regexp/
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_select_does_not_register_an_offense_when_the_block_arity_is_not_1"
+source = '''
+obj.select { |x, y| y.match? /regexp/ }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_select_does_not_register_an_offense_when_the_block_uses_an_external_variable_in_a_regexp_match"
+source = '''
+array.select { |x| y.match? /regexp/ }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_select_does_not_register_an_offense_when_the_block_param_is_a_method_argument"
+source = '''
+array.select { |x| /regexp/.match?(foo(x)) }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_select_does_not_register_an_offense_when_the_block_body_is_empty"
+source = '''
+array.select { }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_select_registers_an_offense_and_corrects_without_a_receiver"
+source = '''
+select { |x| x.match?(/regexp/) }
+'''
+corrected = '''
+grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 33
+message = "Prefer `grep` to `select` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_select_registers_an_offense_and_corrects_when_the_receiver_is_an_array"
+source = '''
+[].select { |x| x.match?(/regexp/) }
+foo.to_a.select { |x| x.match?(/regexp/) }
+'''
+corrected = '''
+[].grep(/regexp/)
+foo.to_a.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 36
+message = "Prefer `grep` to `select` with a regexp match."
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 42
+message = "Prefer `grep` to `select` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_select_registers_an_offense_and_corrects_when_the_receiver_is_a_range"
+source = '''
+('aaa'...'abc').select { |x| x.match?(/ab/) }
+'''
+corrected = '''
+('aaa'...'abc').grep(/ab/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 45
+message = "Prefer `grep` to `select` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_select_registers_an_offense_and_corrects_when_the_receiver_is_a_set"
+source = '''
+Set.new.select { |x| x.match?(/regexp/) }
+[].to_set.select { |x| x.match?(/regexp/) }
+'''
+corrected = '''
+Set.new.grep(/regexp/)
+[].to_set.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 41
+message = "Prefer `grep` to `select` with a regexp match."
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 43
+message = "Prefer `grep` to `select` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_select_does_not_register_an_offense_when_the_receiver_is_a_hash_literal"
+source = '''
+{}.select { |x| x.match? /regexp/ }
+{ foo: :bar }.select { |x| x.match? /regexp/ }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_select_does_not_register_an_offense_when_the_receiver_is_hashnew"
+source = '''
+Hash.new.select { |x| x.match? /regexp/ }
+Hash.new(:default).select { |x| x.match? /regexp/ }
+Hash.new { |hash, key| :default }.select { |x| x.match? /regexp/ }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_select_does_not_register_an_offense_when_the_receiver_is_hash"
+source = '''
+Hash[h].select { |x| x.match? /regexp/ }
+Hash[:foo, 0, :bar, 1].select { |x| x.match? /regexp/ }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_select_does_not_register_an_offense_when_the_receiver_is_to_h"
+source = '''
+to_h.select { |x| x.match? /regexp/ }
+foo.to_h.select { |x| x.match? /regexp/ }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_select_does_not_register_an_offense_when_the_receiver_is_to_hash"
+source = '''
+to_hash.select { |x| x.match? /regexp/ }
+foo.to_hash.select { |x| x.match? /regexp/ }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_select_registers_an_offense_if_to_h_is_in_the_receiver_chain_but_not_the_actual_receiver"
+source = '''
+foo.to_h.bar.select { |x| x.match? /regexp/ }
+'''
+corrected = '''
+foo.to_h.bar.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 45
+message = "Prefer `grep` to `select` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_select_does_not_register_an_offense_when_the_receiver_is_env"
+source = '''
+ENV.select { |x| x.match? /regexp/ }
+::ENV.select { |x| x.match? /regexp/ }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_find_all_registers_an_offense_and_corrects_for_match"
+source = '''
+array.find_all { |x| x.match? /regexp/ }
+'''
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 40
+message = "Prefer `grep` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_find_all_registers_an_offense_and_corrects_for_regexpmatch"
+source = '''
+array.find_all { |x| /regexp/.match? x }
+'''
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 40
+message = "Prefer `grep` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_find_all_registers_an_offense_and_corrects_for_blockvar__regexp"
+source = '''
+array.find_all { |x| x =~ /regexp/ }
+'''
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 36
+message = "Prefer `grep` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_find_all_registers_an_offense_and_corrects_for_blockvar__lvar"
+source = '''
+lvar = /regexp/
+array.find_all { |x| x =~ lvar }
+'''
+corrected = '''
+lvar = /regexp/
+array.grep(lvar)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 32
+message = "Prefer `grep` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_find_all_registers_an_offense_and_corrects_for_regexp__blockvar"
+source = '''
+array.find_all { |x| /regexp/ =~ x }
+'''
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 36
+message = "Prefer `grep` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_find_all_registers_an_offense_and_corrects_for_lvar__blockvar"
+source = '''
+lvar = /regexp/
+array.find_all { |x| lvar =~ x }
+'''
+corrected = '''
+lvar = /regexp/
+array.grep(lvar)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 32
+message = "Prefer `grep` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_find_all_registers_an_offense_and_corrects_when_there_is_no_explicit_regexp"
+source = '''
+array.find_all { |x| x =~ y }
+array.find_all { |x| x =~ REGEXP }
+array.find_all { |x| x =~ foo.bar.baz(quux) }
+'''
+corrected = '''
+array.grep(y)
+array.grep(REGEXP)
+array.grep(foo.bar.baz(quux))
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 29
+message = "Prefer `grep` to `find_all` with a regexp match."
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 34
+message = "Prefer `grep` to `find_all` with a regexp match."
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 45
+message = "Prefer `grep` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_find_all_registers_an_offense_and_corrects_with_a_multiline_block"
+source = '''
+array.find_all do |x|
+  x.match? /regexp/
+end
+'''
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 21
+message = "Prefer `grep` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_find_all_does_not_register_an_offense_when_there_is_no_block"
+source = '''
+array.find_all
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_find_all_does_not_register_an_offense_when_given_a_proc"
+source = '''
+array.find_all(&:even?)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_find_all_does_not_register_an_offense_when_the_block_does_not_match_a_regexp"
+source = '''
+array.find_all { |x| x.even? }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_find_all_does_not_register_an_offense_when_the_block_has_multiple_expressions"
+source = '''
+array.find_all do |x|
+  next if x.even?
+  x.match? /regexp/
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_find_all_does_not_register_an_offense_when_the_block_arity_is_not_1"
+source = '''
+obj.find_all { |x, y| y.match? /regexp/ }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_find_all_does_not_register_an_offense_when_the_block_uses_an_external_variable_in_a_regexp_match"
+source = '''
+array.find_all { |x| y.match? /regexp/ }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_find_all_does_not_register_an_offense_when_the_block_param_is_a_method_argument"
+source = '''
+array.find_all { |x| /regexp/.match?(foo(x)) }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_find_all_does_not_register_an_offense_when_the_block_body_is_empty"
+source = '''
+array.find_all { }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_find_all_registers_an_offense_and_corrects_without_a_receiver"
+source = '''
+find_all { |x| x.match?(/regexp/) }
+'''
+corrected = '''
+grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 35
+message = "Prefer `grep` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_find_all_registers_an_offense_and_corrects_when_the_receiver_is_an_array"
+source = '''
+[].find_all { |x| x.match?(/regexp/) }
+foo.to_a.find_all { |x| x.match?(/regexp/) }
+'''
+corrected = '''
+[].grep(/regexp/)
+foo.to_a.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 38
+message = "Prefer `grep` to `find_all` with a regexp match."
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 44
+message = "Prefer `grep` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_find_all_registers_an_offense_and_corrects_when_the_receiver_is_a_range"
+source = '''
+('aaa'...'abc').find_all { |x| x.match?(/ab/) }
+'''
+corrected = '''
+('aaa'...'abc').grep(/ab/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 47
+message = "Prefer `grep` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_find_all_registers_an_offense_and_corrects_when_the_receiver_is_a_set"
+source = '''
+Set.new.find_all { |x| x.match?(/regexp/) }
+[].to_set.find_all { |x| x.match?(/regexp/) }
+'''
+corrected = '''
+Set.new.grep(/regexp/)
+[].to_set.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 43
+message = "Prefer `grep` to `find_all` with a regexp match."
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 45
+message = "Prefer `grep` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_find_all_does_not_register_an_offense_when_the_receiver_is_a_hash_literal"
+source = '''
+{}.find_all { |x| x.match? /regexp/ }
+{ foo: :bar }.find_all { |x| x.match? /regexp/ }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_find_all_does_not_register_an_offense_when_the_receiver_is_hashnew"
+source = '''
+Hash.new.find_all { |x| x.match? /regexp/ }
+Hash.new(:default).find_all { |x| x.match? /regexp/ }
+Hash.new { |hash, key| :default }.find_all { |x| x.match? /regexp/ }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_find_all_does_not_register_an_offense_when_the_receiver_is_hash"
+source = '''
+Hash[h].find_all { |x| x.match? /regexp/ }
+Hash[:foo, 0, :bar, 1].find_all { |x| x.match? /regexp/ }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_find_all_does_not_register_an_offense_when_the_receiver_is_to_h"
+source = '''
+to_h.find_all { |x| x.match? /regexp/ }
+foo.to_h.find_all { |x| x.match? /regexp/ }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_find_all_does_not_register_an_offense_when_the_receiver_is_to_hash"
+source = '''
+to_hash.find_all { |x| x.match? /regexp/ }
+foo.to_hash.find_all { |x| x.match? /regexp/ }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_find_all_registers_an_offense_if_to_h_is_in_the_receiver_chain_but_not_the_actual_receiver"
+source = '''
+foo.to_h.bar.find_all { |x| x.match? /regexp/ }
+'''
+corrected = '''
+foo.to_h.bar.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 47
+message = "Prefer `grep` to `find_all` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_match_with_find_all_does_not_register_an_offense_when_the_receiver_is_env"
+source = '''
+ENV.find_all { |x| x.match? /regexp/ }
+::ENV.find_all { |x| x.match? /regexp/ }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_mismatch_with_reject_registers_an_offense_and_corrects_for_blockvar__regexp"
+source = '''
+array.reject { |x| x !~ /regexp/ }
+'''
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 34
+message = "Prefer `grep` to `reject` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_mismatch_with_reject_registers_an_offense_and_corrects_for_blockvar__lvar"
+source = '''
+lvar = /regexp/
+array.reject { |x| x !~ lvar }
+'''
+corrected = '''
+lvar = /regexp/
+array.grep(lvar)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 30
+message = "Prefer `grep` to `reject` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_mismatch_with_reject_registers_an_offense_and_corrects_for_regexp__blockvar"
+source = '''
+array.reject { |x| /regexp/ !~ x }
+'''
+corrected = '''
+array.grep(/regexp/)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 34
+message = "Prefer `grep` to `reject` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_mismatch_with_reject_registers_an_offense_and_corrects_for_lvar__blockvar"
+source = '''
+lvar = /regexp/
+array.reject { |x| lvar !~ x }
+'''
+corrected = '''
+lvar = /regexp/
+array.grep(lvar)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 30
+message = "Prefer `grep` to `reject` with a regexp match."
+
+[[tests]]
+name = "rubocopcopstyleselectbyregexp_when_ruby__22_behaves_like_regexp_mismatch_with_reject_registers_an_offense_and_corrects_when_there_is_no_explicit_regexp"
+source = '''
+array.reject { |x| x !~ y }
+array.reject { |x| x !~ REGEXP }
+array.reject { |x| x !~ foo.bar.baz(quux) }
+'''
+corrected = '''
+array.grep(y)
+array.grep(REGEXP)
+array.grep(foo.bar.baz(quux))
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 27
+message = "Prefer `grep` to `reject` with a regexp match."
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 32
+message = "Prefer `grep` to `reject` with a regexp match."
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 43
+message = "Prefer `grep` to `reject` with a regexp match."

@@ -4,128 +4,1449 @@ severity = "warning"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_lint_uselessor"
+name = "rubocopcoplintuselessor_registers_an_offense_with_xto_a__fallback"
 source = '''
-x.#{method} || fallback
+x.to_a || fallback
 '''
 corrected = '''
-x.#{method}
+x.to_a
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
-column_start = 0
-column_end = 23
-message = "`fallback` will never evaluate because `x.#{method}` always returns a truthy value."
+column_start = 7
+column_end = 18
+message = "`fallback` will never evaluate because `x.to_a` always returns a truthy value."
 
 [[tests]]
-name = "rubocop_cop_lint_uselessor"
+name = "rubocopcoplintuselessor_registers_an_offense_with_xto_a_or_fallback"
 source = '''
-x.#{method} or fallback
+x.to_a or fallback
 '''
 corrected = '''
-x.#{method}
+x.to_a
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
-column_start = 0
-column_end = 23
-message = "`fallback` will never evaluate because `x.#{method}` always returns a truthy value."
+column_start = 7
+column_end = 18
+message = "`fallback` will never evaluate because `x.to_a` always returns a truthy value."
 
 [[tests]]
-name = "rubocop_cop_lint_uselessor"
+name = "rubocopcoplintuselessor_registers_an_offense_with_xto_a__fallback__other_fallback"
 source = '''
-x.#{method} || fallback || other_fallback
+x.to_a || fallback || other_fallback
 '''
 corrected = '''
-x.#{method}
+x.to_a
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
-column_start = 0
-column_end = 41
-message = "`fallback` will never evaluate because `x.#{method}` always returns a truthy value."
+column_start = 7
+column_end = 18
+message = "`fallback` will never evaluate because `x.to_a` always returns a truthy value."
 
 [[tests]]
-name = "rubocop_cop_lint_uselessor"
+name = "rubocopcoplintuselessor_registers_an_offense_with_foo__xto_a__fallback"
 source = '''
-foo || x.#{method} || fallback
+foo || x.to_a || fallback
 '''
 corrected = '''
-foo || x.#{method}
+foo || x.to_a
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
-column_start = 0
+column_start = 14
+column_end = 25
+message = "`fallback` will never evaluate because `x.to_a` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_foo__xto_a__fallback_2"
+source = '''
+(foo || x.to_a) || fallback
+'''
+corrected = '''
+(foo || x.to_a)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 16
+column_end = 27
+message = "`fallback` will never evaluate because `x.to_a` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_foo__xto_a__operand"
+source = '''
+(foo || x.to_a) && operand
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_foo__xto_a"
+source = '''
+foo || x.to_a
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_xto_a__fallback"
+source = '''
+x&.to_a || fallback
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_xto_a"
+source = '''
+x.to_a
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_xto_c__fallback"
+source = '''
+x.to_c || fallback
+'''
+corrected = '''
+x.to_c
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 18
+message = "`fallback` will never evaluate because `x.to_c` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_xto_c_or_fallback"
+source = '''
+x.to_c or fallback
+'''
+corrected = '''
+x.to_c
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 18
+message = "`fallback` will never evaluate because `x.to_c` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_xto_c__fallback__other_fallback"
+source = '''
+x.to_c || fallback || other_fallback
+'''
+corrected = '''
+x.to_c
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 18
+message = "`fallback` will never evaluate because `x.to_c` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_foo__xto_c__fallback"
+source = '''
+foo || x.to_c || fallback
+'''
+corrected = '''
+foo || x.to_c
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 14
+column_end = 25
+message = "`fallback` will never evaluate because `x.to_c` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_foo__xto_c__fallback_2"
+source = '''
+(foo || x.to_c) || fallback
+'''
+corrected = '''
+(foo || x.to_c)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 16
+column_end = 27
+message = "`fallback` will never evaluate because `x.to_c` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_foo__xto_c__operand"
+source = '''
+(foo || x.to_c) && operand
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_foo__xto_c"
+source = '''
+foo || x.to_c
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_xto_c__fallback"
+source = '''
+x&.to_c || fallback
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_xto_c"
+source = '''
+x.to_c
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_xto_d__fallback"
+source = '''
+x.to_d || fallback
+'''
+corrected = '''
+x.to_d
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 18
+message = "`fallback` will never evaluate because `x.to_d` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_xto_d_or_fallback"
+source = '''
+x.to_d or fallback
+'''
+corrected = '''
+x.to_d
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 18
+message = "`fallback` will never evaluate because `x.to_d` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_xto_d__fallback__other_fallback"
+source = '''
+x.to_d || fallback || other_fallback
+'''
+corrected = '''
+x.to_d
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 18
+message = "`fallback` will never evaluate because `x.to_d` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_foo__xto_d__fallback"
+source = '''
+foo || x.to_d || fallback
+'''
+corrected = '''
+foo || x.to_d
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 14
+column_end = 25
+message = "`fallback` will never evaluate because `x.to_d` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_foo__xto_d__fallback_2"
+source = '''
+(foo || x.to_d) || fallback
+'''
+corrected = '''
+(foo || x.to_d)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 16
+column_end = 27
+message = "`fallback` will never evaluate because `x.to_d` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_foo__xto_d__operand"
+source = '''
+(foo || x.to_d) && operand
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_foo__xto_d"
+source = '''
+foo || x.to_d
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_xto_d__fallback"
+source = '''
+x&.to_d || fallback
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_xto_d"
+source = '''
+x.to_d
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_xto_i__fallback"
+source = '''
+x.to_i || fallback
+'''
+corrected = '''
+x.to_i
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 18
+message = "`fallback` will never evaluate because `x.to_i` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_xto_i_or_fallback"
+source = '''
+x.to_i or fallback
+'''
+corrected = '''
+x.to_i
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 18
+message = "`fallback` will never evaluate because `x.to_i` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_xto_i__fallback__other_fallback"
+source = '''
+x.to_i || fallback || other_fallback
+'''
+corrected = '''
+x.to_i
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 18
+message = "`fallback` will never evaluate because `x.to_i` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_foo__xto_i__fallback"
+source = '''
+foo || x.to_i || fallback
+'''
+corrected = '''
+foo || x.to_i
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 14
+column_end = 25
+message = "`fallback` will never evaluate because `x.to_i` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_foo__xto_i__fallback_2"
+source = '''
+(foo || x.to_i) || fallback
+'''
+corrected = '''
+(foo || x.to_i)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 16
+column_end = 27
+message = "`fallback` will never evaluate because `x.to_i` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_foo__xto_i__operand"
+source = '''
+(foo || x.to_i) && operand
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_foo__xto_i"
+source = '''
+foo || x.to_i
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_xto_i__fallback"
+source = '''
+x&.to_i || fallback
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_xto_i"
+source = '''
+x.to_i
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_xto_f__fallback"
+source = '''
+x.to_f || fallback
+'''
+corrected = '''
+x.to_f
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 18
+message = "`fallback` will never evaluate because `x.to_f` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_xto_f_or_fallback"
+source = '''
+x.to_f or fallback
+'''
+corrected = '''
+x.to_f
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 18
+message = "`fallback` will never evaluate because `x.to_f` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_xto_f__fallback__other_fallback"
+source = '''
+x.to_f || fallback || other_fallback
+'''
+corrected = '''
+x.to_f
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 18
+message = "`fallback` will never evaluate because `x.to_f` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_foo__xto_f__fallback"
+source = '''
+foo || x.to_f || fallback
+'''
+corrected = '''
+foo || x.to_f
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 14
+column_end = 25
+message = "`fallback` will never evaluate because `x.to_f` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_foo__xto_f__fallback_2"
+source = '''
+(foo || x.to_f) || fallback
+'''
+corrected = '''
+(foo || x.to_f)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 16
+column_end = 27
+message = "`fallback` will never evaluate because `x.to_f` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_foo__xto_f__operand"
+source = '''
+(foo || x.to_f) && operand
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_foo__xto_f"
+source = '''
+foo || x.to_f
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_xto_f__fallback"
+source = '''
+x&.to_f || fallback
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_xto_f"
+source = '''
+x.to_f
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_xto_h__fallback"
+source = '''
+x.to_h || fallback
+'''
+corrected = '''
+x.to_h
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 18
+message = "`fallback` will never evaluate because `x.to_h` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_xto_h_or_fallback"
+source = '''
+x.to_h or fallback
+'''
+corrected = '''
+x.to_h
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 18
+message = "`fallback` will never evaluate because `x.to_h` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_xto_h__fallback__other_fallback"
+source = '''
+x.to_h || fallback || other_fallback
+'''
+corrected = '''
+x.to_h
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 18
+message = "`fallback` will never evaluate because `x.to_h` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_foo__xto_h__fallback"
+source = '''
+foo || x.to_h || fallback
+'''
+corrected = '''
+foo || x.to_h
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 14
+column_end = 25
+message = "`fallback` will never evaluate because `x.to_h` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_foo__xto_h__fallback_2"
+source = '''
+(foo || x.to_h) || fallback
+'''
+corrected = '''
+(foo || x.to_h)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 16
+column_end = 27
+message = "`fallback` will never evaluate because `x.to_h` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_foo__xto_h__operand"
+source = '''
+(foo || x.to_h) && operand
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_foo__xto_h"
+source = '''
+foo || x.to_h
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_xto_h__fallback"
+source = '''
+x&.to_h || fallback
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_xto_h"
+source = '''
+x.to_h
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_xto_r__fallback"
+source = '''
+x.to_r || fallback
+'''
+corrected = '''
+x.to_r
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 18
+message = "`fallback` will never evaluate because `x.to_r` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_xto_r_or_fallback"
+source = '''
+x.to_r or fallback
+'''
+corrected = '''
+x.to_r
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 18
+message = "`fallback` will never evaluate because `x.to_r` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_xto_r__fallback__other_fallback"
+source = '''
+x.to_r || fallback || other_fallback
+'''
+corrected = '''
+x.to_r
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 18
+message = "`fallback` will never evaluate because `x.to_r` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_foo__xto_r__fallback"
+source = '''
+foo || x.to_r || fallback
+'''
+corrected = '''
+foo || x.to_r
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 14
+column_end = 25
+message = "`fallback` will never evaluate because `x.to_r` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_foo__xto_r__fallback_2"
+source = '''
+(foo || x.to_r) || fallback
+'''
+corrected = '''
+(foo || x.to_r)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 16
+column_end = 27
+message = "`fallback` will never evaluate because `x.to_r` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_foo__xto_r__operand"
+source = '''
+(foo || x.to_r) && operand
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_foo__xto_r"
+source = '''
+foo || x.to_r
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_xto_r__fallback"
+source = '''
+x&.to_r || fallback
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_xto_r"
+source = '''
+x.to_r
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_xto_s__fallback"
+source = '''
+x.to_s || fallback
+'''
+corrected = '''
+x.to_s
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 18
+message = "`fallback` will never evaluate because `x.to_s` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_xto_s_or_fallback"
+source = '''
+x.to_s or fallback
+'''
+corrected = '''
+x.to_s
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 18
+message = "`fallback` will never evaluate because `x.to_s` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_xto_s__fallback__other_fallback"
+source = '''
+x.to_s || fallback || other_fallback
+'''
+corrected = '''
+x.to_s
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 18
+message = "`fallback` will never evaluate because `x.to_s` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_foo__xto_s__fallback"
+source = '''
+foo || x.to_s || fallback
+'''
+corrected = '''
+foo || x.to_s
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 14
+column_end = 25
+message = "`fallback` will never evaluate because `x.to_s` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_foo__xto_s__fallback_2"
+source = '''
+(foo || x.to_s) || fallback
+'''
+corrected = '''
+(foo || x.to_s)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 16
+column_end = 27
+message = "`fallback` will never evaluate because `x.to_s` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_foo__xto_s__operand"
+source = '''
+(foo || x.to_s) && operand
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_foo__xto_s"
+source = '''
+foo || x.to_s
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_xto_s__fallback"
+source = '''
+x&.to_s || fallback
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_xto_s"
+source = '''
+x.to_s
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_xto_sym__fallback"
+source = '''
+x.to_sym || fallback
+'''
+corrected = '''
+x.to_sym
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 20
+message = "`fallback` will never evaluate because `x.to_sym` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_xto_sym_or_fallback"
+source = '''
+x.to_sym or fallback
+'''
+corrected = '''
+x.to_sym
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 20
+message = "`fallback` will never evaluate because `x.to_sym` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_xto_sym__fallback__other_fallback"
+source = '''
+x.to_sym || fallback || other_fallback
+'''
+corrected = '''
+x.to_sym
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 20
+message = "`fallback` will never evaluate because `x.to_sym` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_foo__xto_sym__fallback"
+source = '''
+foo || x.to_sym || fallback
+'''
+corrected = '''
+foo || x.to_sym
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 16
+column_end = 27
+message = "`fallback` will never evaluate because `x.to_sym` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_foo__xto_sym__fallback_2"
+source = '''
+(foo || x.to_sym) || fallback
+'''
+corrected = '''
+(foo || x.to_sym)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 18
+column_end = 29
+message = "`fallback` will never evaluate because `x.to_sym` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_foo__xto_sym__operand"
+source = '''
+(foo || x.to_sym) && operand
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_foo__xto_sym"
+source = '''
+foo || x.to_sym
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_xto_sym__fallback"
+source = '''
+x&.to_sym || fallback
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_xto_sym"
+source = '''
+x.to_sym
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_xintern__fallback"
+source = '''
+x.intern || fallback
+'''
+corrected = '''
+x.intern
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 20
+message = "`fallback` will never evaluate because `x.intern` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_xintern_or_fallback"
+source = '''
+x.intern or fallback
+'''
+corrected = '''
+x.intern
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 20
+message = "`fallback` will never evaluate because `x.intern` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_xintern__fallback__other_fallback"
+source = '''
+x.intern || fallback || other_fallback
+'''
+corrected = '''
+x.intern
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 20
+message = "`fallback` will never evaluate because `x.intern` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_foo__xintern__fallback"
+source = '''
+foo || x.intern || fallback
+'''
+corrected = '''
+foo || x.intern
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 16
+column_end = 27
+message = "`fallback` will never evaluate because `x.intern` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_foo__xintern__fallback_2"
+source = '''
+(foo || x.intern) || fallback
+'''
+corrected = '''
+(foo || x.intern)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 18
+column_end = 29
+message = "`fallback` will never evaluate because `x.intern` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_foo__xintern__operand"
+source = '''
+(foo || x.intern) && operand
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_foo__xintern"
+source = '''
+foo || x.intern
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_xintern__fallback"
+source = '''
+x&.intern || fallback
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_xintern"
+source = '''
+x.intern
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_xinspect__fallback"
+source = '''
+x.inspect || fallback
+'''
+corrected = '''
+x.inspect
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 21
+message = "`fallback` will never evaluate because `x.inspect` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_xinspect_or_fallback"
+source = '''
+x.inspect or fallback
+'''
+corrected = '''
+x.inspect
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 21
+message = "`fallback` will never evaluate because `x.inspect` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_xinspect__fallback__other_fallback"
+source = '''
+x.inspect || fallback || other_fallback
+'''
+corrected = '''
+x.inspect
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 21
+message = "`fallback` will never evaluate because `x.inspect` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_foo__xinspect__fallback"
+source = '''
+foo || x.inspect || fallback
+'''
+corrected = '''
+foo || x.inspect
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 28
+message = "`fallback` will never evaluate because `x.inspect` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_foo__xinspect__fallback_2"
+source = '''
+(foo || x.inspect) || fallback
+'''
+corrected = '''
+(foo || x.inspect)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 19
 column_end = 30
-message = "`fallback` will never evaluate because `x.#{method}` always returns a truthy value."
+message = "`fallback` will never evaluate because `x.inspect` always returns a truthy value."
 
 [[tests]]
-name = "rubocop_cop_lint_uselessor"
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_foo__xinspect__operand"
 source = '''
-(foo || x.#{method}) || fallback
+(foo || x.inspect) && operand
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_foo__xinspect"
+source = '''
+foo || x.inspect
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_xinspect__fallback"
+source = '''
+x&.inspect || fallback
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_xinspect"
+source = '''
+x.inspect
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_xhash__fallback"
+source = '''
+x.hash || fallback
 '''
 corrected = '''
-(foo || x.#{method})
+x.hash
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
-column_start = 0
+column_start = 7
+column_end = 18
+message = "`fallback` will never evaluate because `x.hash` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_xhash_or_fallback"
+source = '''
+x.hash or fallback
+'''
+corrected = '''
+x.hash
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 18
+message = "`fallback` will never evaluate because `x.hash` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_xhash__fallback__other_fallback"
+source = '''
+x.hash || fallback || other_fallback
+'''
+corrected = '''
+x.hash
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 18
+message = "`fallback` will never evaluate because `x.hash` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_foo__xhash__fallback"
+source = '''
+foo || x.hash || fallback
+'''
+corrected = '''
+foo || x.hash
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 14
+column_end = 25
+message = "`fallback` will never evaluate because `x.hash` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_foo__xhash__fallback_2"
+source = '''
+(foo || x.hash) || fallback
+'''
+corrected = '''
+(foo || x.hash)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 16
+column_end = 27
+message = "`fallback` will never evaluate because `x.hash` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_foo__xhash__operand"
+source = '''
+(foo || x.hash) && operand
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_foo__xhash"
+source = '''
+foo || x.hash
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_xhash__fallback"
+source = '''
+x&.hash || fallback
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_xhash"
+source = '''
+x.hash
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_xobject_id__fallback"
+source = '''
+x.object_id || fallback
+'''
+corrected = '''
+x.object_id
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 12
+column_end = 23
+message = "`fallback` will never evaluate because `x.object_id` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_xobject_id_or_fallback"
+source = '''
+x.object_id or fallback
+'''
+corrected = '''
+x.object_id
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 12
+column_end = 23
+message = "`fallback` will never evaluate because `x.object_id` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_xobject_id__fallback__other_fallback"
+source = '''
+x.object_id || fallback || other_fallback
+'''
+corrected = '''
+x.object_id
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 12
+column_end = 23
+message = "`fallback` will never evaluate because `x.object_id` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_foo__xobject_id__fallback"
+source = '''
+foo || x.object_id || fallback
+'''
+corrected = '''
+foo || x.object_id
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 19
+column_end = 30
+message = "`fallback` will never evaluate because `x.object_id` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_foo__xobject_id__fallback_2"
+source = '''
+(foo || x.object_id) || fallback
+'''
+corrected = '''
+(foo || x.object_id)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 21
 column_end = 32
-message = "`fallback` will never evaluate because `x.#{method}` always returns a truthy value."
+message = "`fallback` will never evaluate because `x.object_id` always returns a truthy value."
 
 [[tests]]
-name = "rubocop_cop_lint_uselessor"
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_foo__xobject_id__operand"
 source = '''
-(foo || x.#{method}) && operand
+(foo || x.object_id) && operand
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_uselessor"
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_foo__xobject_id"
 source = '''
-foo || x.#{method}
+foo || x.object_id
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_uselessor"
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_xobject_id__fallback"
 source = '''
-x&.#{method} || fallback
+x&.object_id || fallback
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_uselessor"
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_xobject_id"
 source = '''
-x.#{method}
+x.object_id
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_uselessor_does_not_register_an_offense_with_x_foo_fallback"
+name = "rubocopcoplintuselessor_registers_an_offense_with_x__id____fallback"
+source = '''
+x.__id__ || fallback
+'''
+corrected = '''
+x.__id__
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 20
+message = "`fallback` will never evaluate because `x.__id__` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_x__id___or_fallback"
+source = '''
+x.__id__ or fallback
+'''
+corrected = '''
+x.__id__
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 20
+message = "`fallback` will never evaluate because `x.__id__` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_x__id____fallback__other_fallback"
+source = '''
+x.__id__ || fallback || other_fallback
+'''
+corrected = '''
+x.__id__
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 20
+message = "`fallback` will never evaluate because `x.__id__` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_foo__x__id____fallback"
+source = '''
+foo || x.__id__ || fallback
+'''
+corrected = '''
+foo || x.__id__
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 16
+column_end = 27
+message = "`fallback` will never evaluate because `x.__id__` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_registers_an_offense_with_foo__x__id____fallback_2"
+source = '''
+(foo || x.__id__) || fallback
+'''
+corrected = '''
+(foo || x.__id__)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 18
+column_end = 29
+message = "`fallback` will never evaluate because `x.__id__` always returns a truthy value."
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_foo__x__id____operand"
+source = '''
+(foo || x.__id__) && operand
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_foo__x__id__"
+source = '''
+foo || x.__id__
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_x__id____fallback"
+source = '''
+x&.__id__ || fallback
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_x__id__"
+source = '''
+x.__id__
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintuselessor_does_not_register_an_offense_with_xfoo__fallback"
 source = '''
 x.foo || fallback
 '''

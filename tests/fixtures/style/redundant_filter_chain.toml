@@ -4,188 +4,464 @@ severity = "convention"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_style_redundantfilterchain"
+name = "rubocopcopstyleredundantfilterchain_registers_an_offense_when_using_select_followed_by_any"
 source = '''
-arr.%{method} { |x| x > 1 }.any?
+arr.select { |x| x > 1 }.any?
 '''
 corrected = '''
 arr.any? { |x| x > 1 }
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 4
-column_end = 32
-message = "Use `any?` instead of `#{method}.any?`."
+column_end = 29
+message = "Use `any?` instead of `select.any?`."
 
 [[tests]]
-name = "rubocop_cop_style_redundantfilterchain"
+name = "rubocopcopstyleredundantfilterchain_registers_an_offense_when_using_select_followed_by_empty"
 source = '''
-arr.%{method} { |x| x > 1 }.empty?
+arr.select { |x| x > 1 }.empty?
 '''
 corrected = '''
 arr.none? { |x| x > 1 }
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 4
-column_end = 34
-message = "Use `none?` instead of `#{method}.empty?`."
+column_end = 31
+message = "Use `none?` instead of `select.empty?`."
 
 [[tests]]
-name = "rubocop_cop_style_redundantfilterchain"
+name = "rubocopcopstyleredundantfilterchain_registers_an_offense_when_using_select_followed_by_none"
 source = '''
-arr.%{method} { |x| x > 1 }.none?
+arr.select { |x| x > 1 }.none?
 '''
 corrected = '''
 arr.none? { |x| x > 1 }
 '''
-interpolated = true
-verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 30
+message = "Use `none?` instead of `select.none?`."
+
+[[tests]]
+name = "rubocopcopstyleredundantfilterchain_registers_an_offense_when_using_select_with_blockpass_followed_by_none"
+source = '''
+arr.select(&:odd?).none?
+'''
+corrected = '''
+arr.none?(&:odd?)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 24
+message = "Use `none?` instead of `select.none?`."
+
+[[tests]]
+name = "rubocopcopstyleredundantfilterchain_does_not_register_an_offense_when_using_select_followed_by_many"
+source = '''
+arr.select { |x| x > 1 }.many?
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleredundantfilterchain_does_not_register_an_offense_when_using_select_followed_by_present"
+source = '''
+arr.select { |x| x > 1 }.present?
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleredundantfilterchain_does_not_register_an_offense_when_using_select_without_a_block_followed_by_any"
+source = '''
+relation.select(:name).any?
+foo.select.any?
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleredundantfilterchain_does_not_register_an_offense_when_using_select_followed_by_any_with_arguments"
+source = '''
+arr.select(&:odd?).any?(Integer)
+arr.select(&:odd?).any? { |x| x > 10 }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleredundantfilterchain_registers_an_offense_when_using_filter_followed_by_any"
+source = '''
+arr.filter { |x| x > 1 }.any?
+'''
+corrected = '''
+arr.any? { |x| x > 1 }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 29
+message = "Use `any?` instead of `filter.any?`."
+
+[[tests]]
+name = "rubocopcopstyleredundantfilterchain_registers_an_offense_when_using_filter_followed_by_empty"
+source = '''
+arr.filter { |x| x > 1 }.empty?
+'''
+corrected = '''
+arr.none? { |x| x > 1 }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 31
+message = "Use `none?` instead of `filter.empty?`."
+
+[[tests]]
+name = "rubocopcopstyleredundantfilterchain_registers_an_offense_when_using_filter_followed_by_none"
+source = '''
+arr.filter { |x| x > 1 }.none?
+'''
+corrected = '''
+arr.none? { |x| x > 1 }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 30
+message = "Use `none?` instead of `filter.none?`."
+
+[[tests]]
+name = "rubocopcopstyleredundantfilterchain_registers_an_offense_when_using_filter_with_blockpass_followed_by_none"
+source = '''
+arr.filter(&:odd?).none?
+'''
+corrected = '''
+arr.none?(&:odd?)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 24
+message = "Use `none?` instead of `filter.none?`."
+
+[[tests]]
+name = "rubocopcopstyleredundantfilterchain_does_not_register_an_offense_when_using_filter_followed_by_many"
+source = '''
+arr.filter { |x| x > 1 }.many?
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleredundantfilterchain_does_not_register_an_offense_when_using_filter_followed_by_present"
+source = '''
+arr.filter { |x| x > 1 }.present?
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleredundantfilterchain_does_not_register_an_offense_when_using_filter_without_a_block_followed_by_any"
+source = '''
+relation.filter(:name).any?
+foo.filter.any?
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleredundantfilterchain_does_not_register_an_offense_when_using_filter_followed_by_any_with_arguments"
+source = '''
+arr.filter(&:odd?).any?(Integer)
+arr.filter(&:odd?).any? { |x| x > 10 }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleredundantfilterchain_registers_an_offense_when_using_find_all_followed_by_any"
+source = '''
+arr.find_all { |x| x > 1 }.any?
+'''
+corrected = '''
+arr.any? { |x| x > 1 }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 31
+message = "Use `any?` instead of `find_all.any?`."
+
+[[tests]]
+name = "rubocopcopstyleredundantfilterchain_registers_an_offense_when_using_find_all_followed_by_empty"
+source = '''
+arr.find_all { |x| x > 1 }.empty?
+'''
+corrected = '''
+arr.none? { |x| x > 1 }
+'''
 
 [[tests.offenses]]
 line = 1
 column_start = 4
 column_end = 33
-message = "Use `none?` instead of `#{method}.none?`."
+message = "Use `none?` instead of `find_all.empty?`."
 
 [[tests]]
-name = "rubocop_cop_style_redundantfilterchain"
+name = "rubocopcopstyleredundantfilterchain_registers_an_offense_when_using_find_all_followed_by_none"
 source = '''
-arr.%{method}(&:odd?).none?
+arr.find_all { |x| x > 1 }.none?
 '''
 corrected = '''
-arr.none?(&:odd?)
+arr.none? { |x| x > 1 }
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 4
-column_end = 27
-message = "Use `none?` instead of `#{method}.none?`."
+column_end = 32
+message = "Use `none?` instead of `find_all.none?`."
 
 [[tests]]
-name = "rubocop_cop_style_redundantfilterchain"
+name = "rubocopcopstyleredundantfilterchain_registers_an_offense_when_using_find_all_with_blockpass_followed_by_none"
 source = '''
-arr.#{method} { |x| x > 1 }.many?
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantfilterchain"
-source = '''
-arr.#{method} { |x| x > 1 }.present?
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantfilterchain"
-source = '''
-relation.#{method}(:name).any?
-foo.#{method}.any?
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantfilterchain"
-source = '''
-arr.#{method}(&:odd?).any?(Integer)
-arr.#{method}(&:odd?).any? { |x| x > 10 }
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantfilterchain_when_using_safe_navigation_operator"
-source = '''
-arr&.%{method} { |x| x > 1 }&.any?
+arr.find_all(&:odd?).none?
 '''
 corrected = '''
-arr&.any? { |x| x > 1 }
+arr.none?(&:odd?)
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
-column_start = 5
-column_end = 34
-message = "Use `any?` instead of `#{method}.any?`."
+column_start = 4
+column_end = 26
+message = "Use `none?` instead of `find_all.none?`."
 
 [[tests]]
-name = "rubocop_cop_style_redundantfilterchain_when_using_safe_navigation_operator"
+name = "rubocopcopstyleredundantfilterchain_does_not_register_an_offense_when_using_find_all_followed_by_many"
 source = '''
-arr&.%{method} { |x| x > 1 }&.empty?
+arr.find_all { |x| x > 1 }.many?
 '''
-corrected = '''
-arr&.none? { |x| x > 1 }
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 5
-column_end = 36
-message = "Use `none?` instead of `#{method}.empty?`."
+offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_redundantfilterchain_when_using_safe_navigation_operator"
+name = "rubocopcopstyleredundantfilterchain_does_not_register_an_offense_when_using_find_all_followed_by_present"
 source = '''
-arr&.%{method} { |x| x > 1 }&.none?
+arr.find_all { |x| x > 1 }.present?
 '''
-corrected = '''
-arr&.none? { |x| x > 1 }
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 5
-column_end = 35
-message = "Use `none?` instead of `#{method}.none?`."
+offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_redundantfilterchain_when_using_safe_navigation_operator"
+name = "rubocopcopstyleredundantfilterchain_does_not_register_an_offense_when_using_find_all_without_a_block_followed_by_any"
 source = '''
-arr&.%{method}(&:odd?)&.none?
+relation.find_all(:name).any?
+foo.find_all.any?
 '''
-corrected = '''
-arr&.none?(&:odd?)
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 5
-column_end = 29
-message = "Use `none?` instead of `#{method}.none?`."
+offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_redundantfilterchain_does_not_register_an_offense_when_using_any"
+name = "rubocopcopstyleredundantfilterchain_does_not_register_an_offense_when_using_find_all_followed_by_any_with_arguments"
+source = '''
+arr.find_all(&:odd?).any?(Integer)
+arr.find_all(&:odd?).any? { |x| x > 10 }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleredundantfilterchain_does_not_register_an_offense_when_using_any"
 source = '''
 arr.any? { |x| x > 1 }
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_redundantfilterchain_when_allcops_activesupportextensionsenabled_true_registers_an_offense_when_using_select_followed_by_many"
+name = "rubocopcopstyleredundantfilterchain_when_using_safe_navigation_operator_registers_an_offense_when_using_select_followed_by_any"
+source = '''
+arr&.select { |x| x > 1 }&.any?
+'''
+corrected = '''
+arr&.any? { |x| x > 1 }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 31
+message = "Use `any?` instead of `select.any?`."
+
+[[tests]]
+name = "rubocopcopstyleredundantfilterchain_when_using_safe_navigation_operator_registers_an_offense_when_using_select_followed_by_empty"
+source = '''
+arr&.select { |x| x > 1 }&.empty?
+'''
+corrected = '''
+arr&.none? { |x| x > 1 }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 33
+message = "Use `none?` instead of `select.empty?`."
+
+[[tests]]
+name = "rubocopcopstyleredundantfilterchain_when_using_safe_navigation_operator_registers_an_offense_when_using_select_followed_by_none"
+source = '''
+arr&.select { |x| x > 1 }&.none?
+'''
+corrected = '''
+arr&.none? { |x| x > 1 }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 32
+message = "Use `none?` instead of `select.none?`."
+
+[[tests]]
+name = "rubocopcopstyleredundantfilterchain_when_using_safe_navigation_operator_registers_an_offense_when_using_select_with_blockpass_followed_by_none"
+source = '''
+arr&.select(&:odd?)&.none?
+'''
+corrected = '''
+arr&.none?(&:odd?)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 26
+message = "Use `none?` instead of `select.none?`."
+
+[[tests]]
+name = "rubocopcopstyleredundantfilterchain_when_using_safe_navigation_operator_registers_an_offense_when_using_filter_followed_by_any"
+source = '''
+arr&.filter { |x| x > 1 }&.any?
+'''
+corrected = '''
+arr&.any? { |x| x > 1 }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 31
+message = "Use `any?` instead of `filter.any?`."
+
+[[tests]]
+name = "rubocopcopstyleredundantfilterchain_when_using_safe_navigation_operator_registers_an_offense_when_using_filter_followed_by_empty"
+source = '''
+arr&.filter { |x| x > 1 }&.empty?
+'''
+corrected = '''
+arr&.none? { |x| x > 1 }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 33
+message = "Use `none?` instead of `filter.empty?`."
+
+[[tests]]
+name = "rubocopcopstyleredundantfilterchain_when_using_safe_navigation_operator_registers_an_offense_when_using_filter_followed_by_none"
+source = '''
+arr&.filter { |x| x > 1 }&.none?
+'''
+corrected = '''
+arr&.none? { |x| x > 1 }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 32
+message = "Use `none?` instead of `filter.none?`."
+
+[[tests]]
+name = "rubocopcopstyleredundantfilterchain_when_using_safe_navigation_operator_registers_an_offense_when_using_filter_with_blockpass_followed_by_none"
+source = '''
+arr&.filter(&:odd?)&.none?
+'''
+corrected = '''
+arr&.none?(&:odd?)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 26
+message = "Use `none?` instead of `filter.none?`."
+
+[[tests]]
+name = "rubocopcopstyleredundantfilterchain_when_using_safe_navigation_operator_registers_an_offense_when_using_find_all_followed_by_any"
+source = '''
+arr&.find_all { |x| x > 1 }&.any?
+'''
+corrected = '''
+arr&.any? { |x| x > 1 }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 33
+message = "Use `any?` instead of `find_all.any?`."
+
+[[tests]]
+name = "rubocopcopstyleredundantfilterchain_when_using_safe_navigation_operator_registers_an_offense_when_using_find_all_followed_by_empty"
+source = '''
+arr&.find_all { |x| x > 1 }&.empty?
+'''
+corrected = '''
+arr&.none? { |x| x > 1 }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 35
+message = "Use `none?` instead of `find_all.empty?`."
+
+[[tests]]
+name = "rubocopcopstyleredundantfilterchain_when_using_safe_navigation_operator_registers_an_offense_when_using_find_all_followed_by_none"
+source = '''
+arr&.find_all { |x| x > 1 }&.none?
+'''
+corrected = '''
+arr&.none? { |x| x > 1 }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 34
+message = "Use `none?` instead of `find_all.none?`."
+
+[[tests]]
+name = "rubocopcopstyleredundantfilterchain_when_using_safe_navigation_operator_registers_an_offense_when_using_find_all_with_blockpass_followed_by_none"
+source = '''
+arr&.find_all(&:odd?)&.none?
+'''
+corrected = '''
+arr&.none?(&:odd?)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 28
+message = "Use `none?` instead of `find_all.none?`."
+
+[[tests]]
+name = "rubocopcopstyleredundantfilterchain_when_allcopsactivesupportextensionsenabled_true_registers_an_offense_when_using_select_followed_by_many"
 source = '''
 arr.select { |x| x > 1 }.many?
 '''
@@ -200,7 +476,7 @@ column_end = 30
 message = "Use `many?` instead of `select.many?`."
 
 [[tests]]
-name = "rubocop_cop_style_redundantfilterchain_when_allcops_activesupportextensionsenabled_true_registers_an_offense_when_using_select_followed_by_present"
+name = "rubocopcopstyleredundantfilterchain_when_allcopsactivesupportextensionsenabled_true_registers_an_offense_when_using_select_followed_by_present"
 source = '''
 arr.select { |x| x > 1 }.present?
 '''

@@ -4,19 +4,26 @@ severity = "convention"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_style_ifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_if_foo_bar_with_boolean_literal_branches"
+name = "rubocopcopstyleifwithbooleanliteralbranches_does_not_crash_when_using__as_a_condition"
 source = '''
-if foo #{comparison_operator} bar
+if ()
+else
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_if_foo__bar_with_boolean_literal_branches"
+source = '''
+if foo == bar
   true
 else
   false
 end
 '''
 corrected = '''
-foo #{comparison_operator} bar
+foo == bar
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -25,19 +32,17 @@ column_end = 2
 message = "Remove redundant `if` with boolean literal branches."
 
 [[tests]]
-name = "rubocop_cop_style_ifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_unless_foo_bar_with_boolean_literal_branches"
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_unless_foo__bar_with_boolean_literal_branches"
 source = '''
-unless foo #{comparison_operator} bar
+unless foo == bar
   false
 else
   true
 end
 '''
 corrected = '''
-foo #{comparison_operator} bar
+foo == bar
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -46,36 +51,32 @@ column_end = 6
 message = "Remove redundant `unless` with boolean literal branches."
 
 [[tests]]
-name = "rubocop_cop_style_ifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_ternary_operator_with_boolean_literal_branches"
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_ternary_operator_with_boolean_literal_branches"
 source = '''
-foo #{comparison_operator} bar ? true : false
+foo == bar ? true : false
 '''
 corrected = '''
-foo #{comparison_operator} bar
+foo == bar
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
-column_start = 0
-column_end = 45
+column_start = 10
+column_end = 25
 message = "Remove redundant ternary operator with boolean literal branches."
 
 [[tests]]
-name = "rubocop_cop_style_ifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_if_foo_bar_with_opposite_boolean_literal_branches"
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_if_foo__bar_with_opposite_boolean_literal_branches"
 source = '''
-if foo #{comparison_operator} bar
+if foo == bar
   false
 else
   true
 end
 '''
 corrected = '''
-!(foo #{comparison_operator} bar)
+!(foo == bar)
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -84,19 +85,17 @@ column_end = 2
 message = "Remove redundant `if` with boolean literal branches."
 
 [[tests]]
-name = "rubocop_cop_style_ifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_unless_foo_bar_with_opposite_boolean_literal_branches"
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_unless_foo__bar_with_opposite_boolean_literal_branches"
 source = '''
-unless foo #{comparison_operator} bar
+unless foo == bar
   true
 else
   false
 end
 '''
 corrected = '''
-!(foo #{comparison_operator} bar)
+!(foo == bar)
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -105,24 +104,22 @@ column_end = 6
 message = "Remove redundant `unless` with boolean literal branches."
 
 [[tests]]
-name = "rubocop_cop_style_ifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_opposite_ternary_operator_with_boolean_literal_branches"
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_opposite_ternary_operator_with_boolean_literal_branches"
 source = '''
-foo #{comparison_operator} bar ? false : true
+foo == bar ? false : true
 '''
 corrected = '''
-!(foo #{comparison_operator} bar)
+!(foo == bar)
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
-column_start = 0
-column_end = 45
+column_start = 10
+column_end = 25
 message = "Remove redundant ternary operator with boolean literal branches."
 
 [[tests]]
-name = "rubocop_cop_style_ifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_if_with_boolean_literal_branches_directly_under_def"
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_if_with_boolean_literal_branches_directly_under_def"
 source = '''
 def foo
   if bar > baz
@@ -145,20 +142,858 @@ column_end = 4
 message = "Remove redundant `if` with boolean literal branches."
 
 [[tests]]
-name = ""
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_does_not_register_an_offense_when_using_a_branch_that_is_not_boolean_literal"
 source = '''
-if foo #{comparison_operator} bar
+if foo == bar
   do_something
 else
   false
 end
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_ifwithbooleanliteralbranches_when_condition_is_a_predicate_method_registers_and_corrects_an_offense_when_using_if_foo_do_something_with_boolean_literal_branches"
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_if_foo__bar_with_boolean_literal_branches_2"
+source = '''
+if foo === bar
+  true
+else
+  false
+end
+'''
+corrected = '''
+foo === bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 2
+message = "Remove redundant `if` with boolean literal branches."
+
+[[tests]]
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_unless_foo__bar_with_boolean_literal_branches_2"
+source = '''
+unless foo === bar
+  false
+else
+  true
+end
+'''
+corrected = '''
+foo === bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Remove redundant `unless` with boolean literal branches."
+
+[[tests]]
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_ternary_operator_with_boolean_literal_branches_2"
+source = '''
+foo === bar ? true : false
+'''
+corrected = '''
+foo === bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 26
+message = "Remove redundant ternary operator with boolean literal branches."
+
+[[tests]]
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_if_foo__bar_with_opposite_boolean_literal_branches_2"
+source = '''
+if foo === bar
+  false
+else
+  true
+end
+'''
+corrected = '''
+!(foo === bar)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 2
+message = "Remove redundant `if` with boolean literal branches."
+
+[[tests]]
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_unless_foo__bar_with_opposite_boolean_literal_branches_2"
+source = '''
+unless foo === bar
+  true
+else
+  false
+end
+'''
+corrected = '''
+!(foo === bar)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Remove redundant `unless` with boolean literal branches."
+
+[[tests]]
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_opposite_ternary_operator_with_boolean_literal_branches_2"
+source = '''
+foo === bar ? false : true
+'''
+corrected = '''
+!(foo === bar)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 26
+message = "Remove redundant ternary operator with boolean literal branches."
+
+[[tests]]
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_if_with_boolean_literal_branches_directly_under_def_2"
+source = '''
+def foo
+  if bar > baz
+    true
+  else
+    false
+  end
+end
+'''
+corrected = '''
+def foo
+  bar > baz
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 4
+message = "Remove redundant `if` with boolean literal branches."
+
+[[tests]]
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_does_not_register_an_offense_when_using_a_branch_that_is_not_boolean_literal_2"
+source = '''
+if foo === bar
+  do_something
+else
+  false
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_if_foo__bar_with_boolean_literal_branches_3"
+source = '''
+if foo != bar
+  true
+else
+  false
+end
+'''
+corrected = '''
+foo != bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 2
+message = "Remove redundant `if` with boolean literal branches."
+
+[[tests]]
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_unless_foo__bar_with_boolean_literal_branches_3"
+source = '''
+unless foo != bar
+  false
+else
+  true
+end
+'''
+corrected = '''
+foo != bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Remove redundant `unless` with boolean literal branches."
+
+[[tests]]
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_ternary_operator_with_boolean_literal_branches_3"
+source = '''
+foo != bar ? true : false
+'''
+corrected = '''
+foo != bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 25
+message = "Remove redundant ternary operator with boolean literal branches."
+
+[[tests]]
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_if_foo__bar_with_opposite_boolean_literal_branches_3"
+source = '''
+if foo != bar
+  false
+else
+  true
+end
+'''
+corrected = '''
+!(foo != bar)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 2
+message = "Remove redundant `if` with boolean literal branches."
+
+[[tests]]
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_unless_foo__bar_with_opposite_boolean_literal_branches_3"
+source = '''
+unless foo != bar
+  true
+else
+  false
+end
+'''
+corrected = '''
+!(foo != bar)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Remove redundant `unless` with boolean literal branches."
+
+[[tests]]
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_opposite_ternary_operator_with_boolean_literal_branches_3"
+source = '''
+foo != bar ? false : true
+'''
+corrected = '''
+!(foo != bar)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 25
+message = "Remove redundant ternary operator with boolean literal branches."
+
+[[tests]]
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_if_with_boolean_literal_branches_directly_under_def_3"
+source = '''
+def foo
+  if bar > baz
+    true
+  else
+    false
+  end
+end
+'''
+corrected = '''
+def foo
+  bar > baz
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 4
+message = "Remove redundant `if` with boolean literal branches."
+
+[[tests]]
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_does_not_register_an_offense_when_using_a_branch_that_is_not_boolean_literal_3"
+source = '''
+if foo != bar
+  do_something
+else
+  false
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_if_foo__bar_with_boolean_literal_branches_4"
+source = '''
+if foo <= bar
+  true
+else
+  false
+end
+'''
+corrected = '''
+foo <= bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 2
+message = "Remove redundant `if` with boolean literal branches."
+
+[[tests]]
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_unless_foo__bar_with_boolean_literal_branches_4"
+source = '''
+unless foo <= bar
+  false
+else
+  true
+end
+'''
+corrected = '''
+foo <= bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Remove redundant `unless` with boolean literal branches."
+
+[[tests]]
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_ternary_operator_with_boolean_literal_branches_4"
+source = '''
+foo <= bar ? true : false
+'''
+corrected = '''
+foo <= bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 25
+message = "Remove redundant ternary operator with boolean literal branches."
+
+[[tests]]
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_if_foo__bar_with_opposite_boolean_literal_branches_4"
+source = '''
+if foo <= bar
+  false
+else
+  true
+end
+'''
+corrected = '''
+!(foo <= bar)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 2
+message = "Remove redundant `if` with boolean literal branches."
+
+[[tests]]
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_unless_foo__bar_with_opposite_boolean_literal_branches_4"
+source = '''
+unless foo <= bar
+  true
+else
+  false
+end
+'''
+corrected = '''
+!(foo <= bar)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Remove redundant `unless` with boolean literal branches."
+
+[[tests]]
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_opposite_ternary_operator_with_boolean_literal_branches_4"
+source = '''
+foo <= bar ? false : true
+'''
+corrected = '''
+!(foo <= bar)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 25
+message = "Remove redundant ternary operator with boolean literal branches."
+
+[[tests]]
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_if_with_boolean_literal_branches_directly_under_def_4"
+source = '''
+def foo
+  if bar > baz
+    true
+  else
+    false
+  end
+end
+'''
+corrected = '''
+def foo
+  bar > baz
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 4
+message = "Remove redundant `if` with boolean literal branches."
+
+[[tests]]
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_does_not_register_an_offense_when_using_a_branch_that_is_not_boolean_literal_4"
+source = '''
+if foo <= bar
+  do_something
+else
+  false
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_if_foo__bar_with_boolean_literal_branches_5"
+source = '''
+if foo >= bar
+  true
+else
+  false
+end
+'''
+corrected = '''
+foo >= bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 2
+message = "Remove redundant `if` with boolean literal branches."
+
+[[tests]]
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_unless_foo__bar_with_boolean_literal_branches_5"
+source = '''
+unless foo >= bar
+  false
+else
+  true
+end
+'''
+corrected = '''
+foo >= bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Remove redundant `unless` with boolean literal branches."
+
+[[tests]]
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_ternary_operator_with_boolean_literal_branches_5"
+source = '''
+foo >= bar ? true : false
+'''
+corrected = '''
+foo >= bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 25
+message = "Remove redundant ternary operator with boolean literal branches."
+
+[[tests]]
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_if_foo__bar_with_opposite_boolean_literal_branches_5"
+source = '''
+if foo >= bar
+  false
+else
+  true
+end
+'''
+corrected = '''
+!(foo >= bar)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 2
+message = "Remove redundant `if` with boolean literal branches."
+
+[[tests]]
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_unless_foo__bar_with_opposite_boolean_literal_branches_5"
+source = '''
+unless foo >= bar
+  true
+else
+  false
+end
+'''
+corrected = '''
+!(foo >= bar)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Remove redundant `unless` with boolean literal branches."
+
+[[tests]]
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_opposite_ternary_operator_with_boolean_literal_branches_5"
+source = '''
+foo >= bar ? false : true
+'''
+corrected = '''
+!(foo >= bar)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 25
+message = "Remove redundant ternary operator with boolean literal branches."
+
+[[tests]]
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_if_with_boolean_literal_branches_directly_under_def_5"
+source = '''
+def foo
+  if bar > baz
+    true
+  else
+    false
+  end
+end
+'''
+corrected = '''
+def foo
+  bar > baz
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 4
+message = "Remove redundant `if` with boolean literal branches."
+
+[[tests]]
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_does_not_register_an_offense_when_using_a_branch_that_is_not_boolean_literal_5"
+source = '''
+if foo >= bar
+  do_something
+else
+  false
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_if_foo__bar_with_boolean_literal_branches_6"
+source = '''
+if foo > bar
+  true
+else
+  false
+end
+'''
+corrected = '''
+foo > bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 2
+message = "Remove redundant `if` with boolean literal branches."
+
+[[tests]]
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_unless_foo__bar_with_boolean_literal_branches_6"
+source = '''
+unless foo > bar
+  false
+else
+  true
+end
+'''
+corrected = '''
+foo > bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Remove redundant `unless` with boolean literal branches."
+
+[[tests]]
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_ternary_operator_with_boolean_literal_branches_6"
+source = '''
+foo > bar ? true : false
+'''
+corrected = '''
+foo > bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 24
+message = "Remove redundant ternary operator with boolean literal branches."
+
+[[tests]]
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_if_foo__bar_with_opposite_boolean_literal_branches_6"
+source = '''
+if foo > bar
+  false
+else
+  true
+end
+'''
+corrected = '''
+!(foo > bar)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 2
+message = "Remove redundant `if` with boolean literal branches."
+
+[[tests]]
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_unless_foo__bar_with_opposite_boolean_literal_branches_6"
+source = '''
+unless foo > bar
+  true
+else
+  false
+end
+'''
+corrected = '''
+!(foo > bar)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Remove redundant `unless` with boolean literal branches."
+
+[[tests]]
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_opposite_ternary_operator_with_boolean_literal_branches_6"
+source = '''
+foo > bar ? false : true
+'''
+corrected = '''
+!(foo > bar)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 24
+message = "Remove redundant ternary operator with boolean literal branches."
+
+[[tests]]
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_if_with_boolean_literal_branches_directly_under_def_6"
+source = '''
+def foo
+  if bar > baz
+    true
+  else
+    false
+  end
+end
+'''
+corrected = '''
+def foo
+  bar > baz
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 4
+message = "Remove redundant `if` with boolean literal branches."
+
+[[tests]]
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_does_not_register_an_offense_when_using_a_branch_that_is_not_boolean_literal_6"
+source = '''
+if foo > bar
+  do_something
+else
+  false
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_if_foo__bar_with_boolean_literal_branches_7"
+source = '''
+if foo < bar
+  true
+else
+  false
+end
+'''
+corrected = '''
+foo < bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 2
+message = "Remove redundant `if` with boolean literal branches."
+
+[[tests]]
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_unless_foo__bar_with_boolean_literal_branches_7"
+source = '''
+unless foo < bar
+  false
+else
+  true
+end
+'''
+corrected = '''
+foo < bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Remove redundant `unless` with boolean literal branches."
+
+[[tests]]
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_ternary_operator_with_boolean_literal_branches_7"
+source = '''
+foo < bar ? true : false
+'''
+corrected = '''
+foo < bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 24
+message = "Remove redundant ternary operator with boolean literal branches."
+
+[[tests]]
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_if_foo__bar_with_opposite_boolean_literal_branches_7"
+source = '''
+if foo < bar
+  false
+else
+  true
+end
+'''
+corrected = '''
+!(foo < bar)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 2
+message = "Remove redundant `if` with boolean literal branches."
+
+[[tests]]
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_unless_foo__bar_with_opposite_boolean_literal_branches_7"
+source = '''
+unless foo < bar
+  true
+else
+  false
+end
+'''
+corrected = '''
+!(foo < bar)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Remove redundant `unless` with boolean literal branches."
+
+[[tests]]
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_opposite_ternary_operator_with_boolean_literal_branches_7"
+source = '''
+foo < bar ? false : true
+'''
+corrected = '''
+!(foo < bar)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 24
+message = "Remove redundant ternary operator with boolean literal branches."
+
+[[tests]]
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_registers_and_corrects_an_offense_when_using_if_with_boolean_literal_branches_directly_under_def_7"
+source = '''
+def foo
+  if bar > baz
+    true
+  else
+    false
+  end
+end
+'''
+corrected = '''
+def foo
+  bar > baz
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 4
+message = "Remove redundant `if` with boolean literal branches."
+
+[[tests]]
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_comparison_method_does_not_register_an_offense_when_using_a_branch_that_is_not_boolean_literal_7"
+source = '''
+if foo < bar
+  do_something
+else
+  false
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_predicate_method_registers_and_corrects_an_offense_when_using_if_foodo_something_with_boolean_literal_branches"
 source = '''
 if foo.do_something?
   true
@@ -177,7 +1012,7 @@ column_end = 2
 message = "Remove redundant `if` with boolean literal branches."
 
 [[tests]]
-name = ""
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_predicate_method_registers_and_corrects_an_offense_when_using_unless_foodo_something_with_boolean_literal_branches"
 source = '''
 unless foo.do_something?
   false
@@ -196,7 +1031,7 @@ column_end = 6
 message = "Remove redundant `unless` with boolean literal branches."
 
 [[tests]]
-name = ""
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_predicate_method_registers_and_corrects_an_offense_when_using_if_foodo_something_with_opposite_boolean_literal_branches"
 source = '''
 if foo.do_something?
   false
@@ -215,7 +1050,7 @@ column_end = 2
 message = "Remove redundant `if` with boolean literal branches."
 
 [[tests]]
-name = ""
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_predicate_method_registers_and_corrects_an_offense_when_using_unless_foodo_something_with_opposite_boolean_literal_branches"
 source = '''
 unless foo.do_something?
   true
@@ -234,7 +1069,7 @@ column_end = 6
 message = "Remove redundant `unless` with boolean literal branches."
 
 [[tests]]
-name = ""
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_predicate_method_registers_and_corrects_an_offense_when_using_elsif_foodo_something_with_boolean_literal_branches"
 source = '''
 if condition
   bar
@@ -261,7 +1096,7 @@ column_end = 5
 message = "Use `else` instead of redundant `elsif` with boolean literal branches."
 
 [[tests]]
-name = ""
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_predicate_method_registers_and_corrects_an_offense_when_using_elsif_foodo_something_with_opposite_boolean_literal_branches"
 source = '''
 if condition
   bar
@@ -288,7 +1123,7 @@ column_end = 5
 message = "Use `else` instead of redundant `elsif` with boolean literal branches."
 
 [[tests]]
-name = ""
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_double_negative_is_used_in_condition_registers_and_corrects_an_offense_when_using_if_condition_with_boolean_literal_branches"
 source = '''
 if !!condition
   true
@@ -307,7 +1142,7 @@ column_end = 2
 message = "Remove redundant `if` with boolean literal branches."
 
 [[tests]]
-name = ""
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_double_negative_is_used_in_condition_registers_and_corrects_an_offense_when_using_if_condition_with_opposite_boolean_literal_branches"
 source = '''
 if !!condition
   false
@@ -326,7 +1161,7 @@ column_end = 2
 message = "Remove redundant `if` with boolean literal branches."
 
 [[tests]]
-name = ""
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_method_that_does_not_known_whether_to_return_boolean_value_does_not_register_an_offense_when_using_if_condition_with_boolean_literal_branches"
 source = '''
 if condition
   true
@@ -337,7 +1172,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_ifwithbooleanliteralbranches_when_condition_is_a_method_that_does_not_known_whether_to_return_boolean_value_does_not_register_an_offense_when_using_unless_condition_with_boolean_literal_branches"
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_method_that_does_not_known_whether_to_return_boolean_value_does_not_register_an_offense_when_using_unless_condition_with_boolean_literal_branches"
 source = '''
 unless condition
   false
@@ -348,7 +1183,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_ifwithbooleanliteralbranches_when_condition_is_a_method_that_does_not_known_whether_to_return_boolean_value_does_not_register_an_offense_when_using_if_condition_with_opposite_boolean_literal_branches"
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_method_that_does_not_known_whether_to_return_boolean_value_does_not_register_an_offense_when_using_if_condition_with_opposite_boolean_literal_branches"
 source = '''
 if condition
   false
@@ -359,7 +1194,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_ifwithbooleanliteralbranches_when_condition_is_a_method_that_does_not_known_whether_to_return_boolean_value_does_not_register_an_offense_when_using_unless_condition_with_opposite_boolean_literal_branches"
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_method_that_does_not_known_whether_to_return_boolean_value_does_not_register_an_offense_when_using_unless_condition_with_opposite_boolean_literal_branches"
 source = '''
 unless condition
   true
@@ -370,7 +1205,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_ifwithbooleanliteralbranches_when_condition_is_a_logical_operator_and_operands_do_not_known_whether_to_return_boolean_value_does_not_register_an_offense_when_using_if_foo_bar_with_boolean_literal_branches"
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_logical_operator_and_operands_do_not_known_whether_to_return_boolean_value_does_not_register_an_offense_when_using_if_foo__bar_with_boolean_literal_branches"
 source = '''
 if foo && bar
   true
@@ -381,7 +1216,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_ifwithbooleanliteralbranches_when_condition_is_a_logical_operator_and_operands_do_not_known_whether_to_return_boolean_value_does_not_register_an_offense_when_using_if_foo_bar_with_boolean_literal_branches"
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_logical_operator_and_operands_do_not_known_whether_to_return_boolean_value_does_not_register_an_offense_when_using_if_foo__bar_with_boolean_literal_branches_2"
 source = '''
 if foo || bar
   true
@@ -392,7 +1227,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_ifwithbooleanliteralbranches_when_condition_is_a_logical_operator_and_operands_do_not_known_whether_to_return_boolean_value_does_not_register_an_offense_when_using_unless_foo_bar_with_boolean_literal_branches"
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_logical_operator_and_operands_do_not_known_whether_to_return_boolean_value_does_not_register_an_offense_when_using_unless_foo__bar_with_boolean_literal_branches"
 source = '''
 unless foo && bar
   false
@@ -403,7 +1238,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_ifwithbooleanliteralbranches_when_condition_is_a_logical_operator_and_operands_do_not_known_whether_to_return_boolean_value_does_not_register_an_offense_when_using_unless_foo_bar_with_boolean_literal_branches"
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_logical_operator_and_operands_do_not_known_whether_to_return_boolean_value_does_not_register_an_offense_when_using_unless_foo__bar_with_boolean_literal_branches_2"
 source = '''
 unless foo || bar
   false
@@ -414,7 +1249,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_ifwithbooleanliteralbranches_when_condition_is_a_logical_operator_and_operands_do_not_known_whether_to_return_boolean_value_does_not_register_an_offense_when_using_if_foo_bar_with_opposite_boolean_literal_branches"
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_logical_operator_and_operands_do_not_known_whether_to_return_boolean_value_does_not_register_an_offense_when_using_if_foo__bar_with_opposite_boolean_literal_branches"
 source = '''
 if foo && bar
   false
@@ -425,7 +1260,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_ifwithbooleanliteralbranches_when_condition_is_a_logical_operator_and_operands_do_not_known_whether_to_return_boolean_value_does_not_register_an_offense_when_using_if_foo_bar_with_opposite_boolean_literal_branches"
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_logical_operator_and_operands_do_not_known_whether_to_return_boolean_value_does_not_register_an_offense_when_using_if_foo__bar_with_opposite_boolean_literal_branches_2"
 source = '''
 if foo || bar
   false
@@ -436,7 +1271,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_ifwithbooleanliteralbranches_when_condition_is_a_logical_operator_and_operands_do_not_known_whether_to_return_boolean_value_does_not_register_an_offense_when_using_unless_foo_bar_with_opposite_boolean_literal_branches"
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_logical_operator_and_operands_do_not_known_whether_to_return_boolean_value_does_not_register_an_offense_when_using_unless_foo__bar_with_opposite_boolean_literal_branches"
 source = '''
 unless foo && bar
   true
@@ -447,7 +1282,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_ifwithbooleanliteralbranches_when_condition_is_a_logical_operator_and_operands_do_not_known_whether_to_return_boolean_value_does_not_register_an_offense_when_using_unless_foo_bar_with_opposite_boolean_literal_branches"
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_logical_operator_and_operands_do_not_known_whether_to_return_boolean_value_does_not_register_an_offense_when_using_unless_foo__bar_with_opposite_boolean_literal_branches_2"
 source = '''
 unless foo || bar
   true
@@ -458,7 +1293,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_ifwithbooleanliteralbranches_when_complex_condition_registers_and_corrects_an_offense_when_using_if_foo_bar_baz_with_boolean_literal_branches"
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_complex_condition_registers_and_corrects_an_offense_when_using_if_foo__bar__baz_with_boolean_literal_branches"
 source = '''
 if foo? && bar && baz?
   true
@@ -477,7 +1312,7 @@ column_end = 2
 message = "Remove redundant `if` with boolean literal branches."
 
 [[tests]]
-name = ""
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_complex_condition_does_not_register_an_offense_when_using_if_foo__bar__baz_with_boolean_literal_branches"
 source = '''
 if foo? || bar || baz?
   true
@@ -488,7 +1323,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_ifwithbooleanliteralbranches_when_complex_condition_registers_and_corrects_an_offense_when_using_if_foo_bar_baz_with_boolean_literal_branches"
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_complex_condition_registers_and_corrects_an_offense_when_using_if_foo__bar__baz_with_boolean_literal_branches_2"
 source = '''
 if foo? || bar && baz?
   true
@@ -507,7 +1342,7 @@ column_end = 2
 message = "Remove redundant `if` with boolean literal branches."
 
 [[tests]]
-name = ""
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_complex_condition_registers_and_corrects_an_offense_when_using_if_foo__bar__baz_with_boolean_literal_branches_3"
 source = '''
 if foo? || (bar && baz?)
   true
@@ -526,7 +1361,7 @@ column_end = 2
 message = "Remove redundant `if` with boolean literal branches."
 
 [[tests]]
-name = ""
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_complex_condition_registers_and_corrects_an_offense_when_using_if_foo__bar__baz_with_boolean_literal_branches_4"
 source = '''
 if (foo? || bar) && baz?
   true
@@ -545,7 +1380,7 @@ column_end = 2
 message = "Remove redundant `if` with boolean literal branches."
 
 [[tests]]
-name = ""
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_complex_condition_does_not_register_an_offense_when_using_if_foo__bar__baz_with_boolean_literal_branches_2"
 source = '''
 if foo? && bar || baz?
   true
@@ -556,7 +1391,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_ifwithbooleanliteralbranches_when_complex_condition_does_not_register_an_offense_when_using_if_foo_bar_baz_with_boolean_literal_branches"
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_complex_condition_does_not_register_an_offense_when_using_if_foo__bar__baz_with_boolean_literal_branches_3"
 source = '''
 if foo? && (bar || baz?)
   true
@@ -567,7 +1402,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_ifwithbooleanliteralbranches_when_complex_condition_does_not_register_an_offense_when_using_if_foo_bar_baz_with_boolean_literal_branches"
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_complex_condition_does_not_register_an_offense_when_using_if_foo__bar__baz_with_boolean_literal_branches_4"
 source = '''
 if (foo? && bar) || baz?
   true
@@ -578,7 +1413,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_ifwithbooleanliteralbranches_when_condition_is_a_logical_operator_and_all_operands_are_predicate_methods_registers_and_corrects_an_offense_when_using_if_foo_bar_with_boolean_literal_branches"
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_logical_operator_and_all_operands_are_predicate_methods_registers_and_corrects_an_offense_when_using_if_foo__bar_with_boolean_literal_branches"
 source = '''
 if foo? && bar?
   true
@@ -597,7 +1432,7 @@ column_end = 2
 message = "Remove redundant `if` with boolean literal branches."
 
 [[tests]]
-name = ""
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_logical_operator_and_all_operands_are_predicate_methods_registers_and_corrects_an_offense_when_using_if_foo__bar_with_opposite_boolean_literal_branches"
 source = '''
 if foo? && bar?
   false
@@ -616,7 +1451,7 @@ column_end = 2
 message = "Remove redundant `if` with boolean literal branches."
 
 [[tests]]
-name = ""
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_logical_operator_and_all_operands_are_predicate_methods_registers_and_corrects_an_offense_when_using_unless_foo__bar_with_boolean_literal_branches"
 source = '''
 unless foo? || bar?
   false
@@ -635,7 +1470,7 @@ column_end = 6
 message = "Remove redundant `unless` with boolean literal branches."
 
 [[tests]]
-name = ""
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_logical_operator_and_all_operands_are_predicate_methods_registers_and_corrects_an_offense_when_using_unless_foo__bar_with_opposite_boolean_literal_branches"
 source = '''
 unless foo? || bar?
   true
@@ -654,7 +1489,7 @@ column_end = 6
 message = "Remove redundant `unless` with boolean literal branches."
 
 [[tests]]
-name = ""
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_logical_operator_and_all_operands_are_predicate_methods_registers_and_corrects_an_offense_when_using_if_foo__bar__baz_with_boolean_literal_branches"
 source = '''
 if foo? && bar? && baz?
   true
@@ -673,7 +1508,7 @@ column_end = 2
 message = "Remove redundant `if` with boolean literal branches."
 
 [[tests]]
-name = ""
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_condition_is_a_logical_operator_and_all_operands_are_predicate_methods_registers_and_corrects_an_offense_when_using_if_foo__bar__baz_with_boolean_literal_branches_2"
 source = '''
 if foo? && bar? || baz?
   true
@@ -692,7 +1527,7 @@ column_end = 2
 message = "Remove redundant `if` with boolean literal branches."
 
 [[tests]]
-name = ""
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_using_elsif_with_boolean_literal_branches_registers_and_corrects_an_offense_when_using_single_elsif_with_boolean_literal_branches"
 source = '''
 if foo
   true
@@ -717,7 +1552,7 @@ column_end = 5
 message = "Use `else` instead of redundant `elsif` with boolean literal branches."
 
 [[tests]]
-name = ""
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_using_elsif_with_boolean_literal_branches_does_not_register_an_offense_when_using_multiple_elsif_with_boolean_literal_branches"
 source = '''
 if foo
   true
@@ -732,16 +1567,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_ifwithbooleanliteralbranches_does_not_crash_when_using_as_a_condition"
-source = '''
-if ()
-else
-end
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_ifwithbooleanliteralbranches_when_allowedmethods_nonzero_does_not_register_an_offense_when_using_nonzero"
+name = "rubocopcopstyleifwithbooleanliteralbranches_when_allowedmethods_nonzero_does_not_register_an_offense_when_using_nonzero"
 source = '''
 num.nonzero? ? true : false
 '''

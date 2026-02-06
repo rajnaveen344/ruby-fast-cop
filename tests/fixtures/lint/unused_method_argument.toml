@@ -4,7 +4,7 @@ severity = "warning"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_lint_unusedmethodargument_inspection_when_a_method_takes_multiple_arguments_and_an_argument_is_unused_registers_an_offense_and_adds_underscore_prefix"
+name = "rubocopcoplintunusedmethodargument_inspection_when_a_method_takes_multiple_arguments_and_an_argument_is_unused_registers_an_offense_and_adds_underscoreprefix"
 source = '''
 def some_method(foo, bar)
   puts bar
@@ -15,14 +15,12 @@ def some_method(_foo, bar)
   puts bar
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 16
 column_end = 19
-message = "#{message}"
+message = "Unused method argument - `foo`. If it's necessary, use `_` or `_foo` as an argument name to indicate that it won't be used. If it's unnecessary, remove it."
 
 [tests.config]
 AllowUnusedKeywordArguments = false
@@ -30,7 +28,7 @@ IgnoreEmptyMethods = false
 IgnoreNotImplementedMethods = false
 
 [[tests]]
-name = "rubocop_cop_lint_unusedmethodargument_inspection_when_a_method_takes_multiple_arguments_and_an_argument_is_unused_and_there_is_some_whitespace_around_the_unused_argument_registers_an_offense_and_preserves_whitespace"
+name = "rubocopcoplintunusedmethodargument_inspection_when_a_method_takes_multiple_arguments_and_an_argument_is_unused_and_there_is_some_whitespace_around_the_unused_argument_registers_an_offense_and_preserves_whitespace"
 source = '''
 def some_method(foo,
     bar)
@@ -43,14 +41,12 @@ def some_method(foo,
   puts foo
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 2
 column_start = 4
 column_end = 7
-message = "#{message}"
+message = "Unused method argument - `bar`. If it's necessary, use `_` or `_bar` as an argument name to indicate that it won't be used. If it's unnecessary, remove it."
 
 [tests.config]
 AllowUnusedKeywordArguments = false
@@ -58,7 +54,7 @@ IgnoreEmptyMethods = false
 IgnoreNotImplementedMethods = false
 
 [[tests]]
-name = "rubocop_cop_lint_unusedmethodargument_inspection_when_a_method_takes_multiple_arguments_and_an_argument_is_unused_and_arguments_are_swap_assigned_accepts"
+name = "rubocopcoplintunusedmethodargument_inspection_when_a_method_takes_multiple_arguments_and_an_argument_is_unused_and_arguments_are_swapassigned_accepts"
 source = '''
 def foo(a, b)
   a, b = b, a
@@ -72,7 +68,7 @@ IgnoreEmptyMethods = false
 IgnoreNotImplementedMethods = false
 
 [[tests]]
-name = "rubocop_cop_lint_unusedmethodargument_inspection_when_a_method_takes_multiple_arguments_and_an_argument_is_unused_and_one_argument_is_assigned_to_another_whilst_other_s_value_is_not_used_registers_an_offense"
+name = "rubocopcoplintunusedmethodargument_inspection_when_a_method_takes_multiple_arguments_and_an_argument_is_unused_and_one_argument_is_assigned_to_another_whilst_others_value_is_not_used_registers_an_offense"
 source = '''
 def foo(a, b)
   a, b = b, 42
@@ -83,14 +79,12 @@ def foo(_a, b)
   a, b = b, 42
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 8
 column_end = 9
-message = "#{message}"
+message = "Unused method argument - `a`. If it's necessary, use `_` or `_a` as an argument name to indicate that it won't be used. If it's unnecessary, remove it."
 
 [tests.config]
 AllowUnusedKeywordArguments = false
@@ -98,7 +92,7 @@ IgnoreEmptyMethods = false
 IgnoreNotImplementedMethods = false
 
 [[tests]]
-name = "rubocop_cop_lint_unusedmethodargument_inspection_when_a_method_takes_multiple_arguments_and_all_the_arguments_are_unused"
+name = "rubocopcoplintunusedmethodargument_inspection_when_a_method_takes_multiple_arguments_and_all_the_arguments_are_unused_registers_offenses_and_suggests_the_use_of__and_autocorrects_to_add_underscoreprefix_to_all_arguments"
 source = '''
 def some_method(foo, bar)
 end
@@ -107,20 +101,18 @@ corrected = '''
 def some_method(_foo, _bar)
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 21
 column_end = 24
-message = "#{bar_message}"
+message = "Unused method argument - `bar`. If it's necessary, use `_` or `_bar` as an argument name to indicate that it won't be used. If it's unnecessary, remove it. You can also write as `some_method(*)` if you want the method to accept any arguments but don't care about them."
 
 [[tests.offenses]]
 line = 1
 column_start = 16
 column_end = 19
-message = "#{foo_message}"
+message = "Unused method argument - `foo`. If it's necessary, use `_` or `_foo` as an argument name to indicate that it won't be used. If it's unnecessary, remove it. You can also write as `some_method(*)` if you want the method to accept any arguments but don't care about them."
 
 [tests.config]
 AllowUnusedKeywordArguments = false
@@ -128,7 +120,7 @@ IgnoreEmptyMethods = false
 IgnoreNotImplementedMethods = false
 
 [[tests]]
-name = "rubocop_cop_lint_unusedmethodargument_inspection_when_a_splat_argument_is_unused_registers_an_offense_and_preserves_the_splat"
+name = "rubocopcoplintunusedmethodargument_inspection_when_a_splat_argument_is_unused_registers_an_offense_and_preserves_the_splat"
 source = '''
 def some_method(foo, *bar)
   puts foo
@@ -139,14 +131,12 @@ def some_method(foo, *_bar)
   puts foo
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 22
 column_end = 25
-message = "#{message}"
+message = "Unused method argument - `bar`. If it's necessary, use `_` or `_bar` as an argument name to indicate that it won't be used. If it's unnecessary, remove it."
 
 [tests.config]
 AllowUnusedKeywordArguments = false
@@ -154,7 +144,7 @@ IgnoreEmptyMethods = false
 IgnoreNotImplementedMethods = false
 
 [[tests]]
-name = "rubocop_cop_lint_unusedmethodargument_inspection_when_an_argument_with_a_default_value_is_unused_registers_an_offense_and_preserves_the_default_value"
+name = "rubocopcoplintunusedmethodargument_inspection_when_an_argument_with_a_default_value_is_unused_registers_an_offense_and_preserves_the_default_value"
 source = '''
 def some_method(foo, bar = 1)
   puts foo
@@ -165,14 +155,12 @@ def some_method(foo, _bar = 1)
   puts foo
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 21
 column_end = 24
-message = "#{message}"
+message = "Unused method argument - `bar`. If it's necessary, use `_` or `_bar` as an argument name to indicate that it won't be used. If it's unnecessary, remove it."
 
 [tests.config]
 AllowUnusedKeywordArguments = false
@@ -180,7 +168,7 @@ IgnoreEmptyMethods = false
 IgnoreNotImplementedMethods = false
 
 [[tests]]
-name = "rubocop_cop_lint_unusedmethodargument_inspection_when_a_required_keyword_argument_is_unused_when_a_required_keyword_argument_is_unused_registers_an_offense_but_does_not_suggest_underscore_prefix"
+name = "rubocopcoplintunusedmethodargument_inspection_when_a_required_keyword_argument_is_unused_when_a_required_keyword_argument_is_unused_registers_an_offense_but_does_not_suggest_underscoreprefix"
 source = '''
 def self.some_method(foo, bar:)
   puts foo
@@ -199,7 +187,7 @@ IgnoreEmptyMethods = false
 IgnoreNotImplementedMethods = false
 
 [[tests]]
-name = "rubocop_cop_lint_unusedmethodargument_inspection_when_an_optional_keyword_argument_is_unused_registers_an_offense_but_does_not_suggest_underscore_prefix"
+name = "rubocopcoplintunusedmethodargument_inspection_when_an_optional_keyword_argument_is_unused_registers_an_offense_but_does_not_suggest_underscoreprefix"
 source = '''
 def self.some_method(foo, bar: 1)
   puts foo
@@ -218,7 +206,7 @@ IgnoreEmptyMethods = false
 IgnoreNotImplementedMethods = false
 
 [[tests]]
-name = "rubocop_cop_lint_unusedmethodargument_inspection_when_an_optional_keyword_argument_is_unused_and_allowunusedkeywordarguments_set_does_not_care"
+name = "rubocopcoplintunusedmethodargument_inspection_when_an_optional_keyword_argument_is_unused_and_allowunusedkeywordarguments_set_does_not_care"
 source = '''
 def self.some_method(foo, bar: 1)
   puts foo
@@ -228,11 +216,9 @@ offenses = []
 
 [tests.config]
 AllowUnusedKeywordArguments = true
-IgnoreEmptyMethods = false
-IgnoreNotImplementedMethods = false
 
 [[tests]]
-name = "rubocop_cop_lint_unusedmethodargument_inspection_when_a_trailing_block_argument_is_unused_registers_an_offense_and_removes_the_unused_block_arg"
+name = "rubocopcoplintunusedmethodargument_inspection_when_a_trailing_block_argument_is_unused_registers_an_offense_and_removes_the_unused_block_arg"
 source = '''
 def some_method(foo, bar, &block)
   foo + bar
@@ -243,22 +229,20 @@ def some_method(foo, bar)
   foo + bar
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 27
 column_end = 32
-message = "#{message}"
+message = "Unused method argument - `block`. If it's necessary, use `_` or `_block` as an argument name to indicate that it won't be used. If it's unnecessary, remove it."
 
 [tests.config]
-AllowUnusedKeywordArguments = true
+AllowUnusedKeywordArguments = false
 IgnoreEmptyMethods = false
 IgnoreNotImplementedMethods = false
 
 [[tests]]
-name = "rubocop_cop_lint_unusedmethodargument_inspection_when_a_singleton_method_argument_is_unused_registers_an_offense"
+name = "rubocopcoplintunusedmethodargument_inspection_when_a_singleton_method_argument_is_unused_registers_an_offense"
 source = '''
 def self.some_method(foo)
 end
@@ -267,22 +251,74 @@ corrected = '''
 def self.some_method(_foo)
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 21
 column_end = 24
-message = "#{message}"
+message = "Unused method argument - `foo`. If it's necessary, use `_` or `_foo` as an argument name to indicate that it won't be used. If it's unnecessary, remove it. You can also write as `some_method(*)` if you want the method to accept any arguments but don't care about them."
 
 [tests.config]
-AllowUnusedKeywordArguments = true
+AllowUnusedKeywordArguments = false
 IgnoreEmptyMethods = false
 IgnoreNotImplementedMethods = false
 
 [[tests]]
-name = "rubocop_cop_lint_unusedmethodargument_inspection_in_a_method_calling_super_without_arguments_when_a_method_argument_is_not_used_explicitly"
+name = "rubocopcoplintunusedmethodargument_inspection_when_an_underscoreprefixed_method_argument_is_unused_accepts"
+source = '''
+def some_method(_foo)
+end
+'''
+offenses = []
+
+[tests.config]
+AllowUnusedKeywordArguments = false
+IgnoreEmptyMethods = false
+IgnoreNotImplementedMethods = false
+
+[[tests]]
+name = "rubocopcoplintunusedmethodargument_inspection_when_a_method_argument_is_used_accepts"
+source = '''
+def some_method(foo)
+  puts foo
+end
+'''
+offenses = []
+
+[tests.config]
+AllowUnusedKeywordArguments = false
+IgnoreEmptyMethods = false
+IgnoreNotImplementedMethods = false
+
+[[tests]]
+name = "rubocopcoplintunusedmethodargument_inspection_when_a_variable_is_unused_does_not_care"
+source = '''
+def some_method
+  foo = 1
+end
+'''
+offenses = []
+
+[tests.config]
+AllowUnusedKeywordArguments = false
+IgnoreEmptyMethods = false
+IgnoreNotImplementedMethods = false
+
+[[tests]]
+name = "rubocopcoplintunusedmethodargument_inspection_when_a_block_argument_is_unused_does_not_care"
+source = '''
+1.times do |foo|
+end
+'''
+offenses = []
+
+[tests.config]
+AllowUnusedKeywordArguments = false
+IgnoreEmptyMethods = false
+IgnoreNotImplementedMethods = false
+
+[[tests]]
+name = "rubocopcoplintunusedmethodargument_inspection_in_a_method_calling_super_without_arguments_when_a_method_argument_is_not_used_explicitly_accepts_since_the_arguments_are_guaranteed_to_be_the_same_as_superclass_ones_and_the_user_has_no_control_on_them"
 source = '''
 def some_method(foo)
   super
@@ -291,12 +327,12 @@ end
 offenses = []
 
 [tests.config]
-AllowUnusedKeywordArguments = true
+AllowUnusedKeywordArguments = false
 IgnoreEmptyMethods = false
 IgnoreNotImplementedMethods = false
 
 [[tests]]
-name = "rubocop_cop_lint_unusedmethodargument_inspection_in_a_method_calling_super_with_arguments_when_a_method_argument_is_unused_registers_an_offense"
+name = "rubocopcoplintunusedmethodargument_inspection_in_a_method_calling_super_with_arguments_when_a_method_argument_is_unused_registers_an_offense"
 source = '''
 def some_method(foo)
   super(:something)
@@ -307,22 +343,34 @@ def some_method(_foo)
   super(:something)
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 16
 column_end = 19
-message = "#{message}"
+message = "Unused method argument - `foo`. If it's necessary, use `_` or `_foo` as an argument name to indicate that it won't be used. If it's unnecessary, remove it. You can also write as `some_method(*)` if you want the method to accept any arguments but don't care about them."
 
 [tests.config]
-AllowUnusedKeywordArguments = true
+AllowUnusedKeywordArguments = false
 IgnoreEmptyMethods = false
 IgnoreNotImplementedMethods = false
 
 [[tests]]
-name = "rubocop_cop_lint_unusedmethodargument_inspection_in_a_method_calling_binding_without_arguments_inside_another_method_definition_registers_offenses"
+name = "rubocopcoplintunusedmethodargument_inspection_in_a_method_calling_binding_without_arguments_accepts_all_arguments"
+source = '''
+def some_method(foo, bar)
+  do_something binding
+end
+'''
+offenses = []
+
+[tests.config]
+AllowUnusedKeywordArguments = false
+IgnoreEmptyMethods = false
+IgnoreNotImplementedMethods = false
+
+[[tests]]
+name = "rubocopcoplintunusedmethodargument_inspection_in_a_method_calling_binding_without_arguments_inside_another_method_definition_registers_offenses"
 source = '''
 def some_method(foo, bar)
   def other(a)
@@ -337,28 +385,26 @@ def some_method(_foo, _bar)
   end
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 21
 column_end = 24
-message = "#{bar_message}"
+message = "Unused method argument - `bar`. If it's necessary, use `_` or `_bar` as an argument name to indicate that it won't be used. If it's unnecessary, remove it. You can also write as `some_method(*)` if you want the method to accept any arguments but don't care about them."
 
 [[tests.offenses]]
 line = 1
 column_start = 16
 column_end = 19
-message = "#{foo_message}"
+message = "Unused method argument - `foo`. If it's necessary, use `_` or `_foo` as an argument name to indicate that it won't be used. If it's unnecessary, remove it. You can also write as `some_method(*)` if you want the method to accept any arguments but don't care about them."
 
 [tests.config]
-AllowUnusedKeywordArguments = true
+AllowUnusedKeywordArguments = false
 IgnoreEmptyMethods = false
 IgnoreNotImplementedMethods = false
 
 [[tests]]
-name = "rubocop_cop_lint_unusedmethodargument_inspection_in_a_method_calling_binding_with_arguments_when_a_method_argument_is_unused_registers_an_offense"
+name = "rubocopcoplintunusedmethodargument_inspection_in_a_method_calling_binding_with_arguments_when_a_method_argument_is_unused_registers_an_offense"
 source = '''
 def some_method(foo)
   binding(:something)
@@ -369,22 +415,20 @@ def some_method(_foo)
   binding(:something)
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 16
 column_end = 19
-message = "#{message}"
+message = "Unused method argument - `foo`. If it's necessary, use `_` or `_foo` as an argument name to indicate that it won't be used. If it's unnecessary, remove it. You can also write as `some_method(*)` if you want the method to accept any arguments but don't care about them."
 
 [tests.config]
-AllowUnusedKeywordArguments = true
+AllowUnusedKeywordArguments = false
 IgnoreEmptyMethods = false
 IgnoreNotImplementedMethods = false
 
 [[tests]]
-name = "rubocop_cop_lint_unusedmethodargument_when_ignoreemptymethods_config_parameter_is_set_accepts_an_empty_method_with_a_single_unused_parameter"
+name = "rubocopcoplintunusedmethodargument_when_ignoreemptymethods_config_parameter_is_set_accepts_an_empty_method_with_a_single_unused_parameter"
 source = '''
 def method(arg)
 end
@@ -392,12 +436,10 @@ end
 offenses = []
 
 [tests.config]
-AllowUnusedKeywordArguments = true
 IgnoreEmptyMethods = true
-IgnoreNotImplementedMethods = false
 
 [[tests]]
-name = "rubocop_cop_lint_unusedmethodargument_when_ignoreemptymethods_config_parameter_is_set_accepts_an_empty_singleton_method_with_a_single_unused_parameter"
+name = "rubocopcoplintunusedmethodargument_when_ignoreemptymethods_config_parameter_is_set_accepts_an_empty_singleton_method_with_a_single_unused_parameter"
 source = '''
 def self.method(unused)
 end
@@ -405,12 +447,10 @@ end
 offenses = []
 
 [tests.config]
-AllowUnusedKeywordArguments = true
 IgnoreEmptyMethods = true
-IgnoreNotImplementedMethods = false
 
 [[tests]]
-name = "rubocop_cop_lint_unusedmethodargument_when_ignoreemptymethods_config_parameter_is_set_registers_an_offense_for_a_non_empty_method_with_a_single_unused_parameter"
+name = "rubocopcoplintunusedmethodargument_when_ignoreemptymethods_config_parameter_is_set_registers_an_offense_for_a_nonempty_method_with_a_single_unused_parameter"
 source = '''
 def method(arg)
   1
@@ -421,22 +461,18 @@ def method(_arg)
   1
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 11
 column_end = 14
-message = "#{message}"
+message = "Unused method argument - `arg`. If it's necessary, use `_` or `_arg` as an argument name to indicate that it won't be used. If it's unnecessary, remove it. You can also write as `method(*)` if you want the method to accept any arguments but don't care about them."
 
 [tests.config]
-AllowUnusedKeywordArguments = true
 IgnoreEmptyMethods = true
-IgnoreNotImplementedMethods = false
 
 [[tests]]
-name = "rubocop_cop_lint_unusedmethodargument_when_ignoreemptymethods_config_parameter_is_set_accepts_an_empty_method_with_multiple_unused_parameters"
+name = "rubocopcoplintunusedmethodargument_when_ignoreemptymethods_config_parameter_is_set_accepts_an_empty_method_with_multiple_unused_parameters"
 source = '''
 def method(a, b, *others)
 end
@@ -444,15 +480,12 @@ end
 offenses = []
 
 [tests.config]
-AllowUnusedKeywordArguments = true
 IgnoreEmptyMethods = true
-IgnoreNotImplementedMethods = false
 
 [[tests]]
-name = "rubocop_cop_lint_unusedmethodargument_when_ignoreemptymethods_config_parameter_is_set_registers_an_offense_for_a_non_empty_method_with_multiple_unused_parameters"
+name = "rubocopcoplintunusedmethodargument_when_ignoreemptymethods_config_parameter_is_set_registers_an_offense_for_a_nonempty_method_with_multiple_unused_parameters"
 source = '''
 def method(a, b, *others)
-              ^ #{b_message}
   1
 end
 '''
@@ -461,28 +494,30 @@ def method(_a, _b, *_others)
   1
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 18
 column_end = 24
-message = "#{others_message}"
+message = "Unused method argument - `others`. If it's necessary, use `_` or `_others` as an argument name to indicate that it won't be used. If it's unnecessary, remove it. You can also write as `method(*)` if you want the method to accept any arguments but don't care about them."
 
 [[tests.offenses]]
-line = 2
+line = 1
+column_start = 14
+column_end = 15
+message = "Unused method argument - `b`. If it's necessary, use `_` or `_b` as an argument name to indicate that it won't be used. If it's unnecessary, remove it. You can also write as `method(*)` if you want the method to accept any arguments but don't care about them."
+
+[[tests.offenses]]
+line = 1
 column_start = 11
 column_end = 12
-message = "#{a_message}"
+message = "Unused method argument - `a`. If it's necessary, use `_` or `_a` as an argument name to indicate that it won't be used. If it's unnecessary, remove it. You can also write as `method(*)` if you want the method to accept any arguments but don't care about them."
 
 [tests.config]
-AllowUnusedKeywordArguments = true
 IgnoreEmptyMethods = true
-IgnoreNotImplementedMethods = false
 
 [[tests]]
-name = "rubocop_cop_lint_unusedmethodargument_when_ignorenotimplementedmethods_config_parameter_is_set_accepts_a_method_with_a_single_unused_parameter_raises_notimplementederror"
+name = "rubocopcoplintunusedmethodargument_when_ignorenotimplementedmethods_config_parameter_is_set_accepts_a_method_with_a_single_unused_parameter__raises_notimplementederror"
 source = '''
 def method(arg)
   raise NotImplementedError
@@ -491,12 +526,10 @@ end
 offenses = []
 
 [tests.config]
-AllowUnusedKeywordArguments = true
-IgnoreEmptyMethods = true
 IgnoreNotImplementedMethods = true
 
 [[tests]]
-name = "rubocop_cop_lint_unusedmethodargument_when_ignorenotimplementedmethods_config_parameter_is_set_accepts_a_method_with_a_single_unused_parameter_raises_notimplementederror_message"
+name = "rubocopcoplintunusedmethodargument_when_ignorenotimplementedmethods_config_parameter_is_set_accepts_a_method_with_a_single_unused_parameter__raises_notimplementederror_message"
 source = '''
 def method(arg)
   raise NotImplementedError, message
@@ -505,12 +538,10 @@ end
 offenses = []
 
 [tests.config]
-AllowUnusedKeywordArguments = true
-IgnoreEmptyMethods = true
 IgnoreNotImplementedMethods = true
 
 [[tests]]
-name = "rubocop_cop_lint_unusedmethodargument_when_ignorenotimplementedmethods_config_parameter_is_set_accepts_a_method_with_a_single_unused_parameter_raises_notimplementederror"
+name = "rubocopcoplintunusedmethodargument_when_ignorenotimplementedmethods_config_parameter_is_set_accepts_a_method_with_a_single_unused_parameter__raises_notimplementederror_2"
 source = '''
 def method(arg)
   raise ::NotImplementedError
@@ -519,12 +550,10 @@ end
 offenses = []
 
 [tests.config]
-AllowUnusedKeywordArguments = true
-IgnoreEmptyMethods = true
 IgnoreNotImplementedMethods = true
 
 [[tests]]
-name = "rubocop_cop_lint_unusedmethodargument_when_ignorenotimplementedmethods_config_parameter_is_set_accepts_a_method_with_a_single_unused_parameter_fails_with_message"
+name = "rubocopcoplintunusedmethodargument_when_ignorenotimplementedmethods_config_parameter_is_set_accepts_a_method_with_a_single_unused_parameter__fails_with_message"
 source = '''
 def method(arg)
   fail "TODO"
@@ -533,12 +562,10 @@ end
 offenses = []
 
 [tests.config]
-AllowUnusedKeywordArguments = true
-IgnoreEmptyMethods = true
 IgnoreNotImplementedMethods = true
 
 [[tests]]
-name = "rubocop_cop_lint_unusedmethodargument_when_ignorenotimplementedmethods_config_parameter_is_set_accepts_a_method_with_a_single_unused_parameter_fails_without_message"
+name = "rubocopcoplintunusedmethodargument_when_ignorenotimplementedmethods_config_parameter_is_set_accepts_a_method_with_a_single_unused_parameter__fails_without_message"
 source = '''
 def method(arg)
   fail
@@ -547,12 +574,10 @@ end
 offenses = []
 
 [tests.config]
-AllowUnusedKeywordArguments = true
-IgnoreEmptyMethods = true
 IgnoreNotImplementedMethods = true
 
 [[tests]]
-name = "rubocop_cop_lint_unusedmethodargument_when_ignorenotimplementedmethods_config_parameter_is_set"
+name = "rubocopcoplintunusedmethodargument_when_ignorenotimplementedmethods_config_parameter_is_set_accepts_an_empty_singleton_method_with_a_single_unused_parameter_raise_notimplementederror"
 source = '''
 def self.method(unused)
   raise NotImplementedError
@@ -561,12 +586,10 @@ end
 offenses = []
 
 [tests.config]
-AllowUnusedKeywordArguments = true
-IgnoreEmptyMethods = true
 IgnoreNotImplementedMethods = true
 
 [[tests]]
-name = "rubocop_cop_lint_unusedmethodargument_when_ignorenotimplementedmethods_config_parameter_is_set_registers_an_offense_for_a_non_empty_method_with_a_single_unused_parameter"
+name = "rubocopcoplintunusedmethodargument_when_ignorenotimplementedmethods_config_parameter_is_set_registers_an_offense_for_a_nonempty_method_with_a_single_unused_parameter"
 source = '''
 def method(arg)
   1
@@ -577,22 +600,18 @@ def method(_arg)
   1
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 11
 column_end = 14
-message = "#{message}"
+message = "Unused method argument - `arg`. If it's necessary, use `_` or `_arg` as an argument name to indicate that it won't be used. If it's unnecessary, remove it. You can also write as `method(*)` if you want the method to accept any arguments but don't care about them."
 
 [tests.config]
-AllowUnusedKeywordArguments = true
-IgnoreEmptyMethods = true
 IgnoreNotImplementedMethods = true
 
 [[tests]]
-name = "rubocop_cop_lint_unusedmethodargument_when_ignorenotimplementedmethods_config_parameter_is_set_accepts_an_empty_method_with_multiple_unused_parameters"
+name = "rubocopcoplintunusedmethodargument_when_ignorenotimplementedmethods_config_parameter_is_set_accepts_an_empty_method_with_multiple_unused_parameters"
 source = '''
 def method(a, b, *others)
   raise NotImplementedError
@@ -601,15 +620,12 @@ end
 offenses = []
 
 [tests.config]
-AllowUnusedKeywordArguments = true
-IgnoreEmptyMethods = true
 IgnoreNotImplementedMethods = true
 
 [[tests]]
-name = "rubocop_cop_lint_unusedmethodargument_when_ignorenotimplementedmethods_config_parameter_is_set_registers_an_offense_for_a_non_empty_method_with_multiple_unused_parameters"
+name = "rubocopcoplintunusedmethodargument_when_ignorenotimplementedmethods_config_parameter_is_set_registers_an_offense_for_a_nonempty_method_with_multiple_unused_parameters"
 source = '''
 def method(a, b, *others)
-              ^ #{b_message}
   1
 end
 '''
@@ -618,28 +634,30 @@ def method(_a, _b, *_others)
   1
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 18
 column_end = 24
-message = "#{others_message}"
+message = "Unused method argument - `others`. If it's necessary, use `_` or `_others` as an argument name to indicate that it won't be used. If it's unnecessary, remove it. You can also write as `method(*)` if you want the method to accept any arguments but don't care about them."
 
 [[tests.offenses]]
-line = 2
+line = 1
+column_start = 14
+column_end = 15
+message = "Unused method argument - `b`. If it's necessary, use `_` or `_b` as an argument name to indicate that it won't be used. If it's unnecessary, remove it. You can also write as `method(*)` if you want the method to accept any arguments but don't care about them."
+
+[[tests.offenses]]
+line = 1
 column_start = 11
 column_end = 12
-message = "#{a_message}"
+message = "Unused method argument - `a`. If it's necessary, use `_` or `_a` as an argument name to indicate that it won't be used. If it's unnecessary, remove it. You can also write as `method(*)` if you want the method to accept any arguments but don't care about them."
 
 [tests.config]
-AllowUnusedKeywordArguments = true
-IgnoreEmptyMethods = true
 IgnoreNotImplementedMethods = true
 
 [[tests]]
-name = "rubocop_cop_lint_unusedmethodargument_when_ignorenotimplementedmethods_config_parameter_is_set_when_notimplementedexceptions_is_configured_accepts_a_method_with_a_single_unused_parameter_raises_abstractmethoderror"
+name = "rubocopcoplintunusedmethodargument_when_ignorenotimplementedmethods_config_parameter_is_set_when_notimplementedexceptions_is_configured_accepts_a_method_with_a_single_unused_parameter__raises_abstractmethoderror"
 source = '''
 def method(arg)
   raise AbstractMethodError
@@ -648,13 +666,11 @@ end
 offenses = []
 
 [tests.config]
-AllowUnusedKeywordArguments = true
-IgnoreEmptyMethods = true
 IgnoreNotImplementedMethods = true
 NotImplementedExceptions = ["AbstractMethodError"]
 
 [[tests]]
-name = "rubocop_cop_lint_unusedmethodargument_when_ignorenotimplementedmethods_config_parameter_is_set_when_notimplementedexceptions_is_configured_accepts_a_method_with_a_single_unused_parameter_raises_abstractmethoderror_message"
+name = "rubocopcoplintunusedmethodargument_when_ignorenotimplementedmethods_config_parameter_is_set_when_notimplementedexceptions_is_configured_accepts_a_method_with_a_single_unused_parameter__raises_abstractmethoderror_message"
 source = '''
 def method(arg)
   raise AbstractMethodError, message
@@ -663,13 +679,11 @@ end
 offenses = []
 
 [tests.config]
-AllowUnusedKeywordArguments = true
-IgnoreEmptyMethods = true
 IgnoreNotImplementedMethods = true
 NotImplementedExceptions = ["AbstractMethodError"]
 
 [[tests]]
-name = "rubocop_cop_lint_unusedmethodargument_when_ignorenotimplementedmethods_config_parameter_is_set_when_notimplementedexceptions_is_configured_accepts_a_method_with_a_single_unused_parameter_raises_abstractmethoderror"
+name = "rubocopcoplintunusedmethodargument_when_ignorenotimplementedmethods_config_parameter_is_set_when_notimplementedexceptions_is_configured_accepts_a_method_with_a_single_unused_parameter__raises_abstractmethoderror_2"
 source = '''
 def method(arg)
   raise ::AbstractMethodError
@@ -678,13 +692,11 @@ end
 offenses = []
 
 [tests.config]
-AllowUnusedKeywordArguments = true
-IgnoreEmptyMethods = true
 IgnoreNotImplementedMethods = true
 NotImplementedExceptions = ["AbstractMethodError"]
 
 [[tests]]
-name = "rubocop_cop_lint_unusedmethodargument_when_ignorenotimplementedmethods_config_parameter_is_set_when_notimplementedexceptions_is_configured_when_notimplementedexceptions_contains_a_namespaced_exception_class_accepts_a_method_with_a_single_unused_parameter_raises_library_abstractmethoderror"
+name = "rubocopcoplintunusedmethodargument_when_ignorenotimplementedmethods_config_parameter_is_set_when_notimplementedexceptions_is_configured_when_notimplementedexceptions_contains_a_namespaced_exception_class_accepts_a_method_with_a_single_unused_parameter__raises_libraryabstractmethoderror"
 source = '''
 def method(arg)
   raise Library::AbstractMethodError
@@ -693,13 +705,11 @@ end
 offenses = []
 
 [tests.config]
-AllowUnusedKeywordArguments = true
-IgnoreEmptyMethods = true
 IgnoreNotImplementedMethods = true
 NotImplementedExceptions = ["Library::AbstractMethodError"]
 
 [[tests]]
-name = "rubocop_cop_lint_unusedmethodargument_when_ignorenotimplementedmethods_config_parameter_is_set_when_notimplementedexceptions_is_configured_when_notimplementedexceptions_contains_a_namespaced_exception_class_accepts_a_method_with_a_single_unused_parameter_raises_library_abstractmethoderror_message"
+name = "rubocopcoplintunusedmethodargument_when_ignorenotimplementedmethods_config_parameter_is_set_when_notimplementedexceptions_is_configured_when_notimplementedexceptions_contains_a_namespaced_exception_class_accepts_a_method_with_a_single_unused_parameter__raises_libraryabstractmethoderror_message"
 source = '''
 def method(arg)
   raise Library::AbstractMethodError, message
@@ -708,13 +718,11 @@ end
 offenses = []
 
 [tests.config]
-AllowUnusedKeywordArguments = true
-IgnoreEmptyMethods = true
 IgnoreNotImplementedMethods = true
 NotImplementedExceptions = ["Library::AbstractMethodError"]
 
 [[tests]]
-name = "rubocop_cop_lint_unusedmethodargument_when_ignorenotimplementedmethods_config_parameter_is_set_when_notimplementedexceptions_is_configured_when_notimplementedexceptions_contains_a_namespaced_exception_class_accepts_a_method_with_a_single_unused_parameter_raises_library_abstractmethoderror"
+name = "rubocopcoplintunusedmethodargument_when_ignorenotimplementedmethods_config_parameter_is_set_when_notimplementedexceptions_is_configured_when_notimplementedexceptions_contains_a_namespaced_exception_class_accepts_a_method_with_a_single_unused_parameter__raises_libraryabstractmethoderror_2"
 source = '''
 def method(arg)
   raise ::Library::AbstractMethodError
@@ -723,7 +731,5 @@ end
 offenses = []
 
 [tests.config]
-AllowUnusedKeywordArguments = true
-IgnoreEmptyMethods = true
 IgnoreNotImplementedMethods = true
 NotImplementedExceptions = ["Library::AbstractMethodError"]

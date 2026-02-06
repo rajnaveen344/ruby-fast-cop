@@ -4,36 +4,53 @@ severity = "warning"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_lint_scriptpermission_with_file_permission_0644_windows_allows_any_file_permissions"
+name = "rubocopcoplintscriptpermission_with_file_permission_0644_registers_an_offense_for_script_permission"
+source = '''
+#!/usr/bin/ruby
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 15
+message = "Script file 20260206-33694-7egc3a doesn't have execute permission."
+
+[[tests]]
+name = "rubocopcoplintscriptpermission_with_file_permission_0644_if_autocorrection_is_off_leaves_the_file_intact"
+source = '''
+#!/usr/bin/ruby
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 15
+message = "Script file 20260206-33694-woy7eo doesn't have execute permission."
+
+[[tests]]
+name = "rubocopcoplintscriptpermission_with_file_permission_0755_accepts_with_shebang_line"
 source = '''
 #!/usr/bin/ruby
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_scriptpermission_with_file_permission_0644_registers_an_offense_for_script_permission"
+name = "rubocopcoplintscriptpermission_with_file_permission_0755_accepts_without_shebang_line"
 source = '''
-#!/usr/bin/ruby
+puts "hello"
 '''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 15
-message = "Script file #{filename} doesn't have execute permission."
+offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_scriptpermission_with_file_permission_0644_if_autocorrection_is_off_leaves_the_file_intact"
+name = "rubocopcoplintscriptpermission_with_file_permission_0755_accepts_with_blank"
+source = '''
+
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintscriptpermission_with_stdin_skips_investigation"
 source = '''
 #!/usr/bin/ruby
 '''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 15
-message = "Script file #{filename} doesn't have execute permission."
+offenses = []

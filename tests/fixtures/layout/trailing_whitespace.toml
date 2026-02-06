@@ -4,12 +4,10 @@ severity = "convention"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_layout_trailingwhitespace_registers_an_offense_for_a_line_ending_with_space"
+name = "rubocopcoplayouttrailingwhitespace_registers_an_offense_for_a_line_ending_with_space"
 source = '''
-x = 0#{trailing_whitespace}
+x = 0 
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -21,12 +19,10 @@ message = "Trailing whitespace detected."
 AllowInHeredoc = false
 
 [[tests]]
-name = "rubocop_cop_layout_trailingwhitespace_registers_an_offense_for_a_blank_line_with_space"
+name = "rubocopcoplayouttrailingwhitespace_registers_an_offense_for_a_blank_line_with_space"
 source = '''
-#{trailing_whitespace * 2}
+  
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -38,7 +34,7 @@ message = "Trailing whitespace detected."
 AllowInHeredoc = false
 
 [[tests]]
-name = "rubocop_cop_layout_trailingwhitespace_registers_an_offense_for_a_line_ending_with_tab"
+name = "rubocopcoplayouttrailingwhitespace_registers_an_offense_for_a_line_ending_with_tab"
 source = '''
 x = 0	
 '''
@@ -53,7 +49,7 @@ message = "Trailing whitespace detected."
 AllowInHeredoc = false
 
 [[tests]]
-name = "rubocop_cop_layout_trailingwhitespace_registers_an_offense_for_a_line_ending_with_full_width_space"
+name = "rubocopcoplayouttrailingwhitespace_registers_an_offense_for_a_line_ending_with_fullwidth_space"
 source = '''
 x = :a　
 '''
@@ -68,14 +64,12 @@ message = "Trailing whitespace detected."
 AllowInHeredoc = false
 
 [[tests]]
-name = "rubocop_cop_layout_trailingwhitespace_registers_an_offense_for_trailing_whitespace_in_a_heredoc_string"
+name = "rubocopcoplayouttrailingwhitespace_registers_an_offense_for_trailing_whitespace_in_a_heredoc_string"
 source = '''
 x = <<HEREDOC
-  Hi#{trailing_whitespace * 3}
+  Hi   
 HEREDOC
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 2
@@ -87,7 +81,7 @@ message = "Trailing whitespace detected."
 AllowInHeredoc = false
 
 [[tests]]
-name = "rubocop_cop_layout_trailingwhitespace_registers_an_offense_for_a_tab_in_a_heredoc"
+name = "rubocopcoplayouttrailingwhitespace_registers_an_offense_for_a_tab_in_a_heredoc"
 source = '''
 <<~X
 	
@@ -104,7 +98,7 @@ message = "Trailing whitespace detected."
 AllowInHeredoc = false
 
 [[tests]]
-name = "rubocop_cop_layout_trailingwhitespace_registers_an_offense_for_a_full_width_space_in_a_heredoc"
+name = "rubocopcoplayouttrailingwhitespace_registers_an_offense_for_a_fullwidth_space_in_a_heredoc"
 source = '''
 <<~X
 　
@@ -121,15 +115,12 @@ message = "Trailing whitespace detected."
 AllowInHeredoc = false
 
 [[tests]]
-name = "rubocop_cop_layout_trailingwhitespace_registers_offenses_before_end_but_not_after"
+name = "rubocopcoplayouttrailingwhitespace_registers_offenses_before___end___but_not_after"
 source = '''
 x = 0	
-#{trailing_whitespace}
-__END__
+ 
 x = 0	
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -143,15 +134,20 @@ column_start = 0
 column_end = 1
 message = "Trailing whitespace detected."
 
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 2
+message = "END__"
+
 [tests.config]
 AllowInHeredoc = false
 
 [[tests]]
-name = "rubocop_cop_layout_trailingwhitespace_is_not_fooled_by_end_within_a_documentation_comment"
+name = "rubocopcoplayouttrailingwhitespace_is_not_fooled_by___end___within_a_documentation_comment"
 source = '''
 x = 0	
 =begin
-__END__
 =end
 x = 0	
 '''
@@ -163,7 +159,13 @@ column_end = 6
 message = "Trailing whitespace detected."
 
 [[tests.offenses]]
-line = 5
+line = 2
+column_start = 0
+column_end = 2
+message = "END__"
+
+[[tests.offenses]]
+line = 4
 column_start = 5
 column_end = 6
 message = "Trailing whitespace detected."
@@ -172,16 +174,13 @@ message = "Trailing whitespace detected."
 AllowInHeredoc = false
 
 [[tests]]
-name = "rubocop_cop_layout_trailingwhitespace_is_not_fooled_by_heredoc_containing_end"
+name = "rubocopcoplayouttrailingwhitespace_is_not_fooled_by_heredoc_containing___end__"
 source = '''
-x1 = <<HEREDOC#{trailing_whitespace}
-__END__
+x1 = <<HEREDOC 
 x2 = 0	
 HEREDOC
 x3 = 0	
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -190,13 +189,19 @@ column_end = 15
 message = "Trailing whitespace detected."
 
 [[tests.offenses]]
-line = 3
+line = 1
+column_start = 0
+column_end = 2
+message = "END__"
+
+[[tests.offenses]]
+line = 2
 column_start = 6
 column_end = 7
 message = "Trailing whitespace detected."
 
 [[tests.offenses]]
-line = 5
+line = 4
 column_start = 6
 column_end = 7
 message = "Trailing whitespace detected."
@@ -205,18 +210,15 @@ message = "Trailing whitespace detected."
 AllowInHeredoc = false
 
 [[tests]]
-name = "rubocop_cop_layout_trailingwhitespace_is_not_fooled_by_heredoc_containing_end_within_a_doc_comment"
+name = "rubocopcoplayouttrailingwhitespace_is_not_fooled_by_heredoc_containing___end___within_a_doc_comment"
 source = '''
-x1 = <<HEREDOC#{trailing_whitespace}
-=begin#{trailing_whitespace * 2}
-__END__
+x1 = <<HEREDOC 
+=begin  
 =end
 x2 = 0	
 HEREDOC
 x3 = 0	
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -231,13 +233,19 @@ column_end = 8
 message = "Trailing whitespace detected."
 
 [[tests.offenses]]
-line = 5
+line = 2
+column_start = 0
+column_end = 2
+message = "END__"
+
+[[tests.offenses]]
+line = 4
 column_start = 6
 column_end = 7
 message = "Trailing whitespace detected."
 
 [[tests.offenses]]
-line = 7
+line = 6
 column_start = 6
 column_end = 7
 message = "Trailing whitespace detected."
@@ -246,7 +254,7 @@ message = "Trailing whitespace detected."
 AllowInHeredoc = false
 
 [[tests]]
-name = "rubocop_cop_layout_trailingwhitespace_accepts_a_line_without_trailing_whitespace"
+name = "rubocopcoplayouttrailingwhitespace_accepts_a_line_without_trailing_whitespace"
 source = '''
 x = 0
 '''
@@ -256,9 +264,9 @@ offenses = []
 AllowInHeredoc = false
 
 [[tests]]
-name = "rubocop_cop_layout_trailingwhitespace_autocorrects_unwanted_space"
+name = "rubocopcoplayouttrailingwhitespace_autocorrects_unwanted_space"
 source = '''
-x = 0#{trailing_whitespace}
+x = 0 
 x = 0	
 x = :a　
 '''
@@ -267,8 +275,6 @@ x = 0
 x = 0
 x = :a
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -292,28 +298,24 @@ message = "Trailing whitespace detected."
 AllowInHeredoc = false
 
 [[tests]]
-name = "rubocop_cop_layout_trailingwhitespace_when_allowinheredoc_is_set_to_true_accepts_trailing_whitespace_in_a_heredoc_string"
+name = "rubocopcoplayouttrailingwhitespace_when_allowinheredoc_is_set_to_true_accepts_trailing_whitespace_in_a_heredoc_string"
 source = '''
 x = <<HEREDOC
-  Hi#{trailing_whitespace * 3}
+  Hi   
 HEREDOC
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
 AllowInHeredoc = true
 
 [[tests]]
-name = "rubocop_cop_layout_trailingwhitespace_when_allowinheredoc_is_set_to_true_registers_an_offense_for_trailing_whitespace_at_the_heredoc_begin"
+name = "rubocopcoplayouttrailingwhitespace_when_allowinheredoc_is_set_to_true_registers_an_offense_for_trailing_whitespace_at_the_heredoc_begin"
 source = '''
-x = <<HEREDOC#{trailing_whitespace}
-  Hi#{trailing_whitespace * 3}
+x = <<HEREDOC 
+  Hi   
 HEREDOC
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -325,10 +327,10 @@ message = "Trailing whitespace detected."
 AllowInHeredoc = true
 
 [[tests]]
-name = "rubocop_cop_layout_trailingwhitespace_when_allowinheredoc_is_set_to_false_corrects_safely_trailing_whitespace_in_a_heredoc_string"
+name = "rubocopcoplayouttrailingwhitespace_when_allowinheredoc_is_set_to_false_corrects_safely_trailing_whitespace_in_a_heredoc_string"
 source = '''
 x = <<~EXAMPLE
-  has trailing   #{trailing_whitespace}
+  has trailing    
   no trailing
 EXAMPLE
 '''
@@ -338,8 +340,6 @@ x = <<~EXAMPLE
   no trailing
 EXAMPLE
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 2
@@ -351,13 +351,13 @@ message = "Trailing whitespace detected."
 AllowInHeredoc = false
 
 [[tests]]
-name = "rubocop_cop_layout_trailingwhitespace_when_allowinheredoc_is_set_to_false_corrects_by_removing_trailing_whitespace_used_for_indentation_in_a_heredoc_string"
+name = "rubocopcoplayouttrailingwhitespace_when_allowinheredoc_is_set_to_false_corrects_by_removing_trailing_whitespace_used_for_indentation_in_a_heredoc_string"
 source = '''
 x = <<~EXAMPLE
   no trailing
- #{trailing_whitespace}
+  
   no trailing
-#{trailing_whitespace}
+ 
   no trailing
 EXAMPLE
 '''
@@ -370,8 +370,6 @@ x = <<~EXAMPLE
   no trailing
 EXAMPLE
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 3
@@ -389,11 +387,11 @@ message = "Trailing whitespace detected."
 AllowInHeredoc = false
 
 [[tests]]
-name = "rubocop_cop_layout_trailingwhitespace_when_allowinheredoc_is_set_to_false_corrects_a_whitespace_line_in_a_heredoc_string_that_is_longer_than_the_indentation"
+name = "rubocopcoplayouttrailingwhitespace_when_allowinheredoc_is_set_to_false_corrects_a_whitespace_line_in_a_heredoc_string_that_is_longer_than_the_indentation"
 source = '''
 x = <<~EXAMPLE
   no trailing
-  #{trailing_whitespace}
+   
   no trailing
 EXAMPLE
 '''
@@ -404,8 +402,6 @@ x = <<~EXAMPLE
   no trailing
 EXAMPLE
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 3
@@ -417,15 +413,13 @@ message = "Trailing whitespace detected."
 AllowInHeredoc = false
 
 [[tests]]
-name = "rubocop_cop_layout_trailingwhitespace_when_allowinheredoc_is_set_to_false_does_not_correct_trailing_whitespace_in_a_static_heredoc_string"
+name = "rubocopcoplayouttrailingwhitespace_when_allowinheredoc_is_set_to_false_does_not_correct_trailing_whitespace_in_a_static_heredoc_string"
 source = '''
 x = <<~'EXAMPLE'
-  has trailing#{trailing_whitespace}
+  has trailing 
   no trailing
 EXAMPLE
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 2

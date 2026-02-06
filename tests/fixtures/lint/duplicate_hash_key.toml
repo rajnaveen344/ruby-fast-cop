@@ -4,7 +4,7 @@ severity = "warning"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_lint_duplicatehashkey_when_there_is_a_duplicated_key_in_the_hash_literal_registers_an_offense"
+name = "rubocopcoplintduplicatehashkey_when_there_is_a_duplicated_key_in_the_hash_literal_registers_an_offense"
 source = '''
 hash = { 'otherkey' => 'value', 'key' => 'value', 'key' => 'hi' }
 '''
@@ -16,7 +16,7 @@ column_end = 55
 message = "Duplicated key in hash literal."
 
 [[tests]]
-name = "rubocop_cop_lint_duplicatehashkey_when_there_is_a_duplicated_constant_key_in_the_hash_literal_registers_an_offense"
+name = "rubocopcoplintduplicatehashkey_when_there_is_a_duplicated_constant_key_in_the_hash_literal_registers_an_offense"
 source = '''
 hash = { 'otherkey' => 'value', KEY => 'value', KEY => 'hi' }
 '''
@@ -28,7 +28,7 @@ column_end = 51
 message = "Duplicated key in hash literal."
 
 [[tests]]
-name = "rubocop_cop_lint_duplicatehashkey_when_there_are_two_duplicated_keys_in_a_hash_registers_two_offenses"
+name = "rubocopcoplintduplicatehashkey_when_there_are_two_duplicated_keys_in_a_hash_registers_two_offenses"
 source = '''
 hash = { fruit: 'apple', veg: 'kale', veg: 'cuke', fruit: 'orange' }
 '''
@@ -46,7 +46,7 @@ column_end = 56
 message = "Duplicated key in hash literal."
 
 [[tests]]
-name = "rubocop_cop_lint_duplicatehashkey_when_a_key_is_duplicated_three_times_in_a_hash_literal_registers_two_offenses"
+name = "rubocopcoplintduplicatehashkey_when_a_key_is_duplicated_three_times_in_a_hash_literal_registers_two_offenses"
 source = '''
 hash = { 1 => 2, 1 => 3, 1 => 4 }
 '''
@@ -64,226 +64,289 @@ column_end = 26
 message = "Duplicated key in hash literal."
 
 [[tests]]
-name = "rubocop_cop_lint_duplicatehashkey_when_there_is_no_duplicated_key_in_the_hash_does_not_register_an_offense"
+name = "rubocopcoplintduplicatehashkey_when_there_is_no_duplicated_key_in_the_hash_does_not_register_an_offense"
 source = '''
 hash = { ['one', 'two'] => ['hello, bye'], ['two'] => ['yes, no'] }
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_duplicatehashkey"
+name = "rubocopcoplintduplicatehashkey_behaves_like_duplicated_literal_key_registers_an_offense_for_duplicated_true_hash_keys"
 source = '''
-hash = { %{key} => 1, %{key} => 4}
+hash = { !true => 1, !true => 4}
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 0
+column_start = 21
+column_end = 26
+message = "Duplicated key in hash literal."
+
+[[tests]]
+name = "rubocopcoplintduplicatehashkey_behaves_like_duplicated_literal_key_registers_an_offense_for_duplicated_2_hash_keys"
+source = '''
+hash = { "#{2}" => 1, "#{2}" => 4}
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 22
+column_end = 28
+message = "Duplicated key in hash literal."
+
+[[tests]]
+name = "rubocopcoplintduplicatehashkey_behaves_like_duplicated_literal_key_registers_an_offense_for_duplicated_1_hash_keys"
+source = '''
+hash = { (1) => 1, (1) => 4}
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 19
+column_end = 22
+message = "Duplicated key in hash literal."
+
+[[tests]]
+name = "rubocopcoplintduplicatehashkey_behaves_like_duplicated_literal_key_registers_an_offense_for_duplicated_false__true_hash_keys"
+source = '''
+hash = { (false && true) => 1, (false && true) => 4}
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 31
+column_end = 46
+message = "Duplicated key in hash literal."
+
+[[tests]]
+name = "rubocopcoplintduplicatehashkey_behaves_like_duplicated_literal_key_registers_an_offense_for_duplicated_false__true_hash_keys_2"
+source = '''
+hash = { (false <=> true) => 1, (false <=> true) => 4}
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 32
+column_end = 48
+message = "Duplicated key in hash literal."
+
+[[tests]]
+name = "rubocopcoplintduplicatehashkey_behaves_like_duplicated_literal_key_registers_an_offense_for_duplicated_false_or_true_hash_keys"
+source = '''
+hash = { (false or true) => 1, (false or true) => 4}
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 31
+column_end = 46
+message = "Duplicated key in hash literal."
+
+[[tests]]
+name = "rubocopcoplintduplicatehashkey_behaves_like_duplicated_literal_key_registers_an_offense_for_duplicated_1_2_3_hash_keys"
+source = '''
+hash = { [1, 2, 3] => 1, [1, 2, 3] => 4}
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 25
 column_end = 34
 message = "Duplicated key in hash literal."
 
 [[tests]]
-name = "rubocop_cop_lint_duplicatehashkey_duplicated_literal_key_true"
+name = "rubocopcoplintduplicatehashkey_behaves_like_duplicated_literal_key_registers_an_offense_for_duplicated__a__1_b__2__hash_keys"
 source = '''
-!true
+hash = { { :a => 1, :b => 2 } => 1, { :a => 1, :b => 2 } => 4}
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 36
+column_end = 56
+message = "Duplicated key in hash literal."
+
+[[tests]]
+name = "rubocopcoplintduplicatehashkey_behaves_like_duplicated_literal_key_registers_an_offense_for_duplicated__a_1_b_2__hash_keys"
+source = '''
+hash = { { a: 1, b: 2 } => 1, { a: 1, b: 2 } => 4}
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 30
+column_end = 44
+message = "Duplicated key in hash literal."
+
+[[tests]]
+name = "rubocopcoplintduplicatehashkey_behaves_like_duplicated_literal_key_registers_an_offense_for_duplicated__hash_keys"
+source = '''
+hash = { /./ => 1, /./ => 4}
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 19
+column_end = 22
+message = "Duplicated key in hash literal."
+
+[[tests]]
+name = "rubocopcoplintduplicatehashkey_behaves_like_duplicated_literal_key_registers_an_offense_for_duplicated_rabxixo_hash_keys"
+source = '''
+hash = { %r{abx}ixo => 1, %r{abx}ixo => 4}
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 26
+column_end = 36
+message = "Duplicated key in hash literal."
+
+[[tests]]
+name = "rubocopcoplintduplicatehashkey_behaves_like_duplicated_literal_key_registers_an_offense_for_duplicated_10_hash_keys"
+source = '''
+hash = { 1.0 => 1, 1.0 => 4}
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 19
+column_end = 22
+message = "Duplicated key in hash literal."
+
+[[tests]]
+name = "rubocopcoplintduplicatehashkey_behaves_like_duplicated_literal_key_registers_an_offense_for_duplicated_1_hash_keys_2"
+source = '''
+hash = { 1 => 1, 1 => 4}
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 18
+message = "Duplicated key in hash literal."
+
+[[tests]]
+name = "rubocopcoplintduplicatehashkey_behaves_like_duplicated_literal_key_registers_an_offense_for_duplicated_false_hash_keys"
+source = '''
+hash = { false => 1, false => 4}
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 21
+column_end = 26
+message = "Duplicated key in hash literal."
+
+[[tests]]
+name = "rubocopcoplintduplicatehashkey_behaves_like_duplicated_literal_key_registers_an_offense_for_duplicated_nil_hash_keys"
+source = '''
+hash = { nil => 1, nil => 4}
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 19
+column_end = 22
+message = "Duplicated key in hash literal."
+
+[[tests]]
+name = "rubocopcoplintduplicatehashkey_behaves_like_duplicated_literal_key_registers_an_offense_for_duplicated_str_hash_keys"
+source = '''
+hash = { 'str' => 1, 'str' => 4}
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 21
+column_end = 26
+message = "Duplicated key in hash literal."
+
+[[tests]]
+name = "rubocopcoplintduplicatehashkey_target_ruby_version__26_behaves_like_duplicated_literal_key_registers_an_offense_for_duplicated_42_hash_keys"
+source = '''
+hash = { (42..) => 1, (42..) => 4}
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 22
+column_end = 28
+message = "Duplicated key in hash literal."
+
+[[tests]]
+name = "rubocopcoplintduplicatehashkey_behaves_like_duplicated_non_literal_key_does_not_register_an_offense_for_duplicated_some_method_call_hash_keys"
+source = '''
+hash = { "#{some_method_call}" => 1, "#{some_method_call}" => 4}
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_duplicatehashkey_duplicated_literal_key_2"
+name = "rubocopcoplintduplicatehashkey_behaves_like_duplicated_non_literal_key_does_not_register_an_offense_for_duplicated_x__false_hash_keys"
 source = '''
-"#{2}"
+hash = { (x && false) => 1, (x && false) => 4}
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_duplicatehashkey_duplicated_literal_key_1"
+name = "rubocopcoplintduplicatehashkey_behaves_like_duplicated_non_literal_key_does_not_register_an_offense_for_duplicated_x__false_hash_keys_2"
 source = '''
-(1)
+hash = { (x == false) => 1, (x == false) => 4}
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_duplicatehashkey_duplicated_literal_key_false_true"
+name = "rubocopcoplintduplicatehashkey_behaves_like_duplicated_non_literal_key_does_not_register_an_offense_for_duplicated_x_or_false_hash_keys"
 source = '''
-(false && true)
+hash = { (x or false) => 1, (x or false) => 4}
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_duplicatehashkey_duplicated_literal_key_false_true"
+name = "rubocopcoplintduplicatehashkey_behaves_like_duplicated_non_literal_key_does_not_register_an_offense_for_duplicated_some_method_call_hash_keys_2"
 source = '''
-(false <=> true)
+hash = { [some_method_call] => 1, [some_method_call] => 4}
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_duplicatehashkey_duplicated_literal_key_false_or_true"
+name = "rubocopcoplintduplicatehashkey_behaves_like_duplicated_non_literal_key_does_not_register_an_offense_for_duplicated__sym__some_method_call__hash_keys"
 source = '''
-(false or true)
+hash = { { :sym => some_method_call } => 1, { :sym => some_method_call } => 4}
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_duplicatehashkey_duplicated_literal_key_1_2_3"
+name = "rubocopcoplintduplicatehashkey_behaves_like_duplicated_non_literal_key_does_not_register_an_offense_for_duplicated__some_method_call__sym__hash_keys"
 source = '''
-[1, 2, 3]
+hash = { { some_method_call => :sym } => 1, { some_method_call => :sym } => 4}
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_duplicatehashkey_duplicated_literal_key_a_1_b_2"
+name = "rubocopcoplintduplicatehashkey_behaves_like_duplicated_non_literal_key_does_not_register_an_offense_for_duplicated_some_method_call_hash_keys_3"
 source = '''
-{ :a => 1, :b => 2 }
+hash = { /.#{some_method_call}/ => 1, /.#{some_method_call}/ => 4}
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_duplicatehashkey_duplicated_literal_key_a_1_b_2"
+name = "rubocopcoplintduplicatehashkey_behaves_like_duplicated_non_literal_key_does_not_register_an_offense_for_duplicated_rabxfooixo_hash_keys"
 source = '''
-{ a: 1, b: 2 }
+hash = { %r{abx#{foo}}ixo => 1, %r{abx#{foo}}ixo => 4}
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_duplicatehashkey_duplicated_literal_key"
+name = "rubocopcoplintduplicatehashkey_behaves_like_duplicated_non_literal_key_does_not_register_an_offense_for_duplicated_some_method_call_hash_keys_4"
 source = '''
-/./
+hash = { some_method_call => 1, some_method_call => 4}
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_duplicatehashkey_duplicated_literal_key_r_abx_ixo"
+name = "rubocopcoplintduplicatehashkey_behaves_like_duplicated_non_literal_key_does_not_register_an_offense_for_duplicated_some_method_callx_y_hash_keys"
 source = '''
-%r{abx}ixo
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatehashkey_duplicated_literal_key_1_0"
-source = '''
-1.0
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatehashkey_duplicated_literal_key_1"
-source = '''
-1
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatehashkey_duplicated_literal_key_false"
-source = '''
-false
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatehashkey_duplicated_literal_key_nil"
-source = '''
-nil
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatehashkey_duplicated_literal_key_str"
-source = '''
-'str'
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatehashkey_target_ruby_version_2_6_duplicated_literal_key_42"
-source = '''
-(42..)
-'''
-ruby_version = ">= 2.6"
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatehashkey"
-source = '''
-hash = { #{key} => 1, #{key} => 4}
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatehashkey_duplicated_non_literal_key_some_method_call"
-source = '''
-"#{some_method_call}"
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatehashkey_duplicated_non_literal_key_x_false"
-source = '''
-(x && false)
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatehashkey_duplicated_non_literal_key_x_false"
-source = '''
-(x == false)
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatehashkey_duplicated_non_literal_key_x_or_false"
-source = '''
-(x or false)
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatehashkey_duplicated_non_literal_key_some_method_call"
-source = '''
-[some_method_call]
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatehashkey_duplicated_non_literal_key_sym_some_metho"
-source = '''
-{ :sym => some_method_call }
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatehashkey_duplicated_non_literal_key_some_method_call"
-source = '''
-{ some_method_call => :sym }
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatehashkey_duplicated_non_literal_key_some_method_call"
-source = '''
-/.#{some_method_call}/
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatehashkey_duplicated_non_literal_key_r_abx_foo_ixo"
-source = '''
-%r{abx#{foo}}ixo
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatehashkey_duplicated_non_literal_key_some_method_call"
-source = '''
-some_method_call
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatehashkey_duplicated_non_literal_key_some_method_call_x"
-source = '''
-some_method_call(x, y)
+hash = { some_method_call(x, y) => 1, some_method_call(x, y) => 4}
 '''
 offenses = []

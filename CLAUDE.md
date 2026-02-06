@@ -6,6 +6,8 @@ Instructions for Claude when working on this project.
 
 ruby-fast-cop is a high-performance Ruby linter written in Rust, designed as a drop-in replacement for RuboCop. The goal is 50-100x faster linting by rewriting cops in Rust, similar to how Ruff replaced Python linters.
 
+**Current state:** 11 of 631 cops implemented, 631 TOML test fixtures with ~26,968 test cases extracted from RuboCop v1.84.1's RSpec suite.
+
 ## Key Design Decisions
 
 ### Parser: Prism (ruby-prism crate)
@@ -53,8 +55,20 @@ src/
     ├── json.rs          # JSON output
     ├── progress.rs      # Progress dots (default)
     └── emacs.rs         # Emacs-compatible output
+tests/
+├── tester.rs            # Data-driven parity test runner
+└── fixtures/            # TOML test fixtures (1 per cop, 631 total)
+    ├── lint/
+    ├── style/
+    ├── layout/
+    ├── metrics/
+    ├── naming/
+    ├── bundler/
+    ├── gemspec/
+    ├── security/
+    ├── internal_affairs/
+    └── migration/
 ```
-
 
 ## Key Dependencies
 
@@ -62,12 +76,94 @@ src/
 [dependencies]
 ruby-prism = "1.9.0"     # Ruby parser (Prism)
 thiserror = "2"          # Error handling
-clap = { version = "4", features = ["derive"] }  # CLI (TODO)
-serde = { version = "1", features = ["derive"] } # Serialization (TODO)
-serde_yaml = "0.9"       # .rubocop.yml parsing (TODO)
+clap = { version = "4", features = ["derive"] }  # CLI
+serde = { version = "1", features = ["derive"] } # Serialization
+serde_yaml = "0.9"       # .rubocop.yml parsing
 toml = "0.8"             # TOML test fixture parsing
-rayon = "1.8"            # Parallel processing (TODO)
+rayon = "1.8"            # Parallel processing
 ```
+
+## Testing
+
+### Data-Driven Parity Tests (TOML Fixtures)
+
+Test cases live in `tests/fixtures/{department}/{cop_name}.toml`. There is one TOML file per RuboCop cop (631 total). These are **extracted via RSpec monkey-patching** from RuboCop's actual test suite — all string interpolation, `let` blocks, and shared contexts are fully resolved.
+
+Run tests:
+```bash
+cargo test --test tester
+```
+
+Check fixture statistics:
+```bash
+cargo run --bin fixture_stats
+```
+
+### How Test Extraction Works
+
+Scripts live in `.claude/skills/rubocop-test-importer/scripts/`:
+
+1. **`download_rubocop_specs.sh`** — Clones the full RuboCop repo to `/tmp/rubocop-repo` and runs `bundle install`
+2. **`test_data_capture.rb`** — Module prepended onto `RuboCop::RSpec::ExpectOffense` that intercepts `expect_offense`, `expect_no_offenses`, and `expect_correction` to capture fully-resolved test data
+3. **`extract_via_rspec.rb`** — Runs RSpec specs programmatically, collects captured data, generates TOML
+
+To re-sync all fixtures:
+```bash
+/rubocop-test-importer sync
+```
+
+Or manually:
+```bash
+# 1. Clone RuboCop and install dependencies
+.claude/skills/rubocop-test-importer/scripts/download_rubocop_specs.sh
+
+# 2. Extract all tests
+cd /tmp/rubocop-repo && /opt/homebrew/opt/ruby/bin/bundle exec /opt/homebrew/opt/ruby/bin/ruby \
+  /Users/naveenraj/sources/devtools/ruby-fast-cop/.claude/skills/rubocop-test-importer/scripts/extract_via_rspec.rb \
+  --output /Users/naveenraj/sources/devtools/ruby-fast-cop/tests/fixtures
+
+# Extract a single cop:
+cd /tmp/rubocop-repo && bundle exec ruby extract_via_rspec.rb --output <fixtures_dir> --cop Style/RaiseArgs
+
+# Extract a department:
+cd /tmp/rubocop-repo && bundle exec ruby extract_via_rspec.rb --output <fixtures_dir> --department lint
+```
+
+### TOML Fixture Format
+
+```toml
+cop = "Style/RaiseArgs"
+department = "style"
+severity = "convention"
+implemented = true          # Set to true when cop is implemented in Rust
+
+[[tests]]
+name = "test_name_here"
+source = '''
+raise RuntimeError, 'message'
+'''
+corrected = '''              # Optional: expected autocorrect output
+raise RuntimeError.new('message')
+'''
+base_indent = 2              # Optional: indent to restore before running
+
+[[tests.offenses]]           # Empty `offenses = []` for no-offense tests
+line = 1
+column_start = 0
+column_end = 30
+message = "Provide an exception class and message as arguments to `raise`."
+
+[tests.config]               # Optional: cop-specific config overrides
+EnforcedStyle = "exploded"
+```
+
+### How `tester.rs` Works
+
+1. Discovers all `tests/fixtures/**/*.toml` files
+2. Skips cops with `implemented = false`
+3. For each implemented cop's tests, builds a `Config` from `[tests.config]`, decodes source (restoring `base_indent`), runs the cop, and compares offenses
+4. Reports mismatches in offense count, line, column, or message
+
 
 ## Implementing a Cop
 
@@ -96,6 +192,49 @@ impl Cop for Debugger {
     }
 }
 ```
+
+## Common Tasks
+
+### Adding a new cop
+
+1. Read the TOML fixture: `tests/fixtures/{department}/{cop_name}.toml`
+2. Spot-check a few test cases against the original RuboCop spec if anything looks off:
+   ```bash
+   curl -s "https://raw.githubusercontent.com/rubocop/rubocop/master/spec/rubocop/cop/{department}/{cop_name}_spec.rb"
+   ```
+3. Create file in `src/cops/{department}/{cop_name}.rs`
+4. Implement `Cop` trait
+5. Add to department's `mod.rs`
+6. Register in cop registry
+7. Set `implemented = true` in the TOML fixture
+8. Run `cargo test --test tester` — verify tests pass
+9. If tests fail unexpectedly, compare with original RuboCop spec and fix implementation or TOML
+10. Update README.md (implemented cops table)
+
+### Fixing a partial cop
+
+6 implemented cops currently have test failures from newly-resolved test data. To fix:
+
+1. Run `cargo test --test tester 2>&1 | grep "Failures in.*{cop_name}"` to see failing tests
+2. Read the failing test cases in the TOML fixture
+3. Compare with the original RuboCop spec to understand the expected behavior
+4. Fix the Rust implementation to handle the missing cases
+5. Run `cargo test --test tester` to verify
+
+### Re-syncing test fixtures
+
+When RuboCop releases a new version:
+
+1. Update the version in `download_rubocop_specs.sh`
+2. Run `/rubocop-test-importer sync`
+3. Run `cargo test --test tester` to check for regressions
+4. Update README.md with new cop/test counts if changed
+
+### Adding a new formatter
+1. Create file in `src/formatters/{name}.rs`
+2. Implement `Formatter` trait
+3. Register in formatter factory
+4. Add CLI flag support
 
 ## CLI Compatibility
 
@@ -158,157 +297,6 @@ app/models/user.rb:10:5: C: Style/StringLiterals: Prefer double quotes.
 }
 ```
 
-## Testing
-
-### Data-Driven Tests (TOML Fixtures)
-
-Test cases are stored in `tests/fixtures/{department}/{cop_name}.toml`. These were **extracted via script** from RuboCop's spec files, not hand-written.
-
-**IMPORTANT: Always validate TOML fixtures against the original RuboCop specs when implementing a cop.**
-
-The extraction script may have edge cases or errors. Before trusting a TOML fixture:
-
-1. **Fetch the original RuboCop spec file:**
-   ```bash
-   # The specs are cached in /tmp/rubocop-specs (from extraction script)
-   # Or fetch fresh from GitHub:
-   curl -s "https://raw.githubusercontent.com/rubocop/rubocop/master/spec/rubocop/cop/{department}/{cop_name}_spec.rb"
-
-   # Example for Lint/Debugger:
-   curl -s "https://raw.githubusercontent.com/rubocop/rubocop/master/spec/rubocop/cop/lint/debugger_spec.rb"
-   ```
-
-2. **Compare key test cases:**
-   - Check that offense line/column positions match the `^^^` markers in the original
-   - Verify the `[tests.config]` values match `let(:cop_config)` blocks
-   - Ensure `expect_no_offenses` tests have `offenses = []`
-   - Check `corrected` field matches `expect_correction` blocks
-
-3. **Watch for extraction issues:**
-   - Shared examples (`it_behaves_like`) may not have captured all context
-   - Deeply nested `context` blocks may have missed config inheritance
-
-4. **The `interpolated` and `verified` flags:**
-
-   **`interpolated = true` means the test requires manual verification by an AI agent.** This flag is set when:
-   - Source code contains unresolved Ruby string interpolation (`#{...}`)
-   - Config has unresolved values (marked with `$UNRESOLVED:` prefix)
-
-   Tests with `interpolated = true` are **automatically skipped** unless they also have `verified = true`.
-
-   ```toml
-   # SKIPPED - has unresolved source interpolation
-   [[tests]]
-   name = "test_with_interpolated_source"
-   source = '''
-   spec.#{attribute} = #{value}
-   '''
-   interpolated = true
-   verified = false
-
-   [[tests.offenses]]
-   message = "Do not set `#{attribute}`"
-
-   # SKIPPED - has unresolved config values
-   [[tests]]
-   name = "test_with_unresolved_config"
-   source = '''
-   format('%s', foo)
-   '''
-   interpolated = true
-   verified = false
-
-   [tests.config]
-   EnforcedStyle = "$UNRESOLVED:enforced_style"
-   Mode = "$UNRESOLVED:mode"
-
-   # RUNS - manually verified and fixed
-   [[tests]]
-   name = "test_verified"
-   source = '''
-   spec.rubygems_version = '1.0'
-   '''
-   interpolated = true
-   verified = true
-
-   [tests.config]
-   EnforcedStyle = "annotated"
-   ```
-
-   **How to verify an interpolated test:**
-   1. Fetch the original RuboCop spec file from GitHub:
-      ```bash
-      curl -s "https://raw.githubusercontent.com/rubocop/rubocop/master/spec/rubocop/cop/{dept}/{cop}_spec.rb"
-      ```
-   2. Find the corresponding test case in the spec
-   3. Resolve all `#{...}` in source/message with actual values from the spec
-   4. Replace `$UNRESOLVED:variable_name` config values with actual values from `let(:variable_name)` blocks
-   5. Change `verified = false` to `verified = true`
-   6. Keep `interpolated = true` as a marker that it was originally interpolated
-
-5. **Validation workflow when implementing a cop:**
-   ```
-   Before implementing:
-   1. Read the TOML fixture: tests/fixtures/{dept}/{cop}.toml
-   2. Fetch original spec from RuboCop repo
-   3. Spot-check 3-5 test cases match
-   4. Fix any interpolated tests:
-      - Replace #{...} with actual values
-      - Replace $UNRESOLVED:var with actual config values
-      - Set verified = true
-
-   After implementing:
-   1. Run: cargo test --test tester
-   2. If tests fail unexpectedly, compare with original spec
-   3. Fix TOML if extraction was wrong, or fix implementation
-   ```
-
-6. **Re-sync if needed:**
-   ```bash
-   # Use the rubocop-test-importer skill to re-sync tests
-   /rubocop-test-importer sync
-   ```
-
-### Test Types
-
-- **Parity tests** (`tests/tester.rs`) - Data-driven tests from TOML fixtures
-- **Unit tests** - Cop-specific edge cases in `src/cops/{dept}/{cop}.rs`
-- **Integration tests** - End-to-end CLI comparison with RuboCop
-- **Benchmark tests** - Performance validation
-
-## Performance Targets
-
-- Parse 1000 files: < 1 second
-- Lint 1000 files (common cops): < 2 seconds
-- Should be 50-100x faster than RuboCop
-
-## Common Tasks
-
-### Adding a new cop
-1. **Validate test fixtures first:**
-   - Read `tests/fixtures/{department}/{cop_name}.toml`
-   - Fetch original spec: `curl -s "https://raw.githubusercontent.com/rubocop/rubocop/master/spec/rubocop/cop/{department}/{cop_name}_spec.rb"`
-   - Compare 3-5 test cases to verify extraction accuracy
-   - Fix TOML if needed, or note discrepancies
-
-2. Create file in `src/cops/{department}/{cop_name}.rs`
-3. Implement `Cop` trait
-4. Add to department's `mod.rs`
-5. Register in cop registry
-6. Set `implemented = true` in the TOML fixture
-7. Run `cargo test --test tester` - verify tests pass
-8. **Post-implementation validation:**
-   - If any test fails unexpectedly, compare with original RuboCop spec
-   - Run actual RuboCop on failing test source to confirm expected behavior
-   - Fix implementation or TOML as needed
-9. Update COPS.md
-
-### Adding a new formatter
-1. Create file in `src/formatters/{name}.rs`
-2. Implement `Formatter` trait
-3. Register in formatter factory
-4. Add CLI flag support
-
 ## Library API
 
 This crate is both a CLI binary and a library. The library API allows embedding in other tools like `ruby-fast-lsp`.
@@ -320,6 +308,18 @@ Key design principles:
 - Avoid exposing internal types (AST nodes, parser details)
 
 The CLI (`main.rs`) should be a thin wrapper around the library (`lib.rs`).
+
+## Performance Targets
+
+- Parse 1000 files: < 1 second
+- Lint 1000 files (common cops): < 2 seconds
+- Should be 50-100x faster than RuboCop
+
+## Environment Notes
+
+- Ruby (for test extraction only): `/opt/homebrew/opt/ruby/bin/ruby` (installed via Homebrew)
+- RuboCop clone location: `/tmp/rubocop-repo`
+- RuboCop version tracked: v1.84.1
 
 ## References
 

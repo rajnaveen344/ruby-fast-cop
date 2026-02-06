@@ -4,7 +4,121 @@ severity = "convention"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_style_invertibleunlesscondition_when_invertible_unless_registers_an_offense_and_corrects_when_using_negation"
+name = "rubocopcopstyleinvertibleunlesscondition_registers_an_offense_and_corrects_methods_without_arguments_called_with_implicit_receivers"
+source = '''
+foo unless odd?
+'''
+corrected = '''
+foo if even?
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 15
+message = "Prefer `if even?` over `unless odd?`."
+
+[tests.config]
+InverseMethods = { "!=" = "==", "even?" = "odd?", "odd?" = "even?", ">=" = "<", "<" = ">=", "zero?" = "nonzero?", "include?" = "exclude?", "exclude?" = "include?" }
+
+[[tests]]
+name = "rubocopcopstyleinvertibleunlesscondition_registers_an_offense_and_corrects_parenthesized_methods_with_arguments_called_with_implicit_receivers"
+source = '''
+foo unless include?(value)
+'''
+corrected = '''
+foo if exclude?(value)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 26
+message = "Prefer `if exclude?(value)` over `unless include?(value)`."
+
+[tests.config]
+InverseMethods = { "!=" = "==", "even?" = "odd?", "odd?" = "even?", ">=" = "<", "<" = ">=", "zero?" = "nonzero?", "include?" = "exclude?", "exclude?" = "include?" }
+
+[[tests]]
+name = "rubocopcopstyleinvertibleunlesscondition_registers_an_offense_and_corrects_unparenthesized_methods_with_arguments_called_with_implicit_receivers"
+source = '''
+foo unless include? value
+'''
+corrected = '''
+foo if exclude? value
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 25
+message = "Prefer `if exclude? value` over `unless include? value`."
+
+[tests.config]
+InverseMethods = { "!=" = "==", "even?" = "odd?", "odd?" = "even?", ">=" = "<", "<" = ">=", "zero?" = "nonzero?", "include?" = "exclude?", "exclude?" = "include?" }
+
+[[tests]]
+name = "rubocopcopstyleinvertibleunlesscondition_does_not_register_an_offense_when_using_explicit_begin_condition"
+source = '''
+foo unless begin x != y end
+'''
+offenses = []
+
+[tests.config]
+InverseMethods = { "!=" = "==", "even?" = "odd?", "odd?" = "even?", ">=" = "<", "<" = ">=", "zero?" = "nonzero?", "include?" = "exclude?", "exclude?" = "include?" }
+
+[[tests]]
+name = "rubocopcopstyleinvertibleunlesscondition_does_not_register_an_offense_when_using_non_invertible_unless"
+source = '''
+foo unless x != y || x.awesome?
+'''
+offenses = []
+
+[tests.config]
+InverseMethods = { "!=" = "==", "even?" = "odd?", "odd?" = "even?", ">=" = "<", "<" = ">=", "zero?" = "nonzero?", "include?" = "exclude?", "exclude?" = "include?" }
+
+[[tests]]
+name = "rubocopcopstyleinvertibleunlesscondition_does_not_register_an_offense_when_checking_for_inheritance"
+source = '''
+foo unless x < Foo
+'''
+offenses = []
+
+[tests.config]
+InverseMethods = { "!=" = "==", "even?" = "odd?", "odd?" = "even?", ">=" = "<", "<" = ">=", "zero?" = "nonzero?", "include?" = "exclude?", "exclude?" = "include?" }
+
+[[tests]]
+name = "rubocopcopstyleinvertibleunlesscondition_does_not_register_an_offense_when_using_invertible_if"
+source = '''
+foo if !condition
+'''
+offenses = []
+
+[tests.config]
+InverseMethods = { "!=" = "==", "even?" = "odd?", "odd?" = "even?", ">=" = "<", "<" = ">=", "zero?" = "nonzero?", "include?" = "exclude?", "exclude?" = "include?" }
+
+[[tests]]
+name = "rubocopcopstyleinvertibleunlesscondition_does_not_register_an_offense_when_using_empty_braces_with_unless"
+source = '''
+foo unless ()
+'''
+offenses = []
+
+[tests.config]
+InverseMethods = { "!=" = "==", "even?" = "odd?", "odd?" = "even?", ">=" = "<", "<" = ">=", "zero?" = "nonzero?", "include?" = "exclude?", "exclude?" = "include?" }
+
+[[tests]]
+name = "rubocopcopstyleinvertibleunlesscondition_does_not_register_an_offense_when_using_empty_braces_with_inverted_if"
+source = '''
+foo if !()
+'''
+offenses = []
+
+[tests.config]
+InverseMethods = { "!=" = "==", "even?" = "odd?", "odd?" = "even?", ">=" = "<", "<" = ">=", "zero?" = "nonzero?", "include?" = "exclude?", "exclude?" = "include?" }
+
+[[tests]]
+name = "rubocopcopstyleinvertibleunlesscondition_when_invertible_unless_registers_an_offense_and_corrects_when_using__negation"
 source = '''
 foo unless !x
 foo unless !!x
@@ -27,10 +141,10 @@ column_end = 14
 message = "Prefer `if !x` over `unless !!x`."
 
 [tests.config]
-InverseMethods = "{\n        :!= => :==,\n        :even? => :odd?,\n        :odd? => :even?,\n        :>= => :<,\n        :< => :>=,\n        :zero? => :nonzero?,\n        # non-standard Rails extensions, but so we can test arguments\n        :include? => :exclude?,\n        :exclude? => :include?\n      }"
+InverseMethods = { "!=" = "==", "even?" = "odd?", "odd?" = "even?", ">=" = "<", "<" = ">=", "zero?" = "nonzero?", "include?" = "exclude?", "exclude?" = "include?" }
 
 [[tests]]
-name = "rubocop_cop_style_invertibleunlesscondition_when_invertible_unless_registers_an_offense_and_corrects_when_using_simple_operator_condition"
+name = "rubocopcopstyleinvertibleunlesscondition_when_invertible_unless_registers_an_offense_and_corrects_when_using_simple_operator_condition"
 source = '''
 foo unless x != y
 '''
@@ -45,10 +159,10 @@ column_end = 17
 message = "Prefer `if x == y` over `unless x != y`."
 
 [tests.config]
-InverseMethods = "{\n        :!= => :==,\n        :even? => :odd?,\n        :odd? => :even?,\n        :>= => :<,\n        :< => :>=,\n        :zero? => :nonzero?,\n        # non-standard Rails extensions, but so we can test arguments\n        :include? => :exclude?,\n        :exclude? => :include?\n      }"
+InverseMethods = { "!=" = "==", "even?" = "odd?", "odd?" = "even?", ">=" = "<", "<" = ">=", "zero?" = "nonzero?", "include?" = "exclude?", "exclude?" = "include?" }
 
 [[tests]]
-name = "rubocop_cop_style_invertibleunlesscondition_when_invertible_unless_registers_an_offense_and_corrects_when_using_simple_method_condition"
+name = "rubocopcopstyleinvertibleunlesscondition_when_invertible_unless_registers_an_offense_and_corrects_when_using_simple_method_condition"
 source = '''
 foo unless x.odd?
 '''
@@ -63,10 +177,10 @@ column_end = 17
 message = "Prefer `if x.even?` over `unless x.odd?`."
 
 [tests.config]
-InverseMethods = "{\n        :!= => :==,\n        :even? => :odd?,\n        :odd? => :even?,\n        :>= => :<,\n        :< => :>=,\n        :zero? => :nonzero?,\n        # non-standard Rails extensions, but so we can test arguments\n        :include? => :exclude?,\n        :exclude? => :include?\n      }"
+InverseMethods = { "!=" = "==", "even?" = "odd?", "odd?" = "even?", ">=" = "<", "<" = ">=", "zero?" = "nonzero?", "include?" = "exclude?", "exclude?" = "include?" }
 
 [[tests]]
-name = "rubocop_cop_style_invertibleunlesscondition_when_invertible_unless_registers_an_offense_and_corrects_when_using_method_condition_with_arguments"
+name = "rubocopcopstyleinvertibleunlesscondition_when_invertible_unless_registers_an_offense_and_corrects_when_using_method_condition_with_arguments"
 source = '''
 foo unless array.include?(value)
 foo unless array.exclude? value # no parentheses
@@ -89,10 +203,10 @@ column_end = 31
 message = "Prefer `if array.include? value` over `unless array.exclude? value`."
 
 [tests.config]
-InverseMethods = "{\n        :!= => :==,\n        :even? => :odd?,\n        :odd? => :even?,\n        :>= => :<,\n        :< => :>=,\n        :zero? => :nonzero?,\n        # non-standard Rails extensions, but so we can test arguments\n        :include? => :exclude?,\n        :exclude? => :include?\n      }"
+InverseMethods = { "!=" = "==", "even?" = "odd?", "odd?" = "even?", ">=" = "<", "<" = ">=", "zero?" = "nonzero?", "include?" = "exclude?", "exclude?" = "include?" }
 
 [[tests]]
-name = "rubocop_cop_style_invertibleunlesscondition_when_invertible_unless_registers_an_offense_and_corrects_when_using_simple_bracketed_condition"
+name = "rubocopcopstyleinvertibleunlesscondition_when_invertible_unless_registers_an_offense_and_corrects_when_using_simple_bracketed_condition"
 source = '''
 foo unless ((x != y))
 '''
@@ -107,10 +221,10 @@ column_end = 21
 message = "Prefer `if ((x == y))` over `unless ((x != y))`."
 
 [tests.config]
-InverseMethods = "{\n        :!= => :==,\n        :even? => :odd?,\n        :odd? => :even?,\n        :>= => :<,\n        :< => :>=,\n        :zero? => :nonzero?,\n        # non-standard Rails extensions, but so we can test arguments\n        :include? => :exclude?,\n        :exclude? => :include?\n      }"
+InverseMethods = { "!=" = "==", "even?" = "odd?", "odd?" = "even?", ">=" = "<", "<" = ">=", "zero?" = "nonzero?", "include?" = "exclude?", "exclude?" = "include?" }
 
 [[tests]]
-name = "rubocop_cop_style_invertibleunlesscondition_when_invertible_unless_registers_an_offense_and_corrects_when_using_complex_condition"
+name = "rubocopcopstyleinvertibleunlesscondition_when_invertible_unless_registers_an_offense_and_corrects_when_using_complex_condition"
 source = '''
 foo unless x != y && (((x.odd?) || (((y >= 5)))) || z.zero?)
 '''
@@ -125,118 +239,4 @@ column_end = 60
 message = "Prefer `if x == y || (((x.even?) && (((y < 5)))) && z.nonzero?)` over `unless x != y && (((x.odd?) || (((y >= 5)))) || z.zero?)`."
 
 [tests.config]
-InverseMethods = "{\n        :!= => :==,\n        :even? => :odd?,\n        :odd? => :even?,\n        :>= => :<,\n        :< => :>=,\n        :zero? => :nonzero?,\n        # non-standard Rails extensions, but so we can test arguments\n        :include? => :exclude?,\n        :exclude? => :include?\n      }"
-
-[[tests]]
-name = "rubocop_cop_style_invertibleunlesscondition_registers_an_offense_and_corrects_methods_without_arguments_called_with_implicit_receivers"
-source = '''
-foo unless odd?
-'''
-corrected = '''
-foo if even?
-'''
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 15
-message = "Prefer `if even?` over `unless odd?`."
-
-[tests.config]
-InverseMethods = "{\n        :!= => :==,\n        :even? => :odd?,\n        :odd? => :even?,\n        :>= => :<,\n        :< => :>=,\n        :zero? => :nonzero?,\n        # non-standard Rails extensions, but so we can test arguments\n        :include? => :exclude?,\n        :exclude? => :include?\n      }"
-
-[[tests]]
-name = "rubocop_cop_style_invertibleunlesscondition_registers_an_offense_and_corrects_parenthesized_methods_with_arguments_called_with_implicit_receivers"
-source = '''
-foo unless include?(value)
-'''
-corrected = '''
-foo if exclude?(value)
-'''
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 26
-message = "Prefer `if exclude?(value)` over `unless include?(value)`."
-
-[tests.config]
-InverseMethods = "{\n        :!= => :==,\n        :even? => :odd?,\n        :odd? => :even?,\n        :>= => :<,\n        :< => :>=,\n        :zero? => :nonzero?,\n        # non-standard Rails extensions, but so we can test arguments\n        :include? => :exclude?,\n        :exclude? => :include?\n      }"
-
-[[tests]]
-name = "rubocop_cop_style_invertibleunlesscondition_registers_an_offense_and_corrects_unparenthesized_methods_with_arguments_called_with_implicit_receivers"
-source = '''
-foo unless include? value
-'''
-corrected = '''
-foo if exclude? value
-'''
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 25
-message = "Prefer `if exclude? value` over `unless include? value`."
-
-[tests.config]
-InverseMethods = "{\n        :!= => :==,\n        :even? => :odd?,\n        :odd? => :even?,\n        :>= => :<,\n        :< => :>=,\n        :zero? => :nonzero?,\n        # non-standard Rails extensions, but so we can test arguments\n        :include? => :exclude?,\n        :exclude? => :include?\n      }"
-
-[[tests]]
-name = "rubocop_cop_style_invertibleunlesscondition_does_not_register_an_offense_when_using_explicit_begin_condition"
-source = '''
-foo unless begin x != y end
-'''
-offenses = []
-
-[tests.config]
-InverseMethods = "{\n        :!= => :==,\n        :even? => :odd?,\n        :odd? => :even?,\n        :>= => :<,\n        :< => :>=,\n        :zero? => :nonzero?,\n        # non-standard Rails extensions, but so we can test arguments\n        :include? => :exclude?,\n        :exclude? => :include?\n      }"
-
-[[tests]]
-name = "rubocop_cop_style_invertibleunlesscondition_does_not_register_an_offense_when_using_non_invertible_unless"
-source = '''
-foo unless x != y || x.awesome?
-'''
-offenses = []
-
-[tests.config]
-InverseMethods = "{\n        :!= => :==,\n        :even? => :odd?,\n        :odd? => :even?,\n        :>= => :<,\n        :< => :>=,\n        :zero? => :nonzero?,\n        # non-standard Rails extensions, but so we can test arguments\n        :include? => :exclude?,\n        :exclude? => :include?\n      }"
-
-[[tests]]
-name = "rubocop_cop_style_invertibleunlesscondition_does_not_register_an_offense_when_checking_for_inheritance"
-source = '''
-foo unless x < Foo
-'''
-offenses = []
-
-[tests.config]
-InverseMethods = "{\n        :!= => :==,\n        :even? => :odd?,\n        :odd? => :even?,\n        :>= => :<,\n        :< => :>=,\n        :zero? => :nonzero?,\n        # non-standard Rails extensions, but so we can test arguments\n        :include? => :exclude?,\n        :exclude? => :include?\n      }"
-
-[[tests]]
-name = "rubocop_cop_style_invertibleunlesscondition_does_not_register_an_offense_when_using_invertible_if"
-source = '''
-foo if !condition
-'''
-offenses = []
-
-[tests.config]
-InverseMethods = "{\n        :!= => :==,\n        :even? => :odd?,\n        :odd? => :even?,\n        :>= => :<,\n        :< => :>=,\n        :zero? => :nonzero?,\n        # non-standard Rails extensions, but so we can test arguments\n        :include? => :exclude?,\n        :exclude? => :include?\n      }"
-
-[[tests]]
-name = "rubocop_cop_style_invertibleunlesscondition_does_not_register_an_offense_when_using_empty_braces_with_unless"
-source = '''
-foo unless ()
-'''
-offenses = []
-
-[tests.config]
-InverseMethods = "{\n        :!= => :==,\n        :even? => :odd?,\n        :odd? => :even?,\n        :>= => :<,\n        :< => :>=,\n        :zero? => :nonzero?,\n        # non-standard Rails extensions, but so we can test arguments\n        :include? => :exclude?,\n        :exclude? => :include?\n      }"
-
-[[tests]]
-name = "rubocop_cop_style_invertibleunlesscondition_does_not_register_an_offense_when_using_empty_braces_with_inverted_if"
-source = '''
-foo if !()
-'''
-offenses = []
-
-[tests.config]
-InverseMethods = "{\n        :!= => :==,\n        :even? => :odd?,\n        :odd? => :even?,\n        :>= => :<,\n        :< => :>=,\n        :zero? => :nonzero?,\n        # non-standard Rails extensions, but so we can test arguments\n        :include? => :exclude?,\n        :exclude? => :include?\n      }"
+InverseMethods = { "!=" = "==", "even?" = "odd?", "odd?" = "even?", ">=" = "<", "<" = ">=", "zero?" = "nonzero?", "include?" = "exclude?", "exclude?" = "include?" }

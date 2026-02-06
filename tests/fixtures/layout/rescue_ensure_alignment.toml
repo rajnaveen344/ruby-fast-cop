@@ -4,14 +4,471 @@ severity = "convention"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_accepts_the_modifier_form"
+name = "rubocopcoplayoutrescueensurealignment_accepts_the_modifier_form"
 source = '''
 test rescue nil
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_rescue_with_begin_registers_an_offense"
+name = "rubocopcoplayoutrescueensurealignment_accepts_end_being_misaligned"
+source = '''
+def method1
+  'foo'
+end
+
+def method2
+  'bar'
+rescue
+  'baz' end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplayoutrescueensurealignment_accepts_rescue_and_ensure_on_the_same_line"
+source = '''
+begin; puts 1; rescue; ensure; puts 2; end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplayoutrescueensurealignment_accepts_correctly_aligned_rescue"
+source = '''
+begin
+  something
+rescue
+  error
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplayoutrescueensurealignment_accepts_correctly_aligned_ensure"
+source = '''
+begin
+  something
+ensure
+  error
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplayoutrescueensurealignment_accepts_correctly_aligned_rescueensure_with_def"
+source = '''
+def foo
+  something
+rescue StandardError
+  handle_error
+ensure
+  error
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplayoutrescueensurealignment_accepts_correctly_aligned_rescueensure_with_def_with_no_body"
+source = '''
+def foo
+rescue StandardError
+  handle_error
+ensure
+  error
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplayoutrescueensurealignment_accepts_correctly_aligned_rescue_in_assigned_beginend_block"
+source = '''
+foo = begin
+        bar
+      rescue BazError
+        qux
+      end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplayoutrescueensurealignment_accepts_aligned_rescue_in_doend_block"
+source = '''
+[1, 2, 3].each do |el|
+  el.to_s
+rescue StandardError => _exception
+  next
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplayoutrescueensurealignment_accepts_aligned_rescue_in_doend_block_with__call"
+source = '''
+foo.() do |el|
+  el.to_s
+rescue StandardError => _exception
+  next
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplayoutrescueensurealignment_accepts_aligned_rescue_with_doend_block_that_line_break_with_leading_dot_for_method_calls"
+source = '''
+[1, 2, 3]
+  .each do |el|
+    el.to_s
+  rescue StandardError => _exception
+    next
+  end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplayoutrescueensurealignment_registers_an_offense_and_corrects_indented_rescue_with_doend_block_that_line_break_with_leading_dot_for_method_calls"
+source = '''
+[1, 2, 3]
+  .each do |el|
+    el.to_s
+      rescue StandardError => _exception
+    next
+  end
+'''
+corrected = '''
+[1, 2, 3]
+  .each do |el|
+    el.to_s
+  rescue StandardError => _exception
+    next
+  end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 6
+column_end = 12
+message = "`rescue` at 4, 6 is not aligned with `.each do` at 2, 2."
+
+[[tests]]
+name = "rubocopcoplayoutrescueensurealignment_registers_an_offense_and_corrects_unindented_rescue_with_doend_block_that_line_break_with_leading_dot_for_method_calls"
+source = '''
+[1, 2, 3]
+  .each do |el|
+    el.to_s
+rescue StandardError => _exception
+    next
+  end
+'''
+corrected = '''
+[1, 2, 3]
+  .each do |el|
+    el.to_s
+  rescue StandardError => _exception
+    next
+  end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 6
+message = "`rescue` at 4, 0 is not aligned with `.each do` at 2, 2."
+
+[[tests]]
+name = "rubocopcoplayoutrescueensurealignment_accepts_aligned_rescue_with_doend_block_that_line_break_with_trailing_dot_for_method_calls"
+source = '''
+[1, 2, 3].
+  each do |el|
+    el.to_s
+  rescue StandardError => _exception
+    next
+  end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplayoutrescueensurealignment_registers_an_offense_and_corrects_indented_rescue_with_doend_block_that_line_break_with_trailing_dot_for_method_calls"
+source = '''
+[1, 2, 3].
+  each do |el|
+    el.to_s
+      rescue StandardError => _exception
+    next
+  end
+'''
+corrected = '''
+[1, 2, 3].
+  each do |el|
+    el.to_s
+  rescue StandardError => _exception
+    next
+  end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 6
+column_end = 12
+message = "`rescue` at 4, 6 is not aligned with `each do` at 2, 2."
+
+[[tests]]
+name = "rubocopcoplayoutrescueensurealignment_registers_an_offense_and_corrects_unindented_rescue_with_doend_block_that_line_break_with_trailing_dot_for_method_calls"
+source = '''
+[1, 2, 3].
+  each do |el|
+    el.to_s
+rescue StandardError => _exception
+    next
+  end
+'''
+corrected = '''
+[1, 2, 3].
+  each do |el|
+    el.to_s
+  rescue StandardError => _exception
+    next
+  end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 6
+message = "`rescue` at 4, 0 is not aligned with `each do` at 2, 2."
+
+[[tests]]
+name = "rubocopcoplayoutrescueensurealignment_accepts_aligned_ensure_with_doend_block_that_line_break_with_leading_dot_for_method_calls"
+source = '''
+[1, 2, 3]
+  .each do |el|
+    el.to_s
+  ensure
+    next
+  end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplayoutrescueensurealignment_registers_an_offense_and_corrects_indented_ensure_with_doend_block_that_line_break_with_leading_dot_for_method_calls"
+source = '''
+[1, 2, 3]
+  .each do |el|
+    el.to_s
+      ensure
+    next
+  end
+'''
+corrected = '''
+[1, 2, 3]
+  .each do |el|
+    el.to_s
+  ensure
+    next
+  end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 6
+column_end = 12
+message = "`ensure` at 4, 6 is not aligned with `.each do` at 2, 2."
+
+[[tests]]
+name = "rubocopcoplayoutrescueensurealignment_registers_an_offense_and_corrects_unindented_ensure_with_doend_block_that_line_break_with_leading_dot_for_method_calls"
+source = '''
+[1, 2, 3]
+  .each do |el|
+    el.to_s
+ensure
+    next
+  end
+'''
+corrected = '''
+[1, 2, 3]
+  .each do |el|
+    el.to_s
+  ensure
+    next
+  end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 6
+message = "`ensure` at 4, 0 is not aligned with `.each do` at 2, 2."
+
+[[tests]]
+name = "rubocopcoplayoutrescueensurealignment_accepts_aligned_ensure_with_doend_block_that_line_break_with_trailing_dot_for_method_calls"
+source = '''
+[1, 2, 3].
+  each do |el|
+    el.to_s
+  ensure
+    next
+  end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplayoutrescueensurealignment_registers_an_offense_and_corrects_indented_ensure_with_doend_block_that_line_break_with_trailing_dot_for_method_calls"
+source = '''
+[1, 2, 3].
+  each do |el|
+    el.to_s
+      ensure
+    next
+  end
+'''
+corrected = '''
+[1, 2, 3].
+  each do |el|
+    el.to_s
+  ensure
+    next
+  end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 6
+column_end = 12
+message = "`ensure` at 4, 6 is not aligned with `each do` at 2, 2."
+
+[[tests]]
+name = "rubocopcoplayoutrescueensurealignment_registers_an_offense_and_corrects_unindented_ensure_with_doend_block_that_line_break_with_trailing_dot_for_method_calls"
+source = '''
+[1, 2, 3].
+  each do |el|
+    el.to_s
+ensure
+    next
+  end
+'''
+corrected = '''
+[1, 2, 3].
+  each do |el|
+    el.to_s
+  ensure
+    next
+  end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 6
+message = "`ensure` at 4, 0 is not aligned with `each do` at 2, 2."
+
+[[tests]]
+name = "rubocopcoplayoutrescueensurealignment_accepts_aligned_rescue_doend_block_assigned_to_local_variable"
+source = '''
+result = [1, 2, 3].map do |el|
+  el.to_s
+rescue StandardError => _exception
+  next
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplayoutrescueensurealignment_accepts_aligned_rescue_in_doend_block_assigned_to_instance_variable"
+source = '''
+@instance = [].map do |_|
+rescue StandardError => _
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplayoutrescueensurealignment_accepts_aligned_rescue_in_doend_block_assigned_to_class_variable"
+source = '''
+@@class = [].map do |_|
+rescue StandardError => _
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplayoutrescueensurealignment_accepts_aligned_rescue_in_doend_block_assigned_to_global_variable"
+source = '''
+$global = [].map do |_|
+rescue StandardError => _
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplayoutrescueensurealignment_accepts_aligned_rescue_in_doend_block_assigned_to_class"
+source = '''
+CLASS = [].map do |_|
+rescue StandardError => _
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplayoutrescueensurealignment_accepts_aligned_rescue_in_doend_block_on_multiassignment"
+source = '''
+a, b = [].map do |_|
+rescue StandardError => _
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplayoutrescueensurealignment_accepts_aligned_rescue_in_doend_block_on_operation_assignment"
+source = '''
+a += [].map do |_|
+rescue StandardError => _
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplayoutrescueensurealignment_accepts_aligned_rescue_in_doend_block_on_andassignment"
+source = '''
+a &&= [].map do |_|
+rescue StandardError => _
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplayoutrescueensurealignment_accepts_aligned_rescue_in_doend_block_on_orassignment"
+source = '''
+a ||= [].map do |_|
+rescue StandardError => _
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplayoutrescueensurealignment_accepts_aligned_rescue_in_assigned_doend_block_starting_on_newline"
+source = '''
+valid =
+  proc do |bar|
+    baz
+  rescue
+    qux
+  end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplayoutrescueensurealignment_accepts_aligned_rescue_in_doend_block_in_a_method"
+source = '''
+def foo
+  [1, 2, 3].each do |el|
+    el.to_s
+  rescue StandardError => _exception
+    next
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplayoutrescueensurealignment_rescue_with_begin_registers_an_offense"
 source = '''
 begin
   something
@@ -34,7 +491,7 @@ column_end = 10
 message = "`rescue` at 3, 4 is not aligned with `begin` at 1, 0."
 
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_rescue_with_begin_as_rhs_of_assignment_layout_beginendalignment_cop_is_not_enabled_accepts_multi_line_aligned"
+name = "rubocopcoplayoutrescueensurealignment_rescue_with_begin_as_rhs_of_assignment_layoutbeginendalignment_cop_is_not_enabled_accepts_multiline_aligned"
 source = '''
 x ||= begin
         1
@@ -48,7 +505,7 @@ offenses = []
 EnforcedStyle = "require_parentheses"
 
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_rescue_with_begin_as_rhs_of_assignment_layout_beginendalignment_cop_is_not_enabled_accepts_multi_line_indented"
+name = "rubocopcoplayoutrescueensurealignment_rescue_with_begin_as_rhs_of_assignment_layoutbeginendalignment_cop_is_not_enabled_accepts_multiline_indented"
 source = '''
 x ||=
   begin
@@ -63,7 +520,7 @@ offenses = []
 EnforcedStyle = "require_parentheses"
 
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_rescue_with_begin_as_rhs_of_assignment_layout_beginendalignment_cop_is_not_enabled_registers_an_offense_and_corrects_for_incorrect_alignment"
+name = "rubocopcoplayoutrescueensurealignment_rescue_with_begin_as_rhs_of_assignment_layoutbeginendalignment_cop_is_not_enabled_registers_an_offense_and_corrects_for_incorrect_alignment"
 source = '''
 x ||= begin
   1
@@ -89,7 +546,7 @@ message = "`rescue` at 3, 0 is not aligned with `begin` at 1, 6."
 EnforcedStyle = "require_parentheses"
 
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_rescue_with_begin_as_rhs_of_assignment_when_enforcedstylealignwith_start_of_line_of_layout_beginendalignment_cop_accepts_multi_line_aligned"
+name = "rubocopcoplayoutrescueensurealignment_rescue_with_begin_as_rhs_of_assignment_when_enforcedstylealignwith_start_of_line_of_layoutbeginendalignment_cop_accepts_multiline_aligned"
 source = '''
 x ||= begin
   1
@@ -103,7 +560,7 @@ offenses = []
 EnforcedStyle = "require_parentheses"
 
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_rescue_with_begin_as_rhs_of_assignment_when_enforcedstylealignwith_start_of_line_of_layout_beginendalignment_cop_accepts_multi_line_indented"
+name = "rubocopcoplayoutrescueensurealignment_rescue_with_begin_as_rhs_of_assignment_when_enforcedstylealignwith_start_of_line_of_layoutbeginendalignment_cop_accepts_multiline_indented"
 source = '''
 x ||=
   begin
@@ -118,7 +575,7 @@ offenses = []
 EnforcedStyle = "require_parentheses"
 
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_rescue_with_begin_as_rhs_of_assignment_when_enforcedstylealignwith_start_of_line_of_layout_beginendalignment_cop_registers_an_offense_and_corrects_for_incorrect_alignment"
+name = "rubocopcoplayoutrescueensurealignment_rescue_with_begin_as_rhs_of_assignment_when_enforcedstylealignwith_start_of_line_of_layoutbeginendalignment_cop_registers_an_offense_and_corrects_for_incorrect_alignment"
 source = '''
 x ||= begin
         1
@@ -144,7 +601,7 @@ message = "`rescue` at 3, 6 is not aligned with `x ||= begin` at 1, 0."
 EnforcedStyle = "require_parentheses"
 
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_rescue_with_begin_as_rhs_of_assignment_when_enforcedstylealignwith_begin_of_layout_beginendalignment_cop_accepts_multi_line_aligned"
+name = "rubocopcoplayoutrescueensurealignment_rescue_with_begin_as_rhs_of_assignment_when_enforcedstylealignwith_begin_of_layoutbeginendalignment_cop_accepts_multiline_aligned"
 source = '''
 x ||= begin
         1
@@ -158,7 +615,7 @@ offenses = []
 EnforcedStyle = "require_parentheses"
 
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_rescue_with_begin_as_rhs_of_assignment_when_enforcedstylealignwith_begin_of_layout_beginendalignment_cop_accepts_multi_line_indented"
+name = "rubocopcoplayoutrescueensurealignment_rescue_with_begin_as_rhs_of_assignment_when_enforcedstylealignwith_begin_of_layoutbeginendalignment_cop_accepts_multiline_indented"
 source = '''
 x ||=
   begin
@@ -173,7 +630,7 @@ offenses = []
 EnforcedStyle = "require_parentheses"
 
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_rescue_with_begin_as_rhs_of_assignment_when_enforcedstylealignwith_begin_of_layout_beginendalignment_cop_registers_an_offense_and_corrects_for_incorrect_alignment"
+name = "rubocopcoplayoutrescueensurealignment_rescue_with_begin_as_rhs_of_assignment_when_enforcedstylealignwith_begin_of_layoutbeginendalignment_cop_registers_an_offense_and_corrects_for_incorrect_alignment"
 source = '''
 x ||= begin
   1
@@ -199,7 +656,7 @@ message = "`rescue` at 3, 0 is not aligned with `begin` at 1, 6."
 EnforcedStyle = "require_parentheses"
 
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_rescue_with_def_registers_an_offense"
+name = "rubocopcoplayoutrescueensurealignment_rescue_with_def_registers_an_offense"
 source = '''
 def test
   something
@@ -221,11 +678,8 @@ column_start = 4
 column_end = 10
 message = "`rescue` at 3, 4 is not aligned with `def test` at 1, 0."
 
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_rescue_with_defs_registers_an_offense"
+name = "rubocopcoplayoutrescueensurealignment_rescue_with_defs_registers_an_offense"
 source = '''
 def Test.test
   something
@@ -247,11 +701,8 @@ column_start = 4
 column_end = 10
 message = "`rescue` at 3, 4 is not aligned with `def Test.test` at 1, 0."
 
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_rescue_with_class_registers_an_offense_when_rescue_used_with_class"
+name = "rubocopcoplayoutrescueensurealignment_rescue_with_class_registers_an_offense_when_rescue_used_with_class"
 source = '''
 class C
   something
@@ -273,11 +724,8 @@ column_start = 4
 column_end = 10
 message = "`rescue` at 3, 4 is not aligned with `class C` at 1, 0."
 
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_rescue_with_module_registers_an_offense_when_rescue_used_with_module"
+name = "rubocopcoplayoutrescueensurealignment_rescue_with_module_registers_an_offense_when_rescue_used_with_module"
 source = '''
 module M
   something
@@ -299,11 +747,8 @@ column_start = 4
 column_end = 10
 message = "`rescue` at 3, 4 is not aligned with `module M` at 1, 0."
 
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_rescue_with_self_class_registers_an_offense_when_rescue_used_with_class"
+name = "rubocopcoplayoutrescueensurealignment_rescue_with_self_class_registers_an_offense_when_rescue_used_with_class"
 source = '''
 class << self
   something
@@ -325,11 +770,8 @@ column_start = 4
 column_end = 10
 message = "`rescue` at 3, 4 is not aligned with `class << self` at 1, 0."
 
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_ensure_with_begin_registers_an_offense_when_ensure_used_with_begin"
+name = "rubocopcoplayoutrescueensurealignment_ensure_with_begin_registers_an_offense_when_ensure_used_with_begin"
 source = '''
 begin
   something
@@ -351,11 +793,8 @@ column_start = 4
 column_end = 10
 message = "`ensure` at 3, 4 is not aligned with `begin` at 1, 0."
 
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_ensure_with_def_registers_an_offense"
+name = "rubocopcoplayoutrescueensurealignment_ensure_with_def_registers_an_offense"
 source = '''
 def test
   something
@@ -377,11 +816,8 @@ column_start = 4
 column_end = 10
 message = "`ensure` at 3, 4 is not aligned with `def test` at 1, 0."
 
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_ensure_with_defs_registers_an_offense"
+name = "rubocopcoplayoutrescueensurealignment_ensure_with_defs_registers_an_offense"
 source = '''
 def Test.test
   something
@@ -403,11 +839,8 @@ column_start = 4
 column_end = 10
 message = "`ensure` at 3, 4 is not aligned with `def Test.test` at 1, 0."
 
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_ensure_with_class_registers_an_offense"
+name = "rubocopcoplayoutrescueensurealignment_ensure_with_class_registers_an_offense"
 source = '''
 class C
   something
@@ -429,11 +862,8 @@ column_start = 4
 column_end = 10
 message = "`ensure` at 3, 4 is not aligned with `class C` at 1, 0."
 
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_ensure_with_module_registers_an_offense_when_ensure_used_with_module"
+name = "rubocopcoplayoutrescueensurealignment_ensure_with_module_registers_an_offense_when_ensure_used_with_module"
 source = '''
 module M
   something
@@ -455,11 +885,8 @@ column_start = 4
 column_end = 10
 message = "`ensure` at 3, 4 is not aligned with `module M` at 1, 0."
 
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_ensure_with_self_class_registers_an_offense_when_ensure_used_with_self_class"
+name = "rubocopcoplayoutrescueensurealignment_ensure_with_self_class_registers_an_offense_when_ensure_used_with_self_class"
 source = '''
 class << self
   something
@@ -481,564 +908,8 @@ column_start = 4
 column_end = 10
 message = "`ensure` at 3, 4 is not aligned with `class << self` at 1, 0."
 
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_accepts_end_being_misaligned"
-source = '''
-def method1
-  'foo'
-end
-
-def method2
-  'bar'
-rescue
-  'baz' end
-'''
-offenses = []
-
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
-[[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_accepts_rescue_and_ensure_on_the_same_line"
-source = '''
-begin; puts 1; rescue; ensure; puts 2; end
-'''
-offenses = []
-
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
-[[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_accepts_correctly_aligned_rescue"
-source = '''
-begin
-  something
-rescue
-  error
-end
-'''
-offenses = []
-
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
-[[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_accepts_correctly_aligned_ensure"
-source = '''
-begin
-  something
-ensure
-  error
-end
-'''
-offenses = []
-
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
-[[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_accepts_correctly_aligned_rescue_ensure_with_def"
-source = '''
-def foo
-  something
-rescue StandardError
-  handle_error
-ensure
-  error
-end
-'''
-offenses = []
-
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
-[[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_accepts_correctly_aligned_rescue_ensure_with_def_with_no_body"
-source = '''
-def foo
-rescue StandardError
-  handle_error
-ensure
-  error
-end
-'''
-offenses = []
-
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
-[[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_accepts_correctly_aligned_rescue_in_assigned_begin_end_block"
-source = '''
-foo = begin
-        bar
-      rescue BazError
-        qux
-      end
-'''
-offenses = []
-
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
-[[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_accepts_aligned_rescue_in_do_end_block"
-source = '''
-[1, 2, 3].each do |el|
-  el.to_s
-rescue StandardError => _exception
-  next
-end
-'''
-offenses = []
-
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
-[[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_accepts_aligned_rescue_in_do_end_block_with_call"
-source = '''
-foo.() do |el|
-  el.to_s
-rescue StandardError => _exception
-  next
-end
-'''
-offenses = []
-
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
-[[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_accepts_aligned_rescue_with_do_end_block_that_line_break_with_leading_dot_for_method_calls"
-source = '''
-[1, 2, 3]
-  .each do |el|
-    el.to_s
-  rescue StandardError => _exception
-    next
-  end
-'''
-offenses = []
-
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
-[[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_registers_an_offense_and_corrects_indented_rescue_with_do_end_block_that_line_break_with_leading_dot_for_method_calls"
-source = '''
-[1, 2, 3]
-  .each do |el|
-    el.to_s
-      rescue StandardError => _exception
-    next
-  end
-'''
-corrected = '''
-[1, 2, 3]
-  .each do |el|
-    el.to_s
-  rescue StandardError => _exception
-    next
-  end
-'''
-
-[[tests.offenses]]
-line = 4
-column_start = 6
-column_end = 12
-message = "`rescue` at 4, 6 is not aligned with `.each do` at 2, 2."
-
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
-[[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_registers_an_offense_and_corrects_unindented_rescue_with_do_end_block_that_line_break_with_leading_dot_for_method_calls"
-source = '''
-[1, 2, 3]
-  .each do |el|
-    el.to_s
-rescue StandardError => _exception
-    next
-  end
-'''
-corrected = '''
-[1, 2, 3]
-  .each do |el|
-    el.to_s
-  rescue StandardError => _exception
-    next
-  end
-'''
-
-[[tests.offenses]]
-line = 4
-column_start = 0
-column_end = 6
-message = "`rescue` at 4, 0 is not aligned with `.each do` at 2, 2."
-
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
-[[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_accepts_aligned_rescue_with_do_end_block_that_line_break_with_trailing_dot_for_method_calls"
-source = '''
-[1, 2, 3].
-  each do |el|
-    el.to_s
-  rescue StandardError => _exception
-    next
-  end
-'''
-offenses = []
-
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
-[[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_registers_an_offense_and_corrects_indented_rescue_with_do_end_block_that_line_break_with_trailing_dot_for_method_calls"
-source = '''
-[1, 2, 3].
-  each do |el|
-    el.to_s
-      rescue StandardError => _exception
-    next
-  end
-'''
-corrected = '''
-[1, 2, 3].
-  each do |el|
-    el.to_s
-  rescue StandardError => _exception
-    next
-  end
-'''
-
-[[tests.offenses]]
-line = 4
-column_start = 6
-column_end = 12
-message = "`rescue` at 4, 6 is not aligned with `each do` at 2, 2."
-
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
-[[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_registers_an_offense_and_corrects_unindented_rescue_with_do_end_block_that_line_break_with_trailing_dot_for_method_calls"
-source = '''
-[1, 2, 3].
-  each do |el|
-    el.to_s
-rescue StandardError => _exception
-    next
-  end
-'''
-corrected = '''
-[1, 2, 3].
-  each do |el|
-    el.to_s
-  rescue StandardError => _exception
-    next
-  end
-'''
-
-[[tests.offenses]]
-line = 4
-column_start = 0
-column_end = 6
-message = "`rescue` at 4, 0 is not aligned with `each do` at 2, 2."
-
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
-[[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_accepts_aligned_ensure_with_do_end_block_that_line_break_with_leading_dot_for_method_calls"
-source = '''
-[1, 2, 3]
-  .each do |el|
-    el.to_s
-  ensure
-    next
-  end
-'''
-offenses = []
-
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
-[[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_registers_an_offense_and_corrects_indented_ensure_with_do_end_block_that_line_break_with_leading_dot_for_method_calls"
-source = '''
-[1, 2, 3]
-  .each do |el|
-    el.to_s
-      ensure
-    next
-  end
-'''
-corrected = '''
-[1, 2, 3]
-  .each do |el|
-    el.to_s
-  ensure
-    next
-  end
-'''
-
-[[tests.offenses]]
-line = 4
-column_start = 6
-column_end = 12
-message = "`ensure` at 4, 6 is not aligned with `.each do` at 2, 2."
-
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
-[[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_registers_an_offense_and_corrects_unindented_ensure_with_do_end_block_that_line_break_with_leading_dot_for_method_calls"
-source = '''
-[1, 2, 3]
-  .each do |el|
-    el.to_s
-ensure
-    next
-  end
-'''
-corrected = '''
-[1, 2, 3]
-  .each do |el|
-    el.to_s
-  ensure
-    next
-  end
-'''
-
-[[tests.offenses]]
-line = 4
-column_start = 0
-column_end = 6
-message = "`ensure` at 4, 0 is not aligned with `.each do` at 2, 2."
-
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
-[[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_accepts_aligned_ensure_with_do_end_block_that_line_break_with_trailing_dot_for_method_calls"
-source = '''
-[1, 2, 3].
-  each do |el|
-    el.to_s
-  ensure
-    next
-  end
-'''
-offenses = []
-
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
-[[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_registers_an_offense_and_corrects_indented_ensure_with_do_end_block_that_line_break_with_trailing_dot_for_method_calls"
-source = '''
-[1, 2, 3].
-  each do |el|
-    el.to_s
-      ensure
-    next
-  end
-'''
-corrected = '''
-[1, 2, 3].
-  each do |el|
-    el.to_s
-  ensure
-    next
-  end
-'''
-
-[[tests.offenses]]
-line = 4
-column_start = 6
-column_end = 12
-message = "`ensure` at 4, 6 is not aligned with `each do` at 2, 2."
-
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
-[[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_registers_an_offense_and_corrects_unindented_ensure_with_do_end_block_that_line_break_with_trailing_dot_for_method_calls"
-source = '''
-[1, 2, 3].
-  each do |el|
-    el.to_s
-ensure
-    next
-  end
-'''
-corrected = '''
-[1, 2, 3].
-  each do |el|
-    el.to_s
-  ensure
-    next
-  end
-'''
-
-[[tests.offenses]]
-line = 4
-column_start = 0
-column_end = 6
-message = "`ensure` at 4, 0 is not aligned with `each do` at 2, 2."
-
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
-[[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_accepts_aligned_rescue_do_end_block_assigned_to_local_variable"
-source = '''
-result = [1, 2, 3].map do |el|
-  el.to_s
-rescue StandardError => _exception
-  next
-end
-'''
-offenses = []
-
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
-[[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_accepts_aligned_rescue_in_do_end_block_assigned_to_instance_variable"
-source = '''
-@instance = [].map do |_|
-rescue StandardError => _
-end
-'''
-offenses = []
-
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
-[[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_accepts_aligned_rescue_in_do_end_block_assigned_to_class_variable"
-source = '''
-@@class = [].map do |_|
-rescue StandardError => _
-end
-'''
-offenses = []
-
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
-[[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_accepts_aligned_rescue_in_do_end_block_assigned_to_global_variable"
-source = '''
-$global = [].map do |_|
-rescue StandardError => _
-end
-'''
-offenses = []
-
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
-[[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_accepts_aligned_rescue_in_do_end_block_assigned_to_class"
-source = '''
-CLASS = [].map do |_|
-rescue StandardError => _
-end
-'''
-offenses = []
-
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
-[[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_accepts_aligned_rescue_in_do_end_block_on_multi_assignment"
-source = '''
-a, b = [].map do |_|
-rescue StandardError => _
-end
-'''
-offenses = []
-
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
-[[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_accepts_aligned_rescue_in_do_end_block_on_operation_assignment"
-source = '''
-a += [].map do |_|
-rescue StandardError => _
-end
-'''
-offenses = []
-
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
-[[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_accepts_aligned_rescue_in_do_end_block_on_and_assignment"
-source = '''
-a &&= [].map do |_|
-rescue StandardError => _
-end
-'''
-offenses = []
-
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
-[[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_accepts_aligned_rescue_in_do_end_block_on_or_assignment"
-source = '''
-a ||= [].map do |_|
-rescue StandardError => _
-end
-'''
-offenses = []
-
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
-[[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_accepts_aligned_rescue_in_assigned_do_end_block_starting_on_newline"
-source = '''
-valid =
-  proc do |bar|
-    baz
-  rescue
-    qux
-  end
-'''
-offenses = []
-
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
-[[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_accepts_aligned_rescue_in_do_end_block_in_a_method"
-source = '''
-def foo
-  [1, 2, 3].each do |el|
-    el.to_s
-  rescue StandardError => _exception
-    next
-  end
-end
-'''
-offenses = []
-
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
-[[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_rescue_with_do_end_block_registers_an_offense"
+name = "rubocopcoplayoutrescueensurealignment_rescue_with_doend_block_registers_an_offense"
 source = '''
 def foo
   [1, 2, 3].each do |el|
@@ -1064,11 +935,8 @@ column_start = 0
 column_end = 6
 message = "`rescue` at 4, 0 is not aligned with `[1, 2, 3].each do` at 2, 2."
 
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_ruby_2_7_accepts_aligned_rescue_in_do_end_numbered_block_in_a_method"
+name = "rubocopcoplayoutrescueensurealignment_ruby_27_accepts_aligned_rescue_in_doend_numbered_block_in_a_method"
 source = '''
 def foo
   [1, 2, 3].each do
@@ -1078,14 +946,10 @@ def foo
   end
 end
 '''
-ruby_version = ">= 2.7"
 offenses = []
 
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_ruby_2_7_rescue_with_do_end_numbered_block_registers_an_offense"
+name = "rubocopcoplayoutrescueensurealignment_ruby_27_rescue_with_doend_numbered_block_registers_an_offense"
 source = '''
 def foo
   [1, 2, 3].each do
@@ -1104,7 +968,6 @@ def foo
   end
 end
 '''
-ruby_version = ">= 2.7"
 
 [[tests.offenses]]
 line = 4
@@ -1112,11 +975,8 @@ column_start = 0
 column_end = 6
 message = "`rescue` at 4, 0 is not aligned with `[1, 2, 3].each do` at 2, 2."
 
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_ruby_3_4_accepts_aligned_rescue_in_do_end_it_block_in_a_method"
+name = "rubocopcoplayoutrescueensurealignment_ruby_34_accepts_aligned_rescue_in_doend_it_block_in_a_method"
 source = '''
 def foo
   [1, 2, 3].each do
@@ -1126,14 +986,10 @@ def foo
   end
 end
 '''
-ruby_version = ">= 3.4"
 offenses = []
 
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_ruby_3_4_rescue_with_do_end_it_block_registers_an_offense"
+name = "rubocopcoplayoutrescueensurealignment_ruby_34_rescue_with_doend_it_block_registers_an_offense"
 source = '''
 def foo
   [1, 2, 3].each do
@@ -1152,7 +1008,6 @@ def foo
   end
 end
 '''
-ruby_version = ">= 3.4"
 
 [[tests.offenses]]
 line = 4
@@ -1160,11 +1015,8 @@ column_start = 0
 column_end = 6
 message = "`rescue` at 4, 0 is not aligned with `[1, 2, 3].each do` at 2, 2."
 
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_rescue_in_do_end_block_assigned_to_local_variable_registers_an_offense"
+name = "rubocopcoplayoutrescueensurealignment_rescue_in_doend_block_assigned_to_local_variable_registers_an_offense"
 source = '''
 result = [1, 2, 3].map do |el|
   rescue StandardError => _exception
@@ -1182,11 +1034,8 @@ column_start = 2
 column_end = 8
 message = "`rescue` at 2, 2 is not aligned with `result` at 1, 0."
 
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_rescue_in_do_end_block_assigned_to_instance_variable_registers_an_offense"
+name = "rubocopcoplayoutrescueensurealignment_rescue_in_doend_block_assigned_to_instance_variable_registers_an_offense"
 source = '''
 @instance = [1, 2, 3].map do |el|
   rescue StandardError => _exception
@@ -1204,11 +1053,8 @@ column_start = 2
 column_end = 8
 message = "`rescue` at 2, 2 is not aligned with `@instance` at 1, 0."
 
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_rescue_in_do_end_block_assigned_to_class_variable_registers_an_offense"
+name = "rubocopcoplayoutrescueensurealignment_rescue_in_doend_block_assigned_to_class_variable_registers_an_offense"
 source = '''
 @@class = [].map do |_|
   rescue StandardError => _
@@ -1226,11 +1072,8 @@ column_start = 2
 column_end = 8
 message = "`rescue` at 2, 2 is not aligned with `@@class` at 1, 0."
 
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_rescue_in_do_end_block_assigned_to_global_variable_registers_an_offense"
+name = "rubocopcoplayoutrescueensurealignment_rescue_in_doend_block_assigned_to_global_variable_registers_an_offense"
 source = '''
 $global = [].map do |_|
   rescue StandardError => _
@@ -1248,11 +1091,8 @@ column_start = 2
 column_end = 8
 message = "`rescue` at 2, 2 is not aligned with `$global` at 1, 0."
 
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_rescue_in_do_end_block_assigned_to_class_registers_an_offense"
+name = "rubocopcoplayoutrescueensurealignment_rescue_in_doend_block_assigned_to_class_registers_an_offense"
 source = '''
 CLASS = [].map do |_|
   rescue StandardError => _
@@ -1270,11 +1110,8 @@ column_start = 2
 column_end = 8
 message = "`rescue` at 2, 2 is not aligned with `CLASS` at 1, 0."
 
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_rescue_in_do_end_block_assigned_to_object_attribute_registers_an_offense"
+name = "rubocopcoplayoutrescueensurealignment_rescue_in_doend_block_assigned_to_object_attribute_registers_an_offense"
 source = '''
 obj.attr = do_something do
   rescue StandardError
@@ -1292,11 +1129,8 @@ column_start = 2
 column_end = 8
 message = "`rescue` at 2, 2 is not aligned with `obj` at 1, 0."
 
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_rescue_in_do_end_block_on_multi_assignment_registers_an_offense"
+name = "rubocopcoplayoutrescueensurealignment_rescue_in_doend_block_on_multiassignment_registers_an_offense"
 source = '''
 a, b = [].map do |_|
   rescue StandardError => _
@@ -1314,11 +1148,8 @@ column_start = 2
 column_end = 8
 message = "`rescue` at 2, 2 is not aligned with `a, b` at 1, 0."
 
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_rescue_in_do_end_block_on_operation_assignment_registers_an_offense"
+name = "rubocopcoplayoutrescueensurealignment_rescue_in_doend_block_on_operation_assignment_registers_an_offense"
 source = '''
 a += [].map do |_|
   rescue StandardError => _
@@ -1336,11 +1167,8 @@ column_start = 2
 column_end = 8
 message = "`rescue` at 2, 2 is not aligned with `a` at 1, 0."
 
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_rescue_in_do_end_block_on_and_assignment_registers_an_offense"
+name = "rubocopcoplayoutrescueensurealignment_rescue_in_doend_block_on_andassignment_registers_an_offense"
 source = '''
 a &&= [].map do |_|
   rescue StandardError => _
@@ -1358,11 +1186,8 @@ column_start = 2
 column_end = 8
 message = "`rescue` at 2, 2 is not aligned with `a` at 1, 0."
 
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_rescue_in_do_end_block_on_or_assignment_registers_an_offense"
+name = "rubocopcoplayoutrescueensurealignment_rescue_in_doend_block_on_orassignment_registers_an_offense"
 source = '''
 a ||= [].map do |_|
   rescue StandardError => _
@@ -1380,11 +1205,8 @@ column_start = 2
 column_end = 8
 message = "`rescue` at 2, 2 is not aligned with `a` at 1, 0."
 
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_rescue_in_assigned_do_end_block_starting_on_newline_registers_an_offense"
+name = "rubocopcoplayoutrescueensurealignment_rescue_in_assigned_doend_block_starting_on_newline_registers_an_offense"
 source = '''
 valid =
   proc do |bar|
@@ -1408,11 +1230,8 @@ column_start = 4
 column_end = 10
 message = "`rescue` at 4, 4 is not aligned with `proc do` at 2, 2."
 
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_when_using_zsuper_with_block_registers_and_corrects_an_offense_and_corrects_when_incorrect_alignment"
+name = "rubocopcoplayoutrescueensurealignment_when_using_zsuper_with_block_registers_and_corrects_an_offense_and_corrects_when_incorrect_alignment"
 source = '''
 super do
   nil
@@ -1434,11 +1253,8 @@ column_start = 4
 column_end = 10
 message = "`ensure` at 3, 4 is not aligned with `super do` at 1, 0."
 
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_when_using_zsuper_with_block_does_not_register_an_offense_when_correct_alignment"
+name = "rubocopcoplayoutrescueensurealignment_when_using_zsuper_with_block_does_not_register_an_offense_when_correct_alignment"
 source = '''
 super do
   nil
@@ -1448,11 +1264,8 @@ end
 '''
 offenses = []
 
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_excluded_file_processes_excluded_files_with_issue"
+name = "rubocopcoplayoutrescueensurealignment_excluded_file_processes_excluded_files_with_issue"
 source = '''
 begin
   foo
@@ -1462,228 +1275,488 @@ end
 '''
 offenses = []
 
-[tests.config]
-EnforcedStyle = "require_parentheses"
-
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_allows_inline_access_modifier_rescue_with_def_registers_an_offense"
+name = "rubocopcoplayoutrescueensurealignment_allows_inline_access_modifier_with_private_modifier_behaves_like_access_modifier_rescue_with_def_registers_an_offense"
 source = '''
-#{modifier} def test
+private def test
   'foo'
   rescue
   'baz'
 end
 '''
 corrected = '''
-#{modifier} def test
+private def test
   'foo'
 rescue
   'baz'
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 3
 column_start = 2
 column_end = 8
-message = "`rescue` at 3, 2 is not aligned with `#{modifier} def test` at 1, 0."
+message = "`rescue` at 3, 2 is not aligned with `private def test` at 1, 0."
 
 [tests.config]
-EnforcedStyle = "require_parentheses"
-"Style/AccessModifierDeclarations" = "{ 'EnforcedStyle' => 'inline' }"
+"Style/AccessModifierDeclarations" = { EnforcedStyle = "inline" }
 
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_allows_inline_access_modifier_rescue_with_def_corrects_alignment"
+name = "rubocopcoplayoutrescueensurealignment_allows_inline_access_modifier_with_private_modifier_behaves_like_access_modifier_rescue_with_def_corrects_alignment"
 source = '''
-#{modifier} def test
+private def test
   'foo'
 rescue
   'baz'
 end
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "require_parentheses"
-"Style/AccessModifierDeclarations" = "{ 'EnforcedStyle' => 'inline' }"
+"Style/AccessModifierDeclarations" = { EnforcedStyle = "inline" }
 
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_allows_inline_access_modifier_rescue_with_defs_registers_an_offense"
+name = "rubocopcoplayoutrescueensurealignment_allows_inline_access_modifier_with_private_modifier_behaves_like_access_modifier_rescue_with_defs_registers_an_offense"
 source = '''
-#{modifier} def Test.test
+private def Test.test
   'foo'
   rescue
   'baz'
 end
 '''
 corrected = '''
-#{modifier} def Test.test
+private def Test.test
   'foo'
 rescue
   'baz'
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 3
 column_start = 2
 column_end = 8
-message = "`rescue` at 3, 2 is not aligned with `#{modifier} def Test.test` at 1, 0."
+message = "`rescue` at 3, 2 is not aligned with `private def Test.test` at 1, 0."
 
 [tests.config]
-EnforcedStyle = "require_parentheses"
-"Style/AccessModifierDeclarations" = "{ 'EnforcedStyle' => 'inline' }"
+"Style/AccessModifierDeclarations" = { EnforcedStyle = "inline" }
 
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_allows_inline_access_modifier_rescue_with_defs_corrects_alignment"
+name = "rubocopcoplayoutrescueensurealignment_allows_inline_access_modifier_with_private_modifier_behaves_like_access_modifier_rescue_with_defs_corrects_alignment"
 source = '''
-#{modifier} def Test.test
+private def Test.test
   'foo'
 rescue
   'baz'
 end
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "require_parentheses"
-"Style/AccessModifierDeclarations" = "{ 'EnforcedStyle' => 'inline' }"
+"Style/AccessModifierDeclarations" = { EnforcedStyle = "inline" }
 
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_allows_inline_access_modifier_ensure_with_def_registers_an_offense"
+name = "rubocopcoplayoutrescueensurealignment_allows_inline_access_modifier_with_private_modifier_behaves_like_access_modifier_ensure_with_def_registers_an_offense"
 source = '''
-#{modifier} def test
+private def test
   'foo'
   ensure
   'baz'
 end
 '''
 corrected = '''
-#{modifier} def test
+private def test
   'foo'
 ensure
   'baz'
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 3
 column_start = 2
 column_end = 8
-message = "`ensure` at 3, 2 is not aligned with `#{modifier} def test` at 1, 0."
+message = "`ensure` at 3, 2 is not aligned with `private def test` at 1, 0."
 
 [tests.config]
-EnforcedStyle = "require_parentheses"
-"Style/AccessModifierDeclarations" = "{ 'EnforcedStyle' => 'inline' }"
+"Style/AccessModifierDeclarations" = { EnforcedStyle = "inline" }
 
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_allows_inline_access_modifier_ensure_with_def_corrects_alignment"
+name = "rubocopcoplayoutrescueensurealignment_allows_inline_access_modifier_with_private_modifier_behaves_like_access_modifier_ensure_with_def_corrects_alignment"
 source = '''
-#{modifier} def test
+private def test
   'foo'
 ensure
   'baz'
 end
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "require_parentheses"
-"Style/AccessModifierDeclarations" = "{ 'EnforcedStyle' => 'inline' }"
+"Style/AccessModifierDeclarations" = { EnforcedStyle = "inline" }
 
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_allows_inline_access_modifier_ensure_with_defs_registers_an_offense"
+name = "rubocopcoplayoutrescueensurealignment_allows_inline_access_modifier_with_private_modifier_behaves_like_access_modifier_ensure_with_defs_registers_an_offense"
 source = '''
-#{modifier} def Test.test
+private def Test.test
   'foo'
   ensure
   'baz'
 end
 '''
 corrected = '''
-#{modifier} def Test.test
+private def Test.test
   'foo'
 ensure
   'baz'
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 3
 column_start = 2
 column_end = 8
-message = "`ensure` at 3, 2 is not aligned with `#{modifier} def Test.test` at 1, 0."
+message = "`ensure` at 3, 2 is not aligned with `private def Test.test` at 1, 0."
 
 [tests.config]
-EnforcedStyle = "require_parentheses"
-"Style/AccessModifierDeclarations" = "{ 'EnforcedStyle' => 'inline' }"
+"Style/AccessModifierDeclarations" = { EnforcedStyle = "inline" }
 
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_allows_inline_access_modifier_ensure_with_defs_corrects_alignment"
+name = "rubocopcoplayoutrescueensurealignment_allows_inline_access_modifier_with_private_modifier_behaves_like_access_modifier_ensure_with_defs_corrects_alignment"
 source = '''
-#{modifier} def Test.test
+private def Test.test
   'foo'
 ensure
   'baz'
 end
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "require_parentheses"
-"Style/AccessModifierDeclarations" = "{ 'EnforcedStyle' => 'inline' }"
+"Style/AccessModifierDeclarations" = { EnforcedStyle = "inline" }
 
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_allows_inline_access_modifier_with_private_modifier_access_modifier_private"
+name = "rubocopcoplayoutrescueensurealignment_allows_inline_access_modifier_with_private_class_method_modifier_behaves_like_access_modifier_rescue_with_def_registers_an_offense"
 source = '''
-private
+private_class_method def test
+  'foo'
+  rescue
+  'baz'
+end
+'''
+corrected = '''
+private_class_method def test
+  'foo'
+rescue
+  'baz'
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 8
+message = "`rescue` at 3, 2 is not aligned with `private_class_method def test` at 1, 0."
+
+[tests.config]
+"Style/AccessModifierDeclarations" = { EnforcedStyle = "inline" }
+
+[[tests]]
+name = "rubocopcoplayoutrescueensurealignment_allows_inline_access_modifier_with_private_class_method_modifier_behaves_like_access_modifier_rescue_with_def_corrects_alignment"
+source = '''
+private_class_method def test
+  'foo'
+rescue
+  'baz'
+end
 '''
 offenses = []
 
 [tests.config]
-EnforcedStyle = "require_parentheses"
-"Style/AccessModifierDeclarations" = "{ 'EnforcedStyle' => 'inline' }"
+"Style/AccessModifierDeclarations" = { EnforcedStyle = "inline" }
 
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_allows_inline_access_modifier_with_private_class_method_modifier_access_modifier_private_class_method"
+name = "rubocopcoplayoutrescueensurealignment_allows_inline_access_modifier_with_private_class_method_modifier_behaves_like_access_modifier_rescue_with_defs_registers_an_offense"
 source = '''
-private_class_method
+private_class_method def Test.test
+  'foo'
+  rescue
+  'baz'
+end
+'''
+corrected = '''
+private_class_method def Test.test
+  'foo'
+rescue
+  'baz'
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 8
+message = "`rescue` at 3, 2 is not aligned with `private_class_method def Test.test` at 1, 0."
+
+[tests.config]
+"Style/AccessModifierDeclarations" = { EnforcedStyle = "inline" }
+
+[[tests]]
+name = "rubocopcoplayoutrescueensurealignment_allows_inline_access_modifier_with_private_class_method_modifier_behaves_like_access_modifier_rescue_with_defs_corrects_alignment"
+source = '''
+private_class_method def Test.test
+  'foo'
+rescue
+  'baz'
+end
 '''
 offenses = []
 
 [tests.config]
-EnforcedStyle = "require_parentheses"
-"Style/AccessModifierDeclarations" = "{ 'EnforcedStyle' => 'inline' }"
+"Style/AccessModifierDeclarations" = { EnforcedStyle = "inline" }
 
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_allows_inline_access_modifier_with_public_class_method_modifier_access_modifier_public_class_method"
+name = "rubocopcoplayoutrescueensurealignment_allows_inline_access_modifier_with_private_class_method_modifier_behaves_like_access_modifier_ensure_with_def_registers_an_offense"
 source = '''
-public_class_method
+private_class_method def test
+  'foo'
+  ensure
+  'baz'
+end
+'''
+corrected = '''
+private_class_method def test
+  'foo'
+ensure
+  'baz'
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 8
+message = "`ensure` at 3, 2 is not aligned with `private_class_method def test` at 1, 0."
+
+[tests.config]
+"Style/AccessModifierDeclarations" = { EnforcedStyle = "inline" }
+
+[[tests]]
+name = "rubocopcoplayoutrescueensurealignment_allows_inline_access_modifier_with_private_class_method_modifier_behaves_like_access_modifier_ensure_with_def_corrects_alignment"
+source = '''
+private_class_method def test
+  'foo'
+ensure
+  'baz'
+end
 '''
 offenses = []
 
 [tests.config]
-EnforcedStyle = "require_parentheses"
-"Style/AccessModifierDeclarations" = "{ 'EnforcedStyle' => 'inline' }"
+"Style/AccessModifierDeclarations" = { EnforcedStyle = "inline" }
 
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_allows_inline_expression_before_rescue_registers_an_offense"
+name = "rubocopcoplayoutrescueensurealignment_allows_inline_access_modifier_with_private_class_method_modifier_behaves_like_access_modifier_ensure_with_defs_registers_an_offense"
+source = '''
+private_class_method def Test.test
+  'foo'
+  ensure
+  'baz'
+end
+'''
+corrected = '''
+private_class_method def Test.test
+  'foo'
+ensure
+  'baz'
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 8
+message = "`ensure` at 3, 2 is not aligned with `private_class_method def Test.test` at 1, 0."
+
+[tests.config]
+"Style/AccessModifierDeclarations" = { EnforcedStyle = "inline" }
+
+[[tests]]
+name = "rubocopcoplayoutrescueensurealignment_allows_inline_access_modifier_with_private_class_method_modifier_behaves_like_access_modifier_ensure_with_defs_corrects_alignment"
+source = '''
+private_class_method def Test.test
+  'foo'
+ensure
+  'baz'
+end
+'''
+offenses = []
+
+[tests.config]
+"Style/AccessModifierDeclarations" = { EnforcedStyle = "inline" }
+
+[[tests]]
+name = "rubocopcoplayoutrescueensurealignment_allows_inline_access_modifier_with_public_class_method_modifier_behaves_like_access_modifier_rescue_with_def_registers_an_offense"
+source = '''
+public_class_method def test
+  'foo'
+  rescue
+  'baz'
+end
+'''
+corrected = '''
+public_class_method def test
+  'foo'
+rescue
+  'baz'
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 8
+message = "`rescue` at 3, 2 is not aligned with `public_class_method def test` at 1, 0."
+
+[tests.config]
+"Style/AccessModifierDeclarations" = { EnforcedStyle = "inline" }
+
+[[tests]]
+name = "rubocopcoplayoutrescueensurealignment_allows_inline_access_modifier_with_public_class_method_modifier_behaves_like_access_modifier_rescue_with_def_corrects_alignment"
+source = '''
+public_class_method def test
+  'foo'
+rescue
+  'baz'
+end
+'''
+offenses = []
+
+[tests.config]
+"Style/AccessModifierDeclarations" = { EnforcedStyle = "inline" }
+
+[[tests]]
+name = "rubocopcoplayoutrescueensurealignment_allows_inline_access_modifier_with_public_class_method_modifier_behaves_like_access_modifier_rescue_with_defs_registers_an_offense"
+source = '''
+public_class_method def Test.test
+  'foo'
+  rescue
+  'baz'
+end
+'''
+corrected = '''
+public_class_method def Test.test
+  'foo'
+rescue
+  'baz'
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 8
+message = "`rescue` at 3, 2 is not aligned with `public_class_method def Test.test` at 1, 0."
+
+[tests.config]
+"Style/AccessModifierDeclarations" = { EnforcedStyle = "inline" }
+
+[[tests]]
+name = "rubocopcoplayoutrescueensurealignment_allows_inline_access_modifier_with_public_class_method_modifier_behaves_like_access_modifier_rescue_with_defs_corrects_alignment"
+source = '''
+public_class_method def Test.test
+  'foo'
+rescue
+  'baz'
+end
+'''
+offenses = []
+
+[tests.config]
+"Style/AccessModifierDeclarations" = { EnforcedStyle = "inline" }
+
+[[tests]]
+name = "rubocopcoplayoutrescueensurealignment_allows_inline_access_modifier_with_public_class_method_modifier_behaves_like_access_modifier_ensure_with_def_registers_an_offense"
+source = '''
+public_class_method def test
+  'foo'
+  ensure
+  'baz'
+end
+'''
+corrected = '''
+public_class_method def test
+  'foo'
+ensure
+  'baz'
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 8
+message = "`ensure` at 3, 2 is not aligned with `public_class_method def test` at 1, 0."
+
+[tests.config]
+"Style/AccessModifierDeclarations" = { EnforcedStyle = "inline" }
+
+[[tests]]
+name = "rubocopcoplayoutrescueensurealignment_allows_inline_access_modifier_with_public_class_method_modifier_behaves_like_access_modifier_ensure_with_def_corrects_alignment"
+source = '''
+public_class_method def test
+  'foo'
+ensure
+  'baz'
+end
+'''
+offenses = []
+
+[tests.config]
+"Style/AccessModifierDeclarations" = { EnforcedStyle = "inline" }
+
+[[tests]]
+name = "rubocopcoplayoutrescueensurealignment_allows_inline_access_modifier_with_public_class_method_modifier_behaves_like_access_modifier_ensure_with_defs_registers_an_offense"
+source = '''
+public_class_method def Test.test
+  'foo'
+  ensure
+  'baz'
+end
+'''
+corrected = '''
+public_class_method def Test.test
+  'foo'
+ensure
+  'baz'
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 8
+message = "`ensure` at 3, 2 is not aligned with `public_class_method def Test.test` at 1, 0."
+
+[tests.config]
+"Style/AccessModifierDeclarations" = { EnforcedStyle = "inline" }
+
+[[tests]]
+name = "rubocopcoplayoutrescueensurealignment_allows_inline_access_modifier_with_public_class_method_modifier_behaves_like_access_modifier_ensure_with_defs_corrects_alignment"
+source = '''
+public_class_method def Test.test
+  'foo'
+ensure
+  'baz'
+end
+'''
+offenses = []
+
+[tests.config]
+"Style/AccessModifierDeclarations" = { EnforcedStyle = "inline" }
+
+[[tests]]
+name = "rubocopcoplayoutrescueensurealignment_allows_inline_expression_before_rescue_registers_an_offense"
 source = '''
 def test
   'foo'; rescue; 'baz'
@@ -1708,12 +1781,8 @@ column_start = 11
 column_end = 17
 message = "`rescue` at 7, 11 is not aligned with `begin` at 6, 2."
 
-[tests.config]
-EnforcedStyle = "require_parentheses"
-"Style/AccessModifierDeclarations" = "{ 'EnforcedStyle' => 'inline' }"
-
 [[tests]]
-name = "rubocop_cop_layout_rescueensurealignment_allows_inline_expression_before_ensure_registers_an_offense"
+name = "rubocopcoplayoutrescueensurealignment_allows_inline_expression_before_ensure_registers_an_offense"
 source = '''
 def test
   'foo'; ensure; 'baz'
@@ -1737,7 +1806,3 @@ line = 7
 column_start = 11
 column_end = 17
 message = "`ensure` at 7, 11 is not aligned with `begin` at 6, 2."
-
-[tests.config]
-EnforcedStyle = "require_parentheses"
-"Style/AccessModifierDeclarations" = "{ 'EnforcedStyle' => 'inline' }"

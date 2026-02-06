@@ -4,41 +4,109 @@ severity = "convention"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_style_objectthen_enforcedstyle_then_does_not_register_an_offense_for_method_names_other_than_then"
+name = "rubocopcopstyleobjectthen_enforcedstyle_then_does_not_register_an_offense_for_method_names_other_than_then"
 source = '''
 obj.map { |x| x.foo }
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:then"
+EnforcedStyle = "then"
 
 [[tests]]
-name = "rubocop_cop_style_objectthen_enforcedstyle_then_ruby_2_5_accepts_yield_self_with_block"
+name = "rubocopcopstyleobjectthen_enforcedstyle_then_registers_an_offense_for_yield_self_with_proc_param"
+source = '''
+obj.yield_self(&:test)
+'''
+corrected = '''
+obj.then(&:test)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 14
+message = "Prefer `then` over `yield_self`."
+
+[tests.config]
+EnforcedStyle = "then"
+
+[[tests]]
+name = "rubocopcopstyleobjectthen_enforcedstyle_then_registers_an_offense_for_yield_self_with_safe_navigation_and_proc_param"
+source = '''
+obj&.yield_self(&:test)
+'''
+corrected = '''
+obj&.then(&:test)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 15
+message = "Prefer `then` over `yield_self`."
+
+[tests.config]
+EnforcedStyle = "then"
+
+[[tests]]
+name = "rubocopcopstyleobjectthen_enforcedstyle_then_accepts_yield_self_with_more_than_1_param"
+source = '''
+obj.yield_self(other, &:test)
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "then"
+
+[[tests]]
+name = "rubocopcopstyleobjectthen_enforcedstyle_then_accepts_yield_self_with_safe_navigation_and_more_than_1_param"
+source = '''
+obj&.yield_self(other, &:test)
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "then"
+
+[[tests]]
+name = "rubocopcopstyleobjectthen_enforcedstyle_then_accepts_yield_self_without_a_block"
+source = '''
+obj.yield_self
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "then"
+
+[[tests]]
+name = "rubocopcopstyleobjectthen_enforcedstyle_then_accepts_yield_self_with_safe_navigation_without_a_block"
+source = '''
+obj&.yield_self
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "then"
+
+[[tests]]
+name = "rubocopcopstyleobjectthen_enforcedstyle_then_ruby_25_accepts_yield_self_with_block"
 source = '''
 obj.yield_self { |e| e.test }
 '''
-ruby_version = ">= 2.5"
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:then"
+EnforcedStyle = "then"
 
 [[tests]]
-name = "rubocop_cop_style_objectthen_enforcedstyle_then_ruby_2_6_registers_an_offense_for_yield_self_with_block"
+name = "rubocopcopstyleobjectthen_enforcedstyle_then_ruby_26_registers_an_offense_for_yield_self_with_block"
 source = '''
 obj.yield_self { |e| e.test }
 '''
 corrected = '''
 obj.then { |e| e.test }
 '''
-ruby_version = ">= 2.6"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -47,19 +115,16 @@ column_end = 14
 message = "Prefer `then` over `yield_self`."
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:then"
+EnforcedStyle = "then"
 
 [[tests]]
-name = "rubocop_cop_style_objectthen_enforcedstyle_then_ruby_2_6_registers_an_offense_for_yield_self_with_safe_navigation_and_block"
+name = "rubocopcopstyleobjectthen_enforcedstyle_then_ruby_26_registers_an_offense_for_yield_self_with_safe_navigation_and_block"
 source = '''
 obj&.yield_self { |e| e.test }
 '''
 corrected = '''
 obj&.then { |e| e.test }
 '''
-ruby_version = ">= 2.6"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -68,19 +133,16 @@ column_end = 15
 message = "Prefer `then` over `yield_self`."
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:then"
+EnforcedStyle = "then"
 
 [[tests]]
-name = "rubocop_cop_style_objectthen_enforcedstyle_then_ruby_2_7_registers_an_offense_for_yield_self_with_numblock"
+name = "rubocopcopstyleobjectthen_enforcedstyle_then_ruby_27_registers_an_offense_for_yield_self_with_numblock"
 source = '''
 obj.yield_self { _1.test }
 '''
 corrected = '''
 obj.then { _1.test }
 '''
-ruby_version = ">= 2.7"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -89,19 +151,16 @@ column_end = 14
 message = "Prefer `then` over `yield_self`."
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:then"
+EnforcedStyle = "then"
 
 [[tests]]
-name = "rubocop_cop_style_objectthen_enforcedstyle_then_ruby_2_7_registers_an_offense_for_yield_self_with_safe_navigation_and_numblock"
+name = "rubocopcopstyleobjectthen_enforcedstyle_then_ruby_27_registers_an_offense_for_yield_self_with_safe_navigation_and_numblock"
 source = '''
 obj&.yield_self { _1.test }
 '''
 corrected = '''
 obj&.then { _1.test }
 '''
-ruby_version = ">= 2.7"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -110,19 +169,16 @@ column_end = 15
 message = "Prefer `then` over `yield_self`."
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:then"
+EnforcedStyle = "then"
 
 [[tests]]
-name = "rubocop_cop_style_objectthen_enforcedstyle_then_ruby_2_7_registers_an_offense_for_yield_self_without_receiver"
+name = "rubocopcopstyleobjectthen_enforcedstyle_then_ruby_27_registers_an_offense_for_yield_self_without_receiver"
 source = '''
 yield_self { |obj| obj.test }
 '''
 corrected = '''
 self.then { |obj| obj.test }
 '''
-ruby_version = ">= 2.7"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -131,19 +187,16 @@ column_end = 10
 message = "Prefer `then` over `yield_self`."
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:then"
+EnforcedStyle = "then"
 
 [[tests]]
-name = "rubocop_cop_style_objectthen_enforcedstyle_then_ruby_3_4_registers_an_offense_for_yield_self_with_itblock"
+name = "rubocopcopstyleobjectthen_enforcedstyle_then_ruby_34_registers_an_offense_for_yield_self_with_itblock"
 source = '''
 obj.yield_self { it.test }
 '''
 corrected = '''
 obj.then { it.test }
 '''
-ruby_version = ">= 3.4"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -152,19 +205,16 @@ column_end = 14
 message = "Prefer `then` over `yield_self`."
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:then"
+EnforcedStyle = "then"
 
 [[tests]]
-name = "rubocop_cop_style_objectthen_enforcedstyle_then_ruby_3_4_registers_an_offense_for_yield_self_with_safe_navigation_and_itblock"
+name = "rubocopcopstyleobjectthen_enforcedstyle_then_ruby_34_registers_an_offense_for_yield_self_with_safe_navigation_and_itblock"
 source = '''
 obj&.yield_self { it.test }
 '''
 corrected = '''
 obj&.then { it.test }
 '''
-ruby_version = ">= 3.4"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -173,106 +223,16 @@ column_end = 15
 message = "Prefer `then` over `yield_self`."
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:then"
+EnforcedStyle = "then"
 
 [[tests]]
-name = "rubocop_cop_style_objectthen_enforcedstyle_then_registers_an_offense_for_yield_self_with_proc_param"
-source = '''
-obj.yield_self(&:test)
-'''
-corrected = '''
-obj.then(&:test)
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 4
-column_end = 14
-message = "Prefer `then` over `yield_self`."
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:then"
-
-[[tests]]
-name = "rubocop_cop_style_objectthen_enforcedstyle_then_registers_an_offense_for_yield_self_with_safe_navigation_and_proc_param"
-source = '''
-obj&.yield_self(&:test)
-'''
-corrected = '''
-obj&.then(&:test)
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 5
-column_end = 15
-message = "Prefer `then` over `yield_self`."
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:then"
-
-[[tests]]
-name = "rubocop_cop_style_objectthen_enforcedstyle_then_accepts_yield_self_with_more_than_1_param"
-source = '''
-obj.yield_self(other, &:test)
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:then"
-
-[[tests]]
-name = "rubocop_cop_style_objectthen_enforcedstyle_then_accepts_yield_self_with_safe_navigation_and_more_than_1_param"
-source = '''
-obj&.yield_self(other, &:test)
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:then"
-
-[[tests]]
-name = "rubocop_cop_style_objectthen_enforcedstyle_then_accepts_yield_self_without_a_block"
-source = '''
-obj.yield_self
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:then"
-
-[[tests]]
-name = "rubocop_cop_style_objectthen_enforcedstyle_then_accepts_yield_self_with_safe_navigation_without_a_block"
-source = '''
-obj&.yield_self
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:then"
-
-[[tests]]
-name = "rubocop_cop_style_objectthen_enforcedstyle_yield_self_registers_an_offense_for_then_with_block"
+name = "rubocopcopstyleobjectthen_enforcedstyle_yield_self_registers_an_offense_for_then_with_block"
 source = '''
 obj.then { |e| e.test }
 '''
 corrected = '''
 obj.yield_self { |e| e.test }
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -281,18 +241,16 @@ column_end = 8
 message = "Prefer `yield_self` over `then`."
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:yield_self"
+EnforcedStyle = "yield_self"
 
 [[tests]]
-name = "rubocop_cop_style_objectthen_enforcedstyle_yield_self_registers_an_offense_for_then_with_safe_navigation_with_block"
+name = "rubocopcopstyleobjectthen_enforcedstyle_yield_self_registers_an_offense_for_then_with_safe_navigation_with_block"
 source = '''
 obj&.then { |e| e.test }
 '''
 corrected = '''
 obj&.yield_self { |e| e.test }
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -301,18 +259,16 @@ column_end = 9
 message = "Prefer `yield_self` over `then`."
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:yield_self"
+EnforcedStyle = "yield_self"
 
 [[tests]]
-name = "rubocop_cop_style_objectthen_enforcedstyle_yield_self_registers_an_offense_for_then_with_proc_param"
+name = "rubocopcopstyleobjectthen_enforcedstyle_yield_self_registers_an_offense_for_then_with_proc_param"
 source = '''
 obj.then(&:test)
 '''
 corrected = '''
 obj.yield_self(&:test)
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -321,18 +277,16 @@ column_end = 8
 message = "Prefer `yield_self` over `then`."
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:yield_self"
+EnforcedStyle = "yield_self"
 
 [[tests]]
-name = "rubocop_cop_style_objectthen_enforcedstyle_yield_self_registers_an_offense_for_then_with_safe_navigation_and_proc_param"
+name = "rubocopcopstyleobjectthen_enforcedstyle_yield_self_registers_an_offense_for_then_with_safe_navigation_and_proc_param"
 source = '''
 obj&.then(&:test)
 '''
 corrected = '''
 obj&.yield_self(&:test)
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -341,52 +295,44 @@ column_end = 9
 message = "Prefer `yield_self` over `then`."
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:yield_self"
+EnforcedStyle = "yield_self"
 
 [[tests]]
-name = "rubocop_cop_style_objectthen_enforcedstyle_yield_self_accepts_then_with_more_than_1_param"
+name = "rubocopcopstyleobjectthen_enforcedstyle_yield_self_accepts_then_with_more_than_1_param"
 source = '''
 obj.then(other, &:test)
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:yield_self"
+EnforcedStyle = "yield_self"
 
 [[tests]]
-name = "rubocop_cop_style_objectthen_enforcedstyle_yield_self_accepts_then_with_safe_navigation_and_more_than_1_param"
+name = "rubocopcopstyleobjectthen_enforcedstyle_yield_self_accepts_then_with_safe_navigation_and_more_than_1_param"
 source = '''
 obj&.then(other, &:test)
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:yield_self"
+EnforcedStyle = "yield_self"
 
 [[tests]]
-name = "rubocop_cop_style_objectthen_enforcedstyle_yield_self_accepts_then_without_a_block"
+name = "rubocopcopstyleobjectthen_enforcedstyle_yield_self_accepts_then_without_a_block"
 source = '''
 obj.then
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:yield_self"
+EnforcedStyle = "yield_self"
 
 [[tests]]
-name = "rubocop_cop_style_objectthen_enforcedstyle_yield_self_accepts_then_with_safe_navigation_without_a_block"
+name = "rubocopcopstyleobjectthen_enforcedstyle_yield_self_accepts_then_with_safe_navigation_without_a_block"
 source = '''
 obj&.then
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:yield_self"
+EnforcedStyle = "yield_self"

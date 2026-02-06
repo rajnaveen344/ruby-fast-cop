@@ -4,7 +4,401 @@ severity = "convention"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_style_emptycasecondition_given_a_case_statement_with_an_empty_case_when_using_return_in_when_clause_and_assigning_the_return_value_of_case_does_not_register_an_offense"
+name = "rubocopcopstyleemptycasecondition_given_a_case_statement_with_an_empty_case_with_multiple_when_branches_and_an_else_behaves_like_detectcorrect_empty_case_accept_nonempty_case_registers_an_offense_and_autocorrects"
+source = '''
+case
+when 1 == 2
+  foo
+when 1 == 1
+  bar
+else
+  baz
+end
+'''
+corrected = '''
+if 1 == 2
+  foo
+elsif 1 == 1
+  bar
+else
+  baz
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 4
+message = "Do not use empty `case` condition, instead use an `if` expression."
+
+[[tests]]
+name = "rubocopcopstyleemptycasecondition_given_a_case_statement_with_an_empty_case_with_multiple_when_branches_and_an_else_behaves_like_detectcorrect_empty_case_accept_nonempty_case_accepts_the_source_with_case"
+source = '''
+case :a
+when 1 == 2
+  foo
+when 1 == 1
+  bar
+else
+  baz
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleemptycasecondition_given_a_case_statement_with_an_empty_case_with_multiple_when_branches_and_an_else_with_code_comments_behaves_like_detectcorrect_empty_case_accept_nonempty_case_registers_an_offense_and_autocorrects"
+source = '''
+def example
+  # Comment before everything
+  case # first comment
+  # condition a
+  # This is a multi-line comment
+  when 1 == 2
+    foo
+  # condition b
+  when 1 == 1
+    bar
+  # condition c
+  else
+    baz
+  end
+end
+'''
+corrected = '''
+def example
+  # Comment before everything
+  # first comment
+  # condition a
+  # This is a multi-line comment
+  if 1 == 2
+    foo
+  # condition b
+  elsif 1 == 1
+    bar
+  # condition c
+  else
+    baz
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 6
+message = "Do not use empty `case` condition, instead use an `if` expression."
+
+[[tests]]
+name = "rubocopcopstyleemptycasecondition_given_a_case_statement_with_an_empty_case_with_multiple_when_branches_and_an_else_with_code_comments_behaves_like_detectcorrect_empty_case_accept_nonempty_case_accepts_the_source_with_case"
+source = '''
+def example
+  # Comment before everything
+  case :a # first comment
+  # condition a
+  # This is a multi-line comment
+  when 1 == 2
+    foo
+  # condition b
+  when 1 == 1
+    bar
+  # condition c
+  else
+    baz
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleemptycasecondition_given_a_case_statement_with_an_empty_case_with_multiple_when_branches_and_no_else_behaves_like_detectcorrect_empty_case_accept_nonempty_case_registers_an_offense_and_autocorrects"
+source = '''
+case
+when 1 == 2
+  foo
+when 1 == 1
+  bar
+end
+'''
+corrected = '''
+if 1 == 2
+  foo
+elsif 1 == 1
+  bar
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 4
+message = "Do not use empty `case` condition, instead use an `if` expression."
+
+[[tests]]
+name = "rubocopcopstyleemptycasecondition_given_a_case_statement_with_an_empty_case_with_multiple_when_branches_and_no_else_behaves_like_detectcorrect_empty_case_accept_nonempty_case_accepts_the_source_with_case"
+source = '''
+case :a
+when 1 == 2
+  foo
+when 1 == 1
+  bar
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleemptycasecondition_given_a_case_statement_with_an_empty_case_with_a_single_when_branch_and_an_else_behaves_like_detectcorrect_empty_case_accept_nonempty_case_registers_an_offense_and_autocorrects"
+source = '''
+case
+when 1 == 2
+  foo
+else
+  bar
+end
+'''
+corrected = '''
+if 1 == 2
+  foo
+else
+  bar
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 4
+message = "Do not use empty `case` condition, instead use an `if` expression."
+
+[[tests]]
+name = "rubocopcopstyleemptycasecondition_given_a_case_statement_with_an_empty_case_with_a_single_when_branch_and_an_else_behaves_like_detectcorrect_empty_case_accept_nonempty_case_accepts_the_source_with_case"
+source = '''
+case :a
+when 1 == 2
+  foo
+else
+  bar
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleemptycasecondition_given_a_case_statement_with_an_empty_case_with_a_single_when_branch_and_no_else_behaves_like_detectcorrect_empty_case_accept_nonempty_case_registers_an_offense_and_autocorrects"
+source = '''
+case
+when 1 == 2
+  foo
+end
+'''
+corrected = '''
+if 1 == 2
+  foo
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 4
+message = "Do not use empty `case` condition, instead use an `if` expression."
+
+[[tests]]
+name = "rubocopcopstyleemptycasecondition_given_a_case_statement_with_an_empty_case_with_a_single_when_branch_and_no_else_behaves_like_detectcorrect_empty_case_accept_nonempty_case_accepts_the_source_with_case"
+source = '''
+case :a
+when 1 == 2
+  foo
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleemptycasecondition_given_a_case_statement_with_an_empty_case_with_a_when_branch_including_commadelimited_alternatives_behaves_like_detectcorrect_empty_case_accept_nonempty_case_registers_an_offense_and_autocorrects"
+source = '''
+case
+when false
+  foo
+when nil, false, 1
+  bar
+when false, 1
+  baz
+end
+'''
+corrected = '''
+if false
+  foo
+elsif nil || false || 1
+  bar
+elsif false || 1
+  baz
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 4
+message = "Do not use empty `case` condition, instead use an `if` expression."
+
+[[tests]]
+name = "rubocopcopstyleemptycasecondition_given_a_case_statement_with_an_empty_case_with_a_when_branch_including_commadelimited_alternatives_behaves_like_detectcorrect_empty_case_accept_nonempty_case_accepts_the_source_with_case"
+source = '''
+case :a
+when false
+  foo
+when nil, false, 1
+  bar
+when false, 1
+  baz
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleemptycasecondition_given_a_case_statement_with_an_empty_case_with_when_branches_using_then_behaves_like_detectcorrect_empty_case_accept_nonempty_case_registers_an_offense_and_autocorrects"
+source = '''
+case
+when false then foo
+when nil, false, 1 then bar
+when false, 1 then baz
+end
+'''
+corrected = '''
+if false then foo
+elsif nil || false || 1 then bar
+elsif false || 1 then baz
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 4
+message = "Do not use empty `case` condition, instead use an `if` expression."
+
+[[tests]]
+name = "rubocopcopstyleemptycasecondition_given_a_case_statement_with_an_empty_case_with_when_branches_using_then_behaves_like_detectcorrect_empty_case_accept_nonempty_case_accepts_the_source_with_case"
+source = '''
+case :a
+when false then foo
+when nil, false, 1 then bar
+when false, 1 then baz
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleemptycasecondition_given_a_case_statement_with_an_empty_case_with_first_when_branch_including_commadelimited_alternatives_behaves_like_detectcorrect_empty_case_accept_nonempty_case_registers_an_offense_and_autocorrects"
+source = '''
+case
+when my.foo?, my.bar?
+  something
+when my.baz?
+  something_else
+end
+'''
+corrected = '''
+if my.foo? || my.bar?
+  something
+elsif my.baz?
+  something_else
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 4
+message = "Do not use empty `case` condition, instead use an `if` expression."
+
+[[tests]]
+name = "rubocopcopstyleemptycasecondition_given_a_case_statement_with_an_empty_case_with_first_when_branch_including_commadelimited_alternatives_behaves_like_detectcorrect_empty_case_accept_nonempty_case_accepts_the_source_with_case"
+source = '''
+case :a
+when my.foo?, my.bar?
+  something
+when my.baz?
+  something_else
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleemptycasecondition_given_a_case_statement_with_an_empty_case_when_used_as_an_argument_of_a_method_without_comment_behaves_like_detectcorrect_empty_case_accept_nonempty_case_registers_an_offense_and_autocorrects"
+source = '''
+case
+when object.nil?
+  Object.new
+else
+  object
+end
+'''
+corrected = '''
+if object.nil?
+  Object.new
+else
+  object
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 4
+message = "Do not use empty `case` condition, instead use an `if` expression."
+
+[[tests]]
+name = "rubocopcopstyleemptycasecondition_given_a_case_statement_with_an_empty_case_when_used_as_an_argument_of_a_method_without_comment_behaves_like_detectcorrect_empty_case_accept_nonempty_case_accepts_the_source_with_case"
+source = '''
+case :a
+when object.nil?
+  Object.new
+else
+  object
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleemptycasecondition_given_a_case_statement_with_an_empty_case_when_used_as_an_argument_of_a_method_with_comment_behaves_like_detectcorrect_empty_case_accept_nonempty_case_registers_an_offense_and_autocorrects"
+source = '''
+# example.rb
+case
+when object.nil?
+  Object.new
+else
+  object
+end
+'''
+corrected = '''
+# example.rb
+if object.nil?
+  Object.new
+else
+  object
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 4
+message = "Do not use empty `case` condition, instead use an `if` expression."
+
+[[tests]]
+name = "rubocopcopstyleemptycasecondition_given_a_case_statement_with_an_empty_case_when_used_as_an_argument_of_a_method_with_comment_behaves_like_detectcorrect_empty_case_accept_nonempty_case_accepts_the_source_with_case"
+source = '''
+# example.rb
+case :a
+when object.nil?
+  Object.new
+else
+  object
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleemptycasecondition_given_a_case_statement_with_an_empty_case_when_using_return_in_when_clause_and_assigning_the_return_value_of_case_does_not_register_an_offense"
 source = '''
 v = case
     when x.a
@@ -16,7 +410,7 @@ v = case
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_emptycasecondition_given_a_case_statement_with_an_empty_case_does_not_register_an_offense"
+name = "rubocopcopstyleemptycasecondition_given_a_case_statement_with_an_empty_case_when_using_return__if_in_when_clause_and_assigning_the_return_value_of_case_does_not_register_an_offense"
 source = '''
 v = case
     when x.a
@@ -28,7 +422,7 @@ v = case
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_emptycasecondition_given_a_case_statement_with_an_empty_case_when_using_return_in_else_clause_and_assigning_the_return_value_of_case_does_not_register_an_offense"
+name = "rubocopcopstyleemptycasecondition_given_a_case_statement_with_an_empty_case_when_using_return_in_else_clause_and_assigning_the_return_value_of_case_does_not_register_an_offense"
 source = '''
 v = case
     when x.a
@@ -40,7 +434,7 @@ v = case
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_emptycasecondition_given_a_case_statement_with_an_empty_case_does_not_register_an_offense"
+name = "rubocopcopstyleemptycasecondition_given_a_case_statement_with_an_empty_case_when_using_return__if_in_else_clause_and_assigning_the_return_value_of_case_does_not_register_an_offense"
 source = '''
 v = case
     when x.a
@@ -52,7 +446,7 @@ v = case
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_emptycasecondition_given_a_case_statement_with_an_empty_case_when_using_return_before_empty_case_condition_does_not_register_an_offense"
+name = "rubocopcopstyleemptycasecondition_given_a_case_statement_with_an_empty_case_when_using_return_before_empty_case_condition_does_not_register_an_offense"
 source = '''
 return case
        when foo
@@ -64,7 +458,7 @@ return case
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_emptycasecondition_given_a_case_statement_with_an_empty_case_when_using_break_before_empty_case_condition_does_not_register_an_offense"
+name = "rubocopcopstyleemptycasecondition_given_a_case_statement_with_an_empty_case_when_using_break_before_empty_case_condition_does_not_register_an_offense"
 source = '''
 break case
       when foo
@@ -73,11 +467,10 @@ break case
         2
       end
 '''
-ruby_version = ">= 3.2"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_emptycasecondition_given_a_case_statement_with_an_empty_case_when_using_next_before_empty_case_condition_does_not_register_an_offense"
+name = "rubocopcopstyleemptycasecondition_given_a_case_statement_with_an_empty_case_when_using_next_before_empty_case_condition_does_not_register_an_offense"
 source = '''
 next case
      when foo
@@ -86,11 +479,10 @@ next case
        2
      end
 '''
-ruby_version = ">= 3.2"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_emptycasecondition_given_a_case_statement_with_an_empty_case_when_using_method_call_before_empty_case_condition_does_not_register_an_offense"
+name = "rubocopcopstyleemptycasecondition_given_a_case_statement_with_an_empty_case_when_using_method_call_before_empty_case_condition_does_not_register_an_offense"
 source = '''
 do_something case
              when foo
@@ -102,7 +494,7 @@ do_something case
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_emptycasecondition_given_a_case_statement_with_an_empty_case_when_using_safe_navigation_method_call_before_empty_case_condition_does_not_register_an_offense"
+name = "rubocopcopstyleemptycasecondition_given_a_case_statement_with_an_empty_case_when_using_safe_navigation_method_call_before_empty_case_condition_does_not_register_an_offense"
 source = '''
 obj&.do_something case
                   when foo

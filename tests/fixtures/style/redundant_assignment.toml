@@ -4,7 +4,7 @@ severity = "convention"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_style_redundantassignment_reports_an_offense_for_def_ending_with_assignment_and_returning"
+name = "rubocopcopstyleredundantassignment_reports_an_offense_for_def_ending_with_assignment_and_returning"
 source = '''
 def func
   some_preceding_statements
@@ -16,11 +16,9 @@ corrected = '''
 def func
   some_preceding_statements
   something
- #{trailing_whitespace}
+  
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 3
@@ -29,7 +27,68 @@ column_end = 15
 message = "Redundant assignment before returning detected."
 
 [[tests]]
-name = "rubocop_cop_style_redundantassignment_when_inside_begin_end_body_registers_an_offense_and_autocorrects"
+name = "rubocopcopstyleredundantassignment_does_not_register_an_offense_when_ensure_block_present"
+source = '''
+def func
+  1
+  x = 2
+  x
+ensure
+  3
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleredundantassignment_accepts_empty_when_nodes"
+source = '''
+def func
+  case x
+  when y then 1
+  when z # do nothing
+  else
+    3
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleredundantassignment_accepts_empty_in_nodes"
+source = '''
+def func
+  case x
+  in y then 1
+  in z # do nothing
+  else
+    3
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleredundantassignment_accepts_empty_method_body"
+source = '''
+def func
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleredundantassignment_accepts_empty_if_body"
+source = '''
+def func
+  if x
+  elsif y
+  else
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleredundantassignment_when_inside_beginend_body_registers_an_offense_and_autocorrects"
 source = '''
 def func
   some_preceding_statements
@@ -44,12 +103,10 @@ def func
   some_preceding_statements
   begin
     something
-   #{trailing_whitespace}
+    
   end
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 4
@@ -58,7 +115,7 @@ column_end = 17
 message = "Redundant assignment before returning detected."
 
 [[tests]]
-name = "rubocop_cop_style_redundantassignment_when_rescue_blocks_present_registers_an_offense_and_autocorrects_when_inside_function_or_rescue_block"
+name = "rubocopcopstyleredundantassignment_when_rescue_blocks_present_registers_an_offense_and_autocorrects_when_inside_function_or_rescue_block"
 source = '''
 def func
   1
@@ -76,17 +133,15 @@ corrected = '''
 def func
   1
   2
- #{trailing_whitespace}
+  
 rescue SomeException
   3
   4
- #{trailing_whitespace}
+  
 rescue AnotherException
   5
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 3
@@ -101,20 +156,7 @@ column_end = 7
 message = "Redundant assignment before returning detected."
 
 [[tests]]
-name = "rubocop_cop_style_redundantassignment_does_not_register_an_offense_when_ensure_block_present"
-source = '''
-def func
-  1
-  x = 2
-  x
-ensure
-  3
-end
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantassignment_when_inside_an_if_branch_registers_an_offense_and_autocorrects"
+name = "rubocopcopstyleredundantassignment_when_inside_an_ifbranch_registers_an_offense_and_autocorrects"
 source = '''
 def func
   some_preceding_statements
@@ -134,17 +176,15 @@ def func
   some_preceding_statements
   if x
     1
-   #{trailing_whitespace}
+    
   elsif y
     2
   else
     3
-   #{trailing_whitespace}
+    
   end
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 4
@@ -159,7 +199,7 @@ column_end = 9
 message = "Redundant assignment before returning detected."
 
 [[tests]]
-name = "rubocop_cop_style_redundantassignment_when_inside_a_when_branch_registers_an_offense_and_autocorrects"
+name = "rubocopcopstyleredundantassignment_when_inside_a_whenbranch_registers_an_offense_and_autocorrects"
 source = '''
 def func
   some_preceding_statements
@@ -182,18 +222,16 @@ def func
   case x
   when y
     1
-   #{trailing_whitespace}
+    
   when z
     2
   when q
   else
     3
-   #{trailing_whitespace}
+    
   end
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 5
@@ -208,21 +246,7 @@ column_end = 11
 message = "Redundant assignment before returning detected."
 
 [[tests]]
-name = "rubocop_cop_style_redundantassignment_accepts_empty_when_nodes"
-source = '''
-def func
-  case x
-  when y then 1
-  when z # do nothing
-  else
-    3
-  end
-end
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantassignment_when_inside_an_in_branch_registers_an_offense_and_autocorrects"
+name = "rubocopcopstyleredundantassignment_when_inside_an_in_branch_registers_an_offense_and_autocorrects"
 source = '''
 def func
   some_preceding_statements
@@ -245,18 +269,16 @@ def func
   case x
   in y
     1
-   #{trailing_whitespace}
+    
   in z
     2
   in q
   else
     3
-   #{trailing_whitespace}
+    
   end
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 5
@@ -269,37 +291,3 @@ line = 11
 column_start = 4
 column_end = 11
 message = "Redundant assignment before returning detected."
-
-[[tests]]
-name = "rubocop_cop_style_redundantassignment_accepts_empty_in_nodes"
-source = '''
-def func
-  case x
-  in y then 1
-  in z # do nothing
-  else
-    3
-  end
-end
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantassignment_accepts_empty_method_body"
-source = '''
-def func
-end
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantassignment_accepts_empty_if_body"
-source = '''
-def func
-  if x
-  elsif y
-  else
-  end
-end
-'''
-offenses = []

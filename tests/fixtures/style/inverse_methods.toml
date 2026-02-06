@@ -4,7 +4,7 @@ severity = "convention"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_style_inversemethods_registers_an_offense_for_calling_none_with_a_symbol_proc"
+name = "rubocopcopstyleinversemethods_registers_an_offense_for_calling_none_with_a_symbol_proc"
 source = '''
 !foo.none?(&:even?)
 '''
@@ -19,14 +19,14 @@ column_end = 19
 message = "Use `any?` instead of inverting `none?`."
 
 [[tests]]
-name = "rubocop_cop_style_inversemethods_does_not_register_an_offense_for_safe_navigation_calling_none_with_a_symbol_proc"
+name = "rubocopcopstyleinversemethods_does_not_register_an_offense_for_safe_navigation_calling_none_with_a_symbol_proc"
 source = '''
 !foo&.none?(&:even?)
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_inversemethods_registers_an_offense_for_calling_none_with_a_block"
+name = "rubocopcopstyleinversemethods_registers_an_offense_for_calling_none_with_a_block"
 source = '''
 !foo.none? { |f| f.even? }
 '''
@@ -41,46 +41,14 @@ column_end = 26
 message = "Use `any?` instead of inverting `none?`."
 
 [[tests]]
-name = "rubocop_cop_style_inversemethods_does_not_register_an_offense_for_safe_navigation_calling_none_with_a_block"
+name = "rubocopcopstyleinversemethods_does_not_register_an_offense_for_safe_navigation_calling_none_with_a_block"
 source = '''
 !foo&.none? { |f| f.even? }
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_inversemethods_ruby_2_7_registers_an_offense_for_calling_none_with_a_numblock"
-source = '''
-!foo.none? { _1.even? }
-'''
-corrected = '''
-foo.any? { _1.even? }
-'''
-ruby_version = ">= 2.7"
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 23
-message = "Use `any?` instead of inverting `none?`."
-
-[[tests]]
-name = "rubocop_cop_style_inversemethods_ruby_3_4_registers_an_offense_for_calling_none_with_an_itblock"
-source = '''
-!foo.none? { it.even? }
-'''
-corrected = '''
-foo.any? { it.even? }
-'''
-ruby_version = ">= 3.4"
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 23
-message = "Use `any?` instead of inverting `none?`."
-
-[[tests]]
-name = "rubocop_cop_style_inversemethods_registers_an_offense_for_calling_any_inside_parens"
+name = "rubocopcopstyleinversemethods_registers_an_offense_for_calling_any_inside_parens"
 source = '''
 !(foo.any? &:working?)
 '''
@@ -95,35 +63,35 @@ column_end = 22
 message = "Use `none?` instead of inverting `any?`."
 
 [[tests]]
-name = "rubocop_cop_style_inversemethods_does_not_register_an_offense_for_safe_navigation_calling_any_inside_parens"
+name = "rubocopcopstyleinversemethods_does_not_register_an_offense_for_safe_navigation_calling_any_inside_parens"
 source = '''
 !(foo&.any? &:working?)
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_inversemethods_allows_a_method_call_without_a_not"
+name = "rubocopcopstyleinversemethods_allows_a_method_call_without_a_not"
 source = '''
 foo.none?
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_inversemethods_allows_an_inverse_method_when_double_negation_is_used"
+name = "rubocopcopstyleinversemethods_allows_an_inverse_method_when_double_negation_is_used"
 source = '''
 !!(string =~ /^\w+$/)
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_inversemethods_allows_an_inverse_method_with_a_block_when_double_negation_is_used"
+name = "rubocopcopstyleinversemethods_allows_an_inverse_method_with_a_block_when_double_negation_is_used"
 source = '''
 !!foo.reject { |e| !e }
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_inversemethods_allows_an_inverse_method_in_a_block_with_next"
+name = "rubocopcopstyleinversemethods_allows_an_inverse_method_in_a_block_with_next"
 source = '''
 class TestClass
   def test_method
@@ -138,190 +106,349 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_inversemethods"
+name = "rubocopcopstyleinversemethods_registers_an_offense_for_fooany"
 source = '''
-!%{variable}.none?
+!foo.any?
 '''
 corrected = '''
-#{variable}.any?
+foo.none?
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 0
-column_end = 18
+column_end = 9
+message = "Use `none?` instead of inverting `any?`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_registers_an_offense_for_fooeven"
+source = '''
+!foo.even?
+'''
+corrected = '''
+foo.odd?
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 10
+message = "Use `odd?` instead of inverting `even?`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_registers_an_offense_for_foopresent"
+source = '''
+!foo.present?
+'''
+corrected = '''
+foo.blank?
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 13
+message = "Use `blank?` instead of inverting `present?`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_registers_an_offense_for_fooinclude"
+source = '''
+!foo.include?
+'''
+corrected = '''
+foo.exclude?
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 13
+message = "Use `exclude?` instead of inverting `include?`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_registers_an_offense_for_foonone"
+source = '''
+!foo.none?
+'''
+corrected = '''
+foo.any?
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 10
 message = "Use `any?` instead of inverting `none?`."
 
 [[tests]]
-name = "rubocop_cop_style_inversemethods"
+name = "rubocopcopstyleinversemethods_registers_an_offense_for_fooodd"
 source = '''
-not %{variable}.none?
+!foo.odd?
 '''
 corrected = '''
-#{variable}.any?
+foo.even?
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 0
-column_end = 21
-message = "Use `any?` instead of inverting `none?`."
+column_end = 9
+message = "Use `even?` instead of inverting `odd?`."
 
 [[tests]]
-name = "rubocop_cop_style_inversemethods_all_variable_types_foo"
+name = "rubocopcopstyleinversemethods_registers_an_offense_for_fooblank"
 source = '''
-foo
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_inversemethods_all_variable_types_foo"
-source = '''
-$foo
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_inversemethods_all_variable_types_foo"
-source = '''
-@foo
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_inversemethods_all_variable_types_foo"
-source = '''
-@@foo
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_inversemethods_all_variable_types_foo"
-source = '''
-FOO
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_inversemethods_all_variable_types_foo_bar"
-source = '''
-FOO::BAR
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_inversemethods_all_variable_types_foo_bar"
-source = '''
-foo["bar"]
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_inversemethods_all_variable_types_foo_bar"
-source = '''
-foo.bar
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_inversemethods"
-source = '''
-!foo.%{method}
+!foo.blank?
 '''
 corrected = '''
-foo.#{inverse}
+foo.present?
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 0
-column_end = 14
-message = "Use `#{inverse}` instead of inverting `#{method}`."
+column_end = 11
+message = "Use `present?` instead of inverting `blank?`."
 
 [[tests]]
-name = "rubocop_cop_style_inversemethods"
+name = "rubocopcopstyleinversemethods_registers_an_offense_for_fooexclude"
 source = '''
-!(foo %{method} bar)
+!foo.exclude?
 '''
 corrected = '''
-foo #{inverse} bar
+foo.include?
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 0
-column_end = 20
-message = "Use `#{inverse}` instead of inverting `#{method}`."
+column_end = 13
+message = "Use `include?` instead of inverting `exclude?`."
 
 [[tests]]
-name = "rubocop_cop_style_inversemethods"
+name = "rubocopcopstyleinversemethods_registers_an_offense_for_foo__bar"
 source = '''
-not (foo %{method} bar)
+!(foo == bar)
 '''
 corrected = '''
-foo #{inverse} bar
+foo != bar
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 0
-column_end = 23
-message = "Use `#{inverse}` instead of inverting `#{method}`."
+column_end = 13
+message = "Use `!=` instead of inverting `==`."
 
 [[tests]]
-name = "rubocop_cop_style_inversemethods_allows_using_any_method_with_safe_navigation_operator"
+name = "rubocopcopstyleinversemethods_registers_an_offense_for_not_foo__bar"
+source = '''
+not (foo == bar)
+'''
+corrected = '''
+foo != bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 16
+message = "Use `!=` instead of inverting `==`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_registers_an_offense_for_foo__bar_2"
+source = '''
+!(foo != bar)
+'''
+corrected = '''
+foo == bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 13
+message = "Use `==` instead of inverting `!=`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_registers_an_offense_for_not_foo__bar_2"
+source = '''
+not (foo != bar)
+'''
+corrected = '''
+foo == bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 16
+message = "Use `==` instead of inverting `!=`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_registers_an_offense_for_foo__bar_3"
+source = '''
+!(foo =~ bar)
+'''
+corrected = '''
+foo !~ bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 13
+message = "Use `!~` instead of inverting `=~`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_registers_an_offense_for_not_foo__bar_3"
+source = '''
+not (foo =~ bar)
+'''
+corrected = '''
+foo !~ bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 16
+message = "Use `!~` instead of inverting `=~`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_registers_an_offense_for_foo__bar_4"
+source = '''
+!(foo !~ bar)
+'''
+corrected = '''
+foo =~ bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 13
+message = "Use `=~` instead of inverting `!~`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_registers_an_offense_for_not_foo__bar_4"
+source = '''
+not (foo !~ bar)
+'''
+corrected = '''
+foo =~ bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 16
+message = "Use `=~` instead of inverting `!~`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_registers_an_offense_for_foo__bar_5"
+source = '''
+!(foo < bar)
+'''
+corrected = '''
+foo >= bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 12
+message = "Use `>=` instead of inverting `<`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_registers_an_offense_for_not_foo__bar_5"
+source = '''
+not (foo < bar)
+'''
+corrected = '''
+foo >= bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 15
+message = "Use `>=` instead of inverting `<`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_registers_an_offense_for_foo__bar_6"
+source = '''
+!(foo > bar)
+'''
+corrected = '''
+foo <= bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 12
+message = "Use `<=` instead of inverting `>`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_registers_an_offense_for_not_foo__bar_6"
+source = '''
+not (foo > bar)
+'''
+corrected = '''
+foo <= bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 15
+message = "Use `<=` instead of inverting `>`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_allows_using_any_method_with_safe_navigation_operator"
 source = '''
 !nullable&.any?(&:odd)
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_inversemethods_allows_using_none_method_with_safe_navigation_operator"
+name = "rubocopcopstyleinversemethods_allows_using_none_method_with_safe_navigation_operator"
 source = '''
 !nullable&.none?(&:odd)
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_inversemethods_allows_comparing_for_relational_comparison_operator_with_safe_navigation_operator"
+name = "rubocopcopstyleinversemethods_allows_comparing_for_relational_comparison_operator__with_safe_navigation_operator"
 source = '''
 !nullable&.<(0)
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_inversemethods_allows_comparing_for_relational_comparison_operator_with_safe_navigation_operator"
+name = "rubocopcopstyleinversemethods_allows_comparing_for_relational_comparison_operator__with_safe_navigation_operator_2"
 source = '''
 !nullable&.<=(0)
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_inversemethods_allows_comparing_for_relational_comparison_operator_with_safe_navigation_operator"
+name = "rubocopcopstyleinversemethods_allows_comparing_for_relational_comparison_operator__with_safe_navigation_operator_3"
 source = '''
 !nullable&.>(0)
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_inversemethods_allows_comparing_for_relational_comparison_operator_with_safe_navigation_operator"
+name = "rubocopcopstyleinversemethods_allows_comparing_for_relational_comparison_operator__with_safe_navigation_operator_4"
 source = '''
 !nullable&.>=(0)
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_inversemethods_allows_comparing_camel_case_constants_on_the_right"
+name = "rubocopcopstyleinversemethods_allows_comparing_camel_case_constants_on_the_right"
 source = '''
 klass = self.class
 !(klass < BaseClass)
@@ -329,7 +456,7 @@ klass = self.class
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_inversemethods_allows_comparing_camel_case_constants_on_the_left"
+name = "rubocopcopstyleinversemethods_allows_comparing_camel_case_constants_on_the_left"
 source = '''
 klass = self.class
 !(BaseClass < klass)
@@ -337,7 +464,7 @@ klass = self.class
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_inversemethods_registers_an_offense_for_comparing_snake_case_constants_on_the_right"
+name = "rubocopcopstyleinversemethods_registers_an_offense_for_comparing_snake_case_constants_on_the_right"
 source = '''
 klass = self.class
 !(klass < FOO_BAR)
@@ -354,7 +481,7 @@ column_end = 18
 message = "Use `>=` instead of inverting `<`."
 
 [[tests]]
-name = "rubocop_cop_style_inversemethods_registers_an_offense_for_comparing_snake_case_constants_on_the_left"
+name = "rubocopcopstyleinversemethods_registers_an_offense_for_comparing_snake_case_constants_on_the_left"
 source = '''
 klass = self.class
 !(FOO_BAR < klass)
@@ -371,246 +498,1147 @@ column_end = 18
 message = "Use `>=` instead of inverting `<`."
 
 [[tests]]
-name = "rubocop_cop_style_inversemethods_inverse_blocks"
+name = "rubocopcopstyleinversemethods_ruby_27_registers_an_offense_for_calling_none_with_a_numblock"
 source = '''
-foo.%{method} { |e| !e }
+!foo.none? { _1.even? }
 '''
 corrected = '''
-foo.#{inverse} { |e| e }
+foo.any? { _1.even? }
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 0
-column_end = 24
-message = "Use `#{inverse}` instead of inverting `#{method}`."
+column_end = 23
+message = "Use `any?` instead of inverting `none?`."
 
 [[tests]]
-name = "rubocop_cop_style_inversemethods_inverse_blocks"
+name = "rubocopcopstyleinversemethods_ruby_34_registers_an_offense_for_calling_none_with_an_itblock"
 source = '''
-foo&.%{method} { |e| !e }
+!foo.none? { it.even? }
 '''
 corrected = '''
-foo&.#{inverse} { |e| e }
+foo.any? { it.even? }
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 0
-column_end = 25
-message = "Use `#{inverse}` instead of inverting `#{method}`."
+column_end = 23
+message = "Use `any?` instead of inverting `none?`."
 
 [[tests]]
-name = "rubocop_cop_style_inversemethods_inverse_blocks_registers_an_offense_for_a_multiline_method_call_where_the_last_method_is_inverted"
+name = "rubocopcopstyleinversemethods_behaves_like_all_variable_types_registers_an_offense_for_calling_foonone"
 source = '''
-foo.%{method} do |e|
-  something
-  !e.bar
-end
+!foo.none?
 '''
 corrected = '''
-foo.#{inverse} do |e|
-  something
-  e.bar
-end
+foo.any?
 '''
-interpolated = true
-verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 10
+message = "Use `any?` instead of inverting `none?`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_behaves_like_all_variable_types_registers_an_offense_for_calling_not_foonone"
+source = '''
+not foo.none?
+'''
+corrected = '''
+foo.any?
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 13
+message = "Use `any?` instead of inverting `none?`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_behaves_like_all_variable_types_registers_an_offense_for_calling_foonone_2"
+source = '''
+!$foo.none?
+'''
+corrected = '''
+$foo.any?
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 11
+message = "Use `any?` instead of inverting `none?`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_behaves_like_all_variable_types_registers_an_offense_for_calling_not_foonone_2"
+source = '''
+not $foo.none?
+'''
+corrected = '''
+$foo.any?
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 14
+message = "Use `any?` instead of inverting `none?`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_behaves_like_all_variable_types_registers_an_offense_for_calling_foonone_3"
+source = '''
+!@foo.none?
+'''
+corrected = '''
+@foo.any?
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 11
+message = "Use `any?` instead of inverting `none?`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_behaves_like_all_variable_types_registers_an_offense_for_calling_not_foonone_3"
+source = '''
+not @foo.none?
+'''
+corrected = '''
+@foo.any?
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 14
+message = "Use `any?` instead of inverting `none?`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_behaves_like_all_variable_types_registers_an_offense_for_calling_foonone_4"
+source = '''
+!@@foo.none?
+'''
+corrected = '''
+@@foo.any?
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 12
+message = "Use `any?` instead of inverting `none?`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_behaves_like_all_variable_types_registers_an_offense_for_calling_not_foonone_4"
+source = '''
+not @@foo.none?
+'''
+corrected = '''
+@@foo.any?
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 15
+message = "Use `any?` instead of inverting `none?`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_behaves_like_all_variable_types_registers_an_offense_for_calling_foonone_5"
+source = '''
+!FOO.none?
+'''
+corrected = '''
+FOO.any?
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 10
+message = "Use `any?` instead of inverting `none?`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_behaves_like_all_variable_types_registers_an_offense_for_calling_not_foonone_5"
+source = '''
+not FOO.none?
+'''
+corrected = '''
+FOO.any?
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 13
+message = "Use `any?` instead of inverting `none?`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_behaves_like_all_variable_types_registers_an_offense_for_calling_foobarnone"
+source = '''
+!FOO::BAR.none?
+'''
+corrected = '''
+FOO::BAR.any?
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 15
+message = "Use `any?` instead of inverting `none?`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_behaves_like_all_variable_types_registers_an_offense_for_calling_not_foobarnone"
+source = '''
+not FOO::BAR.none?
+'''
+corrected = '''
+FOO::BAR.any?
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 18
+message = "Use `any?` instead of inverting `none?`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_behaves_like_all_variable_types_registers_an_offense_for_calling_foobarnone_2"
+source = '''
+!foo["bar"].none?
+'''
+corrected = '''
+foo["bar"].any?
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 17
+message = "Use `any?` instead of inverting `none?`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_behaves_like_all_variable_types_registers_an_offense_for_calling_not_foobarnone_2"
+source = '''
+not foo["bar"].none?
+'''
+corrected = '''
+foo["bar"].any?
+'''
 
 [[tests.offenses]]
 line = 1
 column_start = 0
 column_end = 20
-message = "Use `#{inverse}` instead of inverting `#{method}`."
+message = "Use `any?` instead of inverting `none?`."
 
 [[tests]]
-name = "rubocop_cop_style_inversemethods_inverse_blocks_registers_an_offense_for_a_multiline_safe_navigation_method_call_where_the_last_method_is_inverted"
+name = "rubocopcopstyleinversemethods_behaves_like_all_variable_types_registers_an_offense_for_calling_foobarnone_3"
 source = '''
-foo&.%{method} do |e|
-  something
-  e&.bar&.!
-end
+!foo.bar.none?
 '''
 corrected = '''
-foo&.#{inverse} do |e|
-  something
-  e&.bar
-end
+foo.bar.any?
 '''
-interpolated = true
-verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 14
+message = "Use `any?` instead of inverting `none?`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_behaves_like_all_variable_types_registers_an_offense_for_calling_not_foobarnone_3"
+source = '''
+not foo.bar.none?
+'''
+corrected = '''
+foo.bar.any?
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 17
+message = "Use `any?` instead of inverting `none?`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_inverse_blocks_registers_an_offense_for_fooselect__e_e_"
+source = '''
+foo.select { |e| !e }
+'''
+corrected = '''
+foo.reject { |e| e }
+'''
 
 [[tests.offenses]]
 line = 1
 column_start = 0
 column_end = 21
-message = "Use `#{inverse}` instead of inverting `#{method}`."
+message = "Use `reject` instead of inverting `select`."
 
 [[tests]]
-name = "rubocop_cop_style_inversemethods_inverse_blocks_registers_an_offense_for_an_inverted_equality_block"
+name = "rubocopcopstyleinversemethods_inverse_blocks_registers_an_offense_for_fooselect__e_e__2"
 source = '''
-foo.%{method} { |e| e != 2 }
+foo&.select { |e| !e }
 '''
 corrected = '''
-foo.#{inverse} { |e| e == 2 }
+foo&.reject { |e| e }
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 0
-column_end = 28
-message = "Use `#{inverse}` instead of inverting `#{method}`."
+column_end = 22
+message = "Use `reject` instead of inverting `select`."
 
 [[tests]]
-name = "rubocop_cop_style_inversemethods_inverse_blocks_registers_an_offense_for_a_multiline_inverted_equality_block"
+name = "rubocopcopstyleinversemethods_inverse_blocks_registers_an_offense_for_a_multiline_method_call_where_the_last_method_is_inverted"
 source = '''
-foo.%{method} do |e|
+foo.select do |e|
+  something
+  !e.bar
+end
+'''
+corrected = '''
+foo.reject do |e|
+  something
+  e.bar
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 17
+message = "Use `reject` instead of inverting `select`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_inverse_blocks_registers_an_offense_for_a_multiline_safe_navigation_method_call_where_the_last_method_is_inverted"
+source = '''
+foo&.select do |e|
+  something
+  e&.bar&.!
+end
+'''
+corrected = '''
+foo&.reject do |e|
+  something
+  e&.bar
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 18
+message = "Use `reject` instead of inverting `select`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_inverse_blocks_registers_an_offense_for_an_inverted_equality_block"
+source = '''
+foo.select { |e| e != 2 }
+'''
+corrected = '''
+foo.reject { |e| e == 2 }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 25
+message = "Use `reject` instead of inverting `select`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_inverse_blocks_registers_an_offense_for_a_multiline_inverted_equality_block"
+source = '''
+foo.select do |e|
   something
   something_else
   e != 2
 end
 '''
 corrected = '''
-foo.#{inverse} do |e|
+foo.reject do |e|
   something
   something_else
   e == 2
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 0
-column_end = 20
-message = "Use `#{inverse}` instead of inverting `#{method}`."
+column_end = 17
+message = "Use `reject` instead of inverting `select`."
 
 [[tests]]
-name = "rubocop_cop_style_inversemethods_inverse_blocks_registers_a_single_offense_for_nested_inverse_method_calls"
+name = "rubocopcopstyleinversemethods_inverse_blocks_registers_a_single_offense_for_nested_inverse_method_calls"
 source = '''
-y.%{method} { |key, _value| !(key =~ /c\d/) }
+y.select { |key, _value| !(key =~ /c\d/) }
 '''
 corrected = '''
-y.#{inverse} { |key, _value| (key =~ /c\d/) }
+y.reject { |key, _value| (key =~ /c\d/) }
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 0
-column_end = 45
-message = "Use `#{inverse}` instead of inverting `#{method}`."
+column_end = 42
+message = "Use `reject` instead of inverting `select`."
 
 [[tests]]
-name = "rubocop_cop_style_inversemethods_inverse_blocks_corrects_an_inverted_method_call"
+name = "rubocopcopstyleinversemethods_inverse_blocks_corrects_an_inverted_method_call"
 source = '''
-foo.%{method} { |e| !e.bar? }
+foo.select { |e| !e.bar? }
 '''
 corrected = '''
-foo.#{inverse} { |e| e.bar? }
+foo.reject { |e| e.bar? }
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 0
-column_end = 29
-message = "Use `#{inverse}` instead of inverting `#{method}`."
+column_end = 26
+message = "Use `reject` instead of inverting `select`."
 
 [[tests]]
-name = "rubocop_cop_style_inversemethods_inverse_blocks_corrects_an_inverted_method_call_when_using_basicobject"
+name = "rubocopcopstyleinversemethods_inverse_blocks_corrects_an_inverted_method_call_when_using_basicobject"
 source = '''
-foo.%{method} { |e| e.bar?.! }
+foo.select { |e| e.bar?.! }
 '''
 corrected = '''
-foo.#{inverse} { |e| e.bar? }
+foo.reject { |e| e.bar? }
 '''
-interpolated = true
-verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 27
+message = "Use `reject` instead of inverting `select`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_inverse_blocks_corrects_an_inverted_safe_navigation_method_call_when_using_basicobject"
+source = '''
+foo&.select { |e| e&.bar?&.! }
+'''
+corrected = '''
+foo&.reject { |e| e&.bar? }
+'''
 
 [[tests.offenses]]
 line = 1
 column_start = 0
 column_end = 30
-message = "Use `#{inverse}` instead of inverting `#{method}`."
+message = "Use `reject` instead of inverting `select`."
 
 [[tests]]
-name = "rubocop_cop_style_inversemethods_inverse_blocks_corrects_an_inverted_safe_navigation_method_call_when_using_basicobject"
+name = "rubocopcopstyleinversemethods_inverse_blocks_corrects_an_inverted_method_call_when_using_basicobject_with_spaces_before_the_method_call"
 source = '''
-foo&.%{method} { |e| e&.bar?&.! }
+foo.select { |e| e.bar?.  ! }
 '''
 corrected = '''
-foo&.#{inverse} { |e| e&.bar? }
+foo.reject { |e| e.bar? }
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 0
-column_end = 33
-message = "Use `#{inverse}` instead of inverting `#{method}`."
+column_end = 29
+message = "Use `reject` instead of inverting `select`."
 
 [[tests]]
-name = "rubocop_cop_style_inversemethods_inverse_blocks_corrects_an_inverted_method_call_when_using_basicobject_with_spaces_before_the_method_call"
+name = "rubocopcopstyleinversemethods_inverse_blocks_corrects_a_complex_inverted_method_call"
 source = '''
-foo.%{method} { |e| e.bar?.  ! }
+puts 1 if !foo.select { |e| !e.bar? }
 '''
 corrected = '''
-foo.#{inverse} { |e| e.bar? }
+puts 1 if !foo.reject { |e| e.bar? }
 '''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 32
-message = "Use `#{inverse}` instead of inverting `#{method}`."
-
-[[tests]]
-name = "rubocop_cop_style_inversemethods_inverse_blocks_corrects_a_complex_inverted_method_call"
-source = '''
-puts 1 if !foo.%{method} { |e| !e.bar? }
-'''
-corrected = '''
-puts 1 if !foo.#{inverse} { |e| e.bar? }
-'''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 11
-column_end = 40
-message = "Use `#{inverse}` instead of inverting `#{method}`."
+column_end = 37
+message = "Use `reject` instead of inverting `select`."
 
 [[tests]]
-name = "rubocop_cop_style_inversemethods_inverse_blocks_corrects_an_inverted_do_end_method_call"
+name = "rubocopcopstyleinversemethods_inverse_blocks_corrects_an_inverted_do_end_method_call"
 source = '''
-foo.%{method} do |e|
+foo.select do |e|
   !e.bar
 end
 '''
 corrected = '''
-foo.#{inverse} do |e|
+foo.reject do |e|
   e.bar
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 0
-column_end = 20
-message = "Use `#{inverse}` instead of inverting `#{method}`."
+column_end = 17
+message = "Use `reject` instead of inverting `select`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_inverse_blocks_registers_an_offense_for_fooreject__e_e_"
+source = '''
+foo.reject { |e| !e }
+'''
+corrected = '''
+foo.select { |e| e }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 21
+message = "Use `select` instead of inverting `reject`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_inverse_blocks_registers_an_offense_for_fooreject__e_e__2"
+source = '''
+foo&.reject { |e| !e }
+'''
+corrected = '''
+foo&.select { |e| e }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 22
+message = "Use `select` instead of inverting `reject`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_inverse_blocks_registers_an_offense_for_a_multiline_method_call_where_the_last_method_is_inverted_2"
+source = '''
+foo.reject do |e|
+  something
+  !e.bar
+end
+'''
+corrected = '''
+foo.select do |e|
+  something
+  e.bar
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 17
+message = "Use `select` instead of inverting `reject`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_inverse_blocks_registers_an_offense_for_a_multiline_safe_navigation_method_call_where_the_last_method_is_inverted_2"
+source = '''
+foo&.reject do |e|
+  something
+  e&.bar&.!
+end
+'''
+corrected = '''
+foo&.select do |e|
+  something
+  e&.bar
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 18
+message = "Use `select` instead of inverting `reject`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_inverse_blocks_registers_an_offense_for_an_inverted_equality_block_2"
+source = '''
+foo.reject { |e| e != 2 }
+'''
+corrected = '''
+foo.select { |e| e == 2 }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 25
+message = "Use `select` instead of inverting `reject`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_inverse_blocks_registers_an_offense_for_a_multiline_inverted_equality_block_2"
+source = '''
+foo.reject do |e|
+  something
+  something_else
+  e != 2
+end
+'''
+corrected = '''
+foo.select do |e|
+  something
+  something_else
+  e == 2
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 17
+message = "Use `select` instead of inverting `reject`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_inverse_blocks_registers_a_single_offense_for_nested_inverse_method_calls_2"
+source = '''
+y.reject { |key, _value| !(key =~ /c\d/) }
+'''
+corrected = '''
+y.select { |key, _value| (key =~ /c\d/) }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 42
+message = "Use `select` instead of inverting `reject`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_inverse_blocks_corrects_an_inverted_method_call_2"
+source = '''
+foo.reject { |e| !e.bar? }
+'''
+corrected = '''
+foo.select { |e| e.bar? }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 26
+message = "Use `select` instead of inverting `reject`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_inverse_blocks_corrects_an_inverted_method_call_when_using_basicobject_2"
+source = '''
+foo.reject { |e| e.bar?.! }
+'''
+corrected = '''
+foo.select { |e| e.bar? }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 27
+message = "Use `select` instead of inverting `reject`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_inverse_blocks_corrects_an_inverted_safe_navigation_method_call_when_using_basicobject_2"
+source = '''
+foo&.reject { |e| e&.bar?&.! }
+'''
+corrected = '''
+foo&.select { |e| e&.bar? }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 30
+message = "Use `select` instead of inverting `reject`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_inverse_blocks_corrects_an_inverted_method_call_when_using_basicobject_with_spaces_before_the_method_call_2"
+source = '''
+foo.reject { |e| e.bar?.  ! }
+'''
+corrected = '''
+foo.select { |e| e.bar? }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 29
+message = "Use `select` instead of inverting `reject`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_inverse_blocks_corrects_a_complex_inverted_method_call_2"
+source = '''
+puts 1 if !foo.reject { |e| !e.bar? }
+'''
+corrected = '''
+puts 1 if !foo.select { |e| e.bar? }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 37
+message = "Use `select` instead of inverting `reject`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_inverse_blocks_corrects_an_inverted_do_end_method_call_2"
+source = '''
+foo.reject do |e|
+  !e.bar
+end
+'''
+corrected = '''
+foo.select do |e|
+  e.bar
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 17
+message = "Use `select` instead of inverting `reject`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_inverse_blocks_registers_an_offense_for_fooselect__e_e__3"
+source = '''
+foo.select! { |e| !e }
+'''
+corrected = '''
+foo.reject! { |e| e }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 22
+message = "Use `reject!` instead of inverting `select!`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_inverse_blocks_registers_an_offense_for_fooselect__e_e__4"
+source = '''
+foo&.select! { |e| !e }
+'''
+corrected = '''
+foo&.reject! { |e| e }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 23
+message = "Use `reject!` instead of inverting `select!`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_inverse_blocks_registers_an_offense_for_a_multiline_method_call_where_the_last_method_is_inverted_3"
+source = '''
+foo.select! do |e|
+  something
+  !e.bar
+end
+'''
+corrected = '''
+foo.reject! do |e|
+  something
+  e.bar
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 18
+message = "Use `reject!` instead of inverting `select!`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_inverse_blocks_registers_an_offense_for_a_multiline_safe_navigation_method_call_where_the_last_method_is_inverted_3"
+source = '''
+foo&.select! do |e|
+  something
+  e&.bar&.!
+end
+'''
+corrected = '''
+foo&.reject! do |e|
+  something
+  e&.bar
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 19
+message = "Use `reject!` instead of inverting `select!`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_inverse_blocks_registers_an_offense_for_an_inverted_equality_block_3"
+source = '''
+foo.select! { |e| e != 2 }
+'''
+corrected = '''
+foo.reject! { |e| e == 2 }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 26
+message = "Use `reject!` instead of inverting `select!`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_inverse_blocks_registers_an_offense_for_a_multiline_inverted_equality_block_3"
+source = '''
+foo.select! do |e|
+  something
+  something_else
+  e != 2
+end
+'''
+corrected = '''
+foo.reject! do |e|
+  something
+  something_else
+  e == 2
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 18
+message = "Use `reject!` instead of inverting `select!`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_inverse_blocks_registers_a_single_offense_for_nested_inverse_method_calls_3"
+source = '''
+y.select! { |key, _value| !(key =~ /c\d/) }
+'''
+corrected = '''
+y.reject! { |key, _value| (key =~ /c\d/) }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 43
+message = "Use `reject!` instead of inverting `select!`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_inverse_blocks_corrects_an_inverted_method_call_3"
+source = '''
+foo.select! { |e| !e.bar? }
+'''
+corrected = '''
+foo.reject! { |e| e.bar? }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 27
+message = "Use `reject!` instead of inverting `select!`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_inverse_blocks_corrects_an_inverted_method_call_when_using_basicobject_3"
+source = '''
+foo.select! { |e| e.bar?.! }
+'''
+corrected = '''
+foo.reject! { |e| e.bar? }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 28
+message = "Use `reject!` instead of inverting `select!`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_inverse_blocks_corrects_an_inverted_safe_navigation_method_call_when_using_basicobject_3"
+source = '''
+foo&.select! { |e| e&.bar?&.! }
+'''
+corrected = '''
+foo&.reject! { |e| e&.bar? }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 31
+message = "Use `reject!` instead of inverting `select!`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_inverse_blocks_corrects_an_inverted_method_call_when_using_basicobject_with_spaces_before_the_method_call_3"
+source = '''
+foo.select! { |e| e.bar?.  ! }
+'''
+corrected = '''
+foo.reject! { |e| e.bar? }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 30
+message = "Use `reject!` instead of inverting `select!`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_inverse_blocks_corrects_a_complex_inverted_method_call_3"
+source = '''
+puts 1 if !foo.select! { |e| !e.bar? }
+'''
+corrected = '''
+puts 1 if !foo.reject! { |e| e.bar? }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 38
+message = "Use `reject!` instead of inverting `select!`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_inverse_blocks_corrects_an_inverted_do_end_method_call_3"
+source = '''
+foo.select! do |e|
+  !e.bar
+end
+'''
+corrected = '''
+foo.reject! do |e|
+  e.bar
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 18
+message = "Use `reject!` instead of inverting `select!`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_inverse_blocks_registers_an_offense_for_fooreject__e_e__3"
+source = '''
+foo.reject! { |e| !e }
+'''
+corrected = '''
+foo.select! { |e| e }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 22
+message = "Use `select!` instead of inverting `reject!`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_inverse_blocks_registers_an_offense_for_fooreject__e_e__4"
+source = '''
+foo&.reject! { |e| !e }
+'''
+corrected = '''
+foo&.select! { |e| e }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 23
+message = "Use `select!` instead of inverting `reject!`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_inverse_blocks_registers_an_offense_for_a_multiline_method_call_where_the_last_method_is_inverted_4"
+source = '''
+foo.reject! do |e|
+  something
+  !e.bar
+end
+'''
+corrected = '''
+foo.select! do |e|
+  something
+  e.bar
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 18
+message = "Use `select!` instead of inverting `reject!`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_inverse_blocks_registers_an_offense_for_a_multiline_safe_navigation_method_call_where_the_last_method_is_inverted_4"
+source = '''
+foo&.reject! do |e|
+  something
+  e&.bar&.!
+end
+'''
+corrected = '''
+foo&.select! do |e|
+  something
+  e&.bar
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 19
+message = "Use `select!` instead of inverting `reject!`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_inverse_blocks_registers_an_offense_for_an_inverted_equality_block_4"
+source = '''
+foo.reject! { |e| e != 2 }
+'''
+corrected = '''
+foo.select! { |e| e == 2 }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 26
+message = "Use `select!` instead of inverting `reject!`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_inverse_blocks_registers_an_offense_for_a_multiline_inverted_equality_block_4"
+source = '''
+foo.reject! do |e|
+  something
+  something_else
+  e != 2
+end
+'''
+corrected = '''
+foo.select! do |e|
+  something
+  something_else
+  e == 2
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 18
+message = "Use `select!` instead of inverting `reject!`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_inverse_blocks_registers_a_single_offense_for_nested_inverse_method_calls_4"
+source = '''
+y.reject! { |key, _value| !(key =~ /c\d/) }
+'''
+corrected = '''
+y.select! { |key, _value| (key =~ /c\d/) }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 43
+message = "Use `select!` instead of inverting `reject!`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_inverse_blocks_corrects_an_inverted_method_call_4"
+source = '''
+foo.reject! { |e| !e.bar? }
+'''
+corrected = '''
+foo.select! { |e| e.bar? }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 27
+message = "Use `select!` instead of inverting `reject!`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_inverse_blocks_corrects_an_inverted_method_call_when_using_basicobject_4"
+source = '''
+foo.reject! { |e| e.bar?.! }
+'''
+corrected = '''
+foo.select! { |e| e.bar? }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 28
+message = "Use `select!` instead of inverting `reject!`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_inverse_blocks_corrects_an_inverted_safe_navigation_method_call_when_using_basicobject_4"
+source = '''
+foo&.reject! { |e| e&.bar?&.! }
+'''
+corrected = '''
+foo&.select! { |e| e&.bar? }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 31
+message = "Use `select!` instead of inverting `reject!`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_inverse_blocks_corrects_an_inverted_method_call_when_using_basicobject_with_spaces_before_the_method_call_4"
+source = '''
+foo.reject! { |e| e.bar?.  ! }
+'''
+corrected = '''
+foo.select! { |e| e.bar? }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 30
+message = "Use `select!` instead of inverting `reject!`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_inverse_blocks_corrects_a_complex_inverted_method_call_4"
+source = '''
+puts 1 if !foo.reject! { |e| !e.bar? }
+'''
+corrected = '''
+puts 1 if !foo.select! { |e| e.bar? }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 38
+message = "Use `select!` instead of inverting `reject!`."
+
+[[tests]]
+name = "rubocopcopstyleinversemethods_inverse_blocks_corrects_an_inverted_do_end_method_call_4"
+source = '''
+foo.reject! do |e|
+  !e.bar
+end
+'''
+corrected = '''
+foo.select! do |e|
+  e.bar
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 18
+message = "Use `select!` instead of inverting `reject!`."

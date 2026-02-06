@@ -4,7 +4,37 @@ severity = "convention"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_style_negatedif_with_both_style_registers_an_offense_for_if_with_exclamation_point_condition"
+name = "rubocopcopstylenegatedif_does_not_blow_up_for_ternary_ops"
+source = '''
+a ? b : c
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegatedif_does_not_blow_up_on_a_negated_ternary_operator"
+source = '''
+!foo.empty? ? :bar : :baz
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegatedif_does_not_blow_up_for_empty_if_condition"
+source = '''
+if ()
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegatedif_does_not_blow_up_for_empty_unless_condition"
+source = '''
+unless ()
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylenegatedif_with_both_style_registers_an_offense_for_if_with_exclamation_point_condition"
 source = '''
 if !a_condition
   some_method
@@ -31,7 +61,7 @@ column_end = 27
 message = "Favor `unless` over `if` for negative conditions."
 
 [[tests]]
-name = "rubocop_cop_style_negatedif_with_both_style_registers_an_offense_for_if_with_not_condition"
+name = "rubocopcopstylenegatedif_with_both_style_registers_an_offense_for_if_with_not_condition"
 source = '''
 if not a_condition
   some_method
@@ -58,7 +88,7 @@ column_end = 30
 message = "Favor `unless` over `if` for negative conditions."
 
 [[tests]]
-name = "rubocop_cop_style_negatedif_with_both_style_accepts_an_if_else_with_negative_condition"
+name = "rubocopcopstylenegatedif_with_both_style_accepts_an_ifelse_with_negative_condition"
 source = '''
 if !a_condition
   some_method
@@ -74,7 +104,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negatedif_with_both_style_accepts_an_if_where_only_part_of_the_condition_is_negated"
+name = "rubocopcopstylenegatedif_with_both_style_accepts_an_if_where_only_part_of_the_condition_is_negated"
 source = '''
 if !condition && another_condition
   some_method
@@ -87,7 +117,7 @@ some_method if not condition or another_condition
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negatedif_with_both_style_accepts_an_if_where_the_condition_is_doubly_negated"
+name = "rubocopcopstylenegatedif_with_both_style_accepts_an_if_where_the_condition_is_doubly_negated"
 source = '''
 if !!condition
   some_method
@@ -97,7 +127,7 @@ some_method if !!condition
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negatedif_with_both_style_is_not_confused_by_negated_elsif"
+name = "rubocopcopstylenegatedif_with_both_style_is_not_confused_by_negated_elsif"
 source = '''
 if test.is_a?(String)
   3
@@ -110,7 +140,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negatedif_with_both_style_autocorrects_by_replacing_parenthesized_if_not_with_unless"
+name = "rubocopcopstylenegatedif_with_both_style_autocorrects_by_replacing_parenthesized_if_not_with_unless"
 source = '''
 something if (!x.even?)
 '''
@@ -125,7 +155,7 @@ column_end = 23
 message = "Favor `unless` over `if` for negative conditions."
 
 [[tests]]
-name = "rubocop_cop_style_negatedif_with_prefix_style_registers_an_offense_for_prefix"
+name = "rubocopcopstylenegatedif_with_prefix_style_registers_an_offense_for_prefix"
 source = '''
 if !foo
 end
@@ -142,14 +172,14 @@ column_end = 7
 message = "Favor `unless` over `if` for negative conditions."
 
 [[tests]]
-name = "rubocop_cop_style_negatedif_with_prefix_style_does_not_register_an_offense_for_postfix"
+name = "rubocopcopstylenegatedif_with_prefix_style_does_not_register_an_offense_for_postfix"
 source = '''
 foo if !bar
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_negatedif_with_postfix_style_registers_an_offense_for_postfix"
+name = "rubocopcopstylenegatedif_with_postfix_style_registers_an_offense_for_postfix"
 source = '''
 foo if !bar
 '''
@@ -164,39 +194,9 @@ column_end = 11
 message = "Favor `unless` over `if` for negative conditions."
 
 [[tests]]
-name = "rubocop_cop_style_negatedif_with_postfix_style_does_not_register_an_offense_for_prefix"
+name = "rubocopcopstylenegatedif_with_postfix_style_does_not_register_an_offense_for_prefix"
 source = '''
 if !foo
-end
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negatedif_does_not_blow_up_for_ternary_ops"
-source = '''
-a ? b : c
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negatedif_does_not_blow_up_on_a_negated_ternary_operator"
-source = '''
-!foo.empty? ? :bar : :baz
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negatedif_does_not_blow_up_for_empty_if_condition"
-source = '''
-if ()
-end
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_negatedif_does_not_blow_up_for_empty_unless_condition"
-source = '''
-unless ()
 end
 '''
 offenses = []

@@ -4,25 +4,23 @@ severity = "convention"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_style_singlelinemethods_registers_an_offense_for_a_single_line_method"
+name = "rubocopcopstylesinglelinemethods_registers_an_offense_for_a_singleline_method"
 source = '''
 def some_method; body end
 def link_to(name, url); {:name => name}; end
 def @table.columns; super; end
 '''
 corrected = '''
-def some_method;#{trailing_whitespace}
-  body#{trailing_whitespace}
+def some_method; 
+  body 
 end
-def link_to(name, url);#{trailing_whitespace}
-  {:name => name};#{trailing_whitespace}
+def link_to(name, url); 
+  {:name => name}; 
 end
-def @table.columns;#{trailing_whitespace}
-  super;#{trailing_whitespace}
+def @table.columns; 
+  super; 
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -46,17 +44,15 @@ message = "Avoid single-line method definitions."
 AllowIfMethodIsEmpty = true
 
 [[tests]]
-name = "rubocop_cop_style_singlelinemethods_registers_an_offense_for_a_single_line_method_and_method_body_is_enclosed_in_parentheses"
+name = "rubocopcopstylesinglelinemethods_registers_an_offense_for_a_singleline_method_and_method_body_is_enclosed_in_parentheses"
 source = '''
 def foo() (do_something) end
 '''
 corrected = '''
-def foo()#{trailing_whitespace}
-  (do_something)#{trailing_whitespace}
+def foo() 
+  (do_something) 
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -68,22 +64,150 @@ message = "Avoid single-line method definitions."
 AllowIfMethodIsEmpty = true
 
 [[tests]]
-name = "rubocop_cop_style_singlelinemethods_when_allowifmethodisempty_is_disabled_registers_an_offense_for_an_empty_method"
+name = "rubocopcopstylesinglelinemethods_accepts_a_multiline_method"
+source = '''
+def some_method
+  body
+end
+'''
+offenses = []
+
+[tests.config]
+AllowIfMethodIsEmpty = true
+
+[[tests]]
+name = "rubocopcopstylesinglelinemethods_does_not_crash_on_a_method_with_a_capitalized_name"
+source = '''
+def NoSnakeCase
+end
+'''
+offenses = []
+
+[tests.config]
+AllowIfMethodIsEmpty = true
+
+[[tests]]
+name = "rubocopcopstylesinglelinemethods_autocorrects_def_with_semicolon_after_method_name"
+source = '''
+def some_method; body end # Cmnt
+'''
+base_indent = 2
+corrected = '''
+  # Cmnt
+  def some_method; 
+    body 
+  end 
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 27
+message = "Avoid single-line method definitions."
+
+[tests.config]
+AllowIfMethodIsEmpty = true
+
+[[tests]]
+name = "rubocopcopstylesinglelinemethods_autocorrects_defs_with_parentheses_after_method_name"
+source = '''
+def self.some_method() body end
+'''
+base_indent = 2
+corrected = '''
+  def self.some_method() 
+    body 
+  end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 33
+message = "Avoid single-line method definitions."
+
+[tests.config]
+AllowIfMethodIsEmpty = true
+
+[[tests]]
+name = "rubocopcopstylesinglelinemethods_autocorrects_def_with_argument_in_parentheses"
+source = '''
+def some_method(arg) body end
+'''
+base_indent = 2
+corrected = '''
+  def some_method(arg) 
+    body 
+  end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 31
+message = "Avoid single-line method definitions."
+
+[tests.config]
+AllowIfMethodIsEmpty = true
+
+[[tests]]
+name = "rubocopcopstylesinglelinemethods_autocorrects_def_with_argument_and_no_parentheses"
+source = '''
+def some_method arg; body end
+'''
+base_indent = 2
+corrected = '''
+  def some_method arg; 
+    body 
+  end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 31
+message = "Avoid single-line method definitions."
+
+[tests.config]
+AllowIfMethodIsEmpty = true
+
+[[tests]]
+name = "rubocopcopstylesinglelinemethods_autocorrects_def_with_semicolon_before_end"
+source = '''
+def some_method; b1; b2; end
+'''
+base_indent = 2
+corrected = '''
+  def some_method; 
+    b1; 
+    b2; 
+  end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 30
+message = "Avoid single-line method definitions."
+
+[tests.config]
+AllowIfMethodIsEmpty = true
+
+[[tests]]
+name = "rubocopcopstylesinglelinemethods_when_allowifmethodisempty_is_disabled_registers_an_offense_for_an_empty_method"
 source = '''
 def no_op; end
 def self.resource_class=(klass); end
 def @table.columns; end
 '''
 corrected = '''
-def no_op;#{trailing_whitespace}
+def no_op; 
 end
-def self.resource_class=(klass);#{trailing_whitespace}
+def self.resource_class=(klass); 
 end
-def @table.columns;#{trailing_whitespace}
+def @table.columns; 
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -107,7 +231,7 @@ message = "Avoid single-line method definitions."
 AllowIfMethodIsEmpty = false
 
 [[tests]]
-name = "rubocop_cop_style_singlelinemethods_when_allowifmethodisempty_is_enabled_accepts_a_single_line_empty_method"
+name = "rubocopcopstylesinglelinemethods_when_allowifmethodisempty_is_enabled_accepts_a_singleline_empty_method"
 source = '''
 def no_op; end
 def self.resource_class=(klass); end
@@ -119,45 +243,50 @@ offenses = []
 AllowIfMethodIsEmpty = true
 
 [[tests]]
-name = "rubocop_cop_style_singlelinemethods_accepts_a_multi_line_method"
-source = '''
-def some_method
-  body
-end
-'''
-offenses = []
-
-[tests.config]
-AllowIfMethodIsEmpty = true
-
-[[tests]]
-name = "rubocop_cop_style_singlelinemethods_does_not_crash_on_a_method_with_a_capitalized_name"
-source = '''
-def NoSnakeCase
-end
-'''
-offenses = []
-
-[tests.config]
-AllowIfMethodIsEmpty = true
-
-[[tests]]
-name = "rubocop_cop_style_singlelinemethods_endless_methods_does_not_register_an_offense"
+name = "rubocopcopstylesinglelinemethods_endless_methods_does_not_register_an_offense"
 source = '''
 def some_method() = x
 '''
-ruby_version = ">= 3.0"
 offenses = []
 
 [tests.config]
 AllowIfMethodIsEmpty = true
 
 [[tests]]
-name = "rubocop_cop_style_singlelinemethods_when_style_endlessmethod_is_enabled_with_allowifmethodisempty_true_does_not_correct"
+name = "rubocopcopstylesinglelinemethods_when_styleendlessmethod_is_enabled_with_allow_single_line_style_behaves_like_convert_to_endless_method_with_allowifmethodisempty_true_does_not_correct"
 source = '''
 def some_method; end
 '''
-ruby_version = ">= 3.0"
+offenses = []
+
+[tests.config]
+AllowIfMethodIsEmpty = true
+
+[[tests]]
+name = "rubocopcopstylesinglelinemethods_when_styleendlessmethod_is_enabled_with_allow_always_style_behaves_like_convert_to_endless_method_with_allowifmethodisempty_true_does_not_correct"
+source = '''
+def some_method; end
+'''
+offenses = []
+
+[tests.config]
+AllowIfMethodIsEmpty = true
+
+[[tests]]
+name = "rubocopcopstylesinglelinemethods_when_styleendlessmethod_is_enabled_with_require_single_line_style_behaves_like_convert_to_endless_method_with_allowifmethodisempty_true_does_not_correct"
+source = '''
+def some_method; end
+'''
+offenses = []
+
+[tests.config]
+AllowIfMethodIsEmpty = true
+
+[[tests]]
+name = "rubocopcopstylesinglelinemethods_when_styleendlessmethod_is_enabled_with_require_always_style_behaves_like_convert_to_endless_method_with_allowifmethodisempty_true_does_not_correct"
+source = '''
+def some_method; end
+'''
 offenses = []
 
 [tests.config]

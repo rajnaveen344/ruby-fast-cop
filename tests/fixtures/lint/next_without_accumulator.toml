@@ -4,15 +4,13 @@ severity = "warning"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_lint_nextwithoutaccumulator_registers_an_offense_for_a_bare_next"
+name = "rubocopcoplintnextwithoutaccumulator_behaves_like_reduceinject_given_a_reduce_block_registers_an_offense_for_a_bare_next"
 source = '''
-(1..4).#{reduce_alias}(0) do |acc, i|
+(1..4).reduce(0) do |acc, i|
   next if i.odd?
   acc + i
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 2
@@ -21,15 +19,13 @@ column_end = 6
 message = "Use `next` with an accumulator argument in a `reduce`."
 
 [[tests]]
-name = "rubocop_cop_lint_nextwithoutaccumulator_registers_an_offense_for_a_bare_next_in_the_block_of_safe_navigation_method_called"
+name = "rubocopcoplintnextwithoutaccumulator_behaves_like_reduceinject_given_a_reduce_block_registers_an_offense_for_a_bare_next_in_the_block_of_safe_navigation_method_called"
 source = '''
-(1..4)&.#{reduce_alias}(0) do |acc, i|
+(1..4)&.reduce(0) do |acc, i|
   next if i.odd?
   acc + i
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 2
@@ -38,21 +34,19 @@ column_end = 6
 message = "Use `next` with an accumulator argument in a `reduce`."
 
 [[tests]]
-name = "rubocop_cop_lint_nextwithoutaccumulator_accepts_next_with_a_value"
+name = "rubocopcoplintnextwithoutaccumulator_behaves_like_reduceinject_given_a_reduce_block_accepts_next_with_a_value"
 source = '''
-(1..4).#{reduce_alias}(0) do |acc, i|
+(1..4).reduce(0) do |acc, i|
   next acc if i.odd?
   acc + i
 end
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_nextwithoutaccumulator_accepts_next_within_a_nested_block"
+name = "rubocopcoplintnextwithoutaccumulator_behaves_like_reduceinject_given_a_reduce_block_accepts_next_within_a_nested_block"
 source = '''
-[(1..3), (4..6)].#{reduce_alias}(0) do |acc, elems|
+[(1..3), (4..6)].reduce(0) do |acc, elems|
   elems.each_with_index do |elem, i|
     next if i == 1
     acc << elem
@@ -60,21 +54,16 @@ source = '''
   acc
 end
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_nextwithoutaccumulator_ruby_2_7_registers_an_offense_for_a_bare_next"
+name = "rubocopcoplintnextwithoutaccumulator_behaves_like_reduceinject_given_a_reduce_block_ruby_27_registers_an_offense_for_a_bare_next"
 source = '''
-(1..4).#{reduce_alias}(0) do
+(1..4).reduce(0) do
   next if _2.odd?
   _1 + i
 end
 '''
-ruby_version = ">= 2.7"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 2
@@ -83,16 +72,13 @@ column_end = 6
 message = "Use `next` with an accumulator argument in a `reduce`."
 
 [[tests]]
-name = "rubocop_cop_lint_nextwithoutaccumulator_ruby_2_7_registers_an_offense_for_a_bare_next_in_the_block_of_safe_navigation_method_call"
+name = "rubocopcoplintnextwithoutaccumulator_behaves_like_reduceinject_given_a_reduce_block_ruby_27_registers_an_offense_for_a_bare_next_in_the_block_of_safe_navigation_method_call"
 source = '''
-(1..4)&.#{reduce_alias}(0) do
+(1..4)&.reduce(0) do
   next if _2.odd?
   _1 + i
 end
 '''
-ruby_version = ">= 2.7"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 2
@@ -101,7 +87,90 @@ column_end = 6
 message = "Use `next` with an accumulator argument in a `reduce`."
 
 [[tests]]
-name = "rubocop_cop_lint_nextwithoutaccumulator_given_an_unrelated_block_accepts_a_bare_next"
+name = "rubocopcoplintnextwithoutaccumulator_behaves_like_reduceinject_given_a_inject_block_registers_an_offense_for_a_bare_next"
+source = '''
+(1..4).inject(0) do |acc, i|
+  next if i.odd?
+  acc + i
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 6
+message = "Use `next` with an accumulator argument in a `reduce`."
+
+[[tests]]
+name = "rubocopcoplintnextwithoutaccumulator_behaves_like_reduceinject_given_a_inject_block_registers_an_offense_for_a_bare_next_in_the_block_of_safe_navigation_method_called"
+source = '''
+(1..4)&.inject(0) do |acc, i|
+  next if i.odd?
+  acc + i
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 6
+message = "Use `next` with an accumulator argument in a `reduce`."
+
+[[tests]]
+name = "rubocopcoplintnextwithoutaccumulator_behaves_like_reduceinject_given_a_inject_block_accepts_next_with_a_value"
+source = '''
+(1..4).inject(0) do |acc, i|
+  next acc if i.odd?
+  acc + i
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintnextwithoutaccumulator_behaves_like_reduceinject_given_a_inject_block_accepts_next_within_a_nested_block"
+source = '''
+[(1..3), (4..6)].inject(0) do |acc, elems|
+  elems.each_with_index do |elem, i|
+    next if i == 1
+    acc << elem
+  end
+  acc
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintnextwithoutaccumulator_behaves_like_reduceinject_given_a_inject_block_ruby_27_registers_an_offense_for_a_bare_next"
+source = '''
+(1..4).inject(0) do
+  next if _2.odd?
+  _1 + i
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 6
+message = "Use `next` with an accumulator argument in a `reduce`."
+
+[[tests]]
+name = "rubocopcoplintnextwithoutaccumulator_behaves_like_reduceinject_given_a_inject_block_ruby_27_registers_an_offense_for_a_bare_next_in_the_block_of_safe_navigation_method_call"
+source = '''
+(1..4)&.inject(0) do
+  next if _2.odd?
+  _1 + i
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 6
+message = "Use `next` with an accumulator argument in a `reduce`."
+
+[[tests]]
+name = "rubocopcoplintnextwithoutaccumulator_given_an_unrelated_block_accepts_a_bare_next"
 source = '''
 (1..4).foo(0) do |acc, i|
   next if i.odd?
@@ -111,7 +180,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_nextwithoutaccumulator_given_an_unrelated_block_accepts_next_with_a_value"
+name = "rubocopcoplintnextwithoutaccumulator_given_an_unrelated_block_accepts_next_with_a_value"
 source = '''
 (1..4).foo(0) do |acc, i|
   next acc if i.odd?

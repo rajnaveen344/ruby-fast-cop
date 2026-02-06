@@ -4,38 +4,582 @@ severity = "convention"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_layout_multilinehashbracelayout_ignores_implicit_hashes"
+name = "rubocopcoplayoutmultilinehashbracelayout_ignores_implicit_hashes"
 source = '''
 foo(a: 1,
 b: 2)
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:symmetrical"
+EnforcedStyle = "symmetrical"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinehashbracelayout_ignores_single_line_hashes"
+name = "rubocopcoplayoutmultilinehashbracelayout_ignores_singleline_hashes"
 source = '''
 {a: 1, b: 2}
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:symmetrical"
+EnforcedStyle = "symmetrical"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinehashbracelayout_ignores_empty_hashes"
+name = "rubocopcoplayoutmultilinehashbracelayout_ignores_empty_hashes"
 source = '''
 {}
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:symmetrical"
+EnforcedStyle = "symmetrical"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinehashbracelayout_behaves_like_multiline_literal_brace_layout_heredoc_ignores_heredocs_that_could_share_a_last_line"
+source = '''
+{a: 1,
+b: <<-EOM
+baz
+EOM
+}
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "same_line"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinehashbracelayout_behaves_like_multiline_literal_brace_layout_heredoc_detects_heredoc_structures_that_are_safe_to_add_to"
+source = '''
+{a: 1,
+b: {
+a: <<-EOM
+baz
+EOM
+}
+}
+'''
+corrected = '''
+{a: 1,
+b: {
+a: <<-EOM
+baz
+EOM
+}}
+'''
+
+[[tests.offenses]]
+line = 7
+column_start = 0
+column_end = 1
+message = "Closing hash brace must be on the same line as the last hash element."
+
+[tests.config]
+EnforcedStyle = "same_line"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinehashbracelayout_behaves_like_multiline_literal_brace_layout_symmetrical_style_opening_brace_on_same_line_as_first_element_allows_closing_brace_on_same_line_as_last_element"
+source = '''
+{a: 1,
+b: 2}
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "symmetrical"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinehashbracelayout_behaves_like_multiline_literal_brace_layout_symmetrical_style_opening_brace_on_same_line_as_first_element_allows_closing_brace_on_same_line_as_last_multiline_element"
+source = '''
+{a: 1,
+b: [
+1
+]}
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "symmetrical"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinehashbracelayout_behaves_like_multiline_literal_brace_layout_symmetrical_style_opening_brace_on_same_line_as_first_element_detects_closing_brace_on_different_line_from_last_element"
+source = '''
+{a: 1,
+b: 2
+}
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 1
+message = "Closing hash brace must be on the same line as the last hash element when opening brace is on the same line as the first hash element."
+
+[tests.config]
+EnforcedStyle = "symmetrical"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinehashbracelayout_behaves_like_multiline_literal_brace_layout_symmetrical_style_opening_brace_on_same_line_as_first_element_autocorrects_closing_brace_on_different_line_from_last_element"
+source = '''
+{a: 1, # a
+b: 2 # b
+}
+'''
+corrected = '''
+{a: 1, # a
+b: 2} # b
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 1
+message = "Closing hash brace must be on the same line as the last hash element when opening brace is on the same line as the first hash element."
+
+[tests.config]
+EnforcedStyle = "symmetrical"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinehashbracelayout_behaves_like_multiline_literal_brace_layout_symmetrical_style_opening_brace_on_same_line_as_first_element_with_a_chained_call_on_the_closing_brace_and_a_comment_after_the_last_element_detects_closing_brace_on_separate_line_from_last_elementbut_does_not_autocorrect_the_closing_brace"
+source = '''
+{a: 1,
+b: 2 # comment b
+}
+.any?
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 1
+message = "Closing hash brace must be on the same line as the last hash element when opening brace is on the same line as the first hash element."
+
+[tests.config]
+EnforcedStyle = "symmetrical"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinehashbracelayout_behaves_like_multiline_literal_brace_layout_symmetrical_style_opening_brace_on_same_line_as_first_element_with_a_chained_call_on_the_closing_brace_but_no_comment_after_the_last_element_autocorrects_the_closing_brace"
+source = '''
+{a: 1,
+b: 2
+}
+.any?
+'''
+corrected = '''
+{a: 1,
+b: 2}
+.any?
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 1
+message = "Closing hash brace must be on the same line as the last hash element when opening brace is on the same line as the first hash element."
+
+[tests.config]
+EnforcedStyle = "symmetrical"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinehashbracelayout_behaves_like_multiline_literal_brace_layout_symmetrical_style_opening_brace_on_separate_line_from_first_element_allows_closing_brace_on_separate_line_from_last_element"
+source = '''
+{
+a: 1,
+b: 2
+}
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "symmetrical"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinehashbracelayout_behaves_like_multiline_literal_brace_layout_symmetrical_style_opening_brace_on_separate_line_from_first_element_allows_closing_brace_on_separate_line_from_last_multiline_element"
+source = '''
+{
+a: 1,
+b: [
+1
+]
+}
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "symmetrical"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinehashbracelayout_behaves_like_multiline_literal_brace_layout_symmetrical_style_opening_brace_on_separate_line_from_first_element_detects_closing_brace_on_same_line_as_last_element"
+source = '''
+{
+a: 1,
+b: 2}
+'''
+corrected = '''
+{
+a: 1,
+b: 2
+}
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 4
+column_end = 5
+message = "Closing hash brace must be on the line after the last hash element when opening brace is on a separate line from the first hash element."
+
+[tests.config]
+EnforcedStyle = "symmetrical"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinehashbracelayout_behaves_like_multiline_literal_brace_layout_new_line_style_opening_brace_on_same_line_as_first_element_allows_closing_brace_on_different_line_from_last_element"
+source = '''
+{a: 1,
+b: 2
+}
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "new_line"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinehashbracelayout_behaves_like_multiline_literal_brace_layout_new_line_style_opening_brace_on_same_line_as_first_element_allows_closing_brace_on_different_line_from_multiline_element"
+source = '''
+{a: 1,
+b: [
+1
+]
+}
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "new_line"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinehashbracelayout_behaves_like_multiline_literal_brace_layout_new_line_style_opening_brace_on_same_line_as_first_element_detects_closing_brace_on_same_line_as_last_multiline_element"
+source = '''
+{a: 1,
+b: [
+1
+]}
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 1
+column_end = 2
+message = "Closing hash brace must be on the line after the last hash element."
+
+[tests.config]
+EnforcedStyle = "new_line"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinehashbracelayout_behaves_like_multiline_literal_brace_layout_new_line_style_opening_brace_on_same_line_as_first_element_autocorrects_closing_brace_on_same_line_as_last_element"
+source = '''
+{a: 1, # a
+b: 2} # b
+'''
+corrected = '''
+{a: 1, # a
+b: 2
+} # b
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 4
+column_end = 5
+message = "Closing hash brace must be on the line after the last hash element."
+
+[tests.config]
+EnforcedStyle = "new_line"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinehashbracelayout_behaves_like_multiline_literal_brace_layout_new_line_style_opening_brace_on_separate_line_from_first_element_allows_closing_brace_on_separate_line_from_last_element"
+source = '''
+{
+a: 1,
+b: 2
+}
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "new_line"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinehashbracelayout_behaves_like_multiline_literal_brace_layout_new_line_style_opening_brace_on_separate_line_from_first_element_allows_closing_brace_on_separate_line_from_last_multiline_element"
+source = '''
+{
+a: 1,
+b: [
+1
+]
+}
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "new_line"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinehashbracelayout_behaves_like_multiline_literal_brace_layout_new_line_style_opening_brace_on_separate_line_from_first_element_detects_closing_brace_on_same_line_as_last_element"
+source = '''
+{
+a: 1,
+b: 2}
+'''
+corrected = '''
+{
+a: 1,
+b: 2
+}
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 4
+column_end = 5
+message = "Closing hash brace must be on the line after the last hash element."
+
+[tests.config]
+EnforcedStyle = "new_line"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinehashbracelayout_behaves_like_multiline_literal_brace_layout_same_line_style_opening_brace_on_same_line_as_first_element_allows_closing_brace_on_same_line_from_last_element"
+source = '''
+{a: 1,
+b: 2}
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "same_line"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinehashbracelayout_behaves_like_multiline_literal_brace_layout_same_line_style_opening_brace_on_same_line_as_first_element_allows_closing_brace_on_same_line_as_multiline_element"
+source = '''
+{a: 1,
+b: [
+1
+]}
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "same_line"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinehashbracelayout_behaves_like_multiline_literal_brace_layout_same_line_style_opening_brace_on_same_line_as_first_element_detects_closing_brace_on_different_line_from_multiline_element"
+source = '''
+{a: 1,
+b: [
+1
+]
+}
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 0
+column_end = 1
+message = "Closing hash brace must be on the same line as the last hash element."
+
+[tests.config]
+EnforcedStyle = "same_line"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinehashbracelayout_behaves_like_multiline_literal_brace_layout_same_line_style_opening_brace_on_same_line_as_first_element_autocorrects_closing_brace_on_different_line_as_last_element"
+source = '''
+{a: 1, # a
+b: 2 # b
+}
+'''
+corrected = '''
+{a: 1, # a
+b: 2} # b
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 1
+message = "Closing hash brace must be on the same line as the last hash element."
+
+[tests.config]
+EnforcedStyle = "same_line"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinehashbracelayout_behaves_like_multiline_literal_brace_layout_same_line_style_opening_brace_on_same_line_as_first_element_with_a_chained_call_on_the_closing_brace_and_a_comment_after_the_last_element_detects_closing_brace_on_separate_line_from_last_elementbut_does_not_autocorrect_the_closing_brace"
+source = '''
+{a: 1,
+b: 2 # comment b
+}
+.any?
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 1
+message = "Closing hash brace must be on the same line as the last hash element."
+
+[tests.config]
+EnforcedStyle = "same_line"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinehashbracelayout_behaves_like_multiline_literal_brace_layout_same_line_style_opening_brace_on_same_line_as_first_element_with_a_chained_call_on_the_closing_brace_but_no_comment_after_the_last_element_autocorrects_the_closing_brace"
+source = '''
+{a: 1,
+b: 2
+}
+.any?
+'''
+corrected = '''
+{a: 1,
+b: 2}
+.any?
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 1
+message = "Closing hash brace must be on the same line as the last hash element."
+
+[tests.config]
+EnforcedStyle = "same_line"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinehashbracelayout_behaves_like_multiline_literal_brace_layout_same_line_style_opening_brace_on_separate_line_from_first_element_allows_closing_brace_on_same_line_as_last_element"
+source = '''
+{
+a: 1,
+b: 2}
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "same_line"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinehashbracelayout_behaves_like_multiline_literal_brace_layout_same_line_style_opening_brace_on_separate_line_from_first_element_allows_closing_brace_on_same_line_as_last_multiline_element"
+source = '''
+{
+a: 1,
+b: [
+1
+]}
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "same_line"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinehashbracelayout_behaves_like_multiline_literal_brace_layout_same_line_style_opening_brace_on_separate_line_from_first_element_detects_closing_brace_on_different_line_from_last_element"
+source = '''
+{
+a: 1,
+b: 2
+}
+'''
+corrected = '''
+{
+a: 1,
+b: 2}
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 1
+message = "Closing hash brace must be on the same line as the last hash element."
+
+[tests.config]
+EnforcedStyle = "same_line"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinehashbracelayout_behaves_like_multiline_literal_brace_layout_method_argument_when_arguments_to_a_method_and_a_comment_after_the_last_element_detects_closing_brace_on_separate_line_from_last_element"
+source = '''
+bar({a: 1,
+b: 2 # comment b
+}
+)
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 1
+message = "Closing hash brace must be on the same line as the last hash element when opening brace is on the same line as the first hash element."
+
+[tests.config]
+EnforcedStyle = "symmetrical"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinehashbracelayout_behaves_like_multiline_literal_brace_layout_method_argument_when_arguments_to_a_method_but_no_comment_after_the_last_element_autocorrects_the_closing_brace"
+source = '''
+bar({a: 1,
+b: 2
+}
+)
+'''
+corrected = '''
+bar({a: 1,
+b: 2}
+)
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 1
+message = "Closing hash brace must be on the same line as the last hash element when opening brace is on the same line as the first hash element."
+
+[tests.config]
+EnforcedStyle = "symmetrical"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinehashbracelayout_behaves_like_multiline_literal_brace_layout_trailing_comma_symmetrical_style_opening_brace_on_same_line_as_first_element_last_element_has_a_trailing_comma_autocorrects_closing_brace_on_different_line_from_last_element"
+source = '''
+{a: 1, # a
+b: 2, # b
+}
+'''
+corrected = '''
+{a: 1, # a
+b: 2,} # b
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 1
+message = "Closing hash brace must be on the same line as the last hash element when opening [...]"
+
+[tests.config]
+EnforcedStyle = "symmetrical"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinehashbracelayout_behaves_like_multiline_literal_brace_layout_trailing_comma_same_line_style_opening_brace_on_same_line_as_first_element_last_element_has_a_trailing_comma_autocorrects_closing_brace_on_different_line_as_last_element"
+source = '''
+{a: 1, # a
+b: 2, # b
+}
+'''
+corrected = '''
+{a: 1, # a
+b: 2,} # b
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 1
+message = "Closing hash brace must be on the same line as the last hash element."
+
+[tests.config]
+EnforcedStyle = "same_line"

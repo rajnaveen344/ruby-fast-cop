@@ -4,7 +4,231 @@ severity = "convention"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_layout_classstructure_when_the_first_line_ends_with_a_comment_reports_an_offense_and_swaps_the_lines"
+name = "rubocopcoplayoutclassstructure_registers_an_offense_and_corrects_when_public_instance_method_is_before_class_method"
+source = '''
+class Foo
+  def instance_method; end
+  def self.class_method; end
+end
+'''
+corrected = '''
+class Foo
+  def self.class_method; end
+  def instance_method; end
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 28
+message = "`public_class_methods` is supposed to appear before `public_methods`."
+
+[[tests]]
+name = "rubocopcoplayoutclassstructure_registers_an_offense_and_corrects_when_there_is_a_comment_in_the_macro_method"
+source = '''
+class Foo
+  # This is a comment for macro method.
+  validates :attr
+  attr_reader :foo
+end
+'''
+corrected = '''
+class Foo
+  attr_reader :foo
+  # This is a comment for macro method.
+  validates :attr
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 18
+message = "`attribute_macros` is supposed to appear before `macros`."
+
+[[tests]]
+name = "rubocopcoplayoutclassstructure_registers_an_offense_and_corrects_when_literal_constant_is_after_method_definitions"
+source = '''
+class Foo
+  def name; end
+
+  LIMIT = 10
+  CONST = 'wrong place'.freeze
+  RECURSIVE_BASIC_LITERALS_CONST = [1, 2].freeze
+  DYNAMIC_CONST = foo.freeze
+end
+'''
+corrected = '''
+class Foo
+  LIMIT = 10
+  CONST = 'wrong place'.freeze
+  RECURSIVE_BASIC_LITERALS_CONST = [1, 2].freeze
+  def name; end
+
+  DYNAMIC_CONST = foo.freeze
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 12
+message = "`constants` is supposed to appear before `public_methods`."
+
+[[tests]]
+name = "rubocopcoplayoutclassstructure_ignores_misplaced_private_constants"
+source = '''
+class Foo
+  def name; end
+
+  PRIVATE_CONST1 = 1
+  PRIVATE_CONST2 = 2
+  private_constant :PRIVATE_CONST1, :PRIVATE_CONST2
+  PUBLIC_CONST = 'public'
+end
+'''
+corrected = '''
+class Foo
+  PUBLIC_CONST = 'public'
+  def name; end
+
+  PRIVATE_CONST1 = 1
+  PRIVATE_CONST2 = 2
+  private_constant :PRIVATE_CONST1, :PRIVATE_CONST2
+end
+'''
+
+[[tests.offenses]]
+line = 7
+column_start = 2
+column_end = 25
+message = "`constants` is supposed to appear before `public_methods`."
+
+[[tests]]
+name = "rubocopcoplayoutclassstructure_registers_an_offense_and_corrects_when_str_heredoc_constant_is_defined_after_public_method"
+source = '''
+class Foo
+  def do_something
+  end
+
+  CONSTANT = <<~EOS
+    str
+  EOS
+end
+'''
+corrected = '''
+class Foo
+  CONSTANT = <<~EOS
+    str
+  EOS
+
+  def do_something
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 19
+message = "`constants` is supposed to appear before `public_methods`."
+
+[[tests]]
+name = "rubocopcoplayoutclassstructure_registers_an_offense_and_corrects_when_dstr_heredoc_constant_is_defined_after_public_method"
+source = '''
+class Foo
+  def do_something
+  end
+
+  CONSTANT = <<~EOS
+    #{str}
+  EOS
+end
+'''
+corrected = '''
+class Foo
+  CONSTANT = <<~EOS
+    #{str}
+  EOS
+
+  def do_something
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 19
+message = "`constants` is supposed to appear before `public_methods`."
+
+[[tests]]
+name = "rubocopcoplayoutclassstructure_registers_an_offense_and_corrects_when_xstr_heredoc_constant_is_defined_after_public_method"
+source = '''
+class Foo
+  def do_something
+  end
+
+  CONSTANT = <<~`EOS`
+    str
+  EOS
+end
+'''
+corrected = '''
+class Foo
+  CONSTANT = <<~`EOS`
+    str
+  EOS
+
+  def do_something
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 21
+message = "`constants` is supposed to appear before `public_methods`."
+
+[[tests]]
+name = "rubocopcoplayoutclassstructure_registers_an_offense_and_corrects_when_public_class_method_with_heredoc_after_instance_method"
+source = '''
+class Foo
+  def instance_method
+    'instance method'
+  end
+
+  def self.class_method
+    <<~EOS
+      class method
+    EOS
+  end
+end
+'''
+corrected = '''
+class Foo
+  def self.class_method
+    <<~EOS
+      class method
+    EOS
+  end
+  def instance_method
+    'instance method'
+  end
+
+end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 2
+column_end = 23
+message = "`public_class_methods` is supposed to appear before `public_methods`."
+
+[[tests]]
+name = "rubocopcoplayoutclassstructure_when_the_first_line_ends_with_a_comment_reports_an_offense_and_swaps_the_lines"
 source = '''
 class GridTask
   DESC = 'Grid Task' # grid task name OID, subclasses should set this
@@ -25,7 +249,7 @@ column_end = 30
 message = "`module_inclusion` is supposed to appear before `constants`."
 
 [[tests]]
-name = "rubocop_cop_layout_classstructure_with_a_complete_ordered_example_does_not_create_offense"
+name = "rubocopcoplayoutclassstructure_with_a_complete_ordered_example_does_not_create_offense"
 source = '''
 class Person
   # extend and include go first
@@ -81,7 +305,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_classstructure_simple_example"
+name = "rubocopcoplayoutclassstructure_simple_example_"
 source = '''
 class Person
   CONST = 'wrong place'
@@ -104,28 +328,87 @@ column_end = 23
 message = "`module_inclusion` is supposed to appear before `constants`."
 
 [[tests]]
-name = "rubocop_cop_layout_classstructure_registers_an_offense_and_corrects_when_public_instance_method_is_before_class_method"
+name = "rubocopcoplayoutclassstructure_with_protected_methods_declared_before_private_"
 source = '''
-class Foo
-  def instance_method; end
-  def self.class_method; end
-end
-'''
-corrected = '''
-class Foo
-  def self.class_method; end
-  def instance_method; end
+class MyClass
+  def public_method
+  end
+
+  private
+
+  def first_private_method
+  end
+
+  def second_private_method
+  end
+
+  protected
+
+  def first_protected_method
+  end
+
+  def second_protected_method
+  end
 end
 '''
 
 [[tests.offenses]]
-line = 3
+line = 15
 column_start = 2
 column_end = 28
-message = "`public_class_methods` is supposed to appear before `public_methods`."
+message = "`protected_methods` is supposed to appear before `private_methods`."
 
 [[tests]]
-name = "rubocop_cop_layout_classstructure_constant_is_not_a_literal_registers_an_offense_but_does_not_autocorrect"
+name = "rubocopcoplayoutclassstructure_with_attribute_macros_before_after_validations_"
+source = '''
+class Person
+  include AnotherModule
+  extend SomeModule
+
+  CustomError = Class.new(StandardError)
+
+  validates :name
+
+  attr_reader :name
+
+  def self.some_public_class_method
+  end
+
+  def initialize
+  end
+
+  def some_public_method
+  end
+
+
+  def yet_other_public_method
+  end
+
+  protected
+
+  def some_protected_method
+  end
+
+  def other_public_method
+  end
+
+  private :other_public_method
+
+  private
+
+  def some_private_method
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 9
+column_start = 2
+column_end = 19
+message = "`attribute_macros` is supposed to appear before `macros`."
+
+[[tests]]
+name = "rubocopcoplayoutclassstructure_constant_is_not_a_literal_registers_an_offense_but_does_not_autocorrect"
 source = '''
 class Person
   def name; end
@@ -142,210 +425,7 @@ column_end = 17
 message = "`constants` is supposed to appear before `public_methods`."
 
 [[tests]]
-name = "rubocop_cop_layout_classstructure_registers_an_offense_and_corrects_when_there_is_a_comment_in_the_macro_method"
-source = '''
-class Foo
-  # This is a comment for macro method.
-  validates :attr
-  attr_reader :foo
-end
-'''
-corrected = '''
-class Foo
-  attr_reader :foo
-  # This is a comment for macro method.
-  validates :attr
-end
-'''
-
-[[tests.offenses]]
-line = 4
-column_start = 2
-column_end = 18
-message = "`attribute_macros` is supposed to appear before `macros`."
-
-[[tests]]
-name = "rubocop_cop_layout_classstructure_registers_an_offense_and_corrects_when_literal_constant_is_after_method_definitions"
-source = '''
-class Foo
-  def name; end
-
-  LIMIT = 10
-  CONST = 'wrong place'.freeze
-  RECURSIVE_BASIC_LITERALS_CONST = [1, 2].freeze
-  DYNAMIC_CONST = foo.freeze
-end
-'''
-corrected = '''
-class Foo
-  LIMIT = 10
-  CONST = 'wrong place'.freeze
-  RECURSIVE_BASIC_LITERALS_CONST = [1, 2].freeze
-  def name; end
-
-  DYNAMIC_CONST = foo.freeze
-end
-'''
-
-[[tests.offenses]]
-line = 4
-column_start = 2
-column_end = 12
-message = "`constants` is supposed to appear before `public_methods`."
-
-[[tests]]
-name = "rubocop_cop_layout_classstructure_ignores_misplaced_private_constants"
-source = '''
-class Foo
-  def name; end
-
-  PRIVATE_CONST1 = 1
-  PRIVATE_CONST2 = 2
-  private_constant :PRIVATE_CONST1, :PRIVATE_CONST2
-  PUBLIC_CONST = 'public'
-end
-'''
-corrected = '''
-class Foo
-  PUBLIC_CONST = 'public'
-  def name; end
-
-  PRIVATE_CONST1 = 1
-  PRIVATE_CONST2 = 2
-  private_constant :PRIVATE_CONST1, :PRIVATE_CONST2
-end
-'''
-
-[[tests.offenses]]
-line = 7
-column_start = 2
-column_end = 25
-message = "`constants` is supposed to appear before `public_methods`."
-
-[[tests]]
-name = "rubocop_cop_layout_classstructure_registers_an_offense_and_corrects_when_str_heredoc_constant_is_defined_after_public_method"
-source = '''
-class Foo
-  def do_something
-  end
-
-  CONSTANT = <<~EOS
-    str
-  EOS
-end
-'''
-corrected = '''
-class Foo
-  CONSTANT = <<~EOS
-    str
-  EOS
-
-  def do_something
-  end
-end
-'''
-
-[[tests.offenses]]
-line = 5
-column_start = 2
-column_end = 19
-message = "`constants` is supposed to appear before `public_methods`."
-
-[[tests]]
-name = "rubocop_cop_layout_classstructure_registers_an_offense_and_corrects_when_dstr_heredoc_constant_is_defined_after_public_method"
-source = '''
-class Foo
-  def do_something
-  end
-
-  CONSTANT = <<~EOS
-    #{str}
-  EOS
-end
-'''
-corrected = '''
-class Foo
-  CONSTANT = <<~EOS
-    #{str}
-  EOS
-
-  def do_something
-  end
-end
-'''
-
-[[tests.offenses]]
-line = 5
-column_start = 2
-column_end = 19
-message = "`constants` is supposed to appear before `public_methods`."
-
-[[tests]]
-name = "rubocop_cop_layout_classstructure_registers_an_offense_and_corrects_when_xstr_heredoc_constant_is_defined_after_public_method"
-source = '''
-class Foo
-  def do_something
-  end
-
-  CONSTANT = <<~`EOS`
-    str
-  EOS
-end
-'''
-corrected = '''
-class Foo
-  CONSTANT = <<~`EOS`
-    str
-  EOS
-
-  def do_something
-  end
-end
-'''
-
-[[tests.offenses]]
-line = 5
-column_start = 2
-column_end = 21
-message = "`constants` is supposed to appear before `public_methods`."
-
-[[tests]]
-name = "rubocop_cop_layout_classstructure_registers_an_offense_and_corrects_when_public_class_method_with_heredoc_after_instance_method"
-source = '''
-class Foo
-  def instance_method
-    'instance method'
-  end
-
-  def self.class_method
-    <<~EOS
-      class method
-    EOS
-  end
-end
-'''
-corrected = '''
-class Foo
-  def self.class_method
-    <<~EOS
-      class method
-    EOS
-  end
-  def instance_method
-    'instance method'
-  end
-
-end
-'''
-
-[[tests.offenses]]
-line = 6
-column_start = 2
-column_end = 23
-message = "`public_class_methods` is supposed to appear before `public_methods`."
-
-[[tests]]
-name = "rubocop_cop_layout_classstructure_when_def_modifier_is_used_registers_an_offense_and_corrects_public_method_with_modifier_declared_after_private_method_with_modifier"
+name = "rubocopcoplayoutclassstructure_when_def_modifier_is_used_registers_an_offense_and_corrects_public_method_with_modifier_declared_after_private_method_with_modifier"
 source = '''
 class A
   private def foo
@@ -372,7 +452,7 @@ column_end = 16
 message = "`public_methods` is supposed to appear before `private_methods`."
 
 [[tests]]
-name = "rubocop_cop_layout_classstructure_when_def_modifier_is_used_registers_an_offense_and_corrects_public_method_without_modifier_declared_after_private_method_with_modifier"
+name = "rubocopcoplayoutclassstructure_when_def_modifier_is_used_registers_an_offense_and_corrects_public_method_without_modifier_declared_after_private_method_with_modifier"
 source = '''
 class A
   private def foo
@@ -399,7 +479,7 @@ column_end = 9
 message = "`public_methods` is supposed to appear before `private_methods`."
 
 [[tests]]
-name = "rubocop_cop_layout_classstructure_when_def_modifier_is_used_registers_an_offense_and_corrects_when_definitions_that_need_to_be_sorted_are_defined_alternately"
+name = "rubocopcoplayoutclassstructure_when_def_modifier_is_used_registers_an_offense_and_corrects_when_definitions_that_need_to_be_sorted_are_defined_alternately"
 source = '''
 class A
   private def foo; end
@@ -436,7 +516,7 @@ column_end = 14
 message = "`public_methods` is supposed to appear before `private_methods`."
 
 [[tests]]
-name = "rubocop_cop_layout_classstructure_when_def_modifier_is_used_registers_an_offense_and_corrects_public_method_after_private_method_marked_by_its_name"
+name = "rubocopcoplayoutclassstructure_when_def_modifier_is_used_registers_an_offense_and_corrects_public_method_after_private_method_marked_by_its_name"
 source = '''
 class A
   def foo
@@ -465,7 +545,7 @@ column_end = 9
 message = "`public_methods` is supposed to appear before `private_methods`."
 
 [[tests]]
-name = "rubocop_cop_layout_classstructure_initializer_is_private_and_comes_after_attribute_macro_registers_an_offense_and_autocorrects"
+name = "rubocopcoplayoutclassstructure_initializer_is_private_and_comes_after_attribute_macro_registers_an_offense_and_autocorrects"
 source = '''
 class A
   private
@@ -494,7 +574,7 @@ column_end = 16
 message = "`initializer` is supposed to appear before `private_attribute_macros`."
 
 [[tests]]
-name = "rubocop_cop_layout_classstructure_when_singleton_class_simple_example"
+name = "rubocopcoplayoutclassstructure_when_singleton_class_simple_example_"
 source = '''
 class << self
   CONST = 'wrong place'
@@ -517,7 +597,7 @@ column_end = 23
 message = "`module_inclusion` is supposed to appear before `constants`."
 
 [[tests]]
-name = "rubocop_cop_layout_classstructure_when_constants_is_in_the_categories_registers_an_offense_and_corrects_when_attribute_macros_after_constant"
+name = "rubocopcoplayoutclassstructure_when_constants_is_in_the_categories_registers_an_offense_and_corrects_when_attribute_macros_after_constant"
 source = '''
 class Foo
   attr_accessor :foo

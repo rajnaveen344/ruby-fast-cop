@@ -4,7 +4,113 @@ severity = "convention"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_style_fetchenvvar_when_it_is_evaluated_with_no_default_values_registers_an_offense"
+name = "rubocopcopstylefetchenvvar_registers_an_offense_when_using_env__x_that_is_different_from_if_condition_in_the_body"
+source = '''
+if ENV && x
+  ENV[x]
+end
+'''
+corrected = '''
+if ENV && x
+  ENV.fetch(x, nil)
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 8
+message = "Use `ENV.fetch(x, nil)` instead of `ENV[x]`."
+
+[tests.config]
+AllowedVars = []
+
+[[tests]]
+name = "rubocopcopstylefetchenvvar_registers_an_offense_when_using_env__x_that_is_different_from_if_condition_in_the_body_2"
+source = '''
+if ENV || x
+  ENV[x]
+end
+'''
+corrected = '''
+if ENV || x
+  ENV.fetch(x, nil)
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 8
+message = "Use `ENV.fetch(x, nil)` instead of `ENV[x]`."
+
+[tests.config]
+AllowedVars = []
+
+[[tests]]
+name = "rubocopcopstylefetchenvvar_registers_an_offense_when_using_an_env_at_if_condition_in_the_body"
+source = '''
+if a == b
+  ENV['X']
+end
+'''
+corrected = '''
+if a == b
+  ENV.fetch('X', nil)
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 10
+message = "Use `ENV.fetch('X', nil)` instead of `ENV['X']`."
+
+[tests.config]
+AllowedVars = []
+
+[[tests]]
+name = "rubocopcopstylefetchenvvar_registers_an_offense_with_using_an_env_at_multiple_if_condition_in_the_body"
+source = '''
+if a || b && c
+  puts ENV['X']
+end
+'''
+corrected = '''
+if a || b && c
+  puts ENV.fetch('X', nil)
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 7
+column_end = 15
+message = "Use `ENV.fetch('X', nil)` instead of `ENV['X']`."
+
+[tests.config]
+AllowedVars = []
+
+[[tests]]
+name = "rubocopcopstylefetchenvvar_when_it_is_evaluated_with_no_default_values_registers_an_offense"
+source = '''
+ENV['X']
+'''
+corrected = '''
+ENV.fetch('X', nil)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 8
+message = "Use `ENV.fetch('X', nil)` instead of `ENV['X']`."
+
+[tests.config]
+AllowedVars = []
+
+[[tests]]
+name = "rubocopcopstylefetchenvvar_when_it_is_evaluated_with_no_default_values_registers_an_offense_2"
 source = '''
 ENV['X' + 'Y']
 '''
@@ -22,7 +128,7 @@ message = "Use `ENV.fetch('X' + 'Y', nil)` instead of `ENV['X' + 'Y']`."
 AllowedVars = []
 
 [[tests]]
-name = "rubocop_cop_style_fetchenvvar_with_negation_registers_no_offenses"
+name = "rubocopcopstylefetchenvvar_with_negation_registers_no_offenses"
 source = '''
 !ENV['X']
 '''
@@ -32,7 +138,7 @@ offenses = []
 AllowedVars = []
 
 [[tests]]
-name = "rubocop_cop_style_fetchenvvar_when_it_receives_a_message_registers_no_offenses"
+name = "rubocopcopstylefetchenvvar_when_it_receives_a_message_registers_no_offenses"
 source = '''
 ENV['X'].some_method
 '''
@@ -42,7 +148,7 @@ offenses = []
 AllowedVars = []
 
 [[tests]]
-name = "rubocop_cop_style_fetchenvvar_when_it_receives_a_message_with_safe_navigation_registers_no_offenses"
+name = "rubocopcopstylefetchenvvar_when_it_receives_a_message_with_safe_navigation_registers_no_offenses"
 source = '''
 ENV['X']&.some_method
 '''
@@ -52,7 +158,7 @@ offenses = []
 AllowedVars = []
 
 [[tests]]
-name = "rubocop_cop_style_fetchenvvar_when_it_is_compared_with_other_object_does_not_register_an_offense"
+name = "rubocopcopstylefetchenvvar_when_it_is_compared__with_other_object_does_not_register_an_offense"
 source = '''
 ENV['X'] == 1
 '''
@@ -62,7 +168,7 @@ offenses = []
 AllowedVars = []
 
 [[tests]]
-name = "rubocop_cop_style_fetchenvvar_when_it_is_compared_with_other_object_does_not_register_an_offense"
+name = "rubocopcopstylefetchenvvar_when_it_is_compared__with_other_object_does_not_register_an_offense_2"
 source = '''
 ENV['X'] != 1
 '''
@@ -72,7 +178,7 @@ offenses = []
 AllowedVars = []
 
 [[tests]]
-name = "rubocop_cop_style_fetchenvvar_when_the_node_is_a_receiver_of_does_not_register_an_offense"
+name = "rubocopcopstylefetchenvvar_when_the_node_is_a_receiver_of__does_not_register_an_offense"
 source = '''
 ENV['X'] ||= y
 x ||= ENV['X'] ||= y
@@ -83,7 +189,7 @@ offenses = []
 AllowedVars = []
 
 [[tests]]
-name = "rubocop_cop_style_fetchenvvar_when_the_node_is_a_receiver_of_does_not_register_an_offense"
+name = "rubocopcopstylefetchenvvar_when_the_node_is_a_receiver_of__does_not_register_an_offense_2"
 source = '''
 ENV['X'] &&= y
 x &&= ENV['X'] ||= y
@@ -94,7 +200,7 @@ offenses = []
 AllowedVars = []
 
 [[tests]]
-name = "rubocop_cop_style_fetchenvvar_when_the_node_is_assigned_by_registers_an_offense"
+name = "rubocopcopstylefetchenvvar_when_the_node_is_assigned_by__registers_an_offense"
 source = '''
 y ||= ENV['X']
 '''
@@ -109,7 +215,7 @@ message = "Use `ENV.fetch('X', nil)` instead of `ENV['X']`."
 AllowedVars = []
 
 [[tests]]
-name = "rubocop_cop_style_fetchenvvar_when_the_node_is_assigned_by_registers_an_offense"
+name = "rubocopcopstylefetchenvvar_when_the_node_is_assigned_by__registers_an_offense_2"
 source = '''
 y &&= ENV['X']
 '''
@@ -124,7 +230,43 @@ message = "Use `ENV.fetch('X', nil)` instead of `ENV['X']`."
 AllowedVars = []
 
 [[tests]]
-name = "rubocop_cop_style_fetchenvvar_when_it_is_an_argument_of_a_method_registers_an_offense"
+name = "rubocopcopstylefetchenvvar_when_it_is_an_argument_of_a_method_registers_an_offense"
+source = '''
+some_method(ENV['X'])
+'''
+corrected = '''
+some_method(ENV.fetch('X', nil))
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 12
+column_end = 20
+message = "Use `ENV.fetch('X', nil)` instead of `ENV['X']`."
+
+[tests.config]
+AllowedVars = []
+
+[[tests]]
+name = "rubocopcopstylefetchenvvar_when_it_is_an_argument_of_a_method_registers_an_offense_2"
+source = '''
+x.some_method(ENV['X'])
+'''
+corrected = '''
+x.some_method(ENV.fetch('X', nil))
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 14
+column_end = 22
+message = "Use `ENV.fetch('X', nil)` instead of `ENV['X']`."
+
+[tests.config]
+AllowedVars = []
+
+[[tests]]
+name = "rubocopcopstylefetchenvvar_when_it_is_an_argument_of_a_method_registers_an_offense_3"
 source = '''
 some_method(
   ENV['A'].some_method,
@@ -164,7 +306,7 @@ message = "Use `ENV.fetch('Y', nil)` instead of `ENV['Y']`."
 AllowedVars = []
 
 [[tests]]
-name = "rubocop_cop_style_fetchenvvar_when_it_is_assigned_to_a_variable_registers_an_offense_when_using_single_assignment"
+name = "rubocopcopstylefetchenvvar_when_it_is_assigned_to_a_variable_registers_an_offense_when_using_single_assignment"
 source = '''
 x = ENV['X']
 '''
@@ -182,7 +324,7 @@ message = "Use `ENV.fetch('X', nil)` instead of `ENV['X']`."
 AllowedVars = []
 
 [[tests]]
-name = "rubocop_cop_style_fetchenvvar_when_it_is_assigned_to_a_variable_registers_an_offense_when_using_multiple_assignment"
+name = "rubocopcopstylefetchenvvar_when_it_is_assigned_to_a_variable_registers_an_offense_when_using_multiple_assignment"
 source = '''
 x, y = ENV['X'],
        ENV['Y']
@@ -208,7 +350,7 @@ message = "Use `ENV.fetch('Y', nil)` instead of `ENV['Y']`."
 AllowedVars = []
 
 [[tests]]
-name = "rubocop_cop_style_fetchenvvar_when_it_is_an_array_element_registers_an_offense"
+name = "rubocopcopstylefetchenvvar_when_it_is_an_array_element_registers_an_offense"
 source = '''
 [
   ENV['X'],
@@ -238,7 +380,7 @@ message = "Use `ENV.fetch('Y', nil)` instead of `ENV['Y']`."
 AllowedVars = []
 
 [[tests]]
-name = "rubocop_cop_style_fetchenvvar_when_it_is_a_hash_key_registers_an_offense"
+name = "rubocopcopstylefetchenvvar_when_it_is_a_hash_key_registers_an_offense"
 source = '''
 {
   ENV['X'] => :x,
@@ -268,7 +410,7 @@ message = "Use `ENV.fetch('Y', nil)` instead of `ENV['Y']`."
 AllowedVars = []
 
 [[tests]]
-name = "rubocop_cop_style_fetchenvvar_when_it_is_a_hash_value_registers_an_offense"
+name = "rubocopcopstylefetchenvvar_when_it_is_a_hash_value_registers_an_offense"
 source = '''
 {
   x: ENV['X'],
@@ -298,7 +440,7 @@ message = "Use `ENV.fetch('Y', nil)` instead of `ENV['Y']`."
 AllowedVars = []
 
 [[tests]]
-name = "rubocop_cop_style_fetchenvvar_when_it_is_used_in_an_interpolation_registers_an_offense"
+name = "rubocopcopstylefetchenvvar_when_it_is_used_in_an_interpolation_registers_an_offense"
 source = '''
 "#{ENV['X']}"
 '''
@@ -316,7 +458,17 @@ message = "Use `ENV.fetch('X', nil)` instead of `ENV['X']`."
 AllowedVars = []
 
 [[tests]]
-name = "rubocop_cop_style_fetchenvvar_when_using_fetch_instead_of_registers_no_offenses"
+name = "rubocopcopstylefetchenvvar_when_using_fetch_instead_of__registers_no_offenses"
+source = '''
+ENV.fetch('X')
+'''
+offenses = []
+
+[tests.config]
+AllowedVars = []
+
+[[tests]]
+name = "rubocopcopstylefetchenvvar_when_using_fetch_instead_of__registers_no_offenses_2"
 source = '''
 ENV.fetch('X', default_value)
 '''
@@ -326,7 +478,7 @@ offenses = []
 AllowedVars = []
 
 [[tests]]
-name = "rubocop_cop_style_fetchenvvar_when_it_is_used_in_a_conditional_expression_registers_no_offenses_with_if"
+name = "rubocopcopstylefetchenvvar_when_it_is_used_in_a_conditional_expression_registers_no_offenses_with_if"
 source = '''
 if ENV['X']
   puts x
@@ -338,7 +490,7 @@ offenses = []
 AllowedVars = []
 
 [[tests]]
-name = "rubocop_cop_style_fetchenvvar_when_it_is_used_in_a_conditional_expression_registers_no_offenses_with_unless"
+name = "rubocopcopstylefetchenvvar_when_it_is_used_in_a_conditional_expression_registers_no_offenses_with_unless"
 source = '''
 unless ENV['X']
   puts x
@@ -350,7 +502,7 @@ offenses = []
 AllowedVars = []
 
 [[tests]]
-name = "rubocop_cop_style_fetchenvvar_when_it_is_used_in_a_conditional_expression_registers_no_offenses_with_ternary_operator"
+name = "rubocopcopstylefetchenvvar_when_it_is_used_in_a_conditional_expression_registers_no_offenses_with_ternary_operator"
 source = '''
 ENV['X'] ? x : y
 '''
@@ -360,7 +512,7 @@ offenses = []
 AllowedVars = []
 
 [[tests]]
-name = "rubocop_cop_style_fetchenvvar_when_it_is_used_in_a_conditional_expression_registers_an_offense_with_case"
+name = "rubocopcopstylefetchenvvar_when_it_is_used_in_a_conditional_expression_registers_an_offense_with_case"
 source = '''
 case ENV['X']
 when ENV['Y']
@@ -390,7 +542,7 @@ message = "Use `ENV.fetch('Y', nil)` instead of `ENV['Y']`."
 AllowedVars = []
 
 [[tests]]
-name = "rubocop_cop_style_fetchenvvar_when_it_is_used_in_a_conditional_expression_registers_no_offenses_when_using_the_same_env_var_as_if_condition_in_the_body"
+name = "rubocopcopstylefetchenvvar_when_it_is_used_in_a_conditional_expression_registers_no_offenses_when_using_the_same_env_var_as_if_condition_in_the_body"
 source = '''
 if ENV['X']
   puts ENV['X']
@@ -402,7 +554,7 @@ offenses = []
 AllowedVars = []
 
 [[tests]]
-name = "rubocop_cop_style_fetchenvvar_when_it_is_used_in_a_conditional_expression_registers_no_offenses_when_using_the_same_env_var_as_if_condition_in_the_body_with_other_conditions"
+name = "rubocopcopstylefetchenvvar_when_it_is_used_in_a_conditional_expression_registers_no_offenses_when_using_the_same_env_var_as_if_condition_in_the_body_with_other_conditions"
 source = '''
 if foo? || ENV["X"]
   puts ENV.fetch("X")
@@ -423,7 +575,7 @@ offenses = []
 AllowedVars = []
 
 [[tests]]
-name = "rubocop_cop_style_fetchenvvar_when_it_is_used_in_a_conditional_expression_registers_no_offenses_when_using_the_same_env_var_as_if_condition_in_the_body_with_operator"
+name = "rubocopcopstylefetchenvvar_when_it_is_used_in_a_conditional_expression_registers_no_offenses_when_using_the_same_env_var_as_if_condition_in_the_body_with_operator"
 source = '''
 if ENV['X'] == foo
   puts ENV['X']
@@ -438,7 +590,7 @@ offenses = []
 AllowedVars = []
 
 [[tests]]
-name = "rubocop_cop_style_fetchenvvar_when_it_is_used_in_a_conditional_expression_registers_no_offenses_when_using_the_same_env_var_as_if_condition_in_the_body_with_predicate_method"
+name = "rubocopcopstylefetchenvvar_when_it_is_used_in_a_conditional_expression_registers_no_offenses_when_using_the_same_env_var_as_if_condition_in_the_body_with_predicate_method"
 source = '''
 if ENV["X"].present?
   puts ENV["X"]
@@ -459,7 +611,7 @@ offenses = []
 AllowedVars = []
 
 [[tests]]
-name = "rubocop_cop_style_fetchenvvar_when_it_is_used_in_a_conditional_expression_registers_an_offense_when_using_an_env_var_that_is_different_from_if_condition_in_the_body"
+name = "rubocopcopstylefetchenvvar_when_it_is_used_in_a_conditional_expression_registers_an_offense_when_using_an_env_var_that_is_different_from_if_condition_in_the_body"
 source = '''
 if ENV['X']
   puts ENV['Y']
@@ -481,7 +633,7 @@ message = "Use `ENV.fetch('Y', nil)` instead of `ENV['Y']`."
 AllowedVars = []
 
 [[tests]]
-name = "rubocop_cop_style_fetchenvvar_when_it_is_used_in_a_conditional_expression_registers_no_offenses_when_using_the_same_env_var_as_if_condition_in_the_body_with_assignment_method"
+name = "rubocopcopstylefetchenvvar_when_it_is_used_in_a_conditional_expression_registers_no_offenses_when_using_the_same_env_var_as_if_condition_in_the_body_with_assignment_method"
 source = '''
 if ENV['X'] = x
   puts ENV['X']
@@ -493,7 +645,7 @@ offenses = []
 AllowedVars = []
 
 [[tests]]
-name = "rubocop_cop_style_fetchenvvar_when_it_is_used_in_a_conditional_expression_registers_an_offense_with_using_an_env_var_as_if_condition_in_the_body_with_assignment_method"
+name = "rubocopcopstylefetchenvvar_when_it_is_used_in_a_conditional_expression_registers_an_offense_with_using_an_env_var_as_if_condition_in_the_body_with_assignment_method"
 source = '''
 if ENV['X'] = x
   puts ENV['Y']
@@ -515,95 +667,7 @@ message = "Use `ENV.fetch('Y', nil)` instead of `ENV['Y']`."
 AllowedVars = []
 
 [[tests]]
-name = "rubocop_cop_style_fetchenvvar_registers_an_offense_when_using_env_x_that_is_different_from_if_condition_in_the_body"
-source = '''
-if ENV && x
-  ENV[x]
-end
-'''
-corrected = '''
-if ENV && x
-  ENV.fetch(x, nil)
-end
-'''
-
-[[tests.offenses]]
-line = 2
-column_start = 2
-column_end = 8
-message = "Use `ENV.fetch(x, nil)` instead of `ENV[x]`."
-
-[tests.config]
-AllowedVars = []
-
-[[tests]]
-name = "rubocop_cop_style_fetchenvvar_registers_an_offense_when_using_env_x_that_is_different_from_if_condition_in_the_body"
-source = '''
-if ENV || x
-  ENV[x]
-end
-'''
-corrected = '''
-if ENV || x
-  ENV.fetch(x, nil)
-end
-'''
-
-[[tests.offenses]]
-line = 2
-column_start = 2
-column_end = 8
-message = "Use `ENV.fetch(x, nil)` instead of `ENV[x]`."
-
-[tests.config]
-AllowedVars = []
-
-[[tests]]
-name = "rubocop_cop_style_fetchenvvar_registers_an_offense_when_using_an_env_at_if_condition_in_the_body"
-source = '''
-if a == b
-  ENV['X']
-end
-'''
-corrected = '''
-if a == b
-  ENV.fetch('X', nil)
-end
-'''
-
-[[tests.offenses]]
-line = 2
-column_start = 2
-column_end = 10
-message = "Use `ENV.fetch('X', nil)` instead of `ENV['X']`."
-
-[tests.config]
-AllowedVars = []
-
-[[tests]]
-name = "rubocop_cop_style_fetchenvvar_registers_an_offense_with_using_an_env_at_multiple_if_condition_in_the_body"
-source = '''
-if a || b && c
-  puts ENV['X']
-end
-'''
-corrected = '''
-if a || b && c
-  puts ENV.fetch('X', nil)
-end
-'''
-
-[[tests.offenses]]
-line = 2
-column_start = 7
-column_end = 15
-message = "Use `ENV.fetch('X', nil)` instead of `ENV['X']`."
-
-[tests.config]
-AllowedVars = []
-
-[[tests]]
-name = "rubocop_cop_style_fetchenvvar_when_the_env_val_is_excluded_from_the_inspection_by_the_config_registers_no_offenses"
+name = "rubocopcopstylefetchenvvar_when_the_env_val_is_excluded_from_the_inspection_by_the_config_registers_no_offenses"
 source = '''
 ENV['X']
 '''
@@ -613,7 +677,7 @@ offenses = []
 AllowedVars = ["X"]
 
 [[tests]]
-name = "rubocop_cop_style_fetchenvvar_when_env_is_the_right_end_of_chains_registers_an_offense"
+name = "rubocopcopstylefetchenvvar_when_env_is_the_right_end_of__chains_registers_an_offense"
 source = '''
 y || ENV['X']
 
@@ -638,10 +702,10 @@ column_end = 18
 message = "Use `ENV.fetch('X', nil)` instead of `ENV['X']`."
 
 [tests.config]
-AllowedVars = ["X"]
+AllowedVars = []
 
 [[tests]]
-name = "rubocop_cop_style_fetchenvvar_when_env_is_the_lhs_of_registers_no_offenses"
+name = "rubocopcopstylefetchenvvar_when_env_is_the_lhs_of__registers_no_offenses"
 source = '''
 ENV['X'] || y
 
@@ -650,10 +714,10 @@ z || ENV['X'] || y
 offenses = []
 
 [tests.config]
-AllowedVars = ["X"]
+AllowedVars = []
 
 [[tests]]
-name = "rubocop_cop_style_fetchenvvar_when_defaulttonil_is_false_registers_an_offense_and_corrects_to_env_fetch_without_nil"
+name = "rubocopcopstylefetchenvvar_when_defaulttonil_is_false_registers_an_offense_and_corrects_to_envfetch_without_nil"
 source = '''
 ENV['X']
 '''
@@ -668,11 +732,10 @@ column_end = 8
 message = "Use `ENV.fetch('X')` instead of `ENV['X']`."
 
 [tests.config]
-AllowedVars = ["X"]
 DefaultToNil = false
 
 [[tests]]
-name = "rubocop_cop_style_fetchenvvar_when_defaulttonil_is_false_registers_an_offense_for_variable_assignment"
+name = "rubocopcopstylefetchenvvar_when_defaulttonil_is_false_registers_an_offense_for_variable_assignment"
 source = '''
 x = ENV['X']
 '''
@@ -687,11 +750,10 @@ column_end = 12
 message = "Use `ENV.fetch('X')` instead of `ENV['X']`."
 
 [tests.config]
-AllowedVars = ["X"]
 DefaultToNil = false
 
 [[tests]]
-name = "rubocop_cop_style_fetchenvvar_when_defaulttonil_is_false_registers_an_offense_for_method_argument"
+name = "rubocopcopstylefetchenvvar_when_defaulttonil_is_false_registers_an_offense_for_method_argument"
 source = '''
 some_method(ENV['X'])
 '''
@@ -706,5 +768,4 @@ column_end = 20
 message = "Use `ENV.fetch('X')` instead of `ENV['X']`."
 
 [tests.config]
-AllowedVars = ["X"]
 DefaultToNil = false

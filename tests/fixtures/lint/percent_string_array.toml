@@ -4,24 +4,48 @@ severity = "warning"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_lint_percentstringarray_detecting_quotes_or_commas_in_a_w_w_string_accepts_tokens_without_quotes_or_commas"
+name = "rubocopcoplintpercentstringarray_detecting_quotes_or_commas_in_a_ww_string_accepts_tokens_without_quotes_or_commas"
 source = '''
-%#{char}(foo bar baz)
+%w(foo bar baz)
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_percentstringarray_detecting_quotes_or_commas_in_a_w_w_string_adds_an_offense_and_corrects_when_tokens_contain_quotes_and_are_comma_separated"
+name = "rubocopcoplintpercentstringarray_detecting_quotes_or_commas_in_a_ww_string_accepts_likely_false_positive_w_"
 source = '''
-%#{char}('foo', 'bar', 'baz')
+%w(' ")
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintpercentstringarray_detecting_quotes_or_commas_in_a_ww_string_accepts_likely_false_positive_w_____"
+source = '''
+%w(' " ! = # ,)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintpercentstringarray_detecting_quotes_or_commas_in_a_ww_string_accepts_likely_false_positive_a"
+source = '''
+:"#{a}"
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintpercentstringarray_detecting_quotes_or_commas_in_a_ww_string_accepts_likely_false_positive_wa_b"
+source = '''
+%w(#{a} b)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintpercentstringarray_detecting_quotes_or_commas_in_a_ww_string_adds_an_offense_and_corrects_when_tokens_contain_quotes_and_are_comma_separated"
+source = '''
+%w('foo', 'bar', 'baz')
 '''
 corrected = '''
-%#{char}(foo bar baz)
+%w(foo bar baz)
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -30,15 +54,13 @@ column_end = 23
 message = "Within `%w`/`%W`, quotes and ',' are unnecessary and may be unwanted in the resulting strings."
 
 [[tests]]
-name = "rubocop_cop_lint_percentstringarray_detecting_quotes_or_commas_in_a_w_w_string_adds_an_offense_and_corrects_when_tokens_contain_both_types_of_quotes"
+name = "rubocopcoplintpercentstringarray_detecting_quotes_or_commas_in_a_ww_string_adds_an_offense_and_corrects_when_tokens_contain_both_types_of_quotes"
 source = '''
-%#{char}('foo' "bar" 'baz')
+%w('foo' "bar" 'baz')
 '''
 corrected = '''
-%#{char}(foo bar baz)
+%w(foo bar baz)
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -47,15 +69,13 @@ column_end = 21
 message = "Within `%w`/`%W`, quotes and ',' are unnecessary and may be unwanted in the resulting strings."
 
 [[tests]]
-name = "rubocop_cop_lint_percentstringarray_detecting_quotes_or_commas_in_a_w_w_string_adds_an_offense_and_corrects_when_one_token_is_quoted_but_there_are_no_commas"
+name = "rubocopcoplintpercentstringarray_detecting_quotes_or_commas_in_a_ww_string_adds_an_offense_and_corrects_when_one_token_is_quoted_but_there_are_no_commas"
 source = '''
-%#{char}('foo' bar baz)
+%w('foo' bar baz)
 '''
 corrected = '''
-%#{char}(foo bar baz)
+%w(foo bar baz)
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -64,15 +84,13 @@ column_end = 17
 message = "Within `%w`/`%W`, quotes and ',' are unnecessary and may be unwanted in the resulting strings."
 
 [[tests]]
-name = "rubocop_cop_lint_percentstringarray_detecting_quotes_or_commas_in_a_w_w_string_adds_an_offense_and_corrects_when_there_are_no_quotes_but_one_comma"
+name = "rubocopcoplintpercentstringarray_detecting_quotes_or_commas_in_a_ww_string_adds_an_offense_and_corrects_when_there_are_no_quotes_but_one_comma"
 source = '''
-%#{char}(foo, bar baz)
+%w(foo, bar baz)
 '''
 corrected = '''
-%#{char}(foo bar baz)
+%w(foo bar baz)
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -81,7 +99,102 @@ column_end = 16
 message = "Within `%w`/`%W`, quotes and ',' are unnecessary and may be unwanted in the resulting strings."
 
 [[tests]]
-name = "rubocop_cop_lint_percentstringarray_with_invalid_byte_sequence_in_utf_8_adds_an_offense_and_corrects_when_tokens_contain_quotes"
+name = "rubocopcoplintpercentstringarray_detecting_quotes_or_commas_in_a_ww_string_accepts_tokens_without_quotes_or_commas_2"
+source = '''
+%W(foo bar baz)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintpercentstringarray_detecting_quotes_or_commas_in_a_ww_string_accepts_likely_false_positive_w__2"
+source = '''
+%W(' ")
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintpercentstringarray_detecting_quotes_or_commas_in_a_ww_string_accepts_likely_false_positive_w______2"
+source = '''
+%W(' " ! = # ,)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintpercentstringarray_detecting_quotes_or_commas_in_a_ww_string_accepts_likely_false_positive_a_2"
+source = '''
+:"#{a}"
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintpercentstringarray_detecting_quotes_or_commas_in_a_ww_string_accepts_likely_false_positive_wa_b_2"
+source = '''
+%W(#{a} b)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintpercentstringarray_detecting_quotes_or_commas_in_a_ww_string_adds_an_offense_and_corrects_when_tokens_contain_quotes_and_are_comma_separated_2"
+source = '''
+%W('foo', 'bar', 'baz')
+'''
+corrected = '''
+%W(foo bar baz)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 23
+message = "Within `%w`/`%W`, quotes and ',' are unnecessary and may be unwanted in the resulting strings."
+
+[[tests]]
+name = "rubocopcoplintpercentstringarray_detecting_quotes_or_commas_in_a_ww_string_adds_an_offense_and_corrects_when_tokens_contain_both_types_of_quotes_2"
+source = '''
+%W('foo' "bar" 'baz')
+'''
+corrected = '''
+%W(foo bar baz)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 21
+message = "Within `%w`/`%W`, quotes and ',' are unnecessary and may be unwanted in the resulting strings."
+
+[[tests]]
+name = "rubocopcoplintpercentstringarray_detecting_quotes_or_commas_in_a_ww_string_adds_an_offense_and_corrects_when_one_token_is_quoted_but_there_are_no_commas_2"
+source = '''
+%W('foo' bar baz)
+'''
+corrected = '''
+%W(foo bar baz)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 17
+message = "Within `%w`/`%W`, quotes and ',' are unnecessary and may be unwanted in the resulting strings."
+
+[[tests]]
+name = "rubocopcoplintpercentstringarray_detecting_quotes_or_commas_in_a_ww_string_adds_an_offense_and_corrects_when_there_are_no_quotes_but_one_comma_2"
+source = '''
+%W(foo, bar baz)
+'''
+corrected = '''
+%W(foo bar baz)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 16
+message = "Within `%w`/`%W`, quotes and ',' are unnecessary and may be unwanted in the resulting strings."
+
+[[tests]]
+name = "rubocopcoplintpercentstringarray_with_invalid_byte_sequence_in_utf8_adds_an_offense_and_corrects_when_tokens_contain_quotes"
 source = '''
 %W("a\255\255")
 '''
@@ -96,8 +209,36 @@ column_end = 15
 message = "Within `%w`/`%W`, quotes and ',' are unnecessary and may be unwanted in the resulting strings."
 
 [[tests]]
-name = "rubocop_cop_lint_percentstringarray_with_invalid_byte_sequence_in_utf_8_accepts_if_tokens_contain_invalid_byte_sequence_only"
+name = "rubocopcoplintpercentstringarray_with_invalid_byte_sequence_in_utf8_accepts_if_tokens_contain_invalid_byte_sequence_only"
 source = '''
 %W(\255)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintpercentstringarray_with_binary_encoded_source_adds_an_offense_and_corrects_when_tokens_contain_quotes"
+source = '''
+# encoding: BINARY
+
+%W[? "foo"]
+'''
+corrected = '''
+# encoding: BINARY
+
+%W[? foo]
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 11
+message = "Within `%w`/`%W`, quotes and ',' are unnecessary and may be unwanted in the resulting strings."
+
+[[tests]]
+name = "rubocopcoplintpercentstringarray_with_binary_encoded_source_accepts_if_tokens_contain_no_quotes"
+source = '''
+# encoding: BINARY
+
+%W[? ?]
 '''
 offenses = []

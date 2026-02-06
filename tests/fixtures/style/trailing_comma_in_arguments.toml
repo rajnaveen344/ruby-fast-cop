@@ -4,144 +4,17 @@ severity = "convention"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_registers_an_offense_for_trailing_comma_in_a_method_call"
-source = '''
-some_method#{start_bracket}a, b, c, #{end_bracket}
-'''
-corrected = '''
-some_method#{start_bracket}a, b, c #{end_bracket}
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 50
-message = "Avoid comma after the last parameter of a method call#{extra_info}."
-
-[[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_registers_an_offense_for_trailing_comma_preceded_by_whitespace_in_a_method_call"
-source = '''
-some_method#{start_bracket}a, b, c , #{end_bracket}
-'''
-corrected = '''
-some_method#{start_bracket}a, b, c  #{end_bracket}
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 51
-message = "Avoid comma after the last parameter of a method call#{extra_info}."
-
-[[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_registers_an_offense_for_trailing_comma_in_a_method_call_with_hash_parameters_at_the_end"
-source = '''
-some_method#{start_bracket}a, b, c: 0, d: 1, #{end_bracket}
-'''
-corrected = '''
-some_method#{start_bracket}a, b, c: 0, d: 1 #{end_bracket}
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 59
-message = "Avoid comma after the last parameter of a method call#{extra_info}."
-
-[[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_accepts_method_call_without_trailing_comma"
-source = '''
-some_method#{start_bracket}a, b, c#{end_bracket}
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_accepts_method_call_without_trailing_comma_when_a_line_break_before_a_method_call"
-source = '''
-obj
-  .do_something#{start_bracket}:foo, :bar#{end_bracket}
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_trailingcommainarguments"
-source = '''
-some_method#{start_bracket}a: 1#{end_bracket}
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_accepts_method_call_without_parameters"
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_no_comma_behaves_like_single_line_lists_accepts_method_call_without_parameters"
 source = '''
 some_method
 '''
 offenses = []
 
-[[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_accepts_chained_single_line_method_calls"
-source = '''
-target
-  .some_method#{start_bracket}a#{end_bracket}
-'''
-interpolated = true
-verified = false
-offenses = []
+[tests.config]
+EnforcedStyleForMultiline = "no_comma"
 
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_when_using_safe_navigation_operator_registers_an_offense_for_trailing_comma_in_a_method_call"
-source = '''
-receiver&.some_method#{start_bracket}a, b, c, #{end_bracket}
-'''
-corrected = '''
-receiver&.some_method#{start_bracket}a, b, c #{end_bracket}
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 60
-message = "Avoid comma after the last parameter of a method call#{extra_info}."
-
-[[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_when_using_safe_navigation_operator"
-source = '''
-receiver&.some_method#{start_bracket}a, b, c: 0, d: 1, #{end_bracket}
-'''
-corrected = '''
-receiver&.some_method#{start_bracket}a, b, c: 0, d: 1 #{end_bracket}
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 69
-message = "Avoid comma after the last parameter of a method call#{extra_info}."
-
-[[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_accepts_method_call_without_parameters"
-source = '''
-some_method
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_accepts_heredoc_without_trailing_comma"
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_no_comma_behaves_like_single_line_lists_accepts_heredoc_without_trailing_comma"
 source = '''
 route(1, <<-HELP.chomp)
 ...
@@ -149,74 +22,1265 @@ HELP
 '''
 offenses = []
 
+[tests.config]
+EnforcedStyleForMultiline = "no_comma"
+
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_comma_single_line_lists_unless_each_item_i"
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_no_comma_behaves_like_single_line_lists_with__brackets_registers_an_offense_for_trailing_comma_in_a_method_call"
 source = '''
-, unless each item is on its own line
+some_method(a, b, c, )
 '''
-interpolated = true
-verified = false
+corrected = '''
+some_method(a, b, c )
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 19
+column_end = 20
+message = "Avoid comma after the last parameter of a method call."
+
+[tests.config]
+EnforcedStyleForMultiline = "no_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_no_comma_behaves_like_single_line_lists_with__brackets_registers_an_offense_for_trailing_comma_preceded_by_whitespace_in_a_method_call"
+source = '''
+some_method(a, b, c , )
+'''
+corrected = '''
+some_method(a, b, c  )
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 20
+column_end = 21
+message = "Avoid comma after the last parameter of a method call."
+
+[tests.config]
+EnforcedStyleForMultiline = "no_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_no_comma_behaves_like_single_line_lists_with__brackets_registers_an_offense_for_trailing_comma_in_a_method_call_with_hash_parameters_at_the_end"
+source = '''
+some_method(a, b, c: 0, d: 1, )
+'''
+corrected = '''
+some_method(a, b, c: 0, d: 1 )
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 28
+column_end = 29
+message = "Avoid comma after the last parameter of a method call."
+
+[tests.config]
+EnforcedStyleForMultiline = "no_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_no_comma_behaves_like_single_line_lists_with__brackets_accepts_method_call_without_trailing_comma"
+source = '''
+some_method(a, b, c)
+'''
 offenses = []
 
 [tests.config]
-EnforcedStyleForMultiline = "$UNRESOLVED:comma"
+EnforcedStyleForMultiline = "no_comma"
 
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_diff_comma_single_line_lists_unless_that_item_i"
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_no_comma_behaves_like_single_line_lists_with__brackets_accepts_method_call_without_trailing_comma_when_a_line_break_before_a_method_call"
 source = '''
-, unless that item immediately precedes a newline
+obj
+  .do_something(:foo, :bar)
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyleForMultiline = "$UNRESOLVED:diff_comma"
+EnforcedStyleForMultiline = "no_comma"
 
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_single_line_lists_unless_items_are_s"
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_no_comma_behaves_like_single_line_lists_with__brackets_accepts_method_call_without_trailing_comma_with_single_element_hash_parameters_at_the_end"
 source = '''
-, unless items are split onto multiple lines
+some_method(a: 1)
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyleForMultiline = "$UNRESOLVED:consistent_comma"
+EnforcedStyleForMultiline = "no_comma"
 
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_with_a_single_argument_spanning_multiple_lines_when_enforcedstyleformultiline_is_consistent_comma_accepts_a_single_argument_with_no_trailing_comma"
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_no_comma_behaves_like_single_line_lists_with__brackets_accepts_method_call_without_parameters"
 source = '''
-EmailWorker.perform_async#{start_bracket}{
+some_method
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "no_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_no_comma_behaves_like_single_line_lists_with__brackets_accepts_chained_singleline_method_calls"
+source = '''
+target
+  .some_method(a)
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "no_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_no_comma_behaves_like_single_line_lists_with__brackets_when_using_safe_navigation_operator_registers_an_offense_for_trailing_comma_in_a_method_call"
+source = '''
+receiver&.some_method(a, b, c, )
+'''
+corrected = '''
+receiver&.some_method(a, b, c )
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 29
+column_end = 30
+message = "Avoid comma after the last parameter of a method call."
+
+[tests.config]
+EnforcedStyleForMultiline = "no_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_no_comma_behaves_like_single_line_lists_with__brackets_when_using_safe_navigation_operator_registers_an_offense_for_trailing_comma_in_a_method_call_with_hash_parameters_at_the_end"
+source = '''
+receiver&.some_method(a, b, c: 0, d: 1, )
+'''
+corrected = '''
+receiver&.some_method(a, b, c: 0, d: 1 )
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 38
+column_end = 39
+message = "Avoid comma after the last parameter of a method call."
+
+[tests.config]
+EnforcedStyleForMultiline = "no_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_no_comma_behaves_like_single_line_lists_with__brackets_registers_an_offense_for_trailing_comma_in_a_method_call_2"
+source = '''
+some_method[a, b, c, ]
+'''
+corrected = '''
+some_method[a, b, c ]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 19
+column_end = 20
+message = "Avoid comma after the last parameter of a method call."
+
+[tests.config]
+EnforcedStyleForMultiline = "no_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_no_comma_behaves_like_single_line_lists_with__brackets_registers_an_offense_for_trailing_comma_preceded_by_whitespace_in_a_method_call_2"
+source = '''
+some_method[a, b, c , ]
+'''
+corrected = '''
+some_method[a, b, c  ]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 20
+column_end = 21
+message = "Avoid comma after the last parameter of a method call."
+
+[tests.config]
+EnforcedStyleForMultiline = "no_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_no_comma_behaves_like_single_line_lists_with__brackets_registers_an_offense_for_trailing_comma_in_a_method_call_with_hash_parameters_at_the_end_2"
+source = '''
+some_method[a, b, c: 0, d: 1, ]
+'''
+corrected = '''
+some_method[a, b, c: 0, d: 1 ]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 28
+column_end = 29
+message = "Avoid comma after the last parameter of a method call."
+
+[tests.config]
+EnforcedStyleForMultiline = "no_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_no_comma_behaves_like_single_line_lists_with__brackets_accepts_method_call_without_trailing_comma_2"
+source = '''
+some_method[a, b, c]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "no_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_no_comma_behaves_like_single_line_lists_with__brackets_accepts_method_call_without_trailing_comma_when_a_line_break_before_a_method_call_2"
+source = '''
+obj
+  .do_something[:foo, :bar]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "no_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_no_comma_behaves_like_single_line_lists_with__brackets_accepts_method_call_without_trailing_comma_with_single_element_hash_parameters_at_the_end_2"
+source = '''
+some_method[a: 1]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "no_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_no_comma_behaves_like_single_line_lists_with__brackets_accepts_method_call_without_parameters_2"
+source = '''
+some_method
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "no_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_no_comma_behaves_like_single_line_lists_with__brackets_accepts_chained_singleline_method_calls_2"
+source = '''
+target
+  .some_method[a]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "no_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_no_comma_behaves_like_single_line_lists_with__brackets_when_using_safe_navigation_operator_registers_an_offense_for_trailing_comma_in_a_method_call_2"
+source = '''
+receiver&.some_method[a, b, c, ]
+'''
+corrected = '''
+receiver&.some_method[a, b, c ]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 29
+column_end = 30
+message = "Avoid comma after the last parameter of a method call."
+
+[tests.config]
+EnforcedStyleForMultiline = "no_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_no_comma_behaves_like_single_line_lists_with__brackets_when_using_safe_navigation_operator_registers_an_offense_for_trailing_comma_in_a_method_call_with_hash_parameters_at_the_end_2"
+source = '''
+receiver&.some_method[a, b, c: 0, d: 1, ]
+'''
+corrected = '''
+receiver&.some_method[a, b, c: 0, d: 1 ]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 38
+column_end = 39
+message = "Avoid comma after the last parameter of a method call."
+
+[tests.config]
+EnforcedStyleForMultiline = "no_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_comma_behaves_like_single_line_lists_accepts_method_call_without_parameters"
+source = '''
+some_method
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_comma_behaves_like_single_line_lists_accepts_heredoc_without_trailing_comma"
+source = '''
+route(1, <<-HELP.chomp)
+...
+HELP
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_comma_behaves_like_single_line_lists_with__brackets_registers_an_offense_for_trailing_comma_in_a_method_call"
+source = '''
+some_method(a, b, c, )
+'''
+corrected = '''
+some_method(a, b, c )
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 19
+column_end = 20
+message = "Avoid comma after the last parameter of a method call, unless each item is on its own line."
+
+[tests.config]
+EnforcedStyleForMultiline = "comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_comma_behaves_like_single_line_lists_with__brackets_registers_an_offense_for_trailing_comma_preceded_by_whitespace_in_a_method_call"
+source = '''
+some_method(a, b, c , )
+'''
+corrected = '''
+some_method(a, b, c  )
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 20
+column_end = 21
+message = "Avoid comma after the last parameter of a method call, unless each item is on its own line."
+
+[tests.config]
+EnforcedStyleForMultiline = "comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_comma_behaves_like_single_line_lists_with__brackets_registers_an_offense_for_trailing_comma_in_a_method_call_with_hash_parameters_at_the_end"
+source = '''
+some_method(a, b, c: 0, d: 1, )
+'''
+corrected = '''
+some_method(a, b, c: 0, d: 1 )
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 28
+column_end = 29
+message = "Avoid comma after the last parameter of a method call, unless each item is on its own line."
+
+[tests.config]
+EnforcedStyleForMultiline = "comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_comma_behaves_like_single_line_lists_with__brackets_accepts_method_call_without_trailing_comma"
+source = '''
+some_method(a, b, c)
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_comma_behaves_like_single_line_lists_with__brackets_accepts_method_call_without_trailing_comma_when_a_line_break_before_a_method_call"
+source = '''
+obj
+  .do_something(:foo, :bar)
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_comma_behaves_like_single_line_lists_with__brackets_accepts_method_call_without_trailing_comma_with_single_element_hash_parameters_at_the_end"
+source = '''
+some_method(a: 1)
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_comma_behaves_like_single_line_lists_with__brackets_accepts_method_call_without_parameters"
+source = '''
+some_method
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_comma_behaves_like_single_line_lists_with__brackets_accepts_chained_singleline_method_calls"
+source = '''
+target
+  .some_method(a)
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_comma_behaves_like_single_line_lists_with__brackets_when_using_safe_navigation_operator_registers_an_offense_for_trailing_comma_in_a_method_call"
+source = '''
+receiver&.some_method(a, b, c, )
+'''
+corrected = '''
+receiver&.some_method(a, b, c )
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 29
+column_end = 30
+message = "Avoid comma after the last parameter of a method call, unless each item is on its own line."
+
+[tests.config]
+EnforcedStyleForMultiline = "comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_comma_behaves_like_single_line_lists_with__brackets_when_using_safe_navigation_operator_registers_an_offense_for_trailing_comma_in_a_method_call_with_hash_parameters_at_the_end"
+source = '''
+receiver&.some_method(a, b, c: 0, d: 1, )
+'''
+corrected = '''
+receiver&.some_method(a, b, c: 0, d: 1 )
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 38
+column_end = 39
+message = "Avoid comma after the last parameter of a method call, unless each item is on its own line."
+
+[tests.config]
+EnforcedStyleForMultiline = "comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_comma_behaves_like_single_line_lists_with__brackets_registers_an_offense_for_trailing_comma_in_a_method_call_2"
+source = '''
+some_method[a, b, c, ]
+'''
+corrected = '''
+some_method[a, b, c ]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 19
+column_end = 20
+message = "Avoid comma after the last parameter of a method call, unless each item is on its own line."
+
+[tests.config]
+EnforcedStyleForMultiline = "comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_comma_behaves_like_single_line_lists_with__brackets_registers_an_offense_for_trailing_comma_preceded_by_whitespace_in_a_method_call_2"
+source = '''
+some_method[a, b, c , ]
+'''
+corrected = '''
+some_method[a, b, c  ]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 20
+column_end = 21
+message = "Avoid comma after the last parameter of a method call, unless each item is on its own line."
+
+[tests.config]
+EnforcedStyleForMultiline = "comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_comma_behaves_like_single_line_lists_with__brackets_registers_an_offense_for_trailing_comma_in_a_method_call_with_hash_parameters_at_the_end_2"
+source = '''
+some_method[a, b, c: 0, d: 1, ]
+'''
+corrected = '''
+some_method[a, b, c: 0, d: 1 ]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 28
+column_end = 29
+message = "Avoid comma after the last parameter of a method call, unless each item is on its own line."
+
+[tests.config]
+EnforcedStyleForMultiline = "comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_comma_behaves_like_single_line_lists_with__brackets_accepts_method_call_without_trailing_comma_2"
+source = '''
+some_method[a, b, c]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_comma_behaves_like_single_line_lists_with__brackets_accepts_method_call_without_trailing_comma_when_a_line_break_before_a_method_call_2"
+source = '''
+obj
+  .do_something[:foo, :bar]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_comma_behaves_like_single_line_lists_with__brackets_accepts_method_call_without_trailing_comma_with_single_element_hash_parameters_at_the_end_2"
+source = '''
+some_method[a: 1]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_comma_behaves_like_single_line_lists_with__brackets_accepts_method_call_without_parameters_2"
+source = '''
+some_method
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_comma_behaves_like_single_line_lists_with__brackets_accepts_chained_singleline_method_calls_2"
+source = '''
+target
+  .some_method[a]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_comma_behaves_like_single_line_lists_with__brackets_when_using_safe_navigation_operator_registers_an_offense_for_trailing_comma_in_a_method_call_2"
+source = '''
+receiver&.some_method[a, b, c, ]
+'''
+corrected = '''
+receiver&.some_method[a, b, c ]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 29
+column_end = 30
+message = "Avoid comma after the last parameter of a method call, unless each item is on its own line."
+
+[tests.config]
+EnforcedStyleForMultiline = "comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_comma_behaves_like_single_line_lists_with__brackets_when_using_safe_navigation_operator_registers_an_offense_for_trailing_comma_in_a_method_call_with_hash_parameters_at_the_end_2"
+source = '''
+receiver&.some_method[a, b, c: 0, d: 1, ]
+'''
+corrected = '''
+receiver&.some_method[a, b, c: 0, d: 1 ]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 38
+column_end = 39
+message = "Avoid comma after the last parameter of a method call, unless each item is on its own line."
+
+[tests.config]
+EnforcedStyleForMultiline = "comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_diff_comma_behaves_like_single_line_lists_accepts_method_call_without_parameters"
+source = '''
+some_method
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "diff_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_diff_comma_behaves_like_single_line_lists_accepts_heredoc_without_trailing_comma"
+source = '''
+route(1, <<-HELP.chomp)
+...
+HELP
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "diff_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_diff_comma_behaves_like_single_line_lists_with__brackets_registers_an_offense_for_trailing_comma_in_a_method_call"
+source = '''
+some_method(a, b, c, )
+'''
+corrected = '''
+some_method(a, b, c )
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 19
+column_end = 20
+message = "Avoid comma after the last parameter of a method call, unless that item immediately precedes a newline."
+
+[tests.config]
+EnforcedStyleForMultiline = "diff_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_diff_comma_behaves_like_single_line_lists_with__brackets_registers_an_offense_for_trailing_comma_preceded_by_whitespace_in_a_method_call"
+source = '''
+some_method(a, b, c , )
+'''
+corrected = '''
+some_method(a, b, c  )
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 20
+column_end = 21
+message = "Avoid comma after the last parameter of a method call, unless that item immediately precedes a newline."
+
+[tests.config]
+EnforcedStyleForMultiline = "diff_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_diff_comma_behaves_like_single_line_lists_with__brackets_registers_an_offense_for_trailing_comma_in_a_method_call_with_hash_parameters_at_the_end"
+source = '''
+some_method(a, b, c: 0, d: 1, )
+'''
+corrected = '''
+some_method(a, b, c: 0, d: 1 )
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 28
+column_end = 29
+message = "Avoid comma after the last parameter of a method call, unless that item immediately precedes a newline."
+
+[tests.config]
+EnforcedStyleForMultiline = "diff_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_diff_comma_behaves_like_single_line_lists_with__brackets_accepts_method_call_without_trailing_comma"
+source = '''
+some_method(a, b, c)
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "diff_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_diff_comma_behaves_like_single_line_lists_with__brackets_accepts_method_call_without_trailing_comma_when_a_line_break_before_a_method_call"
+source = '''
+obj
+  .do_something(:foo, :bar)
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "diff_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_diff_comma_behaves_like_single_line_lists_with__brackets_accepts_method_call_without_trailing_comma_with_single_element_hash_parameters_at_the_end"
+source = '''
+some_method(a: 1)
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "diff_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_diff_comma_behaves_like_single_line_lists_with__brackets_accepts_method_call_without_parameters"
+source = '''
+some_method
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "diff_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_diff_comma_behaves_like_single_line_lists_with__brackets_accepts_chained_singleline_method_calls"
+source = '''
+target
+  .some_method(a)
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "diff_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_diff_comma_behaves_like_single_line_lists_with__brackets_when_using_safe_navigation_operator_registers_an_offense_for_trailing_comma_in_a_method_call"
+source = '''
+receiver&.some_method(a, b, c, )
+'''
+corrected = '''
+receiver&.some_method(a, b, c )
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 29
+column_end = 30
+message = "Avoid comma after the last parameter of a method call, unless that item immediately precedes a newline."
+
+[tests.config]
+EnforcedStyleForMultiline = "diff_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_diff_comma_behaves_like_single_line_lists_with__brackets_when_using_safe_navigation_operator_registers_an_offense_for_trailing_comma_in_a_method_call_with_hash_parameters_at_the_end"
+source = '''
+receiver&.some_method(a, b, c: 0, d: 1, )
+'''
+corrected = '''
+receiver&.some_method(a, b, c: 0, d: 1 )
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 38
+column_end = 39
+message = "Avoid comma after the last parameter of a method call, unless that item immediately precedes a newline."
+
+[tests.config]
+EnforcedStyleForMultiline = "diff_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_diff_comma_behaves_like_single_line_lists_with__brackets_registers_an_offense_for_trailing_comma_in_a_method_call_2"
+source = '''
+some_method[a, b, c, ]
+'''
+corrected = '''
+some_method[a, b, c ]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 19
+column_end = 20
+message = "Avoid comma after the last parameter of a method call, unless that item immediately precedes a newline."
+
+[tests.config]
+EnforcedStyleForMultiline = "diff_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_diff_comma_behaves_like_single_line_lists_with__brackets_registers_an_offense_for_trailing_comma_preceded_by_whitespace_in_a_method_call_2"
+source = '''
+some_method[a, b, c , ]
+'''
+corrected = '''
+some_method[a, b, c  ]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 20
+column_end = 21
+message = "Avoid comma after the last parameter of a method call, unless that item immediately precedes a newline."
+
+[tests.config]
+EnforcedStyleForMultiline = "diff_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_diff_comma_behaves_like_single_line_lists_with__brackets_registers_an_offense_for_trailing_comma_in_a_method_call_with_hash_parameters_at_the_end_2"
+source = '''
+some_method[a, b, c: 0, d: 1, ]
+'''
+corrected = '''
+some_method[a, b, c: 0, d: 1 ]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 28
+column_end = 29
+message = "Avoid comma after the last parameter of a method call, unless that item immediately precedes a newline."
+
+[tests.config]
+EnforcedStyleForMultiline = "diff_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_diff_comma_behaves_like_single_line_lists_with__brackets_accepts_method_call_without_trailing_comma_2"
+source = '''
+some_method[a, b, c]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "diff_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_diff_comma_behaves_like_single_line_lists_with__brackets_accepts_method_call_without_trailing_comma_when_a_line_break_before_a_method_call_2"
+source = '''
+obj
+  .do_something[:foo, :bar]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "diff_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_diff_comma_behaves_like_single_line_lists_with__brackets_accepts_method_call_without_trailing_comma_with_single_element_hash_parameters_at_the_end_2"
+source = '''
+some_method[a: 1]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "diff_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_diff_comma_behaves_like_single_line_lists_with__brackets_accepts_method_call_without_parameters_2"
+source = '''
+some_method
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "diff_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_diff_comma_behaves_like_single_line_lists_with__brackets_accepts_chained_singleline_method_calls_2"
+source = '''
+target
+  .some_method[a]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "diff_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_diff_comma_behaves_like_single_line_lists_with__brackets_when_using_safe_navigation_operator_registers_an_offense_for_trailing_comma_in_a_method_call_2"
+source = '''
+receiver&.some_method[a, b, c, ]
+'''
+corrected = '''
+receiver&.some_method[a, b, c ]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 29
+column_end = 30
+message = "Avoid comma after the last parameter of a method call, unless that item immediately precedes a newline."
+
+[tests.config]
+EnforcedStyleForMultiline = "diff_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_diff_comma_behaves_like_single_line_lists_with__brackets_when_using_safe_navigation_operator_registers_an_offense_for_trailing_comma_in_a_method_call_with_hash_parameters_at_the_end_2"
+source = '''
+receiver&.some_method[a, b, c: 0, d: 1, ]
+'''
+corrected = '''
+receiver&.some_method[a, b, c: 0, d: 1 ]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 38
+column_end = 39
+message = "Avoid comma after the last parameter of a method call, unless that item immediately precedes a newline."
+
+[tests.config]
+EnforcedStyleForMultiline = "diff_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_behaves_like_single_line_lists_accepts_method_call_without_parameters"
+source = '''
+some_method
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "consistent_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_behaves_like_single_line_lists_accepts_heredoc_without_trailing_comma"
+source = '''
+route(1, <<-HELP.chomp)
+...
+HELP
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "consistent_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_behaves_like_single_line_lists_with__brackets_registers_an_offense_for_trailing_comma_in_a_method_call"
+source = '''
+some_method(a, b, c, )
+'''
+corrected = '''
+some_method(a, b, c )
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 19
+column_end = 20
+message = "Avoid comma after the last parameter of a method call, unless items are split onto multiple lines."
+
+[tests.config]
+EnforcedStyleForMultiline = "consistent_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_behaves_like_single_line_lists_with__brackets_registers_an_offense_for_trailing_comma_preceded_by_whitespace_in_a_method_call"
+source = '''
+some_method(a, b, c , )
+'''
+corrected = '''
+some_method(a, b, c  )
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 20
+column_end = 21
+message = "Avoid comma after the last parameter of a method call, unless items are split onto multiple lines."
+
+[tests.config]
+EnforcedStyleForMultiline = "consistent_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_behaves_like_single_line_lists_with__brackets_registers_an_offense_for_trailing_comma_in_a_method_call_with_hash_parameters_at_the_end"
+source = '''
+some_method(a, b, c: 0, d: 1, )
+'''
+corrected = '''
+some_method(a, b, c: 0, d: 1 )
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 28
+column_end = 29
+message = "Avoid comma after the last parameter of a method call, unless items are split onto multiple lines."
+
+[tests.config]
+EnforcedStyleForMultiline = "consistent_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_behaves_like_single_line_lists_with__brackets_accepts_method_call_without_trailing_comma"
+source = '''
+some_method(a, b, c)
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "consistent_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_behaves_like_single_line_lists_with__brackets_accepts_method_call_without_trailing_comma_when_a_line_break_before_a_method_call"
+source = '''
+obj
+  .do_something(:foo, :bar)
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "consistent_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_behaves_like_single_line_lists_with__brackets_accepts_method_call_without_trailing_comma_with_single_element_hash_parameters_at_the_end"
+source = '''
+some_method(a: 1)
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "consistent_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_behaves_like_single_line_lists_with__brackets_accepts_method_call_without_parameters"
+source = '''
+some_method
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "consistent_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_behaves_like_single_line_lists_with__brackets_accepts_chained_singleline_method_calls"
+source = '''
+target
+  .some_method(a)
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "consistent_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_behaves_like_single_line_lists_with__brackets_when_using_safe_navigation_operator_registers_an_offense_for_trailing_comma_in_a_method_call"
+source = '''
+receiver&.some_method(a, b, c, )
+'''
+corrected = '''
+receiver&.some_method(a, b, c )
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 29
+column_end = 30
+message = "Avoid comma after the last parameter of a method call, unless items are split onto multiple lines."
+
+[tests.config]
+EnforcedStyleForMultiline = "consistent_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_behaves_like_single_line_lists_with__brackets_when_using_safe_navigation_operator_registers_an_offense_for_trailing_comma_in_a_method_call_with_hash_parameters_at_the_end"
+source = '''
+receiver&.some_method(a, b, c: 0, d: 1, )
+'''
+corrected = '''
+receiver&.some_method(a, b, c: 0, d: 1 )
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 38
+column_end = 39
+message = "Avoid comma after the last parameter of a method call, unless items are split onto multiple lines."
+
+[tests.config]
+EnforcedStyleForMultiline = "consistent_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_behaves_like_single_line_lists_with__brackets_registers_an_offense_for_trailing_comma_in_a_method_call_2"
+source = '''
+some_method[a, b, c, ]
+'''
+corrected = '''
+some_method[a, b, c ]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 19
+column_end = 20
+message = "Avoid comma after the last parameter of a method call, unless items are split onto multiple lines."
+
+[tests.config]
+EnforcedStyleForMultiline = "consistent_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_behaves_like_single_line_lists_with__brackets_registers_an_offense_for_trailing_comma_preceded_by_whitespace_in_a_method_call_2"
+source = '''
+some_method[a, b, c , ]
+'''
+corrected = '''
+some_method[a, b, c  ]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 20
+column_end = 21
+message = "Avoid comma after the last parameter of a method call, unless items are split onto multiple lines."
+
+[tests.config]
+EnforcedStyleForMultiline = "consistent_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_behaves_like_single_line_lists_with__brackets_registers_an_offense_for_trailing_comma_in_a_method_call_with_hash_parameters_at_the_end_2"
+source = '''
+some_method[a, b, c: 0, d: 1, ]
+'''
+corrected = '''
+some_method[a, b, c: 0, d: 1 ]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 28
+column_end = 29
+message = "Avoid comma after the last parameter of a method call, unless items are split onto multiple lines."
+
+[tests.config]
+EnforcedStyleForMultiline = "consistent_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_behaves_like_single_line_lists_with__brackets_accepts_method_call_without_trailing_comma_2"
+source = '''
+some_method[a, b, c]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "consistent_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_behaves_like_single_line_lists_with__brackets_accepts_method_call_without_trailing_comma_when_a_line_break_before_a_method_call_2"
+source = '''
+obj
+  .do_something[:foo, :bar]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "consistent_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_behaves_like_single_line_lists_with__brackets_accepts_method_call_without_trailing_comma_with_single_element_hash_parameters_at_the_end_2"
+source = '''
+some_method[a: 1]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "consistent_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_behaves_like_single_line_lists_with__brackets_accepts_method_call_without_parameters_2"
+source = '''
+some_method
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "consistent_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_behaves_like_single_line_lists_with__brackets_accepts_chained_singleline_method_calls_2"
+source = '''
+target
+  .some_method[a]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "consistent_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_behaves_like_single_line_lists_with__brackets_when_using_safe_navigation_operator_registers_an_offense_for_trailing_comma_in_a_method_call_2"
+source = '''
+receiver&.some_method[a, b, c, ]
+'''
+corrected = '''
+receiver&.some_method[a, b, c ]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 29
+column_end = 30
+message = "Avoid comma after the last parameter of a method call, unless items are split onto multiple lines."
+
+[tests.config]
+EnforcedStyleForMultiline = "consistent_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_single_line_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_behaves_like_single_line_lists_with__brackets_when_using_safe_navigation_operator_registers_an_offense_for_trailing_comma_in_a_method_call_with_hash_parameters_at_the_end_2"
+source = '''
+receiver&.some_method[a, b, c: 0, d: 1, ]
+'''
+corrected = '''
+receiver&.some_method[a, b, c: 0, d: 1 ]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 38
+column_end = 39
+message = "Avoid comma after the last parameter of a method call, unless items are split onto multiple lines."
+
+[tests.config]
+EnforcedStyleForMultiline = "consistent_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_a_single_argument_spanning_multiple_lines_when_enforcedstyleformultiline_is_consistent_comma_with__brackets_accepts_a_single_argument_with_no_trailing_comma"
+source = '''
+EmailWorker.perform_async({
   subject: "hey there",
   email: "foo@bar.com"
-}#{end_bracket}
+})
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyleForMultiline = "$UNRESOLVED:consistent_comma"
+EnforcedStyleForMultiline = "consistent_comma"
 
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_with_a_braced_hash_argument_spanning_multiple_lines_after_an_argument_when_enforcedstyleformultiline_is_consistent_comma_accepts_multiple_arguments_with_no_trailing_comma"
+name = "rubocopcopstyletrailingcommainarguments_with_a_single_argument_spanning_multiple_lines_when_enforcedstyleformultiline_is_consistent_comma_with__brackets_accepts_a_single_argument_with_no_trailing_comma_2"
 source = '''
-EmailWorker.perform_async#{start_bracket}arg, {
+EmailWorker.perform_async[{
   subject: "hey there",
   email: "foo@bar.com"
-}#{end_bracket}
+}]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyleForMultiline = "$UNRESOLVED:consistent_comma"
+EnforcedStyleForMultiline = "consistent_comma"
 
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_with_multiple_arguments_of_anonymous_function_spanning_multiple_lines_when_enforcedstyleformultiline_is_consistent_comma_accepts_multiple_arguments_with_trailing_comma"
+name = "rubocopcopstyletrailingcommainarguments_with_a_braced_hash_argument_spanning_multiple_lines_after_an_argument_when_enforcedstyleformultiline_is_consistent_comma_with__brackets_accepts_multiple_arguments_with_no_trailing_comma"
+source = '''
+EmailWorker.perform_async(arg, {
+  subject: "hey there",
+  email: "foo@bar.com"
+})
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "consistent_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_a_braced_hash_argument_spanning_multiple_lines_after_an_argument_when_enforcedstyleformultiline_is_consistent_comma_with__brackets_accepts_multiple_arguments_with_no_trailing_comma_2"
+source = '''
+EmailWorker.perform_async[arg, {
+  subject: "hey there",
+  email: "foo@bar.com"
+}]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "consistent_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_multiple_arguments_of_anonymous_function_spanning_multiple_lines_when_enforcedstyleformultiline_is_consistent_comma_accepts_multiple_arguments_with_trailing_comma"
 source = '''
 func.(
   'foo',
@@ -224,44 +1288,38 @@ func.(
   'baz',
 )
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyleForMultiline = "$UNRESOLVED:consistent_comma"
+EnforcedStyleForMultiline = "consistent_comma"
 
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_with_multiple_arguments_of_anonymous_function_spanning_multiple_lines_when_enforcedstyleformultiline_is_consistent_comma_accepts_keyword_arguments_with_trailing_comma"
+name = "rubocopcopstyletrailingcommainarguments_with_multiple_arguments_of_anonymous_function_spanning_multiple_lines_when_enforcedstyleformultiline_is_consistent_comma_accepts_keyword_arguments_with_trailing_comma"
 source = '''
 func.(foo: 1,
       bar: 2,)
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyleForMultiline = "$UNRESOLVED:consistent_comma"
+EnforcedStyleForMultiline = "consistent_comma"
 
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_no_comma"
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_no_comma_with__brackets_registers_an_offense_for_trailing_comma_in_a_method_call_with_hash_parameters_at_the_end"
 source = '''
-some_method#{start_bracket}
+some_method(
               a,
               b,
               c: 0,
-              d: 1,#{end_bracket}
+              d: 1,)
 '''
 corrected = '''
-some_method#{start_bracket}
+some_method(
               a,
               b,
               c: 0,
-              d: 1#{end_bracket}
+              d: 1)
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 5
@@ -270,126 +1328,112 @@ column_end = 19
 message = "Avoid comma after the last parameter of a method call."
 
 [tests.config]
-EnforcedStyleForMultiline = "$UNRESOLVED:no_comma"
+EnforcedStyleForMultiline = "no_comma"
 
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_no_comma_accepts_a_method_call_with_hash_parameters_at_the_end_and_no_trailing_comma"
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_no_comma_with__brackets_accepts_a_method_call_with_hash_parameters_at_the_end_and_no_trailing_comma"
 source = '''
-some_method#{start_bracket}a,
+some_method(a,
             b,
             c: 0,
             d: 1
-          #{end_bracket}
+          )
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyleForMultiline = "$UNRESOLVED:no_comma"
+EnforcedStyleForMultiline = "no_comma"
 
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_no_comma_accepts_comma_inside_a_heredoc_parameter_at_the_end"
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_no_comma_with__brackets_accepts_comma_inside_a_heredoc_parameter_at_the_end"
 source = '''
-route#{start_bracket}help: {
+route(help: {
   'auth' => <<-HELP.chomp
 ,
 HELP
-}#{end_bracket}
+})
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyleForMultiline = "$UNRESOLVED:no_comma"
+EnforcedStyleForMultiline = "no_comma"
 
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_no_comma_accepts_comma_inside_a_heredoc_with_comments_inside"
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_no_comma_with__brackets_accepts_comma_inside_a_heredoc_with_comments_inside"
 source = '''
-route#{start_bracket}
+route(
   <<-HELP
   ,
   # some comment
   HELP
-#{end_bracket}
+)
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyleForMultiline = "$UNRESOLVED:no_comma"
+EnforcedStyleForMultiline = "no_comma"
 
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_no_comma_accepts_comma_inside_a_heredoc_with_method_and_comments_inside"
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_no_comma_with__brackets_accepts_comma_inside_a_heredoc_with_method_and_comments_inside"
 source = '''
-route#{start_bracket}
+route(
   <<-HELP.chomp
   ,
   # some comment
   HELP
-#{end_bracket}
+)
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyleForMultiline = "$UNRESOLVED:no_comma"
+EnforcedStyleForMultiline = "no_comma"
 
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_no_comma_accepts_comma_inside_a_heredoc_in_brackets"
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_no_comma_with__brackets_accepts_comma_inside_a_heredoc_in_brackets"
 source = '''
 expect_no_offenses(
   expect_no_offenses(<<~SOURCE)
-    run#{start_bracket}
+    run(
           :foo, defaults.merge(
-                                bar: 3)#{end_bracket}
+                                bar: 3))
   SOURCE
 )
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyleForMultiline = "$UNRESOLVED:no_comma"
+EnforcedStyleForMultiline = "no_comma"
 
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_no_comma_accepts_comma_inside_a_modified_heredoc_parameter"
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_no_comma_with__brackets_accepts_comma_inside_a_modified_heredoc_parameter"
 source = '''
-some_method#{start_bracket}
+some_method(
   <<-LOREM.delete("\n")
     Something with a , in it
   LOREM
-#{end_bracket}
+)
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyleForMultiline = "$UNRESOLVED:no_comma"
+EnforcedStyleForMultiline = "no_comma"
 
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_no_comma_autocorrects_unwanted_comma_after_modified_heredoc_parameter"
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_no_comma_with__brackets_autocorrects_unwanted_comma_after_modified_heredoc_parameter"
 source = '''
-some_method%{start_bracket}
+some_method(
   <<-LOREM.delete("\n"),
     Something with a , in it
   LOREM
-%{end_bracket}
+)
 '''
 corrected = '''
-some_method#{start_bracket}
+some_method(
   <<-LOREM.delete("\n")
     Something with a , in it
   LOREM
-#{end_bracket}
+)
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 2
@@ -398,43 +1442,39 @@ column_end = 24
 message = "Avoid comma after the last parameter of a method call."
 
 [tests.config]
-EnforcedStyleForMultiline = "$UNRESOLVED:no_comma"
+EnforcedStyleForMultiline = "no_comma"
 
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_no_comma_when_there_is_string_interpolation_inside_heredoc_parameter_accepts_comma_inside_a_heredoc_parameter"
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_no_comma_with__brackets_when_there_is_string_interpolation_inside_heredoc_parameter_accepts_comma_inside_a_heredoc_parameter"
 source = '''
-some_method#{start_bracket}
+some_method(
   <<-SQL
     #{variable}.a ASC,
     #{variable}.b ASC
   SQL
-#{end_bracket}
+)
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyleForMultiline = "$UNRESOLVED:no_comma"
+EnforcedStyleForMultiline = "no_comma"
 
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_no_comma_when_there_is_string_interpolation_inside_heredoc_parameter_accepts_comma_inside_a_heredoc_parameter_when_on_a_single_line"
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_no_comma_with__brackets_when_there_is_string_interpolation_inside_heredoc_parameter_accepts_comma_inside_a_heredoc_parameter_when_on_a_single_line"
 source = '''
-some_method#{start_bracket}
+some_method(
   bar: <<-BAR
     #{variable} foo, bar
   BAR
-#{end_bracket}
+)
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyleForMultiline = "$UNRESOLVED:no_comma"
+EnforcedStyleForMultiline = "no_comma"
 
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_no_comma_when_there_is_string_interpolation_inside_heredoc_parameter_autocorrects_unwanted_comma_inside_string_interpolation"
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_no_comma_with__brackets_when_there_is_string_interpolation_inside_heredoc_parameter_autocorrects_unwanted_comma_inside_string_interpolation"
 source = '''
 some_method(
   bar: <<-BAR,
@@ -455,8 +1495,6 @@ some_method(
   BAZ
 )
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 3
@@ -471,41 +1509,233 @@ column_end = 24
 message = "Avoid comma after the last parameter of a method call."
 
 [tests.config]
-EnforcedStyleForMultiline = "$UNRESOLVED:no_comma"
+EnforcedStyleForMultiline = "no_comma"
 
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_comma_when_closing_bracket_is_on_same_line_as_last_value_accepts_a_method_call_with_hash_as_last_parameter_split_on_multiple_lines"
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_no_comma_with__brackets_registers_an_offense_for_trailing_comma_in_a_method_call_with_hash_parameters_at_the_end_2"
 source = '''
-some_method#{start_bracket}a: "b",
-            c: "d"#{end_bracket}
+some_method[
+              a,
+              b,
+              c: 0,
+              d: 1,]
 '''
-interpolated = true
-verified = false
+corrected = '''
+some_method[
+              a,
+              b,
+              c: 0,
+              d: 1]
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 18
+column_end = 19
+message = "Avoid comma after the last parameter of a method call."
+
+[tests.config]
+EnforcedStyleForMultiline = "no_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_no_comma_with__brackets_accepts_a_method_call_with_hash_parameters_at_the_end_and_no_trailing_comma_2"
+source = '''
+some_method[a,
+            b,
+            c: 0,
+            d: 1
+          ]
+'''
 offenses = []
 
 [tests.config]
-EnforcedStyleForMultiline = "$UNRESOLVED:comma"
+EnforcedStyleForMultiline = "no_comma"
 
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_comma"
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_no_comma_with__brackets_accepts_comma_inside_a_heredoc_parameter_at_the_end_2"
 source = '''
-some_method#{start_bracket}
+route[help: {
+  'auth' => <<-HELP.chomp
+,
+HELP
+}]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "no_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_no_comma_with__brackets_accepts_comma_inside_a_heredoc_with_comments_inside_2"
+source = '''
+route[
+  <<-HELP
+  ,
+  # some comment
+  HELP
+]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "no_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_no_comma_with__brackets_accepts_comma_inside_a_heredoc_with_method_and_comments_inside_2"
+source = '''
+route[
+  <<-HELP.chomp
+  ,
+  # some comment
+  HELP
+]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "no_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_no_comma_with__brackets_accepts_comma_inside_a_heredoc_in_brackets_2"
+source = '''
+expect_no_offenses(
+  expect_no_offenses(<<~SOURCE)
+    run[
+          :foo, defaults.merge(
+                                bar: 3)]
+  SOURCE
+)
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "no_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_no_comma_with__brackets_accepts_comma_inside_a_modified_heredoc_parameter_2"
+source = '''
+some_method[
+  <<-LOREM.delete("\n")
+    Something with a , in it
+  LOREM
+]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "no_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_no_comma_with__brackets_autocorrects_unwanted_comma_after_modified_heredoc_parameter_2"
+source = '''
+some_method[
+  <<-LOREM.delete("\n"),
+    Something with a , in it
+  LOREM
+]
+'''
+corrected = '''
+some_method[
+  <<-LOREM.delete("\n")
+    Something with a , in it
+  LOREM
+]
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 23
+column_end = 24
+message = "Avoid comma after the last parameter of a method call."
+
+[tests.config]
+EnforcedStyleForMultiline = "no_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_no_comma_with__brackets_when_there_is_string_interpolation_inside_heredoc_parameter_accepts_comma_inside_a_heredoc_parameter_2"
+source = '''
+some_method[
+  <<-SQL
+    #{variable}.a ASC,
+    #{variable}.b ASC
+  SQL
+]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "no_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_no_comma_with__brackets_when_there_is_string_interpolation_inside_heredoc_parameter_accepts_comma_inside_a_heredoc_parameter_when_on_a_single_line_2"
+source = '''
+some_method[
+  bar: <<-BAR
+    #{variable} foo, bar
+  BAR
+]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "no_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_no_comma_with__brackets_when_there_is_string_interpolation_inside_heredoc_parameter_autocorrects_unwanted_comma_inside_string_interpolation_2"
+source = '''
+some_method(
+  bar: <<-BAR,
+    #{other_method(a, b,)} foo, bar
+  BAR
+  baz: <<-BAZ
+    #{third_method(c, d,)} foo, bar
+  BAZ
+)
+'''
+corrected = '''
+some_method(
+  bar: <<-BAR,
+    #{other_method(a, b)} foo, bar
+  BAR
+  baz: <<-BAZ
+    #{third_method(c, d)} foo, bar
+  BAZ
+)
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 23
+column_end = 24
+message = "Avoid comma after the last parameter of a method call."
+
+[[tests.offenses]]
+line = 6
+column_start = 23
+column_end = 24
+message = "Avoid comma after the last parameter of a method call."
+
+[tests.config]
+EnforcedStyleForMultiline = "no_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_comma_with__brackets_registers_an_offense_for_no_trailing_comma_in_a_method_call_with_hash_parameters_at_the_end"
+source = '''
+some_method(
               a,
               b,
               c: 0,
               d: 1
-          #{end_bracket}
+          )
 '''
 corrected = '''
-some_method#{start_bracket}
+some_method(
               a,
               b,
               c: 0,
               d: 1,
-          #{end_bracket}
+          )
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 5
@@ -514,174 +1744,328 @@ column_end = 18
 message = "Put a comma after the last parameter of a multiline method call."
 
 [tests.config]
-EnforcedStyleForMultiline = "$UNRESOLVED:comma"
+EnforcedStyleForMultiline = "comma"
 
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_comma_accepts_a_method_call_with_two_parameters_on_the_same_line"
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_comma_with__brackets_accepts_a_method_call_with_two_parameters_on_the_same_line"
 source = '''
-some_method#{start_bracket}a, b
-          #{end_bracket}
+some_method(a, b
+          )
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyleForMultiline = "$UNRESOLVED:comma"
+EnforcedStyleForMultiline = "comma"
 
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_comma_accepts_trailing_comma_in_a_method_call_with_hash_parameters_at_the_end"
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_comma_with__brackets_accepts_trailing_comma_in_a_method_call_with_hash_parameters_at_the_end"
 source = '''
-some_method#{start_bracket}
+some_method(
               a,
               b,
               c: 0,
               d: 1,
-          #{end_bracket}
+          )
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyleForMultiline = "$UNRESOLVED:comma"
+EnforcedStyleForMultiline = "comma"
 
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_comma_accepts_missing_comma_after_heredoc_with_comments"
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_comma_with__brackets_accepts_missing_comma_after_heredoc_with_comments"
 source = '''
-route#{start_bracket}
+route(
   a, <<-HELP.chomp
   ,
   # some comment
   HELP
-#{end_bracket}
+)
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyleForMultiline = "$UNRESOLVED:comma"
+EnforcedStyleForMultiline = "comma"
 
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_comma"
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_comma_with__brackets_accepts_no_trailing_comma_in_a_method_call_with_a_multiline_braceless_hash_at_the_end_with_more_than_one_parameter_on_a_line"
 source = '''
-some_method#{start_bracket}
+some_method(
               a,
               b: 0,
               c: 0, d: 1
-          #{end_bracket}
+          )
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyleForMultiline = "$UNRESOLVED:comma"
+EnforcedStyleForMultiline = "comma"
 
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_comma_accepts_a_trailing_comma_in_a_method_call_with_single_line_hashes"
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_comma_with__brackets_accepts_a_trailing_comma_in_a_method_call_with_single_line_hashes"
 source = '''
-some_method#{start_bracket}
+some_method(
 { a: 0, b: 1 },
 { a: 1, b: 0 },
-#{end_bracket}
+)
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyleForMultiline = "$UNRESOLVED:comma"
+EnforcedStyleForMultiline = "comma"
 
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_comma_accepts_an_empty_hash_being_passed_as_a_method_argument"
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_comma_with__brackets_accepts_an_empty_hash_being_passed_as_a_method_argument"
 source = '''
-Foo.new#{start_bracket}{
-        }#{end_bracket}
+Foo.new({
+        })
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyleForMultiline = "$UNRESOLVED:comma"
+EnforcedStyleForMultiline = "comma"
 
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_comma_accepts_a_multiline_call_with_a_single_argument_and_trailing_comma"
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_comma_with__brackets_accepts_a_multiline_call_with_a_single_argument_and_trailing_comma"
 source = '''
-method#{start_bracket}
+method(
   1,
-#{end_bracket}
+)
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyleForMultiline = "$UNRESOLVED:comma"
+EnforcedStyleForMultiline = "comma"
 
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_comma_does_not_break_when_a_method_call_is_chained_on_the_offending_one"
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_comma_with__brackets_does_not_break_when_a_method_call_is_chained_on_the_offending_one"
 source = '''
-foo.bar#{start_bracket}
+foo.bar(
   baz: 1,
-#{end_bracket}.fetch(:qux)
+).fetch(:qux)
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyleForMultiline = "$UNRESOLVED:comma"
+EnforcedStyleForMultiline = "comma"
 
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_comma_does_not_break_when_a_safe_method_call_is_chained_on_the_offending_simple_one"
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_comma_with__brackets_does_not_break_when_a_safe_method_call_is_chained_on_the_offending_simple_one"
 source = '''
 foo
-  &.do_something#{start_bracket}:bar, :baz#{end_bracket}
+  &.do_something(:bar, :baz)
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyleForMultiline = "$UNRESOLVED:comma"
+EnforcedStyleForMultiline = "comma"
 
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_comma_does_not_break_when_a_safe_method_call_is_chained_on_the_offending_more_complex_one"
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_comma_with__brackets_does_not_break_when_a_safe_method_call_is_chained_on_the_offending_more_complex_one"
 source = '''
-foo.bar#{start_bracket}
+foo.bar(
   baz: 1,
-#{end_bracket}&.fetch(:qux)
+)&.fetch(:qux)
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyleForMultiline = "$UNRESOLVED:comma"
+EnforcedStyleForMultiline = "comma"
 
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_diff_comma_registers_an_offense_for_no_trailing_comma_when_last_argument_precedes_newline"
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_comma_with__brackets_when_closing_bracket_is_on_same_line_as_last_value_accepts_a_method_call_with_hash_as_last_parameter_split_on_multiple_lines"
 source = '''
-some_method#{start_bracket}
+some_method(a: "b",
+            c: "d")
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_comma_with__brackets_registers_an_offense_for_no_trailing_comma_in_a_method_call_with_hash_parameters_at_the_end_2"
+source = '''
+some_method[
+              a,
+              b,
+              c: 0,
+              d: 1
+          ]
+'''
+corrected = '''
+some_method[
+              a,
+              b,
+              c: 0,
+              d: 1,
+          ]
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 14
+column_end = 18
+message = "Put a comma after the last parameter of a multiline method call."
+
+[tests.config]
+EnforcedStyleForMultiline = "comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_comma_with__brackets_accepts_a_method_call_with_two_parameters_on_the_same_line_2"
+source = '''
+some_method[a, b
+          ]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_comma_with__brackets_accepts_trailing_comma_in_a_method_call_with_hash_parameters_at_the_end_2"
+source = '''
+some_method[
+              a,
+              b,
+              c: 0,
+              d: 1,
+          ]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_comma_with__brackets_accepts_missing_comma_after_heredoc_with_comments_2"
+source = '''
+route[
+  a, <<-HELP.chomp
+  ,
+  # some comment
+  HELP
+]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_comma_with__brackets_accepts_no_trailing_comma_in_a_method_call_with_a_multiline_braceless_hash_at_the_end_with_more_than_one_parameter_on_a_line_2"
+source = '''
+some_method[
+              a,
+              b: 0,
+              c: 0, d: 1
+          ]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_comma_with__brackets_accepts_a_trailing_comma_in_a_method_call_with_single_line_hashes_2"
+source = '''
+some_method[
+{ a: 0, b: 1 },
+{ a: 1, b: 0 },
+]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_comma_with__brackets_accepts_an_empty_hash_being_passed_as_a_method_argument_2"
+source = '''
+Foo.new[{
+        }]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_comma_with__brackets_accepts_a_multiline_call_with_a_single_argument_and_trailing_comma_2"
+source = '''
+method[
+  1,
+]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_comma_with__brackets_does_not_break_when_a_method_call_is_chained_on_the_offending_one_2"
+source = '''
+foo.bar[
+  baz: 1,
+].fetch(:qux)
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_comma_with__brackets_does_not_break_when_a_safe_method_call_is_chained_on_the_offending_simple_one_2"
+source = '''
+foo
+  &.do_something[:bar, :baz]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_comma_with__brackets_does_not_break_when_a_safe_method_call_is_chained_on_the_offending_more_complex_one_2"
+source = '''
+foo.bar[
+  baz: 1,
+]&.fetch(:qux)
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_comma_with__brackets_when_closing_bracket_is_on_same_line_as_last_value_accepts_a_method_call_with_hash_as_last_parameter_split_on_multiple_lines_2"
+source = '''
+some_method[a: "b",
+            c: "d"]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_diff_comma_with__brackets_registers_an_offense_for_no_trailing_comma_when_last_argument_precedes_newline"
+source = '''
+some_method(
              a,
              b,
              c: 0,
              d: 1
-           #{end_bracket}
+           )
 '''
 corrected = '''
-some_method#{start_bracket}
+some_method(
              a,
              b,
              c: 0,
              d: 1,
-           #{end_bracket}
+           )
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 5
@@ -690,20 +2074,18 @@ column_end = 17
 message = "Put a comma after the last parameter of a multiline method call."
 
 [tests.config]
-EnforcedStyleForMultiline = "$UNRESOLVED:diff_comma"
+EnforcedStyleForMultiline = "diff_comma"
 
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_diff_comma_registers_an_offense_for_trailing_comma_when_last_argument_is_on_same_line_as_closing_bracket"
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_diff_comma_with__brackets_registers_an_offense_for_trailing_comma_when_last_argument_is_on_same_line_as_closing_bracket"
 source = '''
-some_method#{start_bracket}a: "b",
-            c: "d",#{end_bracket}
+some_method(a: "b",
+            c: "d",)
 '''
 corrected = '''
-some_method#{start_bracket}a: "b",
-            c: "d"#{end_bracket}
+some_method(a: "b",
+            c: "d")
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 2
@@ -712,22 +2094,20 @@ column_end = 19
 message = "Avoid comma after the last parameter of a method call, unless that item immediately precedes a newline."
 
 [tests.config]
-EnforcedStyleForMultiline = "$UNRESOLVED:diff_comma"
+EnforcedStyleForMultiline = "diff_comma"
 
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_diff_comma_registers_an_offense_for_trailing_comma_when_last_argument_is_array_literal_on_same_line_as_closing_bracket"
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_diff_comma_with__brackets_registers_an_offense_for_trailing_comma_when_last_argument_is_array_literal_on_same_line_as_closing_bracket"
 source = '''
-method#{start_bracket}1, [
+method(1, [
   2,
-],#{end_bracket}
+],)
 '''
 corrected = '''
-method#{start_bracket}1, [
+method(1, [
   2,
-]#{end_bracket}
+])
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 3
@@ -736,111 +2116,202 @@ column_end = 2
 message = "Avoid comma after the last parameter of a method call, unless that item immediately precedes a newline."
 
 [tests.config]
-EnforcedStyleForMultiline = "$UNRESOLVED:diff_comma"
+EnforcedStyleForMultiline = "diff_comma"
 
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_diff_comma_accepts_trailing_comma_when_last_argument_precedes_newline"
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_diff_comma_with__brackets_accepts_trailing_comma_when_last_argument_precedes_newline"
 source = '''
-some_method#{start_bracket}
+some_method(
              a,
              b,
              c: 0,
              d: 1,
-           #{end_bracket}
+           )
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyleForMultiline = "$UNRESOLVED:diff_comma"
+EnforcedStyleForMultiline = "diff_comma"
 
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_diff_comma_accepts_no_trailing_comma_when_last_argument_is_on_same_line_as_closing_bracket"
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_diff_comma_with__brackets_accepts_no_trailing_comma_when_last_argument_is_on_same_line_as_closing_bracket"
 source = '''
-some_method#{start_bracket}a: "b",
-            c: "d"#{end_bracket}
+some_method(a: "b",
+            c: "d")
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyleForMultiline = "$UNRESOLVED:diff_comma"
+EnforcedStyleForMultiline = "diff_comma"
 
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_diff_comma_accepts_no_trailing_comma_when_last_argument_is_array_literal_on_same_line_as_closing_bracket"
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_diff_comma_with__brackets_accepts_no_trailing_comma_when_last_argument_is_array_literal_on_same_line_as_closing_bracket"
 source = '''
-method#{start_bracket}1, [
+method(1, [
   2,
-]#{end_bracket}
+])
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyleForMultiline = "$UNRESOLVED:diff_comma"
+EnforcedStyleForMultiline = "diff_comma"
 
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_diff_comma_accepts_trailing_comma_when_last_argument_has_inline_comment_and_precedes_newline"
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_diff_comma_with__brackets_accepts_trailing_comma_when_last_argument_has_inline_comment_and_precedes_newline"
 source = '''
-some_method#{start_bracket}
+some_method(
              a,
              b,
              c: 0,
              d: 1, # comment
-           #{end_bracket}
+           )
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyleForMultiline = "$UNRESOLVED:diff_comma"
+EnforcedStyleForMultiline = "diff_comma"
 
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_when_closing_bracket_is_on_same_line_as_last_value"
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_diff_comma_with__brackets_registers_an_offense_for_no_trailing_comma_when_last_argument_precedes_newline_2"
 source = '''
-some_method#{start_bracket}a: "b",
-            c: "d"#{end_bracket}
+some_method[
+             a,
+             b,
+             c: 0,
+             d: 1
+           ]
 '''
 corrected = '''
-some_method#{start_bracket}a: "b",
-            c: "d",#{end_bracket}
+some_method[
+             a,
+             b,
+             c: 0,
+             d: 1,
+           ]
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
-line = 2
-column_start = 12
-column_end = 18
+line = 5
+column_start = 13
+column_end = 17
 message = "Put a comma after the last parameter of a multiline method call."
 
 [tests.config]
-EnforcedStyleForMultiline = "$UNRESOLVED:consistent_comma"
+EnforcedStyleForMultiline = "diff_comma"
 
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_consistent_comma"
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_diff_comma_with__brackets_registers_an_offense_for_trailing_comma_when_last_argument_is_on_same_line_as_closing_bracket_2"
 source = '''
-some_method#{start_bracket}
+some_method[a: "b",
+            c: "d",]
+'''
+corrected = '''
+some_method[a: "b",
+            c: "d"]
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 18
+column_end = 19
+message = "Avoid comma after the last parameter of a method call, unless that item immediately precedes a newline."
+
+[tests.config]
+EnforcedStyleForMultiline = "diff_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_diff_comma_with__brackets_registers_an_offense_for_trailing_comma_when_last_argument_is_array_literal_on_same_line_as_closing_bracket_2"
+source = '''
+method[1, [
+  2,
+],]
+'''
+corrected = '''
+method[1, [
+  2,
+]]
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 1
+column_end = 2
+message = "Avoid comma after the last parameter of a method call, unless that item immediately precedes a newline."
+
+[tests.config]
+EnforcedStyleForMultiline = "diff_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_diff_comma_with__brackets_accepts_trailing_comma_when_last_argument_precedes_newline_2"
+source = '''
+some_method[
+             a,
+             b,
+             c: 0,
+             d: 1,
+           ]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "diff_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_diff_comma_with__brackets_accepts_no_trailing_comma_when_last_argument_is_on_same_line_as_closing_bracket_2"
+source = '''
+some_method[a: "b",
+            c: "d"]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "diff_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_diff_comma_with__brackets_accepts_no_trailing_comma_when_last_argument_is_array_literal_on_same_line_as_closing_bracket_2"
+source = '''
+method[1, [
+  2,
+]]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "diff_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_diff_comma_with__brackets_accepts_trailing_comma_when_last_argument_has_inline_comment_and_precedes_newline_2"
+source = '''
+some_method[
+             a,
+             b,
+             c: 0,
+             d: 1, # comment
+           ]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "diff_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_with__brackets_registers_an_offense_for_no_trailing_comma_in_a_method_call_with_hash_parameters_at_the_end"
+source = '''
+some_method(
               a,
               b,
               c: 0,
               d: 1
-          #{end_bracket}
+          )
 '''
 corrected = '''
-some_method#{start_bracket}
+some_method(
               a,
               b,
               c: 0,
               d: 1,
-          #{end_bracket}
+          )
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 5
@@ -849,20 +2320,18 @@ column_end = 18
 message = "Put a comma after the last parameter of a multiline method call."
 
 [tests.config]
-EnforcedStyleForMultiline = "$UNRESOLVED:consistent_comma"
+EnforcedStyleForMultiline = "consistent_comma"
 
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_consistent_comma"
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_with__brackets_registers_an_offense_for_no_trailing_comma_in_a_method_call_withtwo_parameters_on_the_same_line"
 source = '''
-some_method#{start_bracket}a, b
-          #{end_bracket}
+some_method(a, b
+          )
 '''
 corrected = '''
-some_method#{start_bracket}a, b,
-          #{end_bracket}
+some_method(a, b,
+          )
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -871,104 +2340,92 @@ column_end = 16
 message = "Put a comma after the last parameter of a multiline method call."
 
 [tests.config]
-EnforcedStyleForMultiline = "$UNRESOLVED:consistent_comma"
+EnforcedStyleForMultiline = "consistent_comma"
 
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_accepts_trailing_comma_in_a_method_call_with_hash_parameters_at_the_end"
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_with__brackets_accepts_trailing_comma_in_a_method_call_with_hash_parameters_at_the_end"
 source = '''
-some_method#{start_bracket}
+some_method(
               a,
               b,
               c: 0,
               d: 1,
-          #{end_bracket}
+          )
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyleForMultiline = "$UNRESOLVED:consistent_comma"
+EnforcedStyleForMultiline = "consistent_comma"
 
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_accepts_a_trailing_comma_in_a_method_call_with_a_single_hash_parameter"
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_with__brackets_accepts_a_trailing_comma_in_a_method_call_with_a_single_hash_parameter"
 source = '''
-some_method#{start_bracket}
+some_method(
               a: 0,
               b: 1,
-          #{end_bracket}
+          )
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyleForMultiline = "$UNRESOLVED:consistent_comma"
+EnforcedStyleForMultiline = "consistent_comma"
 
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_consistent_comma"
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_with__brackets_accepts_a_trailing_comma_in_a_method_call_with_a_single_hash_parameter_to_a_receiver_object"
 source = '''
-obj.some_method#{start_bracket}
+obj.some_method(
                   a: 0,
                   b: 1,
-              #{end_bracket}
+              )
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyleForMultiline = "$UNRESOLVED:consistent_comma"
+EnforcedStyleForMultiline = "consistent_comma"
 
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_accepts_a_trailing_comma_in_a_method_call_with_single_line_hashes"
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_with__brackets_accepts_a_trailing_comma_in_a_method_call_with_single_line_hashes"
 source = '''
-some_method#{start_bracket}
+some_method(
 { a: 0, b: 1 },
 { a: 1, b: 0 },
-#{end_bracket}
+)
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyleForMultiline = "$UNRESOLVED:consistent_comma"
+EnforcedStyleForMultiline = "consistent_comma"
 
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_accepts_no_trailing_comma_in_a_method_call_with_a_block_parameter_at_the_end"
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_with__brackets_accepts_no_trailing_comma_in_a_method_call_with_a_block_parameter_at_the_end"
 source = '''
-some_method#{start_bracket}
+some_method(
               a,
               b,
               c: 0,
               d: 1,
               &block
-          #{end_bracket}
+          )
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyleForMultiline = "$UNRESOLVED:consistent_comma"
+EnforcedStyleForMultiline = "consistent_comma"
 
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_autocorrects_missing_comma_after_a_heredoc"
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_with__brackets_autocorrects_missing_comma_after_a_heredoc"
 source = '''
-route#{start_bracket}1, <<-HELP.chomp
+route(1, <<-HELP.chomp
 ...
 HELP
-#{end_bracket}
+)
 '''
 corrected = '''
-route#{start_bracket}1, <<-HELP.chomp,
+route(1, <<-HELP.chomp,
 ...
 HELP
-#{end_bracket}
+)
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -977,45 +2434,256 @@ column_end = 22
 message = "Put a comma after the last parameter of a multiline method call."
 
 [tests.config]
-EnforcedStyleForMultiline = "$UNRESOLVED:consistent_comma"
+EnforcedStyleForMultiline = "consistent_comma"
 
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_accepts_a_multiline_call_with_a_single_argument_and_trailing_comma"
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_with__brackets_accepts_a_multiline_call_with_a_single_argument_and_trailing_comma"
 source = '''
-method#{start_bracket}
+method(
   1,
-#{end_bracket}
+)
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyleForMultiline = "$UNRESOLVED:consistent_comma"
+EnforcedStyleForMultiline = "consistent_comma"
 
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_accepts_a_multiline_call_with_arguments_on_a_single_line_and_trailing_comma"
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_with__brackets_accepts_a_multiline_call_with_arguments_on_a_single_line_and_trailing_comma"
 source = '''
-method#{start_bracket}
+method(
   1, 2,
-#{end_bracket}
+)
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyleForMultiline = "$UNRESOLVED:consistent_comma"
+EnforcedStyleForMultiline = "consistent_comma"
 
 [[tests]]
-name = "rubocop_cop_style_trailingcommainarguments_with_multi_line_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_accepts_a_multiline_call_with_single_argument_on_multiple_lines"
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_with__brackets_accepts_a_multiline_call_with_single_argument_on_multiple_lines"
 source = '''
-method#{start_bracket}a:
-          "foo"#{end_bracket}
+method(a:
+          "foo")
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyleForMultiline = "$UNRESOLVED:consistent_comma"
+EnforcedStyleForMultiline = "consistent_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_with__brackets_when_closing_bracket_is_on_same_line_as_last_value_registers_an_offense_for_a_method_call_with_a_hash_as_the_last_parameter_split_on_multiple_lines"
+source = '''
+some_method(a: "b",
+            c: "d")
+'''
+corrected = '''
+some_method(a: "b",
+            c: "d",)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 12
+column_end = 18
+message = "Put a comma after the last parameter of a multiline method call."
+
+[tests.config]
+EnforcedStyleForMultiline = "consistent_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_with__brackets_registers_an_offense_for_no_trailing_comma_in_a_method_call_with_hash_parameters_at_the_end_2"
+source = '''
+some_method[
+              a,
+              b,
+              c: 0,
+              d: 1
+          ]
+'''
+corrected = '''
+some_method[
+              a,
+              b,
+              c: 0,
+              d: 1,
+          ]
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 14
+column_end = 18
+message = "Put a comma after the last parameter of a multiline method call."
+
+[tests.config]
+EnforcedStyleForMultiline = "consistent_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_with__brackets_registers_an_offense_for_no_trailing_comma_in_a_method_call_withtwo_parameters_on_the_same_line_2"
+source = '''
+some_method[a, b
+          ]
+'''
+corrected = '''
+some_method[a, b,
+          ]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 16
+message = "Put a comma after the last parameter of a multiline method call."
+
+[tests.config]
+EnforcedStyleForMultiline = "consistent_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_with__brackets_accepts_trailing_comma_in_a_method_call_with_hash_parameters_at_the_end_2"
+source = '''
+some_method[
+              a,
+              b,
+              c: 0,
+              d: 1,
+          ]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "consistent_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_with__brackets_accepts_a_trailing_comma_in_a_method_call_with_a_single_hash_parameter_2"
+source = '''
+some_method[
+              a: 0,
+              b: 1,
+          ]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "consistent_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_with__brackets_accepts_a_trailing_comma_in_a_method_call_with_a_single_hash_parameter_to_a_receiver_object_2"
+source = '''
+obj.some_method[
+                  a: 0,
+                  b: 1,
+              ]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "consistent_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_with__brackets_accepts_a_trailing_comma_in_a_method_call_with_single_line_hashes_2"
+source = '''
+some_method[
+{ a: 0, b: 1 },
+{ a: 1, b: 0 },
+]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "consistent_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_with__brackets_accepts_no_trailing_comma_in_a_method_call_with_a_block_parameter_at_the_end_2"
+source = '''
+some_method[
+              a,
+              b,
+              c: 0,
+              d: 1,
+              &block
+          ]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "consistent_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_with__brackets_autocorrects_missing_comma_after_a_heredoc_2"
+source = '''
+route[1, <<-HELP.chomp
+...
+HELP
+]
+'''
+corrected = '''
+route[1, <<-HELP.chomp,
+...
+HELP
+]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 22
+message = "Put a comma after the last parameter of a multiline method call."
+
+[tests.config]
+EnforcedStyleForMultiline = "consistent_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_with__brackets_accepts_a_multiline_call_with_a_single_argument_and_trailing_comma_2"
+source = '''
+method[
+  1,
+]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "consistent_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_with__brackets_accepts_a_multiline_call_with_arguments_on_a_single_line_and_trailing_comma_2"
+source = '''
+method[
+  1, 2,
+]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "consistent_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_with__brackets_accepts_a_multiline_call_with_single_argument_on_multiple_lines_2"
+source = '''
+method[a:
+          "foo"]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyleForMultiline = "consistent_comma"
+
+[[tests]]
+name = "rubocopcopstyletrailingcommainarguments_with_multiline_list_of_values_when_enforcedstyleformultiline_is_consistent_comma_with__brackets_when_closing_bracket_is_on_same_line_as_last_value_registers_an_offense_for_a_method_call_with_a_hash_as_the_last_parameter_split_on_multiple_lines_2"
+source = '''
+some_method[a: "b",
+            c: "d"]
+'''
+corrected = '''
+some_method[a: "b",
+            c: "d",]
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 12
+column_end = 18
+message = "Put a comma after the last parameter of a multiline method call."
+
+[tests.config]
+EnforcedStyleForMultiline = "consistent_comma"

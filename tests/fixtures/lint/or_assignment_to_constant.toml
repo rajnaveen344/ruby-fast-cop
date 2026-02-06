@@ -4,7 +4,7 @@ severity = "warning"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_lint_orassignmenttoconstant_registers_an_offense_with_or_assignment_to_a_constant"
+name = "rubocopcoplintorassignmenttoconstant_registers_an_offense_with_orassignment_to_a_constant"
 source = '''
 CONST ||= 1
 '''
@@ -19,7 +19,7 @@ column_end = 9
 message = "Avoid using or-assignment with constants."
 
 [[tests]]
-name = "rubocop_cop_lint_orassignmenttoconstant_registers_an_offense_with_or_assignment_to_a_constant_in_method_definition"
+name = "rubocopcoplintorassignmenttoconstant_registers_an_offense_with_orassignment_to_a_constant_in_method_definition"
 source = '''
 def foo
   M::CONST ||= 1
@@ -33,7 +33,7 @@ column_end = 14
 message = "Avoid using or-assignment with constants."
 
 [[tests]]
-name = "rubocop_cop_lint_orassignmenttoconstant_registers_an_offense_with_or_assignment_to_a_constant_in_singleton_method_definition"
+name = "rubocopcoplintorassignmenttoconstant_registers_an_offense_with_orassignment_to_a_constant_in_singleton_method_definition"
 source = '''
 def self.foo
   M::CONST ||= 1
@@ -47,7 +47,7 @@ column_end = 14
 message = "Avoid using or-assignment with constants."
 
 [[tests]]
-name = "rubocop_cop_lint_orassignmenttoconstant_registers_an_offense_with_or_assignment_to_a_constant_in_method_definition_using_define_method"
+name = "rubocopcoplintorassignmenttoconstant_registers_an_offense_with_orassignment_to_a_constant_in_method_definition_using_define_method"
 source = '''
 define_method :foo do
   M::CONST ||= 1
@@ -66,17 +66,43 @@ column_end = 14
 message = "Avoid using or-assignment with constants."
 
 [[tests]]
-name = "rubocop_cop_lint_orassignmenttoconstant_does_not_register_an_offense_with_plain_assignment_to_a_constant"
+name = "rubocopcoplintorassignmenttoconstant_does_not_register_an_offense_with_plain_assignment_to_a_constant"
 source = '''
 CONST = 1
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_orassignmenttoconstant"
+name = "rubocopcoplintorassignmenttoconstant_does_not_register_an_offense_with_orassignment_to_a_local_variable"
 source = '''
-#{var} ||= 1
+var ||= 1
 '''
-interpolated = true
-verified = false
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintorassignmenttoconstant_does_not_register_an_offense_with_orassignment_to_an_instance_variable"
+source = '''
+@var ||= 1
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintorassignmenttoconstant_does_not_register_an_offense_with_orassignment_to_a_class_variable"
+source = '''
+@@var ||= 1
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintorassignmenttoconstant_does_not_register_an_offense_with_orassignment_to_a_global_variable"
+source = '''
+$var ||= 1
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintorassignmenttoconstant_does_not_register_an_offense_with_orassignment_to_an_attribute"
+source = '''
+self.var ||= 1
+'''
 offenses = []

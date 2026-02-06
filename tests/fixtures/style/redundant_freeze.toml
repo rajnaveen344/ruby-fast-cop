@@ -4,549 +4,637 @@ severity = "convention"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_style_redundantfreeze_immutable_objects_1"
-source = '''
-1
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantfreeze_immutable_objects_1_5"
-source = '''
-1.5
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantfreeze_immutable_objects_sym"
-source = '''
-:sym
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantfreeze_immutable_objects"
-source = '''
-:""
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantfreeze_immutable_objects_foo_count"
-source = '''
-'foo'.count
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantfreeze_immutable_objects_1_2"
-source = '''
-(1 + 2)
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantfreeze_immutable_objects_2_1"
-source = '''
-(2 > 1)
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantfreeze_immutable_objects_a_b"
-source = '''
-('a' > 'b')
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantfreeze_immutable_objects_a_b"
-source = '''
-(a > b)
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantfreeze_immutable_objects_1_2_3_size"
-source = '''
-[1, 2, 3].size
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantfreeze_immutable_objects_1_2_3_count_x"
-source = '''
-[1, 2, 3].count { |x| bar?(x) }
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantfreeze_immutable_objects_1_2_3_count_ba"
-source = '''
-[1, 2, 3].count { bar?(_1) }
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantfreeze_mutable_objects_1_2_3"
-source = '''
-[1, 2, 3]
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantfreeze_mutable_objects_a_1_b_2"
-source = '''
-{ a: 1, b: 2 }
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantfreeze_mutable_objects_str"
-source = '''
-'str'
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantfreeze_mutable_objects_top_1_2"
-source = '''
-"top#{1 + 2}"
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantfreeze_mutable_objects_top_foo"
-source = '''
-"top#@foo"
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantfreeze_mutable_objects_top_foo"
-source = '''
-"top#@@foo"
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantfreeze_mutable_objects_top_foo"
-source = '''
-"top#$foo"
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantfreeze_mutable_objects_a_b"
-source = '''
-('a' + 'b')
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantfreeze_mutable_objects_a_20"
-source = '''
-('a' * 20)
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantfreeze_mutable_objects_a_b"
-source = '''
-(a + b)
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantfreeze_mutable_objects_42_42"
-source = '''
-([42] * 42)
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantfreeze_mutable_objects_env_foo"
-source = '''
-ENV['foo']
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantfreeze_mutable_objects_env_foo"
-source = '''
-::ENV['foo']
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantfreeze_allows_freeze_on_method_call"
+name = "rubocopcopstyleredundantfreeze_allows_freeze_on_method_call"
 source = '''
 TOP_TEST = Something.new.freeze
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_redundantfreeze_when_allcops_stringliteralsfrozenbydefault_true_when_the_frozen_string_literal_comment_is_missing_immutable_objects"
+name = "rubocopcopstyleredundantfreeze_behaves_like_immutable_objects_registers_an_offense_for_frozen_1"
 source = '''
-""
+CONST = 1.freeze
+'''
+corrected = '''
+CONST = 1
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 16
+message = "Do not freeze immutable objects, as freezing them has no effect."
+
+[[tests]]
+name = "rubocopcopstyleredundantfreeze_behaves_like_immutable_objects_registers_an_offense_for_frozen_15"
+source = '''
+CONST = 1.5.freeze
+'''
+corrected = '''
+CONST = 1.5
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 18
+message = "Do not freeze immutable objects, as freezing them has no effect."
+
+[[tests]]
+name = "rubocopcopstyleredundantfreeze_behaves_like_immutable_objects_registers_an_offense_for_frozen_sym"
+source = '''
+CONST = :sym.freeze
+'''
+corrected = '''
+CONST = :sym
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 19
+message = "Do not freeze immutable objects, as freezing them has no effect."
+
+[[tests]]
+name = "rubocopcopstyleredundantfreeze_behaves_like_immutable_objects_registers_an_offense_for_frozen_"
+source = '''
+CONST = :"".freeze
+'''
+corrected = '''
+CONST = :""
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 18
+message = "Do not freeze immutable objects, as freezing them has no effect."
+
+[[tests]]
+name = "rubocopcopstyleredundantfreeze_behaves_like_immutable_objects_registers_an_offense_for_frozen_foocount"
+source = '''
+CONST = 'foo'.count.freeze
+'''
+corrected = '''
+CONST = 'foo'.count
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 26
+message = "Do not freeze immutable objects, as freezing them has no effect."
+
+[[tests]]
+name = "rubocopcopstyleredundantfreeze_behaves_like_immutable_objects_registers_an_offense_for_frozen_1__2"
+source = '''
+CONST = (1 + 2).freeze
+'''
+corrected = '''
+CONST = (1 + 2)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 22
+message = "Do not freeze immutable objects, as freezing them has no effect."
+
+[[tests]]
+name = "rubocopcopstyleredundantfreeze_behaves_like_immutable_objects_registers_an_offense_for_frozen_2__1"
+source = '''
+CONST = (2 > 1).freeze
+'''
+corrected = '''
+CONST = (2 > 1)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 22
+message = "Do not freeze immutable objects, as freezing them has no effect."
+
+[[tests]]
+name = "rubocopcopstyleredundantfreeze_behaves_like_immutable_objects_registers_an_offense_for_frozen_a__b"
+source = '''
+CONST = ('a' > 'b').freeze
+'''
+corrected = '''
+CONST = ('a' > 'b')
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 26
+message = "Do not freeze immutable objects, as freezing them has no effect."
+
+[[tests]]
+name = "rubocopcopstyleredundantfreeze_behaves_like_immutable_objects_registers_an_offense_for_frozen_a__b_2"
+source = '''
+CONST = (a > b).freeze
+'''
+corrected = '''
+CONST = (a > b)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 22
+message = "Do not freeze immutable objects, as freezing them has no effect."
+
+[[tests]]
+name = "rubocopcopstyleredundantfreeze_behaves_like_immutable_objects_registers_an_offense_for_frozen_1_2_3size"
+source = '''
+CONST = [1, 2, 3].size.freeze
+'''
+corrected = '''
+CONST = [1, 2, 3].size
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 29
+message = "Do not freeze immutable objects, as freezing them has no effect."
+
+[[tests]]
+name = "rubocopcopstyleredundantfreeze_behaves_like_immutable_objects_registers_an_offense_for_frozen_1_2_3count__x_barx_"
+source = '''
+CONST = [1, 2, 3].count { |x| bar?(x) }.freeze
+'''
+corrected = '''
+CONST = [1, 2, 3].count { |x| bar?(x) }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 46
+message = "Do not freeze immutable objects, as freezing them has no effect."
+
+[[tests]]
+name = "rubocopcopstyleredundantfreeze_behaves_like_immutable_objects_registers_an_offense_for_frozen_1_2_3count__bar_1_"
+source = '''
+CONST = [1, 2, 3].count { bar?(_1) }.freeze
+'''
+corrected = '''
+CONST = [1, 2, 3].count { bar?(_1) }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 43
+message = "Do not freeze immutable objects, as freezing them has no effect."
+
+[[tests]]
+name = "rubocopcopstyleredundantfreeze_behaves_like_mutable_objects_allows_1_2_3_with_freeze"
+source = '''
+CONST = [1, 2, 3].freeze
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_redundantfreeze_when_allcops_stringliteralsfrozenbydefault_true_when_the_frozen_string_literal_comment_is_true_immutable_objects"
+name = "rubocopcopstyleredundantfreeze_behaves_like_mutable_objects_allows__a_1_b_2__with_freeze"
 source = '''
-""
+CONST = { a: 1, b: 2 }.freeze
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_redundantfreeze_when_allcops_stringliteralsfrozenbydefault_true_when_the_frozen_string_literal_comment_is_false_mutable_objects"
+name = "rubocopcopstyleredundantfreeze_behaves_like_mutable_objects_allows_str_with_freeze"
 source = '''
-""
+CONST = 'str'.freeze
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_redundantfreeze_when_allcops_stringliteralsfrozenbydefault_false_when_the_frozen_string_literal_comment_is_missing_mutable_objects"
+name = "rubocopcopstyleredundantfreeze_behaves_like_mutable_objects_allows_top1__2_with_freeze"
 source = '''
-""
+CONST = "top#{1 + 2}".freeze
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_redundantfreeze_when_allcops_stringliteralsfrozenbydefault_false_when_the_frozen_string_literal_comment_is_true_immutable_objects"
+name = "rubocopcopstyleredundantfreeze_behaves_like_mutable_objects_allows_topfoo_with_freeze"
 source = '''
-""
+CONST = "top#@foo".freeze
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_redundantfreeze_when_allcops_stringliteralsfrozenbydefault_false_when_the_frozen_string_literal_comment_is_false_mutable_objects"
+name = "rubocopcopstyleredundantfreeze_behaves_like_mutable_objects_allows_topfoo_with_freeze_2"
 source = '''
-""
+CONST = "top#@@foo".freeze
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_redundantfreeze_when_the_receiver_is_a_string_literal_when_the_target_ruby_version_5_0_when_the_frozen_string_literal_comment_is_missing_immutable_objects_a"
+name = "rubocopcopstyleredundantfreeze_behaves_like_mutable_objects_allows_topfoo_with_freeze_3"
 source = '''
-"#{a}"
+CONST = "top#$foo".freeze
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_redundantfreeze_when_the_receiver_is_a_string_literal_when_the_target_ruby_version_5_0_when_the_frozen_string_literal_comment_is_missing_immutable_objects_a"
+name = "rubocopcopstyleredundantfreeze_behaves_like_mutable_objects_allows_a__b_with_freeze"
 source = '''
-"#@a"
+CONST = ('a' + 'b').freeze
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_redundantfreeze_when_the_receiver_is_a_string_literal_when_the_target_ruby_version_5_0_when_the_frozen_string_literal_comment_is_missing_immutable_objects_a"
+name = "rubocopcopstyleredundantfreeze_behaves_like_mutable_objects_allows_a__20_with_freeze"
 source = '''
-"#@@a"
+CONST = ('a' * 20).freeze
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_redundantfreeze_when_the_receiver_is_a_string_literal_when_the_target_ruby_version_5_0_when_the_frozen_string_literal_comment_is_missing_immutable_objects_a"
+name = "rubocopcopstyleredundantfreeze_behaves_like_mutable_objects_allows_a__b_with_freeze_2"
 source = '''
-"#$a"
+CONST = (a + b).freeze
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_redundantfreeze_when_the_receiver_is_a_string_literal_when_the_target_ruby_version_5_0_when_the_frozen_string_literal_comment_is_true_immutable_objects_a"
+name = "rubocopcopstyleredundantfreeze_behaves_like_mutable_objects_allows_42__42_with_freeze"
 source = '''
-"#{a}"
+CONST = ([42] * 42).freeze
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_redundantfreeze_when_the_receiver_is_a_string_literal_when_the_target_ruby_version_5_0_when_the_frozen_string_literal_comment_is_true_immutable_objects_a"
+name = "rubocopcopstyleredundantfreeze_behaves_like_mutable_objects_allows_envfoo_with_freeze"
 source = '''
-"#@a"
+CONST = ENV['foo'].freeze
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_redundantfreeze_when_the_receiver_is_a_string_literal_when_the_target_ruby_version_5_0_when_the_frozen_string_literal_comment_is_true_immutable_objects_a"
+name = "rubocopcopstyleredundantfreeze_behaves_like_mutable_objects_allows_envfoo_with_freeze_2"
 source = '''
-"#@@a"
+CONST = ::ENV['foo'].freeze
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_redundantfreeze_when_the_receiver_is_a_string_literal_when_the_target_ruby_version_5_0_when_the_frozen_string_literal_comment_is_true_immutable_objects_a"
+name = "rubocopcopstyleredundantfreeze_when_allcopsstringliteralsfrozenbydefault_true_when_the_frozen_string_literal_comment_is_missing_behaves_like_immutable_objects_registers_an_offense_for_frozen_"
 source = '''
-"#$a"
+CONST = "".freeze
+'''
+corrected = '''
+CONST = ""
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 17
+message = "Do not freeze immutable objects, as freezing them has no effect."
+
+[[tests]]
+name = "rubocopcopstyleredundantfreeze_when_allcopsstringliteralsfrozenbydefault_true_when_the_frozen_string_literal_comment_is_true_behaves_like_immutable_objects_registers_an_offense_for_frozen_"
+source = '''
+# frozen_string_literal: true
+CONST = "".freeze
+'''
+corrected = '''
+# frozen_string_literal: true
+CONST = ""
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 8
+column_end = 17
+message = "Do not freeze immutable objects, as freezing them has no effect."
+
+[[tests]]
+name = "rubocopcopstyleredundantfreeze_when_allcopsstringliteralsfrozenbydefault_true_when_the_frozen_string_literal_comment_is_false_behaves_like_mutable_objects_allows__with_freeze"
+source = '''
+# frozen_string_literal: false
+CONST = "".freeze
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_redundantfreeze_when_the_receiver_is_a_string_literal_when_the_target_ruby_version_5_0_when_the_frozen_string_literal_comment_is_false_immutable_objects_a"
+name = "rubocopcopstyleredundantfreeze_when_allcopsstringliteralsfrozenbydefault_false_when_the_frozen_string_literal_comment_is_missing_behaves_like_mutable_objects_allows__with_freeze"
 source = '''
-"#{a}"
+CONST = "".freeze
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_redundantfreeze_when_the_receiver_is_a_string_literal_when_the_target_ruby_version_5_0_when_the_frozen_string_literal_comment_is_false_immutable_objects_a"
+name = "rubocopcopstyleredundantfreeze_when_allcopsstringliteralsfrozenbydefault_false_when_the_frozen_string_literal_comment_is_true_behaves_like_immutable_objects_registers_an_offense_for_frozen_"
 source = '''
-"#@a"
+# frozen_string_literal: true
+CONST = "".freeze
+'''
+corrected = '''
+# frozen_string_literal: true
+CONST = ""
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 8
+column_end = 17
+message = "Do not freeze immutable objects, as freezing them has no effect."
+
+[[tests]]
+name = "rubocopcopstyleredundantfreeze_when_allcopsstringliteralsfrozenbydefault_false_when_the_frozen_string_literal_comment_is_false_behaves_like_mutable_objects_allows__with_freeze"
+source = '''
+# frozen_string_literal: false
+CONST = "".freeze
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_redundantfreeze_when_the_receiver_is_a_string_literal_when_the_target_ruby_version_5_0_when_the_frozen_string_literal_comment_is_false_immutable_objects_a"
+name = "rubocopcopstyleredundantfreeze_when_the_receiver_is_a_string_literal_ruby_30_or_higher_when_the_frozen_string_literal_comment_is_missing_behaves_like_mutable_objects_allows_a_with_freeze"
 source = '''
-"#@@a"
+CONST = "#{a}".freeze
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_redundantfreeze_when_the_receiver_is_a_string_literal_when_the_target_ruby_version_5_0_when_the_frozen_string_literal_comment_is_false_immutable_objects_a"
+name = "rubocopcopstyleredundantfreeze_when_the_receiver_is_a_string_literal_ruby_30_or_higher_when_the_frozen_string_literal_comment_is_missing_behaves_like_mutable_objects_allows_a_with_freeze_2"
 source = '''
-"#$a"
+CONST = "#@a".freeze
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_redundantfreeze_when_the_receiver_is_a_string_literal_ruby_3_0_or_higher_when_the_frozen_string_literal_comment_is_missing_mutable_objects_a"
+name = "rubocopcopstyleredundantfreeze_when_the_receiver_is_a_string_literal_ruby_30_or_higher_when_the_frozen_string_literal_comment_is_missing_behaves_like_mutable_objects_allows_a_with_freeze_3"
 source = '''
-"#{a}"
+CONST = "#@@a".freeze
 '''
-ruby_version = ">= 3.0"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_redundantfreeze_when_the_receiver_is_a_string_literal_ruby_3_0_or_higher_when_the_frozen_string_literal_comment_is_missing_mutable_objects_a"
+name = "rubocopcopstyleredundantfreeze_when_the_receiver_is_a_string_literal_ruby_30_or_higher_when_the_frozen_string_literal_comment_is_missing_behaves_like_mutable_objects_allows_a_with_freeze_4"
 source = '''
-"#@a"
+CONST = "#$a".freeze
 '''
-ruby_version = ">= 3.0"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_redundantfreeze_when_the_receiver_is_a_string_literal_ruby_3_0_or_higher_when_the_frozen_string_literal_comment_is_missing_mutable_objects_a"
+name = "rubocopcopstyleredundantfreeze_when_the_receiver_is_a_string_literal_ruby_30_or_higher_when_the_frozen_string_literal_comment_is_true_behaves_like_mutable_objects_allows_a_with_freeze"
 source = '''
-"#@@a"
+# frozen_string_literal: true
+CONST = "#{a}".freeze
 '''
-ruby_version = ">= 3.0"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_redundantfreeze_when_the_receiver_is_a_string_literal_ruby_3_0_or_higher_when_the_frozen_string_literal_comment_is_missing_mutable_objects_a"
+name = "rubocopcopstyleredundantfreeze_when_the_receiver_is_a_string_literal_ruby_30_or_higher_when_the_frozen_string_literal_comment_is_true_behaves_like_mutable_objects_allows_a_with_freeze_2"
 source = '''
-"#$a"
+# frozen_string_literal: true
+CONST = "#@a".freeze
 '''
-ruby_version = ">= 3.0"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_redundantfreeze_when_the_receiver_is_a_string_literal_ruby_3_0_or_higher_when_the_frozen_string_literal_comment_is_true_mutable_objects_a"
+name = "rubocopcopstyleredundantfreeze_when_the_receiver_is_a_string_literal_ruby_30_or_higher_when_the_frozen_string_literal_comment_is_true_behaves_like_mutable_objects_allows_a_with_freeze_3"
 source = '''
-"#{a}"
+# frozen_string_literal: true
+CONST = "#@@a".freeze
 '''
-ruby_version = ">= 3.0"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_redundantfreeze_when_the_receiver_is_a_string_literal_ruby_3_0_or_higher_when_the_frozen_string_literal_comment_is_true_mutable_objects_a"
+name = "rubocopcopstyleredundantfreeze_when_the_receiver_is_a_string_literal_ruby_30_or_higher_when_the_frozen_string_literal_comment_is_true_behaves_like_mutable_objects_allows_a_with_freeze_4"
 source = '''
-"#@a"
+# frozen_string_literal: true
+CONST = "#$a".freeze
 '''
-ruby_version = ">= 3.0"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_redundantfreeze_when_the_receiver_is_a_string_literal_ruby_3_0_or_higher_when_the_frozen_string_literal_comment_is_true_mutable_objects_a"
+name = "rubocopcopstyleredundantfreeze_when_the_receiver_is_a_string_literal_ruby_30_or_higher_when_the_frozen_string_literal_comment_is_false_behaves_like_mutable_objects_allows_a_with_freeze"
 source = '''
-"#@@a"
+# frozen_string_literal: false
+CONST = "#{a}".freeze
 '''
-ruby_version = ">= 3.0"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_redundantfreeze_when_the_receiver_is_a_string_literal_ruby_3_0_or_higher_when_the_frozen_string_literal_comment_is_true_mutable_objects_a"
+name = "rubocopcopstyleredundantfreeze_when_the_receiver_is_a_string_literal_ruby_30_or_higher_when_the_frozen_string_literal_comment_is_false_behaves_like_mutable_objects_allows_a_with_freeze_2"
 source = '''
-"#$a"
+# frozen_string_literal: false
+CONST = "#@a".freeze
 '''
-ruby_version = ">= 3.0"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_redundantfreeze_when_the_receiver_is_a_string_literal_ruby_3_0_or_higher_when_the_frozen_string_literal_comment_is_false_mutable_objects_a"
+name = "rubocopcopstyleredundantfreeze_when_the_receiver_is_a_string_literal_ruby_30_or_higher_when_the_frozen_string_literal_comment_is_false_behaves_like_mutable_objects_allows_a_with_freeze_3"
 source = '''
-"#{a}"
+# frozen_string_literal: false
+CONST = "#@@a".freeze
 '''
-ruby_version = ">= 3.0"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_redundantfreeze_when_the_receiver_is_a_string_literal_ruby_3_0_or_higher_when_the_frozen_string_literal_comment_is_false_mutable_objects_a"
+name = "rubocopcopstyleredundantfreeze_when_the_receiver_is_a_string_literal_ruby_30_or_higher_when_the_frozen_string_literal_comment_is_false_behaves_like_mutable_objects_allows_a_with_freeze_4"
 source = '''
-"#@a"
+# frozen_string_literal: false
+CONST = "#$a".freeze
 '''
-ruby_version = ">= 3.0"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_redundantfreeze_when_the_receiver_is_a_string_literal_ruby_3_0_or_higher_when_the_frozen_string_literal_comment_is_false_mutable_objects_a"
+name = "rubocopcopstyleredundantfreeze_when_the_receiver_is_a_string_literal_ruby_27_or_lower_when_the_frozen_string_literal_comment_is_missing_behaves_like_mutable_objects_allows_a_with_freeze"
 source = '''
-"#@@a"
+CONST = "#{a}".freeze
 '''
-ruby_version = ">= 3.0"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_redundantfreeze_when_the_receiver_is_a_string_literal_ruby_3_0_or_higher_when_the_frozen_string_literal_comment_is_false_mutable_objects_a"
+name = "rubocopcopstyleredundantfreeze_when_the_receiver_is_a_string_literal_ruby_27_or_lower_when_the_frozen_string_literal_comment_is_missing_behaves_like_mutable_objects_allows_a_with_freeze_2"
 source = '''
-"#$a"
+CONST = "#@a".freeze
 '''
-ruby_version = ">= 3.0"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_redundantfreeze_when_the_receiver_is_a_string_literal_ruby_2_7_or_lower_when_the_frozen_string_literal_comment_is_missing_mutable_objects_a"
+name = "rubocopcopstyleredundantfreeze_when_the_receiver_is_a_string_literal_ruby_27_or_lower_when_the_frozen_string_literal_comment_is_missing_behaves_like_mutable_objects_allows_a_with_freeze_3"
 source = '''
-"#{a}"
+CONST = "#@@a".freeze
 '''
-ruby_version = ">= 2.7"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_redundantfreeze_when_the_receiver_is_a_string_literal_ruby_2_7_or_lower_when_the_frozen_string_literal_comment_is_missing_mutable_objects_a"
+name = "rubocopcopstyleredundantfreeze_when_the_receiver_is_a_string_literal_ruby_27_or_lower_when_the_frozen_string_literal_comment_is_missing_behaves_like_mutable_objects_allows_a_with_freeze_4"
 source = '''
-"#@a"
+CONST = "#$a".freeze
 '''
-ruby_version = ">= 2.7"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_redundantfreeze_when_the_receiver_is_a_string_literal_ruby_2_7_or_lower_when_the_frozen_string_literal_comment_is_missing_mutable_objects_a"
+name = "rubocopcopstyleredundantfreeze_when_the_receiver_is_a_string_literal_ruby_27_or_lower_when_the_frozen_string_literal_comment_is_true_behaves_like_immutable_objects_registers_an_offense_for_frozen_a"
 source = '''
-"#@@a"
+# frozen_string_literal: true
+CONST = "#{a}".freeze
 '''
-ruby_version = ">= 2.7"
+corrected = '''
+# frozen_string_literal: true
+CONST = "#{a}"
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 8
+column_end = 21
+message = "Do not freeze immutable objects, as freezing them has no effect."
+
+[[tests]]
+name = "rubocopcopstyleredundantfreeze_when_the_receiver_is_a_string_literal_ruby_27_or_lower_when_the_frozen_string_literal_comment_is_true_behaves_like_immutable_objects_registers_an_offense_for_frozen_a_2"
+source = '''
+# frozen_string_literal: true
+CONST = "#@a".freeze
+'''
+corrected = '''
+# frozen_string_literal: true
+CONST = "#@a"
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 8
+column_end = 20
+message = "Do not freeze immutable objects, as freezing them has no effect."
+
+[[tests]]
+name = "rubocopcopstyleredundantfreeze_when_the_receiver_is_a_string_literal_ruby_27_or_lower_when_the_frozen_string_literal_comment_is_true_behaves_like_immutable_objects_registers_an_offense_for_frozen_a_3"
+source = '''
+# frozen_string_literal: true
+CONST = "#@@a".freeze
+'''
+corrected = '''
+# frozen_string_literal: true
+CONST = "#@@a"
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 8
+column_end = 21
+message = "Do not freeze immutable objects, as freezing them has no effect."
+
+[[tests]]
+name = "rubocopcopstyleredundantfreeze_when_the_receiver_is_a_string_literal_ruby_27_or_lower_when_the_frozen_string_literal_comment_is_true_behaves_like_immutable_objects_registers_an_offense_for_frozen_a_4"
+source = '''
+# frozen_string_literal: true
+CONST = "#$a".freeze
+'''
+corrected = '''
+# frozen_string_literal: true
+CONST = "#$a"
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 8
+column_end = 20
+message = "Do not freeze immutable objects, as freezing them has no effect."
+
+[[tests]]
+name = "rubocopcopstyleredundantfreeze_when_the_receiver_is_a_string_literal_ruby_27_or_lower_when_the_frozen_string_literal_comment_is_false_behaves_like_mutable_objects_allows_a_with_freeze"
+source = '''
+# frozen_string_literal: false
+CONST = "#{a}".freeze
+'''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_redundantfreeze_when_the_receiver_is_a_string_literal_ruby_2_7_or_lower_when_the_frozen_string_literal_comment_is_missing_mutable_objects_a"
+name = "rubocopcopstyleredundantfreeze_when_the_receiver_is_a_string_literal_ruby_27_or_lower_when_the_frozen_string_literal_comment_is_false_behaves_like_mutable_objects_allows_a_with_freeze_2"
 source = '''
-"#$a"
+# frozen_string_literal: false
+CONST = "#@a".freeze
 '''
-ruby_version = ">= 2.7"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_redundantfreeze_when_the_receiver_is_a_string_literal_ruby_2_7_or_lower_when_the_frozen_string_literal_comment_is_true_immutable_objects_a"
+name = "rubocopcopstyleredundantfreeze_when_the_receiver_is_a_string_literal_ruby_27_or_lower_when_the_frozen_string_literal_comment_is_false_behaves_like_mutable_objects_allows_a_with_freeze_3"
 source = '''
-"#{a}"
+# frozen_string_literal: false
+CONST = "#@@a".freeze
 '''
-ruby_version = ">= 2.7"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_redundantfreeze_when_the_receiver_is_a_string_literal_ruby_2_7_or_lower_when_the_frozen_string_literal_comment_is_true_immutable_objects_a"
+name = "rubocopcopstyleredundantfreeze_when_the_receiver_is_a_string_literal_ruby_27_or_lower_when_the_frozen_string_literal_comment_is_false_behaves_like_mutable_objects_allows_a_with_freeze_4"
 source = '''
-"#@a"
+# frozen_string_literal: false
+CONST = "#$a".freeze
 '''
-ruby_version = ">= 2.7"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_redundantfreeze_when_the_receiver_is_a_string_literal_ruby_2_7_or_lower_when_the_frozen_string_literal_comment_is_true_immutable_objects_a"
+name = "rubocopcopstyleredundantfreeze_when_the_receiver_is_a_string_literal_regexp_and_range_literals_ruby_30_or_higher_behaves_like_immutable_objects_registers_an_offense_for_frozen_"
 source = '''
-"#@@a"
+CONST = /./.freeze
 '''
-ruby_version = ">= 2.7"
+corrected = '''
+CONST = /./
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 18
+message = "Do not freeze immutable objects, as freezing them has no effect."
+
+[[tests]]
+name = "rubocopcopstyleredundantfreeze_when_the_receiver_is_a_string_literal_regexp_and_range_literals_ruby_30_or_higher_behaves_like_immutable_objects_registers_an_offense_for_frozen_15"
+source = '''
+CONST = (1..5).freeze
+'''
+corrected = '''
+CONST = (1..5)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 21
+message = "Do not freeze immutable objects, as freezing them has no effect."
+
+[[tests]]
+name = "rubocopcopstyleredundantfreeze_when_the_receiver_is_a_string_literal_regexp_and_range_literals_ruby_30_or_higher_behaves_like_immutable_objects_registers_an_offense_for_frozen_15_2"
+source = '''
+CONST = (1...5).freeze
+'''
+corrected = '''
+CONST = (1...5)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 22
+message = "Do not freeze immutable objects, as freezing them has no effect."
+
+[[tests]]
+name = "rubocopcopstyleredundantfreeze_when_the_receiver_is_a_string_literal_regexp_and_range_literals_ruby_27_or_lower_behaves_like_mutable_objects_allows__with_freeze"
+source = '''
+CONST = /./.freeze
+'''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_redundantfreeze_when_the_receiver_is_a_string_literal_ruby_2_7_or_lower_when_the_frozen_string_literal_comment_is_true_immutable_objects_a"
+name = "rubocopcopstyleredundantfreeze_when_the_receiver_is_a_string_literal_regexp_and_range_literals_ruby_27_or_lower_behaves_like_mutable_objects_allows_15_with_freeze"
 source = '''
-"#$a"
+CONST = (1..5).freeze
 '''
-ruby_version = ">= 2.7"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_redundantfreeze_when_the_receiver_is_a_string_literal_ruby_2_7_or_lower_when_the_frozen_string_literal_comment_is_false_mutable_objects_a"
+name = "rubocopcopstyleredundantfreeze_when_the_receiver_is_a_string_literal_regexp_and_range_literals_ruby_27_or_lower_behaves_like_mutable_objects_allows_15_with_freeze_2"
 source = '''
-"#{a}"
+CONST = (1...5).freeze
 '''
-ruby_version = ">= 2.7"
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantfreeze_when_the_receiver_is_a_string_literal_ruby_2_7_or_lower_when_the_frozen_string_literal_comment_is_false_mutable_objects_a"
-source = '''
-"#@a"
-'''
-ruby_version = ">= 2.7"
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantfreeze_when_the_receiver_is_a_string_literal_ruby_2_7_or_lower_when_the_frozen_string_literal_comment_is_false_mutable_objects_a"
-source = '''
-"#@@a"
-'''
-ruby_version = ">= 2.7"
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantfreeze_when_the_receiver_is_a_string_literal_ruby_2_7_or_lower_when_the_frozen_string_literal_comment_is_false_mutable_objects_a"
-source = '''
-"#$a"
-'''
-ruby_version = ">= 2.7"
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantfreeze_when_the_receiver_is_a_string_literal_regexp_and_range_literals_ruby_3_0_or_higher_immutable_objects"
-source = '''
-/./
-'''
-ruby_version = ">= 3.0"
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantfreeze_when_the_receiver_is_a_string_literal_regexp_and_range_literals_ruby_3_0_or_higher_immutable_objects_1_5"
-source = '''
-(1..5)
-'''
-ruby_version = ">= 3.0"
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantfreeze_when_the_receiver_is_a_string_literal_regexp_and_range_literals_ruby_3_0_or_higher_immutable_objects_1_5"
-source = '''
-(1...5)
-'''
-ruby_version = ">= 3.0"
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantfreeze_when_the_receiver_is_a_string_literal_regexp_and_range_literals_ruby_2_7_or_lower_mutable_objects"
-source = '''
-/./
-'''
-ruby_version = ">= 2.7"
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantfreeze_when_the_receiver_is_a_string_literal_regexp_and_range_literals_ruby_2_7_or_lower_mutable_objects_1_5"
-source = '''
-(1..5)
-'''
-ruby_version = ">= 2.7"
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantfreeze_when_the_receiver_is_a_string_literal_regexp_and_range_literals_ruby_2_7_or_lower_mutable_objects_1_5"
-source = '''
-(1...5)
-'''
-ruby_version = ">= 2.7"
 offenses = []

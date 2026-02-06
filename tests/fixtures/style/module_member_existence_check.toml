@@ -4,212 +4,1129 @@ severity = "convention"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_style_modulememberexistencecheck"
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_registers_an_offense_when_using_class_variablesincludemethod"
 source = '''
-x.#{array_returning_method}.include?(method)
+x.class_variables.include?(method)
 '''
 corrected = '''
-x.#{predicate_method}(method)
+x.class_variable_defined?(method)
 '''
-interpolated = true
-verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 34
+message = "Use `class_variable_defined?(method)` instead."
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_registers_an_offense_when_using_class_variablesinclude_method"
+source = '''
+x.class_variables.include? method
+'''
+corrected = '''
+x.class_variable_defined?(method)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 33
+message = "Use `class_variable_defined?(method)` instead."
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_registers_an_offense_when_using_class_variablesmembermethod"
+source = '''
+x.class_variables.member?(method)
+'''
+corrected = '''
+x.class_variable_defined?(method)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 33
+message = "Use `class_variable_defined?(method)` instead."
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_registers_an_offense_when_using_class_variablesincludemethod_2"
+source = '''
+x&.class_variables&.include?(method)
+'''
+corrected = '''
+x&.class_variable_defined?(method)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 36
+message = "Use `class_variable_defined?(method)` instead."
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_registers_an_offense_when_using_class_variablesincludemethod_3"
+source = '''
+class_variables.include?(method)
+'''
+corrected = '''
+class_variable_defined?(method)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 32
+message = "Use `class_variable_defined?(method)` instead."
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_does_not_register_an_offense_when_using_class_variablesinheritincludemethod"
+source = '''
+x.class_variables(inherit).include?(method)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_does_not_register_an_offense_when_passing_more_than_one_argument_to_class_variables"
+source = '''
+x.class_variables(true, false).include?(method)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_does_not_register_an_offense_when_passing_more_than_one_argument_to_include"
+source = '''
+x.class_variables.include?(foo, bar)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_does_not_register_an_offense_when_passing_a_splat_argument_to_include"
+source = '''
+x.class_variables.include?(*foo)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_does_not_register_an_offense_when_passing_a_kwargs_argument_to_include"
+source = '''
+x.class_variables.include?(**foo)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_does_not_register_an_offense_when_passing_a_block_argument_to_include"
+source = '''
+x.class_variables.include?(&foo)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_does_not_register_an_offense_when_passing_a_splat_argument_to_class_variables"
+source = '''
+x.class_variables(*foo).include?(method)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_when_class_variables_is_in_allowedmethods_does_not_register_an_offense_when_using_class_variablesincludemethod"
+source = '''
+x.class_variables.include?(method)
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["class_variables"]
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_registers_an_offense_when_using_constantsincludemethod"
+source = '''
+x.constants.include?(method)
+'''
+corrected = '''
+x.const_defined?(method)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 28
+message = "Use `const_defined?(method)` instead."
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_registers_an_offense_when_using_constantsinclude_method"
+source = '''
+x.constants.include? method
+'''
+corrected = '''
+x.const_defined?(method)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 27
+message = "Use `const_defined?(method)` instead."
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_registers_an_offense_when_using_constantsmembermethod"
+source = '''
+x.constants.member?(method)
+'''
+corrected = '''
+x.const_defined?(method)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 27
+message = "Use `const_defined?(method)` instead."
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_registers_an_offense_when_using_constantsincludemethod_2"
+source = '''
+x&.constants&.include?(method)
+'''
+corrected = '''
+x&.const_defined?(method)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 30
+message = "Use `const_defined?(method)` instead."
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_registers_an_offense_when_using_constantsincludemethod_3"
+source = '''
+constants.include?(method)
+'''
+corrected = '''
+const_defined?(method)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 26
+message = "Use `const_defined?(method)` instead."
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_registers_an_offense_when_using_constantsfalseincludemethod"
+source = '''
+x.constants(false).include?(method)
+'''
+corrected = '''
+x.const_defined?(method, false)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 35
+message = "Use `const_defined?(method, false)` instead."
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_registers_an_offense_when_using_constantstrueincludemethod"
+source = '''
+x.constants(true).include?(method)
+'''
+corrected = '''
+x.const_defined?(method)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 34
+message = "Use `const_defined?(method)` instead."
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_registers_an_offense_when_using_constantsinheritincludemethod"
+source = '''
+x.constants(inherit).include?(method)
+'''
+corrected = '''
+x.const_defined?(method, inherit)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 37
+message = "Use `const_defined?(method, inherit)` instead."
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_does_not_register_an_offense_when_passing_more_than_one_argument_to_constants"
+source = '''
+x.constants(true, false).include?(method)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_does_not_register_an_offense_when_passing_more_than_one_argument_to_include_2"
+source = '''
+x.constants.include?(foo, bar)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_does_not_register_an_offense_when_passing_a_splat_argument_to_include_2"
+source = '''
+x.constants.include?(*foo)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_does_not_register_an_offense_when_passing_a_kwargs_argument_to_include_2"
+source = '''
+x.constants.include?(**foo)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_does_not_register_an_offense_when_passing_a_block_argument_to_include_2"
+source = '''
+x.constants.include?(&foo)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_does_not_register_an_offense_when_passing_a_splat_argument_to_constants"
+source = '''
+x.constants(*foo).include?(method)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_when_constants_is_in_allowedmethods_does_not_register_an_offense_when_using_constantsincludemethod"
+source = '''
+x.constants.include?(method)
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["constants"]
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_registers_an_offense_when_using_included_modulesincludemethod"
+source = '''
+x.included_modules.include?(method)
+'''
+corrected = '''
+x.include?(method)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 35
+message = "Use `include?(method)` instead."
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_registers_an_offense_when_using_included_modulesinclude_method"
+source = '''
+x.included_modules.include? method
+'''
+corrected = '''
+x.include?(method)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 34
+message = "Use `include?(method)` instead."
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_registers_an_offense_when_using_included_modulesmembermethod"
+source = '''
+x.included_modules.member?(method)
+'''
+corrected = '''
+x.include?(method)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 34
+message = "Use `include?(method)` instead."
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_registers_an_offense_when_using_included_modulesincludemethod_2"
+source = '''
+x&.included_modules&.include?(method)
+'''
+corrected = '''
+x&.include?(method)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 37
+message = "Use `include?(method)` instead."
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_registers_an_offense_when_using_included_modulesincludemethod_3"
+source = '''
+included_modules.include?(method)
+'''
+corrected = '''
+include?(method)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 33
+message = "Use `include?(method)` instead."
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_does_not_register_an_offense_when_using_included_modulesinheritincludemethod"
+source = '''
+x.included_modules(inherit).include?(method)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_does_not_register_an_offense_when_passing_more_than_one_argument_to_included_modules"
+source = '''
+x.included_modules(true, false).include?(method)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_does_not_register_an_offense_when_passing_more_than_one_argument_to_include_3"
+source = '''
+x.included_modules.include?(foo, bar)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_does_not_register_an_offense_when_passing_a_splat_argument_to_include_3"
+source = '''
+x.included_modules.include?(*foo)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_does_not_register_an_offense_when_passing_a_kwargs_argument_to_include_3"
+source = '''
+x.included_modules.include?(**foo)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_does_not_register_an_offense_when_passing_a_block_argument_to_include_3"
+source = '''
+x.included_modules.include?(&foo)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_does_not_register_an_offense_when_passing_a_splat_argument_to_included_modules"
+source = '''
+x.included_modules(*foo).include?(method)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_when_included_modules_is_in_allowedmethods_does_not_register_an_offense_when_using_included_modulesincludemethod"
+source = '''
+x.included_modules.include?(method)
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["included_modules"]
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_registers_an_offense_when_using_instance_methodsincludemethod"
+source = '''
+x.instance_methods.include?(method)
+'''
+corrected = '''
+x.method_defined?(method)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 35
+message = "Use `method_defined?(method)` instead."
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_registers_an_offense_when_using_instance_methodsinclude_method"
+source = '''
+x.instance_methods.include? method
+'''
+corrected = '''
+x.method_defined?(method)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 34
+message = "Use `method_defined?(method)` instead."
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_registers_an_offense_when_using_instance_methodsmembermethod"
+source = '''
+x.instance_methods.member?(method)
+'''
+corrected = '''
+x.method_defined?(method)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 34
+message = "Use `method_defined?(method)` instead."
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_registers_an_offense_when_using_instance_methodsincludemethod_2"
+source = '''
+x&.instance_methods&.include?(method)
+'''
+corrected = '''
+x&.method_defined?(method)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 37
+message = "Use `method_defined?(method)` instead."
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_registers_an_offense_when_using_instance_methodsincludemethod_3"
+source = '''
+instance_methods.include?(method)
+'''
+corrected = '''
+method_defined?(method)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 33
+message = "Use `method_defined?(method)` instead."
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_registers_an_offense_when_using_instance_methodsfalseincludemethod"
+source = '''
+x.instance_methods(false).include?(method)
+'''
+corrected = '''
+x.method_defined?(method, false)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 42
+message = "Use `method_defined?(method, false)` instead."
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_registers_an_offense_when_using_instance_methodstrueincludemethod"
+source = '''
+x.instance_methods(true).include?(method)
+'''
+corrected = '''
+x.method_defined?(method)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 41
+message = "Use `method_defined?(method)` instead."
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_registers_an_offense_when_using_instance_methodsinheritincludemethod"
+source = '''
+x.instance_methods(inherit).include?(method)
+'''
+corrected = '''
+x.method_defined?(method, inherit)
+'''
 
 [[tests.offenses]]
 line = 1
 column_start = 2
 column_end = 44
-message = "Use `#{predicate_method}(method)` instead."
+message = "Use `method_defined?(method, inherit)` instead."
 
 [[tests]]
-name = "rubocop_cop_style_modulememberexistencecheck"
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_does_not_register_an_offense_when_passing_more_than_one_argument_to_instance_methods"
 source = '''
-x.#{array_returning_method}.include? method
+x.instance_methods(true, false).include?(method)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_does_not_register_an_offense_when_passing_more_than_one_argument_to_include_4"
+source = '''
+x.instance_methods.include?(foo, bar)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_does_not_register_an_offense_when_passing_a_splat_argument_to_include_4"
+source = '''
+x.instance_methods.include?(*foo)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_does_not_register_an_offense_when_passing_a_kwargs_argument_to_include_4"
+source = '''
+x.instance_methods.include?(**foo)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_does_not_register_an_offense_when_passing_a_block_argument_to_include_4"
+source = '''
+x.instance_methods.include?(&foo)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_does_not_register_an_offense_when_passing_a_splat_argument_to_instance_methods"
+source = '''
+x.instance_methods(*foo).include?(method)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_when_instance_methods_is_in_allowedmethods_does_not_register_an_offense_when_using_instance_methodsincludemethod"
+source = '''
+x.instance_methods.include?(method)
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["instance_methods"]
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_registers_an_offense_when_using_private_instance_methodsincludemethod"
+source = '''
+x.private_instance_methods.include?(method)
 '''
 corrected = '''
-x.#{predicate_method}(method)
+x.private_method_defined?(method)
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 2
 column_end = 43
-message = "Use `#{predicate_method}(method)` instead."
+message = "Use `private_method_defined?(method)` instead."
 
 [[tests]]
-name = "rubocop_cop_style_modulememberexistencecheck"
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_registers_an_offense_when_using_private_instance_methodsinclude_method"
 source = '''
-x.#{array_returning_method}.member?(method)
+x.private_instance_methods.include? method
 '''
 corrected = '''
-x.#{predicate_method}(method)
+x.private_method_defined?(method)
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 2
-column_end = 43
-message = "Use `#{predicate_method}(method)` instead."
+column_end = 42
+message = "Use `private_method_defined?(method)` instead."
 
 [[tests]]
-name = "rubocop_cop_style_modulememberexistencecheck"
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_registers_an_offense_when_using_private_instance_methodsmembermethod"
 source = '''
-x&.#{array_returning_method}&.include?(method)
+x.private_instance_methods.member?(method)
 '''
 corrected = '''
-x&.#{predicate_method}(method)
+x.private_method_defined?(method)
 '''
-interpolated = true
-verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 42
+message = "Use `private_method_defined?(method)` instead."
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_registers_an_offense_when_using_private_instance_methodsincludemethod_2"
+source = '''
+x&.private_instance_methods&.include?(method)
+'''
+corrected = '''
+x&.private_method_defined?(method)
+'''
 
 [[tests.offenses]]
 line = 1
 column_start = 3
-column_end = 46
-message = "Use `#{predicate_method}(method)` instead."
+column_end = 45
+message = "Use `private_method_defined?(method)` instead."
 
 [[tests]]
-name = "rubocop_cop_style_modulememberexistencecheck"
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_registers_an_offense_when_using_private_instance_methodsincludemethod_3"
 source = '''
-#{array_returning_method}.include?(method)
+private_instance_methods.include?(method)
 '''
 corrected = '''
-#{predicate_method}(method)
+private_method_defined?(method)
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 0
-column_end = 42
-message = "Use `#{predicate_method}(method)` instead."
+column_end = 41
+message = "Use `private_method_defined?(method)` instead."
 
 [[tests]]
-name = "rubocop_cop_style_modulememberexistencecheck"
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_registers_an_offense_when_using_private_instance_methodsfalseincludemethod"
 source = '''
-x.#{array_returning_method}(false).include?(method)
+x.private_instance_methods(false).include?(method)
 '''
 corrected = '''
-x.#{predicate_method}(method, false)
+x.private_method_defined?(method, false)
 '''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 2
-column_end = 51
-message = "Use `#{predicate_method}(method, false)` instead."
-
-[[tests]]
-name = "rubocop_cop_style_modulememberexistencecheck"
-source = '''
-x.#{array_returning_method}(true).include?(method)
-'''
-corrected = '''
-x.#{predicate_method}(method)
-'''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 2
 column_end = 50
-message = "Use `#{predicate_method}(method)` instead."
+message = "Use `private_method_defined?(method, false)` instead."
 
 [[tests]]
-name = "rubocop_cop_style_modulememberexistencecheck"
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_registers_an_offense_when_using_private_instance_methodstrueincludemethod"
 source = '''
-x.#{array_returning_method}(inherit).include?(method)
+x.private_instance_methods(true).include?(method)
 '''
 corrected = '''
-x.#{predicate_method}(method, inherit)
+x.private_method_defined?(method)
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 2
-column_end = 53
-message = "Use `#{predicate_method}(method, inherit)` instead."
+column_end = 49
+message = "Use `private_method_defined?(method)` instead."
 
 [[tests]]
-name = "rubocop_cop_style_modulememberexistencecheck"
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_registers_an_offense_when_using_private_instance_methodsinheritincludemethod"
 source = '''
-x.#{array_returning_method}(inherit).include?(method)
+x.private_instance_methods(inherit).include?(method)
 '''
-interpolated = true
-verified = false
+corrected = '''
+x.private_method_defined?(method, inherit)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 52
+message = "Use `private_method_defined?(method, inherit)` instead."
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_does_not_register_an_offense_when_passing_more_than_one_argument_to_private_instance_methods"
+source = '''
+x.private_instance_methods(true, false).include?(method)
+'''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_modulememberexistencecheck"
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_does_not_register_an_offense_when_passing_more_than_one_argument_to_include_5"
 source = '''
-x.#{array_returning_method}(true, false).include?(method)
+x.private_instance_methods.include?(foo, bar)
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_modulememberexistencecheck_does_not_register_an_offense_when_passing_more_than_one_argument_to_include"
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_does_not_register_an_offense_when_passing_a_splat_argument_to_include_5"
 source = '''
-x.#{array_returning_method}.include?(foo, bar)
+x.private_instance_methods.include?(*foo)
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_modulememberexistencecheck_does_not_register_an_offense_when_passing_a_splat_argument_to_include"
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_does_not_register_an_offense_when_passing_a_kwargs_argument_to_include_5"
 source = '''
-x.#{array_returning_method}.include?(*foo)
+x.private_instance_methods.include?(**foo)
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_modulememberexistencecheck_does_not_register_an_offense_when_passing_a_kwargs_argument_to_include"
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_does_not_register_an_offense_when_passing_a_block_argument_to_include_5"
 source = '''
-x.#{array_returning_method}.include?(**foo)
+x.private_instance_methods.include?(&foo)
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_modulememberexistencecheck_does_not_register_an_offense_when_passing_a_block_argument_to_include"
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_does_not_register_an_offense_when_passing_a_splat_argument_to_private_instance_methods"
 source = '''
-x.#{array_returning_method}.include?(&foo)
+x.private_instance_methods(*foo).include?(method)
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_modulememberexistencecheck"
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_when_private_instance_methods_is_in_allowedmethods_does_not_register_an_offense_when_using_private_instance_methodsincludemethod"
 source = '''
-x.#{array_returning_method}(*foo).include?(method)
+x.private_instance_methods.include?(method)
 '''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_modulememberexistencecheck"
-source = '''
-x.#{array_returning_method}.include?(method)
-'''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-AllowedMethods = ["array_returning_method.to_s"]
+AllowedMethods = ["private_instance_methods"]
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_registers_an_offense_when_using_protected_instance_methodsincludemethod"
+source = '''
+x.protected_instance_methods.include?(method)
+'''
+corrected = '''
+x.protected_method_defined?(method)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 45
+message = "Use `protected_method_defined?(method)` instead."
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_registers_an_offense_when_using_protected_instance_methodsinclude_method"
+source = '''
+x.protected_instance_methods.include? method
+'''
+corrected = '''
+x.protected_method_defined?(method)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 44
+message = "Use `protected_method_defined?(method)` instead."
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_registers_an_offense_when_using_protected_instance_methodsmembermethod"
+source = '''
+x.protected_instance_methods.member?(method)
+'''
+corrected = '''
+x.protected_method_defined?(method)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 44
+message = "Use `protected_method_defined?(method)` instead."
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_registers_an_offense_when_using_protected_instance_methodsincludemethod_2"
+source = '''
+x&.protected_instance_methods&.include?(method)
+'''
+corrected = '''
+x&.protected_method_defined?(method)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 47
+message = "Use `protected_method_defined?(method)` instead."
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_registers_an_offense_when_using_protected_instance_methodsincludemethod_3"
+source = '''
+protected_instance_methods.include?(method)
+'''
+corrected = '''
+protected_method_defined?(method)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 43
+message = "Use `protected_method_defined?(method)` instead."
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_registers_an_offense_when_using_protected_instance_methodsfalseincludemethod"
+source = '''
+x.protected_instance_methods(false).include?(method)
+'''
+corrected = '''
+x.protected_method_defined?(method, false)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 52
+message = "Use `protected_method_defined?(method, false)` instead."
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_registers_an_offense_when_using_protected_instance_methodstrueincludemethod"
+source = '''
+x.protected_instance_methods(true).include?(method)
+'''
+corrected = '''
+x.protected_method_defined?(method)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 51
+message = "Use `protected_method_defined?(method)` instead."
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_registers_an_offense_when_using_protected_instance_methodsinheritincludemethod"
+source = '''
+x.protected_instance_methods(inherit).include?(method)
+'''
+corrected = '''
+x.protected_method_defined?(method, inherit)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 54
+message = "Use `protected_method_defined?(method, inherit)` instead."
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_does_not_register_an_offense_when_passing_more_than_one_argument_to_protected_instance_methods"
+source = '''
+x.protected_instance_methods(true, false).include?(method)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_does_not_register_an_offense_when_passing_more_than_one_argument_to_include_6"
+source = '''
+x.protected_instance_methods.include?(foo, bar)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_does_not_register_an_offense_when_passing_a_splat_argument_to_include_6"
+source = '''
+x.protected_instance_methods.include?(*foo)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_does_not_register_an_offense_when_passing_a_kwargs_argument_to_include_6"
+source = '''
+x.protected_instance_methods.include?(**foo)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_does_not_register_an_offense_when_passing_a_block_argument_to_include_6"
+source = '''
+x.protected_instance_methods.include?(&foo)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_does_not_register_an_offense_when_passing_a_splat_argument_to_protected_instance_methods"
+source = '''
+x.protected_instance_methods(*foo).include?(method)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_when_protected_instance_methods_is_in_allowedmethods_does_not_register_an_offense_when_using_protected_instance_methodsincludemethod"
+source = '''
+x.protected_instance_methods.include?(method)
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["protected_instance_methods"]
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_registers_an_offense_when_using_public_instance_methodsincludemethod"
+source = '''
+x.public_instance_methods.include?(method)
+'''
+corrected = '''
+x.public_method_defined?(method)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 42
+message = "Use `public_method_defined?(method)` instead."
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_registers_an_offense_when_using_public_instance_methodsinclude_method"
+source = '''
+x.public_instance_methods.include? method
+'''
+corrected = '''
+x.public_method_defined?(method)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 41
+message = "Use `public_method_defined?(method)` instead."
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_registers_an_offense_when_using_public_instance_methodsmembermethod"
+source = '''
+x.public_instance_methods.member?(method)
+'''
+corrected = '''
+x.public_method_defined?(method)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 41
+message = "Use `public_method_defined?(method)` instead."
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_registers_an_offense_when_using_public_instance_methodsincludemethod_2"
+source = '''
+x&.public_instance_methods&.include?(method)
+'''
+corrected = '''
+x&.public_method_defined?(method)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 44
+message = "Use `public_method_defined?(method)` instead."
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_registers_an_offense_when_using_public_instance_methodsincludemethod_3"
+source = '''
+public_instance_methods.include?(method)
+'''
+corrected = '''
+public_method_defined?(method)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 40
+message = "Use `public_method_defined?(method)` instead."
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_registers_an_offense_when_using_public_instance_methodsfalseincludemethod"
+source = '''
+x.public_instance_methods(false).include?(method)
+'''
+corrected = '''
+x.public_method_defined?(method, false)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 49
+message = "Use `public_method_defined?(method, false)` instead."
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_registers_an_offense_when_using_public_instance_methodstrueincludemethod"
+source = '''
+x.public_instance_methods(true).include?(method)
+'''
+corrected = '''
+x.public_method_defined?(method)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 48
+message = "Use `public_method_defined?(method)` instead."
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_registers_an_offense_when_using_public_instance_methodsinheritincludemethod"
+source = '''
+x.public_instance_methods(inherit).include?(method)
+'''
+corrected = '''
+x.public_method_defined?(method, inherit)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 51
+message = "Use `public_method_defined?(method, inherit)` instead."
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_does_not_register_an_offense_when_passing_more_than_one_argument_to_public_instance_methods"
+source = '''
+x.public_instance_methods(true, false).include?(method)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_does_not_register_an_offense_when_passing_more_than_one_argument_to_include_7"
+source = '''
+x.public_instance_methods.include?(foo, bar)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_does_not_register_an_offense_when_passing_a_splat_argument_to_include_7"
+source = '''
+x.public_instance_methods.include?(*foo)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_does_not_register_an_offense_when_passing_a_kwargs_argument_to_include_7"
+source = '''
+x.public_instance_methods.include?(**foo)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_does_not_register_an_offense_when_passing_a_block_argument_to_include_7"
+source = '''
+x.public_instance_methods.include?(&foo)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_does_not_register_an_offense_when_passing_a_splat_argument_to_public_instance_methods"
+source = '''
+x.public_instance_methods(*foo).include?(method)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylemodulememberexistencecheck_behaves_like_module_member_inclusion_when_public_instance_methods_is_in_allowedmethods_does_not_register_an_offense_when_using_public_instance_methodsincludemethod"
+source = '''
+x.public_instance_methods.include?(method)
+'''
+offenses = []
+
+[tests.config]
+AllowedMethods = ["public_instance_methods"]

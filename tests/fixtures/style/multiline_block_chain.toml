@@ -4,7 +4,33 @@ severity = "convention"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_style_multilineblockchain_with_multi_line_block_chaining_registers_an_offense_for_a_simple_case"
+name = "rubocopcopstylemultilineblockchain_accepts_a_chain_of_blocks_spanning_one_line"
+source = '''
+a { b }.c { d }
+w do x end.y do z end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylemultilineblockchain_accepts_a_multiline_block_chained_with_calls_on_one_line"
+source = '''
+a do
+  b
+end.c.d
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylemultilineblockchain_accepts_a_chain_of_calls_followed_by_a_multiline_block"
+source = '''
+a1.a2.a3 do
+  b
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylemultilineblockchain_with_multiline_block_chaining_registers_an_offense_for_a_simple_case"
 source = '''
 a do
   b
@@ -20,7 +46,7 @@ column_end = 5
 message = "Avoid multi-line chains of blocks."
 
 [[tests]]
-name = "rubocop_cop_style_multilineblockchain_with_multi_line_block_chaining_registers_an_offense_for_a_simple_case_with_safe_navigation_operator"
+name = "rubocopcopstylemultilineblockchain_with_multiline_block_chaining_registers_an_offense_for_a_simple_case_with_safe_navigation_operator"
 source = '''
 a do
   b
@@ -36,7 +62,7 @@ column_end = 6
 message = "Avoid multi-line chains of blocks."
 
 [[tests]]
-name = "rubocop_cop_style_multilineblockchain_with_multi_line_block_chaining_registers_an_offense_for_a_slightly_more_complicated_case"
+name = "rubocopcopstylemultilineblockchain_with_multiline_block_chaining_registers_an_offense_for_a_slightly_more_complicated_case"
 source = '''
 a do
   b
@@ -52,41 +78,7 @@ column_end = 9
 message = "Avoid multi-line chains of blocks."
 
 [[tests]]
-name = "rubocop_cop_style_multilineblockchain_with_multi_line_block_chaining_ruby_2_7_registers_an_offense_for_a_slightly_more_complicated_case"
-source = '''
-a do
-  _1
-end.c1.c2 do
-  _1
-end
-'''
-ruby_version = ">= 2.7"
-
-[[tests.offenses]]
-line = 3
-column_start = 0
-column_end = 9
-message = "Avoid multi-line chains of blocks."
-
-[[tests]]
-name = "rubocop_cop_style_multilineblockchain_with_multi_line_block_chaining_ruby_3_4_registers_an_offense_for_a_slightly_more_complicated_case"
-source = '''
-a do
-  it
-end.c1.c2 do
-  it
-end
-'''
-ruby_version = ">= 3.4"
-
-[[tests.offenses]]
-line = 3
-column_start = 0
-column_end = 9
-message = "Avoid multi-line chains of blocks."
-
-[[tests]]
-name = "rubocop_cop_style_multilineblockchain_with_multi_line_block_chaining_registers_two_offenses_for_a_chain_of_three_blocks"
+name = "rubocopcopstylemultilineblockchain_with_multiline_block_chaining_registers_two_offenses_for_a_chain_of_three_blocks"
 source = '''
 a do
   b
@@ -110,7 +102,7 @@ column_end = 5
 message = "Avoid multi-line chains of blocks."
 
 [[tests]]
-name = "rubocop_cop_style_multilineblockchain_with_multi_line_block_chaining_registers_an_offense_for_a_chain_where_the_second_block_is_single_line"
+name = "rubocopcopstylemultilineblockchain_with_multiline_block_chaining_registers_an_offense_for_a_chain_where_the_second_block_is_singleline"
 source = '''
 Thread.list.find_all { |t|
   t.alive?
@@ -124,7 +116,7 @@ column_end = 5
 message = "Avoid multi-line chains of blocks."
 
 [[tests]]
-name = "rubocop_cop_style_multilineblockchain_with_multi_line_block_chaining_accepts_a_chain_where_the_first_block_is_single_line"
+name = "rubocopcopstylemultilineblockchain_with_multiline_block_chaining_accepts_a_chain_where_the_first_block_is_singleline"
 source = '''
 Thread.list.find_all { |t| t.alive? }.map { |t|
   t.object_id
@@ -133,27 +125,33 @@ Thread.list.find_all { |t| t.alive? }.map { |t|
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_multilineblockchain_accepts_a_chain_of_blocks_spanning_one_line"
-source = '''
-a { b }.c { d }
-w do x end.y do z end
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_multilineblockchain_accepts_a_multi_line_block_chained_with_calls_on_one_line"
+name = "rubocopcopstylemultilineblockchain_with_multiline_block_chaining_ruby_27_registers_an_offense_for_a_slightly_more_complicated_case"
 source = '''
 a do
-  b
-end.c.d
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_multilineblockchain_accepts_a_chain_of_calls_followed_by_a_multi_line_block"
-source = '''
-a1.a2.a3 do
-  b
+  _1
+end.c1.c2 do
+  _1
 end
 '''
-offenses = []
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 9
+message = "Avoid multi-line chains of blocks."
+
+[[tests]]
+name = "rubocopcopstylemultilineblockchain_with_multiline_block_chaining_ruby_34_registers_an_offense_for_a_slightly_more_complicated_case"
+source = '''
+a do
+  it
+end.c1.c2 do
+  it
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 9
+message = "Avoid multi-line chains of blocks."

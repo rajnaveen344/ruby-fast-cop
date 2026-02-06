@@ -4,89 +4,293 @@ severity = "convention"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_style_ambiguousendlessmethoddefinition_ruby_3_0_does_not_register_an_offense_for_a_non_endless_method"
+name = "rubocopcopstyleambiguousendlessmethoddefinition_ruby__30_does_not_register_an_offense_for_a_non_endless_method"
 source = '''
 def foo
 end
 '''
-ruby_version = ">= 3.0"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_ambiguousendlessmethoddefinition_ruby_3_0"
+name = "rubocopcopstyleambiguousendlessmethoddefinition_ruby__30_does_not_register_an_offense_for_"
+source = '''
+def foo = true && bar
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleambiguousendlessmethoddefinition_ruby__30_does_not_register_an_offense_for__2"
+source = '''
+def foo = true || bar
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleambiguousendlessmethoddefinition_ruby__30_with_and_does_not_register_an_offense_for_a_non_endless_method_followed_by_and"
 source = '''
 def foo
-end #{operator} bar
+end and bar
 '''
-ruby_version = ">= 3.0"
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_ambiguousendlessmethoddefinition_ruby_3_0_does_not_register_an_offense_when_the_operator_is_already_wrapped_in_parens"
+name = "rubocopcopstyleambiguousendlessmethoddefinition_ruby__30_with_and_does_not_register_an_offense_when_the_operator_is_already_wrapped_in_parens"
 source = '''
-def foo = (true #{operator} bar)
+def foo = (true and bar)
 '''
-ruby_version = ">= 3.0"
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_ambiguousendlessmethoddefinition_ruby_3_0_does_not_register_an_offense_when_the_method_definition_is_already_wrapped_in_parens"
+name = "rubocopcopstyleambiguousendlessmethoddefinition_ruby__30_with_and_does_not_register_an_offense_when_the_method_definition_is_already_wrapped_in_parens"
 source = '''
-(def foo = true) #{operator} bar
+(def foo = true) and bar
 '''
-ruby_version = ">= 3.0"
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_ambiguousendlessmethoddefinition_ruby_3_0"
+name = "rubocopcopstyleambiguousendlessmethoddefinition_ruby__30_with_and_registers_an_offense_and_corrects_an_endless_method_followed_by_and"
 source = '''
-#{operator} bar
-  def foo = true
-end
-'''
-ruby_version = ">= 3.0"
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_ambiguousendlessmethoddefinition_ruby_3_0"
-source = '''
-def foo = true #{operator} bar
+def foo = true and bar
 '''
 corrected = '''
 def foo
   true
-end #{operator} bar
+end and bar
 '''
-ruby_version = ">= 3.0"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 0
-column_end = 30
-message = "Avoid using `#{operator}` statements with endless methods."
+column_end = 22
+message = "Avoid using `and` statements with endless methods."
 
 [[tests]]
-name = "rubocop_cop_style_ambiguousendlessmethoddefinition_ruby_3_0_does_not_register_an_offense_for"
+name = "rubocopcopstyleambiguousendlessmethoddefinition_ruby__30_with_or_does_not_register_an_offense_for_a_non_endless_method_followed_by_or"
 source = '''
-def foo = true && bar
+def foo
+end or bar
 '''
-ruby_version = ">= 3.0"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_ambiguousendlessmethoddefinition_ruby_3_0_does_not_register_an_offense_for"
+name = "rubocopcopstyleambiguousendlessmethoddefinition_ruby__30_with_or_does_not_register_an_offense_when_the_operator_is_already_wrapped_in_parens"
 source = '''
-def foo = true || bar
+def foo = (true or bar)
 '''
-ruby_version = ">= 3.0"
 offenses = []
+
+[[tests]]
+name = "rubocopcopstyleambiguousendlessmethoddefinition_ruby__30_with_or_does_not_register_an_offense_when_the_method_definition_is_already_wrapped_in_parens"
+source = '''
+(def foo = true) or bar
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleambiguousendlessmethoddefinition_ruby__30_with_or_registers_an_offense_and_corrects_an_endless_method_followed_by_or"
+source = '''
+def foo = true or bar
+'''
+corrected = '''
+def foo
+  true
+end or bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 21
+message = "Avoid using `or` statements with endless methods."
+
+[[tests]]
+name = "rubocopcopstyleambiguousendlessmethoddefinition_ruby__30_with_if_does_not_register_an_offense_for_a_non_endless_method_followed_by_if"
+source = '''
+def foo
+end if bar
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleambiguousendlessmethoddefinition_ruby__30_with_if_does_not_register_an_offense_when_the_operator_is_already_wrapped_in_parens"
+source = '''
+def foo = (true if bar)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleambiguousendlessmethoddefinition_ruby__30_with_if_does_not_register_an_offense_when_the_method_definition_is_already_wrapped_in_parens"
+source = '''
+(def foo = true) if bar
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleambiguousendlessmethoddefinition_ruby__30_with_if_does_not_register_an_offense_for_nonmodifier_if"
+source = '''
+if bar
+  def foo = true
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleambiguousendlessmethoddefinition_ruby__30_with_if_registers_an_offense_and_corrects_an_endless_method_followed_by_if"
+source = '''
+def foo = true if bar
+'''
+corrected = '''
+def foo
+  true
+end if bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 21
+message = "Avoid using `if` statements with endless methods."
+
+[[tests]]
+name = "rubocopcopstyleambiguousendlessmethoddefinition_ruby__30_with_unless_does_not_register_an_offense_for_a_non_endless_method_followed_by_unless"
+source = '''
+def foo
+end unless bar
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleambiguousendlessmethoddefinition_ruby__30_with_unless_does_not_register_an_offense_when_the_operator_is_already_wrapped_in_parens"
+source = '''
+def foo = (true unless bar)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleambiguousendlessmethoddefinition_ruby__30_with_unless_does_not_register_an_offense_when_the_method_definition_is_already_wrapped_in_parens"
+source = '''
+(def foo = true) unless bar
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleambiguousendlessmethoddefinition_ruby__30_with_unless_does_not_register_an_offense_for_nonmodifier_unless"
+source = '''
+unless bar
+  def foo = true
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleambiguousendlessmethoddefinition_ruby__30_with_unless_registers_an_offense_and_corrects_an_endless_method_followed_by_unless"
+source = '''
+def foo = true unless bar
+'''
+corrected = '''
+def foo
+  true
+end unless bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 25
+message = "Avoid using `unless` statements with endless methods."
+
+[[tests]]
+name = "rubocopcopstyleambiguousendlessmethoddefinition_ruby__30_with_while_does_not_register_an_offense_for_a_non_endless_method_followed_by_while"
+source = '''
+def foo
+end while bar
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleambiguousendlessmethoddefinition_ruby__30_with_while_does_not_register_an_offense_when_the_operator_is_already_wrapped_in_parens"
+source = '''
+def foo = (true while bar)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleambiguousendlessmethoddefinition_ruby__30_with_while_does_not_register_an_offense_when_the_method_definition_is_already_wrapped_in_parens"
+source = '''
+(def foo = true) while bar
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleambiguousendlessmethoddefinition_ruby__30_with_while_does_not_register_an_offense_for_nonmodifier_while"
+source = '''
+while bar
+  def foo = true
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleambiguousendlessmethoddefinition_ruby__30_with_while_registers_an_offense_and_corrects_an_endless_method_followed_by_while"
+source = '''
+def foo = true while bar
+'''
+corrected = '''
+def foo
+  true
+end while bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 24
+message = "Avoid using `while` statements with endless methods."
+
+[[tests]]
+name = "rubocopcopstyleambiguousendlessmethoddefinition_ruby__30_with_until_does_not_register_an_offense_for_a_non_endless_method_followed_by_until"
+source = '''
+def foo
+end until bar
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleambiguousendlessmethoddefinition_ruby__30_with_until_does_not_register_an_offense_when_the_operator_is_already_wrapped_in_parens"
+source = '''
+def foo = (true until bar)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleambiguousendlessmethoddefinition_ruby__30_with_until_does_not_register_an_offense_when_the_method_definition_is_already_wrapped_in_parens"
+source = '''
+(def foo = true) until bar
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleambiguousendlessmethoddefinition_ruby__30_with_until_does_not_register_an_offense_for_nonmodifier_until"
+source = '''
+until bar
+  def foo = true
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleambiguousendlessmethoddefinition_ruby__30_with_until_registers_an_offense_and_corrects_an_endless_method_followed_by_until"
+source = '''
+def foo = true until bar
+'''
+corrected = '''
+def foo
+  true
+end until bar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 24
+message = "Avoid using `until` statements with endless methods."

@@ -4,11 +4,10 @@ severity = "convention"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_layout_emptylinesaroundarguments_when_extra_lines_registers_and_autocorrects_offense_for_empty_line_before_arg"
+name = "rubocopcoplayoutemptylinesaroundarguments_when_extra_lines_registers_and_autocorrects_offense_for_empty_line_before_arg"
 source = '''
 foo(
 
-#{empty_line_annotation}
   bar
 )
 '''
@@ -17,17 +16,19 @@ foo(
   bar
 )
 '''
-interpolated = true
-verified = false
-offenses = []
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 1
+message = "{} Empty line detected around arguments."
 
 [[tests]]
-name = "rubocop_cop_layout_emptylinesaroundarguments_when_extra_lines_registers_and_autocorrects_offense_for_empty_line_after_arg"
+name = "rubocopcoplayoutemptylinesaroundarguments_when_extra_lines_registers_and_autocorrects_offense_for_empty_line_after_arg"
 source = '''
 bar(
   [baz, qux]
 
-#{empty_line_annotation}
 )
 '''
 corrected = '''
@@ -35,17 +36,19 @@ bar(
   [baz, qux]
 )
 '''
-interpolated = true
-verified = false
-offenses = []
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 1
+message = "{} Empty line detected around arguments."
 
 [[tests]]
-name = "rubocop_cop_layout_emptylinesaroundarguments_when_extra_lines_registers_and_autocorrects_offense_for_empty_line_between_args"
+name = "rubocopcoplayoutemptylinesaroundarguments_when_extra_lines_registers_and_autocorrects_offense_for_empty_line_between_args"
 source = '''
 foo.do_something(
   baz,
 
-#{empty_line_annotation}
   qux: 0
 )
 '''
@@ -55,23 +58,23 @@ foo.do_something(
   qux: 0
 )
 '''
-interpolated = true
-verified = false
-offenses = []
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 1
+message = "{} Empty line detected around arguments."
 
 [[tests]]
-name = "rubocop_cop_layout_emptylinesaroundarguments_when_extra_lines_registers_and_autocorrects_offenses_when_multiple_empty_lines_are_detected"
+name = "rubocopcoplayoutemptylinesaroundarguments_when_extra_lines_registers_and_autocorrects_offenses_when_multiple_empty_lines_are_detected"
 source = '''
 foo(
   baz,
 
-#{empty_line_annotation}
   qux,
 
-#{empty_line_annotation}
   biz,
 
-#{empty_line_annotation}
 )
 '''
 corrected = '''
@@ -81,33 +84,49 @@ foo(
   biz,
 )
 '''
-interpolated = true
-verified = false
-offenses = []
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 1
+message = "{} Empty line detected around arguments."
+
+[[tests.offenses]]
+line = 5
+column_start = 0
+column_end = 1
+message = "{} Empty line detected around arguments."
+
+[[tests.offenses]]
+line = 7
+column_start = 0
+column_end = 1
+message = "{} Empty line detected around arguments."
 
 [[tests]]
-name = "rubocop_cop_layout_emptylinesaroundarguments_when_extra_lines_registers_and_autocorrects_offense_when_args_start_on_definition_line"
+name = "rubocopcoplayoutemptylinesaroundarguments_when_extra_lines_registers_and_autocorrects_offense_when_args_start_on_definition_line"
 source = '''
 foo(biz,
 
-#{empty_line_annotation}
     baz: 0)
 '''
 corrected = '''
 foo(biz,
     baz: 0)
 '''
-interpolated = true
-verified = false
-offenses = []
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 1
+message = "{} Empty line detected around arguments."
 
 [[tests]]
-name = "rubocop_cop_layout_emptylinesaroundarguments_when_extra_lines_registers_and_autocorrects_offense_when_empty_line_between_normal_arg_block_arg"
+name = "rubocopcoplayoutemptylinesaroundarguments_when_extra_lines_registers_and_autocorrects_offense_when_empty_line_between_normal_arg__block_arg"
 source = '''
 Foo.prepend(
   a,
 
-#{empty_line_annotation}
   Module.new do
     def something; end
 
@@ -125,12 +144,15 @@ Foo.prepend(
   end
 )
 '''
-interpolated = true
-verified = false
-offenses = []
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 1
+message = "{} Empty line detected around arguments."
 
 [[tests]]
-name = "rubocop_cop_layout_emptylinesaroundarguments_when_extra_lines_registers_and_autocorrects_offense_on_correct_line_for_single_offense_example"
+name = "rubocopcoplayoutemptylinesaroundarguments_when_extra_lines_registers_and_autocorrects_offense_on_correct_line_for_single_offense_example"
 source = '''
 class Foo
 
@@ -140,7 +162,6 @@ class Foo
     fizz(
       qux,
 
-#{empty_line_annotation}
       10
     )
   end
@@ -159,26 +180,27 @@ class Foo
   end
 end
 '''
-interpolated = true
-verified = false
-offenses = []
+
+[[tests.offenses]]
+line = 8
+column_start = 0
+column_end = 1
+message = "{} Empty line detected around arguments."
 
 [[tests]]
-name = "rubocop_cop_layout_emptylinesaroundarguments_when_extra_lines_registers_and_autocorrects_offense_on_correct_lines_for_multi_offense_example"
+name = "rubocopcoplayoutemptylinesaroundarguments_when_extra_lines_registers_and_autocorrects_offense_on_correct_lines_for_multioffense_example"
 source = '''
 something(1, 5)
 something_else
 
 foo(biz,
 
-#{empty_line_annotation}
     qux)
 
 quux.map do
 
 end.another.thing(
 
-#{empty_line_annotation}
   [baz]
 )
 '''
@@ -195,16 +217,42 @@ end.another.thing(
   [baz]
 )
 '''
-interpolated = true
-verified = false
-offenses = []
+
+[[tests.offenses]]
+line = 5
+column_start = 0
+column_end = 1
+message = "{} Empty line detected around arguments."
+
+[[tests.offenses]]
+line = 11
+column_start = 0
+column_end = 1
+message = "{} Empty line detected around arguments."
 
 [[tests]]
-name = "rubocop_cop_layout_emptylinesaroundarguments_when_extra_lines_when_using_safe_navigation_operator_registers_and_autocorrects_offense_for_empty_line_before_arg"
+name = "rubocopcoplayoutemptylinesaroundarguments_when_extra_lines_registers_autocorrects_empty_line_when_args_start_on_definition_line"
+source = '''
+bar(qux,
+
+    78)
+'''
+corrected = '''
+bar(qux,
+    78)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 1
+message = "{} Empty line detected around arguments."
+
+[[tests]]
+name = "rubocopcoplayoutemptylinesaroundarguments_when_extra_lines_when_using_safe_navigation_operator_registers_and_autocorrects_offense_for_empty_line_before_arg"
 source = '''
 receiver&.foo(
 
-#{empty_line_annotation}
   bar
 )
 '''
@@ -213,35 +261,22 @@ receiver&.foo(
   bar
 )
 '''
-interpolated = true
-verified = false
-offenses = []
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 1
+message = "{} Empty line detected around arguments."
 
 [[tests]]
-name = "rubocop_cop_layout_emptylinesaroundarguments_when_extra_lines_registers_autocorrects_empty_line_when_args_start_on_definition_line"
-source = '''
-bar(qux,
-
-#{empty_line_annotation}
-    78)
-'''
-corrected = '''
-bar(qux,
-    78)
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_layout_emptylinesaroundarguments_when_no_extra_lines_accepts_one_line_methods"
+name = "rubocopcoplayoutemptylinesaroundarguments_when_no_extra_lines_accepts_one_line_methods"
 source = '''
 foo(bar)
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_emptylinesaroundarguments_when_no_extra_lines_accepts_multiple_listed_mixed_args"
+name = "rubocopcoplayoutemptylinesaroundarguments_when_no_extra_lines_accepts_multiple_listed_mixed_args"
 source = '''
 foo(
   bar,
@@ -253,7 +288,7 @@ foo(
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_emptylinesaroundarguments_when_no_extra_lines_accepts_listed_args_starting_on_definition_line"
+name = "rubocopcoplayoutemptylinesaroundarguments_when_no_extra_lines_accepts_listed_args_starting_on_definition_line"
 source = '''
 foo(bar,
     [],
@@ -262,7 +297,7 @@ foo(bar,
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_emptylinesaroundarguments_when_no_extra_lines_accepts_block_argument_with_empty_line"
+name = "rubocopcoplayoutemptylinesaroundarguments_when_no_extra_lines_accepts_block_argument_with_empty_line"
 source = '''
 Foo.prepend(Module.new do
   def something; end
@@ -273,7 +308,7 @@ end)
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_emptylinesaroundarguments_when_no_extra_lines_accepts_method_with_argument_that_trails_off_block"
+name = "rubocopcoplayoutemptylinesaroundarguments_when_no_extra_lines_accepts_method_with_argument_that_trails_off_block"
 source = '''
 fred.map do
   <<-EOT
@@ -287,7 +322,7 @@ end.join("
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_emptylinesaroundarguments_when_no_extra_lines_accepts_method_with_no_arguments_that_trails_off_block"
+name = "rubocopcoplayoutemptylinesaroundarguments_when_no_extra_lines_accepts_method_with_no_arguments_that_trails_off_block"
 source = '''
 foo.baz do
 
@@ -297,7 +332,7 @@ end.compact
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_emptylinesaroundarguments_when_no_extra_lines_accepts_method_with_argument_that_trails_off_heredoc"
+name = "rubocopcoplayoutemptylinesaroundarguments_when_no_extra_lines_accepts_method_with_argument_that_trails_off_heredoc"
 source = '''
 bar(<<-DOCS)
   foo
@@ -308,7 +343,7 @@ DOCS
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_emptylinesaroundarguments_when_no_extra_lines_accepts_when_blank_line_is_inserted_between_method_with_arguments_and_receiver"
+name = "rubocopcoplayoutemptylinesaroundarguments_when_no_extra_lines_accepts_when_blank_line_is_inserted_between_method_with_arguments_and_receiver"
 source = '''
 foo.
 
@@ -317,7 +352,7 @@ foo.
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_emptylinesaroundarguments_when_no_extra_lines_accepts_multiline_style_argument_for_method_call_without_selector"
+name = "rubocopcoplayoutemptylinesaroundarguments_when_no_extra_lines_accepts_multiline_style_argument_for_method_call_without_selector"
 source = '''
 foo.(
   arg
@@ -326,7 +361,7 @@ foo.(
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_emptylinesaroundarguments_when_no_extra_lines_ignores_a_multiline_string_with_only_whitespace_on_one_line_and_style_method_call_after"
+name = "rubocopcoplayoutemptylinesaroundarguments_when_no_extra_lines_ignores_a_multiline_string_with_only_whitespace_on_one_line_and_style_method_call_after"
 source = '''
 format('%d
 
@@ -335,7 +370,7 @@ format('%d
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_emptylinesaroundarguments_when_no_extra_lines_with_one_argument_ignores_empty_lines_inside_of_method_arguments"
+name = "rubocopcoplayoutemptylinesaroundarguments_when_no_extra_lines_with_one_argument_ignores_empty_lines_inside_of_method_arguments"
 source = '''
 private(def bar
 
@@ -345,7 +380,7 @@ end)
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_layout_emptylinesaroundarguments_when_no_extra_lines_with_multiple_arguments_ignores_empty_lines_inside_of_method_arguments"
+name = "rubocopcoplayoutemptylinesaroundarguments_when_no_extra_lines_with_multiple_arguments_ignores_empty_lines_inside_of_method_arguments"
 source = '''
 foo(:bar, [1,
 

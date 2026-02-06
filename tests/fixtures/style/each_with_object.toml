@@ -4,7 +4,7 @@ severity = "convention"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_style_eachwithobject_finds_inject_and_reduce_with_passed_in_and_returned_hash"
+name = "rubocopcopstyleeachwithobject_finds_inject_and_reduce_with_passed_in_and_returned_hash"
 source = '''
 [].inject({}) { |a, e| a }
 
@@ -36,7 +36,7 @@ column_end = 9
 message = "Use `each_with_object` instead of `reduce`."
 
 [[tests]]
-name = "rubocop_cop_style_eachwithobject_finds_inject_is_safe_navigation_called_with_passed_in_and_returned_hash"
+name = "rubocopcopstyleeachwithobject_finds_inject_is_safe_navigation_called_with_passed_in_and_returned_hash"
 source = '''
 []&.inject({}) { |a, e| a }
 '''
@@ -51,51 +51,7 @@ column_end = 10
 message = "Use `each_with_object` instead of `inject`."
 
 [[tests]]
-name = "rubocop_cop_style_eachwithobject_ruby_2_7_finds_inject_and_reduce_with_passed_in_and_returned_hash_and_numblock"
-source = '''
-[].reduce({}) do
-  _1[_2] = 1
-  _1
-end
-'''
-corrected = '''
-[].each_with_object({}) do
-  _2[_1] = 1
-  _2
-end
-'''
-ruby_version = ">= 2.7"
-
-[[tests.offenses]]
-line = 1
-column_start = 3
-column_end = 9
-message = "Use `each_with_object` instead of `reduce`."
-
-[[tests]]
-name = "rubocop_cop_style_eachwithobject_ruby_2_7_finds_reduce_is_called_with_passed_in_and_returned_hash_and_numblock"
-source = '''
-[]&.reduce({}) do
-  _1[_2] = 1
-  _1
-end
-'''
-corrected = '''
-[]&.each_with_object({}) do
-  _2[_1] = 1
-  _2
-end
-'''
-ruby_version = ">= 2.7"
-
-[[tests.offenses]]
-line = 1
-column_start = 4
-column_end = 10
-message = "Use `each_with_object` instead of `reduce`."
-
-[[tests]]
-name = "rubocop_cop_style_eachwithobject_correctly_autocorrects"
+name = "rubocopcopstyleeachwithobject_correctly_autocorrects"
 source = '''
 [1, 2, 3].inject({}) do |h, i|
   h[i] = i
@@ -115,7 +71,7 @@ column_end = 16
 message = "Use `each_with_object` instead of `inject`."
 
 [[tests]]
-name = "rubocop_cop_style_eachwithobject_correctly_autocorrects_with_return_value_only"
+name = "rubocopcopstyleeachwithobject_correctly_autocorrects_with_return_value_only"
 source = '''
 [1, 2, 3].inject({}) do |h, i|
   h
@@ -133,7 +89,7 @@ column_end = 16
 message = "Use `each_with_object` instead of `inject`."
 
 [[tests]]
-name = "rubocop_cop_style_eachwithobject_ignores_inject_and_reduce_with_block_without_arguments"
+name = "rubocopcopstyleeachwithobject_ignores_inject_and_reduce_with_block_without_arguments"
 source = '''
 [].inject({}) { $GLOBAL[rand] = rand; $GLOBAL }
 
@@ -145,7 +101,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_eachwithobject_ignores_inject_and_reduce_with_block_with_single_argument"
+name = "rubocopcopstyleeachwithobject_ignores_inject_and_reduce_with_block_with_single_argument"
 source = '''
 [].inject({}) { |h| h[rand] = rand; h }
 
@@ -157,7 +113,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_eachwithobject_ignores_inject_and_reduce_with_passed_in_but_not_returned_hash"
+name = "rubocopcopstyleeachwithobject_ignores_inject_and_reduce_with_passed_in_but_not_returned_hash"
 source = '''
 [].inject({}) do |a, e|
   a + e
@@ -170,7 +126,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_eachwithobject_ignores_inject_and_reduce_with_empty_body"
+name = "rubocopcopstyleeachwithobject_ignores_inject_and_reduce_with_empty_body"
 source = '''
 [].inject({}) do |a, e|
 end
@@ -180,7 +136,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_eachwithobject_ignores_inject_and_reduce_with_condition_as_body"
+name = "rubocopcopstyleeachwithobject_ignores_inject_and_reduce_with_condition_as_body"
 source = '''
 [].inject({}) do |a, e|
   a = e if e
@@ -199,21 +155,21 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_eachwithobject_ignores_inject_and_reduce_passed_in_symbol"
+name = "rubocopcopstyleeachwithobject_ignores_inject_and_reduce_passed_in_symbol"
 source = '''
 [].inject(:+)
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_eachwithobject_does_not_blow_up_for_reduce_with_no_arguments"
+name = "rubocopcopstyleeachwithobject_does_not_blow_up_for_reduce_with_no_arguments"
 source = '''
 [1, 2, 3].inject { |a, e| a + e }
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_eachwithobject_ignores_inject_reduce_with_assignment_to_accumulator_param_in_block"
+name = "rubocopcopstyleeachwithobject_ignores_injectreduce_with_assignment_to_accumulator_param_in_block"
 source = '''
 r = [1, 2, 3].reduce({}) do |memo, item|
   memo += item > 2 ? item : 0
@@ -223,7 +179,49 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_eachwithobject_when_a_simple_literal_is_passed_as_initial_value_ignores_inject_reduce"
+name = "rubocopcopstyleeachwithobject_ruby_27_finds_inject_and_reduce_with_passed_in_and_returned_hash_and_numblock"
+source = '''
+[].reduce({}) do
+  _1[_2] = 1
+  _1
+end
+'''
+corrected = '''
+[].each_with_object({}) do
+  _2[_1] = 1
+  _2
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 9
+message = "Use `each_with_object` instead of `reduce`."
+
+[[tests]]
+name = "rubocopcopstyleeachwithobject_ruby_27_finds_reduce_is_called_with_passed_in_and_returned_hash_and_numblock"
+source = '''
+[]&.reduce({}) do
+  _1[_2] = 1
+  _1
+end
+'''
+corrected = '''
+[]&.each_with_object({}) do
+  _2[_1] = 1
+  _2
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 10
+message = "Use `each_with_object` instead of `reduce`."
+
+[[tests]]
+name = "rubocopcopstyleeachwithobject_when_a_simple_literal_is_passed_as_initial_value_ignores_injectreduce"
 source = '''
 array.reduce(0) { |a, e| a }
 '''

@@ -4,7 +4,7 @@ severity = "warning"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_lint_unusedblockargument_inspection_when_a_block_takes_multiple_arguments_and_an_argument_is_unused_registers_an_offense"
+name = "rubocopcoplintunusedblockargument_inspection_when_a_block_takes_multiple_arguments_and_an_argument_is_unused_registers_an_offense"
 source = '''
 hash.each do |key, value|
   puts key
@@ -15,20 +15,18 @@ hash.each do |key, _value|
   puts key
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 19
 column_end = 24
-message = "#{message}"
+message = "Unused block argument - `value`. If it's necessary, use `_` or `_value` as an argument name to indicate that it won't be used."
 
 [tests.config]
 AllowUnusedKeywordArguments = false
 
 [[tests]]
-name = "rubocop_cop_lint_unusedblockargument_inspection_when_a_block_takes_multiple_arguments_and_all_arguments_are_used_accepts"
+name = "rubocopcoplintunusedblockargument_inspection_when_a_block_takes_multiple_arguments_and_all_arguments_are_used_accepts"
 source = '''
 obj.method { |foo, bar| stuff(foo, bar) }
 '''
@@ -38,7 +36,7 @@ offenses = []
 AllowUnusedKeywordArguments = false
 
 [[tests]]
-name = "rubocop_cop_lint_unusedblockargument_inspection_when_a_block_takes_multiple_arguments_and_arguments_are_swap_assigned_accepts"
+name = "rubocopcoplintunusedblockargument_inspection_when_a_block_takes_multiple_arguments_and_arguments_are_swapassigned_accepts"
 source = '''
 hash.each do |key, value|
   key, value = value, key
@@ -50,7 +48,7 @@ offenses = []
 AllowUnusedKeywordArguments = false
 
 [[tests]]
-name = "rubocop_cop_lint_unusedblockargument_inspection_when_a_block_takes_multiple_arguments_and_one_argument_is_assigned_to_another_whilst_other_s_value_is_not_used_registers_an_offense"
+name = "rubocopcoplintunusedblockargument_inspection_when_a_block_takes_multiple_arguments_and_one_argument_is_assigned_to_another_whilst_others_value_is_not_used_registers_an_offense"
 source = '''
 hash.each do |key, value|
   key, value = value, 42
@@ -61,40 +59,36 @@ hash.each do |_key, value|
   key, value = value, 42
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 14
 column_end = 17
-message = "#{message}"
+message = "Unused block argument - `key`. If it's necessary, use `_` or `_key` as an argument name to indicate that it won't be used."
 
 [tests.config]
 AllowUnusedKeywordArguments = false
 
 [[tests]]
-name = "rubocop_cop_lint_unusedblockargument_inspection_when_a_block_takes_multiple_arguments_and_a_splat_argument_is_unused_registers_an_offense_and_preserves_splat"
+name = "rubocopcoplintunusedblockargument_inspection_when_a_block_takes_multiple_arguments_and_a_splat_argument_is_unused_registers_an_offense_and_preserves_splat"
 source = '''
 obj.method { |foo, *bars, baz| stuff(foo, baz) }
 '''
 corrected = '''
 obj.method { |foo, *_bars, baz| stuff(foo, baz) }
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 20
 column_end = 24
-message = "#{message}"
+message = "Unused block argument - `bars`. If it's necessary, use `_` or `_bars` as an argument name to indicate that it won't be used."
 
 [tests.config]
 AllowUnusedKeywordArguments = false
 
 [[tests]]
-name = "rubocop_cop_lint_unusedblockargument_inspection_when_a_block_takes_multiple_arguments_and_an_argument_with_default_value_is_unused_registers_an_offense_and_preserves_default_value"
+name = "rubocopcoplintunusedblockargument_inspection_when_a_block_takes_multiple_arguments_and_an_argument_with_default_value_is_unused_registers_an_offense_and_preserves_default_value"
 source = '''
 obj.method do |foo, bar = baz|
   stuff(foo)
@@ -105,20 +99,18 @@ obj.method do |foo, _bar = baz|
   stuff(foo)
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 20
 column_end = 23
-message = "#{message}"
+message = "Unused block argument - `bar`. If it's necessary, use `_` or `_bar` as an argument name to indicate that it won't be used."
 
 [tests.config]
 AllowUnusedKeywordArguments = false
 
 [[tests]]
-name = "rubocop_cop_lint_unusedblockargument_inspection_when_a_block_takes_multiple_arguments_and_all_the_arguments_are_unused_registers_offenses_and_suggests_omitting_them"
+name = "rubocopcoplintunusedblockargument_inspection_when_a_block_takes_multiple_arguments_and_all_the_arguments_are_unused_registers_offenses_and_suggests_omitting_them"
 source = '''
 hash = { foo: 'FOO', bar: 'BAR' }
 hash.each do |key, value|
@@ -131,26 +123,24 @@ hash.each do |_key, _value|
   puts :something
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 2
 column_start = 19
 column_end = 24
-message = "#{value_message}"
+message = "Unused block argument - `value`. You can omit all the arguments if you don't care about them."
 
 [[tests.offenses]]
 line = 2
 column_start = 14
 column_end = 17
-message = "#{key_message}"
+message = "Unused block argument - `key`. You can omit all the arguments if you don't care about them."
 
 [tests.config]
 AllowUnusedKeywordArguments = false
 
 [[tests]]
-name = "rubocop_cop_lint_unusedblockargument_inspection_when_a_block_takes_multiple_arguments_and_all_the_arguments_are_unused_and_unused_arguments_span_multiple_lines_registers_offenses_and_suggests_omitting_them"
+name = "rubocopcoplintunusedblockargument_inspection_when_a_block_takes_multiple_arguments_and_all_the_arguments_are_unused_and_unused_arguments_span_multiple_lines_registers_offenses_and_suggests_omitting_them"
 source = '''
 hash.each do |key,
               value|
@@ -163,26 +153,24 @@ hash.each do |_key,
   puts :something
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 14
 column_end = 17
-message = "#{key_message}"
+message = "Unused block argument - `key`. You can omit all the arguments if you don't care about them."
 
 [[tests.offenses]]
 line = 2
 column_start = 14
 column_end = 19
-message = "#{value_message}"
+message = "Unused block argument - `value`. You can omit all the arguments if you don't care about them."
 
 [tests.config]
 AllowUnusedKeywordArguments = false
 
 [[tests]]
-name = "rubocop_cop_lint_unusedblockargument_inspection_when_a_block_takes_single_argument_and_the_argument_is_unused_registers_an_offense_and_suggests_omitting_that"
+name = "rubocopcoplintunusedblockargument_inspection_when_a_block_takes_single_argument_and_the_argument_is_unused_registers_an_offense_and_suggests_omitting_that"
 source = '''
 1.times do |index|
   puts :something
@@ -193,20 +181,18 @@ corrected = '''
   puts :something
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 12
 column_end = 17
-message = "#{message}"
+message = "Unused block argument - `index`. You can omit the argument if you don't care about it."
 
 [tests.config]
 AllowUnusedKeywordArguments = false
 
 [[tests]]
-name = "rubocop_cop_lint_unusedblockargument_inspection_when_a_block_takes_single_argument_and_the_method_call_is_define_method_registers_an_offense"
+name = "rubocopcoplintunusedblockargument_inspection_when_a_block_takes_single_argument_and_the_method_call_is_define_method_registers_an_offense"
 source = '''
 define_method(:foo) do |bar|
   puts 'baz'
@@ -217,20 +203,18 @@ define_method(:foo) do |_bar|
   puts 'baz'
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 24
 column_end = 27
-message = "#{message}"
+message = "Unused block argument - `bar`. If it's necessary, use `_` or `_bar` as an argument name to indicate that it won't be used."
 
 [tests.config]
 AllowUnusedKeywordArguments = false
 
 [[tests]]
-name = "rubocop_cop_lint_unusedblockargument_inspection_when_a_block_have_a_block_local_variable_and_the_variable_is_unused_registers_an_offense"
+name = "rubocopcoplintunusedblockargument_inspection_when_a_block_have_a_block_local_variable_and_the_variable_is_unused_registers_an_offense"
 source = '''
 1.times do |index; block_local_variable|
   puts index
@@ -252,7 +236,7 @@ message = "Unused block local variable - `block_local_variable`."
 AllowUnusedKeywordArguments = false
 
 [[tests]]
-name = "rubocop_cop_lint_unusedblockargument_inspection_when_a_block_have_a_block_local_variable_and_the_variable_is_used_does_not_register_offense"
+name = "rubocopcoplintunusedblockargument_inspection_when_a_block_have_a_block_local_variable_and_the_variable_is_used_does_not_register_offense"
 source = '''
 1.times do |index; x|
   x = 10
@@ -265,53 +249,49 @@ offenses = []
 AllowUnusedKeywordArguments = false
 
 [[tests]]
-name = "rubocop_cop_lint_unusedblockargument_inspection_when_a_lambda_block_takes_arguments_and_all_the_arguments_are_unused_registers_offenses_and_suggests_using_a_proc"
+name = "rubocopcoplintunusedblockargument_inspection_when_a_lambda_block_takes_arguments_and_all_the_arguments_are_unused_registers_offenses_and_suggests_using_a_proc"
 source = '''
 -> (foo, bar) { do_something }
 '''
 corrected = '''
 -> (_foo, _bar) { do_something }
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 9
 column_end = 12
-message = "#{bar_message}"
+message = "Unused block argument - `bar`. If it's necessary, use `_` or `_bar` as an argument name to indicate that it won't be used. Also consider using a proc without arguments instead of a lambda if you want it to accept any arguments but don't care about them."
 
 [[tests.offenses]]
 line = 1
 column_start = 4
 column_end = 7
-message = "#{foo_message}"
+message = "Unused block argument - `foo`. If it's necessary, use `_` or `_foo` as an argument name to indicate that it won't be used. Also consider using a proc without arguments instead of a lambda if you want it to accept any arguments but don't care about them."
 
 [tests.config]
 AllowUnusedKeywordArguments = false
 
 [[tests]]
-name = "rubocop_cop_lint_unusedblockargument_inspection_when_a_lambda_block_takes_arguments_and_an_argument_is_unused_registers_an_offense"
+name = "rubocopcoplintunusedblockargument_inspection_when_a_lambda_block_takes_arguments_and_an_argument_is_unused_registers_an_offense"
 source = '''
 -> (foo, bar) { puts bar }
 '''
 corrected = '''
 -> (_foo, bar) { puts bar }
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 4
 column_end = 7
-message = "#{message}"
+message = "Unused block argument - `foo`. If it's necessary, use `_` or `_foo` as an argument name to indicate that it won't be used."
 
 [tests.config]
 AllowUnusedKeywordArguments = false
 
 [[tests]]
-name = "rubocop_cop_lint_unusedblockargument_inspection_when_an_underscore_prefixed_block_argument_is_not_used_accepts"
+name = "rubocopcoplintunusedblockargument_inspection_when_an_underscoreprefixed_block_argument_is_not_used_accepts"
 source = '''
 1.times do |_index|
   puts 'foo'
@@ -323,26 +303,24 @@ offenses = []
 AllowUnusedKeywordArguments = false
 
 [[tests]]
-name = "rubocop_cop_lint_unusedblockargument_inspection_when_an_optional_keyword_argument_is_unused_when_the_method_call_is_define_method_registers_an_offense"
+name = "rubocopcoplintunusedblockargument_inspection_when_an_optional_keyword_argument_is_unused_when_the_method_call_is_define_method_registers_an_offense"
 source = '''
 define_method(:foo) do |bar: 'default'|
   puts 'bar'
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 24
 column_end = 27
-message = "#{message}"
+message = "Unused block argument - `bar`. If it's necessary, use `_` or `_bar` as an argument name to indicate that it won't be used."
 
 [tests.config]
 AllowUnusedKeywordArguments = false
 
 [[tests]]
-name = "rubocop_cop_lint_unusedblockargument_inspection_when_an_optional_keyword_argument_is_unused_when_the_method_call_is_define_method_when_allowunusedkeywordarguments_set_does_not_care"
+name = "rubocopcoplintunusedblockargument_inspection_when_an_optional_keyword_argument_is_unused_when_the_method_call_is_define_method_when_allowunusedkeywordarguments_set_does_not_care"
 source = '''
 define_method(:foo) do |bar: 'default'|
   puts 'bar'
@@ -354,26 +332,24 @@ offenses = []
 AllowUnusedKeywordArguments = true
 
 [[tests]]
-name = "rubocop_cop_lint_unusedblockargument_inspection_when_an_optional_keyword_argument_is_unused_when_the_method_call_is_not_define_method_registers_an_offense"
+name = "rubocopcoplintunusedblockargument_inspection_when_an_optional_keyword_argument_is_unused_when_the_method_call_is_not_define_method_registers_an_offense"
 source = '''
 foo(:foo) do |bar: 'default'|
   puts 'bar'
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 14
 column_end = 17
-message = "#{message}"
+message = "Unused block argument - `bar`. You can omit the argument if you don't care about it."
 
 [tests.config]
-AllowUnusedKeywordArguments = true
+AllowUnusedKeywordArguments = false
 
 [[tests]]
-name = "rubocop_cop_lint_unusedblockargument_inspection_when_an_optional_keyword_argument_is_unused_when_the_method_call_is_not_define_method_when_allowunusedkeywordarguments_set_does_not_care"
+name = "rubocopcoplintunusedblockargument_inspection_when_an_optional_keyword_argument_is_unused_when_the_method_call_is_not_define_method_when_allowunusedkeywordarguments_set_does_not_care"
 source = '''
 foo(:foo) do |bar: 'default'|
   puts 'bar'
@@ -385,7 +361,7 @@ offenses = []
 AllowUnusedKeywordArguments = true
 
 [[tests]]
-name = "rubocop_cop_lint_unusedblockargument_inspection_when_a_method_argument_is_not_used_does_not_care"
+name = "rubocopcoplintunusedblockargument_inspection_when_a_method_argument_is_not_used_does_not_care"
 source = '''
 def some_method(foo)
 end
@@ -393,10 +369,10 @@ end
 offenses = []
 
 [tests.config]
-AllowUnusedKeywordArguments = true
+AllowUnusedKeywordArguments = false
 
 [[tests]]
-name = "rubocop_cop_lint_unusedblockargument_inspection_when_a_variable_is_not_used_does_not_care"
+name = "rubocopcoplintunusedblockargument_inspection_when_a_variable_is_not_used_does_not_care"
 source = '''
 1.times do
   foo = 1
@@ -405,10 +381,10 @@ end
 offenses = []
 
 [tests.config]
-AllowUnusedKeywordArguments = true
+AllowUnusedKeywordArguments = false
 
 [[tests]]
-name = "rubocop_cop_lint_unusedblockargument_inspection_in_a_method_calling_binding_without_arguments_accepts_all_arguments"
+name = "rubocopcoplintunusedblockargument_inspection_in_a_method_calling_binding_without_arguments_accepts_all_arguments"
 source = '''
 test do |key, value|
   puts something(binding)
@@ -417,10 +393,10 @@ end
 offenses = []
 
 [tests.config]
-AllowUnusedKeywordArguments = true
+AllowUnusedKeywordArguments = false
 
 [[tests]]
-name = "rubocop_cop_lint_unusedblockargument_inspection_in_a_method_calling_binding_without_arguments_inside_a_method_definition_registers_offenses"
+name = "rubocopcoplintunusedblockargument_inspection_in_a_method_calling_binding_without_arguments_inside_a_method_definition_registers_offenses"
 source = '''
 test do |key, value|
   def other(a)
@@ -435,26 +411,24 @@ test do |_key, _value|
   end
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 14
 column_end = 19
-message = "#{value_message}"
+message = "Unused block argument - `value`. You can omit all the arguments if you don't care about them."
 
 [[tests.offenses]]
 line = 1
 column_start = 9
 column_end = 12
-message = "#{key_message}"
+message = "Unused block argument - `key`. You can omit all the arguments if you don't care about them."
 
 [tests.config]
-AllowUnusedKeywordArguments = true
+AllowUnusedKeywordArguments = false
 
 [[tests]]
-name = "rubocop_cop_lint_unusedblockargument_inspection_in_a_method_calling_binding_with_arguments_when_a_method_argument_is_unused_registers_an_offense"
+name = "rubocopcoplintunusedblockargument_inspection_in_a_method_calling_binding_with_arguments_when_a_method_argument_is_unused_registers_an_offense"
 source = '''
 test do |key, value|
   puts something(binding(:other))
@@ -465,123 +439,114 @@ test do |_key, _value|
   puts something(binding(:other))
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 14
 column_end = 19
-message = "#{value_message}"
+message = "Unused block argument - `value`. You can omit all the arguments if you don't care about them."
 
 [[tests.offenses]]
 line = 1
 column_start = 9
 column_end = 12
-message = "#{key_message}"
+message = "Unused block argument - `key`. You can omit all the arguments if you don't care about them."
 
 [tests.config]
-AllowUnusedKeywordArguments = true
+AllowUnusedKeywordArguments = false
 
 [[tests]]
-name = "rubocop_cop_lint_unusedblockargument_inspection_with_an_empty_block_when_not_configured_to_ignore_empty_blocks_registers_an_offense"
+name = "rubocopcoplintunusedblockargument_inspection_with_an_empty_block_when_not_configured_to_ignore_empty_blocks_registers_an_offense"
 source = '''
 super { |bar| }
 '''
 corrected = '''
 super { |_bar| }
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 9
 column_end = 12
-message = "#{message}"
+message = "Unused block argument - `bar`. You can omit the argument if you don't care about it."
 
 [tests.config]
-AllowUnusedKeywordArguments = true
 IgnoreEmptyBlocks = false
 
 [[tests]]
-name = "rubocop_cop_lint_unusedblockargument_inspection_with_an_empty_block_when_configured_to_ignore_empty_blocks_does_not_register_an_offense"
+name = "rubocopcoplintunusedblockargument_inspection_with_an_empty_block_when_configured_to_ignore_empty_blocks_does_not_register_an_offense"
 source = '''
 super { |bar| }
 '''
 offenses = []
 
 [tests.config]
-AllowUnusedKeywordArguments = true
 IgnoreEmptyBlocks = true
 
 [[tests]]
-name = "rubocop_cop_lint_unusedblockargument_when_ignoreemptyblocks_config_parameter_is_set_accepts_an_empty_block_with_a_single_unused_parameter"
+name = "rubocopcoplintunusedblockargument_when_ignoreemptyblocks_config_parameter_is_set_accepts_an_empty_block_with_a_single_unused_parameter"
 source = '''
 ->(arg) { }
 '''
 offenses = []
 
 [tests.config]
-AllowUnusedKeywordArguments = true
 IgnoreEmptyBlocks = true
 
 [[tests]]
-name = "rubocop_cop_lint_unusedblockargument_when_ignoreemptyblocks_config_parameter_is_set_registers_an_offense_for_a_non_empty_block_with_an_unused_parameter"
+name = "rubocopcoplintunusedblockargument_when_ignoreemptyblocks_config_parameter_is_set_registers_an_offense_for_a_nonempty_block_with_an_unused_parameter"
 source = '''
 ->(arg) { 1 }
 '''
 corrected = '''
 ->(_arg) { 1 }
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 3
 column_end = 6
-message = "#{message}"
+message = "Unused block argument - `arg`. If it's necessary, use `_` or `_arg` as an argument name to indicate that it won't be used. Also consider using a proc without arguments instead of a lambda if you want it to accept any arguments but don't care about them."
 
 [tests.config]
-AllowUnusedKeywordArguments = true
 IgnoreEmptyBlocks = true
 
 [[tests]]
-name = "rubocop_cop_lint_unusedblockargument_when_ignoreemptyblocks_config_parameter_is_set_accepts_an_empty_block_with_multiple_unused_parameters"
+name = "rubocopcoplintunusedblockargument_when_ignoreemptyblocks_config_parameter_is_set_accepts_an_empty_block_with_multiple_unused_parameters"
 source = '''
 ->(arg1, arg2, *others) { }
 '''
 offenses = []
 
 [tests.config]
-AllowUnusedKeywordArguments = true
 IgnoreEmptyBlocks = true
 
 [[tests]]
-name = "rubocop_cop_lint_unusedblockargument_when_ignoreemptyblocks_config_parameter_is_set_registers_an_offense_for_a_non_empty_block_with_multiple_unused_args"
+name = "rubocopcoplintunusedblockargument_when_ignoreemptyblocks_config_parameter_is_set_registers_an_offense_for_a_nonempty_block_with_multiple_unused_args"
 source = '''
 ->(arg1, arg2, *others) { 1 }
-         ^^^^ #{arg2_msg}
 '''
 corrected = '''
 ->(_arg1, _arg2, *_others) { 1 }
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 16
 column_end = 22
-message = "#{others_msg}"
+message = "Unused block argument - `others`. If it's necessary, use `_` or `_others` as an argument name to indicate that it won't be used. Also consider using a proc without arguments instead of a lambda if you want it to accept any arguments but don't care about them."
 
 [[tests.offenses]]
-line = 2
+line = 1
+column_start = 9
+column_end = 13
+message = "Unused block argument - `arg2`. If it's necessary, use `_` or `_arg2` as an argument name to indicate that it won't be used. Also consider using a proc without arguments instead of a lambda if you want it to accept any arguments but don't care about them."
+
+[[tests.offenses]]
+line = 1
 column_start = 3
 column_end = 7
-message = "#{arg1_msg}"
+message = "Unused block argument - `arg1`. If it's necessary, use `_` or `_arg1` as an argument name to indicate that it won't be used. Also consider using a proc without arguments instead of a lambda if you want it to accept any arguments but don't care about them."
 
 [tests.config]
-AllowUnusedKeywordArguments = true
 IgnoreEmptyBlocks = true

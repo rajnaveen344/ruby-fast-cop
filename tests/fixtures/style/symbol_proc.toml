@@ -4,7 +4,7 @@ severity = "convention"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_style_symbolproc_registers_an_offense_for_a_block_with_parameterless_method_call_on_param"
+name = "rubocopcopstylesymbolproc_registers_an_offense_for_a_block_with_parameterless_method_call_on_param"
 source = '''
 coll.map { |e| e.upcase }
 '''
@@ -19,7 +19,7 @@ column_end = 25
 message = "Pass `&:upcase` as an argument to `map` instead of a block."
 
 [[tests]]
-name = ""
+name = "rubocopcopstylesymbolproc_registers_an_offense_for_a_block_with_parameterless_method_call_on_param_and_no_space_between_method_name_and_opening_brace"
 source = '''
 foo.map{ |a| a.nil? }
 '''
@@ -34,7 +34,7 @@ column_end = 21
 message = "Pass `&:nil?` as an argument to `map` instead of a block."
 
 [[tests]]
-name = ""
+name = "rubocopcopstylesymbolproc_registers_an_offense_for_safe_navigation_operator"
 source = '''
 coll&.map { |e| e.upcase }
 '''
@@ -49,7 +49,7 @@ column_end = 26
 message = "Pass `&:upcase` as an argument to `map` instead of a block."
 
 [[tests]]
-name = ""
+name = "rubocopcopstylesymbolproc_registers_an_offense_for_a_block_when_method_in_body_is_unary_"
 source = '''
 something.map { |x| -x }
 '''
@@ -64,259 +64,78 @@ column_end = 24
 message = "Pass `&:-@` as an argument to `map` instead of a block."
 
 [[tests]]
-name = ""
+name = "rubocopcopstylesymbolproc_accepts_block_with_more_than_1_arguments"
 source = '''
 something { |x, y| x.method }
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_symbolproc_when_allcops_activesupportextensionsenabled_true_accepts_lambda_with_1_argument"
-source = '''
-->(x) { x.method }
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_symbolproc_when_allcops_activesupportextensionsenabled_true_accepts_proc_with_1_argument"
-source = '''
-proc { |x| x.method }
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_symbolproc_when_allcops_activesupportextensionsenabled_true_accepts_proc_new_with_1_argument"
-source = '''
-Proc.new { |x| x.method }
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_symbolproc_when_allcops_activesupportextensionsenabled_true_accepts_proc_new_with_1_argument"
-source = '''
-::Proc.new { |x| x.method }
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_symbolproc_when_allcops_activesupportextensionsenabled_false_registers_lambda_with_1_argument"
-source = '''
-->(x) { x.method }
-'''
-corrected = '''
-lambda(&:method)
-'''
-
-[[tests.offenses]]
-line = 1
-column_start = 6
-column_end = 18
-message = "Pass `&:method` as an argument to `lambda` instead of a block."
-
-[[tests]]
-name = ""
-source = '''
-->(arg) do
-  arg.do_something
-end
-'''
-corrected = '''
-lambda(&:do_something)
-'''
-
-[[tests.offenses]]
-line = 1
-column_start = 8
-column_end = 10
-message = "Pass `&:do_something` as an argument to `lambda` instead of a block."
-
-[[tests]]
-name = ""
-source = '''
-proc { |x| x.method }
-'''
-corrected = '''
-proc(&:method)
-'''
-
-[[tests.offenses]]
-line = 1
-column_start = 5
-column_end = 21
-message = "Pass `&:method` as an argument to `proc` instead of a block."
-
-[[tests]]
-name = ""
-source = '''
-Proc.new { |x| x.method }
-'''
-corrected = '''
-Proc.new(&:method)
-'''
-
-[[tests.offenses]]
-line = 1
-column_start = 9
-column_end = 25
-message = "Pass `&:method` as an argument to `new` instead of a block."
-
-[[tests]]
-name = ""
-source = '''
-::Proc.new { |x| x.method }
-'''
-corrected = '''
-::Proc.new(&:method)
-'''
-
-[[tests.offenses]]
-line = 1
-column_start = 11
-column_end = 27
-message = "Pass `&:method` as an argument to `new` instead of a block."
-
-[[tests]]
-name = ""
-source = '''
-respond_to { |format| format.xml }
-'''
-offenses = []
-
-[tests.config]
-AllowedMethods = ["$UNRESOLVED:respond_to"]
-
-[[tests]]
-name = "rubocop_cop_style_symbolproc_when_allowedpatterns_is_enabled_accepts_ignored_method"
-source = '''
-respond_to { |format| format.xml }
-'''
-offenses = []
-
-[tests.config]
-AllowedMethods = ["$UNRESOLVED:respond_to"]
-AllowedPatterns = ["$UNRESOLVED:respond_"]
-
-[[tests]]
-name = "rubocop_cop_style_symbolproc_accepts_block_with_no_arguments"
+name = "rubocopcopstylesymbolproc_accepts_block_with_no_arguments"
 source = '''
 something { x.method }
 '''
 offenses = []
 
-[tests.config]
-AllowedMethods = ["$UNRESOLVED:respond_to"]
-AllowedPatterns = ["$UNRESOLVED:respond_"]
-
 [[tests]]
-name = "rubocop_cop_style_symbolproc_accepts_empty_block_body"
+name = "rubocopcopstylesymbolproc_accepts_empty_block_body"
 source = '''
 something { |x| }
 '''
 offenses = []
 
-[tests.config]
-AllowedMethods = ["$UNRESOLVED:respond_to"]
-AllowedPatterns = ["$UNRESOLVED:respond_"]
-
 [[tests]]
-name = "rubocop_cop_style_symbolproc_accepts_block_with_more_than_1_expression_in_body"
+name = "rubocopcopstylesymbolproc_accepts_block_with_more_than_1_expression_in_body"
 source = '''
 something { |x| x.method; something_else }
 '''
 offenses = []
 
-[tests.config]
-AllowedMethods = ["$UNRESOLVED:respond_to"]
-AllowedPatterns = ["$UNRESOLVED:respond_"]
-
 [[tests]]
-name = "rubocop_cop_style_symbolproc_accepts_block_when_method_in_body_is_not_called_on_block_arg"
+name = "rubocopcopstylesymbolproc_accepts_block_when_method_in_body_is_not_called_on_block_arg"
 source = '''
 something { |x| y.method }
 '''
 offenses = []
 
-[tests.config]
-AllowedMethods = ["$UNRESOLVED:respond_to"]
-AllowedPatterns = ["$UNRESOLVED:respond_"]
-
 [[tests]]
-name = "rubocop_cop_style_symbolproc_accepts_block_with_a_block_argument"
+name = "rubocopcopstylesymbolproc_accepts_block_with_a_block_argument"
 source = '''
 something { |&x| x.call }
 '''
 offenses = []
 
-[tests.config]
-AllowedMethods = ["$UNRESOLVED:respond_to"]
-AllowedPatterns = ["$UNRESOLVED:respond_"]
-
 [[tests]]
-name = "rubocop_cop_style_symbolproc_accepts_block_with_splat_params"
+name = "rubocopcopstylesymbolproc_accepts_block_with_splat_params"
 source = '''
 something { |*x| x.first }
 '''
 offenses = []
 
-[tests.config]
-AllowedMethods = ["$UNRESOLVED:respond_to"]
-AllowedPatterns = ["$UNRESOLVED:respond_"]
-
 [[tests]]
-name = "rubocop_cop_style_symbolproc_accepts_block_with_adding_a_comma_after_the_sole_argument"
+name = "rubocopcopstylesymbolproc_accepts_block_with_adding_a_comma_after_the_sole_argument"
 source = '''
 something { |x,| x.first }
 '''
 offenses = []
 
-[tests.config]
-AllowedMethods = ["$UNRESOLVED:respond_to"]
-AllowedPatterns = ["$UNRESOLVED:respond_"]
-
 [[tests]]
-name = "rubocop_cop_style_symbolproc_accepts_a_block_with_an_unused_argument_with_a_method_call"
+name = "rubocopcopstylesymbolproc_accepts_a_block_with_an_unused_argument_with_a_method_call"
 source = '''
 something { |_x| y.call }
 '''
 offenses = []
 
-[tests.config]
-AllowedMethods = ["$UNRESOLVED:respond_to"]
-AllowedPatterns = ["$UNRESOLVED:respond_"]
-
 [[tests]]
-name = "rubocop_cop_style_symbolproc_accepts_a_block_with_an_unused_argument_with_an_lvar"
+name = "rubocopcopstylesymbolproc_accepts_a_block_with_an_unused_argument_with_an_lvar"
 source = '''
 y = Y.new
 something { |_x| y.call }
 '''
 offenses = []
 
-[tests.config]
-AllowedMethods = ["$UNRESOLVED:respond_to"]
-AllowedPatterns = ["$UNRESOLVED:respond_"]
-
 [[tests]]
-name = "rubocop_cop_style_symbolproc_when_the_method_has_arguments_registers_an_offense"
-source = '''
-method(one, 2) { |x| x.test }
-'''
-corrected = '''
-method(one, 2, &:test)
-'''
-
-[[tests.offenses]]
-line = 1
-column_start = 15
-column_end = 29
-message = "Pass `&:test` as an argument to `method` instead of a block."
-
-[tests.config]
-AllowedMethods = ["$UNRESOLVED:respond_to"]
-AllowedPatterns = ["$UNRESOLVED:respond_"]
-
-[[tests]]
-name = "rubocop_cop_style_symbolproc_autocorrects_multiple_aliases_with_symbols_as_proc"
+name = "rubocopcopstylesymbolproc_autocorrects_multiple_aliases_with_symbols_as_proc"
 source = '''
 coll.map { |s| s.upcase }.map { |s| s.downcase }
 '''
@@ -336,12 +155,8 @@ column_start = 9
 column_end = 25
 message = "Pass `&:upcase` as an argument to `map` instead of a block."
 
-[tests.config]
-AllowedMethods = ["$UNRESOLVED:respond_to"]
-AllowedPatterns = ["$UNRESOLVED:respond_"]
-
 [[tests]]
-name = "rubocop_cop_style_symbolproc_autocorrects_correctly_when_there_are_no_arguments_in_parentheses"
+name = "rubocopcopstylesymbolproc_autocorrects_correctly_when_there_are_no_arguments_in_parentheses"
 source = '''
 coll.map(   ) { |s| s.upcase }
 '''
@@ -355,112 +170,294 @@ column_start = 14
 column_end = 30
 message = "Pass `&:upcase` as an argument to `map` instead of a block."
 
-[tests.config]
-AllowedMethods = ["$UNRESOLVED:respond_to"]
-AllowedPatterns = ["$UNRESOLVED:respond_"]
-
 [[tests]]
-name = "rubocop_cop_style_symbolproc_does_not_crash_with_a_bare_method_call"
+name = "rubocopcopstylesymbolproc_does_not_crash_with_a_bare_method_call"
 source = '''
 coll.map { |s| bare_method }
 '''
 offenses = []
 
-[tests.config]
-AllowedMethods = ["$UNRESOLVED:respond_to"]
-AllowedPatterns = ["$UNRESOLVED:respond_"]
-
 [[tests]]
-name = "rubocop_cop_style_symbolproc"
+name = "rubocopcopstylesymbolproc_registers_an_offense_when_receiver_is_an_array_literal_and_using_reject_with_a_block"
 source = '''
-[1, 2, 3].%{method} {|item| item.foo }
+[1, 2, 3].reject {|item| item.foo }
 '''
 corrected = '''
-[1, 2, 3].#{method}(&:foo)
+[1, 2, 3].reject(&:foo)
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
-column_start = 0
-column_end = 38
-message = "Pass `&:foo` as an argument to `#{method}` instead of a block."
-
-[tests.config]
-AllowedMethods = ["$UNRESOLVED:respond_to"]
-AllowedPatterns = ["$UNRESOLVED:respond_"]
+column_start = 17
+column_end = 35
+message = "Pass `&:foo` as an argument to `reject` instead of a block."
 
 [[tests]]
-name = "rubocop_cop_style_symbolproc"
+name = "rubocopcopstylesymbolproc_registers_an_offense_when_receiver_is_some_value_and_using_reject_with_a_block"
 source = '''
-[1, 2, 3].#{method} {|item| item.foo }
+[1, 2, 3].reject {|item| item.foo }
 '''
 corrected = '''
-[1, 2, 3].#{method}(&:foo)
+[1, 2, 3].reject(&:foo)
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
-column_start = 0
-column_end = 38
-message = "Pass `&:foo` as an argument to `#{method}` instead of a block."
-
-[tests.config]
-AllowedMethods = ["$UNRESOLVED:respond_to"]
-AllowedPatterns = ["$UNRESOLVED:respond_"]
+column_start = 17
+column_end = 35
+message = "Pass `&:foo` as an argument to `reject` instead of a block."
 
 [[tests]]
-name = "rubocop_cop_style_symbolproc"
+name = "rubocopcopstylesymbolproc_does_not_register_an_offense_when_receiver_is_a_hash_literal_and_using_reject_with_a_block"
 source = '''
-{foo: 42}.#{method} {|item| item.foo }
+{foo: 42}.reject {|item| item.foo }
 '''
-interpolated = true
-verified = false
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylesymbolproc_registers_an_offense_when_receiver_is_an_array_literal_and_using_select_with_a_block"
+source = '''
+[1, 2, 3].select {|item| item.foo }
+'''
+corrected = '''
+[1, 2, 3].select(&:foo)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 35
+message = "Pass `&:foo` as an argument to `select` instead of a block."
+
+[[tests]]
+name = "rubocopcopstylesymbolproc_registers_an_offense_when_receiver_is_some_value_and_using_select_with_a_block"
+source = '''
+[1, 2, 3].select {|item| item.foo }
+'''
+corrected = '''
+[1, 2, 3].select(&:foo)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 35
+message = "Pass `&:foo` as an argument to `select` instead of a block."
+
+[[tests]]
+name = "rubocopcopstylesymbolproc_does_not_register_an_offense_when_receiver_is_a_hash_literal_and_using_select_with_a_block"
+source = '''
+{foo: 42}.select {|item| item.foo }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylesymbolproc_registers_an_offense_when_receiver_is_a_hash_literal_and_using_min_with_a_block"
+source = '''
+{foo: 42}.min {|item| item.foo }
+'''
+corrected = '''
+{foo: 42}.min(&:foo)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 14
+column_end = 32
+message = "Pass `&:foo` as an argument to `min` instead of a block."
+
+[[tests]]
+name = "rubocopcopstylesymbolproc_does_not_register_an_offense_when_receiver_is_an_array_literal_and_using_min_with_a_block"
+source = '''
+[1, 2, 3].min {|item| item.foo }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylesymbolproc_registers_an_offense_when_receiver_is_a_hash_literal_and_using_max_with_a_block"
+source = '''
+{foo: 42}.max {|item| item.foo }
+'''
+corrected = '''
+{foo: 42}.max(&:foo)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 14
+column_end = 32
+message = "Pass `&:foo` as an argument to `max` instead of a block."
+
+[[tests]]
+name = "rubocopcopstylesymbolproc_does_not_register_an_offense_when_receiver_is_an_array_literal_and_using_max_with_a_block"
+source = '''
+[1, 2, 3].max {|item| item.foo }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylesymbolproc_autocorrects_correctly_when_args_have_a_trailing_comma"
+source = '''
+mail(
+  to: 'foo',
+  subject: 'bar',
+) { |format| format.text }
+'''
+corrected = '''
+mail(
+  to: 'foo',
+  subject: 'bar', &:text
+)
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 26
+message = "Pass `&:text` as an argument to `mail` instead of a block."
+
+[[tests]]
+name = "rubocopcopstylesymbolproc_when_allcopsactivesupportextensionsenabled_true_accepts_lambda_with_1_argument"
+source = '''
+->(x) { x.method }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylesymbolproc_when_allcopsactivesupportextensionsenabled_true_accepts_proc_with_1_argument"
+source = '''
+proc { |x| x.method }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylesymbolproc_when_allcopsactivesupportextensionsenabled_true_accepts_procnew_with_1_argument"
+source = '''
+Proc.new { |x| x.method }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylesymbolproc_when_allcopsactivesupportextensionsenabled_true_accepts_procnew_with_1_argument_2"
+source = '''
+::Proc.new { |x| x.method }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylesymbolproc_when_allcopsactivesupportextensionsenabled_false_registers_lambda__with_1_argument"
+source = '''
+->(x) { x.method }
+'''
+corrected = '''
+lambda(&:method)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 18
+message = "Pass `&:method` as an argument to `lambda` instead of a block."
+
+[[tests]]
+name = "rubocopcopstylesymbolproc_when_allcopsactivesupportextensionsenabled_false_registers_lambda__with_1_argument_and_multiline_doend_block"
+source = '''
+->(arg) do
+  arg.do_something
+end
+'''
+corrected = '''
+lambda(&:do_something)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 10
+message = "Pass `&:do_something` as an argument to `lambda` instead of a block."
+
+[[tests]]
+name = "rubocopcopstylesymbolproc_when_allcopsactivesupportextensionsenabled_false_registers_proc_with_1_argument"
+source = '''
+proc { |x| x.method }
+'''
+corrected = '''
+proc(&:method)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 21
+message = "Pass `&:method` as an argument to `proc` instead of a block."
+
+[[tests]]
+name = "rubocopcopstylesymbolproc_when_allcopsactivesupportextensionsenabled_false_registers_procnew_with_1_argument"
+source = '''
+Proc.new { |x| x.method }
+'''
+corrected = '''
+Proc.new(&:method)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 25
+message = "Pass `&:method` as an argument to `new` instead of a block."
+
+[[tests]]
+name = "rubocopcopstylesymbolproc_when_allcopsactivesupportextensionsenabled_false_registers_procnew_with_1_argument_2"
+source = '''
+::Proc.new { |x| x.method }
+'''
+corrected = '''
+::Proc.new(&:method)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 11
+column_end = 27
+message = "Pass `&:method` as an argument to `new` instead of a block."
+
+[[tests]]
+name = "rubocopcopstylesymbolproc_when_allowedmethods_is_enabled_accepts_ignored_method"
+source = '''
+respond_to { |format| format.xml }
+'''
 offenses = []
 
 [tests.config]
-AllowedMethods = ["$UNRESOLVED:respond_to"]
-AllowedPatterns = ["$UNRESOLVED:respond_"]
+AllowedMethods = ["respond_to"]
 
 [[tests]]
-name = "rubocop_cop_style_symbolproc"
+name = "rubocopcopstylesymbolproc_when_allowedpatterns_is_enabled_accepts_ignored_method"
 source = '''
-{foo: 42}.%{method} {|item| item.foo }
+respond_to { |format| format.xml }
 '''
-corrected = '''
-{foo: 42}.#{method}(&:foo)
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 38
-message = "Pass `&:foo` as an argument to `#{method}` instead of a block."
-
-[tests.config]
-AllowedMethods = ["$UNRESOLVED:respond_to"]
-AllowedPatterns = ["$UNRESOLVED:respond_"]
-
-[[tests]]
-name = "rubocop_cop_style_symbolproc"
-source = '''
-[1, 2, 3].#{method} {|item| item.foo }
-'''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-AllowedMethods = ["$UNRESOLVED:respond_to"]
-AllowedPatterns = ["$UNRESOLVED:respond_"]
+AllowedPatterns = ["respond_"]
 
 [[tests]]
-name = "rubocop_cop_style_symbolproc_when_allowmethodswitharguments_true_when_method_has_arguments_does_not_register_an_offense"
+name = "rubocopcopstylesymbolproc_when_the_method_has_arguments_registers_an_offense"
+source = '''
+method(one, 2) { |x| x.test }
+'''
+corrected = '''
+method(one, 2, &:test)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 29
+message = "Pass `&:test` as an argument to `method` instead of a block."
+
+[[tests]]
+name = "rubocopcopstylesymbolproc_when_allowmethodswitharguments_true_when_method_has_arguments_does_not_register_an_offense"
 source = '''
 do_something(one, two) { |x| x.test }
 '''
@@ -468,11 +465,9 @@ offenses = []
 
 [tests.config]
 AllowMethodsWithArguments = true
-AllowedMethods = ["$UNRESOLVED:respond_to"]
-AllowedPatterns = ["$UNRESOLVED:respond_"]
 
 [[tests]]
-name = "rubocop_cop_style_symbolproc_when_allowmethodswitharguments_true_when_super_has_arguments_does_not_register_an_offense"
+name = "rubocopcopstylesymbolproc_when_allowmethodswitharguments_true_when_super_has_arguments_does_not_register_an_offense"
 source = '''
 super(one, two) { |x| x.test }
 '''
@@ -480,11 +475,9 @@ offenses = []
 
 [tests.config]
 AllowMethodsWithArguments = true
-AllowedMethods = ["$UNRESOLVED:respond_to"]
-AllowedPatterns = ["$UNRESOLVED:respond_"]
 
 [[tests]]
-name = "rubocop_cop_style_symbolproc_when_allowmethodswitharguments_true_when_method_has_no_arguments_registers_an_offense"
+name = "rubocopcopstylesymbolproc_when_allowmethodswitharguments_true_when_method_has_no_arguments_registers_an_offense"
 source = '''
 coll.map { |e| e.upcase }
 '''
@@ -497,11 +490,9 @@ message = "Pass `&:upcase` as an argument to `map` instead of a block."
 
 [tests.config]
 AllowMethodsWithArguments = true
-AllowedMethods = ["$UNRESOLVED:respond_to"]
-AllowedPatterns = ["$UNRESOLVED:respond_"]
 
 [[tests]]
-name = "rubocop_cop_style_symbolproc_when_allowmethodswitharguments_false_when_method_has_arguments_registers_an_offense"
+name = "rubocopcopstylesymbolproc_when_allowmethodswitharguments_false_when_method_has_arguments_registers_an_offense"
 source = '''
 do_something(one, two) { |x| x.test }
 '''
@@ -517,11 +508,9 @@ message = "Pass `&:test` as an argument to `do_something` instead of a block."
 
 [tests.config]
 AllowMethodsWithArguments = false
-AllowedMethods = ["$UNRESOLVED:respond_to"]
-AllowedPatterns = ["$UNRESOLVED:respond_"]
 
 [[tests]]
-name = "rubocop_cop_style_symbolproc_when_allowmethodswitharguments_false_when_super_has_arguments_registers_an_offense"
+name = "rubocopcopstylesymbolproc_when_allowmethodswitharguments_false_when_super_has_arguments_registers_an_offense"
 source = '''
 super(one, two) { |x| x.test }
 '''
@@ -537,11 +526,9 @@ message = "Pass `&:test` as an argument to `super` instead of a block."
 
 [tests.config]
 AllowMethodsWithArguments = false
-AllowedMethods = ["$UNRESOLVED:respond_to"]
-AllowedPatterns = ["$UNRESOLVED:respond_"]
 
 [[tests]]
-name = "rubocop_cop_style_symbolproc_allowcomments_true"
+name = "rubocopcopstylesymbolproc_allowcomments_true_registers_an_offense_for_a_block_with_parameterless_method_call_on_paramand_not_contains_a_comment"
 source = '''
 # comment a
 something do |e|
@@ -563,12 +550,61 @@ message = "Pass `&:upcase` as an argument to `something` instead of a block."
 
 [tests.config]
 AllowComments = true
-AllowMethodsWithArguments = false
-AllowedMethods = ["$UNRESOLVED:respond_to"]
-AllowedPatterns = ["$UNRESOLVED:respond_"]
 
 [[tests]]
-name = "rubocop_cop_style_symbolproc_allowcomments_true_accepts_block_with_parameterless_method_call_on_param_and_contains_a_comment"
+name = "rubocopcopstylesymbolproc_allowcomments_true_accepts_block_with_parameterless_method_call_on_param_and_contains_a_comment"
+source = '''
+something do |e| # comment
+  e.upcase
+end
+'''
+offenses = []
+
+[tests.config]
+AllowComments = true
+
+[[tests]]
+name = "rubocopcopstylesymbolproc_allowcomments_true_accepts_block_with_parameterless_method_call_on_param_and_contains_a_comment_2"
+source = '''
+something do |e|
+  # comment
+  e.upcase
+end
+'''
+offenses = []
+
+[tests.config]
+AllowComments = true
+
+[[tests]]
+name = "rubocopcopstylesymbolproc_allowcomments_true_accepts_block_with_parameterless_method_call_on_param_and_contains_a_comment_3"
+source = '''
+something
+
+something do |e|
+  # comment
+  e.upcase
+end
+'''
+offenses = []
+
+[tests.config]
+AllowComments = true
+
+[[tests]]
+name = "rubocopcopstylesymbolproc_allowcomments_true_accepts_block_with_parameterless_method_call_on_param_and_contains_a_comment_4"
+source = '''
+something do |e|
+  e.upcase # comment
+end
+'''
+offenses = []
+
+[tests.config]
+AllowComments = true
+
+[[tests]]
+name = "rubocopcopstylesymbolproc_allowcomments_true_accepts_block_with_parameterless_method_call_on_param_and_contains_a_comment_5"
 source = '''
 something do |e|
   e.upcase
@@ -579,12 +615,9 @@ offenses = []
 
 [tests.config]
 AllowComments = true
-AllowMethodsWithArguments = false
-AllowedMethods = ["$UNRESOLVED:respond_to"]
-AllowedPatterns = ["$UNRESOLVED:respond_"]
 
 [[tests]]
-name = "rubocop_cop_style_symbolproc_when_super_has_no_arguments_registers_an_offense"
+name = "rubocopcopstylesymbolproc_when_super_has_no_arguments_registers_an_offense"
 source = '''
 super { |x| x.test }
 '''
@@ -598,152 +631,132 @@ column_start = 6
 column_end = 20
 message = "Pass `&:test` as an argument to `super` instead of a block."
 
-[tests.config]
-AllowComments = true
-AllowMethodsWithArguments = false
-AllowedMethods = ["$UNRESOLVED:respond_to"]
-AllowedPatterns = ["$UNRESOLVED:respond_"]
-
 [[tests]]
-name = "rubocop_cop_style_symbolproc_autocorrects_correctly_when_args_have_a_trailing_comma"
+name = "rubocopcopstylesymbolproc_numblocks_registers_an_offense_when_receiver_is_an_array_literal_and_using_reject_with_a_numblock"
 source = '''
-mail(
-  to: 'foo',
-  subject: 'bar',
-) { |format| format.text }
+[1, 2, 3].reject { _1.foo }
 '''
 corrected = '''
-mail(
-  to: 'foo',
-  subject: 'bar', &:text
-)
+[1, 2, 3].reject(&:foo)
 '''
-
-[[tests.offenses]]
-line = 4
-column_start = 2
-column_end = 26
-message = "Pass `&:text` as an argument to `mail` instead of a block."
-
-[tests.config]
-AllowComments = true
-AllowMethodsWithArguments = false
-AllowedMethods = ["$UNRESOLVED:respond_to"]
-AllowedPatterns = ["$UNRESOLVED:respond_"]
-
-[[tests]]
-name = "rubocop_cop_style_symbolproc_numblocks"
-source = '''
-[1, 2, 3].%{method} { _1.foo }
-'''
-corrected = '''
-[1, 2, 3].#{method}(&:foo)
-'''
-ruby_version = ">= 2.7"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
-column_start = 0
+column_start = 17
+column_end = 27
+message = "Pass `&:foo` as an argument to `reject` instead of a block."
+
+[[tests]]
+name = "rubocopcopstylesymbolproc_numblocks_registers_an_offense_when_receiver_is_some_value_and_using_reject_with_a_numblock"
+source = '''
+do_something.reject { _1.foo }
+'''
+corrected = '''
+do_something.reject(&:foo)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 20
 column_end = 30
-message = "Pass `&:foo` as an argument to `#{method}` instead of a block."
-
-[tests.config]
-AllowComments = true
-AllowMethodsWithArguments = false
-AllowedMethods = ["$UNRESOLVED:respond_to"]
-AllowedPatterns = ["$UNRESOLVED:respond_"]
+message = "Pass `&:foo` as an argument to `reject` instead of a block."
 
 [[tests]]
-name = "rubocop_cop_style_symbolproc_numblocks"
+name = "rubocopcopstylesymbolproc_numblocks_does_not_register_an_offense_when_receiver_is_a_hash_literal_and_using_reject_with_a_numblock"
 source = '''
-do_something.%{method} { _1.foo }
+{foo: 42}.reject { _1.foo }
 '''
-corrected = '''
-do_something.#{method}(&:foo)
-'''
-ruby_version = ">= 2.7"
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 33
-message = "Pass `&:foo` as an argument to `#{method}` instead of a block."
-
-[tests.config]
-AllowComments = true
-AllowMethodsWithArguments = false
-AllowedMethods = ["$UNRESOLVED:respond_to"]
-AllowedPatterns = ["$UNRESOLVED:respond_"]
-
-[[tests]]
-name = "rubocop_cop_style_symbolproc_numblocks"
-source = '''
-{foo: 42}.#{method} { _1.foo }
-'''
-ruby_version = ">= 2.7"
-interpolated = true
-verified = false
 offenses = []
 
-[tests.config]
-AllowComments = true
-AllowMethodsWithArguments = false
-AllowedMethods = ["$UNRESOLVED:respond_to"]
-AllowedPatterns = ["$UNRESOLVED:respond_"]
-
 [[tests]]
-name = "rubocop_cop_style_symbolproc_numblocks"
+name = "rubocopcopstylesymbolproc_numblocks_registers_an_offense_when_receiver_is_an_array_literal_and_using_select_with_a_numblock"
 source = '''
-{foo: 42}.%{method} { _1.foo }
+[1, 2, 3].select { _1.foo }
 '''
 corrected = '''
-{foo: 42}.#{method}(&:foo)
+[1, 2, 3].select(&:foo)
 '''
-ruby_version = ">= 2.7"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
-column_start = 0
-column_end = 30
-message = "Pass `&:foo` as an argument to `#{method}` instead of a block."
-
-[tests.config]
-AllowComments = true
-AllowMethodsWithArguments = false
-AllowedMethods = ["$UNRESOLVED:respond_to"]
-AllowedPatterns = ["$UNRESOLVED:respond_"]
+column_start = 17
+column_end = 27
+message = "Pass `&:foo` as an argument to `select` instead of a block."
 
 [[tests]]
-name = "rubocop_cop_style_symbolproc_numblocks"
+name = "rubocopcopstylesymbolproc_numblocks_registers_an_offense_when_receiver_is_some_value_and_using_select_with_a_numblock"
 source = '''
-[1, 2, 3].#{method} { _1.foo }
+do_something.select { _1.foo }
 '''
-ruby_version = ">= 2.7"
-interpolated = true
-verified = false
+corrected = '''
+do_something.select(&:foo)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 20
+column_end = 30
+message = "Pass `&:foo` as an argument to `select` instead of a block."
+
+[[tests]]
+name = "rubocopcopstylesymbolproc_numblocks_does_not_register_an_offense_when_receiver_is_a_hash_literal_and_using_select_with_a_numblock"
+source = '''
+{foo: 42}.select { _1.foo }
+'''
 offenses = []
 
-[tests.config]
-AllowComments = true
-AllowMethodsWithArguments = false
-AllowedMethods = ["$UNRESOLVED:respond_to"]
-AllowedPatterns = ["$UNRESOLVED:respond_"]
+[[tests]]
+name = "rubocopcopstylesymbolproc_numblocks_registers_an_offense_when_receiver_is_a_hash_literal_and_using_min_with_a_numblock"
+source = '''
+{foo: 42}.min { _1.foo }
+'''
+corrected = '''
+{foo: 42}.min(&:foo)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 14
+column_end = 24
+message = "Pass `&:foo` as an argument to `min` instead of a block."
 
 [[tests]]
-name = "rubocop_cop_style_symbolproc_numblocks_registers_an_offense_for_a_block_with_a_numbered_parameter"
+name = "rubocopcopstylesymbolproc_numblocks_does_not_register_an_offense_when_receiver_is_an_array_literal_and_using_min_with_a_numblock"
+source = '''
+[1, 2, 3].min { _1.foo }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylesymbolproc_numblocks_registers_an_offense_when_receiver_is_a_hash_literal_and_using_max_with_a_numblock"
+source = '''
+{foo: 42}.max { _1.foo }
+'''
+corrected = '''
+{foo: 42}.max(&:foo)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 14
+column_end = 24
+message = "Pass `&:foo` as an argument to `max` instead of a block."
+
+[[tests]]
+name = "rubocopcopstylesymbolproc_numblocks_does_not_register_an_offense_when_receiver_is_an_array_literal_and_using_max_with_a_numblock"
+source = '''
+[1, 2, 3].max { _1.foo }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylesymbolproc_numblocks_registers_an_offense_for_a_block_with_a_numbered_parameter"
 source = '''
 something { _1.foo }
 '''
 corrected = '''
 something(&:foo)
 '''
-ruby_version = ">= 2.7"
 
 [[tests.offenses]]
 line = 1
@@ -751,169 +764,130 @@ column_start = 10
 column_end = 20
 message = "Pass `&:foo` as an argument to `something` instead of a block."
 
-[tests.config]
-AllowComments = true
-AllowMethodsWithArguments = false
-AllowedMethods = ["$UNRESOLVED:respond_to"]
-AllowedPatterns = ["$UNRESOLVED:respond_"]
-
 [[tests]]
-name = "rubocop_cop_style_symbolproc_numblocks_accepts_block_with_multiple_numbered_parameters"
+name = "rubocopcopstylesymbolproc_numblocks_accepts_block_with_multiple_numbered_parameters"
 source = '''
 something { _1 + _2 }
 '''
-ruby_version = ">= 2.7"
 offenses = []
 
-[tests.config]
-AllowComments = true
-AllowMethodsWithArguments = false
-AllowedMethods = ["$UNRESOLVED:respond_to"]
-AllowedPatterns = ["$UNRESOLVED:respond_"]
-
 [[tests]]
-name = "rubocop_cop_style_symbolproc_itblocks"
+name = "rubocopcopstylesymbolproc_itblocks_registers_an_offense_when_receiver_is_an_array_literal_and_using_reject_with_a_itblock"
 source = '''
-[1, 2, 3].%{method} { it.foo }
+[1, 2, 3].reject { it.foo }
 '''
 corrected = '''
-[1, 2, 3].#{method}(&:foo)
+[1, 2, 3].reject(&:foo)
 '''
-ruby_version = ">= 3.4"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
-column_start = 0
+column_start = 17
+column_end = 27
+message = "Pass `&:foo` as an argument to `reject` instead of a block."
+
+[[tests]]
+name = "rubocopcopstylesymbolproc_itblocks_registers_an_offense_when_receiver_is_some_value_and_using_reject_with_a_itblock"
+source = '''
+do_something.reject { it.foo }
+'''
+corrected = '''
+do_something.reject(&:foo)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 20
 column_end = 30
-message = "Pass `&:foo` as an argument to `#{method}` instead of a block."
-
-[tests.config]
-AllowComments = true
-AllowMethodsWithArguments = false
-AllowedMethods = ["$UNRESOLVED:respond_to"]
-AllowedPatterns = ["$UNRESOLVED:respond_"]
+message = "Pass `&:foo` as an argument to `reject` instead of a block."
 
 [[tests]]
-name = "rubocop_cop_style_symbolproc_itblocks"
+name = "rubocopcopstylesymbolproc_itblocks_does_not_register_an_offense_when_receiver_is_a_hash_literal_and_using_reject_with_a_itblock"
 source = '''
-do_something.%{method} { it.foo }
+{foo: 42}.reject { it.foo }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylesymbolproc_itblocks_registers_an_offense_when_receiver_is_an_array_literal_and_using_select_with_a_itblock"
+source = '''
+[1, 2, 3].select { it.foo }
 '''
 corrected = '''
-do_something.#{method}(&:foo)
+[1, 2, 3].select(&:foo)
 '''
-ruby_version = ">= 3.4"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
-column_start = 0
-column_end = 33
-message = "Pass `&:foo` as an argument to `#{method}` instead of a block."
-
-[tests.config]
-AllowComments = true
-AllowMethodsWithArguments = false
-AllowedMethods = ["$UNRESOLVED:respond_to"]
-AllowedPatterns = ["$UNRESOLVED:respond_"]
+column_start = 17
+column_end = 27
+message = "Pass `&:foo` as an argument to `select` instead of a block."
 
 [[tests]]
-name = "rubocop_cop_style_symbolproc_itblocks"
+name = "rubocopcopstylesymbolproc_itblocks_registers_an_offense_when_receiver_is_some_value_and_using_select_with_a_itblock"
 source = '''
-{foo: 42}.#{method} { it.foo }
+do_something.select { it.foo }
 '''
-ruby_version = ">= 3.4"
-interpolated = true
-verified = false
+corrected = '''
+do_something.select(&:foo)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 20
+column_end = 30
+message = "Pass `&:foo` as an argument to `select` instead of a block."
+
+[[tests]]
+name = "rubocopcopstylesymbolproc_itblocks_does_not_register_an_offense_when_receiver_is_a_hash_literal_and_using_select_with_a_itblock"
+source = '''
+{foo: 42}.select { it.foo }
+'''
 offenses = []
 
-[tests.config]
-AllowComments = true
-AllowMethodsWithArguments = false
-AllowedMethods = ["$UNRESOLVED:respond_to"]
-AllowedPatterns = ["$UNRESOLVED:respond_"]
-
 [[tests]]
-name = "rubocop_cop_style_symbolproc_itblocks_when_allcops_activesupportextensionsenabled_true_accepts_lambda_with_1_numbered_parameter"
+name = "rubocopcopstylesymbolproc_itblocks_when_allcopsactivesupportextensionsenabled_true_accepts_lambda_with_1_numbered_parameter"
 source = '''
 -> { _1.method }
 '''
-ruby_version = ">= 3.4"
 offenses = []
 
-[tests.config]
-AllowComments = true
-AllowMethodsWithArguments = false
-AllowedMethods = ["$UNRESOLVED:respond_to"]
-AllowedPatterns = ["$UNRESOLVED:respond_"]
-
 [[tests]]
-name = "rubocop_cop_style_symbolproc_itblocks_when_allcops_activesupportextensionsenabled_true_accepts_proc_with_1_numbered_parameter"
+name = "rubocopcopstylesymbolproc_itblocks_when_allcopsactivesupportextensionsenabled_true_accepts_proc_with_1_numbered_parameter"
 source = '''
 proc { _1.method }
 '''
-ruby_version = ">= 3.4"
 offenses = []
 
-[tests.config]
-AllowComments = true
-AllowMethodsWithArguments = false
-AllowedMethods = ["$UNRESOLVED:respond_to"]
-AllowedPatterns = ["$UNRESOLVED:respond_"]
-
 [[tests]]
-name = "rubocop_cop_style_symbolproc_itblocks_when_allcops_activesupportextensionsenabled_true_accepts_block_with_only_second_numbered_parameter"
+name = "rubocopcopstylesymbolproc_itblocks_when_allcopsactivesupportextensionsenabled_true_accepts_block_with_only_second_numbered_parameter"
 source = '''
 something { _2.first }
 '''
-ruby_version = ">= 3.4"
 offenses = []
 
-[tests.config]
-AllowComments = true
-AllowMethodsWithArguments = false
-AllowedMethods = ["$UNRESOLVED:respond_to"]
-AllowedPatterns = ["$UNRESOLVED:respond_"]
-
 [[tests]]
-name = "rubocop_cop_style_symbolproc_itblocks_when_allcops_activesupportextensionsenabled_true_accepts_proc_new_with_1_numbered_parameter"
+name = "rubocopcopstylesymbolproc_itblocks_when_allcopsactivesupportextensionsenabled_true_accepts_procnew_with_1_numbered_parameter"
 source = '''
 Proc.new { _1.method }
 '''
-ruby_version = ">= 3.4"
 offenses = []
 
-[tests.config]
-AllowComments = true
-AllowMethodsWithArguments = false
-AllowedMethods = ["$UNRESOLVED:respond_to"]
-AllowedPatterns = ["$UNRESOLVED:respond_"]
-
 [[tests]]
-name = "rubocop_cop_style_symbolproc_itblocks_when_allcops_activesupportextensionsenabled_true_accepts_proc_new_with_1_numbered_parameter"
+name = "rubocopcopstylesymbolproc_itblocks_when_allcopsactivesupportextensionsenabled_true_accepts_procnew_with_1_numbered_parameter_2"
 source = '''
 ::Proc.new { _1.method }
 '''
-ruby_version = ">= 3.4"
 offenses = []
 
-[tests.config]
-AllowComments = true
-AllowMethodsWithArguments = false
-AllowedMethods = ["$UNRESOLVED:respond_to"]
-AllowedPatterns = ["$UNRESOLVED:respond_"]
-
 [[tests]]
-name = "rubocop_cop_style_symbolproc_itblocks_when_allcops_activesupportextensionsenabled_false_registers_lambda_with_1_numbered_parameter"
+name = "rubocopcopstylesymbolproc_itblocks_when_allcopsactivesupportextensionsenabled_false_registers_lambda_with_1_numbered_parameter"
 source = '''
 -> { _1.method }
 '''
 corrected = '''
 lambda(&:method)
 '''
-ruby_version = ">= 3.4"
 
 [[tests.offenses]]
 line = 1
@@ -921,21 +895,14 @@ column_start = 3
 column_end = 16
 message = "Pass `&:method` as an argument to `lambda` instead of a block."
 
-[tests.config]
-AllowComments = true
-AllowMethodsWithArguments = false
-AllowedMethods = ["$UNRESOLVED:respond_to"]
-AllowedPatterns = ["$UNRESOLVED:respond_"]
-
 [[tests]]
-name = "rubocop_cop_style_symbolproc_itblocks_when_allcops_activesupportextensionsenabled_false_registers_proc_with_1_numbered_parameter"
+name = "rubocopcopstylesymbolproc_itblocks_when_allcopsactivesupportextensionsenabled_false_registers_proc_with_1_numbered_parameter"
 source = '''
 proc { _1.method }
 '''
 corrected = '''
 proc(&:method)
 '''
-ruby_version = ">= 3.4"
 
 [[tests.offenses]]
 line = 1
@@ -943,35 +910,21 @@ column_start = 5
 column_end = 18
 message = "Pass `&:method` as an argument to `proc` instead of a block."
 
-[tests.config]
-AllowComments = true
-AllowMethodsWithArguments = false
-AllowedMethods = ["$UNRESOLVED:respond_to"]
-AllowedPatterns = ["$UNRESOLVED:respond_"]
-
 [[tests]]
-name = "rubocop_cop_style_symbolproc_itblocks_when_allcops_activesupportextensionsenabled_false_does_not_register_block_with_only_second_numbered_parameter"
+name = "rubocopcopstylesymbolproc_itblocks_when_allcopsactivesupportextensionsenabled_false_does_not_register_block_with_only_second_numbered_parameter"
 source = '''
 something { _2.first }
 '''
-ruby_version = ">= 3.4"
 offenses = []
 
-[tests.config]
-AllowComments = true
-AllowMethodsWithArguments = false
-AllowedMethods = ["$UNRESOLVED:respond_to"]
-AllowedPatterns = ["$UNRESOLVED:respond_"]
-
 [[tests]]
-name = "rubocop_cop_style_symbolproc_itblocks_when_allcops_activesupportextensionsenabled_false_registers_proc_new_with_1_numbered_parameter"
+name = "rubocopcopstylesymbolproc_itblocks_when_allcopsactivesupportextensionsenabled_false_registers_procnew_with_1_numbered_parameter"
 source = '''
 Proc.new { _1.method }
 '''
 corrected = '''
 Proc.new(&:method)
 '''
-ruby_version = ">= 3.4"
 
 [[tests.offenses]]
 line = 1
@@ -979,21 +932,14 @@ column_start = 9
 column_end = 22
 message = "Pass `&:method` as an argument to `new` instead of a block."
 
-[tests.config]
-AllowComments = true
-AllowMethodsWithArguments = false
-AllowedMethods = ["$UNRESOLVED:respond_to"]
-AllowedPatterns = ["$UNRESOLVED:respond_"]
-
 [[tests]]
-name = "rubocop_cop_style_symbolproc_itblocks_when_allcops_activesupportextensionsenabled_false_registers_proc_new_with_1_numbered_parameter"
+name = "rubocopcopstylesymbolproc_itblocks_when_allcopsactivesupportextensionsenabled_false_registers_procnew_with_1_numbered_parameter_2"
 source = '''
 ::Proc.new { _1.method }
 '''
 corrected = '''
 ::Proc.new(&:method)
 '''
-ruby_version = ">= 3.4"
 
 [[tests.offenses]]
 line = 1
@@ -1001,22 +947,42 @@ column_start = 11
 column_end = 24
 message = "Pass `&:method` as an argument to `new` instead of a block."
 
-[tests.config]
-AllowComments = true
-AllowMethodsWithArguments = false
-AllowedMethods = ["$UNRESOLVED:respond_to"]
-AllowedPatterns = ["$UNRESOLVED:respond_"]
-
 [[tests]]
-name = "rubocop_cop_style_symbolproc_itblocks_allowcomments_true_accepts_blocks_containing_comments"
+name = "rubocopcopstylesymbolproc_itblocks_allowcomments_true_accepts_blocks_containing_comments"
 source = '''
-something
+something do
+  # comment
+  _1.upcase
+end
 '''
-ruby_version = ">= 3.4"
 offenses = []
 
 [tests.config]
 AllowComments = true
-AllowMethodsWithArguments = false
-AllowedMethods = ["$UNRESOLVED:respond_to"]
-AllowedPatterns = ["$UNRESOLVED:respond_"]
+
+[[tests]]
+name = "rubocopcopstylesymbolproc_itblocks_allowcomments_true_accepts_blocks_containing_comments_2"
+source = '''
+something do
+  _1.upcase # comment
+end
+'''
+offenses = []
+
+[tests.config]
+AllowComments = true
+
+[[tests]]
+name = "rubocopcopstylesymbolproc_itblocks_allowcomments_true_accepts_blocks_containing_comments_3"
+source = '''
+something
+
+something do
+  # comment
+  _1.upcase
+end
+'''
+offenses = []
+
+[tests.config]
+AllowComments = true

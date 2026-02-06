@@ -4,7 +4,37 @@ severity = "convention"
 implemented = true
 
 [[tests]]
-name = "rubocop_cop_style_raiseargs_when_enforced_style_is_compact_with_a_raise_with_2_args_reports_an_offense"
+name = "rubocopcopstyleraiseargs_when_enforced_style_is_compact_accepts_a_raise_with_msg_argument"
+source = '''
+raise msg
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "compact"
+
+[[tests]]
+name = "rubocopcopstyleraiseargs_when_enforced_style_is_compact_accepts_a_raise_with_an_exception_argument"
+source = '''
+raise Ex.new(msg)
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "compact"
+
+[[tests]]
+name = "rubocopcopstyleraiseargs_when_enforced_style_is_compact_accepts_exception_constructor_with_keyword_arguments_and_message_argument"
+source = '''
+raise MyKwArgError.new(a: 1, b: 2), message
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "compact"
+
+[[tests]]
+name = "rubocopcopstyleraiseargs_when_enforced_style_is_compact_with_a_raise_with_2_args_reports_an_offense"
 source = '''
 raise RuntimeError, msg
 '''
@@ -22,7 +52,7 @@ message = "Provide an exception object as an argument to `raise`."
 EnforcedStyle = "compact"
 
 [[tests]]
-name = "rubocop_cop_style_raiseargs_when_enforced_style_is_compact_with_a_raise_with_2_args_and_exception_object_is_assigned_to_a_local_variable_reports_an_offense"
+name = "rubocopcopstyleraiseargs_when_enforced_style_is_compact_with_a_raise_with_2_args_and_exception_object_is_assigned_to_a_local_variable_reports_an_offense"
 source = '''
 raise error_class, msg
 '''
@@ -40,7 +70,7 @@ message = "Provide an exception object as an argument to `raise`."
 EnforcedStyle = "compact"
 
 [[tests]]
-name = "rubocop_cop_style_raiseargs_when_enforced_style_is_compact_with_a_raise_with_exception_instantiation_and_message_arguments_reports_an_offense"
+name = "rubocopcopstyleraiseargs_when_enforced_style_is_compact_with_a_raise_with_exception_instantiation_and_message_arguments_reports_an_offense"
 source = '''
 raise FooError.new, message
 '''
@@ -58,7 +88,7 @@ message = "Provide an exception object as an argument to `raise`."
 EnforcedStyle = "compact"
 
 [[tests]]
-name = "rubocop_cop_style_raiseargs_when_enforced_style_is_compact_when_used_in_a_ternary_expression_registers_an_offense_and_autocorrects"
+name = "rubocopcopstyleraiseargs_when_enforced_style_is_compact_when_used_in_a_ternary_expression_registers_an_offense_and_autocorrects"
 source = '''
 foo ? raise(Ex, 'error') : bar
 '''
@@ -76,7 +106,7 @@ message = "Provide an exception object as an argument to `raise`."
 EnforcedStyle = "compact"
 
 [[tests]]
-name = "rubocop_cop_style_raiseargs_when_enforced_style_is_compact_when_used_in_a_logical_and_expression_registers_an_offense_and_autocorrects"
+name = "rubocopcopstyleraiseargs_when_enforced_style_is_compact_when_used_in_a_logical_and_expression_registers_an_offense_and_autocorrects"
 source = '''
 bar && raise(Ex, 'error')
 '''
@@ -94,7 +124,7 @@ message = "Provide an exception object as an argument to `raise`."
 EnforcedStyle = "compact"
 
 [[tests]]
-name = "rubocop_cop_style_raiseargs_when_enforced_style_is_compact_when_used_in_a_logical_or_expression_registers_an_offense_and_autocorrects"
+name = "rubocopcopstyleraiseargs_when_enforced_style_is_compact_when_used_in_a_logical_or_expression_registers_an_offense_and_autocorrects"
 source = '''
 bar || raise(Ex, 'error')
 '''
@@ -112,7 +142,7 @@ message = "Provide an exception object as an argument to `raise`."
 EnforcedStyle = "compact"
 
 [[tests]]
-name = "rubocop_cop_style_raiseargs_when_enforced_style_is_compact_with_correct_opposite_reports_an_offense"
+name = "rubocopcopstyleraiseargs_when_enforced_style_is_compact_with_correct__opposite_reports_an_offense"
 source = '''
 if a
   raise RuntimeError, msg
@@ -138,7 +168,7 @@ message = "Provide an exception object as an argument to `raise`."
 EnforcedStyle = "compact"
 
 [[tests]]
-name = "rubocop_cop_style_raiseargs_when_enforced_style_is_compact_with_correct_opposite_reports_multiple_offenses"
+name = "rubocopcopstyleraiseargs_when_enforced_style_is_compact_with_correct__opposite_reports_multiple_offenses"
 source = '''
 if a
   raise RuntimeError, msg
@@ -174,7 +204,7 @@ message = "Provide an exception object as an argument to `raise`."
 EnforcedStyle = "compact"
 
 [[tests]]
-name = "rubocop_cop_style_raiseargs_when_enforced_style_is_compact_with_a_raise_with_3_args_reports_an_offense"
+name = "rubocopcopstyleraiseargs_when_enforced_style_is_compact_with_a_raise_with_3_args_reports_an_offense"
 source = '''
 raise RuntimeError, msg, caller
 '''
@@ -189,37 +219,97 @@ message = "Provide an exception object as an argument to `raise`."
 EnforcedStyle = "compact"
 
 [[tests]]
-name = "rubocop_cop_style_raiseargs_when_enforced_style_is_compact_accepts_a_raise_with_msg_argument"
+name = "rubocopcopstyleraiseargs_when_enforced_style_is_exploded_accepts_exception_constructor_with_more_than_1_argument"
+source = '''
+raise MyCustomError.new(a1, a2, a3)
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "exploded"
+
+[[tests]]
+name = "rubocopcopstyleraiseargs_when_enforced_style_is_exploded_accepts_exception_constructor_with_keyword_arguments"
+source = '''
+raise MyKwArgError.new(a: 1, b: 2)
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "exploded"
+
+[[tests]]
+name = "rubocopcopstyleraiseargs_when_enforced_style_is_exploded_accepts_a_raise_with_splatted_arguments"
+source = '''
+raise MyCustomError.new(*args)
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "exploded"
+
+[[tests]]
+name = "rubocopcopstyleraiseargs_when_enforced_style_is_exploded_ignores_a_raise_with_an_exception_argument"
+source = '''
+raise Ex.new(entity), message
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "exploded"
+
+[[tests]]
+name = "rubocopcopstyleraiseargs_when_enforced_style_is_exploded_accepts_a_raise_with_3_args"
+source = '''
+raise RuntimeError, msg, caller
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "exploded"
+
+[[tests]]
+name = "rubocopcopstyleraiseargs_when_enforced_style_is_exploded_accepts_a_raise_with_2_args"
+source = '''
+raise RuntimeError, msg
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "exploded"
+
+[[tests]]
+name = "rubocopcopstyleraiseargs_when_enforced_style_is_exploded_accepts_a_raise_when_exception_object_is_assigned_to_a_local_variable"
+source = '''
+raise error_class, msg
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "exploded"
+
+[[tests]]
+name = "rubocopcopstyleraiseargs_when_enforced_style_is_exploded_accepts_a_raise_with_msg_argument"
 source = '''
 raise msg
 '''
 offenses = []
 
 [tests.config]
-EnforcedStyle = "compact"
+EnforcedStyle = "exploded"
 
 [[tests]]
-name = "rubocop_cop_style_raiseargs_when_enforced_style_is_compact_accepts_a_raise_with_an_exception_argument"
+name = "rubocopcopstyleraiseargs_when_enforced_style_is_exploded_accepts_a_raise_with_new_method_without_receiver"
 source = '''
-raise Ex.new(msg)
+raise new
 '''
 offenses = []
 
 [tests.config]
-EnforcedStyle = "compact"
+EnforcedStyle = "exploded"
 
 [[tests]]
-name = "rubocop_cop_style_raiseargs_when_enforced_style_is_compact_accepts_exception_constructor_with_keyword_arguments_and_message_argument"
-source = '''
-raise MyKwArgError.new(a: 1, b: 2), message
-'''
-offenses = []
-
-[tests.config]
-EnforcedStyle = "compact"
-
-[[tests]]
-name = "rubocop_cop_style_raiseargs_when_enforced_style_is_exploded_with_a_raise_with_exception_object_with_one_argument_reports_an_offense"
+name = "rubocopcopstyleraiseargs_when_enforced_style_is_exploded_with_a_raise_with_exception_object_with_one_argument_reports_an_offense"
 source = '''
 raise Ex.new(msg)
 '''
@@ -237,7 +327,7 @@ message = "Provide an exception class and message as arguments to `raise`."
 EnforcedStyle = "exploded"
 
 [[tests]]
-name = "rubocop_cop_style_raiseargs_when_enforced_style_is_exploded_with_a_raise_with_exception_object_with_no_arguments_reports_an_offense"
+name = "rubocopcopstyleraiseargs_when_enforced_style_is_exploded_with_a_raise_with_exception_object_with_no_arguments_reports_an_offense"
 source = '''
 raise Ex.new
 '''
@@ -255,7 +345,7 @@ message = "Provide an exception class and message as arguments to `raise`."
 EnforcedStyle = "exploded"
 
 [[tests]]
-name = "rubocop_cop_style_raiseargs_when_enforced_style_is_exploded_with_a_raise_with_exception_object_when_used_in_a_ternary_expression_registers_an_offense_and_autocorrects"
+name = "rubocopcopstyleraiseargs_when_enforced_style_is_exploded_with_a_raise_with_exception_object_when_used_in_a_ternary_expression_registers_an_offense_and_autocorrects"
 source = '''
 foo ? raise(Ex.new('error')) : bar
 '''
@@ -273,7 +363,7 @@ message = "Provide an exception class and message as arguments to `raise`."
 EnforcedStyle = "exploded"
 
 [[tests]]
-name = "rubocop_cop_style_raiseargs_when_enforced_style_is_exploded_with_a_raise_with_exception_object_when_used_in_a_logical_and_expression_registers_an_offense_and_autocorrects"
+name = "rubocopcopstyleraiseargs_when_enforced_style_is_exploded_with_a_raise_with_exception_object_when_used_in_a_logical_and_expression_registers_an_offense_and_autocorrects"
 source = '''
 bar && raise(Ex.new('error'))
 '''
@@ -291,7 +381,7 @@ message = "Provide an exception class and message as arguments to `raise`."
 EnforcedStyle = "exploded"
 
 [[tests]]
-name = "rubocop_cop_style_raiseargs_when_enforced_style_is_exploded_with_a_raise_with_exception_object_when_used_in_a_logical_or_expression_registers_an_offense_and_autocorrects"
+name = "rubocopcopstyleraiseargs_when_enforced_style_is_exploded_with_a_raise_with_exception_object_when_used_in_a_logical_or_expression_registers_an_offense_and_autocorrects"
 source = '''
 bar || raise(Ex.new('error'))
 '''
@@ -309,7 +399,7 @@ message = "Provide an exception class and message as arguments to `raise`."
 EnforcedStyle = "exploded"
 
 [[tests]]
-name = "rubocop_cop_style_raiseargs_when_enforced_style_is_exploded_with_opposite_correct_reports_an_offense_for_opposite_correct"
+name = "rubocopcopstyleraiseargs_when_enforced_style_is_exploded_with_opposite__correct_reports_an_offense_for_opposite__correct"
 source = '''
 if a
   raise RuntimeError, msg
@@ -335,7 +425,7 @@ message = "Provide an exception class and message as arguments to `raise`."
 EnforcedStyle = "exploded"
 
 [[tests]]
-name = "rubocop_cop_style_raiseargs_when_enforced_style_is_exploded_with_opposite_correct_reports_multiple_offenses"
+name = "rubocopcopstyleraiseargs_when_enforced_style_is_exploded_with_opposite__correct_reports_multiple_offenses"
 source = '''
 if a
   raise RuntimeError, msg
@@ -371,7 +461,7 @@ message = "Provide an exception class and message as arguments to `raise`."
 EnforcedStyle = "exploded"
 
 [[tests]]
-name = "rubocop_cop_style_raiseargs_when_enforced_style_is_exploded_when_an_exception_object_is_assigned_to_a_local_variable_autocorrects_to_exploded_style"
+name = "rubocopcopstyleraiseargs_when_enforced_style_is_exploded_when_an_exception_object_is_assigned_to_a_local_variable_autocorrects_to_exploded_style"
 source = '''
 def do_something
   klass = RuntimeError
@@ -395,7 +485,7 @@ message = "Provide an exception class and message as arguments to `raise`."
 EnforcedStyle = "exploded"
 
 [[tests]]
-name = "rubocop_cop_style_raiseargs_when_enforced_style_is_exploded_when_exception_type_is_in_allowedcompacttypes_accepts_exception_constructor_with_no_arguments"
+name = "rubocopcopstyleraiseargs_when_enforced_style_is_exploded_when_exception_type_is_in_allowedcompacttypes_accepts_exception_constructor_with_no_arguments"
 source = '''
 raise Ex1.new
 '''
@@ -406,7 +496,7 @@ AllowedCompactTypes = ["Ex1"]
 EnforcedStyle = "exploded"
 
 [[tests]]
-name = "rubocop_cop_style_raiseargs_when_enforced_style_is_exploded_when_exception_type_is_in_allowedcompacttypes_with_one_argument_accepts_exception_constructor"
+name = "rubocopcopstyleraiseargs_when_enforced_style_is_exploded_when_exception_type_is_in_allowedcompacttypes_with_one_argument_accepts_exception_constructor"
 source = '''
 raise Ex1.new(msg)
 '''
@@ -417,7 +507,7 @@ AllowedCompactTypes = ["Ex1"]
 EnforcedStyle = "exploded"
 
 [[tests]]
-name = "rubocop_cop_style_raiseargs_when_enforced_style_is_exploded_when_exception_type_is_in_allowedcompacttypes_with_more_than_one_argument_accepts_exception_constructor"
+name = "rubocopcopstyleraiseargs_when_enforced_style_is_exploded_when_exception_type_is_in_allowedcompacttypes_with_more_than_one_argument_accepts_exception_constructor"
 source = '''
 raise Ex1.new(arg1, arg2)
 '''
@@ -428,136 +518,31 @@ AllowedCompactTypes = ["Ex1"]
 EnforcedStyle = "exploded"
 
 [[tests]]
-name = "rubocop_cop_style_raiseargs_when_enforced_style_is_exploded_accepts_exception_constructor_with_more_than_1_argument"
-source = '''
-raise MyCustomError.new(a1, a2, a3)
-'''
-offenses = []
-
-[tests.config]
-AllowedCompactTypes = ["Ex1"]
-EnforcedStyle = "exploded"
-
-[[tests]]
-name = "rubocop_cop_style_raiseargs_when_enforced_style_is_exploded_accepts_exception_constructor_with_keyword_arguments"
-source = '''
-raise MyKwArgError.new(a: 1, b: 2)
-'''
-offenses = []
-
-[tests.config]
-AllowedCompactTypes = ["Ex1"]
-EnforcedStyle = "exploded"
-
-[[tests]]
-name = "rubocop_cop_style_raiseargs_when_enforced_style_is_exploded_accepts_a_raise_with_splatted_arguments"
-source = '''
-raise MyCustomError.new(*args)
-'''
-offenses = []
-
-[tests.config]
-AllowedCompactTypes = ["Ex1"]
-EnforcedStyle = "exploded"
-
-[[tests]]
-name = "rubocop_cop_style_raiseargs_when_enforced_style_is_exploded_when_ruby_3_2_accepts_a_raise_with_anonymous_splatted_arguments"
+name = "rubocopcopstyleraiseargs_when_enforced_style_is_exploded_when_ruby__32_accepts_a_raise_with_anonymous_splatted_arguments"
 source = '''
 def foo(*) raise MyCustomError.new(*) end
 '''
-ruby_version = ">= 3.2"
 offenses = []
 
 [tests.config]
-AllowedCompactTypes = ["Ex1"]
 EnforcedStyle = "exploded"
 
 [[tests]]
-name = "rubocop_cop_style_raiseargs_when_enforced_style_is_exploded_when_ruby_3_2_accepts_a_raise_with_anonymous_keyword_splatted_arguments"
+name = "rubocopcopstyleraiseargs_when_enforced_style_is_exploded_when_ruby__32_accepts_a_raise_with_anonymous_keyword_splatted_arguments"
 source = '''
 def foo(**) raise MyCustomError.new(**) end
 '''
-ruby_version = ">= 3.2"
 offenses = []
 
 [tests.config]
-AllowedCompactTypes = ["Ex1"]
 EnforcedStyle = "exploded"
 
 [[tests]]
-name = "rubocop_cop_style_raiseargs_when_enforced_style_is_exploded_when_ruby_27_accepts_a_raise_with_triple_dot_forwarding"
+name = "rubocopcopstyleraiseargs_when_enforced_style_is_exploded_when_ruby__27_accepts_a_raise_with_triple_dot_forwarding"
 source = '''
 def foo(...) raise MyCustomError.new(...) end
 '''
-ruby_version = ">= 2.7"
 offenses = []
 
 [tests.config]
-AllowedCompactTypes = ["Ex1"]
-EnforcedStyle = "exploded"
-
-[[tests]]
-name = "rubocop_cop_style_raiseargs_when_enforced_style_is_exploded_ignores_a_raise_with_an_exception_argument"
-source = '''
-raise Ex.new(entity), message
-'''
-offenses = []
-
-[tests.config]
-AllowedCompactTypes = ["Ex1"]
-EnforcedStyle = "exploded"
-
-[[tests]]
-name = "rubocop_cop_style_raiseargs_when_enforced_style_is_exploded_accepts_a_raise_with_3_args"
-source = '''
-raise RuntimeError, msg, caller
-'''
-offenses = []
-
-[tests.config]
-AllowedCompactTypes = ["Ex1"]
-EnforcedStyle = "exploded"
-
-[[tests]]
-name = "rubocop_cop_style_raiseargs_when_enforced_style_is_exploded_accepts_a_raise_with_2_args"
-source = '''
-raise RuntimeError, msg
-'''
-offenses = []
-
-[tests.config]
-AllowedCompactTypes = ["Ex1"]
-EnforcedStyle = "exploded"
-
-[[tests]]
-name = "rubocop_cop_style_raiseargs_when_enforced_style_is_exploded_accepts_a_raise_when_exception_object_is_assigned_to_a_local_variable"
-source = '''
-raise error_class, msg
-'''
-offenses = []
-
-[tests.config]
-AllowedCompactTypes = ["Ex1"]
-EnforcedStyle = "exploded"
-
-[[tests]]
-name = "rubocop_cop_style_raiseargs_when_enforced_style_is_exploded_accepts_a_raise_with_msg_argument"
-source = '''
-raise msg
-'''
-offenses = []
-
-[tests.config]
-AllowedCompactTypes = ["Ex1"]
-EnforcedStyle = "exploded"
-
-[[tests]]
-name = "rubocop_cop_style_raiseargs_when_enforced_style_is_exploded_accepts_a_raise_with_new_method_without_receiver"
-source = '''
-raise new
-'''
-offenses = []
-
-[tests.config]
-AllowedCompactTypes = ["Ex1"]
 EnforcedStyle = "exploded"

@@ -4,7 +4,16 @@ severity = "convention"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_layout_firstarrayelementlinebreak_elements_listed_on_the_first_line_registers_and_corrects_the_offense"
+name = "rubocopcoplayoutfirstarrayelementlinebreak_ignores_elements_listed_on_a_single_line"
+source = '''
+b = [
+  :a,
+  :b]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplayoutfirstarrayelementlinebreak_elements_listed_on_the_first_line_registers_and_corrects_the_offense"
 source = '''
 a = [:a,
      :b]
@@ -22,7 +31,7 @@ column_end = 7
 message = "Add a line break before the first element of a multi-line array."
 
 [[tests]]
-name = "rubocop_cop_layout_firstarrayelementlinebreak_word_arrays_registers_and_corrects_the_offense"
+name = "rubocopcoplayoutfirstarrayelementlinebreak_word_arrays_registers_and_corrects_the_offense"
 source = '''
 %w(a b
    c d)
@@ -40,7 +49,7 @@ column_end = 4
 message = "Add a line break before the first element of a multi-line array."
 
 [[tests]]
-name = "rubocop_cop_layout_firstarrayelementlinebreak_array_nested_in_a_method_call_registers_and_corrects_the_offense"
+name = "rubocopcoplayoutfirstarrayelementlinebreak_array_nested_in_a_method_call_registers_and_corrects_the_offense"
 source = '''
 method([:foo,
         :bar])
@@ -58,7 +67,20 @@ column_end = 12
 message = "Add a line break before the first element of a multi-line array."
 
 [[tests]]
-name = "rubocop_cop_layout_firstarrayelementlinebreak_when_allowimplicitarrayliterals_is_false_masgn_implicit_arrays_registers_and_corrects_the_offense"
+name = "rubocopcoplayoutfirstarrayelementlinebreak_when_allowimplicitarrayliterals_is_false_ignores_properly_formatted_implicit_arrays"
+source = '''
+a, b,
+c =
+1, 2,
+3
+'''
+offenses = []
+
+[tests.config]
+AllowImplicitArrayLiterals = false
+
+[[tests]]
+name = "rubocopcoplayoutfirstarrayelementlinebreak_when_allowimplicitarrayliterals_is_false_masgn_implicit_arrays_registers_and_corrects_the_offense"
 source = '''
 a, b,
 c = 1,
@@ -66,12 +88,10 @@ c = 1,
 '''
 corrected = '''
 a, b,
-c =#{trailing_whitespace}
+c = 
 1,
 2, 3
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 2
@@ -83,7 +103,7 @@ message = "Add a line break before the first element of a multi-line array."
 AllowImplicitArrayLiterals = false
 
 [[tests]]
-name = "rubocop_cop_layout_firstarrayelementlinebreak_when_allowimplicitarrayliterals_is_false_send_implicit_arrays_registers_and_corrects_the_offense"
+name = "rubocopcoplayoutfirstarrayelementlinebreak_when_allowimplicitarrayliterals_is_false_send_implicit_arrays_registers_and_corrects_the_offense"
 source = '''
 a
 .c = 1,
@@ -91,12 +111,10 @@ a
 '''
 corrected = '''
 a
-.c =#{trailing_whitespace}
+.c = 
 1,
 2, 3
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 2
@@ -108,7 +126,7 @@ message = "Add a line break before the first element of a multi-line array."
 AllowImplicitArrayLiterals = false
 
 [[tests]]
-name = "rubocop_cop_layout_firstarrayelementlinebreak_when_allowimplicitarrayliterals_is_false_ignores_properly_formatted_implicit_arrays"
+name = "rubocopcoplayoutfirstarrayelementlinebreak_when_allowimplicitarrayliterals_is_true_ignores_properly_formatted_implicit_arrays"
 source = '''
 a, b,
 c =
@@ -118,10 +136,10 @@ c =
 offenses = []
 
 [tests.config]
-AllowImplicitArrayLiterals = false
+AllowImplicitArrayLiterals = true
 
 [[tests]]
-name = "rubocop_cop_layout_firstarrayelementlinebreak_when_allowimplicitarrayliterals_is_true_masgn_implicit_arrays_does_not_register_an_offense"
+name = "rubocopcoplayoutfirstarrayelementlinebreak_when_allowimplicitarrayliterals_is_true_masgn_implicit_arrays_does_not_register_an_offense"
 source = '''
 a, b,
 c = 1,
@@ -133,7 +151,7 @@ offenses = []
 AllowImplicitArrayLiterals = true
 
 [[tests]]
-name = "rubocop_cop_layout_firstarrayelementlinebreak_when_allowimplicitarrayliterals_is_true_send_implicit_arrays_does_not_register_an_offense"
+name = "rubocopcoplayoutfirstarrayelementlinebreak_when_allowimplicitarrayliterals_is_true_send_implicit_arrays_does_not_register_an_offense"
 source = '''
 a
 .c = 1,
@@ -145,32 +163,7 @@ offenses = []
 AllowImplicitArrayLiterals = true
 
 [[tests]]
-name = "rubocop_cop_layout_firstarrayelementlinebreak_when_allowimplicitarrayliterals_is_true_ignores_properly_formatted_implicit_arrays"
-source = '''
-a, b,
-c =
-1, 2,
-3
-'''
-offenses = []
-
-[tests.config]
-AllowImplicitArrayLiterals = true
-
-[[tests]]
-name = "rubocop_cop_layout_firstarrayelementlinebreak_ignores_elements_listed_on_a_single_line"
-source = '''
-b = [
-  :a,
-  :b]
-'''
-offenses = []
-
-[tests.config]
-AllowImplicitArrayLiterals = true
-
-[[tests]]
-name = "rubocop_cop_layout_firstarrayelementlinebreak_last_element_can_be_multiline_ignores_last_argument_that_is_a_multiline_hash"
+name = "rubocopcoplayoutfirstarrayelementlinebreak_last_element_can_be_multiline_ignores_last_argument_that_is_a_multiline_hash"
 source = '''
 [a, b, {
   c: d
@@ -179,11 +172,10 @@ source = '''
 offenses = []
 
 [tests.config]
-AllowImplicitArrayLiterals = true
 AllowMultilineFinalElement = true
 
 [[tests]]
-name = "rubocop_cop_layout_firstarrayelementlinebreak_last_element_can_be_multiline_ignores_single_value_that_is_a_multiline_hash"
+name = "rubocopcoplayoutfirstarrayelementlinebreak_last_element_can_be_multiline_ignores_single_value_that_is_a_multiline_hash"
 source = '''
 [{
   a: b
@@ -192,11 +184,10 @@ source = '''
 offenses = []
 
 [tests.config]
-AllowImplicitArrayLiterals = true
 AllowMultilineFinalElement = true
 
 [[tests]]
-name = "rubocop_cop_layout_firstarrayelementlinebreak_last_element_can_be_multiline_registers_and_corrects_values_that_are_multiline_hashes_and_not_the_last_value"
+name = "rubocopcoplayoutfirstarrayelementlinebreak_last_element_can_be_multiline_registers_and_corrects_values_that_are_multiline_hashes_and_not_the_last_value"
 source = '''
 [a, {
   b: c
@@ -216,11 +207,10 @@ column_end = 2
 message = "Add a line break before the first element of a multi-line array."
 
 [tests.config]
-AllowImplicitArrayLiterals = true
 AllowMultilineFinalElement = true
 
 [[tests]]
-name = "rubocop_cop_layout_firstarrayelementlinebreak_last_element_can_be_multiline_registers_and_corrects_last_value_that_starts_on_another_line"
+name = "rubocopcoplayoutfirstarrayelementlinebreak_last_element_can_be_multiline_registers_and_corrects_last_value_that_starts_on_another_line"
 source = '''
 [a, b,
 c]
@@ -238,5 +228,4 @@ column_end = 2
 message = "Add a line break before the first element of a multi-line array."
 
 [tests.config]
-AllowImplicitArrayLiterals = true
 AllowMultilineFinalElement = true

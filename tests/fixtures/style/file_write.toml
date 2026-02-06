@@ -4,7 +4,7 @@ severity = "convention"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_style_filewrite_does_not_register_an_offense_for_the_file_open_with_multiline_write_block_when_not_writing_to_the_block_variable"
+name = "rubocopcopstylefilewrite_does_not_register_an_offense_for_the_fileopen_with_multiline_write_block_when_not_writing_to_the_block_variable"
 source = '''
 File.open(filename, 'w') do |f|
   something.write(content)
@@ -13,7 +13,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_filewrite_does_not_register_an_offense_when_a_splat_argument_is_passed_to_f_write"
+name = "rubocopcopstylefilewrite_does_not_register_an_offense_when_a_splat_argument_is_passed_to_fwrite"
 source = '''
 File.open(filename, 'w') do |f|
   f.write(*objects)
@@ -22,94 +22,499 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_filewrite"
+name = "rubocopcopstylefilewrite_registers_an_offense_for_and_corrects_fileopenfilename_wwritecontent"
 source = '''
-File.open(filename, '#{mode}').write(content)
+File.open(filename, 'w').write(content)
 '''
 corrected = '''
-File.#{write_method}(filename, content)
+File.write(filename, content)
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 0
-column_end = 45
-message = "Use `File.#{write_method}`."
+column_end = 39
+message = "Use `File.write`."
 
 [[tests]]
-name = "rubocop_cop_style_filewrite"
+name = "rubocopcopstylefilewrite_registers_an_offense_for_and_corrects_fileopenfilename_wwritecontent_2"
 source = '''
-::File.open(filename, '#{mode}').write(content)
+::File.open(filename, 'w').write(content)
 '''
 corrected = '''
-::File.#{write_method}(filename, content)
+::File.write(filename, content)
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 0
-column_end = 47
-message = "Use `File.#{write_method}`."
+column_end = 41
+message = "Use `File.write`."
 
 [[tests]]
-name = "rubocop_cop_style_filewrite"
+name = "rubocopcopstylefilewrite_registers_an_offense_for_and_corrects_the_fileopen_with_inline_write_block_mode_w"
 source = '''
-File.open(filename, '#{mode}') { |f| f.write(content) }
+File.open(filename, 'w') { |f| f.write(content) }
 '''
 corrected = '''
-File.#{write_method}(filename, content)
+File.write(filename, content)
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 0
-column_end = 55
-message = "Use `File.#{write_method}`."
+column_end = 49
+message = "Use `File.write`."
 
 [[tests]]
-name = "rubocop_cop_style_filewrite"
+name = "rubocopcopstylefilewrite_registers_an_offense_for_and_corrects_the_fileopen_with_multiline_write_block_mode_w"
 source = '''
-File.open(filename, '#{mode}') do |f|
+File.open(filename, 'w') do |f|
   f.write(content)
 end
 '''
 corrected = '''
-File.#{write_method}(filename, content)
+File.write(filename, content)
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 0
-column_end = 37
-message = "Use `File.#{write_method}`."
+column_end = 31
+message = "Use `File.write`."
 
 [[tests]]
-name = "rubocop_cop_style_filewrite"
+name = "rubocopcopstylefilewrite_registers_an_offense_for_and_corrects_the_fileopen_with_multiline_write_block_mode_w_with_heredoc"
 source = '''
-File.open(filename, '#{mode}') do |f|
+File.open(filename, 'w') do |f|
   f.write(<<~EOS)
     content
   EOS
 end
 '''
 corrected = '''
-File.#{write_method}(filename, <<~EOS)
+File.write(filename, <<~EOS)
     content
   EOS
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 0
-column_end = 37
-message = "Use `File.#{write_method}`."
+column_end = 31
+message = "Use `File.write`."
+
+[[tests]]
+name = "rubocopcopstylefilewrite_registers_an_offense_for_and_corrects_fileopenfilename_wtwritecontent"
+source = '''
+File.open(filename, 'wt').write(content)
+'''
+corrected = '''
+File.write(filename, content)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 40
+message = "Use `File.write`."
+
+[[tests]]
+name = "rubocopcopstylefilewrite_registers_an_offense_for_and_corrects_fileopenfilename_wtwritecontent_2"
+source = '''
+::File.open(filename, 'wt').write(content)
+'''
+corrected = '''
+::File.write(filename, content)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 42
+message = "Use `File.write`."
+
+[[tests]]
+name = "rubocopcopstylefilewrite_registers_an_offense_for_and_corrects_the_fileopen_with_inline_write_block_mode_wt"
+source = '''
+File.open(filename, 'wt') { |f| f.write(content) }
+'''
+corrected = '''
+File.write(filename, content)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 50
+message = "Use `File.write`."
+
+[[tests]]
+name = "rubocopcopstylefilewrite_registers_an_offense_for_and_corrects_the_fileopen_with_multiline_write_block_mode_wt"
+source = '''
+File.open(filename, 'wt') do |f|
+  f.write(content)
+end
+'''
+corrected = '''
+File.write(filename, content)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 32
+message = "Use `File.write`."
+
+[[tests]]
+name = "rubocopcopstylefilewrite_registers_an_offense_for_and_corrects_the_fileopen_with_multiline_write_block_mode_wt_with_heredoc"
+source = '''
+File.open(filename, 'wt') do |f|
+  f.write(<<~EOS)
+    content
+  EOS
+end
+'''
+corrected = '''
+File.write(filename, <<~EOS)
+    content
+  EOS
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 32
+message = "Use `File.write`."
+
+[[tests]]
+name = "rubocopcopstylefilewrite_registers_an_offense_for_and_corrects_fileopenfilename_wbwritecontent"
+source = '''
+File.open(filename, 'wb').write(content)
+'''
+corrected = '''
+File.binwrite(filename, content)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 40
+message = "Use `File.binwrite`."
+
+[[tests]]
+name = "rubocopcopstylefilewrite_registers_an_offense_for_and_corrects_fileopenfilename_wbwritecontent_2"
+source = '''
+::File.open(filename, 'wb').write(content)
+'''
+corrected = '''
+::File.binwrite(filename, content)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 42
+message = "Use `File.binwrite`."
+
+[[tests]]
+name = "rubocopcopstylefilewrite_registers_an_offense_for_and_corrects_the_fileopen_with_inline_write_block_mode_wb"
+source = '''
+File.open(filename, 'wb') { |f| f.write(content) }
+'''
+corrected = '''
+File.binwrite(filename, content)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 50
+message = "Use `File.binwrite`."
+
+[[tests]]
+name = "rubocopcopstylefilewrite_registers_an_offense_for_and_corrects_the_fileopen_with_multiline_write_block_mode_wb"
+source = '''
+File.open(filename, 'wb') do |f|
+  f.write(content)
+end
+'''
+corrected = '''
+File.binwrite(filename, content)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 32
+message = "Use `File.binwrite`."
+
+[[tests]]
+name = "rubocopcopstylefilewrite_registers_an_offense_for_and_corrects_the_fileopen_with_multiline_write_block_mode_wb_with_heredoc"
+source = '''
+File.open(filename, 'wb') do |f|
+  f.write(<<~EOS)
+    content
+  EOS
+end
+'''
+corrected = '''
+File.binwrite(filename, <<~EOS)
+    content
+  EOS
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 32
+message = "Use `File.binwrite`."
+
+[[tests]]
+name = "rubocopcopstylefilewrite_registers_an_offense_for_and_corrects_fileopenfilename_wwritecontent_3"
+source = '''
+File.open(filename, 'w+').write(content)
+'''
+corrected = '''
+File.write(filename, content)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 40
+message = "Use `File.write`."
+
+[[tests]]
+name = "rubocopcopstylefilewrite_registers_an_offense_for_and_corrects_fileopenfilename_wwritecontent_4"
+source = '''
+::File.open(filename, 'w+').write(content)
+'''
+corrected = '''
+::File.write(filename, content)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 42
+message = "Use `File.write`."
+
+[[tests]]
+name = "rubocopcopstylefilewrite_registers_an_offense_for_and_corrects_the_fileopen_with_inline_write_block_mode_w_2"
+source = '''
+File.open(filename, 'w+') { |f| f.write(content) }
+'''
+corrected = '''
+File.write(filename, content)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 50
+message = "Use `File.write`."
+
+[[tests]]
+name = "rubocopcopstylefilewrite_registers_an_offense_for_and_corrects_the_fileopen_with_multiline_write_block_mode_w_2"
+source = '''
+File.open(filename, 'w+') do |f|
+  f.write(content)
+end
+'''
+corrected = '''
+File.write(filename, content)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 32
+message = "Use `File.write`."
+
+[[tests]]
+name = "rubocopcopstylefilewrite_registers_an_offense_for_and_corrects_the_fileopen_with_multiline_write_block_mode_w_with_heredoc_2"
+source = '''
+File.open(filename, 'w+') do |f|
+  f.write(<<~EOS)
+    content
+  EOS
+end
+'''
+corrected = '''
+File.write(filename, <<~EOS)
+    content
+  EOS
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 32
+message = "Use `File.write`."
+
+[[tests]]
+name = "rubocopcopstylefilewrite_registers_an_offense_for_and_corrects_fileopenfilename_wtwritecontent_3"
+source = '''
+File.open(filename, 'w+t').write(content)
+'''
+corrected = '''
+File.write(filename, content)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 41
+message = "Use `File.write`."
+
+[[tests]]
+name = "rubocopcopstylefilewrite_registers_an_offense_for_and_corrects_fileopenfilename_wtwritecontent_4"
+source = '''
+::File.open(filename, 'w+t').write(content)
+'''
+corrected = '''
+::File.write(filename, content)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 43
+message = "Use `File.write`."
+
+[[tests]]
+name = "rubocopcopstylefilewrite_registers_an_offense_for_and_corrects_the_fileopen_with_inline_write_block_mode_wt_2"
+source = '''
+File.open(filename, 'w+t') { |f| f.write(content) }
+'''
+corrected = '''
+File.write(filename, content)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 51
+message = "Use `File.write`."
+
+[[tests]]
+name = "rubocopcopstylefilewrite_registers_an_offense_for_and_corrects_the_fileopen_with_multiline_write_block_mode_wt_2"
+source = '''
+File.open(filename, 'w+t') do |f|
+  f.write(content)
+end
+'''
+corrected = '''
+File.write(filename, content)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 33
+message = "Use `File.write`."
+
+[[tests]]
+name = "rubocopcopstylefilewrite_registers_an_offense_for_and_corrects_the_fileopen_with_multiline_write_block_mode_wt_with_heredoc_2"
+source = '''
+File.open(filename, 'w+t') do |f|
+  f.write(<<~EOS)
+    content
+  EOS
+end
+'''
+corrected = '''
+File.write(filename, <<~EOS)
+    content
+  EOS
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 33
+message = "Use `File.write`."
+
+[[tests]]
+name = "rubocopcopstylefilewrite_registers_an_offense_for_and_corrects_fileopenfilename_wbwritecontent_3"
+source = '''
+File.open(filename, 'w+b').write(content)
+'''
+corrected = '''
+File.binwrite(filename, content)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 41
+message = "Use `File.binwrite`."
+
+[[tests]]
+name = "rubocopcopstylefilewrite_registers_an_offense_for_and_corrects_fileopenfilename_wbwritecontent_4"
+source = '''
+::File.open(filename, 'w+b').write(content)
+'''
+corrected = '''
+::File.binwrite(filename, content)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 43
+message = "Use `File.binwrite`."
+
+[[tests]]
+name = "rubocopcopstylefilewrite_registers_an_offense_for_and_corrects_the_fileopen_with_inline_write_block_mode_wb_2"
+source = '''
+File.open(filename, 'w+b') { |f| f.write(content) }
+'''
+corrected = '''
+File.binwrite(filename, content)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 51
+message = "Use `File.binwrite`."
+
+[[tests]]
+name = "rubocopcopstylefilewrite_registers_an_offense_for_and_corrects_the_fileopen_with_multiline_write_block_mode_wb_2"
+source = '''
+File.open(filename, 'w+b') do |f|
+  f.write(content)
+end
+'''
+corrected = '''
+File.binwrite(filename, content)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 33
+message = "Use `File.binwrite`."
+
+[[tests]]
+name = "rubocopcopstylefilewrite_registers_an_offense_for_and_corrects_the_fileopen_with_multiline_write_block_mode_wb_with_heredoc_2"
+source = '''
+File.open(filename, 'w+b') do |f|
+  f.write(<<~EOS)
+    content
+  EOS
+end
+'''
+corrected = '''
+File.binwrite(filename, <<~EOS)
+    content
+  EOS
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 33
+message = "Use `File.binwrite`."

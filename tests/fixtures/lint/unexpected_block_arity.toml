@@ -4,275 +4,7 @@ severity = "warning"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_lint_unexpectedblockarity_with_a_block_when_given_two_parameters_does_not_register_an_offense"
-source = '''
-values.reduce { |a, b| a + b }
-'''
-offenses = []
-
-[tests.config]
-Methods = "{ 'reduce' => 2, 'inject' => 2 }"
-
-[[tests]]
-name = "rubocop_cop_lint_unexpectedblockarity_with_a_block_when_given_three_parameters_does_not_register_an_offense"
-source = '''
-values.reduce { |a, b, c| a + b }
-'''
-offenses = []
-
-[tests.config]
-Methods = "{ 'reduce' => 2, 'inject' => 2 }"
-
-[[tests]]
-name = "rubocop_cop_lint_unexpectedblockarity_with_a_block_when_given_a_splat_parameter_does_not_register_an_offense"
-source = '''
-values.reduce { |*x| x }
-'''
-offenses = []
-
-[tests.config]
-Methods = "{ 'reduce' => 2, 'inject' => 2 }"
-
-[[tests]]
-name = "rubocop_cop_lint_unexpectedblockarity_with_a_block_when_given_no_parameters_registers_an_offense"
-source = '''
-values.reduce { }
-'''
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 17
-message = "`reduce` expects at least 2 positional arguments, got 0."
-
-[tests.config]
-Methods = "{ 'reduce' => 2, 'inject' => 2 }"
-
-[[tests]]
-name = "rubocop_cop_lint_unexpectedblockarity_with_a_block_when_given_one_parameter_registers_an_offense"
-source = '''
-values.reduce { |a| a }
-'''
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 23
-message = "`reduce` expects at least 2 positional arguments, got 1."
-
-[tests.config]
-Methods = "{ 'reduce' => 2, 'inject' => 2 }"
-
-[[tests]]
-name = "rubocop_cop_lint_unexpectedblockarity_with_a_block_with_keyword_args_registers_an_offense"
-source = '''
-values.reduce { |a:, b:| a + b }
-'''
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 32
-message = "`reduce` expects at least 2 positional arguments, got 0."
-
-[tests.config]
-Methods = "{ 'reduce' => 2, 'inject' => 2 }"
-
-[[tests]]
-name = "rubocop_cop_lint_unexpectedblockarity_with_a_block_with_a_keyword_splat_registers_an_offense"
-source = '''
-values.reduce { |**kwargs| kwargs }
-'''
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 35
-message = "`reduce` expects at least 2 positional arguments, got 0."
-
-[tests.config]
-Methods = "{ 'reduce' => 2, 'inject' => 2 }"
-
-[[tests]]
-name = "rubocop_cop_lint_unexpectedblockarity_with_a_block_when_destructuring_with_arity_1_registers_an_offense"
-source = '''
-values.reduce { |(a, b)| a + b }
-'''
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 32
-message = "`reduce` expects at least 2 positional arguments, got 1."
-
-[tests.config]
-Methods = "{ 'reduce' => 2, 'inject' => 2 }"
-
-[[tests]]
-name = "rubocop_cop_lint_unexpectedblockarity_with_a_block_when_destructuring_with_arity_2_does_not_register_an_offense"
-source = '''
-values.reduce { |(a, b), c| a + b + c }
-'''
-offenses = []
-
-[tests.config]
-Methods = "{ 'reduce' => 2, 'inject' => 2 }"
-
-[[tests]]
-name = "rubocop_cop_lint_unexpectedblockarity_with_a_block_with_optargs_with_arity_1_registers_an_offense"
-source = '''
-values.reduce { |a = 1| a }
-'''
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 27
-message = "`reduce` expects at least 2 positional arguments, got 1."
-
-[tests.config]
-Methods = "{ 'reduce' => 2, 'inject' => 2 }"
-
-[[tests]]
-name = "rubocop_cop_lint_unexpectedblockarity_with_a_block_with_optargs_with_arity_2_does_not_register_an_offense"
-source = '''
-values.reduce { |a = 1, b = 2| a + b }
-'''
-offenses = []
-
-[tests.config]
-Methods = "{ 'reduce' => 2, 'inject' => 2 }"
-
-[[tests]]
-name = "rubocop_cop_lint_unexpectedblockarity_with_a_block_with_shadow_args_registers_an_offense"
-source = '''
-values.reduce { |a; b| a + b }
-'''
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 30
-message = "`reduce` expects at least 2 positional arguments, got 1."
-
-[tests.config]
-Methods = "{ 'reduce' => 2, 'inject' => 2 }"
-
-[[tests]]
-name = "rubocop_cop_lint_unexpectedblockarity_with_a_block_with_no_receiver_does_not_register_an_offense"
-source = '''
-reduce { }
-'''
-offenses = []
-
-[tests.config]
-Methods = "{ 'reduce' => 2, 'inject' => 2 }"
-
-[[tests]]
-name = "rubocop_cop_lint_unexpectedblockarity_with_a_numblock_when_given_no_parameters_registers_an_offense"
-source = '''
-values.reduce { }
-'''
-ruby_version = ">= 2.7"
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 17
-message = "`reduce` expects at least 2 positional arguments, got 0."
-
-[tests.config]
-Methods = "{ 'reduce' => 2, 'inject' => 2 }"
-
-[[tests]]
-name = "rubocop_cop_lint_unexpectedblockarity_with_a_numblock_when_given_one_parameter_registers_an_offense"
-source = '''
-values.reduce { _1 }
-'''
-ruby_version = ">= 2.7"
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 20
-message = "`reduce` expects at least 2 positional arguments, got 1."
-
-[tests.config]
-Methods = "{ 'reduce' => 2, 'inject' => 2 }"
-
-[[tests]]
-name = "rubocop_cop_lint_unexpectedblockarity_with_a_numblock_when_given_two_parameters_does_not_register_an_offense"
-source = '''
-values.reduce { _1 + _2 }
-'''
-ruby_version = ">= 2.7"
-offenses = []
-
-[tests.config]
-Methods = "{ 'reduce' => 2, 'inject' => 2 }"
-
-[[tests]]
-name = "rubocop_cop_lint_unexpectedblockarity_with_a_numblock_when_given_three_parameters_does_not_register_an_offense"
-source = '''
-values.reduce { _1 + _2 + _3 }
-'''
-ruby_version = ">= 2.7"
-offenses = []
-
-[tests.config]
-Methods = "{ 'reduce' => 2, 'inject' => 2 }"
-
-[[tests]]
-name = "rubocop_cop_lint_unexpectedblockarity_with_a_numblock_when_using_enough_parameters_but_not_all_explicitly_does_not_register_an_offense"
-source = '''
-values.reduce { _2 }
-'''
-ruby_version = ">= 2.7"
-offenses = []
-
-[tests.config]
-Methods = "{ 'reduce' => 2, 'inject' => 2 }"
-
-[[tests]]
-name = "rubocop_cop_lint_unexpectedblockarity_with_a_numblock_with_no_receiver_does_not_register_an_offense"
-source = '''
-reduce { _1 }
-'''
-ruby_version = ">= 2.7"
-offenses = []
-
-[tests.config]
-Methods = "{ 'reduce' => 2, 'inject' => 2 }"
-
-[[tests]]
-name = "rubocop_cop_lint_unexpectedblockarity_with_an_itblock_when_given_one_parameter_registers_an_offense"
-source = '''
-values.reduce { it }
-'''
-ruby_version = ">= 3.4"
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 20
-message = "`reduce` expects at least 2 positional arguments, got 1."
-
-[tests.config]
-Methods = "{ 'reduce' => 2, 'inject' => 2 }"
-
-[[tests]]
-name = "rubocop_cop_lint_unexpectedblockarity_with_an_itblock_with_no_receiver_does_not_register_an_offense"
-source = '''
-reduce { it }
-'''
-ruby_version = ">= 3.4"
-offenses = []
-
-[tests.config]
-Methods = "{ 'reduce' => 2, 'inject' => 2 }"
-
-[[tests]]
-name = "rubocop_cop_lint_unexpectedblockarity_registers_multiple_offenses"
+name = "rubocopcoplintunexpectedblockarity_registers_multiple_offenses"
 source = '''
 values.reduce { |a| a }
 values.inject { }
@@ -291,4 +23,264 @@ column_end = 17
 message = "`inject` expects at least 2 positional arguments, got 0."
 
 [tests.config]
-Methods = "{ 'reduce' => 2, 'inject' => 2 }"
+Methods = { reduce = 2, inject = 2 }
+
+[[tests]]
+name = "rubocopcoplintunexpectedblockarity_with_a_block_when_given_two_parameters_does_not_register_an_offense"
+source = '''
+values.reduce { |a, b| a + b }
+'''
+offenses = []
+
+[tests.config]
+Methods = { reduce = 2, inject = 2 }
+
+[[tests]]
+name = "rubocopcoplintunexpectedblockarity_with_a_block_when_given_three_parameters_does_not_register_an_offense"
+source = '''
+values.reduce { |a, b, c| a + b }
+'''
+offenses = []
+
+[tests.config]
+Methods = { reduce = 2, inject = 2 }
+
+[[tests]]
+name = "rubocopcoplintunexpectedblockarity_with_a_block_when_given_a_splat_parameter_does_not_register_an_offense"
+source = '''
+values.reduce { |*x| x }
+'''
+offenses = []
+
+[tests.config]
+Methods = { reduce = 2, inject = 2 }
+
+[[tests]]
+name = "rubocopcoplintunexpectedblockarity_with_a_block_when_given_no_parameters_registers_an_offense"
+source = '''
+values.reduce { }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 17
+message = "`reduce` expects at least 2 positional arguments, got 0."
+
+[tests.config]
+Methods = { reduce = 2, inject = 2 }
+
+[[tests]]
+name = "rubocopcoplintunexpectedblockarity_with_a_block_when_given_one_parameter_registers_an_offense"
+source = '''
+values.reduce { |a| a }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 23
+message = "`reduce` expects at least 2 positional arguments, got 1."
+
+[tests.config]
+Methods = { reduce = 2, inject = 2 }
+
+[[tests]]
+name = "rubocopcoplintunexpectedblockarity_with_a_block_with_keyword_args_registers_an_offense"
+source = '''
+values.reduce { |a:, b:| a + b }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 32
+message = "`reduce` expects at least 2 positional arguments, got 0."
+
+[tests.config]
+Methods = { reduce = 2, inject = 2 }
+
+[[tests]]
+name = "rubocopcoplintunexpectedblockarity_with_a_block_with_a_keyword_splat_registers_an_offense"
+source = '''
+values.reduce { |**kwargs| kwargs }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 35
+message = "`reduce` expects at least 2 positional arguments, got 0."
+
+[tests.config]
+Methods = { reduce = 2, inject = 2 }
+
+[[tests]]
+name = "rubocopcoplintunexpectedblockarity_with_a_block_when_destructuring_with_arity_1_registers_an_offense"
+source = '''
+values.reduce { |(a, b)| a + b }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 32
+message = "`reduce` expects at least 2 positional arguments, got 1."
+
+[tests.config]
+Methods = { reduce = 2, inject = 2 }
+
+[[tests]]
+name = "rubocopcoplintunexpectedblockarity_with_a_block_when_destructuring_with_arity_2_does_not_register_an_offense"
+source = '''
+values.reduce { |(a, b), c| a + b + c }
+'''
+offenses = []
+
+[tests.config]
+Methods = { reduce = 2, inject = 2 }
+
+[[tests]]
+name = "rubocopcoplintunexpectedblockarity_with_a_block_with_optargs_with_arity_1_registers_an_offense"
+source = '''
+values.reduce { |a = 1| a }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 27
+message = "`reduce` expects at least 2 positional arguments, got 1."
+
+[tests.config]
+Methods = { reduce = 2, inject = 2 }
+
+[[tests]]
+name = "rubocopcoplintunexpectedblockarity_with_a_block_with_optargs_with_arity_2_does_not_register_an_offense"
+source = '''
+values.reduce { |a = 1, b = 2| a + b }
+'''
+offenses = []
+
+[tests.config]
+Methods = { reduce = 2, inject = 2 }
+
+[[tests]]
+name = "rubocopcoplintunexpectedblockarity_with_a_block_with_shadow_args_registers_an_offense"
+source = '''
+values.reduce { |a; b| a + b }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 30
+message = "`reduce` expects at least 2 positional arguments, got 1."
+
+[tests.config]
+Methods = { reduce = 2, inject = 2 }
+
+[[tests]]
+name = "rubocopcoplintunexpectedblockarity_with_a_block_with_no_receiver_does_not_register_an_offense"
+source = '''
+reduce { }
+'''
+offenses = []
+
+[tests.config]
+Methods = { reduce = 2, inject = 2 }
+
+[[tests]]
+name = "rubocopcoplintunexpectedblockarity_with_a_numblock_when_given_no_parameters_registers_an_offense"
+source = '''
+values.reduce { }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 17
+message = "`reduce` expects at least 2 positional arguments, got 0."
+
+[tests.config]
+Methods = { reduce = 2, inject = 2 }
+
+[[tests]]
+name = "rubocopcoplintunexpectedblockarity_with_a_numblock_when_given_one_parameter_registers_an_offense"
+source = '''
+values.reduce { _1 }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 20
+message = "`reduce` expects at least 2 positional arguments, got 1."
+
+[tests.config]
+Methods = { reduce = 2, inject = 2 }
+
+[[tests]]
+name = "rubocopcoplintunexpectedblockarity_with_a_numblock_when_given_two_parameters_does_not_register_an_offense"
+source = '''
+values.reduce { _1 + _2 }
+'''
+offenses = []
+
+[tests.config]
+Methods = { reduce = 2, inject = 2 }
+
+[[tests]]
+name = "rubocopcoplintunexpectedblockarity_with_a_numblock_when_given_three_parameters_does_not_register_an_offense"
+source = '''
+values.reduce { _1 + _2 + _3 }
+'''
+offenses = []
+
+[tests.config]
+Methods = { reduce = 2, inject = 2 }
+
+[[tests]]
+name = "rubocopcoplintunexpectedblockarity_with_a_numblock_when_using_enough_parameters_but_not_all_explicitly_does_not_register_an_offense"
+source = '''
+values.reduce { _2 }
+'''
+offenses = []
+
+[tests.config]
+Methods = { reduce = 2, inject = 2 }
+
+[[tests]]
+name = "rubocopcoplintunexpectedblockarity_with_a_numblock_with_no_receiver_does_not_register_an_offense"
+source = '''
+reduce { _1 }
+'''
+offenses = []
+
+[tests.config]
+Methods = { reduce = 2, inject = 2 }
+
+[[tests]]
+name = "rubocopcoplintunexpectedblockarity_with_an_itblock_when_given_one_parameter_registers_an_offense"
+source = '''
+values.reduce { it }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 20
+message = "`reduce` expects at least 2 positional arguments, got 1."
+
+[tests.config]
+Methods = { reduce = 2, inject = 2 }
+
+[[tests]]
+name = "rubocopcoplintunexpectedblockarity_with_an_itblock_with_no_receiver_does_not_register_an_offense"
+source = '''
+reduce { it }
+'''
+offenses = []
+
+[tests.config]
+Methods = { reduce = 2, inject = 2 }

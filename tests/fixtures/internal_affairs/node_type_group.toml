@@ -4,7 +4,7 @@ severity = "convention"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_internalaffairs_nodetypegroup_registers_an_offense_when_using_type_with_entire_numeric_group"
+name = "rubocopcopinternalaffairsnodetypegroup_registers_an_offense_when_using_type_with_entire_numeric_group"
 source = '''
 node.type?(:int, :float, :rational, :complex)
 '''
@@ -19,7 +19,7 @@ column_end = 44
 message = "Use `:numeric` instead of individually listing group types."
 
 [[tests]]
-name = "rubocop_cop_internalaffairs_nodetypegroup_registers_an_offense_when_using_type_with_entire_numeric_group_in_any_order"
+name = "rubocopcopinternalaffairsnodetypegroup_registers_an_offense_when_using_type_with_entire_numeric_group_in_any_order"
 source = '''
 node.type?(:rational, :complex, :int, :float)
 '''
@@ -34,7 +34,7 @@ column_end = 44
 message = "Use `:numeric` instead of individually listing group types."
 
 [[tests]]
-name = "rubocop_cop_internalaffairs_nodetypegroup_registers_an_offense_when_using_type_with_entire_numeric_when_other_types_are_present"
+name = "rubocopcopinternalaffairsnodetypegroup_registers_an_offense_when_using_type_with_entire_numeric_when_other_types_are_present"
 source = '''
 node.type?(:rational, :complex, :send, :int, :float, :def)
 '''
@@ -49,7 +49,7 @@ column_end = 57
 message = "Use `:numeric` instead of individually listing group types."
 
 [[tests]]
-name = "rubocop_cop_internalaffairs_nodetypegroup_registers_an_offense_when_using_type_with_multiple_groups"
+name = "rubocopcopinternalaffairsnodetypegroup_registers_an_offense_when_using_type_with_multiple_groups"
 source = '''
 node.type?(:rational, :complex, :irange, :int, :float, :erange)
 '''
@@ -64,7 +64,7 @@ column_end = 62
 message = "Use `:numeric` instead of individually listing group types."
 
 [[tests]]
-name = "rubocop_cop_internalaffairs_nodetypegroup_registers_an_offense_when_using_type_and_other_node_types_as_argument"
+name = "rubocopcopinternalaffairsnodetypegroup_registers_an_offense_when_using_type_and_other_node_types_as_argument"
 source = '''
 node.type?(bar, :irange, foo, :erange)
 '''
@@ -79,7 +79,7 @@ column_end = 37
 message = "Use `:range` instead of individually listing group types."
 
 [[tests]]
-name = "rubocop_cop_internalaffairs_nodetypegroup_registers_an_offense_for_save_navigation"
+name = "rubocopcopinternalaffairsnodetypegroup_registers_an_offense_for_save_navigation"
 source = '''
 node&.type?(:irange, :erange)
 '''
@@ -94,7 +94,7 @@ column_end = 28
 message = "Use `:range` instead of individually listing group types."
 
 [[tests]]
-name = "rubocop_cop_internalaffairs_nodetypegroup_registers_an_offense_when_chained_to_a_method_call"
+name = "rubocopcopinternalaffairsnodetypegroup_registers_an_offense_when_chained_to_a_method_call"
 source = '''
 node.each_child_node(:irange, :erange).any?
 '''
@@ -109,7 +109,7 @@ column_end = 37
 message = "Use `:range` instead of individually listing group types."
 
 [[tests]]
-name = "rubocop_cop_internalaffairs_nodetypegroup_registers_an_offense_when_chained_to_a_method_call_with_block"
+name = "rubocopcopinternalaffairsnodetypegroup_registers_an_offense_when_chained_to_a_method_call_with_block"
 source = '''
 node.each_child_node(:irange, :erange).any? do |node|
   foo?(node)
@@ -128,39 +128,82 @@ column_end = 37
 message = "Use `:range` instead of individually listing group types."
 
 [[tests]]
-name = "rubocop_cop_internalaffairs_nodetypegroup_registers_no_offense_when_the_group_is_incomplete"
+name = "rubocopcopinternalaffairsnodetypegroup_registers_no_offense_when_the_group_is_incomplete"
 source = '''
 node.type?(:int, :float, :complex)
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_internalaffairs_nodetypegroup_registers_no_offense_with_no_arguments"
+name = "rubocopcopinternalaffairsnodetypegroup_registers_no_offense_with_no_arguments"
 source = '''
 node.type?
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_internalaffairs_nodetypegroup_registers_no_offense_when_there_is_no_receiver"
+name = "rubocopcopinternalaffairsnodetypegroup_registers_no_offense_when_there_is_no_receiver"
 source = '''
 type?(:irange, :erange)
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_internalaffairs_nodetypegroup"
+name = "rubocopcopinternalaffairsnodetypegroup_registers_an_offense_for_each_ancestor"
 source = '''
-node.#{method}(:irange, :erange)
+node.each_ancestor(:irange, :erange)
 '''
 corrected = '''
-node.#{method}(:range)
+node.each_ancestor(:range)
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
-column_start = 0
-column_end = 32
+column_start = 19
+column_end = 35
+message = "Use `:range` instead of individually listing group types."
+
+[[tests]]
+name = "rubocopcopinternalaffairsnodetypegroup_registers_an_offense_for_each_child_node"
+source = '''
+node.each_child_node(:irange, :erange)
+'''
+corrected = '''
+node.each_child_node(:range)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 21
+column_end = 37
+message = "Use `:range` instead of individually listing group types."
+
+[[tests]]
+name = "rubocopcopinternalaffairsnodetypegroup_registers_an_offense_for_each_descendant"
+source = '''
+node.each_descendant(:irange, :erange)
+'''
+corrected = '''
+node.each_descendant(:range)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 21
+column_end = 37
+message = "Use `:range` instead of individually listing group types."
+
+[[tests]]
+name = "rubocopcopinternalaffairsnodetypegroup_registers_an_offense_for_each_node"
+source = '''
+node.each_node(:irange, :erange)
+'''
+corrected = '''
+node.each_node(:range)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 31
 message = "Use `:range` instead of individually listing group types."

@@ -4,125 +4,109 @@ severity = "warning"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_lint_void"
+name = "rubocopcoplintvoid_registers_an_offense_for_void_op__if_not_on_last_line"
 source = '''
-a %{op} b
-a %{op} b
-a %{op} b
+a * b
+a * b
+a * b
 '''
 corrected = '''
 a
 b
 a
 b
-a #{op} b
+a * b
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 2
-column_end = 9
-message = "Operator `#{op}` used in void context."
+column_end = 3
+message = "Operator `*` used in void context."
 
 [[tests.offenses]]
 line = 2
 column_start = 2
-column_end = 9
-message = "Operator `#{op}` used in void context."
+column_end = 3
+message = "Operator `*` used in void context."
 
 [[tests]]
-name = "rubocop_cop_lint_void"
+name = "rubocopcoplintvoid_accepts_void_op__if_on_last_line"
 source = '''
 something
-a #{op} b
+a * b
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_void"
+name = "rubocopcoplintvoid_accepts_void_op__by_itself_without_a_begin_block"
 source = '''
-a #{op} b
+a * b
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_void"
+name = "rubocopcoplintvoid_accepts_void_op__method_call_without_arguments_unless_it_is_on_the_last_line"
 source = '''
-a.#{op}
+a.*
 something
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_void"
+name = "rubocopcoplintvoid_accepts_void_op__safe_navigation_method_call_without_arguments_unless_it_is_on_the_last_line"
 source = '''
-a&.#{op}
+a&.*
 something
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_void"
+name = "rubocopcoplintvoid_registers_an_offense_for_parenthesized_void_op__if_not_on_last_line"
 source = '''
-(a %{op} b)
-((a %{op} b))
-(((a %{op} b)))
+(a * b)
+((a * b))
+(((a * b)))
 '''
 corrected = '''
 (a
 b)
 ((a
 b))
-(((a #{op} b)))
+(((a * b)))
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 3
-column_end = 11
-message = "Operator `#{op}` used in void context."
+column_end = 4
+message = "Operator `*` used in void context."
 
 [[tests.offenses]]
 line = 2
 column_start = 4
-column_end = 13
-message = "Operator `#{op}` used in void context."
+column_end = 5
+message = "Operator `*` used in void context."
 
 [[tests]]
-name = "rubocop_cop_lint_void"
+name = "rubocopcoplintvoid_accepts_parenthesized_void_op__if_on_last_line"
 source = '''
 something
-(a #{op} b)
+(a * b)
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_void"
+name = "rubocopcoplintvoid_accepts_parenthesized_void_op__by_itself_without_a_begin_block"
 source = '''
-(a #{op} b)
+(a * b)
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_void_handles_methods_called_by_dot"
+name = "rubocopcoplintvoid_handles_methods_called_by_dot"
 source = '''
-a.%{op}(b)
+a.*(b)
 nil
 '''
 corrected = '''
@@ -130,19 +114,17 @@ a
 (b)
 nil
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 2
-column_end = 10
-message = "Operator `#{op}` used in void context."
+column_end = 3
+message = "Operator `*` used in void context."
 
 [[tests]]
-name = "rubocop_cop_lint_void_handles_methods_called_by_dot_with_safe_navigation"
+name = "rubocopcoplintvoid_handles_methods_called_by_dot_with_safe_navigation"
 source = '''
-a&.%{op}(b)
+a&.*(b)
 nil
 '''
 corrected = '''
@@ -150,198 +132,2123 @@ a
 (b)
 nil
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 3
-column_end = 11
-message = "Operator `#{op}` used in void context."
+column_end = 4
+message = "Operator `*` used in void context."
 
 [[tests]]
-name = "rubocop_cop_lint_void"
+name = "rubocopcoplintvoid_registers_an_offense_for_void_op__if_not_on_last_line_2"
 source = '''
-%{op}b
-%{op}b
-%{op}b
+a / b
+a / b
+a / b
 '''
 corrected = '''
+a
 b
+a
 b
-#{op}b
+a / b
 '''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 6
-message = "Operator `#{op}@` used in void context."
-
-[[tests.offenses]]
-line = 2
-column_start = 0
-column_end = 6
-message = "Operator `#{op}@` used in void context."
-
-[[tests]]
-name = "rubocop_cop_lint_void"
-source = '''
-%{op}b
-%{op}b
-%{op}b
-'''
-corrected = '''
-b
-b
-#{op}b
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 6
-message = "Operator `#{op}` used in void context."
-
-[[tests.offenses]]
-line = 2
-column_start = 0
-column_end = 6
-message = "Operator `#{op}` used in void context."
-
-[[tests]]
-name = "rubocop_cop_lint_void"
-source = '''
-b.%{op}
-b.%{op}
-'''
-corrected = '''
-b
-b.#{op}
-'''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 2
+column_end = 3
+message = "Operator `/` used in void context."
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 3
+message = "Operator `/` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_op__if_on_last_line_2"
+source = '''
+something
+a / b
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_op__by_itself_without_a_begin_block_2"
+source = '''
+a / b
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_op__method_call_without_arguments_unless_it_is_on_the_last_line_2"
+source = '''
+a./
+something
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_op__safe_navigation_method_call_without_arguments_unless_it_is_on_the_last_line_2"
+source = '''
+a&./
+something
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_parenthesized_void_op__if_not_on_last_line_2"
+source = '''
+(a / b)
+((a / b))
+(((a / b)))
+'''
+corrected = '''
+(a
+b)
+((a
+b))
+(((a / b)))
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 4
+message = "Operator `/` used in void context."
+
+[[tests.offenses]]
+line = 2
+column_start = 4
+column_end = 5
+message = "Operator `/` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_parenthesized_void_op__if_on_last_line_2"
+source = '''
+something
+(a / b)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_parenthesized_void_op__by_itself_without_a_begin_block_2"
+source = '''
+(a / b)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_handles_methods_called_by_dot_2"
+source = '''
+a./(b)
+nil
+'''
+corrected = '''
+a
+(b)
+nil
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 3
+message = "Operator `/` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_handles_methods_called_by_dot_with_safe_navigation_2"
+source = '''
+a&./(b)
+nil
+'''
+corrected = '''
+a
+(b)
+nil
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 4
+message = "Operator `/` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_op__if_not_on_last_line_3"
+source = '''
+a % b
+a % b
+a % b
+'''
+corrected = '''
+a
+b
+a
+b
+a % b
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 3
+message = "Operator `%` used in void context."
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 3
+message = "Operator `%` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_op__if_on_last_line_3"
+source = '''
+something
+a % b
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_op__by_itself_without_a_begin_block_3"
+source = '''
+a % b
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_op__method_call_without_arguments_unless_it_is_on_the_last_line_3"
+source = '''
+a.%
+something
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_op__safe_navigation_method_call_without_arguments_unless_it_is_on_the_last_line_3"
+source = '''
+a&.%
+something
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_parenthesized_void_op__if_not_on_last_line_3"
+source = '''
+(a % b)
+((a % b))
+(((a % b)))
+'''
+corrected = '''
+(a
+b)
+((a
+b))
+(((a % b)))
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 4
+message = "Operator `%` used in void context."
+
+[[tests.offenses]]
+line = 2
+column_start = 4
+column_end = 5
+message = "Operator `%` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_parenthesized_void_op__if_on_last_line_3"
+source = '''
+something
+(a % b)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_parenthesized_void_op__by_itself_without_a_begin_block_3"
+source = '''
+(a % b)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_handles_methods_called_by_dot_3"
+source = '''
+a.%(b)
+nil
+'''
+corrected = '''
+a
+(b)
+nil
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 3
+message = "Operator `%` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_handles_methods_called_by_dot_with_safe_navigation_3"
+source = '''
+a&.%(b)
+nil
+'''
+corrected = '''
+a
+(b)
+nil
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 4
+message = "Operator `%` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_op__if_not_on_last_line_4"
+source = '''
+a + b
+a + b
+a + b
+'''
+corrected = '''
+a
+b
+a
+b
+a + b
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 3
+message = "Operator `+` used in void context."
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 3
+message = "Operator `+` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_op__if_on_last_line_4"
+source = '''
+something
+a + b
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_op__by_itself_without_a_begin_block_4"
+source = '''
+a + b
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_op__method_call_without_arguments_unless_it_is_on_the_last_line_4"
+source = '''
+a.+
+something
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_op__safe_navigation_method_call_without_arguments_unless_it_is_on_the_last_line_4"
+source = '''
+a&.+
+something
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_parenthesized_void_op__if_not_on_last_line_4"
+source = '''
+(a + b)
+((a + b))
+(((a + b)))
+'''
+corrected = '''
+(a
+b)
+((a
+b))
+(((a + b)))
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 4
+message = "Operator `+` used in void context."
+
+[[tests.offenses]]
+line = 2
+column_start = 4
+column_end = 5
+message = "Operator `+` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_parenthesized_void_op__if_on_last_line_4"
+source = '''
+something
+(a + b)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_parenthesized_void_op__by_itself_without_a_begin_block_4"
+source = '''
+(a + b)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_handles_methods_called_by_dot_4"
+source = '''
+a.+(b)
+nil
+'''
+corrected = '''
+a
+(b)
+nil
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 3
+message = "Operator `+` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_handles_methods_called_by_dot_with_safe_navigation_4"
+source = '''
+a&.+(b)
+nil
+'''
+corrected = '''
+a
+(b)
+nil
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 4
+message = "Operator `+` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_op__if_not_on_last_line_5"
+source = '''
+a - b
+a - b
+a - b
+'''
+corrected = '''
+a
+b
+a
+b
+a - b
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 3
+message = "Operator `-` used in void context."
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 3
+message = "Operator `-` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_op__if_on_last_line_5"
+source = '''
+something
+a - b
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_op__by_itself_without_a_begin_block_5"
+source = '''
+a - b
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_op__method_call_without_arguments_unless_it_is_on_the_last_line_5"
+source = '''
+a.-
+something
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_op__safe_navigation_method_call_without_arguments_unless_it_is_on_the_last_line_5"
+source = '''
+a&.-
+something
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_parenthesized_void_op__if_not_on_last_line_5"
+source = '''
+(a - b)
+((a - b))
+(((a - b)))
+'''
+corrected = '''
+(a
+b)
+((a
+b))
+(((a - b)))
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 4
+message = "Operator `-` used in void context."
+
+[[tests.offenses]]
+line = 2
+column_start = 4
+column_end = 5
+message = "Operator `-` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_parenthesized_void_op__if_on_last_line_5"
+source = '''
+something
+(a - b)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_parenthesized_void_op__by_itself_without_a_begin_block_5"
+source = '''
+(a - b)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_handles_methods_called_by_dot_5"
+source = '''
+a.-(b)
+nil
+'''
+corrected = '''
+a
+(b)
+nil
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 3
+message = "Operator `-` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_handles_methods_called_by_dot_with_safe_navigation_5"
+source = '''
+a&.-(b)
+nil
+'''
+corrected = '''
+a
+(b)
+nil
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 4
+message = "Operator `-` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_op__if_not_on_last_line_6"
+source = '''
+a == b
+a == b
+a == b
+'''
+corrected = '''
+a
+b
+a
+b
+a == b
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 4
+message = "Operator `==` used in void context."
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 4
+message = "Operator `==` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_op__if_on_last_line_6"
+source = '''
+something
+a == b
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_op__by_itself_without_a_begin_block_6"
+source = '''
+a == b
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_op__method_call_without_arguments_unless_it_is_on_the_last_line_6"
+source = '''
+a.==
+something
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_op__safe_navigation_method_call_without_arguments_unless_it_is_on_the_last_line_6"
+source = '''
+a&.==
+something
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_parenthesized_void_op__if_not_on_last_line_6"
+source = '''
+(a == b)
+((a == b))
+(((a == b)))
+'''
+corrected = '''
+(a
+b)
+((a
+b))
+(((a == b)))
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 5
+message = "Operator `==` used in void context."
+
+[[tests.offenses]]
+line = 2
+column_start = 4
+column_end = 6
+message = "Operator `==` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_parenthesized_void_op__if_on_last_line_6"
+source = '''
+something
+(a == b)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_parenthesized_void_op__by_itself_without_a_begin_block_6"
+source = '''
+(a == b)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_handles_methods_called_by_dot_6"
+source = '''
+a.==(b)
+nil
+'''
+corrected = '''
+a
+(b)
+nil
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 4
+message = "Operator `==` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_handles_methods_called_by_dot_with_safe_navigation_6"
+source = '''
+a&.==(b)
+nil
+'''
+corrected = '''
+a
+(b)
+nil
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 5
+message = "Operator `==` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_op__if_not_on_last_line_7"
+source = '''
+a === b
+a === b
+a === b
+'''
+corrected = '''
+a
+b
+a
+b
+a === b
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 5
+message = "Operator `===` used in void context."
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 5
+message = "Operator `===` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_op__if_on_last_line_7"
+source = '''
+something
+a === b
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_op__by_itself_without_a_begin_block_7"
+source = '''
+a === b
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_op__method_call_without_arguments_unless_it_is_on_the_last_line_7"
+source = '''
+a.===
+something
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_op__safe_navigation_method_call_without_arguments_unless_it_is_on_the_last_line_7"
+source = '''
+a&.===
+something
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_parenthesized_void_op__if_not_on_last_line_7"
+source = '''
+(a === b)
+((a === b))
+(((a === b)))
+'''
+corrected = '''
+(a
+b)
+((a
+b))
+(((a === b)))
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 6
+message = "Operator `===` used in void context."
+
+[[tests.offenses]]
+line = 2
+column_start = 4
 column_end = 7
-message = "Operator `#{op}` used in void context."
+message = "Operator `===` used in void context."
 
 [[tests]]
-name = "rubocop_cop_lint_void"
+name = "rubocopcoplintvoid_accepts_parenthesized_void_op__if_on_last_line_7"
 source = '''
-b&.%{op}
-b&.%{op}
+something
+(a === b)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_parenthesized_void_op__by_itself_without_a_begin_block_7"
+source = '''
+(a === b)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_handles_methods_called_by_dot_7"
+source = '''
+a.===(b)
+nil
 '''
 corrected = '''
-b
-b&.#{op}
+a
+(b)
+nil
 '''
-interpolated = true
-verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 5
+message = "Operator `===` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_handles_methods_called_by_dot_with_safe_navigation_7"
+source = '''
+a&.===(b)
+nil
+'''
+corrected = '''
+a
+(b)
+nil
+'''
 
 [[tests.offenses]]
 line = 1
 column_start = 3
-column_end = 8
-message = "Operator `#{op}` used in void context."
+column_end = 6
+message = "Operator `===` used in void context."
 
 [[tests]]
-name = "rubocop_cop_lint_void"
+name = "rubocopcoplintvoid_registers_an_offense_for_void_op__if_not_on_last_line_8"
+source = '''
+a != b
+a != b
+a != b
+'''
+corrected = '''
+a
+b
+a
+b
+a != b
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 4
+message = "Operator `!=` used in void context."
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 4
+message = "Operator `!=` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_op__if_on_last_line_8"
 source = '''
 something
-#{op}b
+a != b
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_void"
+name = "rubocopcoplintvoid_accepts_void_op__by_itself_without_a_begin_block_8"
 source = '''
-#{op}b
+a != b
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_void"
+name = "rubocopcoplintvoid_accepts_void_op__method_call_without_arguments_unless_it_is_on_the_last_line_8"
 source = '''
-%{var} = 5
-%{var}
+a.!=
+something
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_op__safe_navigation_method_call_without_arguments_unless_it_is_on_the_last_line_8"
+source = '''
+a&.!=
+something
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_parenthesized_void_op__if_not_on_last_line_8"
+source = '''
+(a != b)
+((a != b))
+(((a != b)))
+'''
+corrected = '''
+(a
+b)
+((a
+b))
+(((a != b)))
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 5
+message = "Operator `!=` used in void context."
+
+[[tests.offenses]]
+line = 2
+column_start = 4
+column_end = 6
+message = "Operator `!=` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_parenthesized_void_op__if_on_last_line_8"
+source = '''
+something
+(a != b)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_parenthesized_void_op__by_itself_without_a_begin_block_8"
+source = '''
+(a != b)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_handles_methods_called_by_dot_8"
+source = '''
+a.!=(b)
+nil
+'''
+corrected = '''
+a
+(b)
+nil
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 4
+message = "Operator `!=` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_handles_methods_called_by_dot_with_safe_navigation_8"
+source = '''
+a&.!=(b)
+nil
+'''
+corrected = '''
+a
+(b)
+nil
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 5
+message = "Operator `!=` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_op__if_not_on_last_line_9"
+source = '''
+a < b
+a < b
+a < b
+'''
+corrected = '''
+a
+b
+a
+b
+a < b
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 3
+message = "Operator `<` used in void context."
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 3
+message = "Operator `<` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_op__if_on_last_line_9"
+source = '''
+something
+a < b
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_op__by_itself_without_a_begin_block_9"
+source = '''
+a < b
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_op__method_call_without_arguments_unless_it_is_on_the_last_line_9"
+source = '''
+a.<
+something
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_op__safe_navigation_method_call_without_arguments_unless_it_is_on_the_last_line_9"
+source = '''
+a&.<
+something
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_parenthesized_void_op__if_not_on_last_line_9"
+source = '''
+(a < b)
+((a < b))
+(((a < b)))
+'''
+corrected = '''
+(a
+b)
+((a
+b))
+(((a < b)))
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 4
+message = "Operator `<` used in void context."
+
+[[tests.offenses]]
+line = 2
+column_start = 4
+column_end = 5
+message = "Operator `<` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_parenthesized_void_op__if_on_last_line_9"
+source = '''
+something
+(a < b)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_parenthesized_void_op__by_itself_without_a_begin_block_9"
+source = '''
+(a < b)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_handles_methods_called_by_dot_9"
+source = '''
+a.<(b)
+nil
+'''
+corrected = '''
+a
+(b)
+nil
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 3
+message = "Operator `<` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_handles_methods_called_by_dot_with_safe_navigation_9"
+source = '''
+a&.<(b)
+nil
+'''
+corrected = '''
+a
+(b)
+nil
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 4
+message = "Operator `<` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_op__if_not_on_last_line_10"
+source = '''
+a > b
+a > b
+a > b
+'''
+corrected = '''
+a
+b
+a
+b
+a > b
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 3
+message = "Operator `>` used in void context."
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 3
+message = "Operator `>` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_op__if_on_last_line_10"
+source = '''
+something
+a > b
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_op__by_itself_without_a_begin_block_10"
+source = '''
+a > b
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_op__method_call_without_arguments_unless_it_is_on_the_last_line_10"
+source = '''
+a.>
+something
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_op__safe_navigation_method_call_without_arguments_unless_it_is_on_the_last_line_10"
+source = '''
+a&.>
+something
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_parenthesized_void_op__if_not_on_last_line_10"
+source = '''
+(a > b)
+((a > b))
+(((a > b)))
+'''
+corrected = '''
+(a
+b)
+((a
+b))
+(((a > b)))
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 4
+message = "Operator `>` used in void context."
+
+[[tests.offenses]]
+line = 2
+column_start = 4
+column_end = 5
+message = "Operator `>` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_parenthesized_void_op__if_on_last_line_10"
+source = '''
+something
+(a > b)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_parenthesized_void_op__by_itself_without_a_begin_block_10"
+source = '''
+(a > b)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_handles_methods_called_by_dot_10"
+source = '''
+a.>(b)
+nil
+'''
+corrected = '''
+a
+(b)
+nil
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 3
+message = "Operator `>` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_handles_methods_called_by_dot_with_safe_navigation_10"
+source = '''
+a&.>(b)
+nil
+'''
+corrected = '''
+a
+(b)
+nil
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 4
+message = "Operator `>` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_op__if_not_on_last_line_11"
+source = '''
+a <= b
+a <= b
+a <= b
+'''
+corrected = '''
+a
+b
+a
+b
+a <= b
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 4
+message = "Operator `<=` used in void context."
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 4
+message = "Operator `<=` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_op__if_on_last_line_11"
+source = '''
+something
+a <= b
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_op__by_itself_without_a_begin_block_11"
+source = '''
+a <= b
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_op__method_call_without_arguments_unless_it_is_on_the_last_line_11"
+source = '''
+a.<=
+something
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_op__safe_navigation_method_call_without_arguments_unless_it_is_on_the_last_line_11"
+source = '''
+a&.<=
+something
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_parenthesized_void_op__if_not_on_last_line_11"
+source = '''
+(a <= b)
+((a <= b))
+(((a <= b)))
+'''
+corrected = '''
+(a
+b)
+((a
+b))
+(((a <= b)))
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 5
+message = "Operator `<=` used in void context."
+
+[[tests.offenses]]
+line = 2
+column_start = 4
+column_end = 6
+message = "Operator `<=` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_parenthesized_void_op__if_on_last_line_11"
+source = '''
+something
+(a <= b)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_parenthesized_void_op__by_itself_without_a_begin_block_11"
+source = '''
+(a <= b)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_handles_methods_called_by_dot_11"
+source = '''
+a.<=(b)
+nil
+'''
+corrected = '''
+a
+(b)
+nil
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 4
+message = "Operator `<=` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_handles_methods_called_by_dot_with_safe_navigation_11"
+source = '''
+a&.<=(b)
+nil
+'''
+corrected = '''
+a
+(b)
+nil
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 5
+message = "Operator `<=` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_op__if_not_on_last_line_12"
+source = '''
+a >= b
+a >= b
+a >= b
+'''
+corrected = '''
+a
+b
+a
+b
+a >= b
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 4
+message = "Operator `>=` used in void context."
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 4
+message = "Operator `>=` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_op__if_on_last_line_12"
+source = '''
+something
+a >= b
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_op__by_itself_without_a_begin_block_12"
+source = '''
+a >= b
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_op__method_call_without_arguments_unless_it_is_on_the_last_line_12"
+source = '''
+a.>=
+something
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_op__safe_navigation_method_call_without_arguments_unless_it_is_on_the_last_line_12"
+source = '''
+a&.>=
+something
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_parenthesized_void_op__if_not_on_last_line_12"
+source = '''
+(a >= b)
+((a >= b))
+(((a >= b)))
+'''
+corrected = '''
+(a
+b)
+((a
+b))
+(((a >= b)))
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 5
+message = "Operator `>=` used in void context."
+
+[[tests.offenses]]
+line = 2
+column_start = 4
+column_end = 6
+message = "Operator `>=` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_parenthesized_void_op__if_on_last_line_12"
+source = '''
+something
+(a >= b)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_parenthesized_void_op__by_itself_without_a_begin_block_12"
+source = '''
+(a >= b)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_handles_methods_called_by_dot_12"
+source = '''
+a.>=(b)
+nil
+'''
+corrected = '''
+a
+(b)
+nil
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 4
+message = "Operator `>=` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_handles_methods_called_by_dot_with_safe_navigation_12"
+source = '''
+a&.>=(b)
+nil
+'''
+corrected = '''
+a
+(b)
+nil
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 5
+message = "Operator `>=` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_op__if_not_on_last_line_13"
+source = '''
+a <=> b
+a <=> b
+a <=> b
+'''
+corrected = '''
+a
+b
+a
+b
+a <=> b
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 5
+message = "Operator `<=>` used in void context."
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 5
+message = "Operator `<=>` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_op__if_on_last_line_13"
+source = '''
+something
+a <=> b
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_op__by_itself_without_a_begin_block_13"
+source = '''
+a <=> b
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_op__method_call_without_arguments_unless_it_is_on_the_last_line_13"
+source = '''
+a.<=>
+something
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_op__safe_navigation_method_call_without_arguments_unless_it_is_on_the_last_line_13"
+source = '''
+a&.<=>
+something
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_parenthesized_void_op__if_not_on_last_line_13"
+source = '''
+(a <=> b)
+((a <=> b))
+(((a <=> b)))
+'''
+corrected = '''
+(a
+b)
+((a
+b))
+(((a <=> b)))
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 6
+message = "Operator `<=>` used in void context."
+
+[[tests.offenses]]
+line = 2
+column_start = 4
+column_end = 7
+message = "Operator `<=>` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_parenthesized_void_op__if_on_last_line_13"
+source = '''
+something
+(a <=> b)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_parenthesized_void_op__by_itself_without_a_begin_block_13"
+source = '''
+(a <=> b)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_handles_methods_called_by_dot_13"
+source = '''
+a.<=>(b)
+nil
+'''
+corrected = '''
+a
+(b)
+nil
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 5
+message = "Operator `<=>` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_handles_methods_called_by_dot_with_safe_navigation_13"
+source = '''
+a&.<=>(b)
+nil
+'''
+corrected = '''
+a
+(b)
+nil
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 6
+message = "Operator `<=>` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_sign_op__if_not_on_last_line"
+source = '''
++b
++b
++b
+'''
+corrected = '''
+b
+b
++b
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 1
+message = "Operator `+@` used in void context."
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 1
+message = "Operator `+@` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_sign_op__if_not_on_last_line_2"
+source = '''
+-b
+-b
+-b
+'''
+corrected = '''
+b
+b
+-b
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 1
+message = "Operator `-@` used in void context."
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 1
+message = "Operator `-@` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_unary_op__if_not_on_last_line"
+source = '''
+~b
+~b
+~b
+'''
+corrected = '''
+b
+b
+~b
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 1
+message = "Operator `~` used in void context."
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 1
+message = "Operator `~` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_unary_op__with_dot"
+source = '''
+b.~
+b.~
+'''
+corrected = '''
+b
+b.~
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 3
+message = "Operator `~` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_unary_op__with_dot_with_safe_navigation"
+source = '''
+b&.~
+b&.~
+'''
+corrected = '''
+b
+b&.~
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 4
+message = "Operator `~` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_unary_op__if_not_on_last_line_2"
+source = '''
+!b
+!b
+!b
+'''
+corrected = '''
+b
+b
+!b
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 1
+message = "Operator `!` used in void context."
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 1
+message = "Operator `!` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_unary_op__with_dot_2"
+source = '''
+b.!
+b.!
+'''
+corrected = '''
+b
+b.!
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 3
+message = "Operator `!` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_unary_op__with_dot_with_safe_navigation_2"
+source = '''
+b&.!
+b&.!
+'''
+corrected = '''
+b
+b&.!
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 3
+column_end = 4
+message = "Operator `!` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_unary_op__if_on_last_line"
+source = '''
+something
++b
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_unary_op__by_itself_without_a_begin_block"
+source = '''
++b
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_unary_op__if_on_last_line_2"
+source = '''
+something
+-b
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_unary_op__by_itself_without_a_begin_block_2"
+source = '''
+-b
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_unary_op__if_on_last_line_3"
+source = '''
+something
+~b
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_unary_op__by_itself_without_a_begin_block_3"
+source = '''
+~b
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_unary_op__if_on_last_line_4"
+source = '''
+something
+!b
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_accepts_void_unary_op__by_itself_without_a_begin_block_4"
+source = '''
+!b
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_var_var_if_not_on_last_line"
+source = '''
+var = 5
+var
 top
 '''
 corrected = '''
-#{var} = 5
+var = 5
 top
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 2
 column_start = 0
-column_end = 6
-message = "Variable `#{var}` used in void context."
+column_end = 3
+message = "Variable `var` used in void context."
 
 [[tests]]
-name = "rubocop_cop_lint_void"
+name = "rubocopcoplintvoid_registers_an_offense_for_void_var_var_with_guard_clause_if_not_on_last_line"
 source = '''
-%{var} = 5
-%{var} unless condition
+var = 5
+var unless condition
 top
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 2
 column_start = 0
-column_end = 23
-message = "Variable `#{var}` used in void context."
+column_end = 3
+message = "Variable `var` used in void context."
 
 [[tests]]
-name = "rubocop_cop_lint_void"
+name = "rubocopcoplintvoid_registers_an_offense_for_void_var_var_inside_unless_block_if_not_on_last_line"
 source = '''
-%{var} = 5
+var = 5
 unless condition
-  %{var}
+  var
 end
 top
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 3
 column_start = 2
-column_end = 8
-message = "Variable `#{var}` used in void context."
+column_end = 5
+message = "Variable `var` used in void context."
 
 [[tests]]
-name = "rubocop_cop_lint_void"
+name = "rubocopcoplintvoid_registers_an_offense_for_void_var_var_in_ternary_if_not_on_last_line"
 source = '''
-%{var} = 5
-condition ? %{var} : nil
+var = 5
+condition ? var : nil
 top
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 2
 column_start = 12
-column_end = 24
-message = "Variable `#{var}` used in void context."
+column_end = 15
+message = "Variable `var` used in void context."
 
 [[tests]]
-name = "rubocop_cop_lint_void_registers_an_offense_for_void_constant_const_if_not_on_last_line"
+name = "rubocopcoplintvoid_registers_an_offense_for_void_var_var_if_not_on_last_line_2"
+source = '''
+@var = 5
+@var
+top
+'''
+corrected = '''
+@var = 5
+top
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 4
+message = "Variable `@var` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_var_var_with_guard_clause_if_not_on_last_line_2"
+source = '''
+@var = 5
+@var unless condition
+top
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 4
+message = "Variable `@var` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_var_var_inside_unless_block_if_not_on_last_line_2"
+source = '''
+@var = 5
+unless condition
+  @var
+end
+top
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 6
+message = "Variable `@var` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_var_var_in_ternary_if_not_on_last_line_2"
+source = '''
+@var = 5
+condition ? @var : nil
+top
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 12
+column_end = 16
+message = "Variable `@var` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_var_var_if_not_on_last_line_3"
+source = '''
+@@var = 5
+@@var
+top
+'''
+corrected = '''
+@@var = 5
+top
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 5
+message = "Variable `@@var` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_var_var_with_guard_clause_if_not_on_last_line_3"
+source = '''
+@@var = 5
+@@var unless condition
+top
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 5
+message = "Variable `@@var` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_var_var_inside_unless_block_if_not_on_last_line_3"
+source = '''
+@@var = 5
+unless condition
+  @@var
+end
+top
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 7
+message = "Variable `@@var` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_var_var_in_ternary_if_not_on_last_line_3"
+source = '''
+@@var = 5
+condition ? @@var : nil
+top
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 12
+column_end = 17
+message = "Variable `@@var` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_var_var_if_not_on_last_line_4"
+source = '''
+$var = 5
+$var
+top
+'''
+corrected = '''
+$var = 5
+top
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 4
+message = "Variable `$var` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_var_var_with_guard_clause_if_not_on_last_line_4"
+source = '''
+$var = 5
+$var unless condition
+top
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 4
+message = "Variable `$var` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_var_var_inside_unless_block_if_not_on_last_line_4"
+source = '''
+$var = 5
+unless condition
+  $var
+end
+top
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 6
+message = "Variable `$var` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_var_var_in_ternary_if_not_on_last_line_4"
+source = '''
+$var = 5
+condition ? $var : nil
+top
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 12
+column_end = 16
+message = "Variable `$var` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_constant_const_if_not_on_last_line"
 source = '''
 CONST = 5
 CONST
@@ -359,7 +2266,7 @@ column_end = 5
 message = "Constant `CONST` used in void context."
 
 [[tests]]
-name = "rubocop_cop_lint_void_registers_an_offense_for_void_constant_const_with_guard_condition_if_not_on_last_line"
+name = "rubocopcoplintvoid_registers_an_offense_for_void_constant_const_with_guard_condition_if_not_on_last_line"
 source = '''
 CONST = 5
 CONST unless condition
@@ -373,7 +2280,7 @@ column_end = 5
 message = "Constant `CONST` used in void context."
 
 [[tests]]
-name = "rubocop_cop_lint_void_registers_an_offense_for_void_constant_const_within_conditional_if_not_on_last_line"
+name = "rubocopcoplintvoid_registers_an_offense_for_void_constant_const_within_conditional_if_not_on_last_line"
 source = '''
 CONST = 5
 unless condition
@@ -389,7 +2296,7 @@ column_end = 7
 message = "Constant `CONST` used in void context."
 
 [[tests]]
-name = "rubocop_cop_lint_void_registers_an_offense_for_void_constant_const_within_ternary_if_not_on_last_line"
+name = "rubocopcoplintvoid_registers_an_offense_for_void_constant_const_within_ternary_if_not_on_last_line"
 source = '''
 CONST = 5
 condition ? CONST : nil
@@ -403,73 +2310,355 @@ column_end = 17
 message = "Constant `CONST` used in void context."
 
 [[tests]]
-name = "rubocop_cop_lint_void"
+name = "rubocopcoplintvoid_registers_an_offense_for_void_lit_1_if_not_on_last_line"
 source = '''
-%{lit}
+1
 top
 '''
 corrected = '''
 
 top
 '''
-interpolated = true
-verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 1
+message = "Literal `1` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_lit_1_with_guard_condition_if_not_on_last_line"
+source = '''
+1 unless condition
+top
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 1
+message = "Literal `1` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_lit_1_within_conditional_if_not_on_last_line"
+source = '''
+unless condition
+  1
+end
+top
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 3
+message = "Literal `1` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_lit_1_within_ternary_if_not_on_last_line"
+source = '''
+condition ? 1 : nil
+top
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 12
+column_end = 13
+message = "Literal `1` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_lit_20_if_not_on_last_line"
+source = '''
+2.0
+top
+'''
+corrected = '''
+
+top
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 3
+message = "Literal `2.0` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_lit_20_with_guard_condition_if_not_on_last_line"
+source = '''
+2.0 unless condition
+top
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 3
+message = "Literal `2.0` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_lit_20_within_conditional_if_not_on_last_line"
+source = '''
+unless condition
+  2.0
+end
+top
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 5
+message = "Literal `2.0` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_lit_20_within_ternary_if_not_on_last_line"
+source = '''
+condition ? 2.0 : nil
+top
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 12
+column_end = 15
+message = "Literal `2.0` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_lit_test_if_not_on_last_line"
+source = '''
+:test
+top
+'''
+corrected = '''
+
+top
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 5
+message = "Literal `:test` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_lit_test_with_guard_condition_if_not_on_last_line"
+source = '''
+:test unless condition
+top
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 5
+message = "Literal `:test` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_lit_test_within_conditional_if_not_on_last_line"
+source = '''
+unless condition
+  :test
+end
+top
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 7
+message = "Literal `:test` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_lit_test_within_ternary_if_not_on_last_line"
+source = '''
+condition ? :test : nil
+top
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 12
+column_end = 17
+message = "Literal `:test` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_lit_test_if_not_on_last_line_2"
+source = '''
+/test/
+top
+'''
+corrected = '''
+
+top
+'''
 
 [[tests.offenses]]
 line = 1
 column_start = 0
 column_end = 6
-message = "Literal `#{lit}` used in void context."
+message = "Literal `/test/` used in void context."
 
 [[tests]]
-name = "rubocop_cop_lint_void"
+name = "rubocopcoplintvoid_registers_an_offense_for_void_lit_test_with_guard_condition_if_not_on_last_line_2"
 source = '''
-%{lit} unless condition
+/test/ unless condition
 top
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 0
-column_end = 23
-message = "Literal `#{lit}` used in void context."
+column_end = 6
+message = "Literal `/test/` used in void context."
 
 [[tests]]
-name = "rubocop_cop_lint_void"
+name = "rubocopcoplintvoid_registers_an_offense_for_void_lit_test_within_conditional_if_not_on_last_line_2"
 source = '''
 unless condition
-  %{lit}
+  /test/
 end
 top
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 2
 column_start = 2
 column_end = 8
-message = "Literal `#{lit}` used in void context."
+message = "Literal `/test/` used in void context."
 
 [[tests]]
-name = "rubocop_cop_lint_void"
+name = "rubocopcoplintvoid_registers_an_offense_for_void_lit_test_within_ternary_if_not_on_last_line_2"
 source = '''
-condition ? %{lit} : nil
+condition ? /test/ : nil
 top
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 12
-column_end = 24
-message = "Literal `#{lit}` used in void context."
+column_end = 18
+message = "Literal `/test/` used in void context."
 
 [[tests]]
-name = "rubocop_cop_lint_void_registers_an_offense_for_void_self_if_not_on_last_line"
+name = "rubocopcoplintvoid_registers_an_offense_for_void_lit_1_if_not_on_last_line_2"
+source = '''
+[1]
+top
+'''
+corrected = '''
+
+top
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 3
+message = "Literal `[1]` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_lit_1_with_guard_condition_if_not_on_last_line_2"
+source = '''
+[1] unless condition
+top
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 3
+message = "Literal `[1]` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_lit_1_within_conditional_if_not_on_last_line_2"
+source = '''
+unless condition
+  [1]
+end
+top
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 5
+message = "Literal `[1]` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_lit_1_within_ternary_if_not_on_last_line_2"
+source = '''
+condition ? [1] : nil
+top
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 12
+column_end = 15
+message = "Literal `[1]` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_lit__if_not_on_last_line"
+source = '''
+{}
+top
+'''
+corrected = '''
+
+top
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 2
+message = "Literal `{}` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_lit__with_guard_condition_if_not_on_last_line"
+source = '''
+{} unless condition
+top
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 2
+message = "Literal `{}` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_lit__within_conditional_if_not_on_last_line"
+source = '''
+unless condition
+  {}
+end
+top
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 4
+message = "Literal `{}` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_lit__within_ternary_if_not_on_last_line"
+source = '''
+condition ? {} : nil
+top
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 12
+column_end = 14
+message = "Literal `{}` used in void context."
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_self_if_not_on_last_line"
 source = '''
 self; top
 '''
@@ -484,7 +2673,7 @@ column_end = 4
 message = "`self` used in void context."
 
 [[tests]]
-name = "rubocop_cop_lint_void_registers_an_offense_for_void_defined_if_not_on_last_line"
+name = "rubocopcoplintvoid_registers_an_offense_for_void_defined_if_not_on_last_line"
 source = '''
 defined?(x)
 top
@@ -501,7 +2690,7 @@ column_end = 11
 message = "`defined?(x)` used in void context."
 
 [[tests]]
-name = "rubocop_cop_lint_void_registers_an_offense_for_void_bar_if_not_on_last_line"
+name = "rubocopcoplintvoid_registers_an_offense_for_void___bar__if_not_on_last_line"
 source = '''
 def foo
   -> { bar }
@@ -521,7 +2710,7 @@ column_end = 12
 message = "`-> { bar }` used in void context."
 
 [[tests]]
-name = "rubocop_cop_lint_void_does_not_register_an_offense_for_void_bar_if_on_last_line"
+name = "rubocopcoplintvoid_does_not_register_an_offense_for_void___bar__if_on_last_line"
 source = '''
 def foo
   top
@@ -531,7 +2720,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_void_does_not_register_an_offense_for_void_bar_call_if_not_on_last_line"
+name = "rubocopcoplintvoid_does_not_register_an_offense_for_void___bar_call_if_not_on_last_line"
 source = '''
 def foo
   -> { bar }.call
@@ -541,7 +2730,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_void_registers_an_offense_for_void_lambda_bar_if_not_on_last_line"
+name = "rubocopcoplintvoid_registers_an_offense_for_void_lambda__bar__if_not_on_last_line"
 source = '''
 def foo
   lambda { bar }
@@ -561,7 +2750,7 @@ column_end = 16
 message = "`lambda { bar }` used in void context."
 
 [[tests]]
-name = "rubocop_cop_lint_void_does_not_register_an_offense_for_void_lambda_bar_if_on_last_line"
+name = "rubocopcoplintvoid_does_not_register_an_offense_for_void_lambda__bar__if_on_last_line"
 source = '''
 def foo
   top
@@ -571,7 +2760,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_void_does_not_register_an_offense_for_void_lambda_bar_call_if_not_on_last_line"
+name = "rubocopcoplintvoid_does_not_register_an_offense_for_void_lambda__bar_call_if_not_on_last_line"
 source = '''
 def foo
   lambda { bar }.call
@@ -581,7 +2770,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_void_registers_an_offense_for_void_proc_bar_if_not_on_last_line"
+name = "rubocopcoplintvoid_registers_an_offense_for_void_proc__bar__if_not_on_last_line"
 source = '''
 def foo
   proc { bar }
@@ -601,7 +2790,7 @@ column_end = 14
 message = "`proc { bar }` used in void context."
 
 [[tests]]
-name = "rubocop_cop_lint_void_does_not_register_an_offense_for_void_proc_bar_if_on_last_line"
+name = "rubocopcoplintvoid_does_not_register_an_offense_for_void_proc__bar__if_on_last_line"
 source = '''
 def foo
   top
@@ -611,7 +2800,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_void_does_not_register_an_offense_for_void_proc_bar_call_if_not_on_last_line"
+name = "rubocopcoplintvoid_does_not_register_an_offense_for_void_proc__bar_call_if_not_on_last_line"
 source = '''
 def foo
   proc { bar }.call
@@ -621,7 +2810,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_void_registers_an_offense_for_void_proc_new_bar_if_not_on_last_line"
+name = "rubocopcoplintvoid_registers_an_offense_for_void_procnew__bar__if_not_on_last_line"
 source = '''
 def foo
   Proc.new { bar }
@@ -641,7 +2830,7 @@ column_end = 18
 message = "`Proc.new { bar }` used in void context."
 
 [[tests]]
-name = "rubocop_cop_lint_void_does_not_register_an_offense_for_void_proc_new_bar_if_on_last_line"
+name = "rubocopcoplintvoid_does_not_register_an_offense_for_void_procnew__bar__if_on_last_line"
 source = '''
 def foo
   top
@@ -651,7 +2840,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_void_does_not_register_an_offense_for_void_proc_new_bar_call_if_not_on_last_line"
+name = "rubocopcoplintvoid_does_not_register_an_offense_for_void_procnew__bar_call_if_not_on_last_line"
 source = '''
 def foo
   Proc.new { bar }.call
@@ -661,132 +2850,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_void_when_checking_for_methods_with_no_side_effects_registers_an_offense_for_nonmutating_method_that_takes_a_block"
-source = '''
-[1,2,3].collect do |n|
-  n.to_s
-end
-"done"
-'''
-corrected = '''
-[1,2,3].each do |n|
-  n.to_s
-end
-"done"
-'''
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 22
-message = "Method `#collect` used in void context. Did you mean `#each`?"
-
-[[tests]]
-name = "rubocop_cop_lint_void_when_checking_for_methods_with_no_side_effects_ruby_2_7_registers_an_offense_for_nonmutating_method_that_takes_a_numbered_parameter_block"
-source = '''
-[1,2,3].map do
-  _1.to_s
-end
-"done"
-'''
-corrected = '''
-[1,2,3].each do
-  _1.to_s
-end
-"done"
-'''
-ruby_version = ">= 2.7"
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 14
-message = "Method `#map` used in void context. Did you mean `#each`?"
-
-[[tests]]
-name = "rubocop_cop_lint_void_when_checking_for_methods_with_no_side_effects_ruby_3_4_registers_an_offense_for_nonmutating_method_that_takes_an_it_parameter_block"
-source = '''
-[1,2,3].map do
-  it.to_s
-end
-"done"
-'''
-corrected = '''
-[1,2,3].each do
-  it.to_s
-end
-"done"
-'''
-ruby_version = ">= 3.4"
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 14
-message = "Method `#map` used in void context. Did you mean `#each`?"
-
-[[tests]]
-name = "rubocop_cop_lint_void_when_checking_for_methods_with_no_side_effects_registers_an_offense_if_not_on_last_line"
-source = '''
-x.sort
-top(x)
-'''
-corrected = '''
-x.sort!
-top(x)
-'''
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 6
-message = "Method `#sort` used in void context. Did you mean `#sort!`?"
-
-[[tests]]
-name = "rubocop_cop_lint_void_when_checking_for_methods_with_no_side_effects_registers_an_offense_for_chained_methods"
-source = '''
-x.sort.flatten
-top(x)
-'''
-corrected = '''
-x.sort.flatten!
-top(x)
-'''
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 14
-message = "Method `#flatten` used in void context. Did you mean `#flatten!`?"
-
-[[tests]]
-name = "rubocop_cop_lint_void_when_checking_for_methods_with_no_side_effects_does_not_register_an_offense_assigning_variable"
-source = '''
-foo = bar
-baz
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_void_when_checking_for_methods_with_no_side_effects_does_not_register_an_offense_when_using_a_method_definition"
-source = '''
-def merge
-end
-
-42
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_void_when_not_checking_for_methods_with_no_side_effects_does_not_register_an_offense_for_void_nonmutating_methods"
-source = '''
-x.sort
-top(x)
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_void_does_not_register_an_offense_for_an_array_literal_that_includes_non_literal_elements_in_a_method_definition"
+name = "rubocopcoplintvoid_does_not_register_an_offense_for_an_array_literal_that_includes_nonliteral_elements_in_a_method_definition"
 source = '''
 def something
   [foo, bar]
@@ -796,7 +2860,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_void_does_not_register_an_offense_for_a_nested_array_literal_that_includes_non_literal_elements_in_a_method_definition"
+name = "rubocopcoplintvoid_does_not_register_an_offense_for_a_nested_array_literal_that_includes_nonliteral_elements_in_a_method_definition"
 source = '''
 def something
   [1, 2, [foo, bar]]
@@ -806,7 +2870,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_void_registers_an_offense_for_an_array_literal_composed_entirely_of_literals_in_a_method_definition"
+name = "rubocopcoplintvoid_registers_an_offense_for_an_array_literal_composed_entirely_of_literals_in_a_method_definition"
 source = '''
 def something
   [1, 2]
@@ -821,7 +2885,7 @@ column_end = 8
 message = "Literal `[1, 2]` used in void context."
 
 [[tests]]
-name = "rubocop_cop_lint_void_registers_an_offense_for_a_nested_array_literal_composed_entirely_of_literals_in_a_method_definition"
+name = "rubocopcoplintvoid_registers_an_offense_for_a_nested_array_literal_composed_entirely_of_literals_in_a_method_definition"
 source = '''
 def something
   [1, 2, [3]]
@@ -836,7 +2900,7 @@ column_end = 13
 message = "Literal `[1, 2, [3]]` used in void context."
 
 [[tests]]
-name = "rubocop_cop_lint_void_registers_an_offense_for_a_frozen_literal_in_a_method_definition"
+name = "rubocopcoplintvoid_registers_an_offense_for_a_frozen_literal_in_a_method_definition"
 source = '''
 def something
   'foo'.freeze
@@ -851,7 +2915,7 @@ column_end = 14
 message = "Literal `'foo'.freeze` used in void context."
 
 [[tests]]
-name = "rubocop_cop_lint_void_registers_an_offense_for_a_literal_frozen_via_safe_navigation_in_a_method_definition"
+name = "rubocopcoplintvoid_registers_an_offense_for_a_literal_frozen_via_safe_navigation_in_a_method_definition"
 source = '''
 def something
   'foo'&.freeze
@@ -866,7 +2930,7 @@ column_end = 15
 message = "Literal `'foo'&.freeze` used in void context."
 
 [[tests]]
-name = "rubocop_cop_lint_void_does_not_register_an_offense_for_frozen_non_literal_in_a_method_definition"
+name = "rubocopcoplintvoid_does_not_register_an_offense_for_frozen_nonliteral_in_a_method_definition"
 source = '''
 def something
   foo.freeze
@@ -876,7 +2940,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_void_registers_an_offense_for_a_nested_array_literal_composed_of_frozen_and_unfrozen_literals_in_a_method_definition"
+name = "rubocopcoplintvoid_registers_an_offense_for_a_nested_array_literal_composed_of_frozen_and_unfrozen_literals_in_a_method_definition"
 source = '''
 def something
   [1, ['foo'.freeze]]
@@ -891,7 +2955,7 @@ column_end = 21
 message = "Literal `[1, ['foo'.freeze]]` used in void context."
 
 [[tests]]
-name = "rubocop_cop_lint_void_does_not_register_an_offense_for_a_nested_array_literal_that_includes_frozen_non_literal_value_elements_in_a_method_definition"
+name = "rubocopcoplintvoid_does_not_register_an_offense_for_a_nested_array_literal_that_includes_frozen_nonliteral_value_elements_in_a_method_definition"
 source = '''
 def something
   [1, [foo.freeze]]
@@ -901,7 +2965,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_void_does_not_register_an_offense_for_a_hash_literal_that_includes_non_literal_value_elements_in_a_method_definition"
+name = "rubocopcoplintvoid_does_not_register_an_offense_for_a_hash_literal_that_includes_nonliteral_value_elements_in_a_method_definition"
 source = '''
 def something
   {k1: foo, k2: bar}
@@ -911,7 +2975,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_void_does_not_register_an_offense_for_a_nested_hash_literal_that_includes_non_literal_value_elements_in_a_method_definition"
+name = "rubocopcoplintvoid_does_not_register_an_offense_for_a_nested_hash_literal_that_includes_nonliteral_value_elements_in_a_method_definition"
 source = '''
 def something
   {k0: {k1: foo, k2: bar}}
@@ -921,7 +2985,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_void_does_not_register_an_offense_for_a_hash_literal_that_includes_non_literal_key_elements_in_a_method_definition"
+name = "rubocopcoplintvoid_does_not_register_an_offense_for_a_hash_literal_that_includes_nonliteral_key_elements_in_a_method_definition"
 source = '''
 def something
   {foo => 1, bar => 2}
@@ -931,7 +2995,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_void_does_not_register_an_offense_for_a_nested_hash_literal_that_includes_non_literal_key_elements_in_a_method_definition"
+name = "rubocopcoplintvoid_does_not_register_an_offense_for_a_nested_hash_literal_that_includes_nonliteral_key_elements_in_a_method_definition"
 source = '''
 def something
   {foo: 1, bar: {baz => 2}}
@@ -941,7 +3005,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_void_registers_an_offense_for_a_hash_literal_composed_entirely_of_literals_in_a_method_definition"
+name = "rubocopcoplintvoid_registers_an_offense_for_a_hash_literal_composed_entirely_of_literals_in_a_method_definition"
 source = '''
 def something
   {k1: 1, k2: 2}
@@ -961,7 +3025,7 @@ column_end = 16
 message = "Literal `{k1: 1, k2: 2}` used in void context."
 
 [[tests]]
-name = "rubocop_cop_lint_void_registers_an_offense_for_a_nested_hash_literal_composed_entirely_of_literals_in_a_method_definition"
+name = "rubocopcoplintvoid_registers_an_offense_for_a_nested_hash_literal_composed_entirely_of_literals_in_a_method_definition"
 source = '''
 def something
   {x: {k1: 1, k2: 2}}
@@ -981,7 +3045,7 @@ column_end = 21
 message = "Literal `{x: {k1: 1, k2: 2}}` used in void context."
 
 [[tests]]
-name = "rubocop_cop_lint_void_does_not_register_an_offense_for_a_hash_literal_that_includes_array_literal_key_within_non_literal_elements_in_a_method_definition"
+name = "rubocopcoplintvoid_does_not_register_an_offense_for_a_hash_literal_that_includes_array_literal_key_within_nonliteral_elements_in_a_method_definition"
 source = '''
 def something
   {[foo, bar] => :foo}
@@ -991,7 +3055,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_void_registers_an_offense_for_a_hash_literal_that_includes_array_literal_key_within_literal_elements_in_a_method_definition"
+name = "rubocopcoplintvoid_registers_an_offense_for_a_hash_literal_that_includes_array_literal_key_within_literal_elements_in_a_method_definition"
 source = '''
 def something
   {[1, 2] => :foo}
@@ -1006,7 +3070,7 @@ column_end = 18
 message = "Literal `{[1, 2] => :foo}` used in void context."
 
 [[tests]]
-name = "rubocop_cop_lint_void_registers_an_offense_for_void_literal_in_a_method_definition"
+name = "rubocopcoplintvoid_registers_an_offense_for_void_literal_in_a_method_definition"
 source = '''
 def something
   42
@@ -1026,7 +3090,7 @@ column_end = 4
 message = "Literal `42` used in void context."
 
 [[tests]]
-name = "rubocop_cop_lint_void_registers_two_offenses_for_void_literals_in_an_initialize_method"
+name = "rubocopcoplintvoid_registers_two_offenses_for_void_literals_in_an_initialize_method"
 source = '''
 def initialize
   42
@@ -1051,7 +3115,7 @@ column_end = 4
 message = "Literal `42` used in void context."
 
 [[tests]]
-name = "rubocop_cop_lint_void_registers_two_offenses_for_void_literals_in_a_setter_method"
+name = "rubocopcoplintvoid_registers_two_offenses_for_void_literals_in_a_setter_method"
 source = '''
 def foo=(rhs)
   42
@@ -1072,7 +3136,7 @@ column_end = 4
 message = "Literal `42` used in void context."
 
 [[tests]]
-name = "rubocop_cop_lint_void_registers_two_offenses_for_void_literals_in_a_class_setter_method"
+name = "rubocopcoplintvoid_registers_two_offenses_for_void_literals_in_a_class_setter_method"
 source = '''
 def self.foo=(rhs)
   42
@@ -1093,7 +3157,7 @@ column_end = 4
 message = "Literal `42` used in void context."
 
 [[tests]]
-name = "rubocop_cop_lint_void_registers_two_offenses_for_void_literals_in_a_each_method"
+name = "rubocopcoplintvoid_registers_two_offenses_for_void_literals_in_a_each_method"
 source = '''
 array.each do |_item|
   42
@@ -1118,7 +3182,7 @@ column_end = 4
 message = "Literal `42` used in void context."
 
 [[tests]]
-name = "rubocop_cop_lint_void_registers_an_offense_for_void_constant_in_a_each_method"
+name = "rubocopcoplintvoid_registers_an_offense_for_void_constant_in_a_each_method"
 source = '''
 array.each do |_item|
   CONST
@@ -1136,7 +3200,7 @@ column_end = 7
 message = "Constant `CONST` used in void context."
 
 [[tests]]
-name = "rubocop_cop_lint_void_handles_each_block_with_single_expression"
+name = "rubocopcoplintvoid_handles_each_block_with_single_expression"
 source = '''
 array.each do |_item|
   42
@@ -1154,7 +3218,7 @@ column_end = 4
 message = "Literal `42` used in void context."
 
 [[tests]]
-name = "rubocop_cop_lint_void_does_not_register_each_block_with_conditional_expression"
+name = "rubocopcoplintvoid_does_not_register_each_block_with_conditional_expression"
 source = '''
 enumerator_as_filter.each do |item|
   # The `filter` method is used to filter for matches with `42`.
@@ -1165,7 +3229,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_void_does_not_register_each_block_with_conditional_expressions_that_has_multiple_statements"
+name = "rubocopcoplintvoid_does_not_register_each_block_with_conditional_expressions_that_has_multiple_statements"
 source = '''
 enumerator_as_filter.each do |item|
   puts item
@@ -1178,7 +3242,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_void_does_not_register_each_numblock_with_conditional_expressions_that_has_multiple_statements"
+name = "rubocopcoplintvoid_does_not_register_each_numblock_with_conditional_expressions_that_has_multiple_statements"
 source = '''
 enumerator_as_filter.each do
   puts _1
@@ -1191,33 +3255,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_void_ruby_2_7_registers_two_offenses_for_void_literals_in_tap_method"
-source = '''
-foo.tap do
-  _1
-  42
-end
-'''
-corrected = '''
-foo.tap do
-end
-'''
-ruby_version = ">= 2.7"
-
-[[tests.offenses]]
-line = 2
-column_start = 2
-column_end = 4
-message = "Variable `_1` used in void context."
-
-[[tests.offenses]]
-line = 3
-column_start = 2
-column_end = 4
-message = "Literal `42` used in void context."
-
-[[tests]]
-name = "rubocop_cop_lint_void_registers_two_offenses_for_void_literals_in_tap_method_with_a_numbered_block"
+name = "rubocopcoplintvoid_registers_two_offenses_for_void_literals_in_tap_method_with_a_numbered_block"
 source = '''
 foo.tap do
   _1
@@ -1242,14 +3280,14 @@ column_end = 4
 message = "Literal `42` used in void context."
 
 [[tests]]
-name = "rubocop_cop_lint_void_accepts_empty_block"
+name = "rubocopcoplintvoid_accepts_empty_block"
 source = '''
 array.each { |_item| }
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_void_registers_two_offenses_for_void_literals_in_tap_method"
+name = "rubocopcoplintvoid_registers_two_offenses_for_void_literals_in_tap_method"
 source = '''
 foo.tap do |x|
   42
@@ -1274,7 +3312,7 @@ column_end = 4
 message = "Literal `42` used in void context."
 
 [[tests]]
-name = "rubocop_cop_lint_void_registers_two_offenses_for_void_literals_in_a_for"
+name = "rubocopcoplintvoid_registers_two_offenses_for_void_literals_in_a_for"
 source = '''
 for _item in array do
   42
@@ -1299,7 +3337,7 @@ column_end = 4
 message = "Literal `42` used in void context."
 
 [[tests]]
-name = "rubocop_cop_lint_void_registers_two_offenses_for_void_literals_in_an_ensure"
+name = "rubocopcoplintvoid_registers_two_offenses_for_void_literals_in_an_ensure"
 source = '''
 def foo
 ensure
@@ -1328,7 +3366,7 @@ column_end = 4
 message = "Literal `42` used in void context."
 
 [[tests]]
-name = "rubocop_cop_lint_void_registers_an_offense_when_the_body_of_ensure_is_a_literal"
+name = "rubocopcoplintvoid_registers_an_offense_when_the_body_of_ensure_is_a_literal"
 source = '''
 def foo
   bar
@@ -1350,7 +3388,7 @@ column_end = 13
 message = "Literal `[1, 2, [3]]` used in void context."
 
 [[tests]]
-name = "rubocop_cop_lint_void_handles_explicit_begin_blocks"
+name = "rubocopcoplintvoid_handles_explicit_begin_blocks"
 source = '''
 begin
  1
@@ -1370,7 +3408,7 @@ column_end = 2
 message = "Literal `1` used in void context."
 
 [[tests]]
-name = "rubocop_cop_lint_void_accepts_short_call_syntax"
+name = "rubocopcoplintvoid_accepts_short_call_syntax"
 source = '''
 lambda.(a)
 top
@@ -1378,7 +3416,7 @@ top
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_void_accepts_backtick_commands"
+name = "rubocopcoplintvoid_accepts_backtick_commands"
 source = '''
 `touch x`
 nil
@@ -1386,7 +3424,7 @@ nil
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_void_accepts_assigned_if_statements"
+name = "rubocopcoplintvoid_accepts_assigned_if_statements"
 source = '''
 x = if condition
       42
@@ -1396,7 +3434,7 @@ nil
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_void_accepts_assigned_if_statements_in_modifier_form"
+name = "rubocopcoplintvoid_accepts_assigned_if_statements_in_modifier_form"
 source = '''
 x = (42 if condition)
 nil
@@ -1404,7 +3442,7 @@ nil
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_void_accepts_assigned_ternary_statements"
+name = "rubocopcoplintvoid_accepts_assigned_ternary_statements"
 source = '''
 x = condition ? 42 : nil
 nil
@@ -1412,7 +3450,7 @@ nil
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_void_accepts_percent_x_commands"
+name = "rubocopcoplintvoid_accepts_percentx_commands"
 source = '''
 %x(touch x)
 nil
@@ -1420,7 +3458,7 @@ nil
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_void_accepts_method_with_irange_block"
+name = "rubocopcoplintvoid_accepts_method_with_irange_block"
 source = '''
 def foo
   1..100.times.each { puts 1 }
@@ -1430,7 +3468,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_void_accepts_method_with_erange_block"
+name = "rubocopcoplintvoid_accepts_method_with_erange_block"
 source = '''
 def foo
   1...100.times.each { puts 1 }
@@ -1440,10 +3478,9 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_void_registers_an_offense_when_using_special_encoding"
+name = "rubocopcoplintvoid_registers_an_offense_when_using_special___encoding__"
 source = '''
 def foo
-  __ENCODING__
   42
 end
 '''
@@ -1454,13 +3491,19 @@ end
 '''
 
 [[tests.offenses]]
-line = 2
+line = 1
+column_start = 2
+column_end = 4
+message = "ENCODING__"
+
+[[tests.offenses]]
+line = 1
 column_start = 2
 column_end = 14
 message = "Variable `__ENCODING__` used in void context."
 
 [[tests]]
-name = "rubocop_cop_lint_void_does_not_register_an_offense_for_if_without_body"
+name = "rubocopcoplintvoid_does_not_register_an_offense_for_if_without_body"
 source = '''
 if some_condition
 end
@@ -1470,8 +3513,156 @@ puts :ok
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_void_does_not_register_an_offense_for_nested_empty_begin"
+name = "rubocopcoplintvoid_does_not_register_an_offense_for_nested_empty_begin"
 source = '''
 ((); 1)
 '''
 offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_when_checking_for_methods_with_no_side_effects_registers_an_offense_for_nonmutating_method_that_takes_a_block"
+source = '''
+[1,2,3].collect do |n|
+  n.to_s
+end
+"done"
+'''
+corrected = '''
+[1,2,3].each do |n|
+  n.to_s
+end
+"done"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 22
+message = "Method `#collect` used in void context. Did you mean `#each`?"
+
+[[tests]]
+name = "rubocopcoplintvoid_when_checking_for_methods_with_no_side_effects_registers_an_offense_if_not_on_last_line"
+source = '''
+x.sort
+top(x)
+'''
+corrected = '''
+x.sort!
+top(x)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Method `#sort` used in void context. Did you mean `#sort!`?"
+
+[[tests]]
+name = "rubocopcoplintvoid_when_checking_for_methods_with_no_side_effects_registers_an_offense_for_chained_methods"
+source = '''
+x.sort.flatten
+top(x)
+'''
+corrected = '''
+x.sort.flatten!
+top(x)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 14
+message = "Method `#flatten` used in void context. Did you mean `#flatten!`?"
+
+[[tests]]
+name = "rubocopcoplintvoid_when_checking_for_methods_with_no_side_effects_does_not_register_an_offense_assigning_variable"
+source = '''
+foo = bar
+baz
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_when_checking_for_methods_with_no_side_effects_does_not_register_an_offense_when_using_a_method_definition"
+source = '''
+def merge
+end
+
+42
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_when_checking_for_methods_with_no_side_effects_ruby_27_registers_an_offense_for_nonmutating_method_that_takes_a_numbered_parameter_block"
+source = '''
+[1,2,3].map do
+  _1.to_s
+end
+"done"
+'''
+corrected = '''
+[1,2,3].each do
+  _1.to_s
+end
+"done"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 14
+message = "Method `#map` used in void context. Did you mean `#each`?"
+
+[[tests]]
+name = "rubocopcoplintvoid_when_checking_for_methods_with_no_side_effects_ruby_34_registers_an_offense_for_nonmutating_method_that_takes_an_it_parameter_block"
+source = '''
+[1,2,3].map do
+  it.to_s
+end
+"done"
+'''
+corrected = '''
+[1,2,3].each do
+  it.to_s
+end
+"done"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 14
+message = "Method `#map` used in void context. Did you mean `#each`?"
+
+[[tests]]
+name = "rubocopcoplintvoid_when_not_checking_for_methods_with_no_side_effects_does_not_register_an_offense_for_void_nonmutating_methods"
+source = '''
+x.sort
+top(x)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintvoid_ruby_27_registers_two_offenses_for_void_literals_in_tap_method"
+source = '''
+foo.tap do
+  _1
+  42
+end
+'''
+corrected = '''
+foo.tap do
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 4
+message = "Variable `_1` used in void context."
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 4
+message = "Literal `42` used in void context."

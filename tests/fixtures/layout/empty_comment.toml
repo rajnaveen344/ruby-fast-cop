@@ -4,7 +4,7 @@ severity = "convention"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_layout_emptycomment_registers_an_offense_and_corrects_using_single_line_empty_comment"
+name = "rubocopcoplayoutemptycomment_registers_an_offense_and_corrects_using_single_line_empty_comment"
 source = '''
 #
 '''
@@ -23,7 +23,7 @@ AllowBorderComment = true
 AllowMarginComment = true
 
 [[tests]]
-name = "rubocop_cop_layout_emptycomment_registers_an_offense_and_corrects_using_multiline_empty_comments"
+name = "rubocopcoplayoutemptycomment_registers_an_offense_and_corrects_using_multiline_empty_comments"
 source = '''
 #
 #
@@ -49,7 +49,7 @@ AllowBorderComment = true
 AllowMarginComment = true
 
 [[tests]]
-name = "rubocop_cop_layout_emptycomment_registers_an_offense_and_corrects_using_an_empty_comment_next_to_code"
+name = "rubocopcoplayoutemptycomment_registers_an_offense_and_corrects_using_an_empty_comment_next_to_code"
 source = '''
 def foo #
   something
@@ -72,7 +72,7 @@ AllowBorderComment = true
 AllowMarginComment = true
 
 [[tests]]
-name = "rubocop_cop_layout_emptycomment_registers_an_offense_and_corrects_when_using_an_empty_comment_next_to_code_after_comment_line"
+name = "rubocopcoplayoutemptycomment_registers_an_offense_and_corrects_when_using_an_empty_comment_next_to_code_after_comment_line"
 source = '''
 # comment
 def foo #
@@ -97,7 +97,7 @@ AllowBorderComment = true
 AllowMarginComment = true
 
 [[tests]]
-name = "rubocop_cop_layout_emptycomment_does_not_register_an_offense_when_using_comment_text"
+name = "rubocopcoplayoutemptycomment_does_not_register_an_offense_when_using_comment_text"
 source = '''
 # Description of `Foo` class.
 class Foo
@@ -113,7 +113,7 @@ AllowBorderComment = true
 AllowMarginComment = true
 
 [[tests]]
-name = "rubocop_cop_layout_emptycomment_does_not_register_an_offense_when_using_comment_text_with_leading_and_trailing_blank_lines"
+name = "rubocopcoplayoutemptycomment_does_not_register_an_offense_when_using_comment_text_with_leading_and_trailing_blank_lines"
 source = '''
 #
 # Description of `Foo` class.
@@ -133,7 +133,88 @@ AllowBorderComment = true
 AllowMarginComment = true
 
 [[tests]]
-name = "rubocop_cop_layout_emptycomment_allow_border_comment_default_does_not_register_an_offense_when_using_border_comment"
+name = "rubocopcoplayoutemptycomment_registers_an_offense_and_corrects_an_empty_comment_without_space_next_to_code"
+source = '''
+def foo#
+  something
+end
+'''
+corrected = '''
+def foo
+  something
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 8
+message = "Source code comment is empty."
+
+[tests.config]
+AllowBorderComment = true
+AllowMarginComment = true
+
+[[tests]]
+name = "rubocopcoplayoutemptycomment_registers_offenses_and_correct_multiple_empty_comments_next_to_code"
+source = '''
+def foo #
+  something #
+end
+'''
+corrected = '''
+def foo
+  something
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 9
+message = "Source code comment is empty."
+
+[[tests.offenses]]
+line = 2
+column_start = 12
+column_end = 13
+message = "Source code comment is empty."
+
+[tests.config]
+AllowBorderComment = true
+AllowMarginComment = true
+
+[[tests]]
+name = "rubocopcoplayoutemptycomment_registers_offenses_and_correct_multiple_aligned_empty_comments_next_to_code"
+source = '''
+def foo     #
+  something #
+end
+'''
+corrected = '''
+def foo
+  something
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 12
+column_end = 13
+message = "Source code comment is empty."
+
+[[tests.offenses]]
+line = 2
+column_start = 12
+column_end = 13
+message = "Source code comment is empty."
+
+[tests.config]
+AllowBorderComment = true
+AllowMarginComment = true
+
+[[tests]]
+name = "rubocopcoplayoutemptycomment_allow_border_comment_default_does_not_register_an_offense_when_using_border_comment"
 source = '''
 #################################
 '''
@@ -144,7 +225,7 @@ AllowBorderComment = true
 AllowMarginComment = true
 
 [[tests]]
-name = "rubocop_cop_layout_emptycomment_disallow_border_comment_registers_an_offense_and_corrects_using_single_line_empty_comment"
+name = "rubocopcoplayoutemptycomment_disallow_border_comment_registers_an_offense_and_corrects_using_single_line_empty_comment"
 source = '''
 #
 '''
@@ -160,10 +241,9 @@ message = "Source code comment is empty."
 
 [tests.config]
 AllowBorderComment = false
-AllowMarginComment = true
 
 [[tests]]
-name = "rubocop_cop_layout_emptycomment_disallow_border_comment_registers_an_offense_and_corrects_using_border_comment"
+name = "rubocopcoplayoutemptycomment_disallow_border_comment_registers_an_offense_and_corrects_using_border_comment"
 source = '''
 #################################
 '''
@@ -179,10 +259,9 @@ message = "Source code comment is empty."
 
 [tests.config]
 AllowBorderComment = false
-AllowMarginComment = true
 
 [[tests]]
-name = "rubocop_cop_layout_emptycomment_allow_margin_comment_default_does_not_register_an_offense_when_using_margin_comment"
+name = "rubocopcoplayoutemptycomment_allow_margin_comment_default_does_not_register_an_offense_when_using_margin_comment"
 source = '''
 #
 # Description of `hello` method.
@@ -193,11 +272,11 @@ end
 offenses = []
 
 [tests.config]
-AllowBorderComment = false
+AllowBorderComment = true
 AllowMarginComment = true
 
 [[tests]]
-name = "rubocop_cop_layout_emptycomment_disallow_margin_comment_registers_an_offense_and_corrects_using_margin_comment"
+name = "rubocopcoplayoutemptycomment_disallow_margin_comment_registers_an_offense_and_corrects_using_margin_comment"
 source = '''
 #
 # Description of `hello` method.
@@ -224,86 +303,4 @@ column_end = 1
 message = "Source code comment is empty."
 
 [tests.config]
-AllowBorderComment = false
-AllowMarginComment = false
-
-[[tests]]
-name = "rubocop_cop_layout_emptycomment_registers_an_offense_and_corrects_an_empty_comment_without_space_next_to_code"
-source = '''
-def foo#
-  something
-end
-'''
-corrected = '''
-def foo
-  something
-end
-'''
-
-[[tests.offenses]]
-line = 1
-column_start = 7
-column_end = 8
-message = "Source code comment is empty."
-
-[tests.config]
-AllowBorderComment = false
-AllowMarginComment = false
-
-[[tests]]
-name = "rubocop_cop_layout_emptycomment_registers_offenses_and_correct_multiple_empty_comments_next_to_code"
-source = '''
-def foo #
-  something #
-end
-'''
-corrected = '''
-def foo
-  something
-end
-'''
-
-[[tests.offenses]]
-line = 1
-column_start = 8
-column_end = 9
-message = "Source code comment is empty."
-
-[[tests.offenses]]
-line = 2
-column_start = 12
-column_end = 13
-message = "Source code comment is empty."
-
-[tests.config]
-AllowBorderComment = false
-AllowMarginComment = false
-
-[[tests]]
-name = "rubocop_cop_layout_emptycomment_registers_offenses_and_correct_multiple_aligned_empty_comments_next_to_code"
-source = '''
-def foo     #
-  something #
-end
-'''
-corrected = '''
-def foo
-  something
-end
-'''
-
-[[tests.offenses]]
-line = 1
-column_start = 12
-column_end = 13
-message = "Source code comment is empty."
-
-[[tests.offenses]]
-line = 2
-column_start = 12
-column_end = 13
-message = "Source code comment is empty."
-
-[tests.config]
-AllowBorderComment = false
 AllowMarginComment = false

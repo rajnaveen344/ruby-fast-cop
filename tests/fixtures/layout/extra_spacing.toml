@@ -4,7 +4,35 @@ severity = "convention"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_layout_extraspacing_registers_an_offense_and_corrects_alignment_with_token_not_preceded_by_space"
+name = "rubocopcoplayoutextraspacing_when_allowforalignment_is_true_registers_an_offense_and_corrects_when_a_character_is_vertically_aligned"
+source = '''
+d_is_vertically_aligned  do
+end
+'''
+corrected = '''
+d_is_vertically_aligned do
+  _______________________d
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 23
+column_end = 24
+message = "Unnecessary spacing detected."
+
+[[tests.offenses]]
+line = 1
+column_start = 2
+column_end = 25
+message = "d"
+
+[tests.config]
+AllowForAlignment = true
+ForceEqualSignAlignment = false
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowforalignment_is_true_behaves_like_common_behavior_registers_an_offense_and_corrects_alignment_with_token_not_preceded_by_space"
 source = '''
 website("example.org")
 name   = "Jill"
@@ -20,8 +48,12 @@ column_start = 4
 column_end = 6
 message = "Unnecessary spacing detected."
 
+[tests.config]
+AllowForAlignment = true
+ForceEqualSignAlignment = false
+
 [[tests]]
-name = "rubocop_cop_layout_extraspacing_accepts_aligned_values_of_an_implicit_hash_literal"
+name = "rubocopcoplayoutextraspacing_when_allowforalignment_is_true_behaves_like_common_behavior_accepts_aligned_values_of_an_implicit_hash_literal"
 source = '''
 register(street1:    '1 Market',
          street2:    '#200',
@@ -31,8 +63,12 @@ register(street1:    '1 Market',
 '''
 offenses = []
 
+[tests.config]
+AllowForAlignment = true
+ForceEqualSignAlignment = false
+
 [[tests]]
-name = "rubocop_cop_layout_extraspacing_accepts_space_between_key_and_value_in_a_hash_with_hash_rockets"
+name = "rubocopcoplayoutextraspacing_when_allowforalignment_is_true_behaves_like_common_behavior_accepts_space_between_key_and_value_in_a_hash_with_hash_rockets"
 source = '''
 ospf_h = {
   'ospfTest'    => {
@@ -55,49 +91,12 @@ ospf_h = {
 '''
 offenses = []
 
-[[tests]]
-name = "rubocop_cop_layout_extraspacing_when_spaces_are_present_in_a_single_line_hash_literal_registers_an_offense_and_corrects_hashes_with_symbol_keys"
-source = '''
-hash = {a:   1,  b:    2}
-               ^ Unnecessary spacing detected.
-'''
-corrected = '''
-hash = {a: 1, b: 2}
-'''
-
-[[tests.offenses]]
-line = 1
-column_start = 10
-column_end = 12
-message = "Unnecessary spacing detected."
-
-[[tests.offenses]]
-line = 2
-column_start = 19
-column_end = 22
-message = "Unnecessary spacing detected."
+[tests.config]
+AllowForAlignment = true
+ForceEqualSignAlignment = false
 
 [[tests]]
-name = "rubocop_cop_layout_extraspacing_when_spaces_are_present_in_a_single_line_hash_literal_registers_an_offense_and_corrects_hashes_with_hash_rockets"
-source = '''
-let(:single_line_hash) {
-  {"a"   => "1", "b" => "2"}
-}
-'''
-corrected = '''
-let(:single_line_hash) {
-  {"a" => "1", "b" => "2"}
-}
-'''
-
-[[tests.offenses]]
-line = 2
-column_start = 6
-column_end = 8
-message = "Unnecessary spacing detected."
-
-[[tests]]
-name = "rubocop_cop_layout_extraspacing_registers_an_offense_and_corrects_extra_space_before_a_float"
+name = "rubocopcoplayoutextraspacing_when_allowforalignment_is_true_behaves_like_common_behavior_registers_an_offense_and_corrects_extra_space_before_a_float"
 source = '''
 {:a => "a",
  :b => [nil,  2.5]}
@@ -113,8 +112,12 @@ column_start = 12
 column_end = 13
 message = "Unnecessary spacing detected."
 
+[tests.config]
+AllowForAlignment = true
+ForceEqualSignAlignment = false
+
 [[tests]]
-name = "rubocop_cop_layout_extraspacing_registers_an_offense_and_corrects_extra_spacing_before_a_unary_plus_in_an_argument_list"
+name = "rubocopcoplayoutextraspacing_when_allowforalignment_is_true_behaves_like_common_behavior_registers_an_offense_and_corrects_extra_spacing_before_a_unary_plus_in_an_argument_list"
 source = '''
 assert_difference(MyModel.count, +2,
                   3,  +3, # Extra spacing only here.
@@ -132,8 +135,12 @@ column_start = 20
 column_end = 21
 message = "Unnecessary spacing detected."
 
+[tests.config]
+AllowForAlignment = true
+ForceEqualSignAlignment = false
+
 [[tests]]
-name = "rubocop_cop_layout_extraspacing_registers_an_offense_and_corrects_double_extra_spacing_in_variable_assignment"
+name = "rubocopcoplayoutextraspacing_when_allowforalignment_is_true_behaves_like_common_behavior_registers_an_offense_and_corrects_double_extra_spacing_in_variable_assignment"
 source = '''
 m    = "hello"
 '''
@@ -147,22 +154,48 @@ column_start = 1
 column_end = 4
 message = "Unnecessary spacing detected."
 
+[tests.config]
+AllowForAlignment = true
+ForceEqualSignAlignment = false
+
 [[tests]]
-name = "rubocop_cop_layout_extraspacing_ignores_whitespace_at_the_beginning_of_the_line"
+name = "rubocopcoplayoutextraspacing_when_allowforalignment_is_true_behaves_like_common_behavior_ignores_whitespace_at_the_beginning_of_the_line"
 source = '''
 m = "hello"
 '''
+base_indent = 2
 offenses = []
 
+[tests.config]
+AllowForAlignment = true
+ForceEqualSignAlignment = false
+
 [[tests]]
-name = "rubocop_cop_layout_extraspacing_ignores_whitespace_inside_a_string"
+name = "rubocopcoplayoutextraspacing_when_allowforalignment_is_true_behaves_like_common_behavior_ignores_whitespace_inside_a_string"
 source = '''
 m = "hello   this"
 '''
 offenses = []
 
+[tests.config]
+AllowForAlignment = true
+ForceEqualSignAlignment = false
+
 [[tests]]
-name = "rubocop_cop_layout_extraspacing_registers_an_offense_and_corrects_extra_spacing_in_class_inheritance"
+name = "rubocopcoplayoutextraspacing_when_allowforalignment_is_true_behaves_like_common_behavior_ignores_trailing_whitespace"
+source = '''
+class Benchmarker < Performer     
+end
+'''
+base_indent = 6
+offenses = []
+
+[tests.config]
+AllowForAlignment = true
+ForceEqualSignAlignment = false
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowforalignment_is_true_behaves_like_common_behavior_registers_an_offense_and_corrects_extra_spacing_in_class_inheritance"
 source = '''
 class A   < String
 end
@@ -178,23 +211,35 @@ column_start = 7
 column_end = 9
 message = "Unnecessary spacing detected."
 
+[tests.config]
+AllowForAlignment = true
+ForceEqualSignAlignment = false
+
 [[tests]]
-name = "rubocop_cop_layout_extraspacing_when_allowforalignment_is_true_registers_an_offense_and_corrects_when_a_character_is_vertically_aligned"
+name = "rubocopcoplayoutextraspacing_when_allowforalignment_is_true_behaves_like_common_behavior_when_spaces_are_present_in_a_singleline_hash_literal_registers_an_offense_and_corrects_hashes_with_symbol_keys"
 source = '''
-d_is_vertically_aligned  do
-  _______________________d
-end
+hash = {a:   1,  b:    2}
 '''
 corrected = '''
-d_is_vertically_aligned do
-  _______________________d
-end
+hash = {a: 1, b: 2}
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 23
-column_end = 24
+column_start = 10
+column_end = 12
+message = "Unnecessary spacing detected."
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 16
+message = "Unnecessary spacing detected."
+
+[[tests.offenses]]
+line = 1
+column_start = 19
+column_end = 22
 message = "Unnecessary spacing detected."
 
 [tests.config]
@@ -202,26 +247,1068 @@ AllowForAlignment = true
 ForceEqualSignAlignment = false
 
 [[tests]]
-name = "rubocop_cop_layout_extraspacing_when_allowbeforetrailingcomments_is_true_allows_it"
+name = "rubocopcoplayoutextraspacing_when_allowforalignment_is_true_behaves_like_common_behavior_when_spaces_are_present_in_a_singleline_hash_literal_registers_an_offense_and_corrects_hashes_with_hash_rockets"
 source = '''
-object.method(argument)  # this is a comment
+let(:single_line_hash) {
+  {"a"   => "1", "b" => "2"}
+}
 '''
-interpolated = true
-verified = false
-offenses = []
+corrected = '''
+let(:single_line_hash) {
+  {"a" => "1", "b" => "2"}
+}
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 8
+message = "Unnecessary spacing detected."
 
 [tests.config]
-AllowBeforeTrailingComments = "$UNRESOLVED:allow_comments"
-AllowForAlignment = "$UNRESOLVED:allow_alignment"
+AllowForAlignment = true
 ForceEqualSignAlignment = false
 
 [[tests]]
-name = "rubocop_cop_layout_extraspacing_when_allowbeforetrailingcomments_is_false_registers_an_offense"
+name = "rubocopcoplayoutextraspacing_when_allowforalignment_is_true_with_extra_spacing_for_alignment_purposes_such_as_lining_up_assignments_allows_it"
+source = '''
+website = "example.org"
+name    = "Jill"
+'''
+offenses = []
+
+[tests.config]
+AllowForAlignment = true
+ForceEqualSignAlignment = false
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowforalignment_is_true_with_extra_spacing_for_alignment_purposes_such_as_lining_up_assignments_with_empty_lines_and_comments_in_between_allows_it"
+source = '''
+a   += 1
+
+# Comment
+aa   = 2
+bb   = 3
+
+a  ||= 1
+'''
+offenses = []
+
+[tests.config]
+AllowForAlignment = true
+ForceEqualSignAlignment = false
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowforalignment_is_true_with_extra_spacing_for_alignment_purposes_such_as_aligning_with_the_same_character_allows_it"
+source = '''
+y, m = (year * 12 + (mon - 1) + n).divmod(12)
+m,   = (m + 1)                    .divmod(1)
+'''
+offenses = []
+
+[tests.config]
+AllowForAlignment = true
+ForceEqualSignAlignment = false
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowforalignment_is_true_with_extra_spacing_for_alignment_purposes_such_as_lining_up_different_kinds_of_assignments_allows_it"
+source = '''
+type_name ||= value.class.name if value
+type_name   = type_name.to_s   if type_name
+
+type_name  = value.class.name if     value
+type_name += type_name.to_s   unless type_name
+a  += 1
+aa -= 2
+'''
+offenses = []
+
+[tests.config]
+AllowForAlignment = true
+ForceEqualSignAlignment = false
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowforalignment_is_true_with_extra_spacing_for_alignment_purposes_such_as_aligning_comments_on_nonadjacent_lines_allows_it"
+source = '''
+include_examples 'aligned',   'var = until',  'test'
+
+include_examples 'unaligned', "var = if",     'test'
+'''
+offenses = []
+
+[tests.config]
+AllowForAlignment = true
+ForceEqualSignAlignment = false
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowforalignment_is_true_with_extra_spacing_for_alignment_purposes_such_as_aligning_tokens_with_empty_line_between_allows_it"
+source = '''
+unless nochdir
+  Dir.chdir "/"    # Release old working directory.
+end
+
+File.umask 0000    # Ensure sensible umask.
+'''
+offenses = []
+
+[tests.config]
+AllowForAlignment = true
+ForceEqualSignAlignment = false
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowforalignment_is_true_with_extra_spacing_for_alignment_purposes_such_as_aligning_long_assignment_expressions_that_include_line_breaks_allows_it"
+source = '''
+size_attribute_name    = FactoryGirl.create(:attribute,
+                                            name:   'Size',
+                                            values: %w{small large})
+carrier_attribute_name = FactoryGirl.create(:attribute,
+                                            name:   'Carrier',
+                                            values: %w{verizon})
+'''
+offenses = []
+
+[tests.config]
+AllowForAlignment = true
+ForceEqualSignAlignment = false
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowforalignment_is_true_with_extra_spacing_for_alignment_purposes_such_as_aligning__on_lines_where_there_are_trailing_comments_allows_it"
+source = '''
+a_long_var_name = 100 # this is 100
+short_name1     = 2
+
+clear
+
+short_name2     = 2
+a_long_var_name = 100 # this is 100
+
+clear
+
+short_name3     = 2 # this is 2
+a_long_var_name = 100 # this is 100
+'''
+offenses = []
+
+[tests.config]
+AllowForAlignment = true
+ForceEqualSignAlignment = false
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowforalignment_is_true_with_extra_spacing_for_alignment_purposes_such_as_aligning_trailing_comments_allows_it"
+source = '''
+a_long_var_name = 2   # this is 2
+a_long_var_name = 100 # this is 100
+'''
+offenses = []
+
+[tests.config]
+AllowForAlignment = true
+ForceEqualSignAlignment = false
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowforalignment_is_false_behaves_like_common_behavior_registers_an_offense_and_corrects_alignment_with_token_not_preceded_by_space"
+source = '''
+website("example.org")
+name   = "Jill"
+'''
+corrected = '''
+website("example.org")
+name = "Jill"
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 4
+column_end = 6
+message = "Unnecessary spacing detected."
+
+[tests.config]
+AllowForAlignment = false
+ForceEqualSignAlignment = false
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowforalignment_is_false_behaves_like_common_behavior_accepts_aligned_values_of_an_implicit_hash_literal"
+source = '''
+register(street1:    '1 Market',
+         street2:    '#200',
+         :city =>    'Some Town',
+         state:      'CA',
+         postal_code:'99999-1111')
+'''
+offenses = []
+
+[tests.config]
+AllowForAlignment = false
+ForceEqualSignAlignment = false
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowforalignment_is_false_behaves_like_common_behavior_accepts_space_between_key_and_value_in_a_hash_with_hash_rockets"
+source = '''
+ospf_h = {
+  'ospfTest'    => {
+    'foo'      => {
+      area: '0.0.0.0', cost: 10, hello: 30, pass: true },
+    'longname' => {
+      area: '1.1.1.38', pass: false },
+    'vlan101'  => {
+      area: '2.2.2.101', cost: 5, hello: 20, pass: true }
+  },
+  'TestOspfInt' => {
+    'x'               => {
+      area: '0.0.0.19' },
+    'vlan290'         => {
+      area: '2.2.2.29', cost: 200, hello: 30, pass: true },
+    'port-channel100' => {
+      area: '3.2.2.29', cost: 25, hello: 50, pass: false }
+  }
+}
+'''
+offenses = []
+
+[tests.config]
+AllowForAlignment = false
+ForceEqualSignAlignment = false
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowforalignment_is_false_behaves_like_common_behavior_registers_an_offense_and_corrects_extra_space_before_a_float"
+source = '''
+{:a => "a",
+ :b => [nil,  2.5]}
+'''
+corrected = '''
+{:a => "a",
+ :b => [nil, 2.5]}
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 12
+column_end = 13
+message = "Unnecessary spacing detected."
+
+[tests.config]
+AllowForAlignment = false
+ForceEqualSignAlignment = false
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowforalignment_is_false_behaves_like_common_behavior_registers_an_offense_and_corrects_extra_spacing_before_a_unary_plus_in_an_argument_list"
+source = '''
+assert_difference(MyModel.count, +2,
+                  3,  +3, # Extra spacing only here.
+                  4,+4)
+'''
+corrected = '''
+assert_difference(MyModel.count, +2,
+                  3, +3, # Extra spacing only here.
+                  4,+4)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 20
+column_end = 21
+message = "Unnecessary spacing detected."
+
+[tests.config]
+AllowForAlignment = false
+ForceEqualSignAlignment = false
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowforalignment_is_false_behaves_like_common_behavior_registers_an_offense_and_corrects_double_extra_spacing_in_variable_assignment"
+source = '''
+m    = "hello"
+'''
+corrected = '''
+m = "hello"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 1
+column_end = 4
+message = "Unnecessary spacing detected."
+
+[tests.config]
+AllowForAlignment = false
+ForceEqualSignAlignment = false
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowforalignment_is_false_behaves_like_common_behavior_ignores_whitespace_at_the_beginning_of_the_line"
+source = '''
+m = "hello"
+'''
+base_indent = 2
+offenses = []
+
+[tests.config]
+AllowForAlignment = false
+ForceEqualSignAlignment = false
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowforalignment_is_false_behaves_like_common_behavior_ignores_whitespace_inside_a_string"
+source = '''
+m = "hello   this"
+'''
+offenses = []
+
+[tests.config]
+AllowForAlignment = false
+ForceEqualSignAlignment = false
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowforalignment_is_false_behaves_like_common_behavior_ignores_trailing_whitespace"
+source = '''
+class Benchmarker < Performer     
+end
+'''
+base_indent = 6
+offenses = []
+
+[tests.config]
+AllowForAlignment = false
+ForceEqualSignAlignment = false
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowforalignment_is_false_behaves_like_common_behavior_registers_an_offense_and_corrects_extra_spacing_in_class_inheritance"
+source = '''
+class A   < String
+end
+'''
+corrected = '''
+class A < String
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 9
+message = "Unnecessary spacing detected."
+
+[tests.config]
+AllowForAlignment = false
+ForceEqualSignAlignment = false
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowforalignment_is_false_behaves_like_common_behavior_when_spaces_are_present_in_a_singleline_hash_literal_registers_an_offense_and_corrects_hashes_with_symbol_keys"
+source = '''
+hash = {a:   1,  b:    2}
+'''
+corrected = '''
+hash = {a: 1, b: 2}
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 10
+column_end = 12
+message = "Unnecessary spacing detected."
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 16
+message = "Unnecessary spacing detected."
+
+[[tests.offenses]]
+line = 1
+column_start = 19
+column_end = 22
+message = "Unnecessary spacing detected."
+
+[tests.config]
+AllowForAlignment = false
+ForceEqualSignAlignment = false
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowforalignment_is_false_behaves_like_common_behavior_when_spaces_are_present_in_a_singleline_hash_literal_registers_an_offense_and_corrects_hashes_with_hash_rockets"
+source = '''
+let(:single_line_hash) {
+  {"a"   => "1", "b" => "2"}
+}
+'''
+corrected = '''
+let(:single_line_hash) {
+  {"a" => "1", "b" => "2"}
+}
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 6
+column_end = 8
+message = "Unnecessary spacing detected."
+
+[tests.config]
+AllowForAlignment = false
+ForceEqualSignAlignment = false
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowforalignment_is_false_with_extra_spacing_for_alignment_purposes_such_as_lining_up_assignments_registers_offenses"
+source = '''
+website = "example.org"
+name    = "Jill"
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 4
+column_end = 7
+message = "Unnecessary spacing detected."
+
+[tests.config]
+AllowForAlignment = false
+ForceEqualSignAlignment = false
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowforalignment_is_false_with_extra_spacing_for_alignment_purposes_such_as_lining_up_assignments_with_empty_lines_and_comments_in_between_registers_offenses"
+source = '''
+a   += 1
+
+# Comment
+aa   = 2
+bb   = 3
+
+a  ||= 1
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 1
+column_end = 3
+message = "Unnecessary spacing detected."
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 4
+message = "Unnecessary spacing detected."
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 4
+message = "Unnecessary spacing detected."
+
+[[tests.offenses]]
+line = 7
+column_start = 1
+column_end = 2
+message = "Unnecessary spacing detected."
+
+[tests.config]
+AllowForAlignment = false
+ForceEqualSignAlignment = false
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowforalignment_is_false_with_extra_spacing_for_alignment_purposes_such_as_aligning_with_the_same_character_registers_offenses"
+source = '''
+y, m = (year * 12 + (mon - 1) + n).divmod(12)
+m,   = (m + 1)                    .divmod(1)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 14
+column_end = 33
+message = "Unnecessary spacing detected."
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 4
+message = "Unnecessary spacing detected."
+
+[tests.config]
+AllowForAlignment = false
+ForceEqualSignAlignment = false
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowforalignment_is_false_with_extra_spacing_for_alignment_purposes_such_as_lining_up_different_kinds_of_assignments_registers_offenses"
+source = '''
+type_name ||= value.class.name if value
+type_name   = type_name.to_s   if type_name
+
+type_name  = value.class.name if     value
+type_name += type_name.to_s   unless type_name
+a  += 1
+aa -= 2
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 28
+column_end = 30
+message = "Unnecessary spacing detected."
+
+[[tests.offenses]]
+line = 2
+column_start = 9
+column_end = 11
+message = "Unnecessary spacing detected."
+
+[[tests.offenses]]
+line = 4
+column_start = 32
+column_end = 36
+message = "Unnecessary spacing detected."
+
+[[tests.offenses]]
+line = 4
+column_start = 9
+column_end = 10
+message = "Unnecessary spacing detected."
+
+[[tests.offenses]]
+line = 5
+column_start = 27
+column_end = 29
+message = "Unnecessary spacing detected."
+
+[[tests.offenses]]
+line = 6
+column_start = 1
+column_end = 2
+message = "Unnecessary spacing detected."
+
+[tests.config]
+AllowForAlignment = false
+ForceEqualSignAlignment = false
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowforalignment_is_false_with_extra_spacing_for_alignment_purposes_such_as_aligning_comments_on_nonadjacent_lines_registers_offenses"
+source = '''
+include_examples 'aligned',   'var = until',  'test'
+
+include_examples 'unaligned', "var = if",     'test'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 44
+column_end = 45
+message = "Unnecessary spacing detected."
+
+[[tests.offenses]]
+line = 1
+column_start = 27
+column_end = 29
+message = "Unnecessary spacing detected."
+
+[[tests.offenses]]
+line = 3
+column_start = 41
+column_end = 45
+message = "Unnecessary spacing detected."
+
+[tests.config]
+AllowForAlignment = false
+ForceEqualSignAlignment = false
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowforalignment_is_false_with_extra_spacing_for_alignment_purposes_such_as_aligning_tokens_with_empty_line_between_registers_offenses"
+source = '''
+unless nochdir
+  Dir.chdir "/"    # Release old working directory.
+end
+
+File.umask 0000    # Ensure sensible umask.
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 15
+column_end = 18
+message = "Unnecessary spacing detected."
+
+[[tests.offenses]]
+line = 5
+column_start = 15
+column_end = 18
+message = "Unnecessary spacing detected."
+
+[tests.config]
+AllowForAlignment = false
+ForceEqualSignAlignment = false
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowforalignment_is_false_with_extra_spacing_for_alignment_purposes_such_as_aligning_long_assignment_expressions_that_include_line_breaks_registers_offenses"
+source = '''
+size_attribute_name    = FactoryGirl.create(:attribute,
+                                            name:   'Size',
+                                            values: %w{small large})
+carrier_attribute_name = FactoryGirl.create(:attribute,
+                                            name:   'Carrier',
+                                            values: %w{verizon})
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 19
+column_end = 22
+message = "Unnecessary spacing detected."
+
+[tests.config]
+AllowForAlignment = false
+ForceEqualSignAlignment = false
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowforalignment_is_false_with_extra_spacing_for_alignment_purposes_such_as_aligning__on_lines_where_there_are_trailing_comments_registers_offenses"
+source = '''
+a_long_var_name = 100 # this is 100
+short_name1     = 2
+
+clear
+
+short_name2     = 2
+a_long_var_name = 100 # this is 100
+
+clear
+
+short_name3     = 2 # this is 2
+a_long_var_name = 100 # this is 100
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 11
+column_end = 15
+message = "Unnecessary spacing detected."
+
+[[tests.offenses]]
+line = 6
+column_start = 11
+column_end = 15
+message = "Unnecessary spacing detected."
+
+[[tests.offenses]]
+line = 11
+column_start = 11
+column_end = 15
+message = "Unnecessary spacing detected."
+
+[tests.config]
+AllowForAlignment = false
+ForceEqualSignAlignment = false
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowforalignment_is_false_with_extra_spacing_for_alignment_purposes_such_as_aligning_trailing_comments_registers_offenses"
+source = '''
+a_long_var_name = 2   # this is 2
+a_long_var_name = 100 # this is 100
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 19
+column_end = 21
+message = "Unnecessary spacing detected."
+
+[tests.config]
+AllowForAlignment = false
+ForceEqualSignAlignment = false
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowbeforetrailingcomments_is_true_allows_it"
 source = '''
 object.method(argument)  # this is a comment
 '''
-interpolated = true
-verified = false
+offenses = []
+
+[tests.config]
+AllowBeforeTrailingComments = true
+AllowForAlignment = false
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowbeforetrailingcomments_is_true_doesnt_interfere_with_allowforalignment_being_true_such_as_lining_up_assignments_allows_it"
+source = '''
+website = "example.org"
+name    = "Jill"
+'''
+offenses = []
+
+[tests.config]
+AllowBeforeTrailingComments = true
+AllowForAlignment = true
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowbeforetrailingcomments_is_true_doesnt_interfere_with_allowforalignment_being_true_such_as_lining_up_assignments_with_empty_lines_and_comments_in_between_allows_it"
+source = '''
+a   += 1
+
+# Comment
+aa   = 2
+bb   = 3
+
+a  ||= 1
+'''
+offenses = []
+
+[tests.config]
+AllowBeforeTrailingComments = true
+AllowForAlignment = true
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowbeforetrailingcomments_is_true_doesnt_interfere_with_allowforalignment_being_true_such_as_aligning_with_the_same_character_allows_it"
+source = '''
+y, m = (year * 12 + (mon - 1) + n).divmod(12)
+m,   = (m + 1)                    .divmod(1)
+'''
+offenses = []
+
+[tests.config]
+AllowBeforeTrailingComments = true
+AllowForAlignment = true
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowbeforetrailingcomments_is_true_doesnt_interfere_with_allowforalignment_being_true_such_as_lining_up_different_kinds_of_assignments_allows_it"
+source = '''
+type_name ||= value.class.name if value
+type_name   = type_name.to_s   if type_name
+
+type_name  = value.class.name if     value
+type_name += type_name.to_s   unless type_name
+a  += 1
+aa -= 2
+'''
+offenses = []
+
+[tests.config]
+AllowBeforeTrailingComments = true
+AllowForAlignment = true
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowbeforetrailingcomments_is_true_doesnt_interfere_with_allowforalignment_being_true_such_as_aligning_comments_on_nonadjacent_lines_allows_it"
+source = '''
+include_examples 'aligned',   'var = until',  'test'
+
+include_examples 'unaligned', "var = if",     'test'
+'''
+offenses = []
+
+[tests.config]
+AllowBeforeTrailingComments = true
+AllowForAlignment = true
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowbeforetrailingcomments_is_true_doesnt_interfere_with_allowforalignment_being_true_such_as_aligning_tokens_with_empty_line_between_allows_it"
+source = '''
+unless nochdir
+  Dir.chdir "/"    # Release old working directory.
+end
+
+File.umask 0000    # Ensure sensible umask.
+'''
+offenses = []
+
+[tests.config]
+AllowBeforeTrailingComments = true
+AllowForAlignment = true
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowbeforetrailingcomments_is_true_doesnt_interfere_with_allowforalignment_being_true_such_as_aligning_long_assignment_expressions_that_include_line_breaks_allows_it"
+source = '''
+size_attribute_name    = FactoryGirl.create(:attribute,
+                                            name:   'Size',
+                                            values: %w{small large})
+carrier_attribute_name = FactoryGirl.create(:attribute,
+                                            name:   'Carrier',
+                                            values: %w{verizon})
+'''
+offenses = []
+
+[tests.config]
+AllowBeforeTrailingComments = true
+AllowForAlignment = true
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowbeforetrailingcomments_is_true_doesnt_interfere_with_allowforalignment_being_true_such_as_aligning__on_lines_where_there_are_trailing_comments_allows_it"
+source = '''
+a_long_var_name = 100 # this is 100
+short_name1     = 2
+
+clear
+
+short_name2     = 2
+a_long_var_name = 100 # this is 100
+
+clear
+
+short_name3     = 2 # this is 2
+a_long_var_name = 100 # this is 100
+'''
+offenses = []
+
+[tests.config]
+AllowBeforeTrailingComments = true
+AllowForAlignment = true
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowbeforetrailingcomments_is_true_doesnt_interfere_with_allowforalignment_being_true_such_as_aligning_trailing_comments_allows_it"
+source = '''
+a_long_var_name = 2   # this is 2
+a_long_var_name = 100 # this is 100
+'''
+offenses = []
+
+[tests.config]
+AllowBeforeTrailingComments = true
+AllowForAlignment = true
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowbeforetrailingcomments_is_true_doesnt_interfere_with_allowforalignment_being_false_such_as_lining_up_assignments_registers_offenses"
+source = '''
+website = "example.org"
+name    = "Jill"
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 4
+column_end = 7
+message = "Unnecessary spacing detected."
+
+[tests.config]
+AllowBeforeTrailingComments = true
+AllowForAlignment = false
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowbeforetrailingcomments_is_true_doesnt_interfere_with_allowforalignment_being_false_such_as_lining_up_assignments_with_empty_lines_and_comments_in_between_registers_offenses"
+source = '''
+a   += 1
+
+# Comment
+aa   = 2
+bb   = 3
+
+a  ||= 1
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 1
+column_end = 3
+message = "Unnecessary spacing detected."
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 4
+message = "Unnecessary spacing detected."
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 4
+message = "Unnecessary spacing detected."
+
+[[tests.offenses]]
+line = 7
+column_start = 1
+column_end = 2
+message = "Unnecessary spacing detected."
+
+[tests.config]
+AllowBeforeTrailingComments = true
+AllowForAlignment = false
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowbeforetrailingcomments_is_true_doesnt_interfere_with_allowforalignment_being_false_such_as_aligning_with_the_same_character_registers_offenses"
+source = '''
+y, m = (year * 12 + (mon - 1) + n).divmod(12)
+m,   = (m + 1)                    .divmod(1)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 14
+column_end = 33
+message = "Unnecessary spacing detected."
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 4
+message = "Unnecessary spacing detected."
+
+[tests.config]
+AllowBeforeTrailingComments = true
+AllowForAlignment = false
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowbeforetrailingcomments_is_true_doesnt_interfere_with_allowforalignment_being_false_such_as_lining_up_different_kinds_of_assignments_registers_offenses"
+source = '''
+type_name ||= value.class.name if value
+type_name   = type_name.to_s   if type_name
+
+type_name  = value.class.name if     value
+type_name += type_name.to_s   unless type_name
+a  += 1
+aa -= 2
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 28
+column_end = 30
+message = "Unnecessary spacing detected."
+
+[[tests.offenses]]
+line = 2
+column_start = 9
+column_end = 11
+message = "Unnecessary spacing detected."
+
+[[tests.offenses]]
+line = 4
+column_start = 32
+column_end = 36
+message = "Unnecessary spacing detected."
+
+[[tests.offenses]]
+line = 4
+column_start = 9
+column_end = 10
+message = "Unnecessary spacing detected."
+
+[[tests.offenses]]
+line = 5
+column_start = 27
+column_end = 29
+message = "Unnecessary spacing detected."
+
+[[tests.offenses]]
+line = 6
+column_start = 1
+column_end = 2
+message = "Unnecessary spacing detected."
+
+[tests.config]
+AllowBeforeTrailingComments = true
+AllowForAlignment = false
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowbeforetrailingcomments_is_true_doesnt_interfere_with_allowforalignment_being_false_such_as_aligning_comments_on_nonadjacent_lines_registers_offenses"
+source = '''
+include_examples 'aligned',   'var = until',  'test'
+
+include_examples 'unaligned', "var = if",     'test'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 44
+column_end = 45
+message = "Unnecessary spacing detected."
+
+[[tests.offenses]]
+line = 1
+column_start = 27
+column_end = 29
+message = "Unnecessary spacing detected."
+
+[[tests.offenses]]
+line = 3
+column_start = 41
+column_end = 45
+message = "Unnecessary spacing detected."
+
+[tests.config]
+AllowBeforeTrailingComments = true
+AllowForAlignment = false
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowbeforetrailingcomments_is_true_doesnt_interfere_with_allowforalignment_being_false_such_as_aligning_tokens_with_empty_line_between_does_not_register_an_offense"
+source = '''
+unless nochdir
+  Dir.chdir "/"    # Release old working directory.
+end
+
+File.umask 0000    # Ensure sensible umask.
+'''
+offenses = []
+
+[tests.config]
+AllowBeforeTrailingComments = true
+AllowForAlignment = false
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowbeforetrailingcomments_is_true_doesnt_interfere_with_allowforalignment_being_false_such_as_aligning_long_assignment_expressions_that_include_line_breaks_registers_offenses"
+source = '''
+size_attribute_name    = FactoryGirl.create(:attribute,
+                                            name:   'Size',
+                                            values: %w{small large})
+carrier_attribute_name = FactoryGirl.create(:attribute,
+                                            name:   'Carrier',
+                                            values: %w{verizon})
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 19
+column_end = 22
+message = "Unnecessary spacing detected."
+
+[tests.config]
+AllowBeforeTrailingComments = true
+AllowForAlignment = false
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowbeforetrailingcomments_is_true_doesnt_interfere_with_allowforalignment_being_false_such_as_aligning__on_lines_where_there_are_trailing_comments_registers_offenses"
+source = '''
+a_long_var_name = 100 # this is 100
+short_name1     = 2
+
+clear
+
+short_name2     = 2
+a_long_var_name = 100 # this is 100
+
+clear
+
+short_name3     = 2 # this is 2
+a_long_var_name = 100 # this is 100
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 11
+column_end = 15
+message = "Unnecessary spacing detected."
+
+[[tests.offenses]]
+line = 6
+column_start = 11
+column_end = 15
+message = "Unnecessary spacing detected."
+
+[[tests.offenses]]
+line = 11
+column_start = 11
+column_end = 15
+message = "Unnecessary spacing detected."
+
+[tests.config]
+AllowBeforeTrailingComments = true
+AllowForAlignment = false
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowbeforetrailingcomments_is_true_doesnt_interfere_with_allowforalignment_being_false_such_as_aligning_trailing_comments_does_not_register_an_offense"
+source = '''
+a_long_var_name = 2   # this is 2
+a_long_var_name = 100 # this is 100
+'''
+offenses = []
+
+[tests.config]
+AllowBeforeTrailingComments = true
+AllowForAlignment = false
+
+[[tests]]
+name = "rubocopcoplayoutextraspacing_when_allowbeforetrailingcomments_is_false_registers_an_offense"
+source = '''
+object.method(argument)  # this is a comment
+'''
 
 [[tests.offenses]]
 line = 1
@@ -230,26 +1317,22 @@ column_end = 24
 message = "Unnecessary spacing detected."
 
 [tests.config]
-AllowBeforeTrailingComments = "$UNRESOLVED:allow_comments"
-AllowForAlignment = "$UNRESOLVED:allow_alignment"
-ForceEqualSignAlignment = false
+AllowBeforeTrailingComments = false
+AllowForAlignment = false
 
 [[tests]]
-name = "rubocop_cop_layout_extraspacing_when_allowbeforetrailingcomments_is_false_does_not_trigger_on_only_one_space_before_comment"
+name = "rubocopcoplayoutextraspacing_when_allowbeforetrailingcomments_is_false_does_not_trigger_on_only_one_space_before_comment"
 source = '''
 object.method(argument) # this is a comment
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-AllowBeforeTrailingComments = "$UNRESOLVED:allow_comments"
-AllowForAlignment = "$UNRESOLVED:allow_alignment"
-ForceEqualSignAlignment = false
+AllowBeforeTrailingComments = false
+AllowForAlignment = false
 
 [[tests]]
-name = "rubocop_cop_layout_extraspacing_when_forceequalsignalignment_is_true_does_not_register_offenses_for_multiple_complex_nested_assignments"
+name = "rubocopcoplayoutextraspacing_when_forceequalsignalignment_is_true_does_not_register_offenses_for_multiple_complex_nested_assignments"
 source = '''
 def batch
   @areas   = params[:param].map {
@@ -273,17 +1356,14 @@ def batch
   render json: @areas
 end
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-AllowBeforeTrailingComments = "$UNRESOLVED:allow_comments"
 AllowForAlignment = true
 ForceEqualSignAlignment = true
 
 [[tests]]
-name = "rubocop_cop_layout_extraspacing_when_forceequalsignalignment_is_true_does_not_register_an_offense_if_assignments_are_separated_by_blanks"
+name = "rubocopcoplayoutextraspacing_when_forceequalsignalignment_is_true_does_not_register_an_offense_if_assignments_are_separated_by_blanks"
 source = '''
 a = 1
 
@@ -291,65 +1371,53 @@ bb = 2
 
 ccc = 3
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-AllowBeforeTrailingComments = "$UNRESOLVED:allow_comments"
 AllowForAlignment = true
 ForceEqualSignAlignment = true
 
 [[tests]]
-name = "rubocop_cop_layout_extraspacing_when_forceequalsignalignment_is_true_does_not_register_an_offense_if_assignments_are_aligned"
+name = "rubocopcoplayoutextraspacing_when_forceequalsignalignment_is_true_does_not_register_an_offense_if_assignments_are_aligned"
 source = '''
 a   = 1
 bb  = 2
 ccc = 3
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-AllowBeforeTrailingComments = "$UNRESOLVED:allow_comments"
 AllowForAlignment = true
 ForceEqualSignAlignment = true
 
 [[tests]]
-name = "rubocop_cop_layout_extraspacing_when_forceequalsignalignment_is_true_aligns_the_first_assignment_with_the_following_assignment"
+name = "rubocopcoplayoutextraspacing_when_forceequalsignalignment_is_true_aligns_the_first_assignment_with_the_following_assignment"
 source = '''
 # comment
 a   = 1
 bb  = 2
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-AllowBeforeTrailingComments = "$UNRESOLVED:allow_comments"
 AllowForAlignment = true
 ForceEqualSignAlignment = true
 
 [[tests]]
-name = "rubocop_cop_layout_extraspacing_when_forceequalsignalignment_is_true_does_not_register_alignment_errors_on_outdented_lines"
+name = "rubocopcoplayoutextraspacing_when_forceequalsignalignment_is_true_does_not_register_alignment_errors_on_outdented_lines"
 source = '''
 @areas = params[:param].map do |ca_params|
            ca_params = ActionController::Parameters.new(stuff)
          end
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-AllowBeforeTrailingComments = "$UNRESOLVED:allow_comments"
 AllowForAlignment = true
 ForceEqualSignAlignment = true
 
 [[tests]]
-name = "rubocop_cop_layout_extraspacing_when_forceequalsignalignment_is_true_registers_an_offense_and_corrects_consecutive_assignments_that_are_not_aligned"
+name = "rubocopcoplayoutextraspacing_when_forceequalsignalignment_is_true_registers_an_offense_and_corrects_consecutive_assignments_that_are_not_aligned"
 source = '''
 a = 1
 bb = 2
@@ -368,8 +1436,6 @@ abcde = 1
 a     = 2
 abc   = 3
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 2
@@ -396,12 +1462,11 @@ column_end = 5
 message = "`=` is not aligned with the preceding assignment."
 
 [tests.config]
-AllowBeforeTrailingComments = "$UNRESOLVED:allow_comments"
 AllowForAlignment = true
 ForceEqualSignAlignment = true
 
 [[tests]]
-name = "rubocop_cop_layout_extraspacing_when_forceequalsignalignment_is_true_registers_offenses_and_correct_consecutive_operator_assignments_which_are_not_aligned"
+name = "rubocopcoplayoutextraspacing_when_forceequalsignalignment_is_true_registers_offenses_and_correct_consecutive_operator_assignments_which_are_not_aligned"
 source = '''
 a += 1
 bb = 2
@@ -420,8 +1485,6 @@ abcde = 1
 a    *= 2
 abc ||= 3
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 3
@@ -442,12 +1505,11 @@ column_end = 7
 message = "`=` is not aligned with the preceding assignment."
 
 [tests.config]
-AllowBeforeTrailingComments = "$UNRESOLVED:allow_comments"
 AllowForAlignment = true
 ForceEqualSignAlignment = true
 
 [[tests]]
-name = "rubocop_cop_layout_extraspacing_when_forceequalsignalignment_is_true_registers_an_offense_and_corrects_consecutive_aref_assignments_which_are_not_aligned"
+name = "rubocopcoplayoutextraspacing_when_forceequalsignalignment_is_true_registers_an_offense_and_corrects_consecutive_aref_assignments_which_are_not_aligned"
 source = '''
 a[1] = 1
 bb[2,3] = 2
@@ -466,8 +1528,6 @@ abcde[0] = 1
 a        = 2
 abc     += 3
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 2
@@ -494,12 +1554,11 @@ column_end = 6
 message = "`=` is not aligned with the preceding assignment."
 
 [tests.config]
-AllowBeforeTrailingComments = "$UNRESOLVED:allow_comments"
 AllowForAlignment = true
 ForceEqualSignAlignment = true
 
 [[tests]]
-name = "rubocop_cop_layout_extraspacing_when_forceequalsignalignment_is_true_registers_offenses_and_correct_consecutive_attribute_assignments_which_are_not_aligned"
+name = "rubocopcoplayoutextraspacing_when_forceequalsignalignment_is_true_registers_offenses_and_correct_consecutive_attribute_assignments_which_are_not_aligned"
 source = '''
 a.attr = 1
 bb &&= 2
@@ -518,8 +1577,6 @@ abcde.blah       = 1
 a.attribute_name = 2
 abc[1]           = 3
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 2
@@ -546,12 +1603,11 @@ column_end = 8
 message = "`=` is not aligned with the preceding assignment."
 
 [tests.config]
-AllowBeforeTrailingComments = "$UNRESOLVED:allow_comments"
 AllowForAlignment = true
 ForceEqualSignAlignment = true
 
 [[tests]]
-name = "rubocop_cop_layout_extraspacing_when_forceequalsignalignment_is_true_registers_offenses_and_correct_complex_nested_assignments"
+name = "rubocopcoplayoutextraspacing_when_forceequalsignalignment_is_true_registers_offenses_and_correct_complex_nested_assignments"
 source = '''
 def batch
   @areas = params[:param].map {
@@ -598,8 +1654,6 @@ def batch
   render json: @areas
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 4
@@ -638,28 +1692,24 @@ column_end = 22
 message = "`=` is not aligned with the preceding assignment."
 
 [tests.config]
-AllowBeforeTrailingComments = "$UNRESOLVED:allow_comments"
 AllowForAlignment = true
 ForceEqualSignAlignment = true
 
 [[tests]]
-name = "rubocop_cop_layout_extraspacing_when_forceequalsignalignment_is_true"
+name = "rubocopcoplayoutextraspacing_when_forceequalsignalignment_is_true_does_not_register_an_offense_when_optarg_equals_is_not_aligned_with_assignment_equals_sign"
 source = '''
 def method(arg = 1)
   var = arg
 end
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-AllowBeforeTrailingComments = "$UNRESOLVED:allow_comments"
 AllowForAlignment = true
 ForceEqualSignAlignment = true
 
 [[tests]]
-name = "rubocop_cop_layout_extraspacing_when_forceequalsignalignment_is_true_registers_an_offense_and_corrects_when_there_is_in_a_string_after_assignment"
+name = "rubocopcoplayoutextraspacing_when_forceequalsignalignment_is_true_registers_an_offense_and_corrects_when_there_is__in_a_string_after_assignment"
 source = '''
 e, f = val.split('=')
 opt.ssh_config[e] = f
@@ -668,8 +1718,6 @@ corrected = '''
 e, f              = val.split('=')
 opt.ssh_config[e] = f
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 2
@@ -678,12 +1726,11 @@ column_end = 19
 message = "`=` is not aligned with the preceding assignment."
 
 [tests.config]
-AllowBeforeTrailingComments = "$UNRESOLVED:allow_comments"
 AllowForAlignment = true
 ForceEqualSignAlignment = true
 
 [[tests]]
-name = "rubocop_cop_layout_extraspacing_when_forceequalsignalignment_is_true_registers_an_offense_and_corrects_with_op_asgn_when_there_is_in_a_string_after_assignment"
+name = "rubocopcoplayoutextraspacing_when_forceequalsignalignment_is_true_registers_an_offense_and_corrects_with_opasgn_when_there_is__in_a_string_after_assignment"
 source = '''
 xy &&= val.split('=')
 opt.ssh_config[e] = f
@@ -692,8 +1739,6 @@ corrected = '''
 xy              &&= val.split('=')
 opt.ssh_config[e] = f
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 2
@@ -702,61 +1747,45 @@ column_end = 19
 message = "`=` is not aligned with the preceding assignment."
 
 [tests.config]
-AllowBeforeTrailingComments = "$UNRESOLVED:allow_comments"
 AllowForAlignment = true
 ForceEqualSignAlignment = true
 
 [[tests]]
-name = "rubocop_cop_layout_extraspacing_when_forceequalsignalignment_is_true_endless_methods_does_not_register_an_offense_when_not_aligned"
+name = "rubocopcoplayoutextraspacing_when_forceequalsignalignment_is_true_endless_methods_does_not_register_an_offense_when_not_aligned"
 source = '''
 def deleted = do_something
 def updated = do_something
 def added = do_something
 '''
-ruby_version = ">= 3.0"
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-AllowBeforeTrailingComments = "$UNRESOLVED:allow_comments"
 AllowForAlignment = true
 ForceEqualSignAlignment = true
 
 [[tests]]
-name = "rubocop_cop_layout_extraspacing_when_forceequalsignalignment_is_true_endless_methods_does_not_register_an_offense_with_optional_values"
+name = "rubocopcoplayoutextraspacing_when_forceequalsignalignment_is_true_endless_methods_does_not_register_an_offense_with_optional_values"
 source = '''
 def deleted(x = true) = do_something(x)
 def updated(x = true) = do_something(x)
 def added(x = true) = do_something(x)
 '''
-ruby_version = ">= 3.0"
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-AllowBeforeTrailingComments = "$UNRESOLVED:allow_comments"
 AllowForAlignment = true
 ForceEqualSignAlignment = true
 
 [[tests]]
-name = "rubocop_cop_layout_extraspacing_when_exactly_two_comments_have_extra_spaces_and_they_are_aligned_does_not_register_an_offense"
+name = "rubocopcoplayoutextraspacing_when_exactly_two_comments_have_extra_spaces_and_they_are_aligned_does_not_register_an_offense"
 source = '''
 one  # comment one
 two  # comment two
 '''
-interpolated = true
-verified = false
 offenses = []
 
-[tests.config]
-AllowBeforeTrailingComments = "$UNRESOLVED:allow_comments"
-AllowForAlignment = true
-ForceEqualSignAlignment = true
-
 [[tests]]
-name = "rubocop_cop_layout_extraspacing_when_exactly_two_comments_have_extra_spaces_and_they_are_not_aligned_registers_an_offense"
+name = "rubocopcoplayoutextraspacing_when_exactly_two_comments_have_extra_spaces_and_they_are_not_aligned_registers_an_offense"
 source = '''
 one  # comment one
 two   # comment two
@@ -765,8 +1794,6 @@ corrected = '''
 one # comment one
 two # comment two
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -780,13 +1807,8 @@ column_start = 3
 column_end = 5
 message = "Unnecessary spacing detected."
 
-[tests.config]
-AllowBeforeTrailingComments = "$UNRESOLVED:allow_comments"
-AllowForAlignment = true
-ForceEqualSignAlignment = true
-
 [[tests]]
-name = "rubocop_cop_layout_extraspacing_when_multiple_comments_have_extra_spaces_registers_offenses_for_all_comments"
+name = "rubocopcoplayoutextraspacing_when_multiple_comments_have_extra_spaces_registers_offenses_for_all_comments"
 source = '''
 class Foo
   def require(p)  # rubocop:disable Naming/MethodParameterName
@@ -817,8 +1839,6 @@ class Foo
   end
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 2
@@ -843,8 +1863,3 @@ line = 11
 column_start = 17
 column_end = 18
 message = "Unnecessary spacing detected."
-
-[tests.config]
-AllowBeforeTrailingComments = "$UNRESOLVED:allow_comments"
-AllowForAlignment = true
-ForceEqualSignAlignment = true

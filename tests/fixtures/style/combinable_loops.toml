@@ -4,7 +4,7 @@ severity = "convention"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_style_combinableloops_when_looping_method_registers_an_offense_when_looping_over_the_same_data_as_previous_loop"
+name = "rubocopcopstylecombinableloops_when_looping_method_registers_an_offense_when_looping_over_the_same_data_as_previous_loop"
 source = '''
 items.each { |item| do_something(item) }
 items.each { |item| do_something_else(item, arg) }
@@ -45,7 +45,7 @@ column_end = 58
 message = "Combine this loop with the previous loop."
 
 [[tests]]
-name = "rubocop_cop_style_combinableloops_when_looping_method_registers_an_offense_when_looping_over_the_same_data_for_the_second_consecutive_time"
+name = "rubocopcopstylecombinableloops_when_looping_method_registers_an_offense_when_looping_over_the_same_data_for_the_second_consecutive_time"
 source = '''
 items.each do |item| foo(item) end
 items.each { |item| bar(item) }
@@ -64,7 +64,7 @@ column_end = 31
 message = "Combine this loop with the previous loop."
 
 [[tests]]
-name = "rubocop_cop_style_combinableloops_when_looping_method_registers_an_offense_when_looping_over_the_same_data_for_the_third_consecutive_time"
+name = "rubocopcopstylecombinableloops_when_looping_method_registers_an_offense_when_looping_over_the_same_data_for_the_third_consecutive_time"
 source = '''
 items.each { |item| foo(item) }
 items.each { |item| bar(item) }
@@ -89,7 +89,7 @@ column_end = 31
 message = "Combine this loop with the previous loop."
 
 [[tests]]
-name = "rubocop_cop_style_combinableloops_when_looping_method_registers_an_offense_and_does_not_correct_when_looping_over_the_same_data_with_different_block_variable_names"
+name = "rubocopcopstylecombinableloops_when_looping_method_registers_an_offense_and_does_not_correct_when_looping_over_the_same_data_with_different_block_variable_names"
 source = '''
 items.each { |item| foo(item) }
 items.each { |x| bar(x) }
@@ -102,7 +102,7 @@ column_end = 25
 message = "Combine this loop with the previous loop."
 
 [[tests]]
-name = "rubocop_cop_style_combinableloops_when_looping_method_registers_an_offense_when_looping_over_the_same_data_for_the_third_consecutive_time_with_numbered_blocks"
+name = "rubocopcopstylecombinableloops_when_looping_method_registers_an_offense_when_looping_over_the_same_data_for_the_third_consecutive_time_with_numbered_blocks"
 source = '''
 items.each { foo(_1) }
 items.each { bar(_1) }
@@ -127,7 +127,7 @@ column_end = 22
 message = "Combine this loop with the previous loop."
 
 [[tests]]
-name = "rubocop_cop_style_combinableloops_when_looping_method_registers_an_offense_when_looping_over_the_same_data_for_the_third_consecutive_time_with_it_blocks"
+name = "rubocopcopstylecombinableloops_when_looping_method_registers_an_offense_when_looping_over_the_same_data_for_the_third_consecutive_time_with_it_blocks"
 source = '''
 items.each { foo(it) }
 items.each { bar(it) }
@@ -138,7 +138,6 @@ items.each { foo(it)
 bar(it)
 baz(it) }
 '''
-ruby_version = ">= 3.4"
 
 [[tests.offenses]]
 line = 2
@@ -153,7 +152,7 @@ column_end = 22
 message = "Combine this loop with the previous loop."
 
 [[tests]]
-name = "rubocop_cop_style_combinableloops_when_looping_method_registers_an_offense_when_looping_over_the_same_data_as_previous_loop_in_do_end_and_blocks"
+name = "rubocopcopstylecombinableloops_when_looping_method_registers_an_offense_when_looping_over_the_same_data_as_previous_loop_in_doend_and__blocks"
 source = '''
 items.each do |item| do_something(item) end
 items.each { |item| do_something_else item, arg}
@@ -170,7 +169,7 @@ column_end = 48
 message = "Combine this loop with the previous loop."
 
 [[tests]]
-name = "rubocop_cop_style_combinableloops_when_looping_method_registers_an_offense_when_looping_over_the_same_data_as_previous_loop_in_and_do_end_blocks"
+name = "rubocopcopstylecombinableloops_when_looping_method_registers_an_offense_when_looping_over_the_same_data_as_previous_loop_in__and_doend_blocks"
 source = '''
 items.each { |item| do_something(item) }
 items.each do |item| do_something_else(item, arg) end
@@ -187,7 +186,61 @@ column_end = 53
 message = "Combine this loop with the previous loop."
 
 [[tests]]
-name = "rubocop_cop_style_combinableloops_when_looping_method_ruby_2_7_registers_an_offense_when_looping_over_the_same_data_as_previous_loop_in_numblocks"
+name = "rubocopcopstylecombinableloops_when_looping_method_does_not_register_an_offense_when_the_same_loops_are_interleaved_with_some_code"
+source = '''
+items.each { |item| do_something(item) }
+
+some_code
+
+items.each { |item| do_something_else(item, arg) }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylecombinableloops_when_looping_method_does_not_register_an_offense_when_the_same_loop_method_is_used_over_different_collections"
+source = '''
+items.each { |item| do_something(item) }
+bars.each { |bar| do_something(bar) }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylecombinableloops_when_looping_method_does_not_register_an_offense_when_different_loop_methods_are_used_over_the_same_collection"
+source = '''
+items.reverse_each { |item| do_something(item) }
+items.each { |item| do_something(item) }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylecombinableloops_when_looping_method_does_not_register_an_offense_when_each_branch_contains_the_same_single_loop_over_the_same_collection"
+source = '''
+if condition
+  items.each { |item| do_something(item) }
+else
+  items.each { |item| do_something_else(item, arg) }
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylecombinableloops_when_looping_method_does_not_register_an_offense_for_when_the_same_method_with_different_arguments"
+source = '''
+each_slice(2) { |slice| do_something(slice) }
+each_slice(3) { |slice| do_something(slice) }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylecombinableloops_when_looping_method_does_not_register_an_offense_for_when_the_same_method_with_different_arguments_and_safe_navigation"
+source = '''
+foo(:bar)&.each { |item| do_something(item) }
+foo(:baz)&.each { |item| do_something(item) }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylecombinableloops_when_looping_method_ruby_27_registers_an_offense_when_looping_over_the_same_data_as_previous_loop_in_numblocks"
 source = '''
 items.each { do_something(_1) }
 items.each { do_something_else(_1, arg) }
@@ -228,61 +281,7 @@ column_end = 49
 message = "Combine this loop with the previous loop."
 
 [[tests]]
-name = "rubocop_cop_style_combinableloops_when_looping_method_does_not_register_an_offense_when_the_same_loops_are_interleaved_with_some_code"
-source = '''
-items.each { |item| do_something(item) }
-
-some_code
-
-items.each { |item| do_something_else(item, arg) }
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_combinableloops_when_looping_method_does_not_register_an_offense_when_the_same_loop_method_is_used_over_different_collections"
-source = '''
-items.each { |item| do_something(item) }
-bars.each { |bar| do_something(bar) }
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_combinableloops_when_looping_method_does_not_register_an_offense_when_different_loop_methods_are_used_over_the_same_collection"
-source = '''
-items.reverse_each { |item| do_something(item) }
-items.each { |item| do_something(item) }
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_combinableloops_when_looping_method_does_not_register_an_offense_when_each_branch_contains_the_same_single_loop_over_the_same_collection"
-source = '''
-if condition
-  items.each { |item| do_something(item) }
-else
-  items.each { |item| do_something_else(item, arg) }
-end
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_combinableloops_when_looping_method_does_not_register_an_offense_for_when_the_same_method_with_different_arguments"
-source = '''
-each_slice(2) { |slice| do_something(slice) }
-each_slice(3) { |slice| do_something(slice) }
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_combinableloops_when_looping_method_does_not_register_an_offense_for_when_the_same_method_with_different_arguments_and_safe_navigation"
-source = '''
-foo(:bar)&.each { |item| do_something(item) }
-foo(:baz)&.each { |item| do_something(item) }
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_combinableloops_when_for_loop_registers_an_offense_when_looping_over_the_same_data_as_previous_loop"
+name = "rubocopcopstylecombinableloops_when_for_loop_registers_an_offense_when_looping_over_the_same_data_as_previous_loop"
 source = '''
 for item in items do do_something(item) end
 for item in items do do_something_else(item, arg) end
@@ -299,7 +298,7 @@ column_end = 53
 message = "Combine this loop with the previous loop."
 
 [[tests]]
-name = "rubocop_cop_style_combinableloops_when_for_loop_does_not_register_an_offense_when_the_same_loops_are_interleaved_with_some_code"
+name = "rubocopcopstylecombinableloops_when_for_loop_does_not_register_an_offense_when_the_same_loops_are_interleaved_with_some_code"
 source = '''
 for item in items do do_something(item) end
 
@@ -310,7 +309,7 @@ for item in items do do_something_else(item, arg) end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_combinableloops_when_for_loop_does_not_register_an_offense_when_the_same_loop_method_is_used_over_different_collections"
+name = "rubocopcopstylecombinableloops_when_for_loop_does_not_register_an_offense_when_the_same_loop_method_is_used_over_different_collections"
 source = '''
 for item in items do do_something(item) end
 for foo in foos do do_something(foo) end
@@ -318,7 +317,7 @@ for foo in foos do do_something(foo) end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_combinableloops_when_for_loop_does_not_register_an_offense_when_each_branch_contains_the_same_single_loop_over_the_same_collection"
+name = "rubocopcopstylecombinableloops_when_for_loop_does_not_register_an_offense_when_each_branch_contains_the_same_single_loop_over_the_same_collection"
 source = '''
 if condition
   for item in items do do_something(item) end
@@ -329,7 +328,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_combinableloops_when_for_loop_does_not_register_an_offense_when_one_of_the_loops_is_empty"
+name = "rubocopcopstylecombinableloops_when_for_loop_does_not_register_an_offense_when_one_of_the_loops_is_empty"
 source = '''
 items.each {}
 items.each {}

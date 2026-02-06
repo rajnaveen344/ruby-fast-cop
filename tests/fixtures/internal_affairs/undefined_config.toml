@@ -4,26 +4,33 @@ severity = "convention"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_internalaffairs_undefinedconfig_does_not_register_an_offense_for_implicit_configuration_keys"
+name = "rubocopcopinternalaffairsundefinedconfig_does_not_register_an_offense_for_implicit_configuration_keys"
 source = '''
 module RuboCop
   module Cop
     module Test
       class Foo < Base
         def configured?
-          #{described_class::ALLOWED_CONFIGURATIONS.map { "cop_config['#{_1}']" }.join("\n          ")}
+          cop_config['Safe']
+          cop_config['SafeAutoCorrect']
+          cop_config['AutoCorrect']
+          cop_config['Severity']
+          cop_config['StyleGuide']
+          cop_config['Details']
+          cop_config['Reference']
+          cop_config['References']
+          cop_config['Include']
+          cop_config['Exclude']
         end
       end
     end
   end
 end
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_internalaffairs_undefinedconfig_registers_an_offense_when_the_cop_has_no_configuration_at_all"
+name = "rubocopcopinternalaffairsundefinedconfig_registers_an_offense_when_the_cop_has_no_configuration_at_all"
 source = '''
 module RuboCop
   module Cop
@@ -45,7 +52,7 @@ column_end = 30
 message = "`Missing` is not defined in the configuration for `Test/Bar` in `config/default.yml`."
 
 [[tests]]
-name = "rubocop_cop_internalaffairs_undefinedconfig_registers_an_offense_when_the_cop_is_not_within_the_rubocop_cop_namespace"
+name = "rubocopcopinternalaffairsundefinedconfig_registers_an_offense_when_the_cop_is_not_within_the_rubocopcop_namespace"
 source = '''
 module Test
   class Foo < Base
@@ -64,7 +71,7 @@ column_end = 26
 message = "`Missing` is not defined in the configuration for `Test/Foo` in `config/default.yml`."
 
 [[tests]]
-name = "rubocop_cop_internalaffairs_undefinedconfig_registers_an_offense_when_the_cop_inherits_cop_base"
+name = "rubocopcopinternalaffairsundefinedconfig_registers_an_offense_when_the_cop_inherits_copbase"
 source = '''
 module Test
   class Foo < Cop::Base
@@ -83,7 +90,7 @@ column_end = 26
 message = "`Missing` is not defined in the configuration for `Test/Foo` in `config/default.yml`."
 
 [[tests]]
-name = "rubocop_cop_internalaffairs_undefinedconfig_registers_an_offense_when_the_cop_inherits_rubocop_cop_base"
+name = "rubocopcopinternalaffairsundefinedconfig_registers_an_offense_when_the_cop_inherits_rubocopcopbase"
 source = '''
 module Test
   class Foo < RuboCop::Cop::Base
@@ -102,7 +109,7 @@ column_end = 26
 message = "`Missing` is not defined in the configuration for `Test/Foo` in `config/default.yml`."
 
 [[tests]]
-name = "rubocop_cop_internalaffairs_undefinedconfig_registers_an_offense_when_the_cop_inherits_rubocop_cop_base"
+name = "rubocopcopinternalaffairsundefinedconfig_registers_an_offense_when_the_cop_inherits_rubocopcopbase_2"
 source = '''
 module Test
   class Foo < ::RuboCop::Cop::Base
@@ -121,124 +128,7 @@ column_end = 26
 message = "`Missing` is not defined in the configuration for `Test/Foo` in `config/default.yml`."
 
 [[tests]]
-name = "rubocop_cop_internalaffairs_undefinedconfig_element_lookup_does_not_register_an_offense_for_defined_configuration_keys"
-source = '''
-module RuboCop
-  module Cop
-    module Test
-      class Foo < Base
-        def configured?
-          cop_config['Defined']
-        end
-      end
-    end
-  end
-end
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_internalaffairs_undefinedconfig_element_lookup_registers_an_offense_for_missing_configuration_keys"
-source = '''
-module RuboCop
-  module Cop
-    module Test
-      class Foo < Base
-        def configured?
-          cop_config['Missing']
-        end
-      end
-    end
-  end
-end
-'''
-
-[[tests.offenses]]
-line = 6
-column_start = 21
-column_end = 30
-message = "`Missing` is not defined in the configuration for `Test/Foo` in `config/default.yml`."
-
-[[tests]]
-name = "rubocop_cop_internalaffairs_undefinedconfig_fetch_does_not_register_an_offense_for_defined_configuration_keys"
-source = '''
-module RuboCop
-  module Cop
-    module Test
-      class Foo < Base
-        def configured?
-          cop_config.fetch('Defined')
-        end
-      end
-    end
-  end
-end
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_internalaffairs_undefinedconfig_fetch_registers_an_offense_for_missing_configuration_keys"
-source = '''
-module RuboCop
-  module Cop
-    module Test
-      class Foo < Base
-        def configured?
-          cop_config.fetch('Missing')
-        end
-      end
-    end
-  end
-end
-'''
-
-[[tests.offenses]]
-line = 6
-column_start = 27
-column_end = 36
-message = "`Missing` is not defined in the configuration for `Test/Foo` in `config/default.yml`."
-
-[[tests]]
-name = "rubocop_cop_internalaffairs_undefinedconfig_fetch_with_a_default_value_does_not_register_an_offense_for_defined_configuration_keys"
-source = '''
-module RuboCop
-  module Cop
-    module Test
-      class Foo < Base
-        def configured?
-          cop_config.fetch('Defined', default)
-        end
-      end
-    end
-  end
-end
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_internalaffairs_undefinedconfig_fetch_with_a_default_value_registers_an_offense_for_missing_configuration_keys"
-source = '''
-module RuboCop
-  module Cop
-    module Test
-      class Foo < Base
-        def configured?
-          cop_config.fetch('Missing', default)
-        end
-      end
-    end
-  end
-end
-'''
-
-[[tests.offenses]]
-line = 6
-column_start = 27
-column_end = 36
-message = "`Missing` is not defined in the configuration for `Test/Foo` in `config/default.yml`."
-
-[[tests]]
-name = "rubocop_cop_internalaffairs_undefinedconfig_works_with_deeper_nested_cop_names"
+name = "rubocopcopinternalaffairsundefinedconfig_works_with_deeper_nested_cop_names"
 source = '''
 module RuboCop
   module Cop
@@ -263,7 +153,7 @@ column_end = 32
 message = "`Missing` is not defined in the configuration for `X/Y/Z` in `config/default.yml`."
 
 [[tests]]
-name = "rubocop_cop_internalaffairs_undefinedconfig_works_when_the_base_class_is_cop_instead_of_base"
+name = "rubocopcopinternalaffairsundefinedconfig_works_when_the_base_class_is_cop_instead_of_base"
 source = '''
 module RuboCop
   module Cop
@@ -286,7 +176,7 @@ column_end = 30
 message = "`Missing` is not defined in the configuration for `Test/Foo` in `config/default.yml`."
 
 [[tests]]
-name = "rubocop_cop_internalaffairs_undefinedconfig_ignores_cop_config_in_non_cop_classes"
+name = "rubocopcopinternalaffairsundefinedconfig_ignores_cop_config_in_noncop_classes"
 source = '''
 class Test
   def configured?
@@ -297,7 +187,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_internalaffairs_undefinedconfig_ignores_cop_config_in_non_cop_subclasses"
+name = "rubocopcopinternalaffairsundefinedconfig_ignores_cop_config_in_noncop_subclasses"
 source = '''
 module M
   class C < ApplicationRecord::Base
@@ -310,10 +200,134 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_internalaffairs_undefinedconfig_does_not_register_an_offense_if_using_cop_config_outside_of_a_cop_class"
+name = "rubocopcopinternalaffairsundefinedconfig_does_not_register_an_offense_if_using_cop_config_outside_of_a_cop_class"
 source = '''
 def configured?
   cop_config['Missing']
 end
 '''
 offenses = []
+
+[[tests]]
+name = "rubocopcopinternalaffairsundefinedconfig_can_handle_an_empty_file"
+source = '''
+
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopinternalaffairsundefinedconfig_element_lookup_does_not_register_an_offense_for_defined_configuration_keys"
+source = '''
+module RuboCop
+  module Cop
+    module Test
+      class Foo < Base
+        def configured?
+          cop_config['Defined']
+        end
+      end
+    end
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopinternalaffairsundefinedconfig_element_lookup_registers_an_offense_for_missing_configuration_keys"
+source = '''
+module RuboCop
+  module Cop
+    module Test
+      class Foo < Base
+        def configured?
+          cop_config['Missing']
+        end
+      end
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 21
+column_end = 30
+message = "`Missing` is not defined in the configuration for `Test/Foo` in `config/default.yml`."
+
+[[tests]]
+name = "rubocopcopinternalaffairsundefinedconfig_fetch_does_not_register_an_offense_for_defined_configuration_keys"
+source = '''
+module RuboCop
+  module Cop
+    module Test
+      class Foo < Base
+        def configured?
+          cop_config.fetch('Defined')
+        end
+      end
+    end
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopinternalaffairsundefinedconfig_fetch_registers_an_offense_for_missing_configuration_keys"
+source = '''
+module RuboCop
+  module Cop
+    module Test
+      class Foo < Base
+        def configured?
+          cop_config.fetch('Missing')
+        end
+      end
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 27
+column_end = 36
+message = "`Missing` is not defined in the configuration for `Test/Foo` in `config/default.yml`."
+
+[[tests]]
+name = "rubocopcopinternalaffairsundefinedconfig_fetch_with_a_default_value_does_not_register_an_offense_for_defined_configuration_keys"
+source = '''
+module RuboCop
+  module Cop
+    module Test
+      class Foo < Base
+        def configured?
+          cop_config.fetch('Defined', default)
+        end
+      end
+    end
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopinternalaffairsundefinedconfig_fetch_with_a_default_value_registers_an_offense_for_missing_configuration_keys"
+source = '''
+module RuboCop
+  module Cop
+    module Test
+      class Foo < Base
+        def configured?
+          cop_config.fetch('Missing', default)
+        end
+      end
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 27
+column_end = 36
+message = "`Missing` is not defined in the configuration for `Test/Foo` in `config/default.yml`."

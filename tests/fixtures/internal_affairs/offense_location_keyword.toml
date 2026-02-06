@@ -4,7 +4,21 @@ severity = "convention"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_internalaffairs_offenselocationkeyword_when_node_loc_selector_is_passed_registers_an_offense"
+name = "rubocopcopinternalaffairsoffenselocationkeyword_does_not_register_an_offense_when_the_loc_is_on_a_child_node"
+source = '''
+add_offense(node, location: node.arguments.loc.selector)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopinternalaffairsoffenselocationkeyword_does_not_register_an_offense_when_the_loc_is_on_a_different_node"
+source = '''
+add_offense(node, location: other_node.loc.selector)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopinternalaffairsoffenselocationkeyword_when_nodelocselector_is_passed_registers_an_offense"
 source = '''
 add_offense(node, location: node.loc.selector)
 '''
@@ -19,7 +33,7 @@ column_end = 45
 message = "Use `:selector` as the location argument to `#add_offense`."
 
 [[tests]]
-name = "rubocop_cop_internalaffairs_offenselocationkeyword_when_node_loc_selector_is_passed_registers_an_offense_if_message_argument_is_passed"
+name = "rubocopcopinternalaffairsoffenselocationkeyword_when_nodelocselector_is_passed_registers_an_offense_if_message_argument_is_passed"
 source = '''
 add_offense(
   node,
@@ -40,17 +54,3 @@ line = 4
 column_start = 12
 column_end = 29
 message = "Use `:selector` as the location argument to `#add_offense`."
-
-[[tests]]
-name = "rubocop_cop_internalaffairs_offenselocationkeyword_does_not_register_an_offense_when_the_loc_is_on_a_child_node"
-source = '''
-add_offense(node, location: node.arguments.loc.selector)
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_internalaffairs_offenselocationkeyword_does_not_register_an_offense_when_the_loc_is_on_a_different_node"
-source = '''
-add_offense(node, location: other_node.loc.selector)
-'''
-offenses = []

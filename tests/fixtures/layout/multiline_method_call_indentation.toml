@@ -4,15 +4,738 @@ severity = "convention"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_accepts_indented_methods_in_lhs_of_assignment"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_doesnt_fail_on_unary_operators"
+source = '''
+def foo
+  !0
+  .nil?
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 2
+column_end = 7
+message = "Use 2 (not 0) spaces for indenting an expression spanning multiple lines."
+
+[tests.config]
+EnforcedStyle = "aligned"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_accepts_correctly_aligned_methods_in_operands"
+source = '''
+1 + a
+    .b
+    .c + d.
+         e
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "aligned"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_accepts_correctly_aligned_methods_in_assignment"
+source = '''
+def investigate(processed_source)
+  @modifier = processed_source
+              .tokens
+              .select { |t| t.type == :k }
+              .map(&:pos)
+end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "aligned"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_accepts_aligned_methods_in_if__assignment"
+source = '''
+KeyMap = Hash.new do |map, key|
+  value = if key.respond_to?(:to_str)
+    key
+  else
+    key.to_s.split('_').
+      each { |w| w.capitalize! }.
+      join('-')
+  end
+  keymap_mutex.synchronize { map[key] = value }
+end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "aligned"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_accepts_indented_method_when_there_is_nothing_to_align_with"
+source = '''
+expect { custom_formatter_class('NonExistentClass') }
+  .to raise_error(NameError)
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "aligned"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_registers_an_offense_and_corrects_one_space_indentation_of_3rd_line"
+source = '''
+a
+  .b
+ .c
+'''
+corrected = '''
+a
+  .b
+  .c
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 1
+column_end = 3
+message = "Use 2 (not 1) spaces for indenting an expression spanning multiple lines."
+
+[tests.config]
+EnforcedStyle = "aligned"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_accepts_indented_and_aligned_methods_in_binary_operation"
+source = '''
+a.
+  b + c
+      .d
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "aligned"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_accepts_aligned_methods_in_if_condition"
+source = '''
+if a.
+   b
+  something
+end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "aligned"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_accepts_aligned_methods_in_a_beginend_block"
+source = '''
+@dependencies ||= begin
+  DEFAULT_DEPRUBYENCIES
+    .reject { |e| e }
+    .map { |e| e }
+end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "aligned"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_registers_an_offense_and_corrects_misaligned_methods_in_if_condition"
+source = '''
+if a.
+    b
+  something
+end
+'''
+corrected = '''
+if a.
+   b
+  something
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 4
+column_end = 5
+message = "Align `b` with `a.` on line 1."
+
+[tests.config]
+EnforcedStyle = "aligned"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_does_not_check_binary_operations_when_string_wrapped_with_backslash"
+source = '''
+flash[:error] = 'Here is a string ' \
+                'That spans' <<
+  'multiple lines'
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "aligned"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_does_not_check_binary_operations_when_string_wrapped_with_"
+source = '''
+flash[:error] = 'Here is a string ' +
+                'That spans' <<
+  'multiple lines'
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "aligned"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_registers_an_offense_and_corrects_misaligned_method_in__call"
+source = '''
+flash[:error] = here_is_a_string.
+                that_spans.
+   multiple_lines
+'''
+corrected = '''
+flash[:error] = here_is_a_string.
+                that_spans.
+                multiple_lines
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 3
+column_end = 17
+message = "Align `multiple_lines` with `here_is_a_string.` on line 1."
+
+[tests.config]
+EnforcedStyle = "aligned"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_registers_an_offense_and_corrects_misaligned_methods_in_unless_condition"
+source = '''
+unless a
+.b
+  something
+end
+'''
+corrected = '''
+unless a
+       .b
+  something
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 2
+message = "Align `.b` with `a` on line 1."
+
+[tests.config]
+EnforcedStyle = "aligned"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_registers_an_offense_and_corrects_misaligned_methods_in_while_condition"
+source = '''
+while a.
+    b
+  something
+end
+'''
+corrected = '''
+while a.
+      b
+  something
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 4
+column_end = 5
+message = "Align `b` with `a.` on line 1."
+
+[tests.config]
+EnforcedStyle = "aligned"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_registers_an_offense_and_corrects_misaligned_methods_in_until_condition"
+source = '''
+until a.
+    b
+  something
+end
+'''
+corrected = '''
+until a.
+      b
+  something
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 4
+column_end = 5
+message = "Align `b` with `a.` on line 1."
+
+[tests.config]
+EnforcedStyle = "aligned"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_accepts_aligned_method_in_return"
+source = '''
+def a
+  return b.
+         c
+end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "aligned"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_accepts_aligned_method_in_assignment__block__assignment"
+source = '''
+a = b do
+  c.d = e.
+        f
+end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "aligned"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_accepts_aligned_methods_in_assignment"
+source = '''
+formatted_int = int_part
+                .to_s
+                .reverse
+                .gsub(/...(?=.)/, '&_')
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "aligned"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_registers_an_offense_and_corrects_misaligned_methods_in_multiline_block_chain"
+source = '''
+do_something.foo do
+end.bar
+            .baz
+'''
+corrected = '''
+do_something.foo do
+end.bar
+   .baz
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 12
+column_end = 16
+message = "Align `.baz` with `.bar` on line 2."
+
+[tests.config]
+EnforcedStyle = "aligned"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_accepts_aligned_methods_in_multiline_block_chain"
+source = '''
+do_something.foo do
+end.bar
+   .baz
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "aligned"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_accepts_aligned_methods_in_multiline_numbered_block_chain"
+source = '''
+do_something.foo do
+  bar(_1)
+end.baz
+   .qux
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "aligned"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_accepts_aligned_methods_in_multiline_it_block_chain"
+source = '''
+do_something.foo do
+  bar(it)
+end.baz
+   .qux
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "aligned"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_accepts_aligned_methods_in_multiline_block_chain_with_safe_navigation_operator"
+source = '''
+do_something.foo do
+end&.bar
+   &.baz
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "aligned"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_registers_an_offense_and_corrects_misaligned_methods_in_local_variable_assignment"
+source = '''
+a = b.c.
+ d
+'''
+corrected = '''
+a = b.c.
+    d
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 1
+column_end = 2
+message = "Align `d` with `b.c.` on line 1."
+
+[tests.config]
+EnforcedStyle = "aligned"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_accepts_aligned_methods_in_constant_assignment"
+source = '''
+A = b
+    .c
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "aligned"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_accepts_aligned_methods_in_operator_assignment"
+source = '''
+a +=
+  b
+  .c
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "aligned"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_registers_an_offense_and_corrects_unaligned_methods_in_assignment"
+source = '''
+bar = Foo
+  .a
+      .b(c)
+'''
+corrected = '''
+bar = Foo
+      .a
+      .b(c)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 4
+message = "Align `.a` with `Foo` on line 1."
+
+[tests.config]
+EnforcedStyle = "aligned"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_registers_an_offense_and_corrects_method_call_inside_hash_pair_value_shifted_left"
+source = '''
+def foo
+  bar(
+    key: VeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeryLongClassName
+ .veeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeery_long_method_name
+  )
+end
+'''
+corrected = '''
+def foo
+  bar(
+    key: VeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeryLongClassName
+         .veeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeery_long_method_name
+  )
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 1
+column_end = 54
+message = "Align `.veeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeery_long_method_name` with `VeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeryLongClassName` on line 3."
+
+[tests.config]
+EnforcedStyle = "aligned"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_registers_an_offense_and_corrects_method_call_inside_hash_pair_value_shifted_right"
+source = '''
+def foo
+  bar(
+    key: VeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeryLongClassName
+                .veeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeery_long_method_name
+  )
+end
+'''
+corrected = '''
+def foo
+  bar(
+    key: VeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeryLongClassName
+         .veeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeery_long_method_name
+  )
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 16
+column_end = 69
+message = "Align `.veeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeery_long_method_name` with `VeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeryLongClassName` on line 3."
+
+[tests.config]
+EnforcedStyle = "aligned"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_registers_an_offense_and_corrects_method_call_with_block_inside_hash_pair_value"
+source = '''
+parsed_params = refusal_advice_params.merge(
+  actions: refusal_advice_params.fetch(:actions).
+              each_pair do |_, suggestions|
+                suggestions.transform_values! { |v| v == 'true' }
+              end
+).to_h
+'''
+corrected = '''
+parsed_params = refusal_advice_params.merge(
+  actions: refusal_advice_params.fetch(:actions).
+           each_pair do |_, suggestions|
+             suggestions.transform_values! { |v| v == 'true' }
+           end
+).to_h
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 14
+column_end = 23
+message = "Align `each_pair` with `refusal_advice_params.fetch(:actions).` on line 2."
+
+[tests.config]
+EnforcedStyle = "aligned"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_registers_an_offense_and_corrects_method_chain_inside_hash_pair_value"
+source = '''
+def payload
+  {
+    type: 'action',
+    params: {
+      page: get_page_name,
+      email: @action.member.email,
+      mailing_id: @mailing_id
+    }.reverse_merge(@action.form_data)
+      .merge(UserLanguageISO.for(page.language))
+      .tap do |params|
+        params[:country] = country(member.country) if member.country.present?
+        params[:action_bucket] = data[:bucket] if data.key? :bucket
+      end
+  }.deep_symbolize_keys
+end
+'''
+corrected = '''
+def payload
+  {
+    type: 'action',
+    params: {
+      page: get_page_name,
+      email: @action.member.email,
+      mailing_id: @mailing_id
+    }.reverse_merge(@action.form_data)
+     .merge(UserLanguageISO.for(page.language))
+     .tap do |params|
+       params[:country] = country(member.country) if member.country.present?
+       params[:action_bucket] = data[:bucket] if data.key? :bucket
+     end
+  }.deep_symbolize_keys
+end
+'''
+
+[[tests.offenses]]
+line = 9
+column_start = 6
+column_end = 12
+message = "Align `.merge` with `.reverse_merge` on line 8."
+
+[[tests.offenses]]
+line = 10
+column_start = 6
+column_end = 10
+message = "Align `.tap` with `.reverse_merge` on line 8."
+
+[tests.config]
+EnforcedStyle = "aligned"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_registers_an_offense_and_corrects_method_call_after_block_in_hash_pair_value"
+source = '''
+add_to_git_repo(
+  initial_repo,
+  "about.json" =>
+    JSON
+      .parse(about_json(about_url: "https://updated.site.com"))
+      .tap { |h| h[:component] = true }
+      .to_json,
+)
+'''
+corrected = '''
+add_to_git_repo(
+  initial_repo,
+  "about.json" =>
+    JSON
+    .parse(about_json(about_url: "https://updated.site.com"))
+    .tap { |h| h[:component] = true }
+    .to_json,
+)
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 6
+column_end = 12
+message = "Align `.parse` with `JSON` on line 4."
+
+[[tests.offenses]]
+line = 6
+column_start = 6
+column_end = 10
+message = "Align `.tap` with `JSON` on line 4."
+
+[[tests.offenses]]
+line = 7
+column_start = 6
+column_end = 14
+message = "Align `.to_json` with `JSON` on line 4."
+
+[tests.config]
+EnforcedStyle = "aligned"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_registers_an_offense_for_method_chain_when_dot_is_on_same_line_as_multiline_parens"
+source = '''
+(a +
+ b).foo
+   .bar
+'''
+corrected = '''
+(a +
+ b).foo
+  .bar
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 3
+column_end = 7
+message = "Use 2 (not 3) spaces for indenting an expression spanning multiple lines."
+
+[tests.config]
+EnforcedStyle = "aligned"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_registers_an_offense_and_corrects_method_chain_with_array_literal_receiver"
+source = '''
+def targets_for(path)
+  fullpath = fullpath_for(path)
+  [
+    Dir.glob(fullpath),
+  ].flatten
+    .uniq
+    .delete_if { |entry| dot_directory?(entry) }
+end
+'''
+corrected = '''
+def targets_for(path)
+  fullpath = fullpath_for(path)
+  [
+    Dir.glob(fullpath),
+  ].flatten
+   .uniq
+   .delete_if { |entry|dot_directory?(entry) }
+end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 4
+column_end = 9
+message = "Align `.uniq` with `.flatten` on line 5."
+
+[tests.config]
+EnforcedStyle = "aligned"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_accepts_method_chain_with_hash_literal_receiver"
+source = '''
+{ a: 1, b: 2 }.keys
+              .first
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "aligned"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_registers_an_offense_and_corrects_method_chain_with_hash_literal_receiver"
+source = '''
+{ a: 1, b: 2 }.keys
+  .first
+'''
+corrected = '''
+{ a: 1, b: 2 }.keys
+              .first
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 8
+message = "Align `.first` with `.keys` on line 1."
+
+[tests.config]
+EnforcedStyle = "aligned"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_behaves_like_common_accepts_indented_methods_in_lhs_of__assignment"
 source = '''
 a
   .b[c] = 0
 '''
 offenses = []
 
+[tests.config]
+EnforcedStyle = "aligned"
+
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_accepts_indented_methods_inside_and_outside_a_block"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_behaves_like_common_accepts_indented_methods_inside_and_outside_a_block"
 source = '''
 a = b.map do |c|
   c
@@ -25,8 +748,11 @@ end
 '''
 offenses = []
 
+[tests.config]
+EnforcedStyle = "aligned"
+
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_accepts_indentation_relative_to_first_receiver"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_behaves_like_common_accepts_indentation_relative_to_first_receiver"
 source = '''
 node
   .children.map { |n| string_source(n) }.compact
@@ -34,16 +760,22 @@ node
 '''
 offenses = []
 
+[tests.config]
+EnforcedStyle = "aligned"
+
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_accepts_indented_methods_in_ordinary_statement"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_behaves_like_common_accepts_indented_methods_in_ordinary_statement"
 source = '''
 a.
   b
 '''
 offenses = []
 
+[tests.config]
+EnforcedStyle = "aligned"
+
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_accepts_no_extra_indentation_of_third_line"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_behaves_like_common_accepts_no_extra_indentation_of_third_line"
 source = '''
 a.
   b.
@@ -51,8 +783,11 @@ a.
 '''
 offenses = []
 
+[tests.config]
+EnforcedStyle = "aligned"
+
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_accepts_indented_methods_in_for_body"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_behaves_like_common_accepts_indented_methods_in_for_body"
 source = '''
 for x in a
   something.
@@ -61,16 +796,22 @@ end
 '''
 offenses = []
 
+[tests.config]
+EnforcedStyle = "aligned"
+
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_accepts_alignment_inside_a_grouped_expression"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_behaves_like_common_accepts_alignment_inside_a_grouped_expression"
 source = '''
 (a.
  b)
 '''
 offenses = []
 
+[tests.config]
+EnforcedStyle = "aligned"
+
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_accepts_arithmetic_operation_with_block_inside_a_grouped_expression"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_behaves_like_common_accepts_arithmetic_operation_with_block_inside_a_grouped_expression"
 source = '''
 (
   a * b do
@@ -80,8 +821,11 @@ source = '''
 '''
 offenses = []
 
+[tests.config]
+EnforcedStyle = "aligned"
+
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_accepts_an_expression_where_the_first_method_spans_multiple_lines"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_behaves_like_common_accepts_an_expression_where_the_first_method_spans_multiple_lines"
 source = '''
 subject.each do |item|
   result = resolve(locale) and return result
@@ -89,8 +833,11 @@ end.a
 '''
 offenses = []
 
+[tests.config]
+EnforcedStyle = "aligned"
+
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_accepts_any_indentation_of_parameters_to"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_behaves_like_common_accepts_any_indentation_of_parameters_to_"
 source = '''
 payment = Models::IncomingPayments[
         id:      input['incoming-payment-id'],
@@ -98,8 +845,11 @@ payment = Models::IncomingPayments[
 '''
 offenses = []
 
+[tests.config]
+EnforcedStyle = "aligned"
+
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_accepts_aligned_methods_when_multiline_method_chain_with_a_block_argument_and_method_chain"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_behaves_like_common_accepts_aligned_methods_when_multiline_method_chain_with_a_block_argument_and_method_chain"
 source = '''
 a(b)
   .c(
@@ -109,16 +859,22 @@ a(b)
 '''
 offenses = []
 
+[tests.config]
+EnforcedStyle = "aligned"
+
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_doesn_t_crash_on_unaligned_multiline_lambdas"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_behaves_like_common_doesnt_crash_on_unaligned_multiline_lambdas"
 source = '''
 MyClass.(my_args)
   .my_method
 '''
 offenses = []
 
+[tests.config]
+EnforcedStyle = "aligned"
+
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_accepts_alignment_of_method_with_assignment_and_operator_like_method"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_behaves_like_common_accepts_alignment_of_method_with_assignment_and_operatorlike_method"
 source = '''
 query = x.|(
   foo,
@@ -127,8 +883,38 @@ query = x.|(
 '''
 offenses = []
 
+[tests.config]
+EnforcedStyle = "aligned"
+
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_accepts_even_indentation_of_consecutive_lines_in_typical_rspec_code"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_behaves_like_common_accepts_method_call_chain_starting_with_implicit_receiver"
+source = '''
+def slugs(type, path_prefix)
+  expanded_links_item(type)
+    .reject { |item| item["base_path"].nil? }
+    .map { |item| item["base_path"].gsub(%r{^#{path_prefix}}, "") }
+end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "aligned"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_behaves_like_common_accepts_method_chain_with_multiline_parenthesized_receiver"
+source = '''
+(a +
+ b)
+  .foo
+  .bar
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "aligned"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_behaves_like_common_for_aligned_and_indented_accepts_even_indentation_of_consecutive_lines_in_typical_rspec_code"
 source = '''
 expect { Foo.new }.
   to change { Bar.count }.
@@ -136,8 +922,11 @@ expect { Foo.new }.
 '''
 offenses = []
 
+[tests.config]
+EnforcedStyle = "aligned"
+
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_registers_an_offense_and_corrects_no_indentation_of_second_line"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_behaves_like_common_for_aligned_and_indented_registers_an_offense_and_corrects_no_indentation_of_second_line"
 source = '''
 a.
 b
@@ -153,8 +942,11 @@ column_start = 0
 column_end = 1
 message = "Use 2 (not 0) spaces for indenting an expression spanning multiple lines."
 
+[tests.config]
+EnforcedStyle = "aligned"
+
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_registers_an_offense_and_corrects_3_spaces_indentation_of_2nd_line"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_behaves_like_common_for_aligned_and_indented_registers_an_offense_and_corrects_3_spaces_indentation_of_2nd_line"
 source = '''
 a.
    b
@@ -180,8 +972,11 @@ column_start = 3
 column_end = 4
 message = "Use 2 (not 3) spaces for indenting an expression spanning multiple lines."
 
+[tests.config]
+EnforcedStyle = "aligned"
+
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_registers_an_offense_and_corrects_extra_indentation_of_third_line"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_behaves_like_common_for_aligned_and_indented_registers_an_offense_and_corrects_extra_indentation_of_third_line"
 source = '''
 a.
   b.
@@ -199,8 +994,11 @@ column_start = 4
 column_end = 5
 message = "Use 2 (not 4) spaces for indenting an expression spanning multiple lines."
 
+[tests.config]
+EnforcedStyle = "aligned"
+
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_behaves_like_common_for_aligned_and_indented_registers_an_offense_and_corrects_the_emacs_rubymode_11_indentation_of_an_expression_in_an_array"
 source = '''
 [
  a.
@@ -220,8 +1018,11 @@ column_start = 1
 column_end = 2
 message = "Use 2 (not 0) spaces for indenting an expression spanning multiple lines."
 
+[tests.config]
+EnforcedStyle = "aligned"
+
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_registers_an_offense_and_corrects_extra_indentation_of_3rd_line_in_typical_rspec_code"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_behaves_like_common_for_aligned_and_indented_registers_an_offense_and_corrects_extra_indentation_of_3rd_line_in_typical_rspec_code"
 source = '''
 expect { Foo.new }.
   to change { Bar.count }.
@@ -239,8 +1040,11 @@ column_start = 6
 column_end = 10
 message = "Use 2 (not 6) spaces for indenting an expression spanning multiple lines."
 
+[tests.config]
+EnforcedStyle = "aligned"
+
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_registers_an_offense_and_corrects_proc_call_without_a_selector"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_behaves_like_common_for_aligned_and_indented_registers_an_offense_and_corrects_proc_call_without_a_selector"
 source = '''
 a
  .(args)
@@ -256,8 +1060,11 @@ column_start = 1
 column_end = 3
 message = "Use 2 (not 1) spaces for indenting an expression spanning multiple lines."
 
+[tests.config]
+EnforcedStyle = "aligned"
+
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_registers_an_offense_and_corrects_one_space_indentation_of_2nd_line"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_behaves_like_common_for_aligned_and_indented_registers_an_offense_and_corrects_one_space_indentation_of_2nd_line"
 source = '''
 a
  .b
@@ -273,8 +1080,45 @@ column_start = 1
 column_end = 3
 message = "Use 2 (not 1) spaces for indenting an expression spanning multiple lines."
 
+[tests.config]
+EnforcedStyle = "aligned"
+
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_using_safe_navigation_operator_registers_an_offense_and_corrects_no_indentation_of_second_line"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_behaves_like_common_for_aligned_and_indented_registers_an_offense_for_misaligned_method_chain_after_parenthesized_expression"
+source = '''
+def run
+  (date_columns + candidate_columns).uniq
+                                    .select { |column_name|
+      castable?(column_name)
+    }
+    .each { |column_name|
+      cast(column_name)
+    }
+end
+'''
+corrected = '''
+def run
+  (date_columns + candidate_columns).uniq
+    .select { |column_name|
+      castable?(column_name)
+    }
+    .each { |column_name|
+      cast(column_name)
+    }
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 36
+column_end = 43
+message = "Use 2 (not 34) spaces for indenting an expression spanning multiple lines."
+
+[tests.config]
+EnforcedStyle = "aligned"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_behaves_like_common_for_aligned_and_indented_when_using_safe_navigation_operator_registers_an_offense_and_corrects_no_indentation_of_second_line"
 source = '''
 a&.
 b
@@ -290,8 +1134,11 @@ column_start = 0
 column_end = 1
 message = "Use 2 (not 0) spaces for indenting an expression spanning multiple lines."
 
+[tests.config]
+EnforcedStyle = "aligned"
+
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_using_safe_navigation_operator_registers_an_offense_and_corrects_3_spaces_indentation_of_2nd_line"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_behaves_like_common_for_aligned_and_indented_when_using_safe_navigation_operator_registers_an_offense_and_corrects_3_spaces_indentation_of_2nd_line"
 source = '''
 a&.
    b
@@ -317,8 +1164,11 @@ column_start = 3
 column_end = 4
 message = "Use 2 (not 3) spaces for indenting an expression spanning multiple lines."
 
+[tests.config]
+EnforcedStyle = "aligned"
+
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_using_safe_navigation_operator_registers_an_offense_and_corrects_extra_indentation_of_third_line"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_behaves_like_common_for_aligned_and_indented_when_using_safe_navigation_operator_registers_an_offense_and_corrects_extra_indentation_of_third_line"
 source = '''
 a&.
   b&.
@@ -336,8 +1186,11 @@ column_start = 4
 column_end = 5
 message = "Use 2 (not 4) spaces for indenting an expression spanning multiple lines."
 
+[tests.config]
+EnforcedStyle = "aligned"
+
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_using_safe_navigation_operator"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_behaves_like_common_for_aligned_and_indented_when_using_safe_navigation_operator_registers_an_offense_and_corrects_the_emacs_rubymode_11_indentation_of_an_expression_in_an_array"
 source = '''
 [
  a&.
@@ -357,8 +1210,11 @@ column_start = 1
 column_end = 2
 message = "Use 2 (not 0) spaces for indenting an expression spanning multiple lines."
 
+[tests.config]
+EnforcedStyle = "aligned"
+
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_using_safe_navigation_operator_registers_an_offense_and_corrects_extra_indentation_of_3rd_line_in_typical_rspec_code"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_behaves_like_common_for_aligned_and_indented_when_using_safe_navigation_operator_registers_an_offense_and_corrects_extra_indentation_of_3rd_line_in_typical_rspec_code"
 source = '''
 expect { Foo.new }&.
   to change { Bar.count }&.
@@ -376,8 +1232,11 @@ column_start = 6
 column_end = 10
 message = "Use 2 (not 6) spaces for indenting an expression spanning multiple lines."
 
+[tests.config]
+EnforcedStyle = "aligned"
+
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_using_safe_navigation_operator_registers_an_offense_and_corrects_proc_call_without_a_selector"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_behaves_like_common_for_aligned_and_indented_when_using_safe_navigation_operator_registers_an_offense_and_corrects_proc_call_without_a_selector"
 source = '''
 a
  &.(args)
@@ -393,8 +1252,11 @@ column_start = 1
 column_end = 4
 message = "Use 2 (not 1) spaces for indenting an expression spanning multiple lines."
 
+[tests.config]
+EnforcedStyle = "aligned"
+
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_using_safe_navigation_operator_registers_an_offense_and_corrects_one_space_indentation_of_2nd_line"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_behaves_like_common_for_aligned_and_indented_when_using_safe_navigation_operator_registers_an_offense_and_corrects_one_space_indentation_of_2nd_line"
 source = '''
 a
  &.b
@@ -410,8 +1272,11 @@ column_start = 1
 column_end = 4
 message = "Use 2 (not 1) spaces for indenting an expression spanning multiple lines."
 
+[tests.config]
+EnforcedStyle = "aligned"
+
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_using_safe_navigation_operator_accepts_aligned_methods_when_multiline_method_chain_with_a_block_argument_and_method_chain"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_behaves_like_common_for_aligned_and_indented_when_using_safe_navigation_operator_accepts_aligned_methods_when_multiline_method_chain_with_a_block_argument_and_method_chain"
 source = '''
 a&.(b)
   .c(
@@ -421,8 +1286,11 @@ a&.(b)
 '''
 offenses = []
 
+[tests.config]
+EnforcedStyle = "aligned"
+
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_using_safe_navigation_operator_doesn_t_crash_on_multiline_method_calls_with_safe_navigation_and_assignment"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_behaves_like_common_for_aligned_and_indented_when_using_safe_navigation_operator_doesnt_crash_on_multiline_method_calls_with_safe_navigation_and_assignment"
 source = '''
 MyClass.
 foo&.bar = 'baz'
@@ -438,207 +1306,138 @@ column_start = 0
 column_end = 3
 message = "Use 2 (not 0) spaces for indenting an expression spanning multiple lines."
 
-[[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_aligned_doesn_t_fail_on_unary_operators"
-source = '''
-def foo
-  !0
-  .nil?
-end
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 3
-column_start = 2
-column_end = 7
-message = "Use 2 (not 0) spaces for indenting an expression spanning multiple lines."
-
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:aligned"
+EnforcedStyle = "aligned"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_aligned_for_semantic_alignment_accepts_method_being_aligned_with_method"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_for_semantic_alignment_accepts_method_being_aligned_with_method"
 source = '''
 User.all.first
     .age.to_s
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:aligned"
+EnforcedStyle = "aligned"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_aligned_for_semantic_alignment_accepts_methods_being_aligned_with_method_that_is_an_argument"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_for_semantic_alignment_accepts_methods_being_aligned_with_method_that_is_an_argument"
 source = '''
 authorize scope.includes(:user)
                .where(name: 'Bob')
                .order(:name)
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:aligned"
+EnforcedStyle = "aligned"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_aligned_for_semantic_alignment_accepts_methods_being_aligned_with_safe_navigation_method_call_that_is_an_argument"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_for_semantic_alignment_accepts_methods_being_aligned_with_safe_navigation_method_call_that_is_an_argument"
 source = '''
 do_something obj.foo(key: value)
                 &.bar(arg)
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:aligned"
+EnforcedStyle = "aligned"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_aligned_for_semantic_alignment_ruby_2_7"
-source = '''
-File.read('data.yml')
-    .then { YAML.safe_load _1 }
-    .transform_values(&:downcase)
-'''
-ruby_version = ">= 2.7"
-interpolated = true
-verified = false
-offenses = []
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:aligned"
-
-[[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_aligned_for_semantic_alignment_ruby_3_4"
-source = '''
-File.read('data.yml')
-    .then { YAML.safe_load it }
-    .transform_values(&:downcase)
-'''
-ruby_version = ">= 3.4"
-interpolated = true
-verified = false
-offenses = []
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:aligned"
-
-[[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_aligned_for_semantic_alignment_accepts_methods_being_aligned_with_method_that_is_an_argument_in_assignment"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_for_semantic_alignment_accepts_methods_being_aligned_with_method_that_is_an_argument_in_assignment"
 source = '''
 user = authorize scope.includes(:user)
                       .where(name: 'Bob')
                       .order(:name)
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:aligned"
+EnforcedStyle = "aligned"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_aligned_for_semantic_alignment_accepts_method_being_aligned_with_method_in_assignment"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_for_semantic_alignment_accepts_method_being_aligned_with_method_in_assignment"
 source = '''
 age = User.all.first
           .age.to_s
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:aligned"
+EnforcedStyle = "aligned"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_aligned_for_semantic_alignment_accepts_aligned_method_even_when_an_aref_is_in_the_chain"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_for_semantic_alignment_accepts_aligned_method_even_when_an_aref_is_in_the_chain"
 source = '''
 foo = '123'.a
            .b[1]
            .c
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:aligned"
+EnforcedStyle = "aligned"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_aligned_for_semantic_alignment_accepts_aligned_method_even_when_an_aref_is_first_in_the_chain"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_for_semantic_alignment_accepts_aligned_method_even_when_an_aref_is_first_in_the_chain"
 source = '''
 foo = '123'[1].a
               .b
               .c
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:aligned"
+EnforcedStyle = "aligned"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_aligned_for_semantic_alignment_doesn_t_fail_on_a_chain_of_aref_calls"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_for_semantic_alignment_doesnt_fail_on_a_chain_of_aref_calls"
 source = '''
 a[1][2][3]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:aligned"
+EnforcedStyle = "aligned"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_aligned_for_semantic_alignment_accepts_aligned_method_with_blocks_in_operation_assignment"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_for_semantic_alignment_accepts_aligned_method_with_blocks_in_operation_assignment"
 source = '''
 @comment_lines ||=
   src.comments
      .select { |c| begins_its_line?(c) }
      .map { |c| c.loc.line }
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:aligned"
+EnforcedStyle = "aligned"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_aligned_for_semantic_alignment_accepts_key_access_to_hash"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_for_semantic_alignment_accepts_key_access_to_hash"
 source = '''
 hash[key] { 10 / 0 }
   .fmap { |x| x * 3 }
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:aligned"
+EnforcedStyle = "aligned"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_aligned_for_semantic_alignment_accepts_3_aligned_methods"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_for_semantic_alignment_accepts_3_aligned_methods"
 source = '''
 a_class.new(severity, location, 'message', 'CopName')
        .severity
        .level
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:aligned"
+EnforcedStyle = "aligned"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_aligned_for_semantic_alignment_registers_an_offense_and_corrects_unaligned_methods"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_for_semantic_alignment_registers_an_offense_and_corrects_unaligned_methods"
 source = '''
 User.a
   .b
@@ -649,8 +1448,6 @@ User.a
     .b
     .c
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 2
@@ -665,10 +1462,10 @@ column_end = 3
 message = "Align `.c` with `.a` on line 1."
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:aligned"
+EnforcedStyle = "aligned"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_aligned_for_semantic_alignment_registers_an_offense_and_corrects_unaligned_method_in_block_body"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_for_semantic_alignment_registers_an_offense_and_corrects_unaligned_method_in_block_body"
 source = '''
 a do
   b.c
@@ -681,8 +1478,6 @@ a do
    .d
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 3
@@ -691,538 +1486,187 @@ column_end = 6
 message = "Align `.d` with `.c` on line 2."
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:aligned"
+EnforcedStyle = "aligned"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_aligned_for_semantic_alignment_accepts_nested_method_calls"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_for_semantic_alignment_accepts_nested_method_calls"
 source = '''
 expect { post :action, params: params, format: :json }.to change { Foo.bar }.by(0)
                                                       .and change { Baz.quux }.by(0)
                                                       .and raise_error(StandardError)
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:aligned"
+EnforcedStyle = "aligned"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_aligned_accepts_correctly_aligned_methods_in_operands"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_for_semantic_alignment_when_inside_a_hash_pair_without_block_receiver_accepts_method_chain_aligned_with_receiver_start_inside_hash_pair"
 source = '''
-1 + a
-    .b
-    .c + d.
-         e
+{
+  key: Foo.bar
+       .baz
+}
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:aligned"
+EnforcedStyle = "aligned"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_aligned_accepts_correctly_aligned_methods_in_assignment"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_for_semantic_alignment_when_inside_a_hash_pair_without_block_receiver_accepts_method_chain_aligned_with_receiver_start_inside_hash_pair_with_multiple_chains"
 source = '''
-def investigate(processed_source)
-  @modifier = processed_source
-              .tokens
-              .select { |t| t.type == :k }
-              .map(&:pos)
-end
+{
+  key: Foo.bar
+       .baz
+       .qux
+}
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:aligned"
+EnforcedStyle = "aligned"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_aligned_accepts_aligned_methods_in_if_assignment"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_for_semantic_alignment_when_inside_a_hash_pair_without_block_receiver_accepts_method_chain_inside_nested_hash_pair"
 source = '''
-KeyMap = Hash.new do |map, key|
-  value = if key.respond_to?(:to_str)
-    key
-  else
-    key.to_s.split('_').
-      each { |w| w.capitalize! }.
-      join('-')
-  end
-  keymap_mutex.synchronize { map[key] = value }
-end
+{
+  outer: {
+    inner: Foo.bar
+           .baz
+  }
+}
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:aligned"
+EnforcedStyle = "aligned"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_aligned_accepts_indented_method_when_there_is_nothing_to_align_with"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_for_semantic_alignment_when_inside_a_hash_pair_without_block_receiver_accepts_method_chain_in_hash_pair_passed_to_method"
 source = '''
-expect { custom_formatter_class('NonExistentClass') }
-  .to raise_error(NameError)
+method_call(
+  key: Foo.bar
+       .baz
+)
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:aligned"
+EnforcedStyle = "aligned"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_aligned_registers_an_offense_and_corrects_one_space_indentation_of_3rd_line"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_for_semantic_alignment_when_inside_a_hash_pair_without_block_receiver_registers_an_offense_for_misaligned_method_chain_in_hash_pair"
 source = '''
-a
-  .b
- .c
+{
+  key: Foo.bar
+          .baz
+}
 '''
 corrected = '''
-a
-  .b
-  .c
+{
+  key: Foo.bar
+       .baz
+}
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 3
-column_start = 1
-column_end = 3
-message = "Use 2 (not 1) spaces for indenting an expression spanning multiple lines."
+column_start = 10
+column_end = 14
+message = "Align `.baz` with `Foo.bar` on line 2."
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:aligned"
+EnforcedStyle = "aligned"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_aligned_accepts_indented_and_aligned_methods_in_binary_operation"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_for_semantic_alignment_when_inside_a_hash_pair_with_block_receiver_accepts_method_chain_after_block_inside_hash_pair"
 source = '''
-a.
-  b + c
-      .d
+{
+  key: Foo.bar { |x| x }
+       .baz
+}
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:aligned"
+EnforcedStyle = "aligned"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_aligned_accepts_aligned_methods_in_if_condition"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_for_semantic_alignment_when_inside_a_hash_pair_with_block_receiver_accepts_method_chain_after_doend_block_inside_hash_pair"
 source = '''
-if a.
-   b
-  something
-end
+{
+  key: Foo.bar do |x|
+    x
+  end.baz
+       .qux
+}
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:aligned"
+EnforcedStyle = "aligned"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_aligned_accepts_aligned_methods_in_a_begin_end_block"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_for_semantic_alignment_when_inside_a_hash_pair_with_block_receiver_registers_an_offense_for_misaligned_method_chain_after_doend_block_in_hash_pair"
 source = '''
-@dependencies ||= begin
-  DEFAULT_DEPRUBYENCIES
-    .reject { |e| e }
-    .map { |e| e }
-end
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:aligned"
-
-[[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_aligned_registers_an_offense_and_corrects_misaligned_methods_in_if_condition"
-source = '''
-if a.
-    b
-  something
-end
+{
+  key: Foo.bar do |x|
+    x
+  end.baz
+     .qux
+}
 '''
 corrected = '''
-if a.
-   b
-  something
-end
+{
+  key: Foo.bar do |x|
+    x
+  end.baz
+       .qux
+}
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
-line = 2
-column_start = 4
-column_end = 5
-message = "Align `b` with `a.` on line 1."
+line = 5
+column_start = 5
+column_end = 9
+message = "Align `.qux` with `Foo.bar do |x|` on line 2."
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:aligned"
+EnforcedStyle = "aligned"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_aligned_does_not_check_binary_operations_when_string_wrapped_with_backslash"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_for_semantic_alignment__ruby_27_accepts_methods_being_aligned_with_method_that_is_an_argumentwhen_using_numbered_parameter"
 source = '''
-flash[:error] = 'Here is a string ' \
-                'That spans' <<
-  'multiple lines'
+File.read('data.yml')
+    .then { YAML.safe_load _1 }
+    .transform_values(&:downcase)
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:aligned"
+EnforcedStyle = "aligned"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_aligned_does_not_check_binary_operations_when_string_wrapped_with"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_for_semantic_alignment__ruby_34_accepts_methods_being_aligned_with_method_that_is_an_argumentwhen_using_it_parameter"
 source = '''
-flash[:error] = 'Here is a string ' +
-                'That spans' <<
-  'multiple lines'
+File.read('data.yml')
+    .then { YAML.safe_load it }
+    .transform_values(&:downcase)
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:aligned"
+EnforcedStyle = "aligned"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_aligned_registers_an_offense_and_corrects_misaligned_method_in_call"
-source = '''
-flash[:error] = here_is_a_string.
-                that_spans.
-   multiple_lines
-'''
-corrected = '''
-flash[:error] = here_is_a_string.
-                that_spans.
-                multiple_lines
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 3
-column_start = 3
-column_end = 17
-message = "Align `multiple_lines` with `here_is_a_string.` on line 1."
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:aligned"
-
-[[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_aligned_registers_an_offense_and_corrects_misaligned_methods_in_unless_condition"
-source = '''
-unless a
-.b
-  something
-end
-'''
-corrected = '''
-unless a
-       .b
-  something
-end
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 2
-column_start = 0
-column_end = 2
-message = "Align `.b` with `a` on line 1."
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:aligned"
-
-[[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_aligned_registers_an_offense_and_corrects_misaligned_methods_in_while_condition"
-source = '''
-while a.
-    b
-  something
-end
-'''
-corrected = '''
-while a.
-      b
-  something
-end
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 2
-column_start = 4
-column_end = 5
-message = "Align `b` with `a.` on line 1."
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:aligned"
-
-[[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_aligned_registers_an_offense_and_corrects_misaligned_methods_in_until_condition"
-source = '''
-until a.
-    b
-  something
-end
-'''
-corrected = '''
-until a.
-      b
-  something
-end
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 2
-column_start = 4
-column_end = 5
-message = "Align `b` with `a.` on line 1."
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:aligned"
-
-[[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_aligned_accepts_aligned_method_in_return"
-source = '''
-def a
-  return b.
-         c
-end
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:aligned"
-
-[[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_aligned_accepts_aligned_method_in_assignment_block_assignment"
-source = '''
-a = b do
-  c.d = e.
-        f
-end
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:aligned"
-
-[[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_aligned_accepts_aligned_methods_in_assignment"
-source = '''
-formatted_int = int_part
-                .to_s
-                .reverse
-                .gsub(/...(?=.)/, '&_')
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:aligned"
-
-[[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_aligned_registers_an_offense_and_corrects_misaligned_methods_in_multiline_block_chain"
-source = '''
-do_something.foo do
-end.bar
-            .baz
-'''
-corrected = '''
-do_something.foo do
-end.bar
-   .baz
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 3
-column_start = 12
-column_end = 16
-message = "Align `.baz` with `.bar` on line 2."
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:aligned"
-
-[[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_aligned_accepts_aligned_methods_in_multiline_block_chain"
-source = '''
-do_something.foo do
-end.bar
-   .baz
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:aligned"
-
-[[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_aligned_accepts_aligned_methods_in_multiline_numbered_block_chain"
-source = '''
-do_something.foo do
-  bar(_1)
-end.baz
-   .qux
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:aligned"
-
-[[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_aligned_accepts_aligned_methods_in_multiline_it_block_chain"
-source = '''
-do_something.foo do
-  bar(it)
-end.baz
-   .qux
-'''
-ruby_version = ">= 3.4"
-interpolated = true
-verified = false
-offenses = []
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:aligned"
-
-[[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_aligned_accepts_aligned_methods_in_multiline_block_chain_with_safe_navigation_operator"
-source = '''
-do_something.foo do
-end&.bar
-   &.baz
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:aligned"
-
-[[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_aligned_registers_an_offense_and_corrects_misaligned_methods_in_local_variable_assignment"
-source = '''
-a = b.c.
- d
-'''
-corrected = '''
-a = b.c.
-    d
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 2
-column_start = 1
-column_end = 2
-message = "Align `d` with `b.c.` on line 1."
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:aligned"
-
-[[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_aligned_accepts_aligned_methods_in_constant_assignment"
-source = '''
-A = b
-    .c
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:aligned"
-
-[[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_aligned_accepts_aligned_methods_in_operator_assignment"
-source = '''
-a +=
-  b
-  .c
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:aligned"
-
-[[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_aligned_registers_an_offense_and_corrects_unaligned_methods_in_assignment"
-source = '''
-bar = Foo
-  .a
-      .b(c)
-'''
-corrected = '''
-bar = Foo
-      .a
-      .b(c)
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 2
-column_start = 2
-column_end = 4
-message = "Align `.a` with `Foo` on line 1."
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:aligned"
-
-[[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_for_possible_semantic_alignment_accepts_indented_methods"
-source = '''
-User.a
-  .c
-  .b
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:aligned"
-
-[[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_doesn_t_fail_on_unary_operators"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_doesnt_fail_on_unary_operators"
 source = '''
 def foo
   !0
   .nil?
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 3
@@ -1231,37 +1675,33 @@ column_end = 7
 message = "Indent `.nil?` 2 spaces more than `0` on line 2."
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:indented_relative_to_receiver"
+EnforcedStyle = "indented_relative_to_receiver"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_accepts_correctly_indented_methods_in_operation"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_accepts_correctly_indented_methods_in_operation"
 source = '''
 1 + a
       .b
       .c
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:indented_relative_to_receiver"
+EnforcedStyle = "indented_relative_to_receiver"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_accepts_indentation_of_consecutive_lines_in_typical_rspec_code"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_accepts_indentation_of_consecutive_lines_in_typical_rspec_code"
 source = '''
 expect { Foo.new }.to change { Bar.count }
                         .from(1).to(2)
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:indented_relative_to_receiver"
+EnforcedStyle = "indented_relative_to_receiver"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_registers_an_offense_and_corrects_no_indentation_of_second_line"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_registers_an_offense_and_corrects_no_indentation_of_second_line"
 source = '''
 a.
 b
@@ -1270,8 +1710,6 @@ corrected = '''
 a.
   b
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 2
@@ -1280,10 +1718,10 @@ column_end = 1
 message = "Indent `b` 2 spaces more than `a` on line 1."
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:indented_relative_to_receiver"
+EnforcedStyle = "indented_relative_to_receiver"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_registers_an_offense_and_corrects_extra_indentation_of_3rd_line_in_typical_rspec_code"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_registers_an_offense_and_corrects_extra_indentation_of_3rd_line_in_typical_rspec_code"
 source = '''
 expect { Foo.new }.
   to change { Bar.count }.
@@ -1294,8 +1732,6 @@ expect { Foo.new }.
   to change { Bar.count }.
        from(1).to(2)
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 3
@@ -1304,10 +1740,10 @@ column_end = 10
 message = "Indent `from` 2 spaces more than `change { Bar.count }` on line 2."
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:indented_relative_to_receiver"
+EnforcedStyle = "indented_relative_to_receiver"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_registers_an_offense_and_corrects_proc_call_without_a_selector"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_registers_an_offense_and_corrects_proc_call_without_a_selector"
 source = '''
 a
  .(args)
@@ -1316,8 +1752,6 @@ corrected = '''
 a
   .(args)
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 2
@@ -1326,10 +1760,10 @@ column_end = 3
 message = "Indent `.(` 2 spaces more than `a` on line 1."
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:indented_relative_to_receiver"
+EnforcedStyle = "indented_relative_to_receiver"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_does_not_register_an_offense_when_multiline_method_chain_has_expected_indent_width_and_the_method_is_preceded_by_splat"
 source = '''
 [
   *foo
@@ -1337,61 +1771,52 @@ source = '''
       arg)
 ]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:indented_relative_to_receiver"
+EnforcedStyle = "indented_relative_to_receiver"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_does_not_register_an_offense_when_multiline_method_chain_with_block_has_expected_indent_width_and_the_method_is_preceded_by_splat"
 source = '''
 [
   *foo
     .bar { |arg| baz(arg) }
 ]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:indented_relative_to_receiver"
+EnforcedStyle = "indented_relative_to_receiver"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_does_not_register_an_offense_when_multiline_method_chain_with_numbered_block_has_expected_indent_width_and_the_method_is_preceded_by_splat"
 source = '''
 [
   *foo
     .bar { baz(_1) }
 ]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:indented_relative_to_receiver"
+EnforcedStyle = "indented_relative_to_receiver"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_does_not_register_an_offense_when_multiline_method_chain_with_it_block_has_expected_indent_width_and_the_method_is_preceded_by_splat"
 source = '''
 [
   *foo
     .bar { baz(it) }
 ]
 '''
-ruby_version = ">= 3.4"
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:indented_relative_to_receiver"
+EnforcedStyle = "indented_relative_to_receiver"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_does_not_register_an_offense_when_multiline_method_chain_has_expected_indent_width_and_the_method_is_preceded_by_double_splat"
 source = '''
 [
   **foo
@@ -1399,61 +1824,52 @@ source = '''
       arg)
 ]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:indented_relative_to_receiver"
+EnforcedStyle = "indented_relative_to_receiver"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_does_not_register_an_offense_when_multiline_method_chain_with_block_has_expected_indent_width_and_the_method_is_preceded_by_double_splat"
 source = '''
 [
   **foo
     .bar { |arg| baz(arg) }
 ]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:indented_relative_to_receiver"
+EnforcedStyle = "indented_relative_to_receiver"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_does_not_register_an_offense_when_multiline_method_chain_with_numbered_block_has_expected_indent_width_and_the_method_is_preceded_by_double_splat"
 source = '''
 [
   **foo
     .bar { baz(_1) }
 ]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:indented_relative_to_receiver"
+EnforcedStyle = "indented_relative_to_receiver"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_does_not_register_an_offense_when_multiline_method_chain_with_it_block_has_expected_indent_width_and_the_method_is_preceded_by_double_splat"
 source = '''
 [
   **foo
     .bar { baz(it) }
 ]
 '''
-ruby_version = ">= 3.4"
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:indented_relative_to_receiver"
+EnforcedStyle = "indented_relative_to_receiver"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_registers_an_offense_and_corrects_one_space_indentation_of_2nd_line"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_registers_an_offense_and_corrects_one_space_indentation_of_2nd_line"
 source = '''
 a
  .b
@@ -1462,8 +1878,6 @@ corrected = '''
 a
   .b
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 2
@@ -1472,10 +1886,10 @@ column_end = 3
 message = "Indent `.b` 2 spaces more than `a` on line 1."
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:indented_relative_to_receiver"
+EnforcedStyle = "indented_relative_to_receiver"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_registers_an_offense_and_corrects_3_spaces_indentation_of_second_line"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_registers_an_offense_and_corrects_3_spaces_indentation_of_second_line"
 source = '''
 a.
    b
@@ -1488,8 +1902,6 @@ a.
 c.
   d
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 2
@@ -1504,10 +1916,10 @@ column_end = 4
 message = "Indent `d` 2 spaces more than `c` on line 3."
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:indented_relative_to_receiver"
+EnforcedStyle = "indented_relative_to_receiver"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_registers_an_offense_and_corrects_extra_indentation_of_3rd_line"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_registers_an_offense_and_corrects_extra_indentation_of_3rd_line"
 source = '''
 a.
   b.
@@ -1518,8 +1930,6 @@ a.
   b.
   c
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 3
@@ -1528,10 +1938,10 @@ column_end = 5
 message = "Indent `c` 2 spaces more than `a` on line 1."
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:indented_relative_to_receiver"
+EnforcedStyle = "indented_relative_to_receiver"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_registers_an_offense_and_corrects_the_emacs_rubymode_11_indentation_of_an_expression_in_an_array"
 source = '''
 [
  a.
@@ -1544,8 +1954,6 @@ corrected = '''
    b
 ]
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 3
@@ -1554,18 +1962,495 @@ column_end = 2
 message = "Indent `b` 2 spaces more than `a` on line 2."
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:indented_relative_to_receiver"
+EnforcedStyle = "indented_relative_to_receiver"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_indented_doesn_t_fail_on_unary_operators"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_registers_an_offense_and_corrects_method_call_inside_hash_pair_value_shifted_left"
+source = '''
+def foo
+  bar(
+    key: VeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeryLongClassName
+ .veeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeery_long_method_name
+  )
+end
+'''
+corrected = '''
+def foo
+  bar(
+    key: VeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeryLongClassName
+           .veeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeery_long_method_name
+  )
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 1
+column_end = 54
+message = "Indent `.veeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeery_long_method_name` 2 spaces more than `VeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeryLongClassName` on line 3."
+
+[tests.config]
+EnforcedStyle = "indented_relative_to_receiver"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_registers_an_offense_and_corrects_method_call_inside_hash_pair_value_shifted_right"
+source = '''
+def foo
+  bar(
+    key: VeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeryLongClassName
+                .veeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeery_long_method_name
+  )
+end
+'''
+corrected = '''
+def foo
+  bar(
+    key: VeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeryLongClassName
+           .veeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeery_long_method_name
+  )
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 16
+column_end = 69
+message = "Indent `.veeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeery_long_method_name` 2 spaces more than `VeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeryLongClassName` on line 3."
+
+[tests.config]
+EnforcedStyle = "indented_relative_to_receiver"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_registers_an_offense_and_corrects_method_call_with_block_inside_hash_pair_value"
+source = '''
+parsed_params = refusal_advice_params.merge(
+  actions: refusal_advice_params.fetch(:actions).
+    each_pair do |_, suggestions|
+      suggestions.transform_values! { |v| v == 'true' }
+    end
+).to_h
+'''
+corrected = '''
+parsed_params = refusal_advice_params.merge(
+  actions: refusal_advice_params.fetch(:actions).
+             each_pair do |_, suggestions|
+               suggestions.transform_values! { |v| v == 'true' }
+             end
+).to_h
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 4
+column_end = 13
+message = "Indent `each_pair` 2 spaces more than `refusal_advice_params` on line 2."
+
+[tests.config]
+EnforcedStyle = "indented_relative_to_receiver"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_registers_an_offense_and_corrects_method_chain_inside_hash_pair_value"
+source = '''
+def payload
+  {
+    type: 'action',
+    params: {
+      page: get_page_name,
+      email: @action.member.email,
+      mailing_id: @mailing_id
+    }.reverse_merge(@action.form_data)
+      .merge(UserLanguageISO.for(page.language))
+      .tap do |params|
+        params[:country] = country(member.country) if member.country.present?
+        params[:action_bucket] = data[:bucket] if data.key? :bucket
+      end
+  }.deep_symbolize_keys
+end
+'''
+corrected = '''
+def payload
+  {
+    type: 'action',
+    params: {
+      page: get_page_name,
+      email: @action.member.email,
+      mailing_id: @mailing_id
+    }.reverse_merge(@action.form_data)
+       .merge(UserLanguageISO.for(page.language))
+       .tap do |params|
+         params[:country] = country(member.country) if member.country.present?
+         params[:action_bucket] = data[:bucket] if data.key? :bucket
+       end
+  }.deep_symbolize_keys
+end
+'''
+
+[[tests.offenses]]
+line = 9
+column_start = 6
+column_end = 12
+message = "Indent `.merge` 2 spaces more than `.reverse_merge` on line 8."
+
+[[tests.offenses]]
+line = 10
+column_start = 6
+column_end = 10
+message = "Indent `.tap` 2 spaces more than `.reverse_merge` on line 8."
+
+[tests.config]
+EnforcedStyle = "indented_relative_to_receiver"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_registers_an_offense_and_corrects_method_chain_with_block_in_hash_pair_value"
+source = '''
+add_to_git_repo(
+  initial_repo,
+  "about.json" =>
+    JSON
+        .parse(about_json(about_url: "https://updated.site.com"))
+        .tap { |h| h[:component] = true }
+        .to_json,
+)
+'''
+corrected = '''
+add_to_git_repo(
+  initial_repo,
+  "about.json" =>
+    JSON
+      .parse(about_json(about_url: "https://updated.site.com"))
+      .tap { |h| h[:component] = true }
+      .to_json,
+)
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 8
+column_end = 14
+message = "Indent `.parse` 2 spaces more than `JSON` on line 4."
+
+[[tests.offenses]]
+line = 6
+column_start = 8
+column_end = 12
+message = "Indent `.tap` 2 spaces more than `JSON` on line 4."
+
+[[tests.offenses]]
+line = 7
+column_start = 8
+column_end = 16
+message = "Indent `.to_json` 2 spaces more than `JSON` on line 4."
+
+[tests.config]
+EnforcedStyle = "indented_relative_to_receiver"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_registers_an_offense_for_method_chain_with_parenthesized_expression_receiver"
+source = '''
+def run
+  (date_columns + candidate_columns).uniq
+                                    .select { |column_name| castable?(column_name) }
+end
+'''
+corrected = '''
+def run
+  (date_columns + candidate_columns).uniq
+                                      .select { |column_name| castable?(column_name) }
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 36
+column_end = 43
+message = "Indent `.select` 2 spaces more than `.uniq` on line 2."
+
+[tests.config]
+EnforcedStyle = "indented_relative_to_receiver"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_accepts_correctly_indented_method_chain_with_parenthesized_expression_receiver"
+source = '''
+def run
+  (date_columns + candidate_columns).uniq
+                                      .select { |column_name| castable?(column_name) }
+                                      .each { |column_name| cast(column_name) }
+end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented_relative_to_receiver"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_registers_an_offense_for_method_chain_when_dot_is_on_same_line_as_multiline_parens"
+source = '''
+(a +
+ b).foo
+   .bar
+'''
+corrected = '''
+(a +
+ b).foo
+     .bar
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 3
+column_end = 7
+message = "Indent `.bar` 2 spaces more than `.foo` on line 2."
+
+[tests.config]
+EnforcedStyle = "indented_relative_to_receiver"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_registers_an_offense_and_corrects_method_chain_with_hash_literal_receiver"
+source = '''
+{ a: 1, b: 2 }.keys
+              .first
+'''
+corrected = '''
+{ a: 1, b: 2 }.keys
+                .first
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 14
+column_end = 20
+message = "Indent `.first` 2 spaces more than `.keys` on line 1."
+
+[tests.config]
+EnforcedStyle = "indented_relative_to_receiver"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_behaves_like_common_accepts_indented_methods_in_lhs_of__assignment"
+source = '''
+a
+  .b[c] = 0
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented_relative_to_receiver"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_behaves_like_common_accepts_indented_methods_inside_and_outside_a_block"
+source = '''
+a = b.map do |c|
+  c
+    .b
+    .d do
+      x
+        .y
+    end
+end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented_relative_to_receiver"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_behaves_like_common_accepts_indentation_relative_to_first_receiver"
+source = '''
+node
+  .children.map { |n| string_source(n) }.compact
+  .any? { |s| preferred.any? { |d| s.include?(d) } }
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented_relative_to_receiver"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_behaves_like_common_accepts_indented_methods_in_ordinary_statement"
+source = '''
+a.
+  b
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented_relative_to_receiver"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_behaves_like_common_accepts_no_extra_indentation_of_third_line"
+source = '''
+a.
+  b.
+  c
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented_relative_to_receiver"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_behaves_like_common_accepts_indented_methods_in_for_body"
+source = '''
+for x in a
+  something.
+    something_else
+end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented_relative_to_receiver"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_behaves_like_common_accepts_alignment_inside_a_grouped_expression"
+source = '''
+(a.
+ b)
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented_relative_to_receiver"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_behaves_like_common_accepts_arithmetic_operation_with_block_inside_a_grouped_expression"
+source = '''
+(
+  a * b do
+  end
+)
+  .c
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented_relative_to_receiver"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_behaves_like_common_accepts_an_expression_where_the_first_method_spans_multiple_lines"
+source = '''
+subject.each do |item|
+  result = resolve(locale) and return result
+end.a
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented_relative_to_receiver"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_behaves_like_common_accepts_any_indentation_of_parameters_to_"
+source = '''
+payment = Models::IncomingPayments[
+        id:      input['incoming-payment-id'],
+           user_id: @user[:id]]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented_relative_to_receiver"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_behaves_like_common_accepts_aligned_methods_when_multiline_method_chain_with_a_block_argument_and_method_chain"
+source = '''
+a(b)
+  .c(
+    d do
+    end.f
+  )
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented_relative_to_receiver"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_behaves_like_common_doesnt_crash_on_unaligned_multiline_lambdas"
+source = '''
+MyClass.(my_args)
+  .my_method
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented_relative_to_receiver"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_behaves_like_common_accepts_alignment_of_method_with_assignment_and_operatorlike_method"
+source = '''
+query = x.|(
+  foo,
+  bar
+)
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented_relative_to_receiver"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_behaves_like_common_accepts_method_call_chain_starting_with_implicit_receiver"
+source = '''
+def slugs(type, path_prefix)
+  expanded_links_item(type)
+    .reject { |item| item["base_path"].nil? }
+    .map { |item| item["base_path"].gsub(%r{^#{path_prefix}}, "") }
+end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented_relative_to_receiver"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_behaves_like_common_accepts_method_chain_with_multiline_parenthesized_receiver"
+source = '''
+(a +
+ b)
+  .foo
+  .bar
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented_relative_to_receiver"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_behaves_like_both_indented_styles_accepts_method_chain_with_array_literal_receiver"
+source = '''
+def targets_for(path)
+  fullpath = fullpath_for(path)
+  [
+    Dir.glob(fullpath),
+  ].flatten
+    .uniq
+    .delete_if { |entry| dot_directory?(entry) }
+end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented_relative_to_receiver"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_behaves_like_both_indented_styles_for_possible_semantic_alignment_accepts_indented_methods"
+source = '''
+User.a
+  .c
+  .b
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented_relative_to_receiver"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_doesnt_fail_on_unary_operators"
 source = '''
 def foo
   !0
   .nil?
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 3
@@ -1574,24 +2459,22 @@ column_end = 7
 message = "Use 2 (not 0) spaces for indenting an expression spanning multiple lines."
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:indented"
+EnforcedStyle = "indented"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_indented_accepts_correctly_indented_methods_in_operation"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_accepts_correctly_indented_methods_in_operation"
 source = '''
 1 + a
   .b
   .c
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:indented"
+EnforcedStyle = "indented"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_indented_registers_an_offense_and_corrects_1_space_indentation_of_3rd_line"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_registers_an_offense_and_corrects_1_space_indentation_of_3rd_line"
 source = '''
 a
   .b
@@ -1602,8 +2485,6 @@ a
   .b
   .c
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 3
@@ -1612,25 +2493,23 @@ column_end = 3
 message = "Use 2 (not 1) spaces for indenting an expression spanning multiple lines."
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:indented"
+EnforcedStyle = "indented"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_indented_accepts_indented_methods_in_if_condition"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_accepts_indented_methods_in_if_condition"
 source = '''
 if a.
     b
   something
 end
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:indented"
+EnforcedStyle = "indented"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_indented_registers_an_offense_and_corrects_0_space_indentation_inside_square_brackets"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_registers_an_offense_and_corrects_0_space_indentation_inside_square_brackets"
 source = '''
 foo[
   bar
@@ -1643,8 +2522,6 @@ foo[
     .baz
 ]
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 3
@@ -1653,10 +2530,10 @@ column_end = 6
 message = "Use 2 (not 0) spaces for indenting an expression spanning multiple lines."
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:indented"
+EnforcedStyle = "indented"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_indented_registers_an_offense_and_corrects_aligned_methods_in_if_condition"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_registers_an_offense_and_corrects_aligned_methods_in_if_condition"
 source = '''
 if a.
    b
@@ -1669,8 +2546,6 @@ if a.
   something
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 2
@@ -1679,117 +2554,247 @@ column_end = 4
 message = "Use 4 (not 3) spaces for indenting a condition in an `if` statement spanning multiple lines."
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:indented"
+EnforcedStyle = "indented"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_indented_accepts_normal_indentation_of_method_parameters"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_accepts_normal_indentation_of_method_parameters"
 source = '''
 Parser::Source::Range.new(expr.source_buffer,
                           begin_pos,
                           begin_pos + line.length)
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:indented"
+EnforcedStyle = "indented"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_indented_accepts_any_indentation_of_method_parameters"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_accepts_any_indentation_of_method_parameters"
 source = '''
 a(b.
     c
 .d)
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:indented"
+EnforcedStyle = "indented"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_indented_accepts_normal_indentation_inside_grouped_expression"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_accepts_normal_indentation_inside_grouped_expression"
 source = '''
 arg_array.size == a.size && (
   arg_array == a ||
   arg_array.map(&:children) == a.map(&:children)
 )
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:indented"
+EnforcedStyle = "indented"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_indented"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_accepts_double_indentation_of_if_condition"
 source = '''
-#{keyword} receiver.
+if receiver.
     nil? &&
     !args.empty?
 end
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:indented"
+EnforcedStyle = "indented"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_indented"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_registers_an_offense_for_a_2_space_indentation_of_if_condition"
 source = '''
-#{keyword} receiver
+if receiver
   .nil? &&
   !args.empty?
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 2
 column_start = 2
 column_end = 7
-message = "Use 4 (not 2) spaces for indenting a condition in #{article} `#{keyword}` statement spanning multiple lines."
+message = "Use 4 (not 2) spaces for indenting a condition in an `if` statement spanning multiple lines."
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:indented"
+EnforcedStyle = "indented"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_indented"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_accepts_indented_methods_in_if_body"
 source = '''
-#{keyword} a
+if a
   something.
     something_else
 end
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:indented"
+EnforcedStyle = "indented"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_indented"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_accepts_double_indentation_of_unless_condition"
 source = '''
-return #{keyword} receiver.nil? &&
+unless receiver.
+    nil? &&
+    !args.empty?
+end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_registers_an_offense_for_a_2_space_indentation_of_unless_condition"
+source = '''
+unless receiver
+  .nil? &&
+  !args.empty?
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 7
+message = "Use 4 (not 2) spaces for indenting a condition in an `unless` statement spanning multiple lines."
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_accepts_indented_methods_in_unless_body"
+source = '''
+unless a
+  something.
+    something_else
+end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_accepts_double_indentation_of_while_condition"
+source = '''
+while receiver.
+    nil? &&
+    !args.empty?
+end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_registers_an_offense_for_a_2_space_indentation_of_while_condition"
+source = '''
+while receiver
+  .nil? &&
+  !args.empty?
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 7
+message = "Use 4 (not 2) spaces for indenting a condition in a `while` statement spanning multiple lines."
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_accepts_indented_methods_in_while_body"
+source = '''
+while a
+  something.
+    something_else
+end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_accepts_double_indentation_of_until_condition"
+source = '''
+until receiver.
+    nil? &&
+    !args.empty?
+end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_registers_an_offense_for_a_2_space_indentation_of_until_condition"
+source = '''
+until receiver
+  .nil? &&
+  !args.empty?
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 7
+message = "Use 4 (not 2) spaces for indenting a condition in an `until` statement spanning multiple lines."
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_accepts_indented_methods_in_until_body"
+source = '''
+until a
+  something.
+    something_else
+end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_accepts_special_indentation_of_return_unless_condition"
+source = '''
+return unless receiver.nil? &&
     !args.empty? &&
     FORBIDDEN_METHODS.include?(method_name)
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:indented"
+EnforcedStyle = "indented"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_indented_registers_an_offense_and_corrects_wrong_indentation_of_for_expression"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_accepts_special_indentation_of_return_if_condition"
+source = '''
+return if receiver.nil? &&
+    !args.empty? &&
+    FORBIDDEN_METHODS.include?(method_name)
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_registers_an_offense_and_corrects_wrong_indentation_of_for_expression"
 source = '''
 for n in a.
   b
@@ -1800,8 +2805,6 @@ for n in a.
     b
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 2
@@ -1810,95 +2813,22 @@ column_end = 3
 message = "Use 4 (not 2) spaces for indenting a collection in a `for` statement spanning multiple lines."
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:indented"
+EnforcedStyle = "indented"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_indented_accepts_special_indentation_of_for_expression"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_accepts_special_indentation_of_for_expression"
 source = '''
 for n in a.
     b
 end
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:indented"
+EnforcedStyle = "indented"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_indented"
-source = '''
-#{lhs} = int_part
-  .abs
-  .to_s
-  .reverse
-  .gsub(/...(?=.)/, '&_')
-  .reverse
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:indented"
-
-[[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_indented"
-source = '''
-#{lhs} =
-  int_part
-    .abs
-    .to_s
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:indented"
-
-[[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_indented"
-source = '''
-obj.#{lhs} =
-  int_part
-    .abs
-    .to_s
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:indented"
-
-[[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_indented_assignment_a"
-source = '''
-a
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:indented"
-
-[[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_indented_assignment_a_key"
-source = '''
-a[:key]
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[tests.config]
-EnforcedStyle = "$UNRESOLVED:indented"
-
-[[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_indented_registers_an_offense_and_corrects_correct_unrecognized_style"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_registers_an_offense_and_corrects_correct__unrecognized_style"
 source = '''
 a.
   b
@@ -1911,8 +2841,6 @@ a.
 c.
   d
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 4
@@ -1921,10 +2849,10 @@ column_end = 5
 message = "Use 2 (not 4) spaces for indenting an expression spanning multiple lines."
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:indented"
+EnforcedStyle = "indented"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_indented_registers_an_offense_and_corrects_aligned_operators_in_assignment"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_registers_an_offense_and_corrects_aligned_operators_in_assignment"
 source = '''
 formatted_int = int_part
                 .abs
@@ -1935,8 +2863,6 @@ formatted_int = int_part
   .abs
   .reverse
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 2
@@ -1951,112 +2877,1107 @@ column_end = 24
 message = "Use 2 (not 16) spaces for indenting an expression in an assignment spanning multiple lines."
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:indented"
+EnforcedStyle = "indented"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_indented_when_indentation_width_is_overridden_for_this_cop_accepts_indented_methods"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_registers_an_offense_and_corrects_method_call_inside_hash_pair_value_using_standard_indentation_width_shifted_left"
+source = '''
+def foo
+  bar(
+    key: VeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeryLongClassName
+ .veeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeery_long_method_name
+  )
+end
+'''
+corrected = '''
+def foo
+  bar(
+    key: VeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeryLongClassName
+      .veeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeery_long_method_name
+  )
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 1
+column_end = 54
+message = "Use 2 (not -3) spaces for indenting an expression spanning multiple lines."
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_registers_an_offense_and_corrects_method_call_inside_hash_pair_value_using_standard_indentation_width_shifted_right"
+source = '''
+def foo
+  bar(
+    key: VeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeryLongClassName
+                .veeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeery_long_method_name
+  )
+end
+'''
+corrected = '''
+def foo
+  bar(
+    key: VeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeryLongClassName
+      .veeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeery_long_method_name
+  )
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 16
+column_end = 69
+message = "Use 2 (not 12) spaces for indenting an expression spanning multiple lines."
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_registers_an_offense_and_corrects_method_call_with_block_inside_hash_pair_value"
+source = '''
+parsed_params = refusal_advice_params.merge(
+  actions: refusal_advice_params.fetch(:actions).
+      each_pair do |_, suggestions|
+        suggestions.transform_values! { |v| v == 'true' }
+      end
+).to_h
+'''
+corrected = '''
+parsed_params = refusal_advice_params.merge(
+  actions: refusal_advice_params.fetch(:actions).
+    each_pair do |_, suggestions|
+      suggestions.transform_values! { |v| v == 'true' }
+    end
+).to_h
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 6
+column_end = 15
+message = "Use 2 (not 4) spaces for indenting an expression in an assignment spanning multiple lines."
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_registers_an_offense_and_corrects_method_chain_inside_hash_pair_value"
+source = '''
+def payload
+  {
+    type: 'action',
+    params: {
+      page: get_page_name,
+      email: @action.member.email,
+      mailing_id: @mailing_id
+    }.reverse_merge(@action.form_data)
+      .merge(UserLanguageISO.for(page.language))
+      .tap do |params|
+        params[:country] = country(member.country) if member.country.present?
+        params[:action_bucket] = data[:bucket] if data.key? :bucket
+      end
+  }.deep_symbolize_keys
+end
+'''
+corrected = '''
+def payload
+  {
+    type: 'action',
+    params: {
+      page: get_page_name,
+      email: @action.member.email,
+      mailing_id: @mailing_id
+    }.reverse_merge(@action.form_data)
+        .merge(UserLanguageISO.for(page.language))
+        .tap do |params|
+          params[:country] = country(member.country) if member.country.present?
+          params[:action_bucket] = data[:bucket] if data.key? :bucket
+        end
+  }.deep_symbolize_keys
+end
+'''
+
+[[tests.offenses]]
+line = 9
+column_start = 6
+column_end = 12
+message = "Use 2 (not 0) spaces for indenting an expression spanning multiple lines."
+
+[[tests.offenses]]
+line = 10
+column_start = 6
+column_end = 10
+message = "Use 2 (not 0) spaces for indenting an expression spanning multiple lines."
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_registers_an_offense_and_corrects_method_chain_with_block_in_hash_pair_value"
+source = '''
+add_to_git_repo(
+  initial_repo,
+  "about.json" =>
+    JSON
+        .parse(about_json(about_url: "https://updated.site.com"))
+        .tap { |h| h[:component] = true }
+        .to_json,
+)
+'''
+corrected = '''
+add_to_git_repo(
+  initial_repo,
+  "about.json" =>
+    JSON
+      .parse(about_json(about_url: "https://updated.site.com"))
+      .tap { |h| h[:component] = true }
+      .to_json,
+)
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 8
+column_end = 14
+message = "Use 2 (not 4) spaces for indenting an expression spanning multiple lines."
+
+[[tests.offenses]]
+line = 6
+column_start = 8
+column_end = 12
+message = "Use 2 (not 4) spaces for indenting an expression spanning multiple lines."
+
+[[tests.offenses]]
+line = 7
+column_start = 8
+column_end = 16
+message = "Use 2 (not 4) spaces for indenting an expression spanning multiple lines."
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_behaves_like_common_accepts_indented_methods_in_lhs_of__assignment"
+source = '''
+a
+  .b[c] = 0
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_behaves_like_common_accepts_indented_methods_inside_and_outside_a_block"
+source = '''
+a = b.map do |c|
+  c
+    .b
+    .d do
+      x
+        .y
+    end
+end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_behaves_like_common_accepts_indentation_relative_to_first_receiver"
+source = '''
+node
+  .children.map { |n| string_source(n) }.compact
+  .any? { |s| preferred.any? { |d| s.include?(d) } }
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_behaves_like_common_accepts_indented_methods_in_ordinary_statement"
+source = '''
+a.
+  b
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_behaves_like_common_accepts_no_extra_indentation_of_third_line"
+source = '''
+a.
+  b.
+  c
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_behaves_like_common_accepts_indented_methods_in_for_body"
+source = '''
+for x in a
+  something.
+    something_else
+end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_behaves_like_common_accepts_alignment_inside_a_grouped_expression"
+source = '''
+(a.
+ b)
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_behaves_like_common_accepts_arithmetic_operation_with_block_inside_a_grouped_expression"
+source = '''
+(
+  a * b do
+  end
+)
+  .c
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_behaves_like_common_accepts_an_expression_where_the_first_method_spans_multiple_lines"
+source = '''
+subject.each do |item|
+  result = resolve(locale) and return result
+end.a
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_behaves_like_common_accepts_any_indentation_of_parameters_to_"
+source = '''
+payment = Models::IncomingPayments[
+        id:      input['incoming-payment-id'],
+           user_id: @user[:id]]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_behaves_like_common_accepts_aligned_methods_when_multiline_method_chain_with_a_block_argument_and_method_chain"
+source = '''
+a(b)
+  .c(
+    d do
+    end.f
+  )
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_behaves_like_common_doesnt_crash_on_unaligned_multiline_lambdas"
+source = '''
+MyClass.(my_args)
+  .my_method
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_behaves_like_common_accepts_alignment_of_method_with_assignment_and_operatorlike_method"
+source = '''
+query = x.|(
+  foo,
+  bar
+)
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_behaves_like_common_accepts_method_call_chain_starting_with_implicit_receiver"
+source = '''
+def slugs(type, path_prefix)
+  expanded_links_item(type)
+    .reject { |item| item["base_path"].nil? }
+    .map { |item| item["base_path"].gsub(%r{^#{path_prefix}}, "") }
+end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_behaves_like_common_accepts_method_chain_with_multiline_parenthesized_receiver"
+source = '''
+(a +
+ b)
+  .foo
+  .bar
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_behaves_like_common_for_aligned_and_indented_accepts_even_indentation_of_consecutive_lines_in_typical_rspec_code"
+source = '''
+expect { Foo.new }.
+  to change { Bar.count }.
+  from(1).to(2)
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_behaves_like_common_for_aligned_and_indented_registers_an_offense_and_corrects_no_indentation_of_second_line"
+source = '''
+a.
+b
+'''
+corrected = '''
+a.
+  b
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 1
+message = "Use 2 (not 0) spaces for indenting an expression spanning multiple lines."
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_behaves_like_common_for_aligned_and_indented_registers_an_offense_and_corrects_3_spaces_indentation_of_2nd_line"
+source = '''
+a.
+   b
+c.
+   d
+'''
+corrected = '''
+a.
+  b
+c.
+  d
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 3
+column_end = 4
+message = "Use 2 (not 3) spaces for indenting an expression spanning multiple lines."
+
+[[tests.offenses]]
+line = 4
+column_start = 3
+column_end = 4
+message = "Use 2 (not 3) spaces for indenting an expression spanning multiple lines."
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_behaves_like_common_for_aligned_and_indented_registers_an_offense_and_corrects_extra_indentation_of_third_line"
+source = '''
+a.
+  b.
+    c
+'''
+corrected = '''
+a.
+  b.
+  c
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 4
+column_end = 5
+message = "Use 2 (not 4) spaces for indenting an expression spanning multiple lines."
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_behaves_like_common_for_aligned_and_indented_registers_an_offense_and_corrects_the_emacs_rubymode_11_indentation_of_an_expression_in_an_array"
+source = '''
+[
+ a.
+ b
+]
+'''
+corrected = '''
+[
+ a.
+   b
+]
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 1
+column_end = 2
+message = "Use 2 (not 0) spaces for indenting an expression spanning multiple lines."
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_behaves_like_common_for_aligned_and_indented_registers_an_offense_and_corrects_extra_indentation_of_3rd_line_in_typical_rspec_code"
+source = '''
+expect { Foo.new }.
+  to change { Bar.count }.
+      from(1).to(2)
+'''
+corrected = '''
+expect { Foo.new }.
+  to change { Bar.count }.
+  from(1).to(2)
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 6
+column_end = 10
+message = "Use 2 (not 6) spaces for indenting an expression spanning multiple lines."
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_behaves_like_common_for_aligned_and_indented_registers_an_offense_and_corrects_proc_call_without_a_selector"
+source = '''
+a
+ .(args)
+'''
+corrected = '''
+a
+  .(args)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 1
+column_end = 3
+message = "Use 2 (not 1) spaces for indenting an expression spanning multiple lines."
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_behaves_like_common_for_aligned_and_indented_registers_an_offense_and_corrects_one_space_indentation_of_2nd_line"
+source = '''
+a
+ .b
+'''
+corrected = '''
+a
+  .b
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 1
+column_end = 3
+message = "Use 2 (not 1) spaces for indenting an expression spanning multiple lines."
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_behaves_like_common_for_aligned_and_indented_registers_an_offense_for_misaligned_method_chain_after_parenthesized_expression"
+source = '''
+def run
+  (date_columns + candidate_columns).uniq
+                                    .select { |column_name|
+      castable?(column_name)
+    }
+    .each { |column_name|
+      cast(column_name)
+    }
+end
+'''
+corrected = '''
+def run
+  (date_columns + candidate_columns).uniq
+    .select { |column_name|
+      castable?(column_name)
+    }
+    .each { |column_name|
+      cast(column_name)
+    }
+end
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 36
+column_end = 43
+message = "Use 2 (not 34) spaces for indenting an expression spanning multiple lines."
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_behaves_like_common_for_aligned_and_indented_when_using_safe_navigation_operator_registers_an_offense_and_corrects_no_indentation_of_second_line"
+source = '''
+a&.
+b
+'''
+corrected = '''
+a&.
+  b
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 1
+message = "Use 2 (not 0) spaces for indenting an expression spanning multiple lines."
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_behaves_like_common_for_aligned_and_indented_when_using_safe_navigation_operator_registers_an_offense_and_corrects_3_spaces_indentation_of_2nd_line"
+source = '''
+a&.
+   b
+c&.
+   d
+'''
+corrected = '''
+a&.
+  b
+c&.
+  d
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 3
+column_end = 4
+message = "Use 2 (not 3) spaces for indenting an expression spanning multiple lines."
+
+[[tests.offenses]]
+line = 4
+column_start = 3
+column_end = 4
+message = "Use 2 (not 3) spaces for indenting an expression spanning multiple lines."
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_behaves_like_common_for_aligned_and_indented_when_using_safe_navigation_operator_registers_an_offense_and_corrects_extra_indentation_of_third_line"
+source = '''
+a&.
+  b&.
+    c
+'''
+corrected = '''
+a&.
+  b&.
+  c
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 4
+column_end = 5
+message = "Use 2 (not 4) spaces for indenting an expression spanning multiple lines."
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_behaves_like_common_for_aligned_and_indented_when_using_safe_navigation_operator_registers_an_offense_and_corrects_the_emacs_rubymode_11_indentation_of_an_expression_in_an_array"
+source = '''
+[
+ a&.
+ b
+]
+'''
+corrected = '''
+[
+ a&.
+   b
+]
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 1
+column_end = 2
+message = "Use 2 (not 0) spaces for indenting an expression spanning multiple lines."
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_behaves_like_common_for_aligned_and_indented_when_using_safe_navigation_operator_registers_an_offense_and_corrects_extra_indentation_of_3rd_line_in_typical_rspec_code"
+source = '''
+expect { Foo.new }&.
+  to change { Bar.count }&.
+      from(1)&.to(2)
+'''
+corrected = '''
+expect { Foo.new }&.
+  to change { Bar.count }&.
+  from(1)&.to(2)
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 6
+column_end = 10
+message = "Use 2 (not 6) spaces for indenting an expression spanning multiple lines."
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_behaves_like_common_for_aligned_and_indented_when_using_safe_navigation_operator_registers_an_offense_and_corrects_proc_call_without_a_selector"
+source = '''
+a
+ &.(args)
+'''
+corrected = '''
+a
+  &.(args)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 1
+column_end = 4
+message = "Use 2 (not 1) spaces for indenting an expression spanning multiple lines."
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_behaves_like_common_for_aligned_and_indented_when_using_safe_navigation_operator_registers_an_offense_and_corrects_one_space_indentation_of_2nd_line"
+source = '''
+a
+ &.b
+'''
+corrected = '''
+a
+  &.b
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 1
+column_end = 4
+message = "Use 2 (not 1) spaces for indenting an expression spanning multiple lines."
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_behaves_like_common_for_aligned_and_indented_when_using_safe_navigation_operator_accepts_aligned_methods_when_multiline_method_chain_with_a_block_argument_and_method_chain"
+source = '''
+a&.(b)
+  .c(
+    d do
+    end.f
+  )
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_behaves_like_common_for_aligned_and_indented_when_using_safe_navigation_operator_doesnt_crash_on_multiline_method_calls_with_safe_navigation_and_assignment"
+source = '''
+MyClass.
+foo&.bar = 'baz'
+'''
+corrected = '''
+MyClass.
+  foo&.bar = 'baz'
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 3
+message = "Use 2 (not 0) spaces for indenting an expression spanning multiple lines."
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_behaves_like_both_indented_styles_accepts_method_chain_with_array_literal_receiver"
+source = '''
+def targets_for(path)
+  fullpath = fullpath_for(path)
+  [
+    Dir.glob(fullpath),
+  ].flatten
+    .uniq
+    .delete_if { |entry| dot_directory?(entry) }
+end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_behaves_like_both_indented_styles_for_possible_semantic_alignment_accepts_indented_methods"
+source = '''
+User.a
+  .c
+  .b
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_behaves_like_assignment_accepts_indentation_of_assignment_to_a_with_rhs_on_same_line"
+source = '''
+a = int_part
+  .abs
+  .to_s
+  .reverse
+  .gsub(/...(?=.)/, '&_')
+  .reverse
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_behaves_like_assignment_accepts_indentation_of_assignment_to_a_with_newline_after_"
+source = '''
+a =
+  int_part
+    .abs
+    .to_s
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_behaves_like_assignment_accepts_indentation_of_assignment_to_obja_with_newline_after_"
+source = '''
+obj.a =
+  int_part
+    .abs
+    .to_s
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_behaves_like_assignment_accepts_indentation_of_assignment_to_akey_with_rhs_on_same_line"
+source = '''
+a[:key] = int_part
+  .abs
+  .to_s
+  .reverse
+  .gsub(/...(?=.)/, '&_')
+  .reverse
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_behaves_like_assignment_accepts_indentation_of_assignment_to_akey_with_newline_after_"
+source = '''
+a[:key] =
+  int_part
+    .abs
+    .to_s
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_behaves_like_assignment_accepts_indentation_of_assignment_to_objakey_with_newline_after_"
+source = '''
+obj.a[:key] =
+  int_part
+    .abs
+    .to_s
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_when_indentation_width_is_overridden_for_this_cop_accepts_indented_methods"
 source = '''
 User.a
        .c
        .b
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:indented"
+EnforcedStyle = "indented"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_indented_when_indentation_width_is_overridden_for_this_cop_accepts_correctly_indented_methods_in_operation"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_when_indentation_width_is_overridden_for_this_cop_accepts_correctly_indented_methods_in_operation"
 source = '''
 1 + a
        .b
        .c
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:indented"
+EnforcedStyle = "indented"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_indented_when_indentation_width_is_overridden_for_this_cop_accepts_indented_methods_in_if_condition"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_when_indentation_width_is_overridden_for_this_cop_accepts_indented_methods_in_if_condition"
 source = '''
 if a.
          b
   something
 end
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:indented"
+EnforcedStyle = "indented"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_indented_when_indentation_width_is_overridden_for_this_cop_accepts_indentation_of_assignment"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_when_indentation_width_is_overridden_for_this_cop_accepts_indentation_of_assignment"
 source = '''
 formatted_int = int_part
        .abs
        .to_s
        .reverse
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:indented"
+EnforcedStyle = "indented"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_indented_when_indentation_width_is_overridden_for_this_cop"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_when_indentation_width_is_overridden_for_this_cop_accepts_indentation_of_if_condition_which_is_offset_by_a_single_normal_indentation_step"
 source = '''
-#{keyword} receiver.
+if receiver.
          nil? &&
          !args.empty?
 end
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:indented"
+EnforcedStyle = "indented"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_indented_when_indentation_width_is_overridden_for_this_cop"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_when_indentation_width_is_overridden_for_this_cop_registers_an_offense_for_a_4_space_indentation_of_if_condition"
 source = '''
-#{keyword} receiver
+if receiver
     .nil? &&
     !args.empty?
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 2
 column_start = 4
 column_end = 9
-message = "Use 9 (not 4) spaces for indenting a condition in #{article} `#{keyword}` statement spanning multiple lines."
+message = "Use 9 (not 4) spaces for indenting a condition in an `if` statement spanning multiple lines."
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:indented"
+EnforcedStyle = "indented"
 
 [[tests]]
-name = "rubocop_cop_layout_multilinemethodcallindentation_when_enforcedstyle_is_indented_when_indentation_width_is_overridden_for_this_cop"
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_when_indentation_width_is_overridden_for_this_cop_accepts_indented_methods_in_if_body"
 source = '''
-#{keyword} a
+if a
   something.
          something_else
 end
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedStyle = "$UNRESOLVED:indented"
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_when_indentation_width_is_overridden_for_this_cop_accepts_indentation_of_unless_condition_which_is_offset_by_a_single_normal_indentation_step"
+source = '''
+unless receiver.
+         nil? &&
+         !args.empty?
+end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_when_indentation_width_is_overridden_for_this_cop_registers_an_offense_for_a_4_space_indentation_of_unless_condition"
+source = '''
+unless receiver
+    .nil? &&
+    !args.empty?
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 4
+column_end = 9
+message = "Use 9 (not 4) spaces for indenting a condition in an `unless` statement spanning multiple lines."
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_when_indentation_width_is_overridden_for_this_cop_accepts_indented_methods_in_unless_body"
+source = '''
+unless a
+  something.
+         something_else
+end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_when_indentation_width_is_overridden_for_this_cop_accepts_indentation_of_while_condition_which_is_offset_by_a_single_normal_indentation_step"
+source = '''
+while receiver.
+         nil? &&
+         !args.empty?
+end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_when_indentation_width_is_overridden_for_this_cop_registers_an_offense_for_a_4_space_indentation_of_while_condition"
+source = '''
+while receiver
+    .nil? &&
+    !args.empty?
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 4
+column_end = 9
+message = "Use 9 (not 4) spaces for indenting a condition in a `while` statement spanning multiple lines."
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_when_indentation_width_is_overridden_for_this_cop_accepts_indented_methods_in_while_body"
+source = '''
+while a
+  something.
+         something_else
+end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_when_indentation_width_is_overridden_for_this_cop_accepts_indentation_of_until_condition_which_is_offset_by_a_single_normal_indentation_step"
+source = '''
+until receiver.
+         nil? &&
+         !args.empty?
+end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_when_indentation_width_is_overridden_for_this_cop_registers_an_offense_for_a_4_space_indentation_of_until_condition"
+source = '''
+until receiver
+    .nil? &&
+    !args.empty?
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 4
+column_end = 9
+message = "Use 9 (not 4) spaces for indenting a condition in an `until` statement spanning multiple lines."
+
+[tests.config]
+EnforcedStyle = "indented"
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_when_indentation_width_is_overridden_for_this_cop_accepts_indented_methods_in_until_body"
+source = '''
+until a
+  something.
+         something_else
+end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented"

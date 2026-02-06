@@ -4,7 +4,7 @@ severity = "convention"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_style_evalwithlocation_registers_an_offense_when_using_eval_without_any_arguments"
+name = "rubocopcopstyleevalwithlocation_registers_an_offense_when_using_eval_without_any_arguments"
 source = '''
 eval <<-CODE
   do_something
@@ -18,7 +18,7 @@ column_end = 12
 message = "Pass a binding, `__FILE__`, and `__LINE__` to `eval`."
 
 [[tests]]
-name = "rubocop_cop_style_evalwithlocation_registers_an_offense_when_using_kernel_eval_without_any_arguments"
+name = "rubocopcopstyleevalwithlocation_registers_an_offense_when_using_kerneleval_without_any_arguments"
 source = '''
 Kernel.eval <<-CODE
   do_something
@@ -32,7 +32,7 @@ column_end = 19
 message = "Pass a binding, `__FILE__`, and `__LINE__` to `eval`."
 
 [[tests]]
-name = "rubocop_cop_style_evalwithlocation_registers_an_offense_when_using_kernel_eval_without_any_arguments"
+name = "rubocopcopstyleevalwithlocation_registers_an_offense_when_using_kerneleval_without_any_arguments_2"
 source = '''
 ::Kernel.eval <<-CODE
   do_something
@@ -46,14 +46,14 @@ column_end = 21
 message = "Pass a binding, `__FILE__`, and `__LINE__` to `eval`."
 
 [[tests]]
-name = "rubocop_cop_style_evalwithlocation_does_not_register_an_offense_if_eval_is_called_on_another_object"
+name = "rubocopcopstyleevalwithlocation_does_not_register_an_offense_if_eval_is_called_on_another_object"
 source = '''
 foo.eval "CODE"
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_evalwithlocation_registers_an_offense_when_using_eval_with_binding_only"
+name = "rubocopcopstyleevalwithlocation_registers_an_offense_when_using_eval_with_binding_only"
 source = '''
 eval <<-CODE, binding
   do_something
@@ -72,7 +72,7 @@ column_end = 21
 message = "Pass a binding, `__FILE__`, and `__LINE__` to `eval`."
 
 [[tests]]
-name = "rubocop_cop_style_evalwithlocation_registers_an_offense_when_using_eval_without_lineno"
+name = "rubocopcopstyleevalwithlocation_registers_an_offense_when_using_eval_without_lineno"
 source = '''
 eval <<-CODE, binding, __FILE__
   do_something
@@ -91,7 +91,7 @@ column_end = 31
 message = "Pass a binding, `__FILE__`, and `__LINE__` to `eval`."
 
 [[tests]]
-name = "rubocop_cop_style_evalwithlocation_registers_an_offense_when_using_eval_without_lineno_and_with_parenthesized_method_call"
+name = "rubocopcopstyleevalwithlocation_registers_an_offense_when_using_eval_without_lineno_and_with_parenthesized_method_call"
 source = '''
 eval(<<-CODE, binding, __FILE__)
   do_something
@@ -110,7 +110,7 @@ column_end = 32
 message = "Pass a binding, `__FILE__`, and `__LINE__` to `eval`."
 
 [[tests]]
-name = "rubocop_cop_style_evalwithlocation_registers_an_offense_when_using_eval_with_an_incorrect_line_number"
+name = "rubocopcopstyleevalwithlocation_registers_an_offense_when_using_eval_with_an_incorrect_line_number"
 source = '''
 eval 'do_something', binding, __FILE__, __LINE__ + 1
 '''
@@ -125,7 +125,7 @@ column_end = 52
 message = "Incorrect line number for `eval`; use `__LINE__` instead of `__LINE__ + 1`."
 
 [[tests]]
-name = "rubocop_cop_style_evalwithlocation_registers_an_offense_when_using_eval_with_a_heredoc_and_an_incorrect_line_number"
+name = "rubocopcopstyleevalwithlocation_registers_an_offense_when_using_eval_with_a_heredoc_and_an_incorrect_line_number"
 source = '''
 eval <<-CODE, binding, __FILE__, __LINE__ + 2
   do_something
@@ -144,12 +144,10 @@ column_end = 45
 message = "Incorrect line number for `eval`; use `__LINE__ + 1` instead of `__LINE__ + 2`."
 
 [[tests]]
-name = "rubocop_cop_style_evalwithlocation_registers_an_offense_when_using_eval_with_a_string_on_a_new_line"
+name = "rubocopcopstyleevalwithlocation_registers_an_offense_when_using_eval_with_a_string_on_a_new_line"
 source = '''
 eval('puts 42',
      binding,
-     __FILE__,
-     __LINE__)
 '''
 corrected = '''
 eval('puts 42',
@@ -159,13 +157,25 @@ eval('puts 42',
 '''
 
 [[tests.offenses]]
-line = 4
+line = 2
+column_start = 5
+column_end = 7
+message = "FILE__,"
+
+[[tests.offenses]]
+line = 2
+column_start = 5
+column_end = 7
+message = "LINE__)"
+
+[[tests.offenses]]
+line = 2
 column_start = 5
 column_end = 13
 message = "Incorrect line number for `eval`; use `__LINE__ - 3` instead of `__LINE__`."
 
 [[tests]]
-name = "rubocop_cop_style_evalwithlocation_registers_an_offense_when_using_class_eval_without_any_arguments"
+name = "rubocopcopstyleevalwithlocation_registers_an_offense_when_using_class_eval_without_any_arguments"
 source = '''
 C.class_eval <<-CODE
   do_something
@@ -184,7 +194,7 @@ column_end = 20
 message = "Pass `__FILE__` and `__LINE__` to `class_eval`."
 
 [[tests]]
-name = "rubocop_cop_style_evalwithlocation_registers_an_offense_when_using_module_eval_without_any_arguments"
+name = "rubocopcopstyleevalwithlocation_registers_an_offense_when_using_module_eval_without_any_arguments"
 source = '''
 M.module_eval <<-CODE
   do_something
@@ -203,7 +213,7 @@ column_end = 21
 message = "Pass `__FILE__` and `__LINE__` to `module_eval`."
 
 [[tests]]
-name = "rubocop_cop_style_evalwithlocation_registers_an_offense_when_using_instance_eval_without_any_arguments"
+name = "rubocopcopstyleevalwithlocation_registers_an_offense_when_using_instance_eval_without_any_arguments"
 source = '''
 foo.instance_eval <<-CODE
   do_something
@@ -222,7 +232,7 @@ column_end = 25
 message = "Pass `__FILE__` and `__LINE__` to `instance_eval`."
 
 [[tests]]
-name = "rubocop_cop_style_evalwithlocation_registers_an_offense_when_using_instance_eval_with_a_string_argument_in_parentheses"
+name = "rubocopcopstyleevalwithlocation_registers_an_offense_when_using_instance_eval_with_a_string_argument_in_parentheses"
 source = '''
 instance_eval('@foo = foo')
 '''
@@ -237,7 +247,7 @@ column_end = 27
 message = "Pass `__FILE__` and `__LINE__` to `instance_eval`."
 
 [[tests]]
-name = "rubocop_cop_style_evalwithlocation_registers_an_offense_when_using_class_eval_with_an_incorrect_lineno"
+name = "rubocopcopstyleevalwithlocation_registers_an_offense_when_using_class_eval_with_an_incorrect_lineno"
 source = '''
 C.class_eval <<-CODE, __FILE__, __LINE__
   do_something
@@ -256,7 +266,7 @@ column_end = 40
 message = "Incorrect line number for `class_eval`; use `__LINE__ + 1` instead of `__LINE__`."
 
 [[tests]]
-name = "rubocop_cop_style_evalwithlocation_accepts_eval_with_a_heredoc_a_filename_and_line_1"
+name = "rubocopcopstyleevalwithlocation_accepts_eval_with_a_heredoc_a_filename_and___line____1"
 source = '''
 eval <<-CODE, binding, __FILE__, __LINE__ + 1
   do_something
@@ -265,7 +275,7 @@ CODE
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_evalwithlocation_accepts_eval_with_a_code_that_is_a_variable"
+name = "rubocopcopstyleevalwithlocation_accepts_eval_with_a_code_that_is_a_variable"
 source = '''
 code = something
 eval code
@@ -273,14 +283,14 @@ eval code
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_evalwithlocation_accepts_eval_with_a_string_a_filename_and_line"
+name = "rubocopcopstyleevalwithlocation_accepts_eval_with_a_string_a_filename_and___line__"
 source = '''
 eval 'do_something', binding, __FILE__, __LINE__
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_evalwithlocation_accepts_eval_with_a_string_a_filename_and_line_on_a_new_line"
+name = "rubocopcopstyleevalwithlocation_accepts_eval_with_a_string_a_filename_and___line___on_a_new_line"
 source = '''
 eval 'do_something', binding, __FILE__,
      __LINE__ - 1
@@ -288,7 +298,7 @@ eval 'do_something', binding, __FILE__,
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_evalwithlocation_registers_an_offense_when_using_eval_with_improper_arguments"
+name = "rubocopcopstyleevalwithlocation_registers_an_offense_when_using_eval_with_improper_arguments"
 source = '''
 eval <<-CODE, binding, 'foo', 'bar'
   do_something
@@ -313,7 +323,7 @@ column_end = 28
 message = "Incorrect file for `eval`; use `__FILE__` instead of `'foo'`."
 
 [[tests]]
-name = "rubocop_cop_style_evalwithlocation_registers_an_offense_when_using_instance_eval_with_improper_arguments"
+name = "rubocopcopstyleevalwithlocation_registers_an_offense_when_using_instance_eval_with_improper_arguments"
 source = '''
 instance_eval <<-CODE, 'foo', 'bar'
   do_something
@@ -338,7 +348,7 @@ column_end = 28
 message = "Incorrect file for `instance_eval`; use `__FILE__` instead of `'foo'`."
 
 [[tests]]
-name = "rubocop_cop_style_evalwithlocation_registers_an_offense_when_using_class_eval_with_improper_arguments"
+name = "rubocopcopstyleevalwithlocation_registers_an_offense_when_using_class_eval_with_improper_arguments"
 source = '''
 class_eval <<-CODE, 'foo', 'bar'
   do_something
@@ -363,7 +373,7 @@ column_end = 25
 message = "Incorrect file for `class_eval`; use `__FILE__` instead of `'foo'`."
 
 [[tests]]
-name = "rubocop_cop_style_evalwithlocation_registers_an_offense_when_using_module_eval_with_improper_arguments"
+name = "rubocopcopstyleevalwithlocation_registers_an_offense_when_using_module_eval_with_improper_arguments"
 source = '''
 module_eval <<-CODE, 'foo', 'bar'
   do_something
@@ -388,7 +398,7 @@ column_end = 26
 message = "Incorrect file for `module_eval`; use `__FILE__` instead of `'foo'`."
 
 [[tests]]
-name = "rubocop_cop_style_evalwithlocation_registers_an_offense_when_using_correct_file_argument_but_incorrect_line"
+name = "rubocopcopstyleevalwithlocation_registers_an_offense_when_using_correct_file_argument_but_incorrect_line"
 source = '''
 module_eval <<-CODE, __FILE__, 'bar'
   do_something
@@ -407,7 +417,7 @@ column_end = 36
 message = "Incorrect line number for `module_eval`; use `__LINE__ + 1` instead of `'bar'`."
 
 [[tests]]
-name = "rubocop_cop_style_evalwithlocation_does_not_register_an_offense_when_using_eval_with_block_argument"
+name = "rubocopcopstyleevalwithlocation_does_not_register_an_offense_when_using_eval_with_block_argument"
 source = '''
 def self.included(base)
   base.class_eval do
@@ -418,7 +428,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_evalwithlocation_does_not_register_an_offense_when_using_eval_with_a_line_number_from_a_method_call"
+name = "rubocopcopstyleevalwithlocation_does_not_register_an_offense_when_using_eval_with_a_line_number_from_a_method_call"
 source = '''
 module_eval(<<~CODE, __FILE__, lineno)
   do_something
@@ -427,7 +437,7 @@ CODE
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_evalwithlocation_does_not_register_an_offense_when_using_eval_with_a_line_number_from_a_variable"
+name = "rubocopcopstyleevalwithlocation_does_not_register_an_offense_when_using_eval_with_a_line_number_from_a_variable"
 source = '''
 lineno = calc
 

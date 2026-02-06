@@ -4,14 +4,28 @@ severity = "warning"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_lint_redundantdirglobsort_when_ruby_3_0_or_higher_registers_an_offense_and_correction_when_using_dir_glob_sort"
+name = "rubocopcoplintredundantdirglobsort_does_not_register_an_offense_when_not_using_sort_for_dir"
+source = '''
+Dir['./lib/**/*.rb'].each do |file|
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintredundantdirglobsort_does_not_register_an_offense_when_using_sort_without_a_receiver"
+source = '''
+sort.do_something
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintredundantdirglobsort_when_ruby_30_or_higher_registers_an_offense_and_correction_when_using_dirglobsort"
 source = '''
 Dir.glob(Rails.root.join('test', '*.rb')).sort.each(&method(:require))
 '''
 corrected = '''
 Dir.glob(Rails.root.join('test', '*.rb')).each(&method(:require))
 '''
-ruby_version = ">= 3.0"
 
 [[tests.offenses]]
 line = 1
@@ -20,14 +34,13 @@ column_end = 46
 message = "Remove redundant `sort`."
 
 [[tests]]
-name = "rubocop_cop_lint_redundantdirglobsort_when_ruby_3_0_or_higher_registers_an_offense_and_correction_when_using_dir_glob_sort"
+name = "rubocopcoplintredundantdirglobsort_when_ruby_30_or_higher_registers_an_offense_and_correction_when_using_dirglobsort_2"
 source = '''
 ::Dir.glob(Rails.root.join('test', '*.rb')).sort.each(&method(:require))
 '''
 corrected = '''
 ::Dir.glob(Rails.root.join('test', '*.rb')).each(&method(:require))
 '''
-ruby_version = ">= 3.0"
 
 [[tests.offenses]]
 line = 1
@@ -36,7 +49,7 @@ column_end = 48
 message = "Remove redundant `sort`."
 
 [[tests]]
-name = "rubocop_cop_lint_redundantdirglobsort_when_ruby_3_0_or_higher_registers_an_offense_and_correction_when_using_dir_sort_each_do"
+name = "rubocopcoplintredundantdirglobsort_when_ruby_30_or_higher_registers_an_offense_and_correction_when_using_dirsorteach_do"
 source = '''
 Dir['./lib/**/*.rb'].sort.each do |file|
 end
@@ -45,7 +58,6 @@ corrected = '''
 Dir['./lib/**/*.rb'].each do |file|
 end
 '''
-ruby_version = ">= 3.0"
 
 [[tests.offenses]]
 line = 1
@@ -54,14 +66,13 @@ column_end = 25
 message = "Remove redundant `sort`."
 
 [[tests]]
-name = "rubocop_cop_lint_redundantdirglobsort_when_ruby_3_0_or_higher_registers_an_offense_and_correction_when_using_dir_sort_each_do_something"
+name = "rubocopcoplintredundantdirglobsort_when_ruby_30_or_higher_registers_an_offense_and_correction_when_using_dirsorteachdo_something"
 source = '''
 Dir['./lib/**/*.rb'].sort.each(&method(:require))
 '''
 corrected = '''
 Dir['./lib/**/*.rb'].each(&method(:require))
 '''
-ruby_version = ">= 3.0"
 
 [[tests.offenses]]
 line = 1
@@ -70,98 +81,73 @@ column_end = 25
 message = "Remove redundant `sort`."
 
 [[tests]]
-name = "rubocop_cop_lint_redundantdirglobsort_when_ruby_3_0_or_higher_does_not_register_an_offense_when_not_using_sort_with_sort_false_option_for_dir"
+name = "rubocopcoplintredundantdirglobsort_when_ruby_30_or_higher_does_not_register_an_offense_when_not_using_sort_with_sort_false_option_for_dir"
 source = '''
 Dir.glob(Rails.root.join('test', '*.rb'), sort: false).each do
 end
 '''
-ruby_version = ">= 3.0"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_redundantdirglobsort_when_ruby_3_0_or_higher_does_not_register_an_offense_when_using_dir_glob_b_txt_a_txt_sort"
+name = "rubocopcoplintredundantdirglobsort_when_ruby_30_or_higher_does_not_register_an_offense_when_using_dirglobbtxt_atxtsort"
 source = '''
 Dir.glob('./b/*.txt', './a/*.txt').sort.each(&method(:require))
 '''
-ruby_version = ">= 3.0"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_redundantdirglobsort_when_ruby_3_0_or_higher_does_not_register_an_offense_when_using_dir_glob_path_sort"
+name = "rubocopcoplintredundantdirglobsort_when_ruby_30_or_higher_does_not_register_an_offense_when_using_dirglobpathsort"
 source = '''
 Dir.glob(*path).sort.each(&method(:require))
 '''
-ruby_version = ">= 3.0"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_redundantdirglobsort_when_ruby_3_0_or_higher_does_not_register_an_offense_when_using_dir_b_txt_a_txt_sort"
+name = "rubocopcoplintredundantdirglobsort_when_ruby_30_or_higher_does_not_register_an_offense_when_using_dirbtxt_atxtsort"
 source = '''
 Dir['./b/*.txt', './a/*.txt'].sort.each(&method(:require))
 '''
-ruby_version = ">= 3.0"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_redundantdirglobsort_when_ruby_3_0_or_higher_does_not_register_an_offense_when_using_dir_path_sort"
+name = "rubocopcoplintredundantdirglobsort_when_ruby_30_or_higher_does_not_register_an_offense_when_using_dirpathsort"
 source = '''
 Dir[*path].sort.each(&method(:require))
 '''
-ruby_version = ">= 3.0"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_redundantdirglobsort_when_ruby_3_0_or_higher_does_not_register_an_offense_when_using_collection_sort"
+name = "rubocopcoplintredundantdirglobsort_when_ruby_30_or_higher_does_not_register_an_offense_when_using_collectionsort"
 source = '''
 collection.sort
 '''
-ruby_version = ">= 3.0"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_redundantdirglobsort_when_ruby_2_7_or_lower_does_not_register_an_offense_when_using_dir_glob_sort"
+name = "rubocopcoplintredundantdirglobsort_when_ruby_27_or_lower_does_not_register_an_offense_when_using_dirglobsort"
 source = '''
 Dir.glob(Rails.root.join('test', '*.rb')).sort.each(&method(:require))
 '''
-ruby_version = ">= 2.7"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_redundantdirglobsort_when_ruby_2_7_or_lower_does_not_register_an_offense_when_using_dir_glob_sort"
+name = "rubocopcoplintredundantdirglobsort_when_ruby_27_or_lower_does_not_register_an_offense_when_using_dirglobsort_2"
 source = '''
 ::Dir.glob(Rails.root.join('test', '*.rb')).sort.each(&method(:require))
 '''
-ruby_version = ">= 2.7"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_redundantdirglobsort_when_ruby_2_7_or_lower_does_not_register_an_offense_when_using_dir_sort_each_do"
+name = "rubocopcoplintredundantdirglobsort_when_ruby_27_or_lower_does_not_register_an_offense_when_using_dirsorteach_do"
 source = '''
 Dir['./lib/**/*.rb'].sort.each do |file|
 end
 '''
-ruby_version = ">= 2.7"
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_redundantdirglobsort_when_ruby_2_7_or_lower_does_not_register_an_offense_when_using_dir_sort_each_do_something"
+name = "rubocopcoplintredundantdirglobsort_when_ruby_27_or_lower_does_not_register_an_offense_when_using_dirsorteachdo_something"
 source = '''
 Dir['./lib/**/*.rb'].sort.each(&method(:require))
-'''
-ruby_version = ">= 2.7"
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_redundantdirglobsort_does_not_register_an_offense_when_not_using_sort_for_dir"
-source = '''
-Dir['./lib/**/*.rb'].each do |file|
-end
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_redundantdirglobsort_does_not_register_an_offense_when_using_sort_without_a_receiver"
-source = '''
-sort.do_something
 '''
 offenses = []

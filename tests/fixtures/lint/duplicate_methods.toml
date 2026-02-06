@@ -4,1227 +4,9 @@ severity = "warning"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_lint_duplicatemethods"
-source = '''
-#{opening_line}
-  def some_method
-    implement 1
-  end
-  def some_method
-    implement 2
-  end
-end
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 5
-column_start = 2
-column_end = 17
-message = "Method `A#some_method` is defined at both (string):2 and (string):5."
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods"
-source = '''
-#{opening_line}
-  def some_method
-    implement 1
-  end
-  def any_method
-    implement 2
-  end
-end
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods"
-source = '''
-#{opening_line}
-  def self.some_method
-    implement 1
-  end
-  def self.some_method
-    implement 2
-  end
-end
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 5
-column_start = 2
-column_end = 22
-message = "Method `A.some_method` is defined at both dups.rb:2 and dups.rb:5."
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods"
-source = '''
-#{opening_line}
-  def self.some_method
-    implement 1
-  end
-  def self.any_method
-    implement 2
-  end
-end
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods"
-source = '''
-#{opening_line}
-  def some_method
-    implement 1
-  end
-  def self.some_method
-    implement 2
-  end
-end
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods"
-source = '''
-#{opening_line}
-  private def some_method
-    implement 1
-  end
-  private def some_method
-    implement 2
-  end
-end
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 5
-column_start = 10
-column_end = 25
-message = "Method `A#some_method` is defined at both (string):2 and (string):5."
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods"
-source = '''
-#{opening_line}
-  private def self.some_method
-    implement 1
-  end
-  private def self.some_method
-    implement 2
-  end
-end
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 5
-column_start = 10
-column_end = 30
-message = "Method `A.some_method` is defined at both (string):2 and (string):5."
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods"
-source = '''
-#{opening_line}
-  private def some_method
-    implement 1
-  end
-  private def any_method
-    implement 2
-  end
-end
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods"
-source = '''
-#{opening_line}
-  protected def some_method
-    implement 1
-  end
-  protected def some_method
-    implement 2
-  end
-end
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 5
-column_start = 12
-column_end = 27
-message = "Method `A#some_method` is defined at both (string):2 and (string):5."
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods"
-source = '''
-#{opening_line}
-  def some_method
-    implement 1
-  end
-  def some_method
-    implement 2
-  end
-  def any_method
-    implement 1
-  end
-  def any_method
-    implement 2
-  end
-end
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 5
-column_start = 2
-column_end = 17
-message = "Method `A#some_method` is defined at both dups.rb:2 and dups.rb:5."
-
-[[tests.offenses]]
-line = 11
-column_start = 2
-column_end = 16
-message = "Method `A#any_method` is defined at both dups.rb:8 and dups.rb:11."
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods"
-source = '''
-#{opening_line}
-  def some_method
-    implement 1
-  end
-end
-#{opening_line}
-  def some_method
-    implement 2
-  end
-end
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 7
-column_start = 2
-column_end = 17
-message = "Method `A#some_method` is defined at both dups.rb:2 and dups.rb:7."
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods"
-source = '''
-#{opening_line}
-  def self.some_method
-    implement 1
-  end
-end
-#{opening_line}
-  def self.some_method
-    implement 2
-  end
-end
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 7
-column_start = 2
-column_end = 22
-message = "Method `A.some_method` is defined at both test.rb:2 and test.rb:7."
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods_only_registers_an_offense_for_the_second_instance_of_a_duplicate_instance_method_in_separate_files"
-source = '''
-#{opening_line}
-  def some_method
-    implement 2
-  end
-end
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 2
-column_start = 2
-column_end = 17
-message = "Method `A#some_method` is defined at both first.rb:2 and second.rb:2."
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods_understands_class_self"
-source = '''
-#{opening_line}
-  class << self
-    def some_method
-      implement 1
-    end
-    def some_method
-      implement 2
-    end
-  end
-end
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 6
-column_start = 4
-column_end = 19
-message = "Method `A.some_method` is defined at both test.rb:3 and test.rb:6."
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods_understands_nested_modules"
-source = '''
-module B
-  #{opening_line}
-    def some_method
-      implement 1
-    end
-    def some_method
-      implement 2
-    end
-    def self.another
-    end
-    def self.another
-    end
-  end
-end
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 6
-column_start = 4
-column_end = 19
-message = "Method `B::A#some_method` is defined at both test.rb:3 and test.rb:6."
-
-[[tests.offenses]]
-line = 11
-column_start = 4
-column_end = 20
-message = "Method `B::A.another` is defined at both test.rb:9 and test.rb:11."
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods_registers_an_offense_when_class_exp_is_used"
-source = '''
-#{opening_line}
-  class << blah
-    def some_method
-      implement 1
-    end
-    def some_method
-      implement 2
-    end
-  end
-end
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 6
-column_start = 4
-column_end = 19
-message = "Method `blah.some_method` is defined at both test.rb:3 and test.rb:6."
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods"
-source = '''
-#{opening_line}
-  def some_method
-    implement 1
-  end
-  alias some_method any_method
-end
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 5
-column_start = 2
-column_end = 30
-message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods"
-source = '''
-#{opening_line}
-  alias some_method some_method
-  def some_method
-    implement 1
-  end
-end
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods"
-source = '''
-#{opening_line}
-  def some_method
-    implement 1
-  end
-  alias any_method some_method
-end
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods"
-source = '''
-#{opening_line}
-  def some_method
-    implement 1
-  end
-  alias_method :some_method, :any_method
-end
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 5
-column_start = 2
-column_end = 40
-message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods"
-source = '''
-#{opening_line}
-  alias_method :some_method, :some_method
-  def some_method
-    implement 1
-  end
-end
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods"
-source = '''
-#{opening_line}
-  alias_method :some_method, unknown()
-  def some_method
-    implement 1
-  end
-end
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods"
-source = '''
-#{opening_line}
-  def some_method
-    implement 1
-  end
-  alias_method :any_method, :some_method
-end
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods"
-source = '''
-#{opening_line}
-  alias $foo $bar
-end
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods"
-source = '''
-#{opening_line}
-  def something
-  end
-  attr_reader :something
-end
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 4
-column_start = 2
-column_end = 24
-message = "Method `A#something` is defined at both example.rb:2 and example.rb:4."
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods"
-source = '''
-#{opening_line}
-  def something=(right)
-  end
-  attr_writer :something
-end
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 4
-column_start = 2
-column_end = 24
-message = "Method `A#something=` is defined at both example.rb:2 and example.rb:4."
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods"
-source = '''
-#{opening_line}
-  attr_accessor :something
-
-  def something
-  end
-  def something=(right)
-  end
-end
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 4
-column_start = 2
-column_end = 15
-message = "Method `A#something` is defined at both example.rb:2 and example.rb:4."
-
-[[tests.offenses]]
-line = 6
-column_start = 2
-column_end = 16
-message = "Method `A#something=` is defined at both example.rb:2 and example.rb:6."
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods"
-source = '''
-#{opening_line}
-  def something
-  end
-  attr :something
-end
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 4
-column_start = 2
-column_end = 17
-message = "Method `A#something` is defined at both example.rb:2 and example.rb:4."
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods"
-source = '''
-#{opening_line}
-  attr :something, true
-
-  def something
-  end
-  def something=(right)
-  end
-end
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 4
-column_start = 2
-column_end = 15
-message = "Method `A#something` is defined at both example.rb:2 and example.rb:4."
-
-[[tests.offenses]]
-line = 6
-column_start = 2
-column_end = 16
-message = "Method `A#something=` is defined at both example.rb:2 and example.rb:6."
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods"
-source = '''
-#{opening_line}
-  def something=(right)
-  end
-  attr_reader :something
-end
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods"
-source = '''
-#{opening_line}
-  def something
-  end
-  attr_writer :something
-end
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods"
-source = '''
-#{opening_line}
-  def foo
-    def some_method
-      implement 1
-    end
-  end
-
-  def foo
-    def some_method
-      implement 2
-    end
-  end
-end
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 8
-column_start = 2
-column_end = 9
-message = "Method `A#foo` is defined at both example.rb:2 and example.rb:8."
-
-[[tests.offenses]]
-line = 9
-column_start = 4
-column_end = 19
-message = "Method `A#some_method` is defined at both example.rb:3 and example.rb:9."
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods"
-source = '''
-#{opening_line}
-  def self.foo
-    def some_method
-      implement 1
-    end
-  end
-
-  def self.foo
-    def some_method
-      implement 2
-    end
-  end
-end
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 8
-column_start = 2
-column_end = 14
-message = "Method `A.foo` is defined at both example.rb:2 and example.rb:8."
-
-[[tests.offenses]]
-line = 9
-column_start = 4
-column_end = 19
-message = "Method `A#some_method` is defined at both example.rb:3 and example.rb:9."
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods_does_not_register_an_offense_for_same_method_name_defined_in_different_methods"
-source = '''
-#{opening_line}
-  def foo
-    def some_method
-      implement 1
-    end
-  end
-
-  def bar
-    def some_method
-      implement 2
-    end
-  end
-end
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods_does_not_register_an_offense_for_same_method_name_defined_in_different_self_methods"
-source = '''
-#{opening_line}
-  def self.foo
-    def some_method
-      implement 1
-    end
-  end
-
-  def self.bar
-    def some_method
-      implement 2
-    end
-  end
-end
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods_does_not_register_an_offense_for_same_method_name_defined_in_different_blocks"
-source = '''
-#{opening_line}
-  dsl_like('foo') do
-    def some_method
-      implement 1
-    end
-  end
-
-  dsl_like('bar') do
-    def some_method
-      implement 2
-    end
-  end
-end
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods_when_allcops_activesupportextensionsenabled_true"
-source = '''
-#{opening_line}
-  def some_method
-    implement 1
-  end
-  delegate :some_method, to: :foo
-end
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 5
-column_start = 2
-column_end = 33
-message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods_when_allcops_activesupportextensionsenabled_true"
-source = '''
-#{opening_line}
-  def some_method
-    implement 1
-  end
-  delegate 'some_method', to: :foo
-end
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 5
-column_start = 2
-column_end = 34
-message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods_when_allcops_activesupportextensionsenabled_true"
-source = '''
-#{opening_line}
-  def some_method
-    implement 1
-  end
-  delegate :some_method, to: 'foo'
-end
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 5
-column_start = 2
-column_end = 34
-message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods_when_allcops_activesupportextensionsenabled_true"
-source = '''
-#{opening_line}
-  def some_method
-    implement 1
-  end
-  delegate :method, to: :foo, prefix: :some
-end
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 5
-column_start = 2
-column_end = 43
-message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods_when_allcops_activesupportextensionsenabled_true"
-source = '''
-#{opening_line}
-  def some_method
-    implement 1
-  end
-  delegate :method, to: :foo, prefix: 'some'
-end
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 5
-column_start = 2
-column_end = 44
-message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods_when_allcops_activesupportextensionsenabled_true"
-source = '''
-#{opening_line}
-  def some_method
-    implement 1
-  end
-  delegate :method, to: :some, prefix: true
-end
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 5
-column_start = 2
-column_end = 43
-message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods_when_allcops_activesupportextensionsenabled_true"
-source = '''
-#{opening_line}
-  def some_method
-    implement 1
-  end
-  delegate :other_method, :some_method, to: :foo
-end
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 5
-column_start = 2
-column_end = 48
-message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods_when_allcops_activesupportextensionsenabled_true"
-source = '''
-#{opening_line}
-  def some_method
-    implement 1
-  end
-  delegate :method, prefix: false, to: :some
-end
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods_when_allcops_activesupportextensionsenabled_true"
-source = '''
-#{opening_line}
-  def some_method
-    implement 1
-  end
-
-  %w[any none some].each do |type|
-    delegate :method, prefix: true, to: type
-  end
-end
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods_when_allcops_activesupportextensionsenabled_true"
-source = '''
-#{opening_line}
-  def some_method
-    implement 1
-  end
-
-  delegate :method, prefix: some_condition, to: :some
-end
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods_when_allcops_activesupportextensionsenabled_true"
-source = '''
-#{opening_line}
-  def some_method
-    implement 1
-  end
-  delegate :other_method, to: :foo
-end
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods_when_allcops_activesupportextensionsenabled_true"
-source = '''
-#{opening_line}
-  def some_method
-    implement 1
-  end
-
-  if cond
-    delegate :some_method, to: :foo
-  end
-end
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods_when_allcops_activesupportextensionsenabled_true"
-source = '''
-#{opening_line}
-  def some_method
-    implement 1
-  end
-
-  delegate :some_method, **options
-end
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods_when_allcops_activesupportextensionsenabled_true"
-source = '''
-#{opening_line}
-  def some_method
-    implement 1
-  end
-
-  delegate :some_method
-end
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods_when_allcops_activesupportextensionsenabled_true_does_not_register_an_offense_for_duplicate_delegate_without_to_argument"
-source = '''
-#{opening_line}
-  def some_method
-    implement 1
-  end
-
-  delegate :some_method, prefix: true
-end
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods_when_allcops_activesupportextensionsenabled_false"
-source = '''
-#{opening_line}
-  def some_method
-    implement 1
-  end
-  delegate :some_method, to: :foo
-end
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods_registers_an_offense_for_duplicate_method_when_def_delegator_is_used"
-source = '''
-#{opening_line}
-  def_delegator :foo, :bar
-
-  def bar; end
-end
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 4
-column_start = 2
-column_end = 9
-message = "Method `A#bar` is defined at both (string):2 and (string):4."
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods_registers_an_offense_for_duplicate_method_when_def_delegator_is_used_with_string_arguments"
-source = '''
-#{opening_line}
-  def_delegator 'foo', 'bar'
-
-  def bar; end
-end
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 4
-column_start = 2
-column_end = 9
-message = "Method `A#bar` is defined at both (string):2 and (string):4."
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods_registers_an_offense_for_duplicate_method_when_def_instance_delegator_is_used"
-source = '''
-#{opening_line}
-  def_instance_delegator :foo, :bar
-
-  def bar; end
-end
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 4
-column_start = 2
-column_end = 9
-message = "Method `A#bar` is defined at both (string):2 and (string):4."
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods_registers_an_offense_for_duplicate_method_when_def_delegator_is_used_with_alias"
-source = '''
-#{opening_line}
-  def_delegator :foo, :bar, :baz
-
-  def bar; end
-
-  def baz; end
-end
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 6
-column_start = 2
-column_end = 9
-message = "Method `A#baz` is defined at both (string):2 and (string):6."
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods_does_not_register_an_offense_for_duplicate_method_when_def_delegator_is_used_within_a_condition"
-source = '''
-#{opening_line}
-  def_delegator :foo, :bar if baz?
-
-  def bar; end
-end
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods_registers_an_offense_for_duplicate_method_when_def_delegators_is_used"
-source = '''
-#{opening_line}
-  def_delegators :foo, :bar, :baz
-
-  def bar; end
-end
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 4
-column_start = 2
-column_end = 9
-message = "Method `A#bar` is defined at both (string):2 and (string):4."
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods_registers_an_offense_for_duplicate_method_when_def_delegators_is_used_with_string_arguments"
-source = '''
-#{opening_line}
-  def_delegators 'foo', 'bar', 'baz'
-
-  def bar; end
-end
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 4
-column_start = 2
-column_end = 9
-message = "Method `A#bar` is defined at both (string):2 and (string):4."
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods_registers_an_offense_for_duplicate_method_when_def_instance_delegators_is_used"
-source = '''
-#{opening_line}
-  def_instance_delegators :foo, :bar, :baz
-
-  def bar; end
-end
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 4
-column_start = 2
-column_end = 9
-message = "Method `A#bar` is defined at both (string):2 and (string):4."
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods_does_not_register_an_offense_for_duplicate_method_when_def_delegators_is_used_within_a_condition"
-source = '''
-#{opening_line}
-  def_delegators :foo, :bar, :baz if qux?
-
-  def bar; end
-end
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods_in_scope_class"
-source = '''
-class
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods_in_scope_class_a"
+name = "rubocopcoplintduplicatemethods_registers_an_offense_for_duplicate_class_methods_with_named_receiver_in_class"
 source = '''
 class A
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods_in_scope_module"
-source = '''
-module
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods_in_scope_module_a"
-source = '''
-module A
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods_in_scope_dynamic_class"
-source = '''
-dynamic class
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods_in_scope_a_class_new_do"
-source = '''
-A = Class.new do
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods_in_scope_dynamic_module"
-source = '''
-dynamic module
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods_in_scope_a_module_new_do"
-source = '''
-A = Module.new do
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods_in_scope_class_eval_block"
-source = '''
-class_eval block
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods_in_scope_a_class_eval_do"
-source = '''
-A.class_eval do
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatemethods"
-source = '''
-#{type} A
   def A.some_method
     implement 1
   end
@@ -1233,8 +15,6 @@ source = '''
   end
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 5
@@ -1243,9 +23,9 @@ column_end = 19
 message = "Method `A.some_method` is defined at both src.rb:2 and src.rb:5."
 
 [[tests]]
-name = "rubocop_cop_lint_duplicatemethods"
+name = "rubocopcoplintduplicatemethods_registers_an_offense_for_duplicate_class_methods_with_self_and_named_receiver_in_class"
 source = '''
-#{type} A
+class A
   def self.some_method
     implement 1
   end
@@ -1254,8 +34,6 @@ source = '''
   end
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 5
@@ -1264,9 +42,9 @@ column_end = 19
 message = "Method `A.some_method` is defined at both src.rb:2 and src.rb:5."
 
 [[tests]]
-name = "rubocop_cop_lint_duplicatemethods"
+name = "rubocopcoplintduplicatemethods_registers_an_offense_for_duplicate_class_methods_with__and_named_receiver_in_class"
 source = '''
-#{type} A
+class A
   class << self
     def some_method
       implement 1
@@ -1277,8 +55,6 @@ source = '''
   end
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 7
@@ -1287,7 +63,66 @@ column_end = 19
 message = "Method `A.some_method` is defined at both test.rb:3 and test.rb:7."
 
 [[tests]]
-name = "rubocop_cop_lint_duplicatemethods_registers_an_offense_for_duplicate_methods_at_top_level"
+name = "rubocopcoplintduplicatemethods_registers_an_offense_for_duplicate_class_methods_with_named_receiver_in_module"
+source = '''
+module A
+  def A.some_method
+    implement 1
+  end
+  def A.some_method
+    implement 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 19
+message = "Method `A.some_method` is defined at both src.rb:2 and src.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_registers_an_offense_for_duplicate_class_methods_with_self_and_named_receiver_in_module"
+source = '''
+module A
+  def self.some_method
+    implement 1
+  end
+  def A.some_method
+    implement 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 19
+message = "Method `A.some_method` is defined at both src.rb:2 and src.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_registers_an_offense_for_duplicate_class_methods_with__and_named_receiver_in_module"
+source = '''
+module A
+  class << self
+    def some_method
+      implement 1
+    end
+  end
+  def A.some_method
+    implement 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 7
+column_start = 2
+column_end = 19
+message = "Method `A.some_method` is defined at both test.rb:3 and test.rb:7."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_registers_an_offense_for_duplicate_methods_at_top_level"
 source = '''
 def some_method
   implement 1
@@ -1304,7 +139,7 @@ column_end = 15
 message = "Method `Object#some_method` is defined at both toplevel.rb:1 and toplevel.rb:4."
 
 [[tests]]
-name = "rubocop_cop_lint_duplicatemethods_understands_class_a"
+name = "rubocopcoplintduplicatemethods_understands_class__a"
 source = '''
 class << A
   def some_method
@@ -1323,7 +158,7 @@ column_end = 17
 message = "Method `A.some_method` is defined at both test.rb:2 and test.rb:5."
 
 [[tests]]
-name = "rubocop_cop_lint_duplicatemethods_handles_class_eval_with_implicit_receiver"
+name = "rubocopcoplintduplicatemethods_handles_class_eval_with_implicit_receiver"
 source = '''
 module A
   class_eval do
@@ -1344,7 +179,7 @@ column_end = 19
 message = "Method `A#some_method` is defined at both test.rb:3 and test.rb:6."
 
 [[tests]]
-name = "rubocop_cop_lint_duplicatemethods_ignores_method_definitions_in_rspec_describe_blocks"
+name = "rubocopcoplintduplicatemethods_ignores_method_definitions_in_rspec_describe_blocks"
 source = '''
 describe "something" do
   def some_method
@@ -1358,7 +193,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_duplicatemethods_ignores_class_new_blocks_which_are_assigned_to_local_variables"
+name = "rubocopcoplintduplicatemethods_ignores_classnew_blocks_which_are_assigned_to_local_variables"
 source = '''
 a = Class.new do
   def foo
@@ -1372,7 +207,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_duplicatemethods_does_not_register_an_offense_when_there_are_same_alias_method_name_outside_ensure_scope"
+name = "rubocopcoplintduplicatemethods_does_not_register_an_offense_when_there_are_same_alias_method_name_outside_ensure_scope"
 source = '''
 module FooTest
   def make_save_always_fail
@@ -1395,7 +230,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_duplicatemethods_registers_an_offense_when_there_are_duplicate_alias_method_name_inside_ensure_scope"
+name = "rubocopcoplintduplicatemethods_registers_an_offense_when_there_are_duplicate_alias_method_name_inside_ensure_scope"
 source = '''
 module FooTest
   def make_save_always_fail
@@ -1424,7 +259,7 @@ column_end = 40
 message = "Method `FooTest::Foo#save` is defined at both test.rb:14 and test.rb:15."
 
 [[tests]]
-name = "rubocop_cop_lint_duplicatemethods_does_not_register_an_offense_when_there_are_same_alias_method_name_outside_rescue_scope"
+name = "rubocopcoplintduplicatemethods_does_not_register_an_offense_when_there_are_same_alias_method_name_outside_rescue_scope"
 source = '''
 module FooTest
   def make_save_always_fail
@@ -1447,7 +282,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_duplicatemethods_registers_an_offense_when_there_are_duplicate_alias_method_name_inside_rescue_scope"
+name = "rubocopcoplintduplicatemethods_registers_an_offense_when_there_are_duplicate_alias_method_name_inside_rescue_scope"
 source = '''
 module FooTest
   def make_save_always_fail
@@ -1476,7 +311,7 @@ column_end = 40
 message = "Method `FooTest::Foo#save` is defined at both test.rb:14 and test.rb:15."
 
 [[tests]]
-name = "rubocop_cop_lint_duplicatemethods_does_not_register_for_the_same_method_in_different_scopes_within_class_self"
+name = "rubocopcoplintduplicatemethods_does_not_register_for_the_same_method_in_different_scopes_within_class__self"
 source = '''
 class A
   class << self
@@ -1493,7 +328,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_duplicatemethods_properly_registers_an_offense_when_deeply_nested"
+name = "rubocopcoplintduplicatemethods_properly_registers_an_offense_when_deeply_nested"
 source = '''
 module A
   module B
@@ -1517,7 +352,5192 @@ column_end = 15
 message = "Method `A::B::C.foo` is defined at both test.rb:5 and test.rb:8."
 
 [[tests]]
-name = "rubocop_cop_lint_duplicatemethods_when_path_is_in_the_project_root_adds_a_message_with_relative_path"
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_method_in_class"
+source = '''
+class A
+  def some_method
+    implement 1
+  end
+  def some_method
+    implement 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 17
+message = "Method `A#some_method` is defined at both (string):2 and (string):5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_doesnt_register_an_offense_for_nonduplicate_method_in_class"
+source = '''
+class A
+  def some_method
+    implement 1
+  end
+  def any_method
+    implement 2
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_class_methods_in_class"
+source = '''
+class A
+  def self.some_method
+    implement 1
+  end
+  def self.some_method
+    implement 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 22
+message = "Method `A.some_method` is defined at both dups.rb:2 and dups.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_doesnt_register_offense_for_nonduplicate_class_methods_in_class"
+source = '''
+class A
+  def self.some_method
+    implement 1
+  end
+  def self.any_method
+    implement 2
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_recognizes_difference_between_instance_and_class_methods_in_class"
+source = '''
+class A
+  def some_method
+    implement 1
+  end
+  def self.some_method
+    implement 2
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_private_methods_in_class"
+source = '''
+class A
+  private def some_method
+    implement 1
+  end
+  private def some_method
+    implement 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 10
+column_end = 25
+message = "Method `A#some_method` is defined at both (string):2 and (string):5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_private_self_methods_in_class"
+source = '''
+class A
+  private def self.some_method
+    implement 1
+  end
+  private def self.some_method
+    implement 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 10
+column_end = 30
+message = "Method `A.some_method` is defined at both (string):2 and (string):5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_doesnt_register_an_offense_for_different_private_methods_in_class"
+source = '''
+class A
+  private def some_method
+    implement 1
+  end
+  private def any_method
+    implement 2
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_protected_methods_in_class"
+source = '''
+class A
+  protected def some_method
+    implement 1
+  end
+  protected def some_method
+    implement 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 12
+column_end = 27
+message = "Method `A#some_method` is defined at both (string):2 and (string):5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_2_offenses_for_pair_of_duplicate_methods_in_class"
+source = '''
+class A
+  def some_method
+    implement 1
+  end
+  def some_method
+    implement 2
+  end
+  def any_method
+    implement 1
+  end
+  def any_method
+    implement 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 17
+message = "Method `A#some_method` is defined at both dups.rb:2 and dups.rb:5."
+
+[[tests.offenses]]
+line = 11
+column_start = 2
+column_end = 16
+message = "Method `A#any_method` is defined at both dups.rb:8 and dups.rb:11."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_a_duplicate_instance_method_in_separate_class_blocks"
+source = '''
+class A
+  def some_method
+    implement 1
+  end
+end
+class A
+  def some_method
+    implement 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 7
+column_start = 2
+column_end = 17
+message = "Method `A#some_method` is defined at both dups.rb:2 and dups.rb:7."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_a_duplicate_class_method_in_separate_class_blocks"
+source = '''
+class A
+  def self.some_method
+    implement 1
+  end
+end
+class A
+  def self.some_method
+    implement 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 7
+column_start = 2
+column_end = 22
+message = "Method `A.some_method` is defined at both test.rb:2 and test.rb:7."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_only_registers_an_offense_for_the_second_instance_of_a_duplicate_instance_method_in_separate_files"
+source = '''
+class A
+  def some_method
+    implement 1
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_only_registers_an_offense_for_the_second_instance_of_a_duplicate_instance_method_in_separate_files_2"
+source = '''
+class A
+  def some_method
+    implement 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 17
+message = "Method `A#some_method` is defined at both first.rb:2 and second.rb:2."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_understands_class__self"
+source = '''
+class A
+  class << self
+    def some_method
+      implement 1
+    end
+    def some_method
+      implement 2
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 4
+column_end = 19
+message = "Method `A.some_method` is defined at both test.rb:3 and test.rb:6."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_understands_nested_modules"
+source = '''
+module B
+  class A
+    def some_method
+      implement 1
+    end
+    def some_method
+      implement 2
+    end
+    def self.another
+    end
+    def self.another
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 4
+column_end = 19
+message = "Method `B::A#some_method` is defined at both test.rb:3 and test.rb:6."
+
+[[tests.offenses]]
+line = 11
+column_start = 4
+column_end = 20
+message = "Method `B::A.another` is defined at both test.rb:9 and test.rb:11."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_when_class__exp_is_used"
+source = '''
+class A
+  class << blah
+    def some_method
+      implement 1
+    end
+    def some_method
+      implement 2
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 4
+column_end = 19
+message = "Method `blah.some_method` is defined at both test.rb:3 and test.rb:6."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_alias_in_class"
+source = '''
+class A
+  def some_method
+    implement 1
+  end
+  alias some_method any_method
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 30
+message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_does_not_register_an_offense_for_duplicate_selfalias_in_class"
+source = '''
+class A
+  alias some_method some_method
+  def some_method
+    implement 1
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_doesnt_register_an_offense_for_nonduplicate_alias_in_class"
+source = '''
+class A
+  def some_method
+    implement 1
+  end
+  alias any_method some_method
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_alias_method_in_class"
+source = '''
+class A
+  def some_method
+    implement 1
+  end
+  alias_method :some_method, :any_method
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 40
+message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_does_not_register_an_offense_for_duplicate_selfalias_method_in_class"
+source = '''
+class A
+  alias_method :some_method, :some_method
+  def some_method
+    implement 1
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_does_not_register_an_offense_for_duplicate_selfalias_method_with_dynamic_original_name_in_class"
+source = '''
+class A
+  alias_method :some_method, unknown()
+  def some_method
+    implement 1
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_accepts_for_nonduplicate_alias_method_in_class"
+source = '''
+class A
+  def some_method
+    implement 1
+  end
+  alias_method :any_method, :some_method
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_doesnt_register_an_offense_for_alias_for_gvar_in_class"
+source = '''
+class A
+  alias $foo $bar
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_attr_reader_in_class"
+source = '''
+class A
+  def something
+  end
+  attr_reader :something
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 24
+message = "Method `A#something` is defined at both example.rb:2 and example.rb:4."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_attr_writer_in_class"
+source = '''
+class A
+  def something=(right)
+  end
+  attr_writer :something
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 24
+message = "Method `A#something=` is defined at both example.rb:2 and example.rb:4."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_offenses_for_duplicate_attr_accessor_in_class"
+source = '''
+class A
+  attr_accessor :something
+
+  def something
+  end
+  def something=(right)
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 15
+message = "Method `A#something` is defined at both example.rb:2 and example.rb:4."
+
+[[tests.offenses]]
+line = 6
+column_start = 2
+column_end = 16
+message = "Method `A#something=` is defined at both example.rb:2 and example.rb:6."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_attr_in_class"
+source = '''
+class A
+  def something
+  end
+  attr :something
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 17
+message = "Method `A#something` is defined at both example.rb:2 and example.rb:4."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_offenses_for_duplicate_assignable_attr_in_class"
+source = '''
+class A
+  attr :something, true
+
+  def something
+  end
+  def something=(right)
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 15
+message = "Method `A#something` is defined at both example.rb:2 and example.rb:4."
+
+[[tests.offenses]]
+line = 6
+column_start = 2
+column_end = 16
+message = "Method `A#something=` is defined at both example.rb:2 and example.rb:6."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_accepts_for_attr_reader_and_setter_in_class"
+source = '''
+class A
+  def something=(right)
+  end
+  attr_reader :something
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_accepts_for_attr_writer_and_getter_in_class"
+source = '''
+class A
+  def something
+  end
+  attr_writer :something
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_nested_method_in_class"
+source = '''
+class A
+  def foo
+    def some_method
+      implement 1
+    end
+  end
+
+  def foo
+    def some_method
+      implement 2
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 8
+column_start = 2
+column_end = 9
+message = "Method `A#foo` is defined at both example.rb:2 and example.rb:8."
+
+[[tests.offenses]]
+line = 9
+column_start = 4
+column_end = 19
+message = "Method `A#some_method` is defined at both example.rb:3 and example.rb:9."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_nested_method_in_self_method_of_class"
+source = '''
+class A
+  def self.foo
+    def some_method
+      implement 1
+    end
+  end
+
+  def self.foo
+    def some_method
+      implement 2
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 8
+column_start = 2
+column_end = 14
+message = "Method `A.foo` is defined at both example.rb:2 and example.rb:8."
+
+[[tests.offenses]]
+line = 9
+column_start = 4
+column_end = 19
+message = "Method `A#some_method` is defined at both example.rb:3 and example.rb:9."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_does_not_register_an_offense_for_same_method_name_defined_in_different_methods"
+source = '''
+class A
+  def foo
+    def some_method
+      implement 1
+    end
+  end
+
+  def bar
+    def some_method
+      implement 2
+    end
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_does_not_register_an_offense_for_same_method_name_defined_in_different_self_methods"
+source = '''
+class A
+  def self.foo
+    def some_method
+      implement 1
+    end
+  end
+
+  def self.bar
+    def some_method
+      implement 2
+    end
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_does_not_register_an_offense_for_same_method_name_defined_in_different_blocks"
+source = '''
+class A
+  dsl_like('foo') do
+    def some_method
+      implement 1
+    end
+  end
+
+  dsl_like('bar') do
+    def some_method
+      implement 2
+    end
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_method_when_def_delegator_is_used"
+source = '''
+class A
+  def_delegator :foo, :bar
+
+  def bar; end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 9
+message = "Method `A#bar` is defined at both (string):2 and (string):4."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_method_when_def_delegator_is_used_with_string_arguments"
+source = '''
+class A
+  def_delegator 'foo', 'bar'
+
+  def bar; end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 9
+message = "Method `A#bar` is defined at both (string):2 and (string):4."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_method_when_def_instance_delegator_is_used"
+source = '''
+class A
+  def_instance_delegator :foo, :bar
+
+  def bar; end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 9
+message = "Method `A#bar` is defined at both (string):2 and (string):4."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_method_when_def_delegator_is_used_with_alias"
+source = '''
+class A
+  def_delegator :foo, :bar, :baz
+
+  def bar; end
+
+  def baz; end
+end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 2
+column_end = 9
+message = "Method `A#baz` is defined at both (string):2 and (string):6."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_does_not_register_an_offense_for_duplicate_method_when_def_delegator_is_used_within_a_condition"
+source = '''
+class A
+  def_delegator :foo, :bar if baz?
+
+  def bar; end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_method_when_def_delegators_is_used"
+source = '''
+class A
+  def_delegators :foo, :bar, :baz
+
+  def bar; end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 9
+message = "Method `A#bar` is defined at both (string):2 and (string):4."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_method_when_def_delegators_is_used_with_string_arguments"
+source = '''
+class A
+  def_delegators 'foo', 'bar', 'baz'
+
+  def bar; end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 9
+message = "Method `A#bar` is defined at both (string):2 and (string):4."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_method_when_def_instance_delegators_is_used"
+source = '''
+class A
+  def_instance_delegators :foo, :bar, :baz
+
+  def bar; end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 9
+message = "Method `A#bar` is defined at both (string):2 and (string):4."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_does_not_register_an_offense_for_duplicate_method_when_def_delegators_is_used_within_a_condition"
+source = '''
+class A
+  def_delegators :foo, :bar, :baz if qux?
+
+  def bar; end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_registers_an_offense_for_duplicate_delegate_with_symbol_method_in_class"
+source = '''
+class A
+  def some_method
+    implement 1
+  end
+  delegate :some_method, to: :foo
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 33
+message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_registers_an_offense_for_duplicate_delegate_with_string_method_in_class"
+source = '''
+class A
+  def some_method
+    implement 1
+  end
+  delegate 'some_method', to: :foo
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 34
+message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_registers_an_offense_for_duplicate_delegate_with_string_to_argument_in_class"
+source = '''
+class A
+  def some_method
+    implement 1
+  end
+  delegate :some_method, to: 'foo'
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 34
+message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_registers_an_offense_for_duplicate_delegate_with_symbol_prefix_in_class"
+source = '''
+class A
+  def some_method
+    implement 1
+  end
+  delegate :method, to: :foo, prefix: :some
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 43
+message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_registers_an_offense_for_duplicate_delegate_with_string_prefix_in_class"
+source = '''
+class A
+  def some_method
+    implement 1
+  end
+  delegate :method, to: :foo, prefix: 'some'
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 44
+message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_registers_an_offense_for_duplicate_delegate_with_prefix_true_in_class"
+source = '''
+class A
+  def some_method
+    implement 1
+  end
+  delegate :method, to: :some, prefix: true
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 43
+message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_registers_an_offense_with_multiple_delegates_in_class"
+source = '''
+class A
+  def some_method
+    implement 1
+  end
+  delegate :other_method, :some_method, to: :foo
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 48
+message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_does_not_register_an_offense_for_nonduplicate_delegate_with_prefix_false_in_class"
+source = '''
+class A
+  def some_method
+    implement 1
+  end
+  delegate :method, prefix: false, to: :some
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_does_not_register_an_offense_for_dynamically_specified_to_option_with_enabled_prefix_in_class"
+source = '''
+class A
+  def some_method
+    implement 1
+  end
+
+  %w[any none some].each do |type|
+    delegate :method, prefix: true, to: type
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_does_not_register_an_offense_for_dynamically_specified_prefix_in_class"
+source = '''
+class A
+  def some_method
+    implement 1
+  end
+
+  delegate :method, prefix: some_condition, to: :some
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_does_not_register_an_offense_for_nonduplicate_delegate_in_class"
+source = '''
+class A
+  def some_method
+    implement 1
+  end
+  delegate :other_method, to: :foo
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_does_not_register_an_offense_for_duplicate_delegate_inside_a_condition_in_class"
+source = '''
+class A
+  def some_method
+    implement 1
+  end
+
+  if cond
+    delegate :some_method, to: :foo
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_does_not_register_an_offense_for_duplicate_delegate_with_splat_keyword_arguments_in_class"
+source = '''
+class A
+  def some_method
+    implement 1
+  end
+
+  delegate :some_method, **options
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_does_not_register_an_offense_for_duplicate_delegate_without_keyword_arguments_in_class"
+source = '''
+class A
+  def some_method
+    implement 1
+  end
+
+  delegate :some_method
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_does_not_register_an_offense_for_duplicate_delegate_without_to_argument"
+source = '''
+class A
+  def some_method
+    implement 1
+  end
+
+  delegate :some_method, prefix: true
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_false_does_not_register_an_offense_for_duplicate_delegate_in_class"
+source = '''
+class A
+  def some_method
+    implement 1
+  end
+  delegate :some_method, to: :foo
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_method_in_module"
+source = '''
+module A
+  def some_method
+    implement 1
+  end
+  def some_method
+    implement 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 17
+message = "Method `A#some_method` is defined at both (string):2 and (string):5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_doesnt_register_an_offense_for_nonduplicate_method_in_module"
+source = '''
+module A
+  def some_method
+    implement 1
+  end
+  def any_method
+    implement 2
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_class_methods_in_module"
+source = '''
+module A
+  def self.some_method
+    implement 1
+  end
+  def self.some_method
+    implement 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 22
+message = "Method `A.some_method` is defined at both dups.rb:2 and dups.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_doesnt_register_offense_for_nonduplicate_class_methods_in_module"
+source = '''
+module A
+  def self.some_method
+    implement 1
+  end
+  def self.any_method
+    implement 2
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_recognizes_difference_between_instance_and_class_methods_in_module"
+source = '''
+module A
+  def some_method
+    implement 1
+  end
+  def self.some_method
+    implement 2
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_private_methods_in_module"
+source = '''
+module A
+  private def some_method
+    implement 1
+  end
+  private def some_method
+    implement 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 10
+column_end = 25
+message = "Method `A#some_method` is defined at both (string):2 and (string):5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_private_self_methods_in_module"
+source = '''
+module A
+  private def self.some_method
+    implement 1
+  end
+  private def self.some_method
+    implement 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 10
+column_end = 30
+message = "Method `A.some_method` is defined at both (string):2 and (string):5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_doesnt_register_an_offense_for_different_private_methods_in_module"
+source = '''
+module A
+  private def some_method
+    implement 1
+  end
+  private def any_method
+    implement 2
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_protected_methods_in_module"
+source = '''
+module A
+  protected def some_method
+    implement 1
+  end
+  protected def some_method
+    implement 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 12
+column_end = 27
+message = "Method `A#some_method` is defined at both (string):2 and (string):5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_2_offenses_for_pair_of_duplicate_methods_in_module"
+source = '''
+module A
+  def some_method
+    implement 1
+  end
+  def some_method
+    implement 2
+  end
+  def any_method
+    implement 1
+  end
+  def any_method
+    implement 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 17
+message = "Method `A#some_method` is defined at both dups.rb:2 and dups.rb:5."
+
+[[tests.offenses]]
+line = 11
+column_start = 2
+column_end = 16
+message = "Method `A#any_method` is defined at both dups.rb:8 and dups.rb:11."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_a_duplicate_instance_method_in_separate_module_blocks"
+source = '''
+module A
+  def some_method
+    implement 1
+  end
+end
+module A
+  def some_method
+    implement 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 7
+column_start = 2
+column_end = 17
+message = "Method `A#some_method` is defined at both dups.rb:2 and dups.rb:7."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_a_duplicate_class_method_in_separate_module_blocks"
+source = '''
+module A
+  def self.some_method
+    implement 1
+  end
+end
+module A
+  def self.some_method
+    implement 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 7
+column_start = 2
+column_end = 22
+message = "Method `A.some_method` is defined at both test.rb:2 and test.rb:7."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_only_registers_an_offense_for_the_second_instance_of_a_duplicate_instance_method_in_separate_files_3"
+source = '''
+module A
+  def some_method
+    implement 1
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_only_registers_an_offense_for_the_second_instance_of_a_duplicate_instance_method_in_separate_files_4"
+source = '''
+module A
+  def some_method
+    implement 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 17
+message = "Method `A#some_method` is defined at both first.rb:2 and second.rb:2."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_understands_class__self_2"
+source = '''
+module A
+  class << self
+    def some_method
+      implement 1
+    end
+    def some_method
+      implement 2
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 4
+column_end = 19
+message = "Method `A.some_method` is defined at both test.rb:3 and test.rb:6."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_understands_nested_modules_2"
+source = '''
+module B
+  module A
+    def some_method
+      implement 1
+    end
+    def some_method
+      implement 2
+    end
+    def self.another
+    end
+    def self.another
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 4
+column_end = 19
+message = "Method `B::A#some_method` is defined at both test.rb:3 and test.rb:6."
+
+[[tests.offenses]]
+line = 11
+column_start = 4
+column_end = 20
+message = "Method `B::A.another` is defined at both test.rb:9 and test.rb:11."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_when_class__exp_is_used_2"
+source = '''
+module A
+  class << blah
+    def some_method
+      implement 1
+    end
+    def some_method
+      implement 2
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 4
+column_end = 19
+message = "Method `blah.some_method` is defined at both test.rb:3 and test.rb:6."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_alias_in_module"
+source = '''
+module A
+  def some_method
+    implement 1
+  end
+  alias some_method any_method
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 30
+message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_does_not_register_an_offense_for_duplicate_selfalias_in_module"
+source = '''
+module A
+  alias some_method some_method
+  def some_method
+    implement 1
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_doesnt_register_an_offense_for_nonduplicate_alias_in_module"
+source = '''
+module A
+  def some_method
+    implement 1
+  end
+  alias any_method some_method
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_alias_method_in_module"
+source = '''
+module A
+  def some_method
+    implement 1
+  end
+  alias_method :some_method, :any_method
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 40
+message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_does_not_register_an_offense_for_duplicate_selfalias_method_in_module"
+source = '''
+module A
+  alias_method :some_method, :some_method
+  def some_method
+    implement 1
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_does_not_register_an_offense_for_duplicate_selfalias_method_with_dynamic_original_name_in_module"
+source = '''
+module A
+  alias_method :some_method, unknown()
+  def some_method
+    implement 1
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_accepts_for_nonduplicate_alias_method_in_module"
+source = '''
+module A
+  def some_method
+    implement 1
+  end
+  alias_method :any_method, :some_method
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_doesnt_register_an_offense_for_alias_for_gvar_in_module"
+source = '''
+module A
+  alias $foo $bar
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_attr_reader_in_module"
+source = '''
+module A
+  def something
+  end
+  attr_reader :something
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 24
+message = "Method `A#something` is defined at both example.rb:2 and example.rb:4."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_attr_writer_in_module"
+source = '''
+module A
+  def something=(right)
+  end
+  attr_writer :something
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 24
+message = "Method `A#something=` is defined at both example.rb:2 and example.rb:4."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_offenses_for_duplicate_attr_accessor_in_module"
+source = '''
+module A
+  attr_accessor :something
+
+  def something
+  end
+  def something=(right)
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 15
+message = "Method `A#something` is defined at both example.rb:2 and example.rb:4."
+
+[[tests.offenses]]
+line = 6
+column_start = 2
+column_end = 16
+message = "Method `A#something=` is defined at both example.rb:2 and example.rb:6."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_attr_in_module"
+source = '''
+module A
+  def something
+  end
+  attr :something
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 17
+message = "Method `A#something` is defined at both example.rb:2 and example.rb:4."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_offenses_for_duplicate_assignable_attr_in_module"
+source = '''
+module A
+  attr :something, true
+
+  def something
+  end
+  def something=(right)
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 15
+message = "Method `A#something` is defined at both example.rb:2 and example.rb:4."
+
+[[tests.offenses]]
+line = 6
+column_start = 2
+column_end = 16
+message = "Method `A#something=` is defined at both example.rb:2 and example.rb:6."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_accepts_for_attr_reader_and_setter_in_module"
+source = '''
+module A
+  def something=(right)
+  end
+  attr_reader :something
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_accepts_for_attr_writer_and_getter_in_module"
+source = '''
+module A
+  def something
+  end
+  attr_writer :something
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_nested_method_in_module"
+source = '''
+module A
+  def foo
+    def some_method
+      implement 1
+    end
+  end
+
+  def foo
+    def some_method
+      implement 2
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 8
+column_start = 2
+column_end = 9
+message = "Method `A#foo` is defined at both example.rb:2 and example.rb:8."
+
+[[tests.offenses]]
+line = 9
+column_start = 4
+column_end = 19
+message = "Method `A#some_method` is defined at both example.rb:3 and example.rb:9."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_nested_method_in_self_method_of_module"
+source = '''
+module A
+  def self.foo
+    def some_method
+      implement 1
+    end
+  end
+
+  def self.foo
+    def some_method
+      implement 2
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 8
+column_start = 2
+column_end = 14
+message = "Method `A.foo` is defined at both example.rb:2 and example.rb:8."
+
+[[tests.offenses]]
+line = 9
+column_start = 4
+column_end = 19
+message = "Method `A#some_method` is defined at both example.rb:3 and example.rb:9."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_does_not_register_an_offense_for_same_method_name_defined_in_different_methods_2"
+source = '''
+module A
+  def foo
+    def some_method
+      implement 1
+    end
+  end
+
+  def bar
+    def some_method
+      implement 2
+    end
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_does_not_register_an_offense_for_same_method_name_defined_in_different_self_methods_2"
+source = '''
+module A
+  def self.foo
+    def some_method
+      implement 1
+    end
+  end
+
+  def self.bar
+    def some_method
+      implement 2
+    end
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_does_not_register_an_offense_for_same_method_name_defined_in_different_blocks_2"
+source = '''
+module A
+  dsl_like('foo') do
+    def some_method
+      implement 1
+    end
+  end
+
+  dsl_like('bar') do
+    def some_method
+      implement 2
+    end
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_method_when_def_delegator_is_used_2"
+source = '''
+module A
+  def_delegator :foo, :bar
+
+  def bar; end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 9
+message = "Method `A#bar` is defined at both (string):2 and (string):4."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_method_when_def_delegator_is_used_with_string_arguments_2"
+source = '''
+module A
+  def_delegator 'foo', 'bar'
+
+  def bar; end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 9
+message = "Method `A#bar` is defined at both (string):2 and (string):4."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_method_when_def_instance_delegator_is_used_2"
+source = '''
+module A
+  def_instance_delegator :foo, :bar
+
+  def bar; end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 9
+message = "Method `A#bar` is defined at both (string):2 and (string):4."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_method_when_def_delegator_is_used_with_alias_2"
+source = '''
+module A
+  def_delegator :foo, :bar, :baz
+
+  def bar; end
+
+  def baz; end
+end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 2
+column_end = 9
+message = "Method `A#baz` is defined at both (string):2 and (string):6."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_does_not_register_an_offense_for_duplicate_method_when_def_delegator_is_used_within_a_condition_2"
+source = '''
+module A
+  def_delegator :foo, :bar if baz?
+
+  def bar; end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_method_when_def_delegators_is_used_2"
+source = '''
+module A
+  def_delegators :foo, :bar, :baz
+
+  def bar; end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 9
+message = "Method `A#bar` is defined at both (string):2 and (string):4."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_method_when_def_delegators_is_used_with_string_arguments_2"
+source = '''
+module A
+  def_delegators 'foo', 'bar', 'baz'
+
+  def bar; end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 9
+message = "Method `A#bar` is defined at both (string):2 and (string):4."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_method_when_def_instance_delegators_is_used_2"
+source = '''
+module A
+  def_instance_delegators :foo, :bar, :baz
+
+  def bar; end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 9
+message = "Method `A#bar` is defined at both (string):2 and (string):4."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_does_not_register_an_offense_for_duplicate_method_when_def_delegators_is_used_within_a_condition_2"
+source = '''
+module A
+  def_delegators :foo, :bar, :baz if qux?
+
+  def bar; end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_registers_an_offense_for_duplicate_delegate_with_symbol_method_in_module"
+source = '''
+module A
+  def some_method
+    implement 1
+  end
+  delegate :some_method, to: :foo
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 33
+message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_registers_an_offense_for_duplicate_delegate_with_string_method_in_module"
+source = '''
+module A
+  def some_method
+    implement 1
+  end
+  delegate 'some_method', to: :foo
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 34
+message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_registers_an_offense_for_duplicate_delegate_with_string_to_argument_in_module"
+source = '''
+module A
+  def some_method
+    implement 1
+  end
+  delegate :some_method, to: 'foo'
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 34
+message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_registers_an_offense_for_duplicate_delegate_with_symbol_prefix_in_module"
+source = '''
+module A
+  def some_method
+    implement 1
+  end
+  delegate :method, to: :foo, prefix: :some
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 43
+message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_registers_an_offense_for_duplicate_delegate_with_string_prefix_in_module"
+source = '''
+module A
+  def some_method
+    implement 1
+  end
+  delegate :method, to: :foo, prefix: 'some'
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 44
+message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_registers_an_offense_for_duplicate_delegate_with_prefix_true_in_module"
+source = '''
+module A
+  def some_method
+    implement 1
+  end
+  delegate :method, to: :some, prefix: true
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 43
+message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_registers_an_offense_with_multiple_delegates_in_module"
+source = '''
+module A
+  def some_method
+    implement 1
+  end
+  delegate :other_method, :some_method, to: :foo
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 48
+message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_does_not_register_an_offense_for_nonduplicate_delegate_with_prefix_false_in_module"
+source = '''
+module A
+  def some_method
+    implement 1
+  end
+  delegate :method, prefix: false, to: :some
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_does_not_register_an_offense_for_dynamically_specified_to_option_with_enabled_prefix_in_module"
+source = '''
+module A
+  def some_method
+    implement 1
+  end
+
+  %w[any none some].each do |type|
+    delegate :method, prefix: true, to: type
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_does_not_register_an_offense_for_dynamically_specified_prefix_in_module"
+source = '''
+module A
+  def some_method
+    implement 1
+  end
+
+  delegate :method, prefix: some_condition, to: :some
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_does_not_register_an_offense_for_nonduplicate_delegate_in_module"
+source = '''
+module A
+  def some_method
+    implement 1
+  end
+  delegate :other_method, to: :foo
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_does_not_register_an_offense_for_duplicate_delegate_inside_a_condition_in_module"
+source = '''
+module A
+  def some_method
+    implement 1
+  end
+
+  if cond
+    delegate :some_method, to: :foo
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_does_not_register_an_offense_for_duplicate_delegate_with_splat_keyword_arguments_in_module"
+source = '''
+module A
+  def some_method
+    implement 1
+  end
+
+  delegate :some_method, **options
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_does_not_register_an_offense_for_duplicate_delegate_without_keyword_arguments_in_module"
+source = '''
+module A
+  def some_method
+    implement 1
+  end
+
+  delegate :some_method
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_does_not_register_an_offense_for_duplicate_delegate_without_to_argument_2"
+source = '''
+module A
+  def some_method
+    implement 1
+  end
+
+  delegate :some_method, prefix: true
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_false_does_not_register_an_offense_for_duplicate_delegate_in_module"
+source = '''
+module A
+  def some_method
+    implement 1
+  end
+  delegate :some_method, to: :foo
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_method_in_dynamic_class"
+source = '''
+A = Class.new do
+  def some_method
+    implement 1
+  end
+  def some_method
+    implement 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 17
+message = "Method `A#some_method` is defined at both (string):2 and (string):5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_doesnt_register_an_offense_for_nonduplicate_method_in_dynamic_class"
+source = '''
+A = Class.new do
+  def some_method
+    implement 1
+  end
+  def any_method
+    implement 2
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_class_methods_in_dynamic_class"
+source = '''
+A = Class.new do
+  def self.some_method
+    implement 1
+  end
+  def self.some_method
+    implement 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 22
+message = "Method `A.some_method` is defined at both dups.rb:2 and dups.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_doesnt_register_offense_for_nonduplicate_class_methods_in_dynamic_class"
+source = '''
+A = Class.new do
+  def self.some_method
+    implement 1
+  end
+  def self.any_method
+    implement 2
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_recognizes_difference_between_instance_and_class_methods_in_dynamic_class"
+source = '''
+A = Class.new do
+  def some_method
+    implement 1
+  end
+  def self.some_method
+    implement 2
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_private_methods_in_dynamic_class"
+source = '''
+A = Class.new do
+  private def some_method
+    implement 1
+  end
+  private def some_method
+    implement 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 10
+column_end = 25
+message = "Method `A#some_method` is defined at both (string):2 and (string):5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_private_self_methods_in_dynamic_class"
+source = '''
+A = Class.new do
+  private def self.some_method
+    implement 1
+  end
+  private def self.some_method
+    implement 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 10
+column_end = 30
+message = "Method `A.some_method` is defined at both (string):2 and (string):5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_doesnt_register_an_offense_for_different_private_methods_in_dynamic_class"
+source = '''
+A = Class.new do
+  private def some_method
+    implement 1
+  end
+  private def any_method
+    implement 2
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_protected_methods_in_dynamic_class"
+source = '''
+A = Class.new do
+  protected def some_method
+    implement 1
+  end
+  protected def some_method
+    implement 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 12
+column_end = 27
+message = "Method `A#some_method` is defined at both (string):2 and (string):5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_2_offenses_for_pair_of_duplicate_methods_in_dynamic_class"
+source = '''
+A = Class.new do
+  def some_method
+    implement 1
+  end
+  def some_method
+    implement 2
+  end
+  def any_method
+    implement 1
+  end
+  def any_method
+    implement 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 17
+message = "Method `A#some_method` is defined at both dups.rb:2 and dups.rb:5."
+
+[[tests.offenses]]
+line = 11
+column_start = 2
+column_end = 16
+message = "Method `A#any_method` is defined at both dups.rb:8 and dups.rb:11."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_a_duplicate_instance_method_in_separate_dynamic_class_blocks"
+source = '''
+A = Class.new do
+  def some_method
+    implement 1
+  end
+end
+A = Class.new do
+  def some_method
+    implement 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 7
+column_start = 2
+column_end = 17
+message = "Method `A#some_method` is defined at both dups.rb:2 and dups.rb:7."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_a_duplicate_class_method_in_separate_dynamic_class_blocks"
+source = '''
+A = Class.new do
+  def self.some_method
+    implement 1
+  end
+end
+A = Class.new do
+  def self.some_method
+    implement 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 7
+column_start = 2
+column_end = 22
+message = "Method `A.some_method` is defined at both test.rb:2 and test.rb:7."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_only_registers_an_offense_for_the_second_instance_of_a_duplicate_instance_method_in_separate_files_5"
+source = '''
+A = Class.new do
+  def some_method
+    implement 1
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_only_registers_an_offense_for_the_second_instance_of_a_duplicate_instance_method_in_separate_files_6"
+source = '''
+A = Class.new do
+  def some_method
+    implement 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 17
+message = "Method `A#some_method` is defined at both first.rb:2 and second.rb:2."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_understands_class__self_3"
+source = '''
+A = Class.new do
+  class << self
+    def some_method
+      implement 1
+    end
+    def some_method
+      implement 2
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 4
+column_end = 19
+message = "Method `A.some_method` is defined at both test.rb:3 and test.rb:6."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_understands_nested_modules_3"
+source = '''
+module B
+  A = Class.new do
+    def some_method
+      implement 1
+    end
+    def some_method
+      implement 2
+    end
+    def self.another
+    end
+    def self.another
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 4
+column_end = 19
+message = "Method `B::A#some_method` is defined at both test.rb:3 and test.rb:6."
+
+[[tests.offenses]]
+line = 11
+column_start = 4
+column_end = 20
+message = "Method `B::A.another` is defined at both test.rb:9 and test.rb:11."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_when_class__exp_is_used_3"
+source = '''
+A = Class.new do
+  class << blah
+    def some_method
+      implement 1
+    end
+    def some_method
+      implement 2
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 4
+column_end = 19
+message = "Method `blah.some_method` is defined at both test.rb:3 and test.rb:6."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_alias_in_dynamic_class"
+source = '''
+A = Class.new do
+  def some_method
+    implement 1
+  end
+  alias some_method any_method
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 30
+message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_does_not_register_an_offense_for_duplicate_selfalias_in_dynamic_class"
+source = '''
+A = Class.new do
+  alias some_method some_method
+  def some_method
+    implement 1
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_doesnt_register_an_offense_for_nonduplicate_alias_in_dynamic_class"
+source = '''
+A = Class.new do
+  def some_method
+    implement 1
+  end
+  alias any_method some_method
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_alias_method_in_dynamic_class"
+source = '''
+A = Class.new do
+  def some_method
+    implement 1
+  end
+  alias_method :some_method, :any_method
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 40
+message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_does_not_register_an_offense_for_duplicate_selfalias_method_in_dynamic_class"
+source = '''
+A = Class.new do
+  alias_method :some_method, :some_method
+  def some_method
+    implement 1
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_does_not_register_an_offense_for_duplicate_selfalias_method_with_dynamic_original_name_in_dynamic_class"
+source = '''
+A = Class.new do
+  alias_method :some_method, unknown()
+  def some_method
+    implement 1
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_accepts_for_nonduplicate_alias_method_in_dynamic_class"
+source = '''
+A = Class.new do
+  def some_method
+    implement 1
+  end
+  alias_method :any_method, :some_method
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_doesnt_register_an_offense_for_alias_for_gvar_in_dynamic_class"
+source = '''
+A = Class.new do
+  alias $foo $bar
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_attr_reader_in_dynamic_class"
+source = '''
+A = Class.new do
+  def something
+  end
+  attr_reader :something
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 24
+message = "Method `A#something` is defined at both example.rb:2 and example.rb:4."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_attr_writer_in_dynamic_class"
+source = '''
+A = Class.new do
+  def something=(right)
+  end
+  attr_writer :something
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 24
+message = "Method `A#something=` is defined at both example.rb:2 and example.rb:4."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_offenses_for_duplicate_attr_accessor_in_dynamic_class"
+source = '''
+A = Class.new do
+  attr_accessor :something
+
+  def something
+  end
+  def something=(right)
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 15
+message = "Method `A#something` is defined at both example.rb:2 and example.rb:4."
+
+[[tests.offenses]]
+line = 6
+column_start = 2
+column_end = 16
+message = "Method `A#something=` is defined at both example.rb:2 and example.rb:6."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_attr_in_dynamic_class"
+source = '''
+A = Class.new do
+  def something
+  end
+  attr :something
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 17
+message = "Method `A#something` is defined at both example.rb:2 and example.rb:4."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_offenses_for_duplicate_assignable_attr_in_dynamic_class"
+source = '''
+A = Class.new do
+  attr :something, true
+
+  def something
+  end
+  def something=(right)
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 15
+message = "Method `A#something` is defined at both example.rb:2 and example.rb:4."
+
+[[tests.offenses]]
+line = 6
+column_start = 2
+column_end = 16
+message = "Method `A#something=` is defined at both example.rb:2 and example.rb:6."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_accepts_for_attr_reader_and_setter_in_dynamic_class"
+source = '''
+A = Class.new do
+  def something=(right)
+  end
+  attr_reader :something
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_accepts_for_attr_writer_and_getter_in_dynamic_class"
+source = '''
+A = Class.new do
+  def something
+  end
+  attr_writer :something
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_nested_method_in_dynamic_class"
+source = '''
+A = Class.new do
+  def foo
+    def some_method
+      implement 1
+    end
+  end
+
+  def foo
+    def some_method
+      implement 2
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 8
+column_start = 2
+column_end = 9
+message = "Method `A#foo` is defined at both example.rb:2 and example.rb:8."
+
+[[tests.offenses]]
+line = 9
+column_start = 4
+column_end = 19
+message = "Method `A#some_method` is defined at both example.rb:3 and example.rb:9."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_nested_method_in_self_method_of_dynamic_class"
+source = '''
+A = Class.new do
+  def self.foo
+    def some_method
+      implement 1
+    end
+  end
+
+  def self.foo
+    def some_method
+      implement 2
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 8
+column_start = 2
+column_end = 14
+message = "Method `A.foo` is defined at both example.rb:2 and example.rb:8."
+
+[[tests.offenses]]
+line = 9
+column_start = 4
+column_end = 19
+message = "Method `A#some_method` is defined at both example.rb:3 and example.rb:9."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_does_not_register_an_offense_for_same_method_name_defined_in_different_methods_3"
+source = '''
+A = Class.new do
+  def foo
+    def some_method
+      implement 1
+    end
+  end
+
+  def bar
+    def some_method
+      implement 2
+    end
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_does_not_register_an_offense_for_same_method_name_defined_in_different_self_methods_3"
+source = '''
+A = Class.new do
+  def self.foo
+    def some_method
+      implement 1
+    end
+  end
+
+  def self.bar
+    def some_method
+      implement 2
+    end
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_does_not_register_an_offense_for_same_method_name_defined_in_different_blocks_3"
+source = '''
+A = Class.new do
+  dsl_like('foo') do
+    def some_method
+      implement 1
+    end
+  end
+
+  dsl_like('bar') do
+    def some_method
+      implement 2
+    end
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_method_when_def_delegator_is_used_3"
+source = '''
+A = Class.new do
+  def_delegator :foo, :bar
+
+  def bar; end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 9
+message = "Method `A#bar` is defined at both (string):2 and (string):4."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_method_when_def_delegator_is_used_with_string_arguments_3"
+source = '''
+A = Class.new do
+  def_delegator 'foo', 'bar'
+
+  def bar; end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 9
+message = "Method `A#bar` is defined at both (string):2 and (string):4."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_method_when_def_instance_delegator_is_used_3"
+source = '''
+A = Class.new do
+  def_instance_delegator :foo, :bar
+
+  def bar; end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 9
+message = "Method `A#bar` is defined at both (string):2 and (string):4."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_method_when_def_delegator_is_used_with_alias_3"
+source = '''
+A = Class.new do
+  def_delegator :foo, :bar, :baz
+
+  def bar; end
+
+  def baz; end
+end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 2
+column_end = 9
+message = "Method `A#baz` is defined at both (string):2 and (string):6."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_does_not_register_an_offense_for_duplicate_method_when_def_delegator_is_used_within_a_condition_3"
+source = '''
+A = Class.new do
+  def_delegator :foo, :bar if baz?
+
+  def bar; end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_method_when_def_delegators_is_used_3"
+source = '''
+A = Class.new do
+  def_delegators :foo, :bar, :baz
+
+  def bar; end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 9
+message = "Method `A#bar` is defined at both (string):2 and (string):4."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_method_when_def_delegators_is_used_with_string_arguments_3"
+source = '''
+A = Class.new do
+  def_delegators 'foo', 'bar', 'baz'
+
+  def bar; end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 9
+message = "Method `A#bar` is defined at both (string):2 and (string):4."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_method_when_def_instance_delegators_is_used_3"
+source = '''
+A = Class.new do
+  def_instance_delegators :foo, :bar, :baz
+
+  def bar; end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 9
+message = "Method `A#bar` is defined at both (string):2 and (string):4."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_does_not_register_an_offense_for_duplicate_method_when_def_delegators_is_used_within_a_condition_3"
+source = '''
+A = Class.new do
+  def_delegators :foo, :bar, :baz if qux?
+
+  def bar; end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_registers_an_offense_for_duplicate_delegate_with_symbol_method_in_dynamic_class"
+source = '''
+A = Class.new do
+  def some_method
+    implement 1
+  end
+  delegate :some_method, to: :foo
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 33
+message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_registers_an_offense_for_duplicate_delegate_with_string_method_in_dynamic_class"
+source = '''
+A = Class.new do
+  def some_method
+    implement 1
+  end
+  delegate 'some_method', to: :foo
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 34
+message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_registers_an_offense_for_duplicate_delegate_with_string_to_argument_in_dynamic_class"
+source = '''
+A = Class.new do
+  def some_method
+    implement 1
+  end
+  delegate :some_method, to: 'foo'
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 34
+message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_registers_an_offense_for_duplicate_delegate_with_symbol_prefix_in_dynamic_class"
+source = '''
+A = Class.new do
+  def some_method
+    implement 1
+  end
+  delegate :method, to: :foo, prefix: :some
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 43
+message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_registers_an_offense_for_duplicate_delegate_with_string_prefix_in_dynamic_class"
+source = '''
+A = Class.new do
+  def some_method
+    implement 1
+  end
+  delegate :method, to: :foo, prefix: 'some'
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 44
+message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_registers_an_offense_for_duplicate_delegate_with_prefix_true_in_dynamic_class"
+source = '''
+A = Class.new do
+  def some_method
+    implement 1
+  end
+  delegate :method, to: :some, prefix: true
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 43
+message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_registers_an_offense_with_multiple_delegates_in_dynamic_class"
+source = '''
+A = Class.new do
+  def some_method
+    implement 1
+  end
+  delegate :other_method, :some_method, to: :foo
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 48
+message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_does_not_register_an_offense_for_nonduplicate_delegate_with_prefix_false_in_dynamic_class"
+source = '''
+A = Class.new do
+  def some_method
+    implement 1
+  end
+  delegate :method, prefix: false, to: :some
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_does_not_register_an_offense_for_dynamically_specified_to_option_with_enabled_prefix_in_dynamic_class"
+source = '''
+A = Class.new do
+  def some_method
+    implement 1
+  end
+
+  %w[any none some].each do |type|
+    delegate :method, prefix: true, to: type
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_does_not_register_an_offense_for_dynamically_specified_prefix_in_dynamic_class"
+source = '''
+A = Class.new do
+  def some_method
+    implement 1
+  end
+
+  delegate :method, prefix: some_condition, to: :some
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_does_not_register_an_offense_for_nonduplicate_delegate_in_dynamic_class"
+source = '''
+A = Class.new do
+  def some_method
+    implement 1
+  end
+  delegate :other_method, to: :foo
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_does_not_register_an_offense_for_duplicate_delegate_inside_a_condition_in_dynamic_class"
+source = '''
+A = Class.new do
+  def some_method
+    implement 1
+  end
+
+  if cond
+    delegate :some_method, to: :foo
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_does_not_register_an_offense_for_duplicate_delegate_with_splat_keyword_arguments_in_dynamic_class"
+source = '''
+A = Class.new do
+  def some_method
+    implement 1
+  end
+
+  delegate :some_method, **options
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_does_not_register_an_offense_for_duplicate_delegate_without_keyword_arguments_in_dynamic_class"
+source = '''
+A = Class.new do
+  def some_method
+    implement 1
+  end
+
+  delegate :some_method
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_does_not_register_an_offense_for_duplicate_delegate_without_to_argument_3"
+source = '''
+A = Class.new do
+  def some_method
+    implement 1
+  end
+
+  delegate :some_method, prefix: true
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_false_does_not_register_an_offense_for_duplicate_delegate_in_dynamic_class"
+source = '''
+A = Class.new do
+  def some_method
+    implement 1
+  end
+  delegate :some_method, to: :foo
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_method_in_dynamic_module"
+source = '''
+A = Module.new do
+  def some_method
+    implement 1
+  end
+  def some_method
+    implement 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 17
+message = "Method `A#some_method` is defined at both (string):2 and (string):5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_doesnt_register_an_offense_for_nonduplicate_method_in_dynamic_module"
+source = '''
+A = Module.new do
+  def some_method
+    implement 1
+  end
+  def any_method
+    implement 2
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_class_methods_in_dynamic_module"
+source = '''
+A = Module.new do
+  def self.some_method
+    implement 1
+  end
+  def self.some_method
+    implement 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 22
+message = "Method `A.some_method` is defined at both dups.rb:2 and dups.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_doesnt_register_offense_for_nonduplicate_class_methods_in_dynamic_module"
+source = '''
+A = Module.new do
+  def self.some_method
+    implement 1
+  end
+  def self.any_method
+    implement 2
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_recognizes_difference_between_instance_and_class_methods_in_dynamic_module"
+source = '''
+A = Module.new do
+  def some_method
+    implement 1
+  end
+  def self.some_method
+    implement 2
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_private_methods_in_dynamic_module"
+source = '''
+A = Module.new do
+  private def some_method
+    implement 1
+  end
+  private def some_method
+    implement 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 10
+column_end = 25
+message = "Method `A#some_method` is defined at both (string):2 and (string):5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_private_self_methods_in_dynamic_module"
+source = '''
+A = Module.new do
+  private def self.some_method
+    implement 1
+  end
+  private def self.some_method
+    implement 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 10
+column_end = 30
+message = "Method `A.some_method` is defined at both (string):2 and (string):5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_doesnt_register_an_offense_for_different_private_methods_in_dynamic_module"
+source = '''
+A = Module.new do
+  private def some_method
+    implement 1
+  end
+  private def any_method
+    implement 2
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_protected_methods_in_dynamic_module"
+source = '''
+A = Module.new do
+  protected def some_method
+    implement 1
+  end
+  protected def some_method
+    implement 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 12
+column_end = 27
+message = "Method `A#some_method` is defined at both (string):2 and (string):5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_2_offenses_for_pair_of_duplicate_methods_in_dynamic_module"
+source = '''
+A = Module.new do
+  def some_method
+    implement 1
+  end
+  def some_method
+    implement 2
+  end
+  def any_method
+    implement 1
+  end
+  def any_method
+    implement 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 17
+message = "Method `A#some_method` is defined at both dups.rb:2 and dups.rb:5."
+
+[[tests.offenses]]
+line = 11
+column_start = 2
+column_end = 16
+message = "Method `A#any_method` is defined at both dups.rb:8 and dups.rb:11."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_a_duplicate_instance_method_in_separate_dynamic_module_blocks"
+source = '''
+A = Module.new do
+  def some_method
+    implement 1
+  end
+end
+A = Module.new do
+  def some_method
+    implement 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 7
+column_start = 2
+column_end = 17
+message = "Method `A#some_method` is defined at both dups.rb:2 and dups.rb:7."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_a_duplicate_class_method_in_separate_dynamic_module_blocks"
+source = '''
+A = Module.new do
+  def self.some_method
+    implement 1
+  end
+end
+A = Module.new do
+  def self.some_method
+    implement 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 7
+column_start = 2
+column_end = 22
+message = "Method `A.some_method` is defined at both test.rb:2 and test.rb:7."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_only_registers_an_offense_for_the_second_instance_of_a_duplicate_instance_method_in_separate_files_7"
+source = '''
+A = Module.new do
+  def some_method
+    implement 1
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_only_registers_an_offense_for_the_second_instance_of_a_duplicate_instance_method_in_separate_files_8"
+source = '''
+A = Module.new do
+  def some_method
+    implement 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 17
+message = "Method `A#some_method` is defined at both first.rb:2 and second.rb:2."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_understands_class__self_4"
+source = '''
+A = Module.new do
+  class << self
+    def some_method
+      implement 1
+    end
+    def some_method
+      implement 2
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 4
+column_end = 19
+message = "Method `A.some_method` is defined at both test.rb:3 and test.rb:6."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_understands_nested_modules_4"
+source = '''
+module B
+  A = Module.new do
+    def some_method
+      implement 1
+    end
+    def some_method
+      implement 2
+    end
+    def self.another
+    end
+    def self.another
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 4
+column_end = 19
+message = "Method `B::A#some_method` is defined at both test.rb:3 and test.rb:6."
+
+[[tests.offenses]]
+line = 11
+column_start = 4
+column_end = 20
+message = "Method `B::A.another` is defined at both test.rb:9 and test.rb:11."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_when_class__exp_is_used_4"
+source = '''
+A = Module.new do
+  class << blah
+    def some_method
+      implement 1
+    end
+    def some_method
+      implement 2
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 4
+column_end = 19
+message = "Method `blah.some_method` is defined at both test.rb:3 and test.rb:6."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_alias_in_dynamic_module"
+source = '''
+A = Module.new do
+  def some_method
+    implement 1
+  end
+  alias some_method any_method
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 30
+message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_does_not_register_an_offense_for_duplicate_selfalias_in_dynamic_module"
+source = '''
+A = Module.new do
+  alias some_method some_method
+  def some_method
+    implement 1
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_doesnt_register_an_offense_for_nonduplicate_alias_in_dynamic_module"
+source = '''
+A = Module.new do
+  def some_method
+    implement 1
+  end
+  alias any_method some_method
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_alias_method_in_dynamic_module"
+source = '''
+A = Module.new do
+  def some_method
+    implement 1
+  end
+  alias_method :some_method, :any_method
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 40
+message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_does_not_register_an_offense_for_duplicate_selfalias_method_in_dynamic_module"
+source = '''
+A = Module.new do
+  alias_method :some_method, :some_method
+  def some_method
+    implement 1
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_does_not_register_an_offense_for_duplicate_selfalias_method_with_dynamic_original_name_in_dynamic_module"
+source = '''
+A = Module.new do
+  alias_method :some_method, unknown()
+  def some_method
+    implement 1
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_accepts_for_nonduplicate_alias_method_in_dynamic_module"
+source = '''
+A = Module.new do
+  def some_method
+    implement 1
+  end
+  alias_method :any_method, :some_method
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_doesnt_register_an_offense_for_alias_for_gvar_in_dynamic_module"
+source = '''
+A = Module.new do
+  alias $foo $bar
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_attr_reader_in_dynamic_module"
+source = '''
+A = Module.new do
+  def something
+  end
+  attr_reader :something
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 24
+message = "Method `A#something` is defined at both example.rb:2 and example.rb:4."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_attr_writer_in_dynamic_module"
+source = '''
+A = Module.new do
+  def something=(right)
+  end
+  attr_writer :something
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 24
+message = "Method `A#something=` is defined at both example.rb:2 and example.rb:4."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_offenses_for_duplicate_attr_accessor_in_dynamic_module"
+source = '''
+A = Module.new do
+  attr_accessor :something
+
+  def something
+  end
+  def something=(right)
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 15
+message = "Method `A#something` is defined at both example.rb:2 and example.rb:4."
+
+[[tests.offenses]]
+line = 6
+column_start = 2
+column_end = 16
+message = "Method `A#something=` is defined at both example.rb:2 and example.rb:6."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_attr_in_dynamic_module"
+source = '''
+A = Module.new do
+  def something
+  end
+  attr :something
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 17
+message = "Method `A#something` is defined at both example.rb:2 and example.rb:4."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_offenses_for_duplicate_assignable_attr_in_dynamic_module"
+source = '''
+A = Module.new do
+  attr :something, true
+
+  def something
+  end
+  def something=(right)
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 15
+message = "Method `A#something` is defined at both example.rb:2 and example.rb:4."
+
+[[tests.offenses]]
+line = 6
+column_start = 2
+column_end = 16
+message = "Method `A#something=` is defined at both example.rb:2 and example.rb:6."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_accepts_for_attr_reader_and_setter_in_dynamic_module"
+source = '''
+A = Module.new do
+  def something=(right)
+  end
+  attr_reader :something
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_accepts_for_attr_writer_and_getter_in_dynamic_module"
+source = '''
+A = Module.new do
+  def something
+  end
+  attr_writer :something
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_nested_method_in_dynamic_module"
+source = '''
+A = Module.new do
+  def foo
+    def some_method
+      implement 1
+    end
+  end
+
+  def foo
+    def some_method
+      implement 2
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 8
+column_start = 2
+column_end = 9
+message = "Method `A#foo` is defined at both example.rb:2 and example.rb:8."
+
+[[tests.offenses]]
+line = 9
+column_start = 4
+column_end = 19
+message = "Method `A#some_method` is defined at both example.rb:3 and example.rb:9."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_nested_method_in_self_method_of_dynamic_module"
+source = '''
+A = Module.new do
+  def self.foo
+    def some_method
+      implement 1
+    end
+  end
+
+  def self.foo
+    def some_method
+      implement 2
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 8
+column_start = 2
+column_end = 14
+message = "Method `A.foo` is defined at both example.rb:2 and example.rb:8."
+
+[[tests.offenses]]
+line = 9
+column_start = 4
+column_end = 19
+message = "Method `A#some_method` is defined at both example.rb:3 and example.rb:9."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_does_not_register_an_offense_for_same_method_name_defined_in_different_methods_4"
+source = '''
+A = Module.new do
+  def foo
+    def some_method
+      implement 1
+    end
+  end
+
+  def bar
+    def some_method
+      implement 2
+    end
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_does_not_register_an_offense_for_same_method_name_defined_in_different_self_methods_4"
+source = '''
+A = Module.new do
+  def self.foo
+    def some_method
+      implement 1
+    end
+  end
+
+  def self.bar
+    def some_method
+      implement 2
+    end
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_does_not_register_an_offense_for_same_method_name_defined_in_different_blocks_4"
+source = '''
+A = Module.new do
+  dsl_like('foo') do
+    def some_method
+      implement 1
+    end
+  end
+
+  dsl_like('bar') do
+    def some_method
+      implement 2
+    end
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_method_when_def_delegator_is_used_4"
+source = '''
+A = Module.new do
+  def_delegator :foo, :bar
+
+  def bar; end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 9
+message = "Method `A#bar` is defined at both (string):2 and (string):4."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_method_when_def_delegator_is_used_with_string_arguments_4"
+source = '''
+A = Module.new do
+  def_delegator 'foo', 'bar'
+
+  def bar; end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 9
+message = "Method `A#bar` is defined at both (string):2 and (string):4."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_method_when_def_instance_delegator_is_used_4"
+source = '''
+A = Module.new do
+  def_instance_delegator :foo, :bar
+
+  def bar; end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 9
+message = "Method `A#bar` is defined at both (string):2 and (string):4."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_method_when_def_delegator_is_used_with_alias_4"
+source = '''
+A = Module.new do
+  def_delegator :foo, :bar, :baz
+
+  def bar; end
+
+  def baz; end
+end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 2
+column_end = 9
+message = "Method `A#baz` is defined at both (string):2 and (string):6."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_does_not_register_an_offense_for_duplicate_method_when_def_delegator_is_used_within_a_condition_4"
+source = '''
+A = Module.new do
+  def_delegator :foo, :bar if baz?
+
+  def bar; end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_method_when_def_delegators_is_used_4"
+source = '''
+A = Module.new do
+  def_delegators :foo, :bar, :baz
+
+  def bar; end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 9
+message = "Method `A#bar` is defined at both (string):2 and (string):4."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_method_when_def_delegators_is_used_with_string_arguments_4"
+source = '''
+A = Module.new do
+  def_delegators 'foo', 'bar', 'baz'
+
+  def bar; end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 9
+message = "Method `A#bar` is defined at both (string):2 and (string):4."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_method_when_def_instance_delegators_is_used_4"
+source = '''
+A = Module.new do
+  def_instance_delegators :foo, :bar, :baz
+
+  def bar; end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 9
+message = "Method `A#bar` is defined at both (string):2 and (string):4."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_does_not_register_an_offense_for_duplicate_method_when_def_delegators_is_used_within_a_condition_4"
+source = '''
+A = Module.new do
+  def_delegators :foo, :bar, :baz if qux?
+
+  def bar; end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_registers_an_offense_for_duplicate_delegate_with_symbol_method_in_dynamic_module"
+source = '''
+A = Module.new do
+  def some_method
+    implement 1
+  end
+  delegate :some_method, to: :foo
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 33
+message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_registers_an_offense_for_duplicate_delegate_with_string_method_in_dynamic_module"
+source = '''
+A = Module.new do
+  def some_method
+    implement 1
+  end
+  delegate 'some_method', to: :foo
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 34
+message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_registers_an_offense_for_duplicate_delegate_with_string_to_argument_in_dynamic_module"
+source = '''
+A = Module.new do
+  def some_method
+    implement 1
+  end
+  delegate :some_method, to: 'foo'
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 34
+message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_registers_an_offense_for_duplicate_delegate_with_symbol_prefix_in_dynamic_module"
+source = '''
+A = Module.new do
+  def some_method
+    implement 1
+  end
+  delegate :method, to: :foo, prefix: :some
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 43
+message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_registers_an_offense_for_duplicate_delegate_with_string_prefix_in_dynamic_module"
+source = '''
+A = Module.new do
+  def some_method
+    implement 1
+  end
+  delegate :method, to: :foo, prefix: 'some'
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 44
+message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_registers_an_offense_for_duplicate_delegate_with_prefix_true_in_dynamic_module"
+source = '''
+A = Module.new do
+  def some_method
+    implement 1
+  end
+  delegate :method, to: :some, prefix: true
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 43
+message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_registers_an_offense_with_multiple_delegates_in_dynamic_module"
+source = '''
+A = Module.new do
+  def some_method
+    implement 1
+  end
+  delegate :other_method, :some_method, to: :foo
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 48
+message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_does_not_register_an_offense_for_nonduplicate_delegate_with_prefix_false_in_dynamic_module"
+source = '''
+A = Module.new do
+  def some_method
+    implement 1
+  end
+  delegate :method, prefix: false, to: :some
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_does_not_register_an_offense_for_dynamically_specified_to_option_with_enabled_prefix_in_dynamic_module"
+source = '''
+A = Module.new do
+  def some_method
+    implement 1
+  end
+
+  %w[any none some].each do |type|
+    delegate :method, prefix: true, to: type
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_does_not_register_an_offense_for_dynamically_specified_prefix_in_dynamic_module"
+source = '''
+A = Module.new do
+  def some_method
+    implement 1
+  end
+
+  delegate :method, prefix: some_condition, to: :some
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_does_not_register_an_offense_for_nonduplicate_delegate_in_dynamic_module"
+source = '''
+A = Module.new do
+  def some_method
+    implement 1
+  end
+  delegate :other_method, to: :foo
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_does_not_register_an_offense_for_duplicate_delegate_inside_a_condition_in_dynamic_module"
+source = '''
+A = Module.new do
+  def some_method
+    implement 1
+  end
+
+  if cond
+    delegate :some_method, to: :foo
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_does_not_register_an_offense_for_duplicate_delegate_with_splat_keyword_arguments_in_dynamic_module"
+source = '''
+A = Module.new do
+  def some_method
+    implement 1
+  end
+
+  delegate :some_method, **options
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_does_not_register_an_offense_for_duplicate_delegate_without_keyword_arguments_in_dynamic_module"
+source = '''
+A = Module.new do
+  def some_method
+    implement 1
+  end
+
+  delegate :some_method
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_does_not_register_an_offense_for_duplicate_delegate_without_to_argument_4"
+source = '''
+A = Module.new do
+  def some_method
+    implement 1
+  end
+
+  delegate :some_method, prefix: true
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_false_does_not_register_an_offense_for_duplicate_delegate_in_dynamic_module"
+source = '''
+A = Module.new do
+  def some_method
+    implement 1
+  end
+  delegate :some_method, to: :foo
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_method_in_class_eval_block"
+source = '''
+A.class_eval do
+  def some_method
+    implement 1
+  end
+  def some_method
+    implement 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 17
+message = "Method `A#some_method` is defined at both (string):2 and (string):5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_doesnt_register_an_offense_for_nonduplicate_method_in_class_eval_block"
+source = '''
+A.class_eval do
+  def some_method
+    implement 1
+  end
+  def any_method
+    implement 2
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_class_methods_in_class_eval_block"
+source = '''
+A.class_eval do
+  def self.some_method
+    implement 1
+  end
+  def self.some_method
+    implement 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 22
+message = "Method `A.some_method` is defined at both dups.rb:2 and dups.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_doesnt_register_offense_for_nonduplicate_class_methods_in_class_eval_block"
+source = '''
+A.class_eval do
+  def self.some_method
+    implement 1
+  end
+  def self.any_method
+    implement 2
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_recognizes_difference_between_instance_and_class_methods_in_class_eval_block"
+source = '''
+A.class_eval do
+  def some_method
+    implement 1
+  end
+  def self.some_method
+    implement 2
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_private_methods_in_class_eval_block"
+source = '''
+A.class_eval do
+  private def some_method
+    implement 1
+  end
+  private def some_method
+    implement 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 10
+column_end = 25
+message = "Method `A#some_method` is defined at both (string):2 and (string):5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_private_self_methods_in_class_eval_block"
+source = '''
+A.class_eval do
+  private def self.some_method
+    implement 1
+  end
+  private def self.some_method
+    implement 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 10
+column_end = 30
+message = "Method `A.some_method` is defined at both (string):2 and (string):5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_doesnt_register_an_offense_for_different_private_methods_in_class_eval_block"
+source = '''
+A.class_eval do
+  private def some_method
+    implement 1
+  end
+  private def any_method
+    implement 2
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_protected_methods_in_class_eval_block"
+source = '''
+A.class_eval do
+  protected def some_method
+    implement 1
+  end
+  protected def some_method
+    implement 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 12
+column_end = 27
+message = "Method `A#some_method` is defined at both (string):2 and (string):5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_2_offenses_for_pair_of_duplicate_methods_in_class_eval_block"
+source = '''
+A.class_eval do
+  def some_method
+    implement 1
+  end
+  def some_method
+    implement 2
+  end
+  def any_method
+    implement 1
+  end
+  def any_method
+    implement 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 17
+message = "Method `A#some_method` is defined at both dups.rb:2 and dups.rb:5."
+
+[[tests.offenses]]
+line = 11
+column_start = 2
+column_end = 16
+message = "Method `A#any_method` is defined at both dups.rb:8 and dups.rb:11."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_a_duplicate_instance_method_in_separate_class_eval_block_blocks"
+source = '''
+A.class_eval do
+  def some_method
+    implement 1
+  end
+end
+A.class_eval do
+  def some_method
+    implement 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 7
+column_start = 2
+column_end = 17
+message = "Method `A#some_method` is defined at both dups.rb:2 and dups.rb:7."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_a_duplicate_class_method_in_separate_class_eval_block_blocks"
+source = '''
+A.class_eval do
+  def self.some_method
+    implement 1
+  end
+end
+A.class_eval do
+  def self.some_method
+    implement 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 7
+column_start = 2
+column_end = 22
+message = "Method `A.some_method` is defined at both test.rb:2 and test.rb:7."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_only_registers_an_offense_for_the_second_instance_of_a_duplicate_instance_method_in_separate_files_9"
+source = '''
+A.class_eval do
+  def some_method
+    implement 1
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_only_registers_an_offense_for_the_second_instance_of_a_duplicate_instance_method_in_separate_files_10"
+source = '''
+A.class_eval do
+  def some_method
+    implement 2
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 17
+message = "Method `A#some_method` is defined at both first.rb:2 and second.rb:2."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_understands_class__self_5"
+source = '''
+A.class_eval do
+  class << self
+    def some_method
+      implement 1
+    end
+    def some_method
+      implement 2
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 4
+column_end = 19
+message = "Method `A.some_method` is defined at both test.rb:3 and test.rb:6."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_understands_nested_modules_5"
+source = '''
+module B
+  A.class_eval do
+    def some_method
+      implement 1
+    end
+    def some_method
+      implement 2
+    end
+    def self.another
+    end
+    def self.another
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 4
+column_end = 19
+message = "Method `B::A#some_method` is defined at both test.rb:3 and test.rb:6."
+
+[[tests.offenses]]
+line = 11
+column_start = 4
+column_end = 20
+message = "Method `B::A.another` is defined at both test.rb:9 and test.rb:11."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_when_class__exp_is_used_5"
+source = '''
+A.class_eval do
+  class << blah
+    def some_method
+      implement 1
+    end
+    def some_method
+      implement 2
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 4
+column_end = 19
+message = "Method `blah.some_method` is defined at both test.rb:3 and test.rb:6."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_alias_in_class_eval_block"
+source = '''
+A.class_eval do
+  def some_method
+    implement 1
+  end
+  alias some_method any_method
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 30
+message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_does_not_register_an_offense_for_duplicate_selfalias_in_class_eval_block"
+source = '''
+A.class_eval do
+  alias some_method some_method
+  def some_method
+    implement 1
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_doesnt_register_an_offense_for_nonduplicate_alias_in_class_eval_block"
+source = '''
+A.class_eval do
+  def some_method
+    implement 1
+  end
+  alias any_method some_method
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_alias_method_in_class_eval_block"
+source = '''
+A.class_eval do
+  def some_method
+    implement 1
+  end
+  alias_method :some_method, :any_method
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 40
+message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_does_not_register_an_offense_for_duplicate_selfalias_method_in_class_eval_block"
+source = '''
+A.class_eval do
+  alias_method :some_method, :some_method
+  def some_method
+    implement 1
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_does_not_register_an_offense_for_duplicate_selfalias_method_with_dynamic_original_name_in_class_eval_block"
+source = '''
+A.class_eval do
+  alias_method :some_method, unknown()
+  def some_method
+    implement 1
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_accepts_for_nonduplicate_alias_method_in_class_eval_block"
+source = '''
+A.class_eval do
+  def some_method
+    implement 1
+  end
+  alias_method :any_method, :some_method
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_doesnt_register_an_offense_for_alias_for_gvar_in_class_eval_block"
+source = '''
+A.class_eval do
+  alias $foo $bar
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_attr_reader_in_class_eval_block"
+source = '''
+A.class_eval do
+  def something
+  end
+  attr_reader :something
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 24
+message = "Method `A#something` is defined at both example.rb:2 and example.rb:4."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_attr_writer_in_class_eval_block"
+source = '''
+A.class_eval do
+  def something=(right)
+  end
+  attr_writer :something
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 24
+message = "Method `A#something=` is defined at both example.rb:2 and example.rb:4."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_offenses_for_duplicate_attr_accessor_in_class_eval_block"
+source = '''
+A.class_eval do
+  attr_accessor :something
+
+  def something
+  end
+  def something=(right)
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 15
+message = "Method `A#something` is defined at both example.rb:2 and example.rb:4."
+
+[[tests.offenses]]
+line = 6
+column_start = 2
+column_end = 16
+message = "Method `A#something=` is defined at both example.rb:2 and example.rb:6."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_attr_in_class_eval_block"
+source = '''
+A.class_eval do
+  def something
+  end
+  attr :something
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 17
+message = "Method `A#something` is defined at both example.rb:2 and example.rb:4."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_offenses_for_duplicate_assignable_attr_in_class_eval_block"
+source = '''
+A.class_eval do
+  attr :something, true
+
+  def something
+  end
+  def something=(right)
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 15
+message = "Method `A#something` is defined at both example.rb:2 and example.rb:4."
+
+[[tests.offenses]]
+line = 6
+column_start = 2
+column_end = 16
+message = "Method `A#something=` is defined at both example.rb:2 and example.rb:6."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_accepts_for_attr_reader_and_setter_in_class_eval_block"
+source = '''
+A.class_eval do
+  def something=(right)
+  end
+  attr_reader :something
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_accepts_for_attr_writer_and_getter_in_class_eval_block"
+source = '''
+A.class_eval do
+  def something
+  end
+  attr_writer :something
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_nested_method_in_class_eval_block"
+source = '''
+A.class_eval do
+  def foo
+    def some_method
+      implement 1
+    end
+  end
+
+  def foo
+    def some_method
+      implement 2
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 8
+column_start = 2
+column_end = 9
+message = "Method `A#foo` is defined at both example.rb:2 and example.rb:8."
+
+[[tests.offenses]]
+line = 9
+column_start = 4
+column_end = 19
+message = "Method `A#some_method` is defined at both example.rb:3 and example.rb:9."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_nested_method_in_self_method_of_class_eval_block"
+source = '''
+A.class_eval do
+  def self.foo
+    def some_method
+      implement 1
+    end
+  end
+
+  def self.foo
+    def some_method
+      implement 2
+    end
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 8
+column_start = 2
+column_end = 14
+message = "Method `A.foo` is defined at both example.rb:2 and example.rb:8."
+
+[[tests.offenses]]
+line = 9
+column_start = 4
+column_end = 19
+message = "Method `A#some_method` is defined at both example.rb:3 and example.rb:9."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_does_not_register_an_offense_for_same_method_name_defined_in_different_methods_5"
+source = '''
+A.class_eval do
+  def foo
+    def some_method
+      implement 1
+    end
+  end
+
+  def bar
+    def some_method
+      implement 2
+    end
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_does_not_register_an_offense_for_same_method_name_defined_in_different_self_methods_5"
+source = '''
+A.class_eval do
+  def self.foo
+    def some_method
+      implement 1
+    end
+  end
+
+  def self.bar
+    def some_method
+      implement 2
+    end
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_does_not_register_an_offense_for_same_method_name_defined_in_different_blocks_5"
+source = '''
+A.class_eval do
+  dsl_like('foo') do
+    def some_method
+      implement 1
+    end
+  end
+
+  dsl_like('bar') do
+    def some_method
+      implement 2
+    end
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_method_when_def_delegator_is_used_5"
+source = '''
+A.class_eval do
+  def_delegator :foo, :bar
+
+  def bar; end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 9
+message = "Method `A#bar` is defined at both (string):2 and (string):4."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_method_when_def_delegator_is_used_with_string_arguments_5"
+source = '''
+A.class_eval do
+  def_delegator 'foo', 'bar'
+
+  def bar; end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 9
+message = "Method `A#bar` is defined at both (string):2 and (string):4."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_method_when_def_instance_delegator_is_used_5"
+source = '''
+A.class_eval do
+  def_instance_delegator :foo, :bar
+
+  def bar; end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 9
+message = "Method `A#bar` is defined at both (string):2 and (string):4."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_method_when_def_delegator_is_used_with_alias_5"
+source = '''
+A.class_eval do
+  def_delegator :foo, :bar, :baz
+
+  def bar; end
+
+  def baz; end
+end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 2
+column_end = 9
+message = "Method `A#baz` is defined at both (string):2 and (string):6."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_does_not_register_an_offense_for_duplicate_method_when_def_delegator_is_used_within_a_condition_5"
+source = '''
+A.class_eval do
+  def_delegator :foo, :bar if baz?
+
+  def bar; end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_method_when_def_delegators_is_used_5"
+source = '''
+A.class_eval do
+  def_delegators :foo, :bar, :baz
+
+  def bar; end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 9
+message = "Method `A#bar` is defined at both (string):2 and (string):4."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_method_when_def_delegators_is_used_with_string_arguments_5"
+source = '''
+A.class_eval do
+  def_delegators 'foo', 'bar', 'baz'
+
+  def bar; end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 9
+message = "Method `A#bar` is defined at both (string):2 and (string):4."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_registers_an_offense_for_duplicate_method_when_def_instance_delegators_is_used_5"
+source = '''
+A.class_eval do
+  def_instance_delegators :foo, :bar, :baz
+
+  def bar; end
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 2
+column_end = 9
+message = "Method `A#bar` is defined at both (string):2 and (string):4."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_does_not_register_an_offense_for_duplicate_method_when_def_delegators_is_used_within_a_condition_5"
+source = '''
+A.class_eval do
+  def_delegators :foo, :bar, :baz if qux?
+
+  def bar; end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_registers_an_offense_for_duplicate_delegate_with_symbol_method_in_class_eval_block"
+source = '''
+A.class_eval do
+  def some_method
+    implement 1
+  end
+  delegate :some_method, to: :foo
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 33
+message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_registers_an_offense_for_duplicate_delegate_with_string_method_in_class_eval_block"
+source = '''
+A.class_eval do
+  def some_method
+    implement 1
+  end
+  delegate 'some_method', to: :foo
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 34
+message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_registers_an_offense_for_duplicate_delegate_with_string_to_argument_in_class_eval_block"
+source = '''
+A.class_eval do
+  def some_method
+    implement 1
+  end
+  delegate :some_method, to: 'foo'
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 34
+message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_registers_an_offense_for_duplicate_delegate_with_symbol_prefix_in_class_eval_block"
+source = '''
+A.class_eval do
+  def some_method
+    implement 1
+  end
+  delegate :method, to: :foo, prefix: :some
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 43
+message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_registers_an_offense_for_duplicate_delegate_with_string_prefix_in_class_eval_block"
+source = '''
+A.class_eval do
+  def some_method
+    implement 1
+  end
+  delegate :method, to: :foo, prefix: 'some'
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 44
+message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_registers_an_offense_for_duplicate_delegate_with_prefix_true_in_class_eval_block"
+source = '''
+A.class_eval do
+  def some_method
+    implement 1
+  end
+  delegate :method, to: :some, prefix: true
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 43
+message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_registers_an_offense_with_multiple_delegates_in_class_eval_block"
+source = '''
+A.class_eval do
+  def some_method
+    implement 1
+  end
+  delegate :other_method, :some_method, to: :foo
+end
+'''
+
+[[tests.offenses]]
+line = 5
+column_start = 2
+column_end = 48
+message = "Method `A#some_method` is defined at both example.rb:2 and example.rb:5."
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_does_not_register_an_offense_for_nonduplicate_delegate_with_prefix_false_in_class_eval_block"
+source = '''
+A.class_eval do
+  def some_method
+    implement 1
+  end
+  delegate :method, prefix: false, to: :some
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_does_not_register_an_offense_for_dynamically_specified_to_option_with_enabled_prefix_in_class_eval_block"
+source = '''
+A.class_eval do
+  def some_method
+    implement 1
+  end
+
+  %w[any none some].each do |type|
+    delegate :method, prefix: true, to: type
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_does_not_register_an_offense_for_dynamically_specified_prefix_in_class_eval_block"
+source = '''
+A.class_eval do
+  def some_method
+    implement 1
+  end
+
+  delegate :method, prefix: some_condition, to: :some
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_does_not_register_an_offense_for_nonduplicate_delegate_in_class_eval_block"
+source = '''
+A.class_eval do
+  def some_method
+    implement 1
+  end
+  delegate :other_method, to: :foo
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_does_not_register_an_offense_for_duplicate_delegate_inside_a_condition_in_class_eval_block"
+source = '''
+A.class_eval do
+  def some_method
+    implement 1
+  end
+
+  if cond
+    delegate :some_method, to: :foo
+  end
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_does_not_register_an_offense_for_duplicate_delegate_with_splat_keyword_arguments_in_class_eval_block"
+source = '''
+A.class_eval do
+  def some_method
+    implement 1
+  end
+
+  delegate :some_method, **options
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_does_not_register_an_offense_for_duplicate_delegate_without_keyword_arguments_in_class_eval_block"
+source = '''
+A.class_eval do
+  def some_method
+    implement 1
+  end
+
+  delegate :some_method
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_true_does_not_register_an_offense_for_duplicate_delegate_without_to_argument_5"
+source = '''
+A.class_eval do
+  def some_method
+    implement 1
+  end
+
+  delegate :some_method, prefix: true
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_behaves_like_in_scope_when_allcopsactivesupportextensionsenabled_false_does_not_register_an_offense_for_duplicate_delegate_in_class_eval_block"
+source = '''
+A.class_eval do
+  def some_method
+    implement 1
+  end
+  delegate :some_method, to: :foo
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatemethods_when_path_is_in_the_project_root_adds_a_message_with_relative_path"
 source = '''
 def something
 end
@@ -1532,7 +5552,7 @@ column_end = 13
 message = "Method `Object#something` is defined at both lib/foo.rb:1 and lib/foo.rb:3."
 
 [[tests]]
-name = "rubocop_cop_lint_duplicatemethods_when_path_is_not_in_the_project_root_adds_a_message_with_absolute_path"
+name = "rubocopcoplintduplicatemethods_when_path_is_not_in_the_project_root_adds_a_message_with_absolute_path"
 source = '''
 def something
 end

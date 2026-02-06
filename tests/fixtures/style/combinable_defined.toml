@@ -4,274 +4,462 @@ severity = "convention"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_style_combinabledefined_does_not_register_an_offense_for_a_single_defined"
+name = "rubocopcopstylecombinabledefined_does_not_register_an_offense_for_a_single_defined"
 source = '''
 defined?(Foo)
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_combinabledefined_does_not_register_an_offense_for_two_separate_defined_s"
+name = "rubocopcopstylecombinabledefined_joined_by__does_not_register_an_offense_for_two_separate_defineds"
 source = '''
-defined?(Foo) #{operator} defined?(Bar)
+defined?(Foo) && defined?(Bar)
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_combinabledefined_does_not_register_an_offense_for_two_identical_defined_s"
+name = "rubocopcopstylecombinabledefined_joined_by__does_not_register_an_offense_for_two_identical_defineds"
 source = '''
-defined?(Foo) #{operator} defined?(Foo)
+defined?(Foo) && defined?(Foo)
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_combinabledefined_does_not_register_an_offense_for_the_same_constant_with_different_cbase_s"
+name = "rubocopcopstylecombinabledefined_joined_by__does_not_register_an_offense_for_the_same_constant_with_different_cbases"
 source = '''
-defined?(Foo) #{operator} defined?(::Foo)
+defined?(Foo) && defined?(::Foo)
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_combinabledefined_registers_an_offense_for_two_defined_s_with_same_nesting"
+name = "rubocopcopstylecombinabledefined_joined_by__registers_an_offense_for_two_defineds_with_same_nesting"
 source = '''
-defined?(Foo) #{operator} defined?(Foo::Bar)
+defined?(Foo) && defined?(Foo::Bar)
 '''
 corrected = '''
 defined?(Foo::Bar)
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 0
-column_end = 44
+column_end = 35
 message = "Combine nested `defined?` calls."
 
 [[tests]]
-name = "rubocop_cop_style_combinabledefined_registers_an_offense_for_two_defined_s_with_the_same_nesting_in_reverse_order"
+name = "rubocopcopstylecombinabledefined_joined_by__registers_an_offense_for_two_defineds_with_the_same_nesting_in_reverse_order"
 source = '''
-defined?(Foo::Bar) #{operator} defined?(Foo)
+defined?(Foo::Bar) && defined?(Foo)
 '''
 corrected = '''
 defined?(Foo::Bar)
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 0
-column_end = 44
+column_end = 35
 message = "Combine nested `defined?` calls."
 
 [[tests]]
-name = "rubocop_cop_style_combinabledefined_registers_an_offense_for_two_defined_s_with_the_same_nesting_and_cbase"
+name = "rubocopcopstylecombinabledefined_joined_by__registers_an_offense_for_two_defineds_with_the_same_nesting_and_cbase"
 source = '''
-defined?(::Foo) #{operator} defined?(::Foo::Bar)
+defined?(::Foo) && defined?(::Foo::Bar)
 '''
 corrected = '''
 defined?(::Foo::Bar)
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 0
-column_end = 48
+column_end = 39
 message = "Combine nested `defined?` calls."
 
 [[tests]]
-name = "rubocop_cop_style_combinabledefined_registers_an_offense_for_two_defined_s_with_the_same_deep_nesting"
+name = "rubocopcopstylecombinabledefined_joined_by__registers_an_offense_for_two_defineds_with_the_same_deep_nesting"
 source = '''
-defined?(Foo::Bar) #{operator} defined?(Foo::Bar::Baz)
+defined?(Foo::Bar) && defined?(Foo::Bar::Baz)
 '''
 corrected = '''
 defined?(Foo::Bar::Baz)
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 0
-column_end = 54
+column_end = 45
 message = "Combine nested `defined?` calls."
 
 [[tests]]
-name = "rubocop_cop_style_combinabledefined_registers_an_offense_for_three_defined_s_with_same_nesting"
+name = "rubocopcopstylecombinabledefined_joined_by__registers_an_offense_for_three_defineds_with_same_nesting"
 source = '''
-defined?(Foo) #{operator} defined?(Foo::Bar) #{operator} defined?(Foo::Bar::Baz)
+defined?(Foo) && defined?(Foo::Bar) && defined?(Foo::Bar::Baz)
 '''
 corrected = '''
 defined?(Foo::Bar::Baz)
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 0
-column_end = 80
+column_end = 35
 message = "Combine nested `defined?` calls."
 
 [[tests.offenses]]
 line = 1
 column_start = 0
-column_end = 80
+column_end = 62
 message = "Combine nested `defined?` calls."
 
 [[tests]]
-name = "rubocop_cop_style_combinabledefined_registers_an_offense_for_three_defined_s_with_the_same_module_ancestor"
+name = "rubocopcopstylecombinabledefined_joined_by__registers_an_offense_for_three_defineds_with_the_same_module_ancestor"
 source = '''
-defined?(Foo) #{operator} defined?(Foo::Bar) #{operator} defined?(Foo::Baz)
+defined?(Foo) && defined?(Foo::Bar) && defined?(Foo::Baz)
 '''
 corrected = '''
-defined?(Foo::Bar) #{operator} defined?(Foo::Baz)
+defined?(Foo::Bar) && defined?(Foo::Baz)
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 0
-column_end = 75
+column_end = 35
 message = "Combine nested `defined?` calls."
 
 [[tests.offenses]]
 line = 1
 column_start = 0
-column_end = 75
+column_end = 57
 message = "Combine nested `defined?` calls."
 
 [[tests]]
-name = "rubocop_cop_style_combinabledefined_does_not_register_an_offense_for_two_defined_s_with_same_namespace_but_different_nesting"
+name = "rubocopcopstylecombinabledefined_joined_by__does_not_register_an_offense_for_two_defineds_with_same_namespace_but_different_nesting"
 source = '''
-defined?(Foo::Bar) #{operator} defined?(Foo::Baz)
+defined?(Foo::Bar) && defined?(Foo::Baz)
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_combinabledefined_does_not_register_an_offense_for_two_defined_s_with_negation"
+name = "rubocopcopstylecombinabledefined_joined_by__does_not_register_an_offense_for_two_defineds_with_negation"
 source = '''
-defined?(Foo) #{operator} !defined?(Foo::Bar)
+defined?(Foo) && !defined?(Foo::Bar)
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_combinabledefined_does_not_register_an_offense_for_two_defined_with_different_cbase_s"
+name = "rubocopcopstylecombinabledefined_joined_by__does_not_register_an_offense_for_two_defined_with_different_cbases"
 source = '''
-defined?(::Foo) #{operator} defined?(Foo::Bar)
+defined?(::Foo) && defined?(Foo::Bar)
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_combinabledefined_does_not_register_an_offense_when_skipping_a_nesting_level"
+name = "rubocopcopstylecombinabledefined_joined_by__does_not_register_an_offense_when_skipping_a_nesting_level"
 source = '''
-defined?(Foo) #{operator} defined?(Foo::Bar::Baz)
+defined?(Foo) && defined?(Foo::Bar::Baz)
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_combinabledefined_registers_an_offense_when_the_namespace_is_not_a_constant"
+name = "rubocopcopstylecombinabledefined_joined_by__registers_an_offense_when_the_namespace_is_not_a_constant"
 source = '''
-defined?(foo) #{operator} defined?(foo::Bar)
+defined?(foo) && defined?(foo::Bar)
 '''
 corrected = '''
 defined?(foo::Bar)
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 0
-column_end = 44
+column_end = 35
 message = "Combine nested `defined?` calls."
 
 [[tests]]
-name = "rubocop_cop_style_combinabledefined_registers_an_offense_for_method_chain_with_dots"
+name = "rubocopcopstylecombinabledefined_joined_by__registers_an_offense_for_method_chain_with_dots"
 source = '''
-defined?(foo) #{operator} defined?(foo.bar)
+defined?(foo) && defined?(foo.bar)
 '''
 corrected = '''
 defined?(foo.bar)
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 0
-column_end = 43
+column_end = 34
 message = "Combine nested `defined?` calls."
 
 [[tests]]
-name = "rubocop_cop_style_combinabledefined_registers_an_offense_for_method_chain_with"
+name = "rubocopcopstylecombinabledefined_joined_by__registers_an_offense_for_method_chain_with_"
 source = '''
-defined?(foo) #{operator} defined?(foo::bar)
+defined?(foo) && defined?(foo::bar)
 '''
 corrected = '''
 defined?(foo::bar)
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 0
-column_end = 44
+column_end = 35
 message = "Combine nested `defined?` calls."
 
 [[tests]]
-name = "rubocop_cop_style_combinabledefined_registers_an_offense_for_a_method_chain_followed_by_constant_nesting"
+name = "rubocopcopstylecombinabledefined_joined_by__registers_an_offense_for_a_method_chain_followed_by_constant_nesting"
 source = '''
-defined?(foo) #{operator} defined?(foo.bar) #{operator} defined?(foo.bar::BAZ)
+defined?(foo) && defined?(foo.bar) && defined?(foo.bar::BAZ)
 '''
 corrected = '''
 defined?(foo.bar::BAZ)
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
 column_start = 0
-column_end = 78
+column_end = 34
 message = "Combine nested `defined?` calls."
 
 [[tests.offenses]]
 line = 1
 column_start = 0
-column_end = 78
+column_end = 60
 message = "Combine nested `defined?` calls."
 
 [[tests]]
-name = "rubocop_cop_style_combinabledefined_does_not_register_an_offense_when_there_is_another_term_between_defined_s"
+name = "rubocopcopstylecombinabledefined_joined_by__does_not_register_an_offense_when_there_is_another_term_between_defineds"
 source = '''
-foo #{operator} defined?(Foo) #{operator} bar #{operator} defined?(Foo::Bar)
+foo && defined?(Foo) && bar && defined?(Foo::Bar)
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_combinabledefined_mixed_operators_registers_an_offense_and_corrects"
+name = "rubocopcopstylecombinabledefined_joined_by_and_does_not_register_an_offense_for_two_separate_defineds"
+source = '''
+defined?(Foo) and defined?(Bar)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylecombinabledefined_joined_by_and_does_not_register_an_offense_for_two_identical_defineds"
+source = '''
+defined?(Foo) and defined?(Foo)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylecombinabledefined_joined_by_and_does_not_register_an_offense_for_the_same_constant_with_different_cbases"
+source = '''
+defined?(Foo) and defined?(::Foo)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylecombinabledefined_joined_by_and_registers_an_offense_for_two_defineds_with_same_nesting"
+source = '''
+defined?(Foo) and defined?(Foo::Bar)
+'''
+corrected = '''
+defined?(Foo::Bar)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 36
+message = "Combine nested `defined?` calls."
+
+[[tests]]
+name = "rubocopcopstylecombinabledefined_joined_by_and_registers_an_offense_for_two_defineds_with_the_same_nesting_in_reverse_order"
+source = '''
+defined?(Foo::Bar) and defined?(Foo)
+'''
+corrected = '''
+defined?(Foo::Bar)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 36
+message = "Combine nested `defined?` calls."
+
+[[tests]]
+name = "rubocopcopstylecombinabledefined_joined_by_and_registers_an_offense_for_two_defineds_with_the_same_nesting_and_cbase"
+source = '''
+defined?(::Foo) and defined?(::Foo::Bar)
+'''
+corrected = '''
+defined?(::Foo::Bar)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 40
+message = "Combine nested `defined?` calls."
+
+[[tests]]
+name = "rubocopcopstylecombinabledefined_joined_by_and_registers_an_offense_for_two_defineds_with_the_same_deep_nesting"
+source = '''
+defined?(Foo::Bar) and defined?(Foo::Bar::Baz)
+'''
+corrected = '''
+defined?(Foo::Bar::Baz)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 46
+message = "Combine nested `defined?` calls."
+
+[[tests]]
+name = "rubocopcopstylecombinabledefined_joined_by_and_registers_an_offense_for_three_defineds_with_same_nesting"
+source = '''
+defined?(Foo) and defined?(Foo::Bar) and defined?(Foo::Bar::Baz)
+'''
+corrected = '''
+defined?(Foo::Bar::Baz)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 36
+message = "Combine nested `defined?` calls."
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 64
+message = "Combine nested `defined?` calls."
+
+[[tests]]
+name = "rubocopcopstylecombinabledefined_joined_by_and_registers_an_offense_for_three_defineds_with_the_same_module_ancestor"
+source = '''
+defined?(Foo) and defined?(Foo::Bar) and defined?(Foo::Baz)
+'''
+corrected = '''
+defined?(Foo::Bar) and defined?(Foo::Baz)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 36
+message = "Combine nested `defined?` calls."
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 59
+message = "Combine nested `defined?` calls."
+
+[[tests]]
+name = "rubocopcopstylecombinabledefined_joined_by_and_does_not_register_an_offense_for_two_defineds_with_same_namespace_but_different_nesting"
+source = '''
+defined?(Foo::Bar) and defined?(Foo::Baz)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylecombinabledefined_joined_by_and_does_not_register_an_offense_for_two_defineds_with_negation"
+source = '''
+defined?(Foo) and !defined?(Foo::Bar)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylecombinabledefined_joined_by_and_does_not_register_an_offense_for_two_defined_with_different_cbases"
+source = '''
+defined?(::Foo) and defined?(Foo::Bar)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylecombinabledefined_joined_by_and_does_not_register_an_offense_when_skipping_a_nesting_level"
+source = '''
+defined?(Foo) and defined?(Foo::Bar::Baz)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylecombinabledefined_joined_by_and_registers_an_offense_when_the_namespace_is_not_a_constant"
+source = '''
+defined?(foo) and defined?(foo::Bar)
+'''
+corrected = '''
+defined?(foo::Bar)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 36
+message = "Combine nested `defined?` calls."
+
+[[tests]]
+name = "rubocopcopstylecombinabledefined_joined_by_and_registers_an_offense_for_method_chain_with_dots"
+source = '''
+defined?(foo) and defined?(foo.bar)
+'''
+corrected = '''
+defined?(foo.bar)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 35
+message = "Combine nested `defined?` calls."
+
+[[tests]]
+name = "rubocopcopstylecombinabledefined_joined_by_and_registers_an_offense_for_method_chain_with_"
+source = '''
+defined?(foo) and defined?(foo::bar)
+'''
+corrected = '''
+defined?(foo::bar)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 36
+message = "Combine nested `defined?` calls."
+
+[[tests]]
+name = "rubocopcopstylecombinabledefined_joined_by_and_registers_an_offense_for_a_method_chain_followed_by_constant_nesting"
+source = '''
+defined?(foo) and defined?(foo.bar) and defined?(foo.bar::BAZ)
+'''
+corrected = '''
+defined?(foo.bar::BAZ)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 35
+message = "Combine nested `defined?` calls."
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 62
+message = "Combine nested `defined?` calls."
+
+[[tests]]
+name = "rubocopcopstylecombinabledefined_joined_by_and_does_not_register_an_offense_when_there_is_another_term_between_defineds"
+source = '''
+foo and defined?(Foo) and bar and defined?(Foo::Bar)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylecombinabledefined_mixed_operators_registers_an_offense_and_corrects"
 source = '''
 defined?(Foo) && defined?(Foo::Bar) and defined?(Foo::Bar::Baz)
 '''
@@ -292,7 +480,7 @@ column_end = 63
 message = "Combine nested `defined?` calls."
 
 [[tests]]
-name = "rubocop_cop_style_combinabledefined_mixed_operators_registers_an_offense_and_corrects_when_an_operator_is_retained"
+name = "rubocopcopstylecombinabledefined_mixed_operators_registers_an_offense_and_corrects_when_an_operator_is_retained"
 source = '''
 defined?(Foo) && defined?(Foo::Bar) and defined?(Foo::Baz)
 '''

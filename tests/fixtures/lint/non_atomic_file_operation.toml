@@ -4,7 +4,7 @@ severity = "warning"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_lint_nonatomicfileoperation_registers_an_offense_when_use_filetest_exist_before_creating_file"
+name = "rubocopcoplintnonatomicfileoperation_registers_an_offense_when_use_filetestexist_before_creating_file"
 source = '''
 unless FileTest.exist?(path)
   FileUtils.mkdir(path)
@@ -12,10 +12,8 @@ end
 '''
 corrected = '''
 
-#{trailing_whitespace}#{trailing_whitespace}FileUtils.mkdir_p(path)
+  FileUtils.mkdir_p(path)
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -30,18 +28,16 @@ column_end = 23
 message = "Use atomic file operation method `FileUtils.mkdir_p`."
 
 [[tests]]
-name = "rubocop_cop_lint_nonatomicfileoperation_registers_an_offense_when_use_filetest_exist_before_force_creating_file"
+name = "rubocopcoplintnonatomicfileoperation_registers_an_offense_when_use_filetestexist_before_force_creating_file"
 source = '''
 unless FileTest.exist?(path)
-  FileUtils.#{make_method}(path)
+  FileUtils.makedirs(path)
 end
 '''
 corrected = '''
 
-#{trailing_whitespace}#{trailing_whitespace}FileUtils.#{make_method}(path)
+  FileUtils.makedirs(path)
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -50,18 +46,52 @@ column_end = 28
 message = "Remove unnecessary existence check `FileTest.exist?`."
 
 [[tests]]
-name = "rubocop_cop_lint_nonatomicfileoperation_registers_an_offense_when_use_filetest_exist_before_remove_file"
+name = "rubocopcoplintnonatomicfileoperation_registers_an_offense_when_use_filetestexist_before_force_creating_file_2"
 source = '''
-if FileTest.exist?(path)
-  FileUtils.#{remove_method}(path)
+unless FileTest.exist?(path)
+  FileUtils.mkdir_p(path)
 end
 '''
 corrected = '''
 
-#{trailing_whitespace}#{trailing_whitespace}FileUtils.rm_f(path)
+  FileUtils.mkdir_p(path)
 '''
-interpolated = true
-verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 28
+message = "Remove unnecessary existence check `FileTest.exist?`."
+
+[[tests]]
+name = "rubocopcoplintnonatomicfileoperation_registers_an_offense_when_use_filetestexist_before_force_creating_file_3"
+source = '''
+unless FileTest.exist?(path)
+  FileUtils.mkpath(path)
+end
+'''
+corrected = '''
+
+  FileUtils.mkpath(path)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 28
+message = "Remove unnecessary existence check `FileTest.exist?`."
+
+[[tests]]
+name = "rubocopcoplintnonatomicfileoperation_registers_an_offense_when_use_filetestexist_before_remove_file"
+source = '''
+if FileTest.exist?(path)
+  FileUtils.remove(path)
+end
+'''
+corrected = '''
+
+  FileUtils.rm_f(path)
+'''
 
 [[tests.offenses]]
 line = 1
@@ -72,22 +102,20 @@ message = "Remove unnecessary existence check `FileTest.exist?`."
 [[tests.offenses]]
 line = 2
 column_start = 2
-column_end = 34
+column_end = 24
 message = "Use atomic file operation method `FileUtils.rm_f`."
 
 [[tests]]
-name = "rubocop_cop_lint_nonatomicfileoperation_registers_an_offense_when_use_filetest_exist_before_recursive_remove_file"
+name = "rubocopcoplintnonatomicfileoperation_registers_an_offense_when_use_filetestexist_before_remove_file_2"
 source = '''
 if FileTest.exist?(path)
-  FileUtils.#{remove_method}(path)
+  FileUtils.delete(path)
 end
 '''
 corrected = '''
 
-#{trailing_whitespace}#{trailing_whitespace}FileUtils.rm_rf(path)
+  FileUtils.rm_f(path)
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -98,22 +126,212 @@ message = "Remove unnecessary existence check `FileTest.exist?`."
 [[tests.offenses]]
 line = 2
 column_start = 2
-column_end = 34
-message = "Use atomic file operation method `FileUtils.rm_rf`."
+column_end = 24
+message = "Use atomic file operation method `FileUtils.rm_f`."
 
 [[tests]]
-name = "rubocop_cop_lint_nonatomicfileoperation_registers_an_offense_when_use_filetest_exist_before_force_remove_file"
+name = "rubocopcoplintnonatomicfileoperation_registers_an_offense_when_use_filetestexist_before_remove_file_3"
 source = '''
 if FileTest.exist?(path)
-  FileUtils.#{remove_method}(path)
+  FileUtils.unlink(path)
 end
 '''
 corrected = '''
 
-#{trailing_whitespace}#{trailing_whitespace}FileUtils.#{remove_method}(path)
+  FileUtils.rm_f(path)
 '''
-interpolated = true
-verified = false
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 24
+message = "Remove unnecessary existence check `FileTest.exist?`."
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 24
+message = "Use atomic file operation method `FileUtils.rm_f`."
+
+[[tests]]
+name = "rubocopcoplintnonatomicfileoperation_registers_an_offense_when_use_filetestexist_before_remove_file_4"
+source = '''
+if FileTest.exist?(path)
+  FileUtils.remove_file(path)
+end
+'''
+corrected = '''
+
+  FileUtils.rm_f(path)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 24
+message = "Remove unnecessary existence check `FileTest.exist?`."
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 29
+message = "Use atomic file operation method `FileUtils.rm_f`."
+
+[[tests]]
+name = "rubocopcoplintnonatomicfileoperation_registers_an_offense_when_use_filetestexist_before_remove_file_5"
+source = '''
+if FileTest.exist?(path)
+  FileUtils.rm(path)
+end
+'''
+corrected = '''
+
+  FileUtils.rm_f(path)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 24
+message = "Remove unnecessary existence check `FileTest.exist?`."
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 20
+message = "Use atomic file operation method `FileUtils.rm_f`."
+
+[[tests]]
+name = "rubocopcoplintnonatomicfileoperation_registers_an_offense_when_use_filetestexist_before_remove_file_6"
+source = '''
+if FileTest.exist?(path)
+  FileUtils.rmdir(path)
+end
+'''
+corrected = '''
+
+  FileUtils.rm_f(path)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 24
+message = "Remove unnecessary existence check `FileTest.exist?`."
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 23
+message = "Use atomic file operation method `FileUtils.rm_f`."
+
+[[tests]]
+name = "rubocopcoplintnonatomicfileoperation_registers_an_offense_when_use_filetestexist_before_remove_file_7"
+source = '''
+if FileTest.exist?(path)
+  FileUtils.safe_unlink(path)
+end
+'''
+corrected = '''
+
+  FileUtils.rm_f(path)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 24
+message = "Remove unnecessary existence check `FileTest.exist?`."
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 29
+message = "Use atomic file operation method `FileUtils.rm_f`."
+
+[[tests]]
+name = "rubocopcoplintnonatomicfileoperation_registers_an_offense_when_use_filetestexist_before_recursive_remove_file"
+source = '''
+if FileTest.exist?(path)
+  FileUtils.remove_dir(path)
+end
+'''
+corrected = '''
+
+  FileUtils.rm_rf(path)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 24
+message = "Remove unnecessary existence check `FileTest.exist?`."
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 28
+message = "Use atomic file operation method `FileUtils.rm_rf`."
+
+[[tests]]
+name = "rubocopcoplintnonatomicfileoperation_registers_an_offense_when_use_filetestexist_before_recursive_remove_file_2"
+source = '''
+if FileTest.exist?(path)
+  FileUtils.remove_entry(path)
+end
+'''
+corrected = '''
+
+  FileUtils.rm_rf(path)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 24
+message = "Remove unnecessary existence check `FileTest.exist?`."
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 30
+message = "Use atomic file operation method `FileUtils.rm_rf`."
+
+[[tests]]
+name = "rubocopcoplintnonatomicfileoperation_registers_an_offense_when_use_filetestexist_before_recursive_remove_file_3"
+source = '''
+if FileTest.exist?(path)
+  FileUtils.remove_entry_secure(path)
+end
+'''
+corrected = '''
+
+  FileUtils.rm_rf(path)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 24
+message = "Remove unnecessary existence check `FileTest.exist?`."
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 37
+message = "Use atomic file operation method `FileUtils.rm_rf`."
+
+[[tests]]
+name = "rubocopcoplintnonatomicfileoperation_registers_an_offense_when_use_filetestexist_before_force_remove_file"
+source = '''
+if FileTest.exist?(path)
+  FileUtils.rm_f(path)
+end
+'''
+corrected = '''
+
+  FileUtils.rm_f(path)
+'''
 
 [[tests.offenses]]
 line = 1
@@ -122,18 +340,43 @@ column_end = 24
 message = "Remove unnecessary existence check `FileTest.exist?`."
 
 [[tests]]
-name = "rubocop_cop_lint_nonatomicfileoperation_does_not_register_an_offense_when_use_filetest_exist_before_remove_recursive_file"
+name = "rubocopcoplintnonatomicfileoperation_registers_an_offense_when_use_filetestexist_before_force_remove_file_2"
 source = '''
 if FileTest.exist?(path)
-  FileUtils.#{remove_method}(path)
+  FileUtils.rm_rf(path)
 end
 '''
-interpolated = true
-verified = false
+corrected = '''
+
+  FileUtils.rm_rf(path)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 24
+message = "Remove unnecessary existence check `FileTest.exist?`."
+
+[[tests]]
+name = "rubocopcoplintnonatomicfileoperation_does_not_register_an_offense_when_use_filetestexist_before_remove_recursive_file"
+source = '''
+if FileTest.exist?(path)
+  FileUtils.rm_r(path)
+end
+'''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_nonatomicfileoperation_registers_an_offense_when_use_filetest_exist_before_creating_file_with_an_option_force_true"
+name = "rubocopcoplintnonatomicfileoperation_does_not_register_an_offense_when_use_filetestexist_before_remove_recursive_file_2"
+source = '''
+if FileTest.exist?(path)
+  FileUtils.rmtree(path)
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintnonatomicfileoperation_registers_an_offense_when_use_filetestexist_before_creating_file_with_an_option_force_true"
 source = '''
 unless FileTest.exists?(path)
   FileUtils.makedirs(path, force: true)
@@ -141,10 +384,8 @@ end
 '''
 corrected = '''
 
-#{trailing_whitespace}#{trailing_whitespace}FileUtils.makedirs(path, force: true)
+  FileUtils.makedirs(path, force: true)
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -153,7 +394,7 @@ column_end = 29
 message = "Remove unnecessary existence check `FileTest.exists?`."
 
 [[tests]]
-name = "rubocop_cop_lint_nonatomicfileoperation_registers_an_offense_when_using_filetest_exist_as_a_condition_for_elsif"
+name = "rubocopcoplintnonatomicfileoperation_registers_an_offense_when_using_filetestexist_as_a_condition_for_elsif"
 source = '''
 if condition
   do_something
@@ -169,7 +410,7 @@ column_end = 27
 message = "Remove unnecessary existence check `FileTest.exist?`."
 
 [[tests]]
-name = "rubocop_cop_lint_nonatomicfileoperation_does_not_register_an_offense_when_use_filetest_exist_before_creating_file_with_an_option_force_false"
+name = "rubocopcoplintnonatomicfileoperation_does_not_register_an_offense_when_use_filetestexist_before_creating_file_with_an_option_force_false"
 source = '''
 unless FileTest.exists?(path)
   FileUtils.makedirs(path, force: false)
@@ -178,7 +419,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_nonatomicfileoperation_registers_an_offense_when_use_filetest_exist_before_creating_file_with_an_option_not_force"
+name = "rubocopcoplintnonatomicfileoperation_registers_an_offense_when_use_filetestexist_before_creating_file_with_an_option_not_force"
 source = '''
 unless FileTest.exists?(path)
   FileUtils.makedirs(path, verbose: true)
@@ -186,10 +427,8 @@ end
 '''
 corrected = '''
 
-#{trailing_whitespace}#{trailing_whitespace}FileUtils.makedirs(path, verbose: true)
+  FileUtils.makedirs(path, verbose: true)
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -198,7 +437,7 @@ column_end = 29
 message = "Remove unnecessary existence check `FileTest.exists?`."
 
 [[tests]]
-name = "rubocop_cop_lint_nonatomicfileoperation_registers_an_offense_when_use_filetest_exists_before_creating_file"
+name = "rubocopcoplintnonatomicfileoperation_registers_an_offense_when_use_filetestexists_before_creating_file"
 source = '''
 unless FileTest.exists?(path)
   FileUtils.makedirs(path)
@@ -206,10 +445,8 @@ end
 '''
 corrected = '''
 
-#{trailing_whitespace}#{trailing_whitespace}FileUtils.makedirs(path)
+  FileUtils.makedirs(path)
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -218,7 +455,7 @@ column_end = 29
 message = "Remove unnecessary existence check `FileTest.exists?`."
 
 [[tests]]
-name = "rubocop_cop_lint_nonatomicfileoperation_registers_an_offense_when_use_filetest_exist_with_negated_if_before_creating_file"
+name = "rubocopcoplintnonatomicfileoperation_registers_an_offense_when_use_filetestexist_with_negated_if_before_creating_file"
 source = '''
 if !FileTest.exist?(path)
   FileUtils.makedirs(path)
@@ -226,10 +463,8 @@ end
 '''
 corrected = '''
 
-#{trailing_whitespace}#{trailing_whitespace}FileUtils.makedirs(path)
+  FileUtils.makedirs(path)
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -238,7 +473,7 @@ column_end = 25
 message = "Remove unnecessary existence check `FileTest.exist?`."
 
 [[tests]]
-name = "rubocop_cop_lint_nonatomicfileoperation_registers_an_offense_when_use_file_existence_checks_unless_by_postfix_before_creating_file"
+name = "rubocopcoplintnonatomicfileoperation_registers_an_offense_when_use_file_existence_checks_unless_by_postfix_before_creating_file"
 source = '''
 FileUtils.mkdir(path) unless FileTest.exist?(path)
 '''
@@ -259,7 +494,7 @@ column_end = 21
 message = "Use atomic file operation method `FileUtils.mkdir_p`."
 
 [[tests]]
-name = "rubocop_cop_lint_nonatomicfileoperation_registers_an_offense_when_use_file_existence_checks_unless_by_postfix_before_creating_file_while_dir_mkdir_has_2_arguments"
+name = "rubocopcoplintnonatomicfileoperation_registers_an_offense_when_use_file_existence_checks_unless_by_postfix_before_creating_file_while_dirmkdir_has_2_arguments"
 source = '''
 Dir.mkdir(path, 0o0755) unless Dir.exist?(path)
 '''
@@ -280,7 +515,7 @@ column_end = 23
 message = "Use atomic file operation method `FileUtils.mkdir_p`."
 
 [[tests]]
-name = "rubocop_cop_lint_nonatomicfileoperation_registers_an_offense_when_use_file_existence_checks_unless_by_postfix_before_creating_file_while_dir_mkdir_has_an_argument"
+name = "rubocopcoplintnonatomicfileoperation_registers_an_offense_when_use_file_existence_checks_unless_by_postfix_before_creating_file_while_dirmkdir_has_an_argument"
 source = '''
 Dir.mkdir(path) unless Dir.exist?(path)
 '''
@@ -301,7 +536,7 @@ column_end = 15
 message = "Use atomic file operation method `FileUtils.mkdir_p`."
 
 [[tests]]
-name = "rubocop_cop_lint_nonatomicfileoperation_registers_an_offense_when_use_file_existence_checks_if_by_postfix_before_removing_file"
+name = "rubocopcoplintnonatomicfileoperation_registers_an_offense_when_use_file_existence_checks_if_by_postfix_before_removing_file"
 source = '''
 FileUtils.remove(path) if FileTest.exist?(path)
 '''
@@ -322,7 +557,7 @@ column_end = 22
 message = "Use atomic file operation method `FileUtils.rm_f`."
 
 [[tests]]
-name = "rubocop_cop_lint_nonatomicfileoperation_registers_an_offense_when_use_file_existence_checks_line_break_unless_by_postfix_before_creating_file"
+name = "rubocopcoplintnonatomicfileoperation_registers_an_offense_when_use_file_existence_checks_line_break_unless_by_postfix_before_creating_file"
 source = '''
 FileUtils.mkdir(path) unless
                       FileTest.exist?(path)
@@ -344,7 +579,7 @@ column_end = 21
 message = "Use atomic file operation method `FileUtils.mkdir_p`."
 
 [[tests]]
-name = "rubocop_cop_lint_nonatomicfileoperation_registers_an_offense_when_use_file_existence_checks_line_break_unless_wrapped_the_in_parentheses_by_postfix_before_creating_file"
+name = "rubocopcoplintnonatomicfileoperation_registers_an_offense_when_use_file_existence_checks_line_break_unless_wrapped_the_in_parentheses_by_postfix_before_creating_file"
 source = '''
 FileUtils.mkdir(path) unless (
                       FileTest.exist?(path))
@@ -366,99 +601,21 @@ column_end = 21
 message = "Use atomic file operation method `FileUtils.mkdir_p`."
 
 [[tests]]
-name = "rubocop_cop_lint_nonatomicfileoperation_with_fully_qualified_constant_names_registers_an_offense_when_existence_check_uses_fully_qualified_constant_name"
-source = '''
-if ::FileTest.exist?(path)
-  FileUtils.delete(path)
-end
-'''
-corrected = '''
-
-#{trailing_whitespace}#{trailing_whitespace}FileUtils.rm_f(path)
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 26
-message = "Remove unnecessary existence check `FileTest.exist?`."
-
-[[tests.offenses]]
-line = 2
-column_start = 2
-column_end = 24
-message = "Use atomic file operation method `FileUtils.rm_f`."
-
-[[tests]]
-name = "rubocop_cop_lint_nonatomicfileoperation_with_fully_qualified_constant_names_registers_an_offense_when_file_method_uses_fully_qualified_constant_name"
-source = '''
-if FileTest.exist?(path)
-  ::FileUtils.delete(path)
-end
-'''
-corrected = '''
-
-#{trailing_whitespace}#{trailing_whitespace}::FileUtils.rm_f(path)
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 24
-message = "Remove unnecessary existence check `FileTest.exist?`."
-
-[[tests.offenses]]
-line = 2
-column_start = 2
-column_end = 26
-message = "Use atomic file operation method `FileUtils.rm_f`."
-
-[[tests]]
-name = "rubocop_cop_lint_nonatomicfileoperation_with_fully_qualified_constant_names_registers_an_offense_when_both_methods_use_fully_qualified_constant_name"
-source = '''
-if ::FileTest.exist?(path)
-  ::FileUtils.delete(path)
-end
-'''
-corrected = '''
-
-#{trailing_whitespace}#{trailing_whitespace}::FileUtils.rm_f(path)
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 26
-message = "Remove unnecessary existence check `FileTest.exist?`."
-
-[[tests.offenses]]
-line = 2
-column_start = 2
-column_end = 26
-message = "Use atomic file operation method `FileUtils.rm_f`."
-
-[[tests]]
-name = "rubocop_cop_lint_nonatomicfileoperation_does_not_register_an_offense_when_not_checking_for_the_existence"
+name = "rubocopcoplintnonatomicfileoperation_does_not_register_an_offense_when_not_checking_for_the_existence"
 source = '''
 FileUtils.mkdir_p(path)
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_nonatomicfileoperation_does_not_register_an_offense_when_checking_for_the_existence_of_different_files"
+name = "rubocopcoplintnonatomicfileoperation_does_not_register_an_offense_when_checking_for_the_existence_of_different_files"
 source = '''
 FileUtils.mkdir_p(y) unless FileTest.exist?(path)
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_nonatomicfileoperation_does_not_register_an_offense_when_not_a_method_of_file_operation"
+name = "rubocopcoplintnonatomicfileoperation_does_not_register_an_offense_when_not_a_method_of_file_operation"
 source = '''
 unless FileUtils.exist?(path)
   FileUtils.options_of(:rm)
@@ -470,7 +627,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_nonatomicfileoperation_does_not_register_an_offense_when_not_an_exist_check"
+name = "rubocopcoplintnonatomicfileoperation_does_not_register_an_offense_when_not_an_exist_check"
 source = '''
 unless FileUtils.options_of(:rm)
   FileUtils.mkdir_p(path)
@@ -482,7 +639,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_nonatomicfileoperation_does_not_register_an_offense_when_processing_other_than_file_operations"
+name = "rubocopcoplintnonatomicfileoperation_does_not_register_an_offense_when_processing_other_than_file_operations"
 source = '''
 unless FileTest.exist?(path)
   FileUtils.makedirs(path)
@@ -497,7 +654,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_nonatomicfileoperation_does_not_register_an_offense_when_using_filetest_exist_with_if_condition_that_has_else_branch"
+name = "rubocopcoplintnonatomicfileoperation_does_not_register_an_offense_when_using_filetestexist_with_if_condition_that_has_else_branch"
 source = '''
 if FileTest.exist?(path)
   FileUtils.mkdir(path)
@@ -508,7 +665,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_nonatomicfileoperation_does_not_register_an_offense_when_using_complex_conditional_with"
+name = "rubocopcoplintnonatomicfileoperation_does_not_register_an_offense_when_using_complex_conditional_with_"
 source = '''
 if FileTest.exist?(path) && File.stat(path).socket?
   FileUtils.mkdir(path)
@@ -517,7 +674,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_nonatomicfileoperation_does_not_register_an_offense_when_using_complex_conditional_with"
+name = "rubocopcoplintnonatomicfileoperation_does_not_register_an_offense_when_using_complex_conditional_with__2"
 source = '''
 if FileTest.exist?(path) || condition
   FileUtils.mkdir(path)
@@ -526,15 +683,87 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_nonatomicfileoperation_does_not_register_an_offense_without_explicit_receiver"
+name = "rubocopcoplintnonatomicfileoperation_does_not_register_an_offense_without_explicit_receiver"
 source = '''
 mkdir(path) unless FileTest.exist?(path)
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_nonatomicfileoperation_does_not_register_an_offense_with_non_constant_receiver"
+name = "rubocopcoplintnonatomicfileoperation_does_not_register_an_offense_with_nonconstant_receiver"
 source = '''
 storage[:files].delete(file) unless File.exists?(file)
 '''
 offenses = []
+
+[[tests]]
+name = "rubocopcoplintnonatomicfileoperation_with_fullyqualified_constant_names_registers_an_offense_when_existence_check_uses_fully_qualified_constant_name"
+source = '''
+if ::FileTest.exist?(path)
+  FileUtils.delete(path)
+end
+'''
+corrected = '''
+
+  FileUtils.rm_f(path)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 26
+message = "Remove unnecessary existence check `FileTest.exist?`."
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 24
+message = "Use atomic file operation method `FileUtils.rm_f`."
+
+[[tests]]
+name = "rubocopcoplintnonatomicfileoperation_with_fullyqualified_constant_names_registers_an_offense_when_file_method_uses_fully_qualified_constant_name"
+source = '''
+if FileTest.exist?(path)
+  ::FileUtils.delete(path)
+end
+'''
+corrected = '''
+
+  ::FileUtils.rm_f(path)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 24
+message = "Remove unnecessary existence check `FileTest.exist?`."
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 26
+message = "Use atomic file operation method `FileUtils.rm_f`."
+
+[[tests]]
+name = "rubocopcoplintnonatomicfileoperation_with_fullyqualified_constant_names_registers_an_offense_when_both_methods_use_fully_qualified_constant_name"
+source = '''
+if ::FileTest.exist?(path)
+  ::FileUtils.delete(path)
+end
+'''
+corrected = '''
+
+  ::FileUtils.rm_f(path)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 26
+message = "Remove unnecessary existence check `FileTest.exist?`."
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 26
+message = "Use atomic file operation method `FileUtils.rm_f`."

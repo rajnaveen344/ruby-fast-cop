@@ -1,0 +1,462 @@
+cop = "Style/WhileUntilModifier"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocopcopstylewhileuntilmodifier_behaves_like_condition_modifier_cop_for_a_multiline_while_accepts_it_if_single_line_would_not_fit_on_one_line"
+source = '''
+while aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylewhileuntilmodifier_behaves_like_condition_modifier_cop_for_a_multiline_while_accepts_it_if_single_line_would_not_fit_on_one_line_and_body_last_argument_is_a_hash_type_with_value_omission"
+source = '''
+while aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb(a:)
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylewhileuntilmodifier_behaves_like_condition_modifier_cop_for_a_multiline_while_accepts_it_if_body_spans_more_than_one_line"
+source = '''
+while some_condition
+  do_something
+  do_something_else
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylewhileuntilmodifier_behaves_like_condition_modifier_cop_for_a_multiline_while_corrects_it_if_result_fits_in_one_line"
+source = '''
+while condition
+  do_something
+end
+'''
+corrected = '''
+do_something while condition
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 5
+message = "Favor modifier `while` usage when having a single-line body."
+
+[[tests]]
+name = "rubocopcopstylewhileuntilmodifier_behaves_like_condition_modifier_cop_for_a_multiline_while_accepts_an_empty_body"
+source = '''
+while cond
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylewhileuntilmodifier_behaves_like_condition_modifier_cop_for_a_multiline_while_accepts_it_when_condition_has_local_variable_assignment"
+source = '''
+while (var = something)
+  puts var
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylewhileuntilmodifier_behaves_like_condition_modifier_cop_for_a_multiline_while_corrects_it_when_assignment_is_in_body"
+source = '''
+while true
+  x = 0
+end
+'''
+corrected = '''
+x = 0 while true
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 5
+message = "Favor modifier `while` usage when having a single-line body."
+
+[[tests]]
+name = "rubocopcopstylewhileuntilmodifier_behaves_like_condition_modifier_cop_for_a_multiline_while_doesnt_break_when_used_as_rhs_of_local_var_assignment"
+source = '''
+a = while b
+  1
+end
+'''
+corrected = '''
+a = (1 while b)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 9
+message = "Favor modifier `while` usage when having a single-line body."
+
+[[tests]]
+name = "rubocopcopstylewhileuntilmodifier_behaves_like_condition_modifier_cop_for_a_multiline_while_doesnt_break_when_used_as_rhs_of_instance_var_assignment"
+source = '''
+@a = while b
+  1
+end
+'''
+corrected = '''
+@a = (1 while b)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 10
+message = "Favor modifier `while` usage when having a single-line body."
+
+[[tests]]
+name = "rubocopcopstylewhileuntilmodifier_behaves_like_condition_modifier_cop_for_a_multiline_while_doesnt_break_when_used_as_rhs_of_class_var_assignment"
+source = '''
+@@a = while b
+  1
+end
+'''
+corrected = '''
+@@a = (1 while b)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 11
+message = "Favor modifier `while` usage when having a single-line body."
+
+[[tests]]
+name = "rubocopcopstylewhileuntilmodifier_behaves_like_condition_modifier_cop_for_a_multiline_while_doesnt_break_when_used_as_rhs_of_constant_assignment"
+source = '''
+A = while b
+  1
+end
+'''
+corrected = '''
+A = (1 while b)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 9
+message = "Favor modifier `while` usage when having a single-line body."
+
+[[tests]]
+name = "rubocopcopstylewhileuntilmodifier_behaves_like_condition_modifier_cop_for_a_multiline_while_doesnt_break_when_used_as_rhs_of_binary_arithmetic"
+source = '''
+a + while b
+  1
+end
+'''
+corrected = '''
+a + (1 while b)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 9
+message = "Favor modifier `while` usage when having a single-line body."
+
+[[tests]]
+name = "rubocopcopstylewhileuntilmodifier_behaves_like_condition_modifier_cop_for_a_multiline_while_handles_inline_comments_during_autocorrection"
+source = '''
+while bar # important comment not to be nuked
+  baz
+end
+'''
+corrected = '''
+baz while bar # important comment not to be nuked
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 5
+message = "Favor modifier `while` usage when having a single-line body."
+
+[[tests]]
+name = "rubocopcopstylewhileuntilmodifier_behaves_like_condition_modifier_cop_for_a_multiline_while_handles_oneline_usage"
+source = '''
+while foo; bar; end
+'''
+corrected = '''
+bar while foo
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 5
+message = "Favor modifier `while` usage when having a single-line body."
+
+[[tests]]
+name = "rubocopcopstylewhileuntilmodifier_behaves_like_condition_modifier_cop_for_a_multiline_while_when_layoutlinelength_is_disabled_registers_an_offense_even_for_a_long_modifier_statement"
+source = '''
+while foo
+  "This string would make the line longer than eighty characters if combined with the statement."
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 5
+message = "Favor modifier `while` usage when having a single-line body."
+
+[[tests]]
+name = "rubocopcopstylewhileuntilmodifier_behaves_like_condition_modifier_cop_for_a_multiline_while_accepts_multiline_condition_in_modifier_form_registers_an_offense"
+source = '''
+foo while bar ||
+               baz
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylewhileuntilmodifier_behaves_like_condition_modifier_cop_for_a_multiline_while_when_there_is_a_comment_on_the_first_line_and_some_code_after_the_end_keyword_does_not_register_an_offense"
+source = '''
+[
+  1, while foo # bar
+       baz
+     end, 3
+]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylewhileuntilmodifier_behaves_like_condition_modifier_cop_for_a_multiline_until_accepts_it_if_single_line_would_not_fit_on_one_line"
+source = '''
+until aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylewhileuntilmodifier_behaves_like_condition_modifier_cop_for_a_multiline_until_accepts_it_if_single_line_would_not_fit_on_one_line_and_body_last_argument_is_a_hash_type_with_value_omission"
+source = '''
+until aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb(a:)
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylewhileuntilmodifier_behaves_like_condition_modifier_cop_for_a_multiline_until_accepts_it_if_body_spans_more_than_one_line"
+source = '''
+until some_condition
+  do_something
+  do_something_else
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylewhileuntilmodifier_behaves_like_condition_modifier_cop_for_a_multiline_until_corrects_it_if_result_fits_in_one_line"
+source = '''
+until condition
+  do_something
+end
+'''
+corrected = '''
+do_something until condition
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 5
+message = "Favor modifier `until` usage when having a single-line body."
+
+[[tests]]
+name = "rubocopcopstylewhileuntilmodifier_behaves_like_condition_modifier_cop_for_a_multiline_until_accepts_an_empty_body"
+source = '''
+until cond
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylewhileuntilmodifier_behaves_like_condition_modifier_cop_for_a_multiline_until_accepts_it_when_condition_has_local_variable_assignment"
+source = '''
+until (var = something)
+  puts var
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylewhileuntilmodifier_behaves_like_condition_modifier_cop_for_a_multiline_until_corrects_it_when_assignment_is_in_body"
+source = '''
+until true
+  x = 0
+end
+'''
+corrected = '''
+x = 0 until true
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 5
+message = "Favor modifier `until` usage when having a single-line body."
+
+[[tests]]
+name = "rubocopcopstylewhileuntilmodifier_behaves_like_condition_modifier_cop_for_a_multiline_until_doesnt_break_when_used_as_rhs_of_local_var_assignment"
+source = '''
+a = until b
+  1
+end
+'''
+corrected = '''
+a = (1 until b)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 9
+message = "Favor modifier `until` usage when having a single-line body."
+
+[[tests]]
+name = "rubocopcopstylewhileuntilmodifier_behaves_like_condition_modifier_cop_for_a_multiline_until_doesnt_break_when_used_as_rhs_of_instance_var_assignment"
+source = '''
+@a = until b
+  1
+end
+'''
+corrected = '''
+@a = (1 until b)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 10
+message = "Favor modifier `until` usage when having a single-line body."
+
+[[tests]]
+name = "rubocopcopstylewhileuntilmodifier_behaves_like_condition_modifier_cop_for_a_multiline_until_doesnt_break_when_used_as_rhs_of_class_var_assignment"
+source = '''
+@@a = until b
+  1
+end
+'''
+corrected = '''
+@@a = (1 until b)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 11
+message = "Favor modifier `until` usage when having a single-line body."
+
+[[tests]]
+name = "rubocopcopstylewhileuntilmodifier_behaves_like_condition_modifier_cop_for_a_multiline_until_doesnt_break_when_used_as_rhs_of_constant_assignment"
+source = '''
+A = until b
+  1
+end
+'''
+corrected = '''
+A = (1 until b)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 9
+message = "Favor modifier `until` usage when having a single-line body."
+
+[[tests]]
+name = "rubocopcopstylewhileuntilmodifier_behaves_like_condition_modifier_cop_for_a_multiline_until_doesnt_break_when_used_as_rhs_of_binary_arithmetic"
+source = '''
+a + until b
+  1
+end
+'''
+corrected = '''
+a + (1 until b)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 4
+column_end = 9
+message = "Favor modifier `until` usage when having a single-line body."
+
+[[tests]]
+name = "rubocopcopstylewhileuntilmodifier_behaves_like_condition_modifier_cop_for_a_multiline_until_handles_inline_comments_during_autocorrection"
+source = '''
+until bar # important comment not to be nuked
+  baz
+end
+'''
+corrected = '''
+baz until bar # important comment not to be nuked
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 5
+message = "Favor modifier `until` usage when having a single-line body."
+
+[[tests]]
+name = "rubocopcopstylewhileuntilmodifier_behaves_like_condition_modifier_cop_for_a_multiline_until_handles_oneline_usage"
+source = '''
+until foo; bar; end
+'''
+corrected = '''
+bar until foo
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 5
+message = "Favor modifier `until` usage when having a single-line body."
+
+[[tests]]
+name = "rubocopcopstylewhileuntilmodifier_behaves_like_condition_modifier_cop_for_a_multiline_until_when_layoutlinelength_is_disabled_registers_an_offense_even_for_a_long_modifier_statement"
+source = '''
+until foo
+  "This string would make the line longer than eighty characters if combined with the statement."
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 5
+message = "Favor modifier `until` usage when having a single-line body."
+
+[[tests]]
+name = "rubocopcopstylewhileuntilmodifier_behaves_like_condition_modifier_cop_for_a_multiline_until_accepts_multiline_condition_in_modifier_form_registers_an_offense"
+source = '''
+foo until bar ||
+               baz
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylewhileuntilmodifier_behaves_like_condition_modifier_cop_for_a_multiline_until_when_there_is_a_comment_on_the_first_line_and_some_code_after_the_end_keyword_does_not_register_an_offense"
+source = '''
+[
+  1, until foo # bar
+       baz
+     end, 3
+]
+'''
+offenses = []

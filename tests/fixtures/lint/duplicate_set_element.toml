@@ -4,235 +4,399 @@ severity = "warning"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_lint_duplicatesetelement"
+name = "rubocopcoplintduplicatesetelement_registers_an_offense_when_using_duplicate_symbol_element_in_set"
 source = '''
-#{class_name}[:foo, :bar, :foo]
+Set[:foo, :bar, :foo]
 '''
 corrected = '''
-#{class_name}[:foo, :bar]
+Set[:foo, :bar]
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
-column_start = 0
-column_end = 31
-message = "Remove the duplicate element in #{class_name}."
+column_start = 16
+column_end = 20
+message = "Remove the duplicate element in Set."
 
 [[tests]]
-name = "rubocop_cop_lint_duplicatesetelement"
+name = "rubocopcoplintduplicatesetelement_registers_an_offense_when_using_duplicate_symbol_element_in_set_2"
 source = '''
-::#{class_name}[:foo, :bar, :foo]
+::Set[:foo, :bar, :foo]
 '''
 corrected = '''
-::#{class_name}[:foo, :bar]
+::Set[:foo, :bar]
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
-column_start = 0
-column_end = 33
-message = "Remove the duplicate element in #{class_name}."
+column_start = 18
+column_end = 22
+message = "Remove the duplicate element in Set."
 
 [[tests]]
-name = "rubocop_cop_lint_duplicatesetelement_registers_an_offense_when_using_multiple_duplicate_symbol_element"
+name = "rubocopcoplintduplicatesetelement_registers_an_offense_when_using_multiple_duplicate_symbol_element"
 source = '''
-#{class_name}[:foo, :bar, :foo, :baz, :baz]
+Set[:foo, :bar, :foo, :baz, :baz]
 '''
 corrected = '''
-#{class_name}[:foo, :bar, :baz]
+Set[:foo, :bar, :baz]
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
-column_start = 0
-column_end = 43
-message = "Remove the duplicate element in #{class_name}."
+column_start = 16
+column_end = 20
+message = "Remove the duplicate element in Set."
 
 [[tests.offenses]]
 line = 1
-column_start = 0
-column_end = 43
-message = "Remove the duplicate element in #{class_name}."
+column_start = 28
+column_end = 32
+message = "Remove the duplicate element in Set."
 
 [[tests]]
-name = "rubocop_cop_lint_duplicatesetelement_registers_an_offense_when_using_duplicate_lvar_element"
+name = "rubocopcoplintduplicatesetelement_registers_an_offense_when_using_duplicate_lvar_element"
 source = '''
 foo = do_foo
 bar = do_bar
 
-#{class_name}[foo, bar, foo]
+Set[foo, bar, foo]
 '''
 corrected = '''
 foo = do_foo
 bar = do_bar
 
-#{class_name}[foo, bar]
+Set[foo, bar]
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 4
-column_start = 0
-column_end = 28
-message = "Remove the duplicate element in #{class_name}."
+column_start = 14
+column_end = 17
+message = "Remove the duplicate element in Set."
 
 [[tests]]
-name = "rubocop_cop_lint_duplicatesetelement_registers_an_offense_when_using_duplicate_ivar_element"
+name = "rubocopcoplintduplicatesetelement_registers_an_offense_when_using_duplicate_ivar_element"
 source = '''
-#{class_name}[@foo, @bar, @foo]
+Set[@foo, @bar, @foo]
 '''
 corrected = '''
-#{class_name}[@foo, @bar]
+Set[@foo, @bar]
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
-column_start = 0
+column_start = 16
+column_end = 20
+message = "Remove the duplicate element in Set."
+
+[[tests]]
+name = "rubocopcoplintduplicatesetelement_registers_an_offense_when_using_duplicate_constant_element"
+source = '''
+Set[Foo, Bar, Foo]
+'''
+corrected = '''
+Set[Foo, Bar]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 14
+column_end = 17
+message = "Remove the duplicate element in Set."
+
+[[tests]]
+name = "rubocopcoplintduplicatesetelement_does_not_register_an_offense_when_using_duplicate_method_call_element"
+source = '''
+Set[foo, bar, foo]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatesetelement_does_not_register_an_offense_when_using_duplicate_safe_navigation_method_call_element"
+source = '''
+Set[obj&.foo, obj&.bar, obj&.foo]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatesetelement_does_not_register_an_offense_when_using_duplicate_ternary_operator_element"
+source = '''
+Set[rand > 0.5 ? 1 : 2, rand > 0.5 ? 1 : 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatesetelement_registers_an_offense_when_using_duplicate_symbol_element_in_setnew"
+source = '''
+Set.new([:foo, :bar, :foo])
+'''
+corrected = '''
+Set.new([:foo, :bar])
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 21
+column_end = 25
+message = "Remove the duplicate element in Set."
+
+[[tests]]
+name = "rubocopcoplintduplicatesetelement_registers_an_offense_when_using_duplicate_symbol_element_in_setnewi"
+source = '''
+Set.new(%i[foo bar foo])
+'''
+corrected = '''
+Set.new(%i[foo bar])
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 19
+column_end = 22
+message = "Remove the duplicate element in Set."
+
+[[tests]]
+name = "rubocopcoplintduplicatesetelement_registers_an_offense_when_using_duplicate_symbol_element_in_setnew_2"
+source = '''
+::Set.new([:foo, :bar, :foo])
+'''
+corrected = '''
+::Set.new([:foo, :bar])
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 23
+column_end = 27
+message = "Remove the duplicate element in Set."
+
+[[tests]]
+name = "rubocopcoplintduplicatesetelement_does_not_register_an_offense_when_not_using_duplicate_method_call_element_in_set"
+source = '''
+Set[foo, bar]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatesetelement_does_not_register_an_offense_when_not_using_duplicate_symbol_element_in_setnew"
+source = '''
+Set.new([:foo, :bar])
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatesetelement_does_not_register_an_offense_when_using_empty_element_in_set"
+source = '''
+Set[]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatesetelement_does_not_register_an_offense_when_using_one_element_in_set"
+source = '''
+Set[:foo]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatesetelement_registers_an_offense_when_using_duplicate_symbol_element_in_sortedset"
+source = '''
+SortedSet[:foo, :bar, :foo]
+'''
+corrected = '''
+SortedSet[:foo, :bar]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 22
+column_end = 26
+message = "Remove the duplicate element in SortedSet."
+
+[[tests]]
+name = "rubocopcoplintduplicatesetelement_registers_an_offense_when_using_duplicate_symbol_element_in_sortedset_2"
+source = '''
+::SortedSet[:foo, :bar, :foo]
+'''
+corrected = '''
+::SortedSet[:foo, :bar]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 24
+column_end = 28
+message = "Remove the duplicate element in SortedSet."
+
+[[tests]]
+name = "rubocopcoplintduplicatesetelement_registers_an_offense_when_using_multiple_duplicate_symbol_element_2"
+source = '''
+SortedSet[:foo, :bar, :foo, :baz, :baz]
+'''
+corrected = '''
+SortedSet[:foo, :bar, :baz]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 22
+column_end = 26
+message = "Remove the duplicate element in SortedSet."
+
+[[tests.offenses]]
+line = 1
+column_start = 34
+column_end = 38
+message = "Remove the duplicate element in SortedSet."
+
+[[tests]]
+name = "rubocopcoplintduplicatesetelement_registers_an_offense_when_using_duplicate_lvar_element_2"
+source = '''
+foo = do_foo
+bar = do_bar
+
+SortedSet[foo, bar, foo]
+'''
+corrected = '''
+foo = do_foo
+bar = do_bar
+
+SortedSet[foo, bar]
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 20
+column_end = 23
+message = "Remove the duplicate element in SortedSet."
+
+[[tests]]
+name = "rubocopcoplintduplicatesetelement_registers_an_offense_when_using_duplicate_ivar_element_2"
+source = '''
+SortedSet[@foo, @bar, @foo]
+'''
+corrected = '''
+SortedSet[@foo, @bar]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 22
+column_end = 26
+message = "Remove the duplicate element in SortedSet."
+
+[[tests]]
+name = "rubocopcoplintduplicatesetelement_registers_an_offense_when_using_duplicate_constant_element_2"
+source = '''
+SortedSet[Foo, Bar, Foo]
+'''
+corrected = '''
+SortedSet[Foo, Bar]
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 20
+column_end = 23
+message = "Remove the duplicate element in SortedSet."
+
+[[tests]]
+name = "rubocopcoplintduplicatesetelement_does_not_register_an_offense_when_using_duplicate_method_call_element_2"
+source = '''
+SortedSet[foo, bar, foo]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatesetelement_does_not_register_an_offense_when_using_duplicate_safe_navigation_method_call_element_2"
+source = '''
+SortedSet[obj&.foo, obj&.bar, obj&.foo]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatesetelement_does_not_register_an_offense_when_using_duplicate_ternary_operator_element_2"
+source = '''
+SortedSet[rand > 0.5 ? 1 : 2, rand > 0.5 ? 1 : 2]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintduplicatesetelement_registers_an_offense_when_using_duplicate_symbol_element_in_sortedsetnew"
+source = '''
+SortedSet.new([:foo, :bar, :foo])
+'''
+corrected = '''
+SortedSet.new([:foo, :bar])
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 27
 column_end = 31
-message = "Remove the duplicate element in #{class_name}."
+message = "Remove the duplicate element in SortedSet."
 
 [[tests]]
-name = "rubocop_cop_lint_duplicatesetelement_registers_an_offense_when_using_duplicate_constant_element"
+name = "rubocopcoplintduplicatesetelement_registers_an_offense_when_using_duplicate_symbol_element_in_sortedsetnewi"
 source = '''
-#{class_name}[Foo, Bar, Foo]
+SortedSet.new(%i[foo bar foo])
 '''
 corrected = '''
-#{class_name}[Foo, Bar]
+SortedSet.new(%i[foo bar])
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
-column_start = 0
+column_start = 25
 column_end = 28
-message = "Remove the duplicate element in #{class_name}."
+message = "Remove the duplicate element in SortedSet."
 
 [[tests]]
-name = "rubocop_cop_lint_duplicatesetelement_does_not_register_an_offense_when_using_duplicate_method_call_element"
+name = "rubocopcoplintduplicatesetelement_registers_an_offense_when_using_duplicate_symbol_element_in_sortedsetnew_2"
 source = '''
-#{class_name}[foo, bar, foo]
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatesetelement_does_not_register_an_offense_when_using_duplicate_safe_navigation_method_call_element"
-source = '''
-#{class_name}[obj&.foo, obj&.bar, obj&.foo]
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatesetelement_does_not_register_an_offense_when_using_duplicate_ternary_operator_element"
-source = '''
-#{class_name}[rand > 0.5 ? 1 : 2, rand > 0.5 ? 1 : 2]
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatesetelement"
-source = '''
-#{class_name}.new([:foo, :bar, :foo])
+::SortedSet.new([:foo, :bar, :foo])
 '''
 corrected = '''
-#{class_name}.new([:foo, :bar])
+::SortedSet.new([:foo, :bar])
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
-column_start = 0
-column_end = 37
-message = "Remove the duplicate element in #{class_name}."
+column_start = 29
+column_end = 33
+message = "Remove the duplicate element in SortedSet."
 
 [[tests]]
-name = "rubocop_cop_lint_duplicatesetelement"
+name = "rubocopcoplintduplicatesetelement_does_not_register_an_offense_when_not_using_duplicate_method_call_element_in_sortedset"
 source = '''
-#{class_name}.new(%i[foo bar foo])
+SortedSet[foo, bar]
 '''
-corrected = '''
-#{class_name}.new(%i[foo bar])
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 34
-message = "Remove the duplicate element in #{class_name}."
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatesetelement"
-source = '''
-::#{class_name}.new([:foo, :bar, :foo])
-'''
-corrected = '''
-::#{class_name}.new([:foo, :bar])
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 39
-message = "Remove the duplicate element in #{class_name}."
-
-[[tests]]
-name = "rubocop_cop_lint_duplicatesetelement"
-source = '''
-#{class_name}[foo, bar]
-'''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_duplicatesetelement"
+name = "rubocopcoplintduplicatesetelement_does_not_register_an_offense_when_not_using_duplicate_symbol_element_in_sortedsetnew"
 source = '''
-#{class_name}.new([:foo, :bar])
+SortedSet.new([:foo, :bar])
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_duplicatesetelement"
+name = "rubocopcoplintduplicatesetelement_does_not_register_an_offense_when_using_empty_element_in_sortedset"
 source = '''
-#{class_name}[]
+SortedSet[]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_duplicatesetelement"
+name = "rubocopcoplintduplicatesetelement_does_not_register_an_offense_when_using_one_element_in_sortedset"
 source = '''
-#{class_name}[:foo]
+SortedSet[:foo]
 '''
-interpolated = true
-verified = false
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_duplicatesetelement_registers_an_offense_when_using_duplicate_symbol_element_in_to_set"
+name = "rubocopcoplintduplicatesetelement_registers_an_offense_when_using_duplicate_symbol_element_in_to_set"
 source = '''
 [:foo, :bar, :foo].to_set
 '''
@@ -247,7 +411,7 @@ column_end = 17
 message = "Remove the duplicate element in Set."
 
 [[tests]]
-name = "rubocop_cop_lint_duplicatesetelement_registers_an_offense_when_using_duplicate_symbol_element_in_to_set"
+name = "rubocopcoplintduplicatesetelement_registers_an_offense_when_using_duplicate_symbol_element_in_to_set_2"
 source = '''
 [:foo, :bar, :foo]&.to_set
 '''
@@ -262,14 +426,14 @@ column_end = 17
 message = "Remove the duplicate element in Set."
 
 [[tests]]
-name = "rubocop_cop_lint_duplicatesetelement_does_not_register_an_offense_when_using_duplicate_symbol_element_in_array"
+name = "rubocopcoplintduplicatesetelement_does_not_register_an_offense_when_using_duplicate_symbol_element_in_array"
 source = '''
 Array[:foo, :bar, :foo]
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_lint_duplicatesetelement_does_not_register_an_offense_when_using_duplicate_symbol_element_in_array_new"
+name = "rubocopcoplintduplicatesetelement_does_not_register_an_offense_when_using_duplicate_symbol_element_in_arraynew"
 source = '''
 Array.new([:foo, :bar, :foo])
 '''

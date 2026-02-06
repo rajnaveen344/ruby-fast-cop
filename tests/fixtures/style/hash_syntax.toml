@@ -1,10 +1,25 @@
 cop = "Style/HashSyntax"
 department = "style"
 severity = "convention"
-implemented = false
+implemented = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_registers_an_offense_for_hash_rocket_syntax_when_new_is_possible"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby19_style_registers_an_offense_for_implicit_call_method"
+source = '''
+method(:puts).(:key=>value)
+'''
+corrected = '''
+method(:puts).(key: value)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 21
+message = "Use the new Ruby 1.9 hash syntax."
+
+[[tests]]
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_registers_an_offense_for_hash_rocket_syntax_when_new_is_possible"
 source = '''
 x = { :a => 0, :b   =>  2}
 '''
@@ -24,8 +39,16 @@ column_start = 15
 column_end = 22
 message = "Use the new Ruby 1.9 hash syntax."
 
+[tests.config]
+EnforcedShorthandSyntax = "always"
+EnforcedStyle = "ruby19"
+PreferHashRocketsForNonAlnumEndingSymbols = false
+SupportedShorthandSyntax = ["always", "never"]
+SupportedStyles = ["ruby19", "hash_rockets"]
+UseHashRocketsWithSymbolValues = false
+
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_registers_an_offense_for_mixed_syntax_when_new_is_possible"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_registers_an_offense_for_mixed_syntax_when_new_is_possible"
 source = '''
 x = { :a => 0, b: 1 }
 '''
@@ -39,8 +62,16 @@ column_start = 6
 column_end = 11
 message = "Use the new Ruby 1.9 hash syntax."
 
+[tests.config]
+EnforcedShorthandSyntax = "always"
+EnforcedStyle = "ruby19"
+PreferHashRocketsForNonAlnumEndingSymbols = false
+SupportedShorthandSyntax = ["always", "never"]
+SupportedStyles = ["ruby19", "hash_rockets"]
+UseHashRocketsWithSymbolValues = false
+
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_registers_an_offense_for_hash_rockets_in_method_calls"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_registers_an_offense_for_hash_rockets_in_method_calls"
 source = '''
 func(3, :a => 0)
 '''
@@ -54,37 +85,52 @@ column_start = 8
 column_end = 13
 message = "Use the new Ruby 1.9 hash syntax."
 
+[tests.config]
+EnforcedShorthandSyntax = "always"
+EnforcedStyle = "ruby19"
+PreferHashRocketsForNonAlnumEndingSymbols = false
+SupportedShorthandSyntax = ["always", "never"]
+SupportedStyles = ["ruby19", "hash_rockets"]
+UseHashRocketsWithSymbolValues = false
+
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_accepts_hash_rockets_when_keys_have_different_types"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_accepts_hash_rockets_when_keys_have_different_types"
 source = '''
 x = { :a => 0, "b" => 1 }
 '''
 offenses = []
 
+[tests.config]
+EnforcedShorthandSyntax = "always"
+EnforcedStyle = "ruby19"
+PreferHashRocketsForNonAlnumEndingSymbols = false
+SupportedShorthandSyntax = ["always", "never"]
+SupportedStyles = ["ruby19", "hash_rockets"]
+UseHashRocketsWithSymbolValues = false
+
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_accepts_an_empty_hash"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_accepts_an_empty_hash"
 source = '''
 {}
 '''
 offenses = []
 
-[[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_ruby_2_2_accepts_hash_rockets_when_symbol_keys_have_string_in_them"
-source = '''
-x = { :"string" => 0 }
-'''
-ruby_version = ">= 2.1"
-offenses = []
+[tests.config]
+EnforcedShorthandSyntax = "always"
+EnforcedStyle = "ruby19"
+PreferHashRocketsForNonAlnumEndingSymbols = false
+SupportedShorthandSyntax = ["always", "never"]
+SupportedStyles = ["ruby19", "hash_rockets"]
+UseHashRocketsWithSymbolValues = false
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_registers_an_offense_when_symbol_keys_have_strings_in_them"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_registers_an_offense_when_symbol_keys_have_strings_in_them"
 source = '''
 x = { :"string" => 0 }
 '''
 corrected = '''
 x = { "string": 0 }
 '''
-ruby_version = ">= 2.2"
 
 [[tests.offenses]]
 line = 1
@@ -92,8 +138,16 @@ column_start = 6
 column_end = 18
 message = "Use the new Ruby 1.9 hash syntax."
 
+[tests.config]
+EnforcedShorthandSyntax = "always"
+EnforcedStyle = "ruby19"
+PreferHashRocketsForNonAlnumEndingSymbols = false
+SupportedShorthandSyntax = ["always", "never"]
+SupportedStyles = ["ruby19", "hash_rockets"]
+UseHashRocketsWithSymbolValues = false
+
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_preserves_quotes_during_autocorrection"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_preserves_quotes_during_autocorrection"
 source = '''
 { :'&&' => foo }
 '''
@@ -107,66 +161,46 @@ column_start = 2
 column_end = 10
 message = "Use the new Ruby 1.9 hash syntax."
 
-[[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_if_preferhashrocketsfornonalnumendingsymbols_is_false_registers_an_offense_for_hash_rockets_when_symbols_end_with"
-source = '''
-x = { :a? => 0 }
-'''
-corrected = '''
-x = { a?: 0 }
-'''
-
-[[tests.offenses]]
-line = 1
-column_start = 6
-column_end = 12
-message = "Use the new Ruby 1.9 hash syntax."
+[tests.config]
+EnforcedShorthandSyntax = "always"
+EnforcedStyle = "ruby19"
+PreferHashRocketsForNonAlnumEndingSymbols = false
+SupportedShorthandSyntax = ["always", "never"]
+SupportedStyles = ["ruby19", "hash_rockets"]
+UseHashRocketsWithSymbolValues = false
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_if_preferhashrocketsfornonalnumendingsymbols_is_false_registers_an_offense_for_hash_rockets_when_symbols_end_with"
-source = '''
-x = { :a! => 0 }
-'''
-corrected = '''
-x = { a!: 0 }
-'''
-
-[[tests.offenses]]
-line = 1
-column_start = 6
-column_end = 12
-message = "Use the new Ruby 1.9 hash syntax."
-
-[[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_if_preferhashrocketsfornonalnumendingsymbols_is_true_accepts_hash_rockets_when_symbols_end_with"
-source = '''
-x = { :a? => 0 }
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_if_preferhashrocketsfornonalnumendingsymbols_is_true_accepts_hash_rockets_when_symbols_end_with"
-source = '''
-x = { :a! => 0 }
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_accepts_hash_rockets_when_symbol_keys_end_with"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_accepts_hash_rockets_when_symbol_keys_end_with_"
 source = '''
 x = { :a= => 0 }
 '''
 offenses = []
 
+[tests.config]
+EnforcedShorthandSyntax = "always"
+EnforcedStyle = "ruby19"
+PreferHashRocketsForNonAlnumEndingSymbols = false
+SupportedShorthandSyntax = ["always", "never"]
+SupportedStyles = ["ruby19", "hash_rockets"]
+UseHashRocketsWithSymbolValues = false
+
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_accepts_hash_rockets_when_symbol_characters_are_not_supported"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_accepts_hash_rockets_when_symbol_characters_are_not_supported"
 source = '''
 x = { :[] => 0 }
 '''
 offenses = []
 
+[tests.config]
+EnforcedShorthandSyntax = "always"
+EnforcedStyle = "ruby19"
+PreferHashRocketsForNonAlnumEndingSymbols = false
+SupportedShorthandSyntax = ["always", "never"]
+SupportedStyles = ["ruby19", "hash_rockets"]
+UseHashRocketsWithSymbolValues = false
+
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_registers_an_offense_when_keys_start_with_an_uppercase_letter"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_registers_an_offense_when_keys_start_with_an_uppercase_letter"
 source = '''
 x = { :A => 0 }
 '''
@@ -180,22 +214,46 @@ column_start = 6
 column_end = 11
 message = "Use the new Ruby 1.9 hash syntax."
 
+[tests.config]
+EnforcedShorthandSyntax = "always"
+EnforcedStyle = "ruby19"
+PreferHashRocketsForNonAlnumEndingSymbols = false
+SupportedShorthandSyntax = ["always", "never"]
+SupportedStyles = ["ruby19", "hash_rockets"]
+UseHashRocketsWithSymbolValues = false
+
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_accepts_new_syntax_in_a_hash_literal"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_accepts_new_syntax_in_a_hash_literal"
 source = '''
 x = { a: 0, b: 1 }
 '''
 offenses = []
 
+[tests.config]
+EnforcedShorthandSyntax = "always"
+EnforcedStyle = "ruby19"
+PreferHashRocketsForNonAlnumEndingSymbols = false
+SupportedShorthandSyntax = ["always", "never"]
+SupportedStyles = ["ruby19", "hash_rockets"]
+UseHashRocketsWithSymbolValues = false
+
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_accepts_new_syntax_in_method_calls"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_accepts_new_syntax_in_method_calls"
 source = '''
 func(3, a: 0)
 '''
 offenses = []
 
+[tests.config]
+EnforcedShorthandSyntax = "always"
+EnforcedStyle = "ruby19"
+PreferHashRocketsForNonAlnumEndingSymbols = false
+SupportedShorthandSyntax = ["always", "never"]
+SupportedStyles = ["ruby19", "hash_rockets"]
+UseHashRocketsWithSymbolValues = false
+
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_autocorrects_even_if_it_interferes_with_spacearoundoperators"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_autocorrects_even_if_it_interferes_with_spacearoundoperators"
 source = '''
 { :a=>1, :b=>2 }
 '''
@@ -215,8 +273,16 @@ column_start = 9
 column_end = 13
 message = "Use the new Ruby 1.9 hash syntax."
 
+[tests.config]
+EnforcedShorthandSyntax = "always"
+EnforcedStyle = "ruby19"
+PreferHashRocketsForNonAlnumEndingSymbols = false
+SupportedShorthandSyntax = ["always", "never"]
+SupportedStyles = ["ruby19", "hash_rockets"]
+UseHashRocketsWithSymbolValues = false
+
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_autocorrects_a_missing_space_when_hash_is_used_as_argument"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_autocorrects_a_missing_space_when_hash_is_used_as_argument"
 source = '''
 foo:bar => 1
 '''
@@ -230,38 +296,16 @@ column_start = 3
 column_end = 10
 message = "Use the new Ruby 1.9 hash syntax."
 
-[[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_when_using_a_return_value_uses_return_registers_an_offense_and_corrects_when_not_enclosed_in_parentheses"
-source = '''
-return :key => value
-'''
-corrected = '''
-return {key: value}
-'''
-
-[[tests.offenses]]
-line = 1
-column_start = 7
-column_end = 14
-message = "Use the new Ruby 1.9 hash syntax."
+[tests.config]
+EnforcedShorthandSyntax = "always"
+EnforcedStyle = "ruby19"
+PreferHashRocketsForNonAlnumEndingSymbols = false
+SupportedShorthandSyntax = ["always", "never"]
+SupportedStyles = ["ruby19", "hash_rockets"]
+UseHashRocketsWithSymbolValues = false
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_when_using_a_return_value_uses_return_registers_an_offense_and_corrects_when_enclosed_in_parentheses"
-source = '''
-return {:key => value}
-'''
-corrected = '''
-return {key: value}
-'''
-
-[[tests.offenses]]
-line = 1
-column_start = 8
-column_end = 15
-message = "Use the new Ruby 1.9 hash syntax."
-
-[[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_registers_an_offense_for_implicit_call_method"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_registers_an_offense_for_implicit_call_method"
 source = '''
 method(:puts).(:key => value)
 '''
@@ -275,8 +319,153 @@ column_start = 15
 column_end = 22
 message = "Use the new Ruby 1.9 hash syntax."
 
+[tests.config]
+EnforcedShorthandSyntax = "always"
+EnforcedStyle = "ruby19"
+PreferHashRocketsForNonAlnumEndingSymbols = false
+SupportedShorthandSyntax = ["always", "never"]
+SupportedStyles = ["ruby19", "hash_rockets"]
+UseHashRocketsWithSymbolValues = false
+
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_ruby_3_1_registers_an_offense_and_adds_parentheses_for_if_condition"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_ruby__22_accepts_hash_rockets_when_symbol_keys_have_string_in_them"
+source = '''
+x = { :"string" => 0 }
+'''
+offenses = []
+
+[tests.config]
+EnforcedShorthandSyntax = "always"
+EnforcedStyle = "ruby19"
+PreferHashRocketsForNonAlnumEndingSymbols = false
+SupportedShorthandSyntax = ["always", "never"]
+SupportedStyles = ["ruby19", "hash_rockets"]
+UseHashRocketsWithSymbolValues = false
+
+[[tests]]
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_if_preferhashrocketsfornonalnumendingsymbols_is_false_registers_an_offense_for_hash_rockets_when_symbols_end_with_"
+source = '''
+x = { :a? => 0 }
+'''
+corrected = '''
+x = { a?: 0 }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 12
+message = "Use the new Ruby 1.9 hash syntax."
+
+[tests.config]
+EnforcedShorthandSyntax = "always"
+EnforcedStyle = "ruby19"
+PreferHashRocketsForNonAlnumEndingSymbols = false
+SupportedShorthandSyntax = ["always", "never"]
+SupportedStyles = ["ruby19", "hash_rockets"]
+UseHashRocketsWithSymbolValues = false
+
+[[tests]]
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_if_preferhashrocketsfornonalnumendingsymbols_is_false_registers_an_offense_for_hash_rockets_when_symbols_end_with__2"
+source = '''
+x = { :a! => 0 }
+'''
+corrected = '''
+x = { a!: 0 }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 12
+message = "Use the new Ruby 1.9 hash syntax."
+
+[tests.config]
+EnforcedShorthandSyntax = "always"
+EnforcedStyle = "ruby19"
+PreferHashRocketsForNonAlnumEndingSymbols = false
+SupportedShorthandSyntax = ["always", "never"]
+SupportedStyles = ["ruby19", "hash_rockets"]
+UseHashRocketsWithSymbolValues = false
+
+[[tests]]
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_if_preferhashrocketsfornonalnumendingsymbols_is_true_accepts_hash_rockets_when_symbols_end_with_"
+source = '''
+x = { :a? => 0 }
+'''
+offenses = []
+
+[tests.config]
+EnforcedShorthandSyntax = "always"
+EnforcedStyle = "ruby19"
+PreferHashRocketsForNonAlnumEndingSymbols = true
+SupportedShorthandSyntax = ["always", "never"]
+SupportedStyles = ["ruby19", "hash_rockets"]
+UseHashRocketsWithSymbolValues = false
+
+[[tests]]
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_if_preferhashrocketsfornonalnumendingsymbols_is_true_accepts_hash_rockets_when_symbols_end_with__2"
+source = '''
+x = { :a! => 0 }
+'''
+offenses = []
+
+[tests.config]
+EnforcedShorthandSyntax = "always"
+EnforcedStyle = "ruby19"
+PreferHashRocketsForNonAlnumEndingSymbols = true
+SupportedShorthandSyntax = ["always", "never"]
+SupportedStyles = ["ruby19", "hash_rockets"]
+UseHashRocketsWithSymbolValues = false
+
+[[tests]]
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_when_using_a_return_value_uses_return_registers_an_offense_and_corrects_when_not_enclosed_in_parentheses"
+source = '''
+return :key => value
+'''
+corrected = '''
+return {key: value}
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 14
+message = "Use the new Ruby 1.9 hash syntax."
+
+[tests.config]
+EnforcedShorthandSyntax = "always"
+EnforcedStyle = "ruby19"
+PreferHashRocketsForNonAlnumEndingSymbols = false
+SupportedShorthandSyntax = ["always", "never"]
+SupportedStyles = ["ruby19", "hash_rockets"]
+UseHashRocketsWithSymbolValues = false
+
+[[tests]]
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_when_using_a_return_value_uses_return_registers_an_offense_and_corrects_when_enclosed_in_parentheses"
+source = '''
+return {:key => value}
+'''
+corrected = '''
+return {key: value}
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 15
+message = "Use the new Ruby 1.9 hash syntax."
+
+[tests.config]
+EnforcedShorthandSyntax = "always"
+EnforcedStyle = "ruby19"
+PreferHashRocketsForNonAlnumEndingSymbols = false
+SupportedShorthandSyntax = ["always", "never"]
+SupportedStyles = ["ruby19", "hash_rockets"]
+UseHashRocketsWithSymbolValues = false
+
+[[tests]]
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_ruby__31_registers_an_offense_and_adds_parentheses_for_if_condition"
 source = '''
 if foo bar: bar
   baz
@@ -287,7 +476,6 @@ if foo(bar:)
   baz
 end
 '''
-ruby_version = ">= 3.1"
 
 [[tests.offenses]]
 line = 1
@@ -295,8 +483,16 @@ column_start = 12
 column_end = 15
 message = "Omit the hash value."
 
+[tests.config]
+EnforcedShorthandSyntax = "always"
+EnforcedStyle = "ruby19"
+PreferHashRocketsForNonAlnumEndingSymbols = false
+SupportedShorthandSyntax = ["always", "never"]
+SupportedStyles = ["ruby19", "hash_rockets"]
+UseHashRocketsWithSymbolValues = false
+
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_ruby_3_1_registers_an_offense_and_adds_parentheses_for_unless_condition"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_ruby__31_registers_an_offense_and_adds_parentheses_for_unless_condition"
 source = '''
 unless foo bar: bar
   baz
@@ -307,7 +503,6 @@ unless foo(bar:)
   baz
 end
 '''
-ruby_version = ">= 3.1"
 
 [[tests.offenses]]
 line = 1
@@ -315,8 +510,16 @@ column_start = 16
 column_end = 19
 message = "Omit the hash value."
 
+[tests.config]
+EnforcedShorthandSyntax = "always"
+EnforcedStyle = "ruby19"
+PreferHashRocketsForNonAlnumEndingSymbols = false
+SupportedShorthandSyntax = ["always", "never"]
+SupportedStyles = ["ruby19", "hash_rockets"]
+UseHashRocketsWithSymbolValues = false
+
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_ruby_3_1_registers_an_offense_and_adds_parentheses_for_while_condition"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_ruby__31_registers_an_offense_and_adds_parentheses_for_while_condition"
 source = '''
 while foo bar: bar
   baz
@@ -327,7 +530,6 @@ while foo(bar:)
   baz
 end
 '''
-ruby_version = ">= 3.1"
 
 [[tests.offenses]]
 line = 1
@@ -335,8 +537,16 @@ column_start = 15
 column_end = 18
 message = "Omit the hash value."
 
+[tests.config]
+EnforcedShorthandSyntax = "always"
+EnforcedStyle = "ruby19"
+PreferHashRocketsForNonAlnumEndingSymbols = false
+SupportedShorthandSyntax = ["always", "never"]
+SupportedStyles = ["ruby19", "hash_rockets"]
+UseHashRocketsWithSymbolValues = false
+
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_ruby_3_1_registers_an_offense_and_adds_parentheses_for_until_condition"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_ruby__31_registers_an_offense_and_adds_parentheses_for_until_condition"
 source = '''
 until foo bar: bar
   baz
@@ -347,7 +557,6 @@ until foo(bar:)
   baz
 end
 '''
-ruby_version = ">= 3.1"
 
 [[tests.offenses]]
 line = 1
@@ -355,16 +564,31 @@ column_start = 15
 column_end = 18
 message = "Omit the hash value."
 
+[tests.config]
+EnforcedShorthandSyntax = "always"
+EnforcedStyle = "ruby19"
+PreferHashRocketsForNonAlnumEndingSymbols = false
+SupportedShorthandSyntax = ["always", "never"]
+SupportedStyles = ["ruby19", "hash_rockets"]
+UseHashRocketsWithSymbolValues = false
+
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_ruby_3_1_does_not_register_an_offense_for_modifier_form"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_enabled_ruby__31_does_not_register_an_offense_for_modifier_form"
 source = '''
 baz if foo bar: bar
 '''
-ruby_version = ">= 3.1"
 offenses = []
 
+[tests.config]
+EnforcedShorthandSyntax = "always"
+EnforcedStyle = "ruby19"
+PreferHashRocketsForNonAlnumEndingSymbols = false
+SupportedShorthandSyntax = ["always", "never"]
+SupportedStyles = ["ruby19", "hash_rockets"]
+UseHashRocketsWithSymbolValues = false
+
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_disabled_autocorrects_even_if_there_is_no_space_around"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby19_style_with_spacearoundoperators_disabled_autocorrects_even_if_there_is_no_space_around_"
 source = '''
 { :a=>1, :b=>2 }
 '''
@@ -385,28 +609,28 @@ column_end = 13
 message = "Use the new Ruby 1.9 hash syntax."
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby19_style_configured_to_use_hash_rockets_when_symbol_values_are_found_accepts_ruby19_syntax_when_no_elements_have_symbol_values"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby19_style_configured_to_use_hash_rockets_when_symbol_values_are_found_accepts_ruby19_syntax_when_no_elements_have_symbol_values"
 source = '''
 x = { a: 1, b: 2 }
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby19_style_configured_to_use_hash_rockets_when_symbol_values_are_found_accepts_ruby19_syntax_when_no_elements_have_symbol_values_in_method_calls"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby19_style_configured_to_use_hash_rockets_when_symbol_values_are_found_accepts_ruby19_syntax_when_no_elements_have_symbol_values_in_method_calls"
 source = '''
 func(3, a: 0)
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby19_style_configured_to_use_hash_rockets_when_symbol_values_are_found_accepts_an_empty_hash"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby19_style_configured_to_use_hash_rockets_when_symbol_values_are_found_accepts_an_empty_hash"
 source = '''
 {}
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby19_style_configured_to_use_hash_rockets_when_symbol_values_are_found_registers_an_offense_when_any_element_uses_a_symbol_for_the_value"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby19_style_configured_to_use_hash_rockets_when_symbol_values_are_found_registers_an_offense_when_any_element_uses_a_symbol_for_the_value"
 source = '''
 x = { a: 1, b: :c }
 '''
@@ -427,7 +651,7 @@ column_end = 14
 message = "Use hash rockets syntax."
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby19_style_configured_to_use_hash_rockets_when_symbol_values_are_found_registers_an_offense_when_any_element_has_a_symbol_value_in_method_calls"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby19_style_configured_to_use_hash_rockets_when_symbol_values_are_found_registers_an_offense_when_any_element_has_a_symbol_value_in_method_calls"
 source = '''
 func(3, b: :c)
 '''
@@ -442,7 +666,7 @@ column_end = 10
 message = "Use hash rockets syntax."
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby19_style_configured_to_use_hash_rockets_when_symbol_values_are_found_registers_an_offense_when_using_hash_rockets_and_no_elements_have_a_symbol_value"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby19_style_configured_to_use_hash_rockets_when_symbol_values_are_found_registers_an_offense_when_using_hash_rockets_and_no_elements_have_a_symbol_value"
 source = '''
 x = { :a => 1, :b => 2 }
 '''
@@ -463,7 +687,7 @@ column_end = 20
 message = "Use the new Ruby 1.9 hash syntax."
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby19_style_configured_to_use_hash_rockets_when_symbol_values_are_found_registers_an_offense_for_hashes_with_elements_on_multiple_lines"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby19_style_configured_to_use_hash_rockets_when_symbol_values_are_found_registers_an_offense_for_hashes_with_elements_on_multiple_lines"
 source = '''
 x = { a: :b,
  c: :d }
@@ -486,7 +710,7 @@ column_end = 3
 message = "Use hash rockets syntax."
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby19_style_configured_to_use_hash_rockets_when_symbol_values_are_found_accepts_both_hash_rockets_and_ruby19_syntax_in_the_same_code"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby19_style_configured_to_use_hash_rockets_when_symbol_values_are_found_accepts_both_hash_rockets_and_ruby19_syntax_in_the_same_code"
 source = '''
 rocket_required = { :a => :b }
 ruby19_required = { c: 3 }
@@ -494,7 +718,7 @@ ruby19_required = { c: 3 }
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby19_style_configured_to_use_hash_rockets_when_symbol_values_are_found_autocorrects_to_hash_rockets_when_all_elements_have_symbol_value"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby19_style_configured_to_use_hash_rockets_when_symbol_values_are_found_autocorrects_to_hash_rockets_when_all_elements_have_symbol_value"
 source = '''
 { a: :b, c: :d }
 '''
@@ -515,29 +739,14 @@ column_end = 11
 message = "Use hash rockets syntax."
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby19_style_configured_to_use_hash_rockets_when_symbol_values_are_found_accepts_hash_in_ruby19_style_with_no_symbol_values"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby19_style_configured_to_use_hash_rockets_when_symbol_values_are_found_accepts_hash_in_ruby19_style_with_no_symbol_values"
 source = '''
 { a: 1, b: 2 }
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby19_style_registers_an_offense_for_implicit_call_method"
-source = '''
-method(:puts).(:key=>value)
-'''
-corrected = '''
-method(:puts).(key: value)
-'''
-
-[[tests.offenses]]
-line = 1
-column_start = 15
-column_end = 21
-message = "Use the new Ruby 1.9 hash syntax."
-
-[[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_hash_rockets_style_registers_an_offense_for_ruby_1_9_style"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_hash_rockets_style_registers_an_offense_for_ruby_19_style"
 source = '''
 x = { a: 0, b: 2}
 '''
@@ -563,7 +772,7 @@ SupportedStyles = ["ruby19", "hash_rockets"]
 UseHashRocketsWithSymbolValues = false
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_hash_rockets_style_registers_an_offense_for_mixed_syntax"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_hash_rockets_style_registers_an_offense_for_mixed_syntax"
 source = '''
 x = { a => 0, b: 1 }
 '''
@@ -583,7 +792,7 @@ SupportedStyles = ["ruby19", "hash_rockets"]
 UseHashRocketsWithSymbolValues = false
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_hash_rockets_style_registers_an_offense_for_1_9_style_in_method_calls"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_hash_rockets_style_registers_an_offense_for_19_style_in_method_calls"
 source = '''
 func(3, a: 0)
 '''
@@ -603,7 +812,7 @@ SupportedStyles = ["ruby19", "hash_rockets"]
 UseHashRocketsWithSymbolValues = false
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_hash_rockets_style_accepts_hash_rockets_in_a_hash_literal"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_hash_rockets_style_accepts_hash_rockets_in_a_hash_literal"
 source = '''
 x = { :a => 0, :b => 1 }
 '''
@@ -615,7 +824,7 @@ SupportedStyles = ["ruby19", "hash_rockets"]
 UseHashRocketsWithSymbolValues = false
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_hash_rockets_style_accepts_hash_rockets_in_method_calls"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_hash_rockets_style_accepts_hash_rockets_in_method_calls"
 source = '''
 func(3, :a => 0)
 '''
@@ -627,7 +836,7 @@ SupportedStyles = ["ruby19", "hash_rockets"]
 UseHashRocketsWithSymbolValues = false
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_hash_rockets_style_accepts_an_empty_hash"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_hash_rockets_style_accepts_an_empty_hash"
 source = '''
 {}
 '''
@@ -639,19 +848,7 @@ SupportedStyles = ["ruby19", "hash_rockets"]
 UseHashRocketsWithSymbolValues = false
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_hash_rockets_style_usehashrocketswithsymbolvalues_has_no_impact_does_not_register_an_offense_when_there_is_a_symbol_value"
-source = '''
-{ :a => :b, :c => :d }
-'''
-offenses = []
-
-[tests.config]
-EnforcedStyle = "hash_rockets"
-SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
-
-[[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_hash_rockets_style_registers_an_offense_for_implicit_call_method"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_hash_rockets_style_registers_an_offense_for_implicit_call_method"
 source = '''
 method(:puts).(a: 0)
 '''
@@ -668,10 +865,22 @@ message = "Use hash rockets syntax."
 [tests.config]
 EnforcedStyle = "hash_rockets"
 SupportedStyles = ["ruby19", "hash_rockets"]
+UseHashRocketsWithSymbolValues = false
+
+[[tests]]
+name = "rubocopcopstylehashsyntax_configured_to_enforce_hash_rockets_style_usehashrocketswithsymbolvalues_has_no_impact_does_not_register_an_offense_when_there_is_a_symbol_value"
+source = '''
+{ :a => :b, :c => :d }
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "hash_rockets"
+SupportedStyles = ["ruby19", "hash_rockets"]
 UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby_1_9_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_disabled_accepts_new_syntax_in_a_hash_literal"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby_19_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_disabled_accepts_new_syntax_in_a_hash_literal"
 source = '''
 x = { a: 0, b: 1 }
 '''
@@ -679,11 +888,10 @@ offenses = []
 
 [tests.config]
 EnforcedStyle = "ruby19_no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
 UseHashRocketsWithSymbolValues = false
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby_1_9_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_disabled_registers_an_offense_for_hash_rocket_syntax_when_new_is_possible"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby_19_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_disabled_registers_an_offense_for_hash_rocket_syntax_when_new_is_possible"
 source = '''
 x = { :a => 0, :b => 2 }
 '''
@@ -705,11 +913,10 @@ message = "Use the new Ruby 1.9 hash syntax."
 
 [tests.config]
 EnforcedStyle = "ruby19_no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
 UseHashRocketsWithSymbolValues = false
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby_1_9_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_disabled_registers_an_offense_for_mixed_syntax_when_new_is_possible"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby_19_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_disabled_registers_an_offense_for_mixed_syntax_when_new_is_possible"
 source = '''
 x = { :a => 0, b: 1 }
 '''
@@ -725,11 +932,10 @@ message = "Use the new Ruby 1.9 hash syntax."
 
 [tests.config]
 EnforcedStyle = "ruby19_no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
 UseHashRocketsWithSymbolValues = false
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby_1_9_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_disabled_accepts_new_syntax_in_method_calls"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby_19_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_disabled_accepts_new_syntax_in_method_calls"
 source = '''
 func(3, a: 0)
 '''
@@ -737,11 +943,10 @@ offenses = []
 
 [tests.config]
 EnforcedStyle = "ruby19_no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
 UseHashRocketsWithSymbolValues = false
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby_1_9_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_disabled_registers_an_offense_for_hash_rockets_in_method_calls"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby_19_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_disabled_registers_an_offense_for_hash_rockets_in_method_calls"
 source = '''
 func(3, :a => 0)
 '''
@@ -757,11 +962,10 @@ message = "Use the new Ruby 1.9 hash syntax."
 
 [tests.config]
 EnforcedStyle = "ruby19_no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
 UseHashRocketsWithSymbolValues = false
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby_1_9_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_disabled_accepts_hash_rockets_when_keys_have_different_types"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby_19_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_disabled_accepts_hash_rockets_when_keys_have_different_types"
 source = '''
 x = { :a => 0, "b" => 1 }
 '''
@@ -769,11 +973,10 @@ offenses = []
 
 [tests.config]
 EnforcedStyle = "ruby19_no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
 UseHashRocketsWithSymbolValues = false
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby_1_9_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_disabled_accepts_an_empty_hash"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby_19_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_disabled_accepts_an_empty_hash"
 source = '''
 {}
 '''
@@ -781,16 +984,12 @@ offenses = []
 
 [tests.config]
 EnforcedStyle = "ruby19_no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
 UseHashRocketsWithSymbolValues = false
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby_1_9_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_disabled_registers_an_offense_when_keys_have_different_types_and_styles"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby_19_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_disabled_registers_an_offense_when_keys_have_different_types_and_styles"
 source = '''
 x = { a: 0, "b" => 1 }
-'''
-corrected = '''
-x = { :a => 0, "b" => 1 }
 '''
 
 [[tests.offenses]]
@@ -801,104 +1000,10 @@ message = "Don't mix styles in the same hash."
 
 [tests.config]
 EnforcedStyle = "ruby19_no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
 UseHashRocketsWithSymbolValues = false
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby_1_9_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_disabled_ruby_2_2_accepts_hash_rockets_when_keys_have_whitespaces_in_them"
-source = '''
-x = { :"t o" => 0, :b => 1 }
-'''
-ruby_version = ">= 2.1"
-offenses = []
-
-[tests.config]
-EnforcedStyle = "ruby19_no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = false
-
-[[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby_1_9_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_disabled_ruby_2_2_registers_an_offense_when_keys_have_whitespaces_and_mix_styles"
-source = '''
-x = { :"t o" => 0, b: 1 }
-'''
-ruby_version = ">= 2.1"
-
-[[tests.offenses]]
-line = 1
-column_start = 19
-column_end = 21
-message = "Don't mix styles in the same hash."
-
-[tests.config]
-EnforcedStyle = "ruby19_no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = false
-
-[[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby_1_9_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_disabled_ruby_2_2_accepts_hash_rockets_when_keys_have_special_symbols_in_them"
-source = '''
-x = { :"\tab" => 1, :b => 1 }
-'''
-ruby_version = ">= 2.1"
-offenses = []
-
-[tests.config]
-EnforcedStyle = "ruby19_no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = false
-
-[[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby_1_9_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_disabled_ruby_2_2_registers_an_offense_when_keys_have_special_symbols_and_mix_styles"
-source = '''
-x = { :"	ab" => 1, b: 1 }
-'''
-ruby_version = ">= 2.1"
-
-[[tests.offenses]]
-line = 1
-column_start = 19
-column_end = 21
-message = "Don't mix styles in the same hash."
-
-[tests.config]
-EnforcedStyle = "ruby19_no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = false
-
-[[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby_1_9_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_disabled_ruby_2_2_accepts_hash_rockets_when_keys_start_with_a_digit"
-source = '''
-x = { :"1" => 1, :b => 1 }
-'''
-ruby_version = ">= 2.1"
-offenses = []
-
-[tests.config]
-EnforcedStyle = "ruby19_no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = false
-
-[[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby_1_9_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_disabled_ruby_2_2_registers_an_offense_when_keys_start_with_a_digit_and_mix_styles"
-source = '''
-x = { :"1" => 1, b: 1 }
-'''
-ruby_version = ">= 2.1"
-
-[[tests.offenses]]
-line = 1
-column_start = 17
-column_end = 19
-message = "Don't mix styles in the same hash."
-
-[tests.config]
-EnforcedStyle = "ruby19_no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = false
-
-[[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby_1_9_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_disabled_registers_an_offense_when_keys_have_whitespaces_in_them"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby_19_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_disabled_registers_an_offense_when_keys_have_whitespaces_in_them"
 source = '''
 x = { :"t o" => 0 }
 '''
@@ -914,11 +1019,10 @@ message = "Use the new Ruby 1.9 hash syntax."
 
 [tests.config]
 EnforcedStyle = "ruby19_no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
 UseHashRocketsWithSymbolValues = false
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby_1_9_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_disabled_registers_an_offense_when_keys_have_special_symbols_in_them"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby_19_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_disabled_registers_an_offense_when_keys_have_special_symbols_in_them"
 source = '''
 x = { :"\tab" => 1 }
 '''
@@ -934,11 +1038,10 @@ message = "Use the new Ruby 1.9 hash syntax."
 
 [tests.config]
 EnforcedStyle = "ruby19_no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
 UseHashRocketsWithSymbolValues = false
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby_1_9_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_disabled_registers_an_offense_when_keys_start_with_a_digit"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby_19_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_disabled_registers_an_offense_when_keys_start_with_a_digit"
 source = '''
 x = { :"1" => 1 }
 '''
@@ -954,11 +1057,10 @@ message = "Use the new Ruby 1.9 hash syntax."
 
 [tests.config]
 EnforcedStyle = "ruby19_no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
 UseHashRocketsWithSymbolValues = false
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby_1_9_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_disabled_accepts_new_syntax_when_keys_are_interpolated_string"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby_19_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_disabled_accepts_new_syntax_when_keys_are_interpolated_string"
 source = '''
 {"#{foo}": 1, "#{@foo}": 2, "#@foo": 3}
 '''
@@ -966,11 +1068,91 @@ offenses = []
 
 [tests.config]
 EnforcedStyle = "ruby19_no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
 UseHashRocketsWithSymbolValues = false
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby_1_9_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_enabled_registers_an_offense_when_any_element_uses_a_symbol_for_the_value"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby_19_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_disabled_ruby__22_accepts_hash_rockets_when_keys_have_whitespaces_in_them"
+source = '''
+x = { :"t o" => 0, :b => 1 }
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "ruby19_no_mixed_keys"
+UseHashRocketsWithSymbolValues = false
+
+[[tests]]
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby_19_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_disabled_ruby__22_registers_an_offense_when_keys_have_whitespaces_and_mix_styles"
+source = '''
+x = { :"t o" => 0, b: 1 }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 19
+column_end = 21
+message = "Don't mix styles in the same hash."
+
+[tests.config]
+EnforcedStyle = "ruby19_no_mixed_keys"
+UseHashRocketsWithSymbolValues = false
+
+[[tests]]
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby_19_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_disabled_ruby__22_accepts_hash_rockets_when_keys_have_special_symbols_in_them"
+source = '''
+x = { :"\tab" => 1, :b => 1 }
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "ruby19_no_mixed_keys"
+UseHashRocketsWithSymbolValues = false
+
+[[tests]]
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby_19_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_disabled_ruby__22_registers_an_offense_when_keys_have_special_symbols_and_mix_styles"
+source = '''
+x = { :"	ab" => 1, b: 1 }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 19
+column_end = 21
+message = "Don't mix styles in the same hash."
+
+[tests.config]
+EnforcedStyle = "ruby19_no_mixed_keys"
+UseHashRocketsWithSymbolValues = false
+
+[[tests]]
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby_19_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_disabled_ruby__22_accepts_hash_rockets_when_keys_start_with_a_digit"
+source = '''
+x = { :"1" => 1, :b => 1 }
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "ruby19_no_mixed_keys"
+UseHashRocketsWithSymbolValues = false
+
+[[tests]]
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby_19_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_disabled_ruby__22_registers_an_offense_when_keys_start_with_a_digit_and_mix_styles"
+source = '''
+x = { :"1" => 1, b: 1 }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 19
+message = "Don't mix styles in the same hash."
+
+[tests.config]
+EnforcedStyle = "ruby19_no_mixed_keys"
+UseHashRocketsWithSymbolValues = false
+
+[[tests]]
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby_19_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_enabled_registers_an_offense_when_any_element_uses_a_symbol_for_the_value"
 source = '''
 x = { a: 1, b: :c }
 '''
@@ -992,11 +1174,10 @@ message = "Use hash rockets syntax."
 
 [tests.config]
 EnforcedStyle = "ruby19_no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
 UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby_1_9_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_enabled_registers_an_offense_when_any_element_has_a_symbol_value_in_method_calls"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby_19_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_enabled_registers_an_offense_when_any_element_has_a_symbol_value_in_method_calls"
 source = '''
 func(3, b: :c)
 '''
@@ -1012,11 +1193,10 @@ message = "Use hash rockets syntax."
 
 [tests.config]
 EnforcedStyle = "ruby19_no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
 UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby_1_9_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_enabled_autocorrects_to_hash_rockets_when_all_elements_have_symbol_value"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby_19_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_enabled_autocorrects_to_hash_rockets_when_all_elements_have_symbol_value"
 source = '''
 { a: :b, c: :d }
 '''
@@ -1038,11 +1218,10 @@ message = "Use hash rockets syntax."
 
 [tests.config]
 EnforcedStyle = "ruby19_no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
 UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby_1_9_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_enabled_accepts_new_syntax_in_a_hash_literal"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby_19_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_enabled_accepts_new_syntax_in_a_hash_literal"
 source = '''
 x = { a: 0, b: 1 }
 '''
@@ -1050,16 +1229,12 @@ offenses = []
 
 [tests.config]
 EnforcedStyle = "ruby19_no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
 UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby_1_9_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_enabled_registers_an_offense_for_hash_rocket_syntax_when_new_is_possible"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby_19_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_enabled_registers_an_offense_for_hash_rocket_syntax_when_new_is_possible"
 source = '''
 x = { :a => 0, :b => 2 }
-'''
-corrected = '''
-x = { a: 0, b: 2 }
 '''
 
 [[tests.offenses]]
@@ -1076,16 +1251,12 @@ message = "Use the new Ruby 1.9 hash syntax."
 
 [tests.config]
 EnforcedStyle = "ruby19_no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
 UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby_1_9_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_enabled_registers_an_offense_for_mixed_syntax_when_new_is_possible"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby_19_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_enabled_registers_an_offense_for_mixed_syntax_when_new_is_possible"
 source = '''
 x = { :a => 0, b: 1 }
-'''
-corrected = '''
-x = { a: 0, b: 1 }
 '''
 
 [[tests.offenses]]
@@ -1096,11 +1267,10 @@ message = "Use the new Ruby 1.9 hash syntax."
 
 [tests.config]
 EnforcedStyle = "ruby19_no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
 UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby_1_9_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_enabled_accepts_new_syntax_in_method_calls"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby_19_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_enabled_accepts_new_syntax_in_method_calls"
 source = '''
 func(3, a: 0)
 '''
@@ -1108,11 +1278,10 @@ offenses = []
 
 [tests.config]
 EnforcedStyle = "ruby19_no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
 UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby_1_9_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_enabled_registers_an_offense_for_hash_rockets_in_method_calls"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby_19_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_enabled_registers_an_offense_for_hash_rockets_in_method_calls"
 source = '''
 func(3, :a => 0)
 '''
@@ -1128,11 +1297,10 @@ message = "Use the new Ruby 1.9 hash syntax."
 
 [tests.config]
 EnforcedStyle = "ruby19_no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
 UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby_1_9_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_enabled_accepts_hash_rockets_when_keys_have_different_types"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby_19_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_enabled_accepts_hash_rockets_when_keys_have_different_types"
 source = '''
 x = { :a => 0, "b" => 1 }
 '''
@@ -1140,11 +1308,10 @@ offenses = []
 
 [tests.config]
 EnforcedStyle = "ruby19_no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
 UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby_1_9_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_enabled_accepts_an_empty_hash"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby_19_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_enabled_accepts_an_empty_hash"
 source = '''
 {}
 '''
@@ -1152,16 +1319,12 @@ offenses = []
 
 [tests.config]
 EnforcedStyle = "ruby19_no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
 UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby_1_9_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_enabled_registers_an_offense_when_keys_have_different_types_and_styles"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby_19_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_enabled_registers_an_offense_when_keys_have_different_types_and_styles"
 source = '''
 x = { a: 0, "b" => 1 }
-'''
-corrected = '''
-x = { :a => 0, "b" => 1 }
 '''
 
 [[tests.offenses]]
@@ -1172,104 +1335,10 @@ message = "Don't mix styles in the same hash."
 
 [tests.config]
 EnforcedStyle = "ruby19_no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
 UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby_1_9_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_enabled_ruby_2_2_accepts_hash_rockets_when_keys_have_whitespaces_in_them"
-source = '''
-x = { :"t o" => 0, :b => 1 }
-'''
-ruby_version = ">= 2.1"
-offenses = []
-
-[tests.config]
-EnforcedStyle = "ruby19_no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
-
-[[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby_1_9_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_enabled_ruby_2_2_registers_an_offense_when_keys_have_whitespaces_and_mix_styles"
-source = '''
-x = { :"t o" => 0, b: 1 }
-'''
-ruby_version = ">= 2.1"
-
-[[tests.offenses]]
-line = 1
-column_start = 19
-column_end = 21
-message = "Don't mix styles in the same hash."
-
-[tests.config]
-EnforcedStyle = "ruby19_no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
-
-[[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby_1_9_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_enabled_ruby_2_2_accepts_hash_rockets_when_keys_have_special_symbols_in_them"
-source = '''
-x = { :"\tab" => 1, :b => 1 }
-'''
-ruby_version = ">= 2.1"
-offenses = []
-
-[tests.config]
-EnforcedStyle = "ruby19_no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
-
-[[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby_1_9_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_enabled_ruby_2_2_registers_an_offense_when_keys_have_special_symbols_and_mix_styles"
-source = '''
-x = { :"	ab" => 1, b: 1 }
-'''
-ruby_version = ">= 2.1"
-
-[[tests.offenses]]
-line = 1
-column_start = 19
-column_end = 21
-message = "Don't mix styles in the same hash."
-
-[tests.config]
-EnforcedStyle = "ruby19_no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
-
-[[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby_1_9_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_enabled_ruby_2_2_accepts_hash_rockets_when_keys_start_with_a_digit"
-source = '''
-x = { :"1" => 1, :b => 1 }
-'''
-ruby_version = ">= 2.1"
-offenses = []
-
-[tests.config]
-EnforcedStyle = "ruby19_no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
-
-[[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby_1_9_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_enabled_ruby_2_2_registers_an_offense_when_keys_start_with_a_digit_and_mix_styles"
-source = '''
-x = { :"1" => 1, b: 1 }
-'''
-ruby_version = ">= 2.1"
-
-[[tests.offenses]]
-line = 1
-column_start = 17
-column_end = 19
-message = "Don't mix styles in the same hash."
-
-[tests.config]
-EnforcedStyle = "ruby19_no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
-
-[[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby_1_9_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_enabled_registers_an_offense_when_keys_have_whitespaces_in_them"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby_19_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_enabled_registers_an_offense_when_keys_have_whitespaces_in_them"
 source = '''
 x = { :"t o" => 0 }
 '''
@@ -1285,11 +1354,10 @@ message = "Use the new Ruby 1.9 hash syntax."
 
 [tests.config]
 EnforcedStyle = "ruby19_no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
 UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby_1_9_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_enabled_registers_an_offense_when_keys_have_special_symbols_in_them"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby_19_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_enabled_registers_an_offense_when_keys_have_special_symbols_in_them"
 source = '''
 x = { :"\tab" => 1 }
 '''
@@ -1305,11 +1373,10 @@ message = "Use the new Ruby 1.9 hash syntax."
 
 [tests.config]
 EnforcedStyle = "ruby19_no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
 UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby_1_9_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_enabled_registers_an_offense_when_keys_start_with_a_digit"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby_19_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_enabled_registers_an_offense_when_keys_start_with_a_digit"
 source = '''
 x = { :"1" => 1 }
 '''
@@ -1325,11 +1392,10 @@ message = "Use the new Ruby 1.9 hash syntax."
 
 [tests.config]
 EnforcedStyle = "ruby19_no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
 UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_ruby_1_9_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_enabled_accepts_new_syntax_when_keys_are_interpolated_string"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby_19_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_enabled_accepts_new_syntax_when_keys_are_interpolated_string"
 source = '''
 {"#{foo}": 1, "#{@foo}": 2, "#@foo": 3}
 '''
@@ -1337,11 +1403,91 @@ offenses = []
 
 [tests.config]
 EnforcedStyle = "ruby19_no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
 UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_no_mixed_keys_accepts_new_syntax_in_a_hash_literal"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby_19_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_enabled_ruby__22_accepts_hash_rockets_when_keys_have_whitespaces_in_them"
+source = '''
+x = { :"t o" => 0, :b => 1 }
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "ruby19_no_mixed_keys"
+UseHashRocketsWithSymbolValues = true
+
+[[tests]]
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby_19_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_enabled_ruby__22_registers_an_offense_when_keys_have_whitespaces_and_mix_styles"
+source = '''
+x = { :"t o" => 0, b: 1 }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 19
+column_end = 21
+message = "Don't mix styles in the same hash."
+
+[tests.config]
+EnforcedStyle = "ruby19_no_mixed_keys"
+UseHashRocketsWithSymbolValues = true
+
+[[tests]]
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby_19_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_enabled_ruby__22_accepts_hash_rockets_when_keys_have_special_symbols_in_them"
+source = '''
+x = { :"\tab" => 1, :b => 1 }
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "ruby19_no_mixed_keys"
+UseHashRocketsWithSymbolValues = true
+
+[[tests]]
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby_19_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_enabled_ruby__22_registers_an_offense_when_keys_have_special_symbols_and_mix_styles"
+source = '''
+x = { :"	ab" => 1, b: 1 }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 19
+column_end = 21
+message = "Don't mix styles in the same hash."
+
+[tests.config]
+EnforcedStyle = "ruby19_no_mixed_keys"
+UseHashRocketsWithSymbolValues = true
+
+[[tests]]
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby_19_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_enabled_ruby__22_accepts_hash_rockets_when_keys_start_with_a_digit"
+source = '''
+x = { :"1" => 1, :b => 1 }
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "ruby19_no_mixed_keys"
+UseHashRocketsWithSymbolValues = true
+
+[[tests]]
+name = "rubocopcopstylehashsyntax_configured_to_enforce_ruby_19_style_with_no_mixed_keys_usehashrocketswithsymbolvalues_enabled_ruby__22_registers_an_offense_when_keys_start_with_a_digit_and_mix_styles"
+source = '''
+x = { :"1" => 1, b: 1 }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 19
+message = "Don't mix styles in the same hash."
+
+[tests.config]
+EnforcedStyle = "ruby19_no_mixed_keys"
+UseHashRocketsWithSymbolValues = true
+
+[[tests]]
+name = "rubocopcopstylehashsyntax_configured_to_enforce_no_mixed_keys_accepts_new_syntax_in_a_hash_literal"
 source = '''
 x = { a: 0, b: 1 }
 '''
@@ -1349,11 +1495,9 @@ offenses = []
 
 [tests.config]
 EnforcedStyle = "no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_no_mixed_keys_accepts_the_hash_rocket_syntax_when_new_is_possible"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_no_mixed_keys_accepts_the_hash_rocket_syntax_when_new_is_possible"
 source = '''
 x = { :a => 0 }
 '''
@@ -1361,16 +1505,11 @@ offenses = []
 
 [tests.config]
 EnforcedStyle = "no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_no_mixed_keys_registers_an_offense_for_mixed_syntax_when_new_is_possible"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_no_mixed_keys_registers_an_offense_for_mixed_syntax_when_new_is_possible"
 source = '''
 x = { :a => 0, b: 1 }
-'''
-corrected = '''
-x = { :a => 0, :b => 1 }
 '''
 
 [[tests.offenses]]
@@ -1381,11 +1520,9 @@ message = "Don't mix styles in the same hash."
 
 [tests.config]
 EnforcedStyle = "no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_no_mixed_keys_accepts_new_syntax_in_method_calls"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_no_mixed_keys_accepts_new_syntax_in_method_calls"
 source = '''
 func(3, a: 0)
 '''
@@ -1393,11 +1530,9 @@ offenses = []
 
 [tests.config]
 EnforcedStyle = "no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_no_mixed_keys_accepts_hash_rockets_in_method_calls"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_no_mixed_keys_accepts_hash_rockets_in_method_calls"
 source = '''
 func(3, :a => 0)
 '''
@@ -1405,11 +1540,9 @@ offenses = []
 
 [tests.config]
 EnforcedStyle = "no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_no_mixed_keys_accepts_hash_rockets_when_keys_have_different_types"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_no_mixed_keys_accepts_hash_rockets_when_keys_have_different_types"
 source = '''
 x = { :a => 0, "b" => 1 }
 '''
@@ -1417,11 +1550,9 @@ offenses = []
 
 [tests.config]
 EnforcedStyle = "no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_no_mixed_keys_accepts_an_empty_hash"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_no_mixed_keys_accepts_an_empty_hash"
 source = '''
 {}
 '''
@@ -1429,16 +1560,11 @@ offenses = []
 
 [tests.config]
 EnforcedStyle = "no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_no_mixed_keys_registers_an_offense_when_keys_have_different_types_and_styles"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_no_mixed_keys_registers_an_offense_when_keys_have_different_types_and_styles"
 source = '''
 x = { a: 0, "b" => 1 }
-'''
-corrected = '''
-x = { :a => 0, "b" => 1 }
 '''
 
 [[tests.offenses]]
@@ -1449,11 +1575,9 @@ message = "Don't mix styles in the same hash."
 
 [tests.config]
 EnforcedStyle = "no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_no_mixed_keys_accepts_hash_rockets_when_keys_have_whitespaces_in_them"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_no_mixed_keys_accepts_hash_rockets_when_keys_have_whitespaces_in_them"
 source = '''
 x = { :"t o" => 0, :b => 1 }
 '''
@@ -1461,37 +1585,11 @@ offenses = []
 
 [tests.config]
 EnforcedStyle = "no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_no_mixed_keys_ruby_3_1_registers_hash_rockets_when_keys_have_whitespaces_in_them_and_using_hash_value_omission"
-source = '''
-{:"t o" => 0, b:}
-'''
-corrected = '''
-{:"t o" => 0, :b => b}
-'''
-ruby_version = ">= 3.1"
-
-[[tests.offenses]]
-line = 1
-column_start = 14
-column_end = 16
-message = "Don't mix styles in the same hash."
-
-[tests.config]
-EnforcedStyle = "no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
-
-[[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_no_mixed_keys_registers_an_offense_when_keys_have_whitespaces_and_mix_styles"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_no_mixed_keys_registers_an_offense_when_keys_have_whitespaces_and_mix_styles"
 source = '''
 x = { :"t o" => 0, b: 1 }
-'''
-corrected = '''
-x = { :"t o" => 0, :b => 1 }
 '''
 
 [[tests.offenses]]
@@ -1502,11 +1600,9 @@ message = "Don't mix styles in the same hash."
 
 [tests.config]
 EnforcedStyle = "no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_no_mixed_keys_accepts_hash_rockets_when_keys_have_special_symbols_in_them"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_no_mixed_keys_accepts_hash_rockets_when_keys_have_special_symbols_in_them"
 source = '''
 x = { :"\tab" => 1, :b => 1 }
 '''
@@ -1514,31 +1610,24 @@ offenses = []
 
 [tests.config]
 EnforcedStyle = "no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_no_mixed_keys_registers_an_offense_when_keys_have_special_symbols_and_mix_styles"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_no_mixed_keys_registers_an_offense_when_keys_have_special_symbols_and_mix_styles"
 source = '''
-x = { :"%{tab}ab" => 1, b: 1 }
-'''
-corrected = '''
-x = { :"	ab" => 1, :b => 1 }
+x = { :"	ab" => 1, b: 1 }
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 0
-column_end = 30
+column_start = 19
+column_end = 21
 message = "Don't mix styles in the same hash."
 
 [tests.config]
 EnforcedStyle = "no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_no_mixed_keys_accepts_hash_rockets_when_keys_start_with_a_digit"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_no_mixed_keys_accepts_hash_rockets_when_keys_start_with_a_digit"
 source = '''
 x = { :"1" => 1, :b => 1 }
 '''
@@ -1546,16 +1635,11 @@ offenses = []
 
 [tests.config]
 EnforcedStyle = "no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_no_mixed_keys_registers_an_offense_when_keys_start_with_a_digit_and_mix_styles"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_no_mixed_keys_registers_an_offense_when_keys_start_with_a_digit_and_mix_styles"
 source = '''
 x = { :"1" => 1, b: 1 }
-'''
-corrected = '''
-x = { :"1" => 1, :b => 1 }
 '''
 
 [[tests.offenses]]
@@ -1566,11 +1650,9 @@ message = "Don't mix styles in the same hash."
 
 [tests.config]
 EnforcedStyle = "no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_no_mixed_keys_accepts_old_hash_rockets_style"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_no_mixed_keys_accepts_old_hash_rockets_style"
 source = '''
 { :a => 1, :b => 2 }
 '''
@@ -1578,11 +1660,9 @@ offenses = []
 
 [tests.config]
 EnforcedStyle = "no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_no_mixed_keys_accepts_new_hash_style"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_no_mixed_keys_accepts_new_hash_style"
 source = '''
 { a: 1, b: 2 }
 '''
@@ -1590,11 +1670,9 @@ offenses = []
 
 [tests.config]
 EnforcedStyle = "no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_no_mixed_keys_autocorrects_mixed_key_hashes"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_no_mixed_keys_autocorrects_mixed_key_hashes"
 source = '''
 { a: 1, :b => 2 }
 '''
@@ -1610,20 +1688,33 @@ message = "Don't mix styles in the same hash."
 
 [tests.config]
 EnforcedStyle = "no_mixed_keys"
-SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_and_corrects_an_offense_when_hash_key_and_hash_value_are_the_same"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_no_mixed_keys_ruby__31_registers_hash_rockets_when_keys_have_whitespaces_in_them_and_using_hash_value_omission"
+source = '''
+{:"t o" => 0, b:}
+'''
+corrected = '''
+{:"t o" => 0, :b => b}
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 14
+column_end = 16
+message = "Don't mix styles in the same hash."
+
+[tests.config]
+EnforcedStyle = "no_mixed_keys"
+
+[[tests]]
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_registers_and_corrects_an_offense_when_hash_key_and_hash_value_are_the_same"
 source = '''
 {foo: foo, bar: bar}
 '''
 corrected = '''
 {foo:, bar:}
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -1639,12 +1730,11 @@ message = "Omit the hash value."
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_and_corrects_an_offense_when_hash_key_and_hash_value_lvar_are_the_same"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_registers_and_corrects_an_offense_when_hash_key_and_hash_value_lvar_are_the_same"
 source = '''
 foo = 'a'
 bar = 'b'
@@ -1657,9 +1747,6 @@ bar = 'b'
 
 {foo:, bar:}
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 4
@@ -1675,21 +1762,17 @@ message = "Omit the hash value."
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_and_corrects_an_offense_when_hash_key_and_hash_value_are_partially_the_same"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_registers_and_corrects_an_offense_when_hash_key_and_hash_value_are_partially_the_same"
 source = '''
 {foo:, bar: bar, baz: qux}
 '''
 corrected = '''
 {foo:, bar:, baz: qux}
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -1699,21 +1782,17 @@ message = "Omit the hash value."
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_and_corrects_an_offense_when_hash_foo_foo"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_registers_and_corrects_an_offense_when_hashfoo_foo"
 source = '''
 Hash[foo: foo]
 '''
 corrected = '''
 Hash[foo:]
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -1723,12 +1802,11 @@ message = "Omit the hash value."
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_and_corrects_an_offense_when_hash_foo_foo_and_an_expression_follows"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_registers_and_corrects_an_offense_when_hashfoo_foo_and_an_expression_follows"
 source = '''
 Hash[foo: foo]
 do_something
@@ -1737,9 +1815,6 @@ corrected = '''
 Hash[foo:]
 do_something
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -1749,12 +1824,11 @@ message = "Omit the hash value."
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_and_corrects_an_offense_when_braced_hash_key_and_value_are_the_same_and_it_is_used_in_if_else"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_registers_and_corrects_an_offense_when_braced_hash_key_and_value_are_the_same_and_it_is_used_in_ifelse"
 source = '''
 if condition
   template % {value: value}
@@ -1769,9 +1843,6 @@ else
   do_something
 end
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 2
@@ -1781,12 +1852,11 @@ message = "Omit the hash value."
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_and_corrects_an_offense_when_hash_key_and_hash_value_are_the_same_and_it_in_the_method_body"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_registers_and_corrects_an_offense_when_hash_key_and_hash_value_are_the_same_and_it_in_the_method_body"
 source = '''
 def do_something
   {
@@ -1803,9 +1873,6 @@ def do_something
   }
 end
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 3
@@ -1821,12 +1888,11 @@ message = "Omit the hash value."
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_registers_and_corrects_an_offense_when_hash_key_and_hash_value_are_the_same_and_it_in_the_method_bodyand_an_expression_follows"
 source = '''
 def do_something
   {
@@ -1845,9 +1911,6 @@ def do_something
 end
 do_something
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 3
@@ -1863,72 +1926,56 @@ message = "Omit the hash value."
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_does_not_register_an_offense_when_hash_values_are_omitted"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_does_not_register_an_offense_when_hash_values_are_omitted"
 source = '''
 {foo:, bar:}
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_does_not_register_an_offense_when_hash_key_and_hash_value_are_not_the_same"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_does_not_register_an_offense_when_hash_key_and_hash_value_are_not_the_same"
 source = '''
 {foo: bar, bar: foo}
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_does_not_register_an_offense_when_symbol_hash_key_and_hash_value_lvar_are_not_the_same"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_does_not_register_an_offense_when_symbol_hash_key_and_hash_value_lvar_are_not_the_same"
 source = '''
 foo = 'a'
 bar = 'b'
 
 {foo: bar, bar: foo}
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_when_hash_key_and_hash_value_are_not_the_same_and_method_with_is_called"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_registers_an_offense_when_hash_key_and_hash_value_are_not_the_same_and_method_with__is_called"
 source = '''
 {foo: foo}.do_something[key]
 '''
 corrected = '''
 {foo:}.do_something[key]
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -1938,112 +1985,87 @@ message = "Omit the hash value."
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_does_not_register_an_offense_when_hash_pattern_matching"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_does_not_register_an_offense_when_hash_pattern_matching"
 source = '''
 case pattern
 in {foo: 42}
 in {foo: foo}
 end
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_does_not_register_an_offense_when_hash_key_and_hash_value_are_the_same_but_the_value_ends"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_does_not_register_an_offense_when_hash_key_and_hash_value_are_the_same_but_the_value_ends_"
 source = '''
 {foo!: foo!}
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_does_not_register_an_offense_when_hash_key_and_hash_value_are_the_same_but_the_value_ends"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_does_not_register_an_offense_when_hash_key_and_hash_value_are_the_same_but_the_value_ends__2"
 source = '''
 {foo?: foo?}
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_does_not_register_an_offense_when_symbol_hash_key_and_string_hash_value_are_the_same"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_does_not_register_an_offense_when_symbol_hash_key_and_string_hash_value_are_the_same"
 source = '''
 {'foo': 'foo'}
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_does_not_register_an_offense_when_method_call_hash_key_and_hash_value_are_the_same"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_does_not_register_an_offense_when_method_call_hash_key_and_hash_value_are_the_same"
 source = '''
 {foo => foo}
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_does_not_register_an_offense_when_lvar_hash_key_and_hash_value_are_the_same"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_does_not_register_an_offense_when_lvar_hash_key_and_hash_value_are_the_same"
 source = '''
 foo = 42
 {foo => foo}
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_when_without_parentheses_call_expr_follows"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_registers_an_offense_when_without_parentheses_call_expr_follows"
 source = '''
 foo value: value
 foo arg
@@ -2060,9 +2082,6 @@ value = 'a'
 foo(value:)
 foo arg
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -2078,21 +2097,17 @@ message = "Omit the hash value."
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_in_chained_calls"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_registers_an_offense_in_chained_calls"
 source = '''
 create(:foo, bar: bar).baz
 '''
 corrected = '''
 create(:foo, bar:).baz
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -2102,12 +2117,11 @@ message = "Omit the hash value."
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_when_without_parentheses_call_expr_follows_after_nested_method_call"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_registers_an_offense_when_without_parentheses_call_expr_follows_after_nested_method_call"
 source = '''
 foo bar value: value
 baz
@@ -2116,9 +2130,6 @@ corrected = '''
 foo bar(value:)
 baz
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -2128,12 +2139,11 @@ message = "Omit the hash value."
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_when_without_parentheses_call_expr_follows_after_multiple_keyword_arguments_method_call"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_registers_an_offense_when_without_parentheses_call_expr_follows_after_multiple_keyword_arguments_method_call"
 source = '''
 foo baz: baz, qux: qux
 baz
@@ -2142,9 +2152,6 @@ corrected = '''
 foo(baz:, qux:)
 baz
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -2160,12 +2167,11 @@ message = "Omit the hash value."
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_when_expression_follows_hash_key_assignment"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_registers_an_offense_when_expression_follows_hash_key_assignment"
 source = '''
 hash[:key] = { foo: foo }
 bar
@@ -2174,9 +2180,6 @@ corrected = '''
 hash[:key] = { foo: }
 bar
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -2186,12 +2189,11 @@ message = "Omit the hash value."
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_when_expression_follows_attribute_assignment"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_registers_an_offense_when_expression_follows_attribute_assignment"
 source = '''
 object.attr = {foo: foo}
 pass
@@ -2200,9 +2202,6 @@ corrected = '''
 object.attr = {foo:}
 pass
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -2212,12 +2211,11 @@ message = "Omit the hash value."
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_when_expression_follows_multiple_assignments"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_registers_an_offense_when_expression_follows_multiple_assignments"
 source = '''
 foo = bar = do_stuff arg, opt1: opt1,
                           opt2: opt2
@@ -2228,9 +2226,6 @@ foo = bar = do_stuff(arg, opt1:,
                           opt2:)
 pass
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -2246,21 +2241,17 @@ message = "Omit the hash value."
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_when_one_line_if_condition_follows_with_parentheses"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_registers_an_offense_when_one_line_if_condition_follows_with_parentheses"
 source = '''
 foo(value: value) if bar
 '''
 corrected = '''
 foo(value:) if bar
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -2270,21 +2261,17 @@ message = "Omit the hash value."
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_when_one_line_if_condition_follows_super_with_parentheses"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_registers_an_offense_when_one_line_if_condition_follows_super_with_parentheses"
 source = '''
 super(value: value) unless foo
 '''
 corrected = '''
 super(value:) unless foo
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -2294,12 +2281,11 @@ message = "Omit the hash value."
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_in_super_followed_by_ivar_assignment_without_parentheses"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_registers_an_offense_in_super_followed_by_ivar_assignment_without_parentheses"
 source = '''
 super value: value, other: other
 @ivar = ivar
@@ -2308,9 +2294,6 @@ corrected = '''
 super(value:, other:)
 @ivar = ivar
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -2326,12 +2309,11 @@ message = "Omit the hash value."
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_in_super_followed_by_expr_without_parentheses"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_registers_an_offense_in_super_followed_by_expr_without_parentheses"
 source = '''
 super value: value, other: other
 foo baz
@@ -2340,9 +2322,6 @@ corrected = '''
 super(value:, other:)
 foo baz
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -2358,199 +2337,67 @@ message = "Omit the hash value."
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_ruby_3_2_registers_an_offense_in_chained_calls_with_dispatch_keywords"
-source = '''
-yield(:foo, bar: bar).baz
-'''
-corrected = '''
-yield(:foo, bar:).baz
-'''
-ruby_version = ">= 3.2"
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 17
-column_end = 20
-message = "Omit the hash value."
-
-[tests.config]
-EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
-SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
-
-[[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_ruby_3_2_registers_an_offense_when_one_line_if_condition_follows_yield_with_parentheses"
-source = '''
-yield(value: value) unless foo
-'''
-corrected = '''
-yield(value:) unless foo
-'''
-ruby_version = ">= 3.2"
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 13
-column_end = 18
-message = "Omit the hash value."
-
-[tests.config]
-EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
-SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
-
-[[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_ruby_3_2_registers_an_offense_in_yield_followed_by_ivar_assignment_without_parentheses"
-source = '''
-yield value: value, other: other
-@ivar = ivar
-'''
-corrected = '''
-yield(value:, other:)
-@ivar = ivar
-'''
-ruby_version = ">= 3.2"
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 27
-column_end = 32
-message = "Omit the hash value."
-
-[[tests.offenses]]
-line = 1
-column_start = 13
-column_end = 18
-message = "Omit the hash value."
-
-[tests.config]
-EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
-SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
-
-[[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_ruby_3_2_registers_an_offense_in_yield_followed_by_expr_without_parentheses"
-source = '''
-yield value: value, other: other
-foo baz
-'''
-corrected = '''
-yield(value:, other:)
-foo baz
-'''
-ruby_version = ">= 3.2"
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 27
-column_end = 32
-message = "Omit the hash value."
-
-[[tests.offenses]]
-line = 1
-column_start = 13
-column_end = 18
-message = "Omit the hash value."
-
-[tests.config]
-EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
-SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
-
-[[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_does_not_register_an_offense_when_one_line_if_condition_follows_without_parentheses"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_does_not_register_an_offense_when_one_line_if_condition_follows_without_parentheses"
 source = '''
 foo x, value: value if bar
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_does_not_register_an_offense_when_one_line_if_condition_follows_super_without_parentheses"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_does_not_register_an_offense_when_one_line_if_condition_follows_super_without_parentheses"
 source = '''
 super x, value: value unless foo
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_does_not_register_an_offense_when_one_line_if_condition_follows_without_parentheses_in_methods"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_does_not_register_an_offense_when_one_line_if_condition_follows_without_parentheses_in_methods"
 source = '''
 def method
   foo x, other:, value: value if bar
 end
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_does_not_register_an_offense_when_return_with_one_line_if_condition_follows_without_parentheses"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_does_not_register_an_offense_when_return_with_one_line_if_condition_follows_without_parentheses"
 source = '''
 return foo value: value if bar
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_when_one_line_until_condition_follows_with_parentheses"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_registers_an_offense_when_one_line_until_condition_follows_with_parentheses"
 source = '''
 foo(value: value) until bar
 '''
 corrected = '''
 foo(value:) until bar
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -2560,28 +2407,23 @@ message = "Omit the hash value."
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_does_not_register_an_offense_when_one_line_until_condition_follows_without_parentheses"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_does_not_register_an_offense_when_one_line_until_condition_follows_without_parentheses"
 source = '''
 foo value: value until bar
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_when_call_expr_with_argument_and_a_block_follows"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_registers_an_offense_when_call_expr_with_argument_and_a_block_follows"
 source = '''
 foo value: value
 foo arg do
@@ -2594,9 +2436,6 @@ foo arg do
   value
 end
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -2606,12 +2445,11 @@ message = "Omit the hash value."
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_when_call_expr_without_arguments_and_with_a_block_follows"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_registers_an_offense_when_call_expr_without_arguments_and_with_a_block_follows"
 source = '''
 foo value: value
 bar do
@@ -2624,9 +2462,6 @@ bar do
   value
 end
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -2636,12 +2471,11 @@ message = "Omit the hash value."
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_when_with_parentheses_call_expr_follows"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_registers_an_offense_when_with_parentheses_call_expr_follows"
 source = '''
 foo value: value
 foo(arg)
@@ -2650,9 +2484,6 @@ corrected = '''
 foo(value:)
 foo(arg)
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -2662,12 +2493,11 @@ message = "Omit the hash value."
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_when_with_parentheses_safe_navigation_call_expr_follows"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_registers_an_offense_when_with_parentheses_safe_navigation_call_expr_follows"
 source = '''
 x&.foo value: value
 foo(arg)
@@ -2676,9 +2506,6 @@ corrected = '''
 x&.foo(value:)
 foo(arg)
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -2688,12 +2515,11 @@ message = "Omit the hash value."
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_when_with_parentheses_call_expr_follows_assignment_expr"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_registers_an_offense_when_with_parentheses_call_expr_follows_assignment_expr"
 source = '''
 var = foo value: value
 foo(arg)
@@ -2702,9 +2528,6 @@ corrected = '''
 var = foo(value:)
 foo(arg)
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -2714,12 +2537,11 @@ message = "Omit the hash value."
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_when_hash_key_and_hash_value_are_partially_the_same"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_registers_an_offense_when_hash_key_and_hash_value_are_partially_the_same"
 source = '''
 def do_something
   do_something foo: foo
@@ -2732,9 +2554,6 @@ def do_something
   do_something(arg)
 end
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 2
@@ -2744,12 +2563,11 @@ message = "Omit the hash value."
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_when_hash_first_arg_key_and_hash_value_only_are_the_same_which_has_a_method_call_on_the_next_line"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_registers_an_offense_when_hash_first_arg_key_and_hash_value_only_are_the_same_which_has_a_method_call_on_the_next_line"
 source = '''
 buz foo: foo, bar: 'bar'
 
@@ -2760,9 +2578,6 @@ buz foo:, bar: 'bar'
 
 def buz(foo:, bar:); end
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -2772,21 +2587,17 @@ message = "Omit the hash value."
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_in_method_receiving_hash_literals"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_registers_an_offense_in_method_receiving_hash_literals"
 source = '''
 foo = {bar: bar, baz: :baz, quux: quux}.merge foo
 '''
 corrected = '''
 foo = {bar:, baz: :baz, quux:}.merge foo
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -2802,12 +2613,11 @@ message = "Omit the hash value."
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_in_arguments_as_method_calls_with_hash_omissions"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_registers_an_offense_in_arguments_as_method_calls_with_hash_omissions"
 source = '''
 if condition?
   raise LongLongLongLongError.new 'A long, long, long, long, really long message', foo: foo
@@ -2818,9 +2628,6 @@ if condition?
   raise LongLongLongLongError.new('A long, long, long, long, really long message', foo:)
 end
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 2
@@ -2830,12 +2637,11 @@ message = "Omit the hash value."
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_in_calls_without_parentheses_but_inside_parentheses"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_registers_an_offense_in_calls_without_parentheses_but_inside_parentheses"
 source = '''
 (create :foo, bar: bar)
 
@@ -2846,9 +2652,6 @@ corrected = '''
 
 pass
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -2858,12 +2661,11 @@ message = "Omit the hash value."
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_and_adds_parentheses_for_if_condition"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_registers_an_offense_and_adds_parentheses_for_if_condition"
 source = '''
 if foo bar: bar
   baz
@@ -2874,9 +2676,6 @@ if foo(bar:)
   baz
 end
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -2886,12 +2685,11 @@ message = "Omit the hash value."
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_and_adds_parentheses_for_unless_condition"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_registers_an_offense_and_adds_parentheses_for_unless_condition"
 source = '''
 unless foo bar: bar
   baz
@@ -2902,9 +2700,6 @@ unless foo(bar:)
   baz
 end
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -2914,12 +2709,11 @@ message = "Omit the hash value."
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_and_adds_parentheses_for_while_condition"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_registers_an_offense_and_adds_parentheses_for_while_condition"
 source = '''
 while foo bar: bar
   baz
@@ -2930,9 +2724,6 @@ while foo(bar:)
   baz
 end
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -2942,12 +2733,11 @@ message = "Omit the hash value."
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_registers_an_offense_and_adds_parentheses_for_until_condition"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_registers_an_offense_and_adds_parentheses_for_until_condition"
 source = '''
 until foo bar: bar
   baz
@@ -2958,9 +2748,6 @@ until foo(bar:)
   baz
 end
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -2970,67 +2757,149 @@ message = "Omit the hash value."
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_does_not_register_an_offense_for_modifier_form"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_does_not_register_an_offense_for_modifier_form"
 source = '''
 baz if foo bar: bar
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_1_when_hash_rocket_syntax_does_not_register_an_offense"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_ruby__32_registers_an_offense_in_chained_calls_with_dispatch_keywords"
+source = '''
+yield(:foo, bar: bar).baz
+'''
+corrected = '''
+yield(:foo, bar:).baz
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 17
+column_end = 20
+message = "Omit the hash value."
+
+[tests.config]
+EnforcedShorthandSyntax = "always"
+EnforcedStyle = "ruby19"
+SupportedStyles = ["ruby19", "hash_rockets"]
+
+[[tests]]
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_ruby__32_registers_an_offense_when_one_line_if_condition_follows_yield_with_parentheses"
+source = '''
+yield(value: value) unless foo
+'''
+corrected = '''
+yield(value:) unless foo
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 18
+message = "Omit the hash value."
+
+[tests.config]
+EnforcedShorthandSyntax = "always"
+EnforcedStyle = "ruby19"
+SupportedStyles = ["ruby19", "hash_rockets"]
+
+[[tests]]
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_ruby__32_registers_an_offense_in_yield_followed_by_ivar_assignment_without_parentheses"
+source = '''
+yield value: value, other: other
+@ivar = ivar
+'''
+corrected = '''
+yield(value:, other:)
+@ivar = ivar
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 27
+column_end = 32
+message = "Omit the hash value."
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 18
+message = "Omit the hash value."
+
+[tests.config]
+EnforcedShorthandSyntax = "always"
+EnforcedStyle = "ruby19"
+SupportedStyles = ["ruby19", "hash_rockets"]
+
+[[tests]]
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_ruby__32_registers_an_offense_in_yield_followed_by_expr_without_parentheses"
+source = '''
+yield value: value, other: other
+foo baz
+'''
+corrected = '''
+yield(value:, other:)
+foo baz
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 27
+column_end = 32
+message = "Omit the hash value."
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 18
+message = "Omit the hash value."
+
+[tests.config]
+EnforcedShorthandSyntax = "always"
+EnforcedStyle = "ruby19"
+SupportedStyles = ["ruby19", "hash_rockets"]
+
+[[tests]]
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__31_when_hash_rocket_syntax_does_not_register_an_offense"
 source = '''
 {:foo => foo, :bar => bar}
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "hash_rockets"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_shorthand_syntax_style_ruby_3_0_does_not_register_an_offense_when_hash_key_and_hash_value_are_the_same"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_shorthand_syntax_style_ruby__30_does_not_register_an_offense_when_hash_key_and_hash_value_are_the_same"
 source = '''
 {foo: foo, bar: bar}
 '''
-ruby_version = ">= 3.0"
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
 EnforcedShorthandSyntax = "always"
-EnforcedStyle = "$UNRESOLVED:enforced_style"
+EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_explicit_hash_value_syntax_style_ruby_3_1_registers_and_corrects_an_offense_when_hash_values_are_omitted"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_explicit_hash_value_syntax_style_ruby__31_registers_and_corrects_an_offense_when_hash_values_are_omitted"
 source = '''
 {foo:, bar:}
 '''
 corrected = '''
 {foo: foo, bar: bar}
 '''
-ruby_version = ">= 3.1"
 
 [[tests.offenses]]
 line = 1
@@ -3048,17 +2917,15 @@ message = "Include the hash value."
 EnforcedShorthandSyntax = "never"
 EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_explicit_hash_value_syntax_style_ruby_3_1_registers_and_corrects_an_offense_when_hash_key_and_hash_value_are_partially_the_same"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_explicit_hash_value_syntax_style_ruby__31_registers_and_corrects_an_offense_when_hash_key_and_hash_value_are_partially_the_same"
 source = '''
 {foo:, bar: bar, baz: qux}
 '''
 corrected = '''
 {foo: foo, bar: bar, baz: qux}
 '''
-ruby_version = ">= 3.1"
 
 [[tests.offenses]]
 line = 1
@@ -3070,153 +2937,123 @@ message = "Include the hash value."
 EnforcedShorthandSyntax = "never"
 EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_explicit_hash_value_syntax_style_ruby_3_1_does_not_register_an_offense_when_hash_key_and_hash_value_are_not_the_same"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_explicit_hash_value_syntax_style_ruby__31_does_not_register_an_offense_when_hash_key_and_hash_value_are_not_the_same"
 source = '''
 {foo: bar, bar: foo}
 '''
-ruby_version = ">= 3.1"
 offenses = []
 
 [tests.config]
 EnforcedShorthandSyntax = "never"
 EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_explicit_hash_value_syntax_style_ruby_3_1_does_not_register_an_offense_when_hash_key_and_hash_value_are_the_same"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_explicit_hash_value_syntax_style_ruby__31_does_not_register_an_offense_when_hash_key_and_hash_value_are_the_same"
 source = '''
 {foo: foo, bar: bar}
 '''
-ruby_version = ">= 3.1"
 offenses = []
 
 [tests.config]
 EnforcedShorthandSyntax = "never"
 EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_enforce_explicit_hash_value_syntax_style_ruby_3_0_does_not_register_an_offense_when_hash_key_and_hash_value_are_the_same"
+name = "rubocopcopstylehashsyntax_configured_to_enforce_explicit_hash_value_syntax_style_ruby__30_does_not_register_an_offense_when_hash_key_and_hash_value_are_the_same"
 source = '''
 {foo: foo, bar: bar}
 '''
-ruby_version = ">= 3.0"
 offenses = []
 
 [tests.config]
 EnforcedShorthandSyntax = "never"
 EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_accept_both_shorthand_and_explicit_use_of_hash_literal_value_ruby_3_1_does_not_register_an_offense_when_hash_values_are_omitted"
+name = "rubocopcopstylehashsyntax_configured_to_accept_both_shorthand_and_explicit_use_of_hash_literal_value_ruby__31_does_not_register_an_offense_when_hash_values_are_omitted"
 source = '''
 {foo:, bar:}
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedShorthandSyntax = "$UNRESOLVED:either"
+EnforcedShorthandSyntax = "either"
 EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_accept_both_shorthand_and_explicit_use_of_hash_literal_value_ruby_3_1_does_not_register_an_offense_when_hash_key_and_hash_value_are_partially_the_same"
+name = "rubocopcopstylehashsyntax_configured_to_accept_both_shorthand_and_explicit_use_of_hash_literal_value_ruby__31_does_not_register_an_offense_when_hash_key_and_hash_value_are_partially_the_same"
 source = '''
 {foo:, bar: bar, baz: qux}
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedShorthandSyntax = "$UNRESOLVED:either"
+EnforcedShorthandSyntax = "either"
 EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_accept_both_shorthand_and_explicit_use_of_hash_literal_value_ruby_3_1_does_not_register_an_offense_when_hash_key_and_hash_value_are_not_the_same"
+name = "rubocopcopstylehashsyntax_configured_to_accept_both_shorthand_and_explicit_use_of_hash_literal_value_ruby__31_does_not_register_an_offense_when_hash_key_and_hash_value_are_not_the_same"
 source = '''
 {foo: bar, bar: foo}
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedShorthandSyntax = "$UNRESOLVED:either"
+EnforcedShorthandSyntax = "either"
 EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_accept_both_shorthand_and_explicit_use_of_hash_literal_value_ruby_3_1_does_not_register_an_offense_when_hash_key_and_hash_value_are_the_same"
+name = "rubocopcopstylehashsyntax_configured_to_accept_both_shorthand_and_explicit_use_of_hash_literal_value_ruby__31_does_not_register_an_offense_when_hash_key_and_hash_value_are_the_same"
 source = '''
 {foo: foo, bar: bar}
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedShorthandSyntax = "$UNRESOLVED:either"
+EnforcedShorthandSyntax = "either"
 EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_accept_both_shorthand_and_explicit_use_of_hash_literal_value_ruby_3_0_does_not_register_an_offense_when_hash_key_and_hash_value_are_the_same"
+name = "rubocopcopstylehashsyntax_configured_to_accept_both_shorthand_and_explicit_use_of_hash_literal_value_ruby__30_does_not_register_an_offense_when_hash_key_and_hash_value_are_the_same"
 source = '''
 {foo: foo, bar: bar}
 '''
-ruby_version = ">= 3.0"
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedShorthandSyntax = "$UNRESOLVED:either"
+EnforcedShorthandSyntax = "either"
 EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_disallow_mixing_of_implicit_and_explicit_hash_literal_value_but_prefers_shorthand_syntax_whenever_possible_ruby_3_1_does_not_register_an_offense_when_all_hash_values_are_omitted"
+name = "rubocopcopstylehashsyntax_configured_to_disallow_mixing_of_implicit_and_explicit_hash_literal_value_but_prefers_shorthand_syntax_whenever_possible_ruby__31_does_not_register_an_offense_when_all_hash_values_are_omitted"
 source = '''
 {foo:, bar:}
 '''
-ruby_version = ">= 3.1"
 offenses = []
 
 [tests.config]
 EnforcedShorthandSyntax = "consistent"
 EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_disallow_mixing_of_implicit_and_explicit_hash_literal_value_but_prefers_shorthand_syntax_whenever_possible_ruby_3_1_registers_an_offense_when_some_hash_values_are_omitted_but_they_can_all_be_omitted"
+name = "rubocopcopstylehashsyntax_configured_to_disallow_mixing_of_implicit_and_explicit_hash_literal_value_but_prefers_shorthand_syntax_whenever_possible_ruby__31_registers_an_offense_when_some_hash_values_are_omitted_but_they_can_all_be_omitted"
 source = '''
 {foo:, bar: bar}
 '''
 corrected = '''
 {foo:, bar:}
 '''
-ruby_version = ">= 3.1"
 
 [[tests.offenses]]
 line = 1
@@ -3228,17 +3065,15 @@ message = "Do not mix explicit and implicit hash values. Omit the hash value."
 EnforcedShorthandSyntax = "consistent"
 EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_disallow_mixing_of_implicit_and_explicit_hash_literal_value_but_prefers_shorthand_syntax_whenever_possible_ruby_3_1_registers_an_offense_when_some_hash_values_are_omitted_but_they_cannot_all_be_omitted"
+name = "rubocopcopstylehashsyntax_configured_to_disallow_mixing_of_implicit_and_explicit_hash_literal_value_but_prefers_shorthand_syntax_whenever_possible_ruby__31_registers_an_offense_when_some_hash_values_are_omitted_but_they_cannot_all_be_omitted"
 source = '''
 {foo:, bar: baz}
 '''
 corrected = '''
 {foo: foo, bar: baz}
 '''
-ruby_version = ">= 3.1"
 
 [[tests.offenses]]
 line = 1
@@ -3250,45 +3085,39 @@ message = "Do not mix explicit and implicit hash values. Include the hash value.
 EnforcedShorthandSyntax = "consistent"
 EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_disallow_mixing_of_implicit_and_explicit_hash_literal_value_but_prefers_shorthand_syntax_whenever_possible_ruby_3_1_does_not_register_an_offense_when_all_hash_values_are_present_but_no_values_can_be_omitted"
+name = "rubocopcopstylehashsyntax_configured_to_disallow_mixing_of_implicit_and_explicit_hash_literal_value_but_prefers_shorthand_syntax_whenever_possible_ruby__31_does_not_register_an_offense_when_all_hash_values_are_present_but_no_values_can_be_omitted"
 source = '''
 {foo: bar, bar: foo}
 '''
-ruby_version = ">= 3.1"
 offenses = []
 
 [tests.config]
 EnforcedShorthandSyntax = "consistent"
 EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_disallow_mixing_of_implicit_and_explicit_hash_literal_value_but_prefers_shorthand_syntax_whenever_possible_ruby_3_1_does_not_register_an_offense_when_all_hash_values_are_present_but_only_some_values_can_be_omitted"
+name = "rubocopcopstylehashsyntax_configured_to_disallow_mixing_of_implicit_and_explicit_hash_literal_value_but_prefers_shorthand_syntax_whenever_possible_ruby__31_does_not_register_an_offense_when_all_hash_values_are_present_but_only_some_values_can_be_omitted"
 source = '''
 {foo: baz, bar: bar}
 '''
-ruby_version = ">= 3.1"
 offenses = []
 
 [tests.config]
 EnforcedShorthandSyntax = "consistent"
 EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_disallow_mixing_of_implicit_and_explicit_hash_literal_value_but_prefers_shorthand_syntax_whenever_possible_ruby_3_1_registers_an_offense_when_all_hash_values_are_present_but_can_all_be_omitted"
+name = "rubocopcopstylehashsyntax_configured_to_disallow_mixing_of_implicit_and_explicit_hash_literal_value_but_prefers_shorthand_syntax_whenever_possible_ruby__31_registers_an_offense_when_all_hash_values_are_present_but_can_all_be_omitted"
 source = '''
 {foo: foo, bar: bar}
 '''
 corrected = '''
 {foo:, bar:}
 '''
-ruby_version = ">= 3.1"
 
 [[tests.offenses]]
 line = 1
@@ -3306,10 +3135,9 @@ message = "Omit the hash value."
 EnforcedShorthandSyntax = "consistent"
 EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_disallow_mixing_of_implicit_and_explicit_hash_literal_value_but_prefers_shorthand_syntax_whenever_possible_ruby_3_1_registers_an_offense_and_adds_parentheses_for_if_condition"
+name = "rubocopcopstylehashsyntax_configured_to_disallow_mixing_of_implicit_and_explicit_hash_literal_value_but_prefers_shorthand_syntax_whenever_possible_ruby__31_registers_an_offense_and_adds_parentheses_for_if_condition"
 source = '''
 if foo bar: bar
   baz
@@ -3320,7 +3148,6 @@ if foo(bar:)
   baz
 end
 '''
-ruby_version = ">= 3.1"
 
 [[tests.offenses]]
 line = 1
@@ -3332,10 +3159,9 @@ message = "Omit the hash value."
 EnforcedShorthandSyntax = "consistent"
 EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_disallow_mixing_of_implicit_and_explicit_hash_literal_value_but_prefers_shorthand_syntax_whenever_possible_ruby_3_1_registers_an_offense_and_adds_parentheses_for_unless_condition"
+name = "rubocopcopstylehashsyntax_configured_to_disallow_mixing_of_implicit_and_explicit_hash_literal_value_but_prefers_shorthand_syntax_whenever_possible_ruby__31_registers_an_offense_and_adds_parentheses_for_unless_condition"
 source = '''
 unless foo bar: bar
   baz
@@ -3346,7 +3172,6 @@ unless foo(bar:)
   baz
 end
 '''
-ruby_version = ">= 3.1"
 
 [[tests.offenses]]
 line = 1
@@ -3358,10 +3183,9 @@ message = "Omit the hash value."
 EnforcedShorthandSyntax = "consistent"
 EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_disallow_mixing_of_implicit_and_explicit_hash_literal_value_but_prefers_shorthand_syntax_whenever_possible_ruby_3_1_registers_an_offense_and_adds_parentheses_for_while_condition"
+name = "rubocopcopstylehashsyntax_configured_to_disallow_mixing_of_implicit_and_explicit_hash_literal_value_but_prefers_shorthand_syntax_whenever_possible_ruby__31_registers_an_offense_and_adds_parentheses_for_while_condition"
 source = '''
 while foo bar: bar
   baz
@@ -3372,7 +3196,6 @@ while foo(bar:)
   baz
 end
 '''
-ruby_version = ">= 3.1"
 
 [[tests.offenses]]
 line = 1
@@ -3384,10 +3207,9 @@ message = "Omit the hash value."
 EnforcedShorthandSyntax = "consistent"
 EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_disallow_mixing_of_implicit_and_explicit_hash_literal_value_but_prefers_shorthand_syntax_whenever_possible_ruby_3_1_registers_an_offense_and_adds_parentheses_for_until_condition"
+name = "rubocopcopstylehashsyntax_configured_to_disallow_mixing_of_implicit_and_explicit_hash_literal_value_but_prefers_shorthand_syntax_whenever_possible_ruby__31_registers_an_offense_and_adds_parentheses_for_until_condition"
 source = '''
 until foo bar: bar
   baz
@@ -3398,7 +3220,6 @@ until foo(bar:)
   baz
 end
 '''
-ruby_version = ">= 3.1"
 
 [[tests.offenses]]
 line = 1
@@ -3410,63 +3231,51 @@ message = "Omit the hash value."
 EnforcedShorthandSyntax = "consistent"
 EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_disallow_mixing_of_implicit_and_explicit_hash_literal_value_but_prefers_shorthand_syntax_whenever_possible_ruby_3_1_does_not_register_an_offense_for_modifier_form"
+name = "rubocopcopstylehashsyntax_configured_to_disallow_mixing_of_implicit_and_explicit_hash_literal_value_but_prefers_shorthand_syntax_whenever_possible_ruby__31_does_not_register_an_offense_for_modifier_form"
 source = '''
 baz if foo bar: bar
 '''
-ruby_version = ">= 3.1"
 offenses = []
 
 [tests.config]
 EnforcedShorthandSyntax = "consistent"
 EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_disallow_mixing_of_implicit_and_explicit_hash_literal_value_but_prefers_shorthand_syntax_whenever_possible_ruby_3_0_does_not_register_an_offense_when_all_hash_key_and_hash_values_are_the_same"
+name = "rubocopcopstylehashsyntax_configured_to_disallow_mixing_of_implicit_and_explicit_hash_literal_value_but_prefers_shorthand_syntax_whenever_possible_ruby__30_does_not_register_an_offense_when_all_hash_key_and_hash_values_are_the_same"
 source = '''
 {foo: foo, bar: bar}
 '''
-ruby_version = ">= 3.0"
 offenses = []
 
 [tests.config]
 EnforcedShorthandSyntax = "consistent"
 EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_disallow_mixing_of_implicit_and_explicit_hash_literal_value_ruby_3_1_does_not_register_an_offense_when_all_hash_values_are_omitted"
+name = "rubocopcopstylehashsyntax_configured_to_disallow_mixing_of_implicit_and_explicit_hash_literal_value_ruby__31_does_not_register_an_offense_when_all_hash_values_are_omitted"
 source = '''
 {foo:, bar:}
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedShorthandSyntax = "$UNRESOLVED:either_consistent"
+EnforcedShorthandSyntax = "either_consistent"
 EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_disallow_mixing_of_implicit_and_explicit_hash_literal_value_ruby_3_1_registers_an_offense_when_some_hash_values_are_omitted_but_they_can_all_be_omitted"
+name = "rubocopcopstylehashsyntax_configured_to_disallow_mixing_of_implicit_and_explicit_hash_literal_value_ruby__31_registers_an_offense_when_some_hash_values_are_omitted_but_they_can_all_be_omitted"
 source = '''
 {foo:, bar: bar}
 '''
 corrected = '''
 {foo:, bar:}
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -3475,22 +3284,18 @@ column_end = 15
 message = "Do not mix explicit and implicit hash values. Omit the hash value."
 
 [tests.config]
-EnforcedShorthandSyntax = "$UNRESOLVED:either_consistent"
+EnforcedShorthandSyntax = "either_consistent"
 EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_disallow_mixing_of_implicit_and_explicit_hash_literal_value_ruby_3_1_registers_an_offense_when_some_hash_values_are_omitted_but_they_cannot_all_be_omitted"
+name = "rubocopcopstylehashsyntax_configured_to_disallow_mixing_of_implicit_and_explicit_hash_literal_value_ruby__31_registers_an_offense_when_some_hash_values_are_omitted_but_they_cannot_all_be_omitted"
 source = '''
 {foo:, bar: baz}
 '''
 corrected = '''
 {foo: foo, bar: baz}
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -3499,71 +3304,54 @@ column_end = 4
 message = "Do not mix explicit and implicit hash values. Include the hash value."
 
 [tests.config]
-EnforcedShorthandSyntax = "$UNRESOLVED:either_consistent"
+EnforcedShorthandSyntax = "either_consistent"
 EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_disallow_mixing_of_implicit_and_explicit_hash_literal_value_ruby_3_1_does_not_register_an_offense_when_all_hash_values_are_present_but_no_values_can_be_omitted"
+name = "rubocopcopstylehashsyntax_configured_to_disallow_mixing_of_implicit_and_explicit_hash_literal_value_ruby__31_does_not_register_an_offense_when_all_hash_values_are_present_but_no_values_can_be_omitted"
 source = '''
 {foo: bar, bar: foo}
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedShorthandSyntax = "$UNRESOLVED:either_consistent"
+EnforcedShorthandSyntax = "either_consistent"
 EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_disallow_mixing_of_implicit_and_explicit_hash_literal_value_ruby_3_1_does_not_register_an_offense_when_all_hash_values_are_present_but_only_some_values_can_be_omitted"
+name = "rubocopcopstylehashsyntax_configured_to_disallow_mixing_of_implicit_and_explicit_hash_literal_value_ruby__31_does_not_register_an_offense_when_all_hash_values_are_present_but_only_some_values_can_be_omitted"
 source = '''
 {foo: baz, bar: bar}
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedShorthandSyntax = "$UNRESOLVED:either_consistent"
+EnforcedShorthandSyntax = "either_consistent"
 EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_disallow_mixing_of_implicit_and_explicit_hash_literal_value_ruby_3_1_does_not_register_an_offense_when_all_hash_values_are_present_but_can_all_be_omitted"
+name = "rubocopcopstylehashsyntax_configured_to_disallow_mixing_of_implicit_and_explicit_hash_literal_value_ruby__31_does_not_register_an_offense_when_all_hash_values_are_present_but_can_all_be_omitted"
 source = '''
 {foo: foo, bar: bar}
 '''
-ruby_version = ">= 3.1"
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedShorthandSyntax = "$UNRESOLVED:either_consistent"
+EnforcedShorthandSyntax = "either_consistent"
 EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true
 
 [[tests]]
-name = "rubocop_cop_style_hashsyntax_configured_to_disallow_mixing_of_implicit_and_explicit_hash_literal_value_ruby_3_0_does_not_register_an_offense_when_hash_key_and_hash_value_are_the_same"
+name = "rubocopcopstylehashsyntax_configured_to_disallow_mixing_of_implicit_and_explicit_hash_literal_value_ruby__30_does_not_register_an_offense_when_hash_key_and_hash_value_are_the_same"
 source = '''
 {foo: foo, bar: bar}
 '''
-ruby_version = ">= 3.0"
-interpolated = true
-verified = false
 offenses = []
 
 [tests.config]
-EnforcedShorthandSyntax = "$UNRESOLVED:either_consistent"
+EnforcedShorthandSyntax = "either_consistent"
 EnforcedStyle = "ruby19"
 SupportedStyles = ["ruby19", "hash_rockets"]
-UseHashRocketsWithSymbolValues = true

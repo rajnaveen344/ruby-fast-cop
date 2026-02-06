@@ -4,7 +4,7 @@ severity = "warning"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_lint_requireparentheses_registers_an_offense_for_missing_parentheses_around_expression_with_operator"
+name = "rubocopcoplintrequireparentheses_registers_an_offense_for_missing_parentheses_around_expression_with__operator"
 source = '''
 if day.is? 'monday' && month == :jan
   foo
@@ -18,7 +18,7 @@ column_end = 36
 message = "Use parentheses in the method call to avoid confusion about precedence."
 
 [[tests]]
-name = "rubocop_cop_lint_requireparentheses_registers_an_offense_for_missing_parentheses_around_expression_with_operator"
+name = "rubocopcoplintrequireparentheses_registers_an_offense_for_missing_parentheses_around_expression_with__operator_2"
 source = '''
 day_is? 'tuesday' || true
 '''
@@ -30,7 +30,7 @@ column_end = 25
 message = "Use parentheses in the method call to avoid confusion about precedence."
 
 [[tests]]
-name = "rubocop_cop_lint_requireparentheses_registers_an_offense_for_missing_parentheses_around_expression_in_ternary"
+name = "rubocopcoplintrequireparentheses_registers_an_offense_for_missing_parentheses_around_expression_in_ternary"
 source = '''
 wd.include? 'tuesday' && true == true ? a : b
 '''
@@ -42,7 +42,98 @@ column_end = 37
 message = "Use parentheses in the method call to avoid confusion about precedence."
 
 [[tests]]
-name = "rubocop_cop_lint_requireparentheses_when_using_safe_navigation_operator_registers_an_offense_for_missing_parentheses_around_expression_with_operator"
+name = "rubocopcoplintrequireparentheses_accepts_missing_parentheses_around_expression_with__operator"
+source = '''
+if day_is? 'tuesday' + rest
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintrequireparentheses_accepts_method_calls_without_parentheses_followed_by_keyword_andor"
+source = '''
+if day.is? 'tuesday' and month == :jan
+end
+if day.is? 'tuesday' or month == :jan
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintrequireparentheses_accepts_method_calls_that_are_all_operations"
+source = '''
+if current_level == max + 1
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintrequireparentheses_accepts_condition_that_is_not_a_call"
+source = '''
+if @debug
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintrequireparentheses_accepts_parentheses_around_expression_with_boolean_operator"
+source = '''
+if day.is?('tuesday' && true == true)
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintrequireparentheses_accepts_method_call_with_parentheses_in_ternary"
+source = '''
+wd.include?('tuesday' && true == true) ? a : b
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintrequireparentheses_accepts_missing_parentheses_when_method_is_not_a_predicate"
+source = '''
+weekdays.foo 'tuesday' && true == true
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintrequireparentheses_accepts_missing_parentheses_when_using_ternary_operator"
+source = '''
+foo && bar ? baz : qux
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintrequireparentheses_accepts_missing_parentheses_when_using_ternary_operator_in_square_brackets"
+source = '''
+do_something[foo && bar ? baz : qux]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintrequireparentheses_accepts_missing_parentheses_when_assigning_ternary_operator"
+source = '''
+self.foo = bar && baz ? qux : quux
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintrequireparentheses_accepts_calls_to_methods_that_are_setters"
+source = '''
+s.version = @version || ">= 1.8.5"
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintrequireparentheses_accepts_calls_to_methods_that_are_operators"
+source = '''
+a[b || c]
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintrequireparentheses_when_using_safe_navigation_operator_registers_an_offense_for_missing_parentheses_around_expression_with__operator"
 source = '''
 if day&.is? 'monday' && month == :jan
   foo
@@ -54,94 +145,3 @@ line = 1
 column_start = 3
 column_end = 37
 message = "Use parentheses in the method call to avoid confusion about precedence."
-
-[[tests]]
-name = "rubocop_cop_lint_requireparentheses_accepts_missing_parentheses_around_expression_with_operator"
-source = '''
-if day_is? 'tuesday' + rest
-end
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_requireparentheses_accepts_method_calls_without_parentheses_followed_by_keyword_and_or"
-source = '''
-if day.is? 'tuesday' and month == :jan
-end
-if day.is? 'tuesday' or month == :jan
-end
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_requireparentheses_accepts_method_calls_that_are_all_operations"
-source = '''
-if current_level == max + 1
-end
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_requireparentheses_accepts_condition_that_is_not_a_call"
-source = '''
-if @debug
-end
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_requireparentheses_accepts_parentheses_around_expression_with_boolean_operator"
-source = '''
-if day.is?('tuesday' && true == true)
-end
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_requireparentheses_accepts_method_call_with_parentheses_in_ternary"
-source = '''
-wd.include?('tuesday' && true == true) ? a : b
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_requireparentheses_accepts_missing_parentheses_when_method_is_not_a_predicate"
-source = '''
-weekdays.foo 'tuesday' && true == true
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_requireparentheses_accepts_missing_parentheses_when_using_ternary_operator"
-source = '''
-foo && bar ? baz : qux
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_requireparentheses_accepts_missing_parentheses_when_using_ternary_operator_in_square_brackets"
-source = '''
-do_something[foo && bar ? baz : qux]
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_requireparentheses_accepts_missing_parentheses_when_assigning_ternary_operator"
-source = '''
-self.foo = bar && baz ? qux : quux
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_requireparentheses_accepts_calls_to_methods_that_are_setters"
-source = '''
-s.version = @version || ">= 1.8.5"
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_lint_requireparentheses_accepts_calls_to_methods_that_are_operators"
-source = '''
-a[b || c]
-'''
-offenses = []

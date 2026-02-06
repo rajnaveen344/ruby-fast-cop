@@ -47,12 +47,6 @@ struct TestCase {
     /// Optional Ruby version requirement (e.g., ">= 3.1")
     #[serde(default)]
     ruby_version: Option<String>,
-    /// Whether this test contains unresolved Ruby string interpolation
-    #[serde(default)]
-    interpolated: bool,
-    /// Whether an interpolated test has been manually verified/fixed
-    #[serde(default)]
-    verified: bool,
 }
 
 /// An expected offense in a test case
@@ -304,17 +298,9 @@ fn run_test_case(
     errors
 }
 
-/// Check if a test case has $UNRESOLVED config values
-fn has_unresolved_config(test_case: &TestCase) -> bool {
-    let config_str = toml::to_string(&test_case.config).unwrap_or_default();
-    config_str.contains("$UNRESOLVED")
-}
-
 /// Result of running tests for a single file
 struct TestFileResult {
     errors: Vec<String>,
-    skipped_interpolated: usize,
-    skipped_unresolved: usize,
     ran: usize,
 }
 
@@ -322,8 +308,6 @@ struct TestFileResult {
 fn run_test_file(test_file: &CopTestFile, file_path: &PathBuf) -> TestFileResult {
     let mut result = TestFileResult {
         errors: Vec::new(),
-        skipped_interpolated: 0,
-        skipped_unresolved: 0,
         ran: 0,
     };
 
@@ -336,36 +320,13 @@ fn run_test_file(test_file: &CopTestFile, file_path: &PathBuf) -> TestFileResult
         return result;
     }
 
-    // Filter out tests that are:
-    // 1. Interpolated but not verified
-    // 2. Have $UNRESOLVED config values
-    let runnable_tests: Vec<_> = test_file.tests.iter()
-        .filter(|t| {
-            let is_interpolated_unverified = t.interpolated && !t.verified;
-            let has_unresolved = has_unresolved_config(t);
-            !is_interpolated_unverified && !has_unresolved
-        })
-        .collect();
-
-    let skipped_interp = test_file.tests.iter()
-        .filter(|t| t.interpolated && !t.verified)
-        .count();
-    let skipped_unres = test_file.tests.iter()
-        .filter(|t| has_unresolved_config(t))
-        .count();
-
-    result.skipped_interpolated = skipped_interp;
-    result.skipped_unresolved = skipped_unres;
-
     println!(
-        "  Testing {} ({} test cases, {} skipped interpolated, {} skipped unresolved config)",
+        "  Testing {} ({} test cases)",
         test_file.cop,
-        runnable_tests.len(),
-        skipped_interp,
-        skipped_unres
+        test_file.tests.len()
     );
 
-    for test_case in runnable_tests {
+    for test_case in &test_file.tests {
         result.ran += 1;
         let test_errors = run_test_case(test_case, &test_file.cop);
         if !test_errors.is_empty() {
@@ -395,8 +356,6 @@ fn rubocop_parity_tests() {
     let mut total_tests = 0;
     let mut tests_ran = 0;
     let mut skipped_cops = 0;
-    let mut skipped_interpolated = 0;
-    let mut skipped_unresolved = 0;
 
     for file_path in &test_files {
         match load_test_file(file_path) {
@@ -407,8 +366,6 @@ fn rubocop_parity_tests() {
                 total_tests += test_file.tests.len();
                 let result = run_test_file(&test_file, file_path);
                 all_errors.extend(result.errors);
-                skipped_interpolated += result.skipped_interpolated;
-                skipped_unresolved += result.skipped_unresolved;
                 tests_ran += result.ran;
             }
             Err(e) => {
@@ -434,8 +391,6 @@ fn rubocop_parity_tests() {
     println!("  Skipped cops (unimplemented): {}", skipped_cops);
     println!("  Total test cases: {}", total_tests);
     println!("  Tests ran: {}", tests_ran);
-    println!("  Skipped (unverified interpolated): {}", skipped_interpolated);
-    println!("  Skipped (unresolved config): {}", skipped_unresolved);
 
     if !all_errors.is_empty() {
         println!();

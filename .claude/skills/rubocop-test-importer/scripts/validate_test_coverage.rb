@@ -12,7 +12,7 @@ require 'fileutils'
 SCRIPT_DIR = File.dirname(File.expand_path(__FILE__))
 PROJECT_ROOT = File.expand_path('../../../../', SCRIPT_DIR)
 FIXTURES_DIR = File.join(PROJECT_ROOT, 'tests/fixtures')
-RUBOCOP_SPEC_DIR = '/tmp/rubocop-specs/spec/rubocop/cop'
+RUBOCOP_SPEC_DIR = '/tmp/rubocop-repo/spec/rubocop/cop'
 
 DEPARTMENTS = %w[lint style layout metrics naming bundler gemspec security internal_affairs migration].freeze
 

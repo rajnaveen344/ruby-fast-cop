@@ -4,9 +4,9 @@ severity = "convention"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_style_infiniteloop"
+name = "rubocopcopstyleinfiniteloop_registers_an_offense_for_a_while_loop_with_1_as_condition"
 source = '''
-while #{lit}
+while 1
   top
 end
 '''
@@ -15,8 +15,6 @@ loop do
   top
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -25,9 +23,9 @@ column_end = 5
 message = "Use `Kernel#loop` for infinite loops."
 
 [[tests]]
-name = "rubocop_cop_style_infiniteloop"
+name = "rubocopcopstyleinfiniteloop_registers_an_offense_for_a_while_loop_with_20_as_condition"
 source = '''
-until #{lit}
+while 2.0
   top
 end
 '''
@@ -36,8 +34,6 @@ loop do
   top
 end
 '''
-interpolated = true
-verified = false
 
 [[tests.offenses]]
 line = 1
@@ -46,14 +42,90 @@ column_end = 5
 message = "Use `Kernel#loop` for infinite loops."
 
 [[tests]]
-name = "rubocop_cop_style_infiniteloop_accepts_kernel_loop"
+name = "rubocopcopstyleinfiniteloop_registers_an_offense_for_a_while_loop_with_1_as_condition_2"
+source = '''
+while [1]
+  top
+end
+'''
+corrected = '''
+loop do
+  top
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 5
+message = "Use `Kernel#loop` for infinite loops."
+
+[[tests]]
+name = "rubocopcopstyleinfiniteloop_registers_an_offense_for_a_while_loop_with__as_condition"
+source = '''
+while {}
+  top
+end
+'''
+corrected = '''
+loop do
+  top
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 5
+message = "Use `Kernel#loop` for infinite loops."
+
+[[tests]]
+name = "rubocopcopstyleinfiniteloop_registers_an_offense_for_a_until_loop_with_false_as_condition"
+source = '''
+until false
+  top
+end
+'''
+corrected = '''
+loop do
+  top
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 5
+message = "Use `Kernel#loop` for infinite loops."
+
+[[tests]]
+name = "rubocopcopstyleinfiniteloop_registers_an_offense_for_a_until_loop_with_nil_as_condition"
+source = '''
+until nil
+  top
+end
+'''
+corrected = '''
+loop do
+  top
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 5
+message = "Use `Kernel#loop` for infinite loops."
+
+[[tests]]
+name = "rubocopcopstyleinfiniteloop_accepts_kernelloop"
 source = '''
 loop { break if something }
 '''
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_infiniteloop_accepts_while_true_if_loop_would_change_semantics"
+name = "rubocopcopstyleinfiniteloop_accepts_while_true_if_loop__would_change_semantics"
 source = '''
 def f1
   a = nil # This `a` is local to `f1` and should not affect `f2`.
@@ -74,7 +146,7 @@ end
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_infiniteloop_accepts_modifier_while_true_if_loop_would_change_semantics"
+name = "rubocopcopstyleinfiniteloop_accepts_modifier_while_true_if_loop__would_change_semantics"
 source = '''
 a = next_value or break while true
 p a
@@ -82,7 +154,7 @@ p a
 offenses = []
 
 [[tests]]
-name = "rubocop_cop_style_infiniteloop_registers_an_offense_for_modifier_until_false_if_loop_would_not_change_semantics"
+name = "rubocopcopstyleinfiniteloop_registers_an_offense_for_modifier_until_false_if_loop__would_not_change_semantics"
 source = '''
 a = nil
 a = next_value or break until false
@@ -101,7 +173,7 @@ column_end = 29
 message = "Use `Kernel#loop` for infinite loops."
 
 [[tests]]
-name = "rubocop_cop_style_infiniteloop"
+name = "rubocopcopstyleinfiniteloop_registers_an_offense_for_until_false_if_loop__would_work_because_of_previous_assignment_in_a_while_loop"
 source = '''
 while true
   a = 42
@@ -136,7 +208,7 @@ column_end = 5
 message = "Use `Kernel#loop` for infinite loops."
 
 [[tests]]
-name = "rubocop_cop_style_infiniteloop"
+name = "rubocopcopstyleinfiniteloop_registers_an_offense_for_until_false_if_loop__would_work_because_the_assigned_variable_is_not_used_afterwards"
 source = '''
 until false
   a = 43
@@ -157,7 +229,7 @@ column_end = 5
 message = "Use `Kernel#loop` for infinite loops."
 
 [[tests]]
-name = "rubocop_cop_style_infiniteloop"
+name = "rubocopcopstyleinfiniteloop_registers_an_offense_for_while_true_or_until_false_if_loop__would_work_because_of_an_earlier_assignment"
 source = '''
 a = 0
 while true
@@ -196,7 +268,7 @@ column_end = 5
 message = "Use `Kernel#loop` for infinite loops."
 
 [[tests]]
-name = "rubocop_cop_style_infiniteloop"
+name = "rubocopcopstyleinfiniteloop_registers_an_offense_for_while_true_if_loop__would_work_because_it_is_an_instance_variable_being_assigned"
 source = '''
 while true
   @a = 42
@@ -219,9 +291,9 @@ column_end = 5
 message = "Use `Kernel#loop` for infinite loops."
 
 [[tests]]
-name = "rubocop_cop_style_infiniteloop"
+name = "rubocopcopstyleinfiniteloop_behaves_like_autocorrector_autocorrects_single_line_modifier_while"
 source = '''
-something += 1 %{keyword} %{lit} # comment
+something += 1 while true # comment
 '''
 corrected = '''
 loop { something += 1 } # comment
@@ -230,16 +302,105 @@ loop { something += 1 } # comment
 [[tests.offenses]]
 line = 1
 column_start = 15
-column_end = 42
+column_end = 20
 message = "Use `Kernel#loop` for infinite loops."
 
 [[tests]]
-name = "rubocop_cop_style_infiniteloop_with_non_default_indentation_width"
+name = "rubocopcopstyleinfiniteloop_behaves_like_autocorrector_autocorrects_beginendwhile_with_one_statement"
+source = '''
+begin # comment 1
+  something += 1 # comment 2
+end while true # comment 3
+'''
+corrected = '''
+loop do # comment 1
+  something += 1 # comment 2
+end # comment 3
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 4
+column_end = 9
+message = "Use `Kernel#loop` for infinite loops."
+
+[[tests]]
+name = "rubocopcopstyleinfiniteloop_behaves_like_autocorrector_autocorrects_beginendwhile_with_two_statements"
+source = '''
+begin
+  something += 1
+  something_else += 1
+end while true
+'''
+corrected = '''
+loop do
+  something += 1
+  something_else += 1
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 4
+column_end = 9
+message = "Use `Kernel#loop` for infinite loops."
+
+[[tests]]
+name = "rubocopcopstyleinfiniteloop_behaves_like_autocorrector_autocorrects_single_line_modifier_while_with_and"
+source = '''
+something and something_else while true
+'''
+corrected = '''
+loop { something and something_else }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 29
+column_end = 34
+message = "Use `Kernel#loop` for infinite loops."
+
+[[tests]]
+name = "rubocopcopstyleinfiniteloop_behaves_like_autocorrector_autocorrects_the_usage_of_while_with_do"
+source = '''
+while true do
+end
+'''
+corrected = '''
+loop do
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 5
+message = "Use `Kernel#loop` for infinite loops."
+
+[[tests]]
+name = "rubocopcopstyleinfiniteloop_behaves_like_autocorrector_autocorrects_the_usage_of_while_without_do"
+source = '''
+while true
+end
+'''
+corrected = '''
+loop do
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 5
+message = "Use `Kernel#loop` for infinite loops."
+
+[[tests]]
+name = "rubocopcopstyleinfiniteloop_behaves_like_autocorrector_with_nondefault_indentation_width_autocorrects_multiline_modifier_while_and_indents_correctly"
 source = '''
 # comment
 something 1, # comment 1
     # comment 2
-    2 %{keyword} %{lit}
+    2 while true
 '''
 corrected = '''
 # comment
@@ -253,15 +414,30 @@ end
 [[tests.offenses]]
 line = 4
 column_start = 6
-column_end = 23
+column_end = 11
 message = "Use `Kernel#loop` for infinite loops."
 
 [[tests]]
-name = "rubocop_cop_style_infiniteloop"
+name = "rubocopcopstyleinfiniteloop_behaves_like_autocorrector_autocorrects_single_line_modifier_until"
+source = '''
+something += 1 until false # comment
+'''
+corrected = '''
+loop { something += 1 } # comment
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 20
+message = "Use `Kernel#loop` for infinite loops."
+
+[[tests]]
+name = "rubocopcopstyleinfiniteloop_behaves_like_autocorrector_autocorrects_beginenduntil_with_one_statement"
 source = '''
 begin # comment 1
   something += 1 # comment 2
-end %{keyword} %{lit} # comment 3
+end until false # comment 3
 '''
 corrected = '''
 loop do # comment 1
@@ -272,16 +448,16 @@ end # comment 3
 [[tests.offenses]]
 line = 3
 column_start = 4
-column_end = 33
+column_end = 9
 message = "Use `Kernel#loop` for infinite loops."
 
 [[tests]]
-name = "rubocop_cop_style_infiniteloop"
+name = "rubocopcopstyleinfiniteloop_behaves_like_autocorrector_autocorrects_beginenduntil_with_two_statements"
 source = '''
 begin
   something += 1
   something_else += 1
-end %{keyword} %{lit}
+end until false
 '''
 corrected = '''
 loop do
@@ -293,13 +469,13 @@ end
 [[tests.offenses]]
 line = 4
 column_start = 4
-column_end = 21
+column_end = 9
 message = "Use `Kernel#loop` for infinite loops."
 
 [[tests]]
-name = "rubocop_cop_style_infiniteloop"
+name = "rubocopcopstyleinfiniteloop_behaves_like_autocorrector_autocorrects_single_line_modifier_until_with_and"
 source = '''
-something and something_else %{keyword} %{lit}
+something and something_else until false
 '''
 corrected = '''
 loop { something and something_else }
@@ -308,13 +484,13 @@ loop { something and something_else }
 [[tests.offenses]]
 line = 1
 column_start = 29
-column_end = 46
+column_end = 34
 message = "Use `Kernel#loop` for infinite loops."
 
 [[tests]]
-name = "rubocop_cop_style_infiniteloop"
+name = "rubocopcopstyleinfiniteloop_behaves_like_autocorrector_autocorrects_the_usage_of_until_with_do"
 source = '''
-%{keyword} %{lit} do
+until false do
 end
 '''
 corrected = '''
@@ -325,13 +501,13 @@ end
 [[tests.offenses]]
 line = 1
 column_start = 0
-column_end = 20
+column_end = 5
 message = "Use `Kernel#loop` for infinite loops."
 
 [[tests]]
-name = "rubocop_cop_style_infiniteloop"
+name = "rubocopcopstyleinfiniteloop_behaves_like_autocorrector_autocorrects_the_usage_of_until_without_do"
 source = '''
-%{keyword} %{lit}
+until false
 end
 '''
 corrected = '''
@@ -342,33 +518,28 @@ end
 [[tests.offenses]]
 line = 1
 column_start = 0
-column_end = 17
+column_end = 5
 message = "Use `Kernel#loop` for infinite loops."
 
 [[tests]]
-name = "rubocop_cop_style_infiniteloop_autocorrector_while"
+name = "rubocopcopstyleinfiniteloop_behaves_like_autocorrector_with_nondefault_indentation_width_autocorrects_multiline_modifier_until_and_indents_correctly"
 source = '''
-while
+# comment
+something 1, # comment 1
+    # comment 2
+    2 until false
 '''
-offenses = []
+corrected = '''
+# comment
+loop do
+    something 1, # comment 1
+        # comment 2
+        2
+end
+'''
 
-[[tests]]
-name = "rubocop_cop_style_infiniteloop_autocorrector_true"
-source = '''
-true
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_infiniteloop_autocorrector_until"
-source = '''
-until
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_infiniteloop_autocorrector_false"
-source = '''
-false
-'''
-offenses = []
+[[tests.offenses]]
+line = 4
+column_start = 6
+column_end = 11
+message = "Use `Kernel#loop` for infinite loops."

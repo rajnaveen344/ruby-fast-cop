@@ -4,149 +4,7 @@ severity = "convention"
 implemented = false
 
 [[tests]]
-name = "rubocop_cop_style_redundantexception"
-source = '''
-%{keyword} %{runtime_error}, "message"
-'''
-corrected = '''
-#{keyword} "message"
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 38
-message = "Redundant `RuntimeError` argument can be removed."
-
-[[tests]]
-name = "rubocop_cop_style_redundantexception"
-source = '''
-%{keyword}(%{runtime_error}, "message")
-'''
-corrected = '''
-#{keyword}("message")
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 39
-message = "Redundant `RuntimeError` argument can be removed."
-
-[[tests]]
-name = "rubocop_cop_style_redundantexception"
-source = '''
-%{keyword} %{runtime_error}.new "message"
-'''
-corrected = '''
-#{keyword} "message"
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 41
-message = "Redundant `RuntimeError.new` call can be replaced with just the message."
-
-[[tests]]
-name = "rubocop_cop_style_redundantexception"
-source = '''
-%{keyword} %{runtime_error}.new("message")
-'''
-corrected = '''
-#{keyword} "message"
-'''
-interpolated = true
-verified = false
-
-[[tests.offenses]]
-line = 1
-column_start = 0
-column_end = 42
-message = "Redundant `RuntimeError.new` call can be replaced with just the message."
-
-[[tests]]
-name = "rubocop_cop_style_redundantexception"
-source = '''
-#{keyword} #{runtime_error}, 'message', caller
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantexception_accepts_rescue_w_non_redundant_error"
-source = '''
-#{keyword} OtherError, 'message'
-'''
-interpolated = true
-verified = false
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantexception_common_behavior_raise"
-source = '''
-raise
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantexception_common_behavior_runtimeerror"
-source = '''
-RuntimeError
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantexception_common_behavior_raise"
-source = '''
-raise
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantexception_common_behavior_runtimeerror"
-source = '''
-::RuntimeError
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantexception_common_behavior_fail"
-source = '''
-fail
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantexception_common_behavior_runtimeerror"
-source = '''
-RuntimeError
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantexception_common_behavior_fail"
-source = '''
-fail
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantexception_common_behavior_runtimeerror"
-source = '''
-::RuntimeError
-'''
-offenses = []
-
-[[tests]]
-name = "rubocop_cop_style_redundantexception_registers_an_offense_for_raise_with_runtimeerror_message"
+name = "rubocopcopstyleredundantexception_registers_an_offense_for_raise_with_runtimeerror_message"
 source = '''
 raise RuntimeError, "#{message}"
 '''
@@ -161,7 +19,7 @@ column_end = 32
 message = "Redundant `RuntimeError` argument can be removed."
 
 [[tests]]
-name = "rubocop_cop_style_redundantexception_registers_an_offense_for_raise_with_runtimeerror_command"
+name = "rubocopcopstyleredundantexception_registers_an_offense_for_raise_with_runtimeerror_command"
 source = '''
 raise RuntimeError, `command`
 '''
@@ -176,7 +34,7 @@ column_end = 29
 message = "Redundant `RuntimeError` argument can be removed."
 
 [[tests]]
-name = "rubocop_cop_style_redundantexception_registers_an_offense_for_raise_with_runtimeerror_object_new"
+name = "rubocopcopstyleredundantexception_registers_an_offense_for_raise_with_runtimeerror_objectnew"
 source = '''
 raise RuntimeError, Object.new
 '''
@@ -191,7 +49,7 @@ column_end = 30
 message = "Redundant `RuntimeError` argument can be removed."
 
 [[tests]]
-name = "rubocop_cop_style_redundantexception_registers_an_offense_for_raise_with_runtimeerror_new_object_new_and_parans"
+name = "rubocopcopstyleredundantexception_registers_an_offense_for_raise_with_runtimeerrornew_objectnew_and_parans"
 source = '''
 raise RuntimeError.new(Object.new)
 '''
@@ -206,7 +64,7 @@ column_end = 34
 message = "Redundant `RuntimeError.new` call can be replaced with just the message."
 
 [[tests]]
-name = "rubocop_cop_style_redundantexception_registers_an_offense_for_raise_with_runtimeerror_new_object_new_no_parens"
+name = "rubocopcopstyleredundantexception_registers_an_offense_for_raise_with_runtimeerrornew_objectnew_no_parens"
 source = '''
 raise RuntimeError.new Object.new
 '''
@@ -221,7 +79,7 @@ column_end = 33
 message = "Redundant `RuntimeError.new` call can be replaced with just the message."
 
 [[tests]]
-name = "rubocop_cop_style_redundantexception_registers_an_offense_for_raise_with_runtimeerror_variable"
+name = "rubocopcopstyleredundantexception_registers_an_offense_for_raise_with_runtimeerror_variable"
 source = '''
 raise RuntimeError, variable
 '''
@@ -234,3 +92,299 @@ line = 1
 column_start = 0
 column_end = 28
 message = "Redundant `RuntimeError` argument can be removed."
+
+[[tests]]
+name = "rubocopcopstyleredundantexception_behaves_like_common_behavior_reports_an_offense_for_a_raise_with_runtimeerror"
+source = '''
+raise RuntimeError, "message"
+'''
+corrected = '''
+raise "message"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 29
+message = "Redundant `RuntimeError` argument can be removed."
+
+[[tests]]
+name = "rubocopcopstyleredundantexception_behaves_like_common_behavior_reports_an_offense_for_a_raise_with_runtimeerror_and_"
+source = '''
+raise(RuntimeError, "message")
+'''
+corrected = '''
+raise("message")
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 30
+message = "Redundant `RuntimeError` argument can be removed."
+
+[[tests]]
+name = "rubocopcopstyleredundantexception_behaves_like_common_behavior_reports_an_offense_for_a_raise_with_runtimeerrornew"
+source = '''
+raise RuntimeError.new "message"
+'''
+corrected = '''
+raise "message"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 32
+message = "Redundant `RuntimeError.new` call can be replaced with just the message."
+
+[[tests]]
+name = "rubocopcopstyleredundantexception_behaves_like_common_behavior_reports_an_offense_for_a_raise_with_runtimeerrornew_2"
+source = '''
+raise RuntimeError.new("message")
+'''
+corrected = '''
+raise "message"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 33
+message = "Redundant `RuntimeError.new` call can be replaced with just the message."
+
+[[tests]]
+name = "rubocopcopstyleredundantexception_behaves_like_common_behavior_accepts_a_raise_with_runtimeerror_if_it_does_not_have_2_args"
+source = '''
+raise RuntimeError, 'message', caller
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleredundantexception_behaves_like_common_behavior_accepts_rescue_w_non_redundant_error"
+source = '''
+raise OtherError, 'message'
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleredundantexception_behaves_like_common_behavior_reports_an_offense_for_a_raise_with_runtimeerror_2"
+source = '''
+raise ::RuntimeError, "message"
+'''
+corrected = '''
+raise "message"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 31
+message = "Redundant `RuntimeError` argument can be removed."
+
+[[tests]]
+name = "rubocopcopstyleredundantexception_behaves_like_common_behavior_reports_an_offense_for_a_raise_with_runtimeerror_and__2"
+source = '''
+raise(::RuntimeError, "message")
+'''
+corrected = '''
+raise("message")
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 32
+message = "Redundant `RuntimeError` argument can be removed."
+
+[[tests]]
+name = "rubocopcopstyleredundantexception_behaves_like_common_behavior_reports_an_offense_for_a_raise_with_runtimeerrornew_3"
+source = '''
+raise ::RuntimeError.new "message"
+'''
+corrected = '''
+raise "message"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 34
+message = "Redundant `RuntimeError.new` call can be replaced with just the message."
+
+[[tests]]
+name = "rubocopcopstyleredundantexception_behaves_like_common_behavior_reports_an_offense_for_a_raise_with_runtimeerrornew_4"
+source = '''
+raise ::RuntimeError.new("message")
+'''
+corrected = '''
+raise "message"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 35
+message = "Redundant `RuntimeError.new` call can be replaced with just the message."
+
+[[tests]]
+name = "rubocopcopstyleredundantexception_behaves_like_common_behavior_accepts_a_raise_with_runtimeerror_if_it_does_not_have_2_args_2"
+source = '''
+raise ::RuntimeError, 'message', caller
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleredundantexception_behaves_like_common_behavior_accepts_rescue_w_non_redundant_error_2"
+source = '''
+raise OtherError, 'message'
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleredundantexception_behaves_like_common_behavior_reports_an_offense_for_a_fail_with_runtimeerror"
+source = '''
+fail RuntimeError, "message"
+'''
+corrected = '''
+fail "message"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 28
+message = "Redundant `RuntimeError` argument can be removed."
+
+[[tests]]
+name = "rubocopcopstyleredundantexception_behaves_like_common_behavior_reports_an_offense_for_a_fail_with_runtimeerror_and_"
+source = '''
+fail(RuntimeError, "message")
+'''
+corrected = '''
+fail("message")
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 29
+message = "Redundant `RuntimeError` argument can be removed."
+
+[[tests]]
+name = "rubocopcopstyleredundantexception_behaves_like_common_behavior_reports_an_offense_for_a_fail_with_runtimeerrornew"
+source = '''
+fail RuntimeError.new "message"
+'''
+corrected = '''
+fail "message"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 31
+message = "Redundant `RuntimeError.new` call can be replaced with just the message."
+
+[[tests]]
+name = "rubocopcopstyleredundantexception_behaves_like_common_behavior_reports_an_offense_for_a_fail_with_runtimeerrornew_2"
+source = '''
+fail RuntimeError.new("message")
+'''
+corrected = '''
+fail "message"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 32
+message = "Redundant `RuntimeError.new` call can be replaced with just the message."
+
+[[tests]]
+name = "rubocopcopstyleredundantexception_behaves_like_common_behavior_accepts_a_fail_with_runtimeerror_if_it_does_not_have_2_args"
+source = '''
+fail RuntimeError, 'message', caller
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleredundantexception_behaves_like_common_behavior_accepts_rescue_w_non_redundant_error_3"
+source = '''
+fail OtherError, 'message'
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleredundantexception_behaves_like_common_behavior_reports_an_offense_for_a_fail_with_runtimeerror_2"
+source = '''
+fail ::RuntimeError, "message"
+'''
+corrected = '''
+fail "message"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 30
+message = "Redundant `RuntimeError` argument can be removed."
+
+[[tests]]
+name = "rubocopcopstyleredundantexception_behaves_like_common_behavior_reports_an_offense_for_a_fail_with_runtimeerror_and__2"
+source = '''
+fail(::RuntimeError, "message")
+'''
+corrected = '''
+fail("message")
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 31
+message = "Redundant `RuntimeError` argument can be removed."
+
+[[tests]]
+name = "rubocopcopstyleredundantexception_behaves_like_common_behavior_reports_an_offense_for_a_fail_with_runtimeerrornew_3"
+source = '''
+fail ::RuntimeError.new "message"
+'''
+corrected = '''
+fail "message"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 33
+message = "Redundant `RuntimeError.new` call can be replaced with just the message."
+
+[[tests]]
+name = "rubocopcopstyleredundantexception_behaves_like_common_behavior_reports_an_offense_for_a_fail_with_runtimeerrornew_4"
+source = '''
+fail ::RuntimeError.new("message")
+'''
+corrected = '''
+fail "message"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 34
+message = "Redundant `RuntimeError.new` call can be replaced with just the message."
+
+[[tests]]
+name = "rubocopcopstyleredundantexception_behaves_like_common_behavior_accepts_a_fail_with_runtimeerror_if_it_does_not_have_2_args_2"
+source = '''
+fail ::RuntimeError, 'message', caller
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleredundantexception_behaves_like_common_behavior_accepts_rescue_w_non_redundant_error_4"
+source = '''
+fail OtherError, 'message'
+'''
+offenses = []
