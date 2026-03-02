@@ -244,6 +244,12 @@ def generate_toml(cop:, department:, severity:, implemented:, tests:)
     lines << "[[tests]]"
     lines << "name = #{toml_string(ensure_utf8(test[:test_name] || 'unnamed'))}"
 
+    # Output ruby_version if it differs from the default (2.7 in RuboCop).
+    # RuboCop's default TargetRubyVersion is 2.7 (RuboCop::TargetRuby::DEFAULT_VERSION).
+    if test[:ruby_version] && test[:ruby_version] != 2.7
+      lines << "ruby_version = #{toml_string(">= #{test[:ruby_version]}")}"
+    end
+
     source = ensure_utf8(test[:source] || '')
     base_indent = compute_base_indent(source)
 

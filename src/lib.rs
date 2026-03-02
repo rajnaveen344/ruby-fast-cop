@@ -152,8 +152,8 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
 
     // Style/HashSyntax
     if config.is_cop_enabled("Style/HashSyntax") {
-        let style = config
-            .get_cop_config("Style/HashSyntax")
+        let cop_config = config.get_cop_config("Style/HashSyntax");
+        let style = cop_config
             .and_then(|c| c.enforced_style.as_ref())
             .map(|s| match s.as_str() {
                 "hash_rockets" => cops::style::HashSyntaxStyle::HashRockets,
@@ -162,7 +162,31 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
                 _ => cops::style::HashSyntaxStyle::Ruby19,
             })
             .unwrap_or(cops::style::HashSyntaxStyle::Ruby19);
-        result.push(Box::new(cops::style::HashSyntax::new(style)));
+        let shorthand = cop_config
+            .and_then(|c| c.raw.get("EnforcedShorthandSyntax"))
+            .and_then(|v| v.as_str())
+            .map(|s| match s {
+                "always" => cops::style::HashSyntaxShorthandStyle::Always,
+                "never" => cops::style::HashSyntaxShorthandStyle::Never,
+                "consistent" => cops::style::HashSyntaxShorthandStyle::Consistent,
+                "either_consistent" => cops::style::HashSyntaxShorthandStyle::EitherConsistent,
+                _ => cops::style::HashSyntaxShorthandStyle::Either,
+            })
+            .unwrap_or(cops::style::HashSyntaxShorthandStyle::Either);
+        let use_rockets_with_symbols = cop_config
+            .and_then(|c| c.raw.get("UseHashRocketsWithSymbolValues"))
+            .and_then(|v| v.as_bool())
+            .unwrap_or(false);
+        let prefer_rockets_non_alnum = cop_config
+            .and_then(|c| c.raw.get("PreferHashRocketsForNonAlnumEndingSymbols"))
+            .and_then(|v| v.as_bool())
+            .unwrap_or(true);
+        result.push(Box::new(cops::style::HashSyntax::with_config(
+            style,
+            shorthand,
+            use_rockets_with_symbols,
+            prefer_rockets_non_alnum,
+        )));
     }
 
     // Style/MethodCalledOnDoEndBlock
@@ -438,8 +462,8 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
         }
 
         "Style/HashSyntax" => {
-            let style = config
-                .get_cop_config("Style/HashSyntax")
+            let cop_config = config.get_cop_config("Style/HashSyntax");
+            let style = cop_config
                 .and_then(|c| c.enforced_style.as_ref())
                 .map(|s| match s.as_str() {
                     "hash_rockets" => cops::style::HashSyntaxStyle::HashRockets,
@@ -448,7 +472,31 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
                     _ => cops::style::HashSyntaxStyle::Ruby19,
                 })
                 .unwrap_or(cops::style::HashSyntaxStyle::Ruby19);
-            Some(Box::new(cops::style::HashSyntax::new(style)))
+            let shorthand = cop_config
+                .and_then(|c| c.raw.get("EnforcedShorthandSyntax"))
+                .and_then(|v| v.as_str())
+                .map(|s| match s {
+                    "always" => cops::style::HashSyntaxShorthandStyle::Always,
+                    "never" => cops::style::HashSyntaxShorthandStyle::Never,
+                    "consistent" => cops::style::HashSyntaxShorthandStyle::Consistent,
+                    "either_consistent" => cops::style::HashSyntaxShorthandStyle::EitherConsistent,
+                    _ => cops::style::HashSyntaxShorthandStyle::Either,
+                })
+                .unwrap_or(cops::style::HashSyntaxShorthandStyle::Either);
+            let use_rockets_with_symbols = cop_config
+                .and_then(|c| c.raw.get("UseHashRocketsWithSymbolValues"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
+            let prefer_rockets_non_alnum = cop_config
+                .and_then(|c| c.raw.get("PreferHashRocketsForNonAlnumEndingSymbols"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(true);
+            Some(Box::new(cops::style::HashSyntax::with_config(
+                style,
+                shorthand,
+                use_rockets_with_symbols,
+                prefer_rockets_non_alnum,
+            )))
         }
 
         "Style/MethodCalledOnDoEndBlock" => {

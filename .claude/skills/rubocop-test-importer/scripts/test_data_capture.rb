@@ -232,10 +232,23 @@ module TestDataCaptureHook
           .gsub(/[^a-zA-Z0-9_]/, '')
           .downcase
 
+        # Capture target ruby version from RSpec shared contexts (e.g., :ruby21, :ruby31).
+        # The shared contexts define `let(:ruby_version)` which flows into AllCops.TargetRubyVersion.
+        # We only record non-default versions (default is 2.7 in modern RuboCop).
+        target_ruby_version = begin
+          if respond_to?(:ruby_version, true)
+            rv = ruby_version
+            rv if rv.is_a?(Numeric)
+          end
+        rescue => e
+          nil
+        end
+
         # Tag all captures from this example with metadata
         TestDataCapture.captures.each do |capture|
           capture[:test_name] ||= test_name
           capture[:cop_name] ||= cop_name
+          capture[:ruby_version] ||= target_ruby_version if target_ruby_version
         end
       end
     end

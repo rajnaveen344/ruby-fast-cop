@@ -19,7 +19,7 @@ impl<'a> CheckContext<'a> {
         Self {
             source,
             filename,
-            target_ruby_version: 2.5, // Default to oldest supported
+            target_ruby_version: 2.7, // Matches RuboCop's TargetRuby::DEFAULT_VERSION
         }
     }
 
@@ -143,6 +143,15 @@ pub trait Cop: Send + Sync {
 
     /// Check a HashNode
     fn check_hash(&self, _node: &ruby_prism::HashNode, _ctx: &CheckContext) -> Vec<Offense> {
+        vec![]
+    }
+
+    /// Check a KeywordHashNode (implicit hash in method arguments)
+    fn check_keyword_hash(
+        &self,
+        _node: &ruby_prism::KeywordHashNode,
+        _ctx: &CheckContext,
+    ) -> Vec<Offense> {
         vec![]
     }
 
@@ -276,6 +285,14 @@ impl Visit<'_> for CopRunner<'_> {
             self.offenses.extend(cop.check_hash(node, &self.ctx));
         }
         ruby_prism::visit_hash_node(self, node);
+    }
+
+    fn visit_keyword_hash_node(&mut self, node: &ruby_prism::KeywordHashNode) {
+        for cop in self.cops {
+            self.offenses
+                .extend(cop.check_keyword_hash(node, &self.ctx));
+        }
+        ruby_prism::visit_keyword_hash_node(self, node);
     }
 
     fn visit_block_node(&mut self, node: &ruby_prism::BlockNode) {

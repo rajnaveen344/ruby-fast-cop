@@ -8,7 +8,10 @@ mod string_methods;
 
 pub use auto_resource_cleanup::AutoResourceCleanup;
 pub use format_string_token::{EnforcedStyle as FormatStringTokenStyle, FormatStringToken};
-pub use hash_syntax::{EnforcedStyle as HashSyntaxStyle, HashSyntax};
+pub use hash_syntax::{
+    EnforcedShorthandSyntax as HashSyntaxShorthandStyle, EnforcedStyle as HashSyntaxStyle,
+    HashSyntax,
+};
 pub use method_called_on_do_end_block::MethodCalledOnDoEndBlock;
 pub use raise_args::{EnforcedStyle as RaiseArgsStyle, RaiseArgs};
 pub use rescue_standard_error::{EnforcedStyle as RescueStandardErrorStyle, RescueStandardError};

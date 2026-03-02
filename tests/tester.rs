@@ -8,8 +8,9 @@ use ruby_fast_cop::{check_source_with_cop_config_and_version, Config, Offense};
 use serde::Deserialize;
 use std::path::PathBuf;
 
-/// Default Ruby version for tests without a specified version
-const DEFAULT_RUBY_VERSION: f64 = 2.5;
+/// Default Ruby version for tests without a specified version.
+/// Matches RuboCop's TargetRuby::DEFAULT_VERSION (2.7).
+const DEFAULT_RUBY_VERSION: f64 = 2.7;
 
 /// Represents a complete test file for a cop
 #[derive(Debug, Deserialize)]
