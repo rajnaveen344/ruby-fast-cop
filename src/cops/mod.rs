@@ -317,7 +317,7 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(lint::Debugger::new()),
         Box::new(lint::AssignmentInCondition::new(false)), // User's config: AllowSafeAssignment: false
         // Layout
-        Box::new(layout::LineLength::new(160)), // User's config: Max: 160
+        Box::new(layout::LineLength::new(160)), // User's config: Max: 160 (allow_uri=true by default)
         // Metrics
         Box::new(metrics::BlockLength::new(50)), // User's config: Max: 50
         // Style

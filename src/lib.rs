@@ -221,12 +221,37 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
                 .and_then(|c| c.raw.get("AllowURI"))
                 .and_then(|v| v.as_bool())
                 .unwrap_or(true);
+            // AllowHeredoc can be bool or array of delimiter strings
             let allow_heredoc = cop_config
                 .and_then(|c| c.raw.get("AllowHeredoc"))
-                .and_then(|v| v.as_bool())
-                .unwrap_or(false);
+                .map(|v| {
+                    if let Some(b) = v.as_bool() {
+                        if b {
+                            cops::layout::AllowHeredoc::All
+                        } else {
+                            cops::layout::AllowHeredoc::Disabled
+                        }
+                    } else if let Some(seq) = v.as_sequence() {
+                        let delimiters: Vec<String> = seq
+                            .iter()
+                            .filter_map(|v| v.as_str().map(|s| s.to_string()))
+                            .collect();
+                        cops::layout::AllowHeredoc::Specific(delimiters)
+                    } else {
+                        cops::layout::AllowHeredoc::Disabled
+                    }
+                })
+                .unwrap_or(cops::layout::AllowHeredoc::Disabled);
             let allow_qualified_name = cop_config
                 .and_then(|c| c.raw.get("AllowQualifiedName"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
+            let allow_cop_directives = cop_config
+                .and_then(|c| c.raw.get("AllowCopDirectives"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
+            let allow_rbs_inline_annotation = cop_config
+                .and_then(|c| c.raw.get("AllowRBSInlineAnnotation"))
                 .and_then(|v| v.as_bool())
                 .unwrap_or(false);
             let uri_schemes = cop_config
@@ -257,6 +282,8 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
                 allow_uri,
                 allow_heredoc,
                 allow_qualified_name,
+                allow_cop_directives,
+                allow_rbs_inline_annotation,
                 uri_schemes,
                 allowed_patterns,
                 tab_width,
