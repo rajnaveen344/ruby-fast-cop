@@ -208,7 +208,7 @@ end
 def compute_base_indent(source)
   indents = source.lines
     .reject { |l| l.strip.empty? }
-    .map { |l| l[/^\s*/].length }
+    .map { |l| l[/^ */].length }
 
   return nil if indents.empty?
   min_indent = indents.min
@@ -251,10 +251,8 @@ def generate_toml(cop:, department:, severity:, implemented:, tests:)
       stripped = source.lines.map { |l|
         if l.strip.empty?
           "\n"
-        elsif l.length > base_indent
-          l[base_indent..]
         else
-          l.lstrip
+          l.sub(/^ {#{base_indent}}/, '')
         end
       }.join.chomp
       lines << "source = #{toml_literal_string(stripped)}"

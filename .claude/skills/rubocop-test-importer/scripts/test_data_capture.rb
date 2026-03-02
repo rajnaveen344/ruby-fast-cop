@@ -65,21 +65,6 @@ module TestDataCapture
             message: message
           }
         end
-      elsif line =~ /\A(\s*)(_{2,})\s?(.*)/
-        # Underscore markers (used for offset placeholders — treat like carets)
-        prefix = $1
-        underscores = $2
-        message = $3.rstrip
-
-        line_number = source_lines.size
-        line_number = 1 if line_number == 0
-
-        offenses << {
-          line: line_number,
-          column_start: prefix.length,
-          column_end: prefix.length + underscores.length,
-          message: message
-        }
       else
         source_lines << line
       end
@@ -155,17 +140,40 @@ module TestDataCapture
 
   private
 
-  # Extract the cop_config hash from the current test context.
-  # This accesses the `cop_config` let variable which contains
-  # the overrides hash (not full merged config).
+  # Meta keys that should be filtered out from cop config.
+  # These are RuboCop infrastructure keys, not behavioral settings.
+  CONFIG_META_KEYS = %w[
+    Enabled Description StyleGuide Safe SafeAutoCorrect VersionAdded
+    VersionChanged VersionRemoved Reference AutoCorrect Severity
+    Details SupportedStyles SupportedEnforcedStyles
+  ].freeze
+
+  # Extract the cop config from the fully-resolved cop object.
+  # Uses cop.cop_config (the merged config) instead of the cop_config
+  # let variable, which may not reflect all config overrides (e.g.,
+  # those set via `let(:config)` or `let(:cop_options)`).
   def extract_config_hash
-    return {} unless respond_to?(:cop_config, true)
+    # Try the cop object's fully-resolved config first
+    if respond_to?(:cop, true)
+      cop_obj = cop
+      if cop_obj.respond_to?(:cop_config)
+        raw = cop_obj.cop_config
+        if raw.is_a?(Hash)
+          filtered = normalize_config(raw).reject { |k, _| CONFIG_META_KEYS.include?(k) }
+          return filtered
+        end
+      end
+    end
 
-    raw_config = cop_config
-    return {} unless raw_config.is_a?(Hash)
+    # Fallback: try the cop_config let variable (older-style tests)
+    if respond_to?(:cop_config, true)
+      raw_config = cop_config
+      if raw_config.is_a?(Hash)
+        return normalize_config(raw_config)
+      end
+    end
 
-    # Convert symbol keys to string keys and normalize values
-    normalize_config(raw_config)
+    {}
   rescue NameError, NoMethodError
     {}
   end
