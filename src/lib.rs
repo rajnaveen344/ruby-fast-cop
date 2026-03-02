@@ -105,8 +105,8 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
 
     // Style/FormatStringToken
     if config.is_cop_enabled("Style/FormatStringToken") {
-        let style = config
-            .get_cop_config("Style/FormatStringToken")
+        let cop_config = config.get_cop_config("Style/FormatStringToken");
+        let style = cop_config
             .and_then(|c| c.enforced_style.as_ref())
             .map(|s| match s.as_str() {
                 "template" => cops::style::FormatStringTokenStyle::Template,
@@ -114,7 +114,40 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
                 _ => cops::style::FormatStringTokenStyle::Annotated,
             })
             .unwrap_or(cops::style::FormatStringTokenStyle::Annotated);
-        result.push(Box::new(cops::style::FormatStringToken::new(style)));
+        let max_unannotated = cop_config
+            .and_then(|c| c.raw.get("MaxUnannotatedPlaceholdersAllowed"))
+            .and_then(|v| v.as_u64())
+            .unwrap_or(0) as usize;
+        let conservative = cop_config
+            .and_then(|c| c.raw.get("Mode"))
+            .and_then(|v| v.as_str())
+            .map(|s| s == "conservative")
+            .unwrap_or(false);
+        let allowed_methods = cop_config
+            .and_then(|c| c.raw.get("AllowedMethods"))
+            .and_then(|v| v.as_sequence())
+            .map(|seq| {
+                seq.iter()
+                    .filter_map(|v| v.as_str().map(String::from))
+                    .collect()
+            })
+            .unwrap_or_default();
+        let allowed_patterns = cop_config
+            .and_then(|c| c.raw.get("AllowedPatterns"))
+            .and_then(|v| v.as_sequence())
+            .map(|seq| {
+                seq.iter()
+                    .filter_map(|v| v.as_str().map(String::from))
+                    .collect()
+            })
+            .unwrap_or_default();
+        result.push(Box::new(cops::style::FormatStringToken::with_config(
+            style,
+            max_unannotated,
+            conservative,
+            allowed_methods,
+            allowed_patterns,
+        )));
     }
 
     // Style/HashSyntax
@@ -348,8 +381,8 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
         "Style/AutoResourceCleanup" => Some(Box::new(cops::style::AutoResourceCleanup::new())),
 
         "Style/FormatStringToken" => {
-            let style = config
-                .get_cop_config("Style/FormatStringToken")
+            let cop_config = config.get_cop_config("Style/FormatStringToken");
+            let style = cop_config
                 .and_then(|c| c.enforced_style.as_ref())
                 .map(|s| match s.as_str() {
                     "template" => cops::style::FormatStringTokenStyle::Template,
@@ -357,7 +390,40 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
                     _ => cops::style::FormatStringTokenStyle::Annotated,
                 })
                 .unwrap_or(cops::style::FormatStringTokenStyle::Annotated);
-            Some(Box::new(cops::style::FormatStringToken::new(style)))
+            let max_unannotated = cop_config
+                .and_then(|c| c.raw.get("MaxUnannotatedPlaceholdersAllowed"))
+                .and_then(|v| v.as_u64())
+                .unwrap_or(0) as usize;
+            let conservative = cop_config
+                .and_then(|c| c.raw.get("Mode"))
+                .and_then(|v| v.as_str())
+                .map(|s| s == "conservative")
+                .unwrap_or(false);
+            let allowed_methods = cop_config
+                .and_then(|c| c.raw.get("AllowedMethods"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| {
+                    seq.iter()
+                        .filter_map(|v| v.as_str().map(String::from))
+                        .collect()
+                })
+                .unwrap_or_default();
+            let allowed_patterns = cop_config
+                .and_then(|c| c.raw.get("AllowedPatterns"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| {
+                    seq.iter()
+                        .filter_map(|v| v.as_str().map(String::from))
+                        .collect()
+                })
+                .unwrap_or_default();
+            Some(Box::new(cops::style::FormatStringToken::with_config(
+                style,
+                max_unannotated,
+                conservative,
+                allowed_methods,
+                allowed_patterns,
+            )))
         }
 
         "Style/HashSyntax" => {

@@ -89,6 +89,28 @@ module TestDataCapture
 
     clean_source, offenses = TestDataCapture.parse_annotated_source(source)
 
+    # Resolve abbreviated messages: RuboCop's expect_offense format allows
+    # "[...]" as a wildcard suffix to truncate long messages. We need the
+    # full messages for our test fixtures, so run the cop via super and
+    # use the actual offense messages to replace abbreviated ones.
+    if offenses.any? { |o| o[:message].include?('[...]') }
+      begin
+        actual_offenses = super(source, file, severity: severity, chomp: chomp, **replacements)
+        if actual_offenses.is_a?(Array)
+          offenses.each do |parsed|
+            next unless parsed[:message].include?('[...]')
+            match = actual_offenses.find do |actual|
+              actual.line == parsed[:line] &&
+                actual.column == parsed[:column_start]
+            end
+            parsed[:message] = match.message if match
+          end
+        end
+      rescue => e
+        $stderr.puts "[TestDataCapture] Could not resolve [...] messages: #{e.message}"
+      end
+    end
+
     # Extract cop config if available
     config_hash = extract_config_hash
 
@@ -99,10 +121,7 @@ module TestDataCapture
       corrected: nil
     }
   rescue => e
-    # If anything goes wrong, still try to call super so the test suite
-    # doesn't break in unexpected ways. But log the error.
     $stderr.puts "[TestDataCapture] Error in expect_offense: #{e.message}"
-    super
   end
 
   # Override expect_no_offenses to capture test data
