@@ -4,6 +4,7 @@
 
 use crate::cops::{CheckContext, Cop};
 use crate::offense::{Offense, Severity};
+use ruby_prism::Visit;
 
 /// Default debugger methods from RuboCop's default.yml
 const DEBUGGER_METHODS: &[&str] = &[
@@ -50,99 +51,32 @@ const DEBUGGER_METHODS: &[&str] = &[
 /// Default debugger requires from RuboCop's default.yml
 const DEBUGGER_REQUIRES: &[&str] = &["debug/open", "debug/start"];
 
-pub struct Debugger;
+pub struct Debugger {
+    debugger_methods: Vec<String>,
+    debugger_requires: Vec<String>,
+}
 
 impl Debugger {
     pub fn new() -> Self {
-        Self
+        Self::with_config(
+            DEBUGGER_METHODS.iter().map(|s| s.to_string()).collect(),
+            DEBUGGER_REQUIRES.iter().map(|s| s.to_string()).collect(),
+        )
     }
 
-    /// Build the chained method name like "binding.pry" or "Kernel.binding.irb"
-    fn chained_method_name(&self, node: &ruby_prism::CallNode, ctx: &CheckContext) -> String {
-        let method_name = String::from_utf8_lossy(node.name().as_slice()).to_string();
-
-        let mut parts = vec![method_name];
-        let mut current_receiver = node.receiver();
-
-        loop {
-            match current_receiver {
-                Some(ref recv) => match recv {
-                    ruby_prism::Node::CallNode { .. } => {
-                        let call_node = recv.as_call_node().unwrap();
-                        let name =
-                            String::from_utf8_lossy(call_node.name().as_slice()).to_string();
-                        parts.push(name);
-                        current_receiver = call_node.receiver();
-                    }
-                    ruby_prism::Node::ConstantReadNode { .. } => {
-                        let loc = recv.location();
-                        if let Some(bytes) = ctx
-                            .source
-                            .as_bytes()
-                            .get(loc.start_offset()..loc.end_offset())
-                        {
-                            let name = String::from_utf8_lossy(bytes).to_string();
-                            parts.push(name);
-                        }
-                        break;
-                    }
-                    _ => break,
-                },
-                None => break,
-            }
+    pub fn with_config(methods: Vec<String>, requires: Vec<String>) -> Self {
+        Self {
+            debugger_methods: methods,
+            debugger_requires: requires,
         }
-
-        parts.reverse();
-        parts.join(".")
     }
 
-    /// Check if this is a debugger method call
-    fn is_debugger_method(&self, node: &ruby_prism::CallNode, ctx: &CheckContext) -> bool {
-        let chained_name = self.chained_method_name(node, ctx);
-        DEBUGGER_METHODS.contains(&chained_name.as_str())
+    pub fn default_methods() -> Vec<String> {
+        DEBUGGER_METHODS.iter().map(|s| s.to_string()).collect()
     }
 
-    /// Check if this is a require statement for a debugger
-    fn is_debugger_require(&self, node: &ruby_prism::CallNode, ctx: &CheckContext) -> bool {
-        let method_name = String::from_utf8_lossy(node.name().as_slice());
-        if method_name != "require" {
-            return false;
-        }
-
-        // Check if receiver is nil (bare require call)
-        if node.receiver().is_some() {
-            return false;
-        }
-
-        // Get the first argument
-        if let Some(args) = node.arguments() {
-            let arg_list: Vec<_> = args.arguments().iter().collect();
-            if arg_list.len() == 1 {
-                if let ruby_prism::Node::StringNode { .. } = &arg_list[0] {
-                    let str_node = arg_list[0].as_string_node().unwrap();
-                    let loc = str_node.content_loc();
-                    if let Some(bytes) = ctx
-                        .source
-                        .as_bytes()
-                        .get(loc.start_offset()..loc.end_offset())
-                    {
-                        let content = String::from_utf8_lossy(bytes);
-                        return DEBUGGER_REQUIRES.contains(&content.as_ref());
-                    }
-                }
-            }
-        }
-
-        false
-    }
-
-    /// Get the source text for the node
-    fn node_source(&self, node: &ruby_prism::CallNode, ctx: &CheckContext) -> String {
-        let loc = node.location();
-        ctx.source
-            .get(loc.start_offset()..loc.end_offset())
-            .unwrap_or("")
-            .to_string()
+    pub fn default_requires() -> Vec<String> {
+        DEBUGGER_REQUIRES.iter().map(|s| s.to_string()).collect()
     }
 }
 
@@ -161,18 +95,269 @@ impl Cop for Debugger {
         Severity::Warning
     }
 
-    fn check_call(&self, node: &ruby_prism::CallNode, ctx: &CheckContext) -> Vec<Offense> {
-        if self.is_debugger_method(node, ctx) || self.is_debugger_require(node, ctx) {
-            let source = self.node_source(node, ctx);
-            let message = format!("Remove debugger entry point `{}`.", source);
-            vec![ctx.offense(
-                self.name(),
-                &message,
-                self.severity(),
-                &node.location(),
-            )]
-        } else {
-            vec![]
+    fn check_program(
+        &self,
+        node: &ruby_prism::ProgramNode,
+        ctx: &CheckContext,
+    ) -> Vec<Offense> {
+        let mut visitor = DebuggerVisitor {
+            ctx,
+            debugger: self,
+            offenses: Vec::new(),
+            call_ancestor_depth: 0,
+            block_ancestor_depth: 0,
+            parent_is_call: false,
+        };
+        visitor.visit_program_node(node);
+        visitor.offenses
+    }
+}
+
+/// AST visitor that walks the tree with parent context tracking,
+/// needed for the `assumed_usage_context?` logic.
+struct DebuggerVisitor<'a> {
+    ctx: &'a CheckContext<'a>,
+    debugger: &'a Debugger,
+    offenses: Vec<Offense>,
+    /// How many CallNode ancestors the current position has
+    call_ancestor_depth: usize,
+    /// How many block-like ancestors (Block, Lambda, Begin) the current position has
+    block_ancestor_depth: usize,
+    /// Whether the immediate parent is a CallNode
+    parent_is_call: bool,
+}
+
+impl<'a> DebuggerVisitor<'a> {
+    fn check_call(&mut self, node: &ruby_prism::CallNode) {
+        let is_method = self.is_debugger_method(node);
+        let is_require = self.is_debugger_require(node);
+
+        if !is_method && !is_require {
+            return;
+        }
+
+        // For method matches (not requires), check assumed_usage_context
+        if is_method && self.assumed_usage_context(node) {
+            return;
+        }
+
+        let source = self.call_source_without_block(node);
+        let message = format!("Remove debugger entry point `{}`.", source);
+        let (start, end) = self.call_range_without_block(node);
+        self.offenses.push(self.ctx.offense_with_range(
+            self.debugger.name(),
+            &message,
+            self.debugger.severity(),
+            start,
+            end,
+        ));
+    }
+
+    /// Implements RuboCop's `assumed_usage_context?` logic.
+    /// Returns true if the debugger call is likely used as a value (not a debugging entry point).
+    fn assumed_usage_context(&self, node: &ruby_prism::CallNode) -> bool {
+        // Must have no arguments to be an assumed usage
+        if node.arguments().is_some() {
+            return false;
+        }
+        // Must have a call ancestor
+        if self.call_ancestor_depth == 0 {
+            return false;
+        }
+        // If immediate parent is a call (receiver or argument), it's an assumed argument
+        if self.parent_is_call {
+            return true;
+        }
+        // If there are no block-like ancestors, it's assumed usage context
+        self.block_ancestor_depth == 0
+    }
+
+    fn is_debugger_method(&self, node: &ruby_prism::CallNode) -> bool {
+        let chained_name = chained_method_name(node, self.ctx);
+        self.debugger.debugger_methods.iter().any(|m| m == &chained_name)
+    }
+
+    fn is_debugger_require(&self, node: &ruby_prism::CallNode) -> bool {
+        let method_name = String::from_utf8_lossy(node.name().as_slice());
+        if method_name != "require" {
+            return false;
+        }
+        if node.receiver().is_some() {
+            return false;
+        }
+        if let Some(args) = node.arguments() {
+            let arg_list: Vec<_> = args.arguments().iter().collect();
+            if arg_list.len() == 1 {
+                if let ruby_prism::Node::StringNode { .. } = &arg_list[0] {
+                    let str_node = arg_list[0].as_string_node().unwrap();
+                    let loc = str_node.content_loc();
+                    if let Some(bytes) = self
+                        .ctx
+                        .source
+                        .as_bytes()
+                        .get(loc.start_offset()..loc.end_offset())
+                    {
+                        let content = String::from_utf8_lossy(bytes);
+                        return self
+                            .debugger
+                            .debugger_requires
+                            .iter()
+                            .any(|r| r == content.as_ref());
+                    }
+                }
+            }
+        }
+        false
+    }
+
+    /// Get the source text of a call excluding any block.
+    fn call_source_without_block(&self, node: &ruby_prism::CallNode) -> String {
+        let (start, end) = self.call_range_without_block(node);
+        self.ctx
+            .source
+            .get(start..end)
+            .unwrap_or("")
+            .to_string()
+    }
+
+    /// Get the byte range of a call excluding any block.
+    /// This matches RuboCop's behavior where the send node doesn't include the block.
+    fn call_range_without_block(&self, node: &ruby_prism::CallNode) -> (usize, usize) {
+        let start = node.location().start_offset();
+        // If there's a closing paren, end there
+        if let Some(closing) = node.closing_loc() {
+            return (start, closing.end_offset());
+        }
+        // If there are arguments, end at the last argument
+        if let Some(args) = node.arguments() {
+            let arg_list: Vec<_> = args.arguments().iter().collect();
+            if let Some(last_arg) = arg_list.last() {
+                return (start, last_arg.location().end_offset());
+            }
+        }
+        // Otherwise, end at the method name (excludes block)
+        if let Some(msg_loc) = node.message_loc() {
+            return (start, msg_loc.end_offset());
+        }
+        (start, node.location().end_offset())
+    }
+}
+
+impl Visit<'_> for DebuggerVisitor<'_> {
+    fn visit_call_node(&mut self, node: &ruby_prism::CallNode) {
+        self.check_call(node);
+
+        let prev_parent_is_call = self.parent_is_call;
+        let prev_call_depth = self.call_ancestor_depth;
+        self.parent_is_call = true;
+        self.call_ancestor_depth += 1;
+
+        ruby_prism::visit_call_node(self, node);
+
+        self.parent_is_call = prev_parent_is_call;
+        self.call_ancestor_depth = prev_call_depth;
+    }
+
+    fn visit_block_node(&mut self, node: &ruby_prism::BlockNode) {
+        let prev_parent = self.parent_is_call;
+        self.parent_is_call = false;
+        self.block_ancestor_depth += 1;
+
+        ruby_prism::visit_block_node(self, node);
+
+        self.parent_is_call = prev_parent;
+        self.block_ancestor_depth -= 1;
+    }
+
+    fn visit_lambda_node(&mut self, node: &ruby_prism::LambdaNode) {
+        let prev_parent = self.parent_is_call;
+        self.parent_is_call = false;
+        self.block_ancestor_depth += 1;
+
+        ruby_prism::visit_lambda_node(self, node);
+
+        self.parent_is_call = prev_parent;
+        self.block_ancestor_depth -= 1;
+    }
+
+    fn visit_begin_node(&mut self, node: &ruby_prism::BeginNode) {
+        let prev_parent = self.parent_is_call;
+        self.parent_is_call = false;
+        self.block_ancestor_depth += 1;
+
+        ruby_prism::visit_begin_node(self, node);
+
+        self.parent_is_call = prev_parent;
+        self.block_ancestor_depth -= 1;
+    }
+}
+
+/// Build the chained method name like "binding.pry" or "Kernel.binding.irb"
+/// Handles ConstantPathNode for "Foo::Bar::Baz.debug" and "::Pry.rescue"
+fn chained_method_name(node: &ruby_prism::CallNode, ctx: &CheckContext) -> String {
+    let method_name = String::from_utf8_lossy(node.name().as_slice()).to_string();
+
+    let mut parts = vec![method_name];
+    let mut current_receiver = node.receiver();
+
+    loop {
+        match current_receiver {
+            Some(ref recv) => match recv {
+                ruby_prism::Node::CallNode { .. } => {
+                    let call_node = recv.as_call_node().unwrap();
+                    let name =
+                        String::from_utf8_lossy(call_node.name().as_slice()).to_string();
+                    parts.push(name);
+                    current_receiver = call_node.receiver();
+                }
+                ruby_prism::Node::ConstantReadNode { .. } => {
+                    let const_node = recv.as_constant_read_node().unwrap();
+                    let name =
+                        String::from_utf8_lossy(const_node.name().as_slice()).to_string();
+                    parts.push(name);
+                    break;
+                }
+                ruby_prism::Node::ConstantPathNode { .. } => {
+                    let path = full_const_path(recv, ctx);
+                    parts.push(path);
+                    break;
+                }
+                _ => break,
+            },
+            None => break,
+        }
+    }
+
+    parts.reverse();
+    parts.join(".")
+}
+
+/// Recursively build the full constant path string like "Foo::Bar::Baz" or "Pry"
+fn full_const_path(node: &ruby_prism::Node, ctx: &CheckContext) -> String {
+    match node {
+        ruby_prism::Node::ConstantReadNode { .. } => {
+            let const_node = node.as_constant_read_node().unwrap();
+            String::from_utf8_lossy(const_node.name().as_slice()).to_string()
+        }
+        ruby_prism::Node::ConstantPathNode { .. } => {
+            let path_node = node.as_constant_path_node().unwrap();
+            let name = path_node
+                .name()
+                .map(|n| String::from_utf8_lossy(n.as_slice()).to_string())
+                .unwrap_or_default();
+            if let Some(parent) = path_node.parent() {
+                format!("{}::{}", full_const_path(&parent, ctx), name)
+            } else {
+                // ::Foo (root-scoped constant) - just use the name for matching
+                name
+            }
+        }
+        _ => {
+            let loc = node.location();
+            ctx.source
+                .get(loc.start_offset()..loc.end_offset())
+                .unwrap_or("")
+                .to_string()
         }
     }
 }

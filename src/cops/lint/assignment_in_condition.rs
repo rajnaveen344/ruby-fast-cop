@@ -152,15 +152,15 @@ impl AssignmentInCondition {
                 // ||= and &&= are generally allowed in conditions
             }
             // Parenthesized expression - check inside
+            // When allow_safe_assignment is true, individual assignments that are
+            // directly wrapped in parens (e.g., `(x = 1)`) will be skipped by
+            // is_safe_assignment_lvar/is_safe_assignment_node. But we still need
+            // to recurse to find assignments NOT directly wrapped, e.g.,
+            // `(foo && x = 1)` should still flag `x = 1`.
             ruby_prism::Node::ParenthesesNode { .. } => {
                 let paren = node.as_parentheses_node().unwrap();
                 if let Some(body) = paren.body() {
-                    if self.allow_safe_assignment {
-                        // Parentheses make it safe, don't check inside
-                    } else {
-                        // When safe assignment is not allowed, check inside the parens
-                        self.check_condition(&body, ctx, offenses, inside_block);
-                    }
+                    self.check_condition(&body, ctx, offenses, inside_block);
                 }
             }
             // And/Or expressions - check both sides

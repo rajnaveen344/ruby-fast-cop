@@ -237,7 +237,18 @@ pub fn check_source_with_cop_config_and_version(
 /// Build a single cop with the given configuration
 pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops::Cop>> {
     match cop_name {
-        "Lint/Debugger" => Some(Box::new(cops::lint::Debugger::new())),
+        "Lint/Debugger" => {
+            let cop_config = config.get_cop_config("Lint/Debugger");
+            let methods = cop_config
+                .and_then(|c| c.raw.get("DebuggerMethods"))
+                .and_then(parse_debugger_list)
+                .unwrap_or_else(cops::lint::Debugger::default_methods);
+            let requires = cop_config
+                .and_then(|c| c.raw.get("DebuggerRequires"))
+                .and_then(parse_debugger_list)
+                .unwrap_or_else(cops::lint::Debugger::default_requires);
+            Some(Box::new(cops::lint::Debugger::with_config(methods, requires)))
+        }
 
         "Lint/AssignmentInCondition" => {
             let allow_safe = config
@@ -487,6 +498,57 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
 
         _ => None,
     }
+}
+
+/// Parse a DebuggerMethods or DebuggerRequires config value.
+/// Handles both array format (flat list) and hash format (grouped by category).
+/// For hash format, values that are empty strings, false, or null are skipped (disabled groups).
+/// Returns None if the value is null/missing so the caller can use defaults.
+fn parse_debugger_list(value: &serde_yaml::Value) -> Option<Vec<String>> {
+    if value.is_null() {
+        return None;
+    }
+    // Array format: ["method1", "method2"]
+    if let Some(seq) = value.as_sequence() {
+        return Some(
+            seq.iter()
+                .filter_map(|v| v.as_str().map(String::from))
+                .collect(),
+        );
+    }
+    // Hash format: { GroupName: ["method1", "method2"], DisabledGroup: null }
+    if let Some(map) = value.as_mapping() {
+        let mut result = Vec::new();
+        for (_key, val) in map {
+            // Skip disabled groups: null, false, empty string
+            if val.is_null() {
+                continue;
+            }
+            if let Some(b) = val.as_bool() {
+                if !b {
+                    continue;
+                }
+            }
+            if let Some(s) = val.as_str() {
+                if s.is_empty() {
+                    continue;
+                }
+                // Single string value
+                result.push(s.to_string());
+                continue;
+            }
+            // Array of strings
+            if let Some(seq) = val.as_sequence() {
+                for item in seq {
+                    if let Some(s) = item.as_str() {
+                        result.push(s.to_string());
+                    }
+                }
+            }
+        }
+        return Some(result);
+    }
+    None
 }
 
 /// Find unsupported cops in the configuration
