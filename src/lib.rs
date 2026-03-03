@@ -664,6 +664,10 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
                 .and_then(|v| v.as_u64())
                 .map(|v| v as usize)
                 .unwrap_or(2);
+            let split_strings = cop_config
+                .and_then(|c| c.raw.get("SplitStrings"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
             Some(Box::new(cops::layout::LineLength::with_config(
                 max,
                 allow_uri,
@@ -674,6 +678,7 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
                 uri_schemes,
                 allowed_patterns,
                 tab_width,
+                split_strings,
             )))
         }
 

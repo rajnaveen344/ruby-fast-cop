@@ -168,7 +168,7 @@ ruby-fast-cop -A .
 
 ### How Autocorrect Works: RuboCop vs Ruff vs ruby-fast-cop
 
-All three tools find style violations then **rewrite the source file** with fixes applied. The key difference is *how* they apply multiple edits and handle cascading fixes (where one cop's fix creates a new violation for another cop).
+All three tools find style violations then **rewrite the source file** with fixes applied. The key difference is _how_ they apply multiple edits and handle cascading fixes (where one cop's fix creates a new violation for another cop).
 
 #### RuboCop — Iterative Re-Parse (up to 200 passes)
 
@@ -204,6 +204,7 @@ source.rb → Parse (Prism) → Run cops → Forward-walk apply
 ```
 
 We use the same forward-walk algorithm as Ruff with three safety mechanisms:
+
 - **Max 10 iterations** — can't loop forever
 - **Cycle detection** — if we see the same source hash twice, stop (two cops fighting each other)
 - **No-change detection** — if edits produce identical output, stop immediately
@@ -217,14 +218,14 @@ Pass 2: FrozenStringLiteralComment      →  (adds # frozen_string_literal: true
 Pass 3: No more corrections             →  STOP, write file once
 ```
 
-| | RuboCop | Ruff | ruby-fast-cop |
-|---|---|---|---|
-| Language | Ruby | Rust | Rust |
-| Max iterations | 200 | 10 | 10 |
-| Edit strategy | end-to-start | forward-walk | forward-walk |
-| File writes | every pass | once at end | once at end |
-| Overlap handling | re-parse | skip + retry | skip + retry |
-| Cycle detection | no (just cap) | yes (hash) | yes (hash) |
+|                  | RuboCop       | Ruff         | ruby-fast-cop |
+| ---------------- | ------------- | ------------ | ------------- |
+| Language         | Ruby          | Rust         | Rust          |
+| Max iterations   | 200           | 10           | 10            |
+| Edit strategy    | end-to-start  | forward-walk | forward-walk  |
+| File writes      | every pass    | once at end  | once at end   |
+| Overlap handling | re-parse      | skip + retry | skip + retry  |
+| Cycle detection  | no (just cap) | yes (hash)   | yes (hash)    |
 
 ## Library Usage
 
