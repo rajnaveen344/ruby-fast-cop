@@ -3,7 +3,7 @@
 //! Ported from: https://github.com/rubocop/rubocop/blob/master/lib/rubocop/cop/style/numeric_literals.rb
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Location, Offense, Severity};
+use crate::offense::{Correction, Location, Offense, Severity};
 use regex::Regex;
 use ruby_prism::Visit;
 
@@ -134,6 +134,60 @@ impl NumericLiterals {
         }
 
         true
+    }
+
+    /// Format the integer part with underscores every 3 digits from the right.
+    fn format_with_underscores(integer_part: &str) -> String {
+        let digits: String = integer_part.chars().filter(|c| c.is_ascii_digit()).collect();
+        if digits.len() <= 3 {
+            return digits;
+        }
+        let mut result = String::new();
+        let remainder = digits.len() % 3;
+        if remainder > 0 {
+            result.push_str(&digits[..remainder]);
+        }
+        for i in (remainder..digits.len()).step_by(3) {
+            if !result.is_empty() {
+                result.push('_');
+            }
+            result.push_str(&digits[i..i + 3]);
+        }
+        result
+    }
+
+    /// Format a full numeric source with underscores in the integer part.
+    fn format_number(source: &str) -> String {
+        let s = source.trim().trim_start_matches('-').trim_start_matches('+').trim();
+        let is_negative = source.trim().starts_with('-');
+
+        // Find decimal point
+        if let Some(dot_pos) = s.find('.') {
+            let integer_part = &s[..dot_pos];
+            let rest = &s[dot_pos..]; // .789 or .789e3
+            let formatted = Self::format_with_underscores(integer_part);
+            if is_negative {
+                format!("-{}{}", formatted, rest)
+            } else {
+                format!("{}{}", formatted, rest)
+            }
+        } else if let Some(e_pos) = s.find(|c: char| c == 'e' || c == 'E') {
+            let integer_part = &s[..e_pos];
+            let rest = &s[e_pos..];
+            let formatted = Self::format_with_underscores(integer_part);
+            if is_negative {
+                format!("-{}{}", formatted, rest)
+            } else {
+                format!("{}{}", formatted, rest)
+            }
+        } else {
+            let formatted = Self::format_with_underscores(s);
+            if is_negative {
+                format!("-{}", formatted)
+            } else {
+                formatted
+            }
+        }
     }
 
     /// Check if underscores are in acceptable positions (non-strict mode).
@@ -273,13 +327,22 @@ impl Visit<'_> for NumericVisitor<'_> {
             } else {
                 self.ctx.location(&loc)
             };
+            // Compute corrected form and create correction
+            let corrected = NumericLiterals::format_number(check_source);
+            let corr_start = if offense_start != loc.start_offset() {
+                offense_start // includes the minus sign
+            } else {
+                loc.start_offset()
+            };
+            let corr_end = loc.end_offset();
+            let correction = Correction::replace(corr_start, corr_end, corrected);
             self.offenses.push(Offense::new(
                 self.cop.name(),
                 "Use underscores(_) as thousands separator and separate every 3 digits with them.",
                 self.cop.severity(),
                 location,
                 self.ctx.filename,
-            ));
+            ).with_correction(correction));
         }
 
         ruby_prism::visit_integer_node(self, node);
@@ -304,13 +367,21 @@ impl Visit<'_> for NumericVisitor<'_> {
             } else {
                 self.ctx.location(&loc)
             };
+            let corrected = NumericLiterals::format_number(check_source);
+            let corr_start = if offense_start != loc.start_offset() {
+                offense_start
+            } else {
+                loc.start_offset()
+            };
+            let corr_end = loc.end_offset();
+            let correction = Correction::replace(corr_start, corr_end, corrected);
             self.offenses.push(Offense::new(
                 self.cop.name(),
                 "Use underscores(_) as thousands separator and separate every 3 digits with them.",
                 self.cop.severity(),
                 location,
                 self.ctx.filename,
-            ));
+            ).with_correction(correction));
         }
 
         ruby_prism::visit_float_node(self, node);

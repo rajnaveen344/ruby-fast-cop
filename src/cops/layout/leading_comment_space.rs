@@ -3,7 +3,7 @@
 //! Ported from: https://github.com/rubocop/rubocop/blob/master/lib/rubocop/cop/layout/leading_comment_space.rb
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Location, Offense, Severity};
+use crate::offense::{Correction, Location, Offense, Severity};
 
 pub struct LeadingCommentSpace {
     allow_doxygen_comment_style: bool,
@@ -185,8 +185,14 @@ impl Cop for LeadingCommentSpace {
         let mut offenses = Vec::new();
         let mut in_doc_comment = false;
         let mut first_line_is_shebang = false;
+        let mut byte_offset: usize = 0;
 
         for (line_index, line) in ctx.source.lines().enumerate() {
+            let line_byte_offset = byte_offset;
+            byte_offset += line.len();
+            if byte_offset < ctx.source.len() {
+                byte_offset += 1; // skip '\n'
+            }
             // Track =begin/=end doc comments
             if !in_doc_comment && Self::is_doc_comment_start(line) {
                 in_doc_comment = true;
@@ -245,6 +251,11 @@ impl Cop for LeadingCommentSpace {
                     let comment_char_len = comment_text.chars().count();
                     let line_num = (line_index + 1) as u32;
 
+                    // Correction: insert space after the #
+                    // byte_start is the byte offset of # within the line
+                    let hash_abs_byte = line_byte_offset + byte_start;
+                    let correction = Correction::insert(hash_abs_byte + 1, " ");
+
                     offenses.push(Offense::new(
                         self.name(),
                         "Missing space after `#`.",
@@ -256,7 +267,8 @@ impl Cop for LeadingCommentSpace {
                             (char_start + comment_char_len) as u32,
                         ),
                         ctx.filename,
-                    ));
+                    )
+                    .with_correction(correction));
                 }
             }
         }

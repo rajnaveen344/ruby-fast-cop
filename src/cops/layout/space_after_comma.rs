@@ -3,7 +3,7 @@
 //! Ported from: https://github.com/rubocop/rubocop/blob/master/lib/rubocop/cop/layout/space_after_comma.rb
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Location, Offense, Severity};
+use crate::offense::{Correction, Location, Offense, Severity};
 
 pub struct SpaceAfterComma {
     /// When true, a comma followed by `}` should still be flagged
@@ -38,8 +38,15 @@ impl Cop for SpaceAfterComma {
 
     fn check_program(&self, _node: &ruby_prism::ProgramNode, ctx: &CheckContext) -> Vec<Offense> {
         let mut offenses = Vec::new();
+        let mut byte_offset: usize = 0;
 
         for (line_index, line) in ctx.source.lines().enumerate() {
+            let line_byte_offset = byte_offset;
+            byte_offset += line.len();
+            if byte_offset < ctx.source.len() {
+                byte_offset += 1; // skip '\n'
+            }
+
             let chars: Vec<char> = line.chars().collect();
             let mut i = 0;
             // Track string/comment context to avoid false positives
@@ -89,13 +96,31 @@ impl Cop for SpaceAfterComma {
                                 && next != '\n'
                             {
                                 let line_num = (line_index + 1) as u32;
-                                offenses.push(Offense::new(
-                                    self.name(),
-                                    "Space missing after comma.",
-                                    self.severity(),
-                                    Location::new(line_num, i as u32, line_num, (i + 1) as u32),
-                                    ctx.filename,
-                                ));
+                                // Compute byte position of comma within the line
+                                let comma_byte_pos = line
+                                    .char_indices()
+                                    .nth(i)
+                                    .map(|(pos, _)| pos)
+                                    .unwrap_or(i);
+                                let correction = Correction::insert(
+                                    line_byte_offset + comma_byte_pos + 1,
+                                    " ",
+                                );
+                                offenses.push(
+                                    Offense::new(
+                                        self.name(),
+                                        "Space missing after comma.",
+                                        self.severity(),
+                                        Location::new(
+                                            line_num,
+                                            i as u32,
+                                            line_num,
+                                            (i + 1) as u32,
+                                        ),
+                                        ctx.filename,
+                                    )
+                                    .with_correction(correction),
+                                );
                             }
                         }
                         // Comma at end of line is OK (trailing comma)

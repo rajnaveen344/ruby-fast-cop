@@ -1,11 +1,15 @@
 pub mod config;
 pub mod cops;
+pub mod correction;
 pub mod offense;
 
 pub use config::Config;
-pub use offense::{Location, Offense, Severity};
+pub use correction::{apply_corrections, apply_corrections_detailed, CorrectionResult};
+pub use offense::{Correction, Edit, Location, Offense, Severity};
 
 use ruby_prism::parse;
+use std::collections::HashSet;
+use std::hash::{Hash, Hasher};
 use std::path::Path;
 use thiserror::Error;
 
@@ -60,6 +64,115 @@ pub fn check_file_with_config(path: &Path, config: &Config) -> Result<Vec<Offens
     offenses.retain(|offense| !config.is_excluded_for_cop(path, &offense.cop_name));
 
     Ok(offenses)
+}
+
+/// Maximum number of correction iterations before giving up.
+/// Ruff uses 10; RuboCop uses 200. We follow Ruff's model.
+const MAX_CORRECTION_ITERATIONS: usize = 10;
+
+/// Hash source code for cycle detection during iterative correction.
+fn hash_source(source: &str) -> u64 {
+    let mut hasher = std::collections::hash_map::DefaultHasher::new();
+    source.hash(&mut hasher);
+    hasher.finish()
+}
+
+/// Check a file and optionally autocorrect. Returns (offenses, corrected_count).
+/// When `autocorrect` is true, iteratively applies corrections (up to 10 passes)
+/// until no more fixes are available or a cycle is detected. Writes the file once at end.
+pub fn check_and_correct_file(
+    path: &Path,
+    config: &Config,
+    autocorrect: bool,
+) -> Result<(Vec<Offense>, usize)> {
+    if config.is_excluded(path) {
+        return Ok((vec![], 0));
+    }
+
+    let source = std::fs::read_to_string(path)?;
+    let filename = path.to_string_lossy();
+    let cops = build_cops_from_config(config);
+    let target_ruby_version = config.all_cops.target_ruby_version.unwrap_or(2.5);
+
+    if !autocorrect {
+        // Non-autocorrect path: single parse + lint (unchanged)
+        let result = parse(source.as_bytes());
+        let mut offenses =
+            cops::run_cops_with_version(&cops, &result, &source, &filename, target_ruby_version);
+        offenses.retain(|offense| !config.is_excluded_for_cop(path, &offense.cop_name));
+        return Ok((offenses, 0));
+    }
+
+    let (corrected, offenses, total_applied) =
+        check_and_correct_source(&source, &filename, &cops, target_ruby_version);
+
+    // Filter excluded cops from final offenses
+    let offenses: Vec<Offense> = offenses
+        .into_iter()
+        .filter(|o| !config.is_excluded_for_cop(path, &o.cop_name))
+        .collect();
+
+    if corrected != source {
+        std::fs::write(path, &corrected)?;
+    }
+
+    Ok((offenses, total_applied))
+}
+
+/// Check source code and iteratively apply corrections in memory.
+///
+/// Returns `(corrected_source, remaining_offenses, total_corrections_applied)`.
+/// Runs up to `MAX_CORRECTION_ITERATIONS` passes, stopping early when:
+/// - No corrections are available
+/// - No edits were actually applied (all overlapped)
+/// - Source didn't change (edits were no-ops)
+/// - A cycle is detected (source seen before)
+pub fn check_and_correct_source(
+    source: &str,
+    filename: &str,
+    cops: &[Box<dyn cops::Cop>],
+    target_ruby_version: f64,
+) -> (String, Vec<Offense>, usize) {
+    let mut current_source = source.to_string();
+    let mut seen_hashes: HashSet<u64> = HashSet::new();
+    seen_hashes.insert(hash_source(&current_source));
+    let mut total_applied = 0usize;
+
+    for _ in 0..MAX_CORRECTION_ITERATIONS {
+        // Run cops in a block so ParseResult's borrow is dropped before we reassign
+        let offenses = {
+            let result = parse(current_source.as_bytes());
+            cops::run_cops_with_version(cops, &result, &current_source, filename, target_ruby_version)
+        };
+
+        let has_corrections = offenses.iter().any(|o| o.correction.is_some());
+        if !has_corrections {
+            return (current_source, offenses, total_applied);
+        }
+
+        let cr = correction::apply_corrections_detailed(&current_source, &offenses);
+        if cr.applied_count == 0 || cr.output == current_source {
+            return (current_source, offenses, total_applied);
+        }
+
+        total_applied += cr.applied_count;
+
+        // Cycle detection
+        let h = hash_source(&cr.output);
+        if !seen_hashes.insert(h) {
+            // We've seen this source before — stop to avoid infinite loop
+            return (cr.output, offenses, total_applied);
+        }
+
+        current_source = cr.output;
+    }
+
+    // Exhausted iterations — do one final lint pass on the corrected source
+    let offenses = {
+        let result = parse(current_source.as_bytes());
+        cops::run_cops_with_version(cops, &result, &current_source, filename, target_ruby_version)
+    };
+    (current_source, offenses, total_applied)
 }
 
 /// Build cops based on configuration

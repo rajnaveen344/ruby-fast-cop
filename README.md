@@ -152,6 +152,80 @@ Frequency data sourced from the [300 Days of RuboCop](https://lovro-bikic.github
 | Metrics/AbcSize                       | Medium     | Assignment/Branch/Condition counting        |
 | Metrics/CyclomaticComplexity          | Medium     | Decision point counting                     |
 
+## Autocorrect
+
+ruby-fast-cop supports autocorrect via `-a` (safe) and `-A` (all) flags:
+
+```bash
+# Safe autocorrect only
+ruby-fast-cop -a .
+
+# All autocorrect (safe + unsafe)
+ruby-fast-cop -A .
+```
+
+15 of 21 implemented cops support autocorrect (352 correction tests passing).
+
+### How Autocorrect Works: RuboCop vs Ruff vs ruby-fast-cop
+
+All three tools find style violations then **rewrite the source file** with fixes applied. The key difference is *how* they apply multiple edits and handle cascading fixes (where one cop's fix creates a new violation for another cop).
+
+#### RuboCop — Iterative Re-Parse (up to 200 passes)
+
+```
+source.rb → Parse → Run cops → Apply fixes → Write back
+               ↑                                  │
+               └──── re-read corrected file ──────┘
+                     (repeat up to 200 times)
+```
+
+RuboCop re-parses the **entire file from scratch** each pass. Safe but slow — it invokes Ruby's parser up to 200 times per file. Edits are applied **end-to-start** (descending offset order) so byte positions stay valid within a single pass.
+
+#### Ruff — Smart Single-Pass + Safety Net (up to 10 passes)
+
+```
+source.py → Parse → Run rules → Forward-walk apply → Changed?
+               ↑                                        │
+               └──── re-parse (only if changed) ────────┘
+                     (max 10 iterations, cycle detection)
+```
+
+Ruff's **forward-walk** algorithm sorts edits ascending by offset and walks forward with a cursor. Unchanged gaps are copied verbatim, replacements are spliced in, and overlapping edits are skipped (caught in the next pass). Most files need only 1 pass.
+
+#### ruby-fast-cop — Follows Ruff's Model
+
+```
+source.rb → Parse (Prism) → Run cops → Forward-walk apply
+               ↑                              │
+               └──── re-parse if changed ─────┘
+                     max 10 iterations
+                     cycle detection (source hash)
+                     write file ONCE at end
+```
+
+We use the same forward-walk algorithm as Ruff with three safety mechanisms:
+- **Max 10 iterations** — can't loop forever
+- **Cycle detection** — if we see the same source hash twice, stop (two cops fighting each other)
+- **No-change detection** — if edits produce identical output, stop immediately
+
+Example of cascading fixes in a single run:
+
+```
+Pass 1: StringLiterals fixes quotes     →  x = "hello"  →  x = 'hello'
+        SpaceAfterComma adds spaces     →  [1,2,3]      →  [1, 2, 3]
+Pass 2: FrozenStringLiteralComment      →  (adds # frozen_string_literal: true)
+Pass 3: No more corrections             →  STOP, write file once
+```
+
+| | RuboCop | Ruff | ruby-fast-cop |
+|---|---|---|---|
+| Language | Ruby | Rust | Rust |
+| Max iterations | 200 | 10 | 10 |
+| Edit strategy | end-to-start | forward-walk | forward-walk |
+| File writes | every pass | once at end | once at end |
+| Overlap handling | re-parse | skip + retry | skip + retry |
+| Cycle detection | no (just cap) | yes (hash) | yes (hash) |
+
 ## Library Usage
 
 ruby-fast-cop can be embedded in other tools (LSP servers, editors, CI):
@@ -231,7 +305,7 @@ cargo run --bin fixture_stats
 ### High Priority
 
 - [ ] **More cops** - 21 of 606 implemented; see [Implementation Roadmap](#implementation-roadmap) for priority list
-- [ ] **Auto-correct** - Implement `-a` (safe) and `-A` (all) correction flags
+- [x] **Auto-correct** - `-a` (safe) and `-A` (all) flags with Ruff-style iterative correction
 - [ ] **Parallel processing** - Use rayon for multi-threaded file processing
 
 ### Medium Priority
@@ -259,7 +333,7 @@ cargo run --bin fixture_stats
 | Test coverage    | ~28k test cases | 606 fixtures (1:1)      |
 | Custom Ruby cops | Yes             | No                      |
 | .rubocop.yml     | Yes             | Yes                     |
-| Auto-correct     | Yes             | Planned                 |
+| Auto-correct     | Yes             | Yes (15 of 21 cops)     |
 | Library API      | Limited         | Yes                     |
 | inherit_from     | Yes             | Yes                     |
 | inherit_gem      | Yes             | Yes                     |

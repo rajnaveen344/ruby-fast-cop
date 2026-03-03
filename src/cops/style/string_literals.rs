@@ -3,7 +3,7 @@
 //! Ported from: https://github.com/rubocop/rubocop/blob/master/lib/rubocop/cop/style/string_literals.rb
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Location, Offense, Severity};
+use crate::offense::{Correction, Location, Offense, Severity};
 use ruby_prism::Visit;
 
 #[derive(Debug, Clone, PartialEq)]
@@ -74,6 +74,70 @@ impl StringLiterals {
         }
 
         false
+    }
+
+    /// Convert a double-quoted string to single-quoted.
+    /// Unescapes \" to " and keeps \\ as \\.
+    fn to_single_quoted(source_text: &str) -> String {
+        let inner = &source_text[1..source_text.len() - 1];
+        let mut result = String::with_capacity(source_text.len());
+        result.push('\'');
+        let chars: Vec<char> = inner.chars().collect();
+        let mut i = 0;
+        while i < chars.len() {
+            if chars[i] == '\\' && i + 1 < chars.len() {
+                match chars[i + 1] {
+                    '"' => {
+                        result.push('"');
+                        i += 2;
+                        continue;
+                    }
+                    '\\' => {
+                        result.push('\\');
+                        result.push('\\');
+                        i += 2;
+                        continue;
+                    }
+                    _ => {}
+                }
+            }
+            result.push(chars[i]);
+            i += 1;
+        }
+        result.push('\'');
+        result
+    }
+
+    /// Convert a single-quoted string to double-quoted.
+    /// Unescapes \' to ' and keeps \\ as \\.
+    fn to_double_quoted(source_text: &str) -> String {
+        let inner = &source_text[1..source_text.len() - 1];
+        let mut result = String::with_capacity(source_text.len());
+        result.push('"');
+        let chars: Vec<char> = inner.chars().collect();
+        let mut i = 0;
+        while i < chars.len() {
+            if chars[i] == '\\' && i + 1 < chars.len() {
+                match chars[i + 1] {
+                    '\'' => {
+                        result.push('\'');
+                        i += 2;
+                        continue;
+                    }
+                    '\\' => {
+                        result.push('\\');
+                        result.push('\\');
+                        i += 2;
+                        continue;
+                    }
+                    _ => {}
+                }
+            }
+            result.push(chars[i]);
+            i += 1;
+        }
+        result.push('"');
+        result
     }
 
     /// Check if a single-quoted string needs single quotes
@@ -406,25 +470,37 @@ impl StringLiteralsVisitor<'_> {
             EnforcedStyle::SingleQuotes => {
                 if is_double_quoted && !StringLiterals::needs_double_quotes(source_text) {
                     let location = self.ctx.location(&loc);
+                    let corrected = StringLiterals::to_single_quoted(source_text);
+                    let correction = Correction::replace(
+                        loc.start_offset(),
+                        loc.end_offset(),
+                        corrected,
+                    );
                     self.offenses.push(Offense::new(
                         self.cop.name(),
                         "Prefer single-quoted strings when you don't need string interpolation or special symbols.",
                         self.cop.severity(),
                         location,
                         self.ctx.filename,
-                    ));
+                    ).with_correction(correction));
                 }
             }
             EnforcedStyle::DoubleQuotes => {
                 if is_single_quoted && !StringLiterals::needs_single_quotes(source_text) {
                     let location = self.ctx.location(&loc);
+                    let corrected = StringLiterals::to_double_quoted(source_text);
+                    let correction = Correction::replace(
+                        loc.start_offset(),
+                        loc.end_offset(),
+                        corrected,
+                    );
                     self.offenses.push(Offense::new(
                         self.cop.name(),
                         "Prefer double-quoted strings unless you need single quotes to avoid extra backslashes for escaping.",
                         self.cop.severity(),
                         location,
                         self.ctx.filename,
-                    ));
+                    ).with_correction(correction));
                 }
             }
         }

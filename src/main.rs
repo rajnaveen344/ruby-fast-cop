@@ -1,4 +1,4 @@
-use ruby_fast_cop::{Config, check_file_with_config, find_unsupported_cops};
+use ruby_fast_cop::{Config, check_and_correct_file, check_file_with_config, find_unsupported_cops};
 use std::path::PathBuf;
 
 fn main() {
@@ -8,6 +8,7 @@ fn main() {
     let mut paths: Vec<PathBuf> = Vec::new();
     let mut config_path: Option<PathBuf> = None;
     let mut show_warnings = true;
+    let mut autocorrect = false;
 
     let mut i = 1;
     while i < args.len() {
@@ -20,6 +21,14 @@ fn main() {
                     eprintln!("Error: --config requires a path argument");
                     std::process::exit(1);
                 }
+            }
+            "-a" | "--autocorrect" | "--auto-correct" => {
+                autocorrect = true;
+                i += 1;
+            }
+            "-A" | "--autocorrect-all" | "--auto-correct-all" => {
+                autocorrect = true;
+                i += 1;
             }
             "--no-warnings" => {
                 show_warnings = false;
@@ -78,26 +87,48 @@ fn main() {
     }
 
     let mut total_offenses = 0;
+    let mut total_corrected = 0;
     let mut files_inspected = 0;
 
     for path in paths {
         if path.is_file() && path.extension().is_some_and(|ext| ext == "rb") {
-            process_file(&path, &config, &mut files_inspected, &mut total_offenses);
+            process_file(
+                &path,
+                &config,
+                autocorrect,
+                &mut files_inspected,
+                &mut total_offenses,
+                &mut total_corrected,
+            );
         } else if path.is_dir() {
             // Walk directory for .rb files
             for entry in walkdir(&path) {
                 if entry.extension().is_some_and(|ext| ext == "rb") {
-                    process_file(&entry, &config, &mut files_inspected, &mut total_offenses);
+                    process_file(
+                        &entry,
+                        &config,
+                        autocorrect,
+                        &mut files_inspected,
+                        &mut total_offenses,
+                        &mut total_corrected,
+                    );
                 }
             }
         }
     }
 
     println!();
-    println!(
-        "{} files inspected, {} offenses detected",
-        files_inspected, total_offenses
-    );
+    if autocorrect && total_corrected > 0 {
+        println!(
+            "{} files inspected, {} offenses detected, {} offenses corrected",
+            files_inspected, total_offenses, total_corrected
+        );
+    } else {
+        println!(
+            "{} files inspected, {} offenses detected",
+            files_inspected, total_offenses
+        );
+    }
 
     if total_offenses > 0 {
         std::process::exit(1);
@@ -107,24 +138,43 @@ fn main() {
 fn process_file(
     path: &PathBuf,
     config: &Config,
+    autocorrect: bool,
     files_inspected: &mut usize,
     total_offenses: &mut usize,
+    total_corrected: &mut usize,
 ) {
     // Skip if globally excluded
     if config.is_excluded(path) {
         return;
     }
 
-    match check_file_with_config(path, config) {
-        Ok(offenses) => {
-            *files_inspected += 1;
-            for offense in &offenses {
-                println!("{}", offense);
+    if autocorrect {
+        match check_and_correct_file(path, config, true) {
+            Ok((offenses, corrected)) => {
+                *files_inspected += 1;
+                for offense in &offenses {
+                    let marker = if offense.correction.is_some() { "[Corrected] " } else { "" };
+                    println!("{}{}", marker, offense);
+                }
+                *total_offenses += offenses.len();
+                *total_corrected += corrected;
             }
-            *total_offenses += offenses.len();
+            Err(e) => {
+                eprintln!("Error processing {}: {}", path.display(), e);
+            }
         }
-        Err(e) => {
-            eprintln!("Error reading {}: {}", path.display(), e);
+    } else {
+        match check_file_with_config(path, config) {
+            Ok(offenses) => {
+                *files_inspected += 1;
+                for offense in &offenses {
+                    println!("{}", offense);
+                }
+                *total_offenses += offenses.len();
+            }
+            Err(e) => {
+                eprintln!("Error reading {}: {}", path.display(), e);
+            }
         }
     }
 }
@@ -154,13 +204,16 @@ USAGE:
     ruby-fast-cop [OPTIONS] [FILES/DIRS...]
 
 OPTIONS:
-    -c, --config <PATH>    Use specified config file instead of .rubocop.yml
-    --no-warnings          Don't show warnings about unsupported cops
-    -h, --help             Show this help message
-    -v, --version          Show version
+    -a, --autocorrect          Autocorrect offenses (safe corrections only)
+    -A, --autocorrect-all      Autocorrect offenses (safe and unsafe)
+    -c, --config <PATH>        Use specified config file instead of .rubocop.yml
+    --no-warnings              Don't show warnings about unsupported cops
+    -h, --help                 Show this help message
+    -v, --version              Show version
 
 EXAMPLES:
     ruby-fast-cop                    Check all .rb files in current directory
+    ruby-fast-cop -a .               Autocorrect all .rb files in current directory
     ruby-fast-cop app lib            Check .rb files in app/ and lib/ directories
     ruby-fast-cop foo.rb bar.rb      Check specific files
     ruby-fast-cop -c custom.yml .    Use custom config file

@@ -73,6 +73,55 @@ fn offset_to_line_col(source: &str, offset: usize) -> (u32, u32) {
     (line, col)
 }
 
+/// A single text edit: replace bytes [start_offset..end_offset) with replacement.
+#[derive(Debug, Clone)]
+pub struct Edit {
+    pub start_offset: usize,
+    pub end_offset: usize,
+    pub replacement: String,
+}
+
+/// A correction attached to an offense.
+#[derive(Debug, Clone)]
+pub struct Correction {
+    pub edits: Vec<Edit>,
+}
+
+impl Correction {
+    /// Single replacement: replace bytes [start..end) with text.
+    pub fn replace(start: usize, end: usize, text: impl Into<String>) -> Self {
+        Self {
+            edits: vec![Edit {
+                start_offset: start,
+                end_offset: end,
+                replacement: text.into(),
+            }],
+        }
+    }
+
+    /// Zero-width insert at offset.
+    pub fn insert(offset: usize, text: impl Into<String>) -> Self {
+        Self {
+            edits: vec![Edit {
+                start_offset: offset,
+                end_offset: offset,
+                replacement: text.into(),
+            }],
+        }
+    }
+
+    /// Delete bytes [start..end).
+    pub fn delete(start: usize, end: usize) -> Self {
+        Self {
+            edits: vec![Edit {
+                start_offset: start,
+                end_offset: end,
+                replacement: String::new(),
+            }],
+        }
+    }
+}
+
 /// A single offense found by a cop
 #[derive(Debug, Clone)]
 pub struct Offense {
@@ -81,6 +130,7 @@ pub struct Offense {
     pub severity: Severity,
     pub location: Location,
     pub filename: String,
+    pub correction: Option<Correction>,
 }
 
 impl Offense {
@@ -97,7 +147,14 @@ impl Offense {
             severity,
             location,
             filename: filename.into(),
+            correction: None,
         }
+    }
+
+    /// Attach a correction to this offense.
+    pub fn with_correction(mut self, correction: Correction) -> Self {
+        self.correction = Some(correction);
+        self
     }
 }
 

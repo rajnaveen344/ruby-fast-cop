@@ -3,7 +3,7 @@
 //! Ported from: https://github.com/rubocop/rubocop/blob/master/lib/rubocop/cop/style/rescue_standard_error.rb
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::Visit;
 
 /// Enforced style for StandardError rescuing
@@ -130,13 +130,18 @@ impl Visit<'_> for RescueVisitor<'_> {
                             // Highlight from 'rescue' to end of 'StandardError'
                             let start = keyword_loc.start_offset();
                             let end = exc.location().end_offset();
+                            // Correction: delete from after 'rescue' to end of exception class
+                            let correction = Correction::delete(
+                                keyword_loc.end_offset(),
+                                exc.location().end_offset(),
+                            );
                             self.offenses.push(self.ctx.offense_with_range(
                                 self.cop_name,
                                 "Omit the error class when rescuing `StandardError` by itself.",
                                 Severity::Convention,
                                 start,
                                 end,
-                            ));
+                            ).with_correction(correction));
                         }
                     }
                 }
@@ -144,13 +149,18 @@ impl Visit<'_> for RescueVisitor<'_> {
             EnforcedStyle::Explicit => {
                 // Flag if no exception class is specified (bare rescue)
                 if exceptions.is_empty() {
+                    // Correction: insert " StandardError" after 'rescue'
+                    let correction = Correction::insert(
+                        keyword_loc.end_offset(),
+                        " StandardError",
+                    );
                     // Highlight just the 'rescue' keyword
                     self.offenses.push(self.ctx.offense(
                         self.cop_name,
                         "Avoid rescuing without specifying an error class.",
                         Severity::Convention,
                         &keyword_loc,
-                    ));
+                    ).with_correction(correction));
                 }
             }
         }

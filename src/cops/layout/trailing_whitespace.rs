@@ -3,7 +3,7 @@
 //! Ported from: https://github.com/rubocop/rubocop/blob/master/lib/rubocop/cop/layout/trailing_whitespace.rb
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Location, Offense, Severity};
+use crate::offense::{Correction, Location, Offense, Severity};
 use regex::Regex;
 use std::collections::VecDeque;
 
@@ -96,11 +96,19 @@ impl Cop for TrailingWhitespace {
         let mut offenses = Vec::new();
         let mut past_end = false;
         let mut in_doc_comment = false;
+        let mut byte_offset: usize = 0;
 
         // Pre-compute heredoc body lines
         let heredoc_body_lines = Self::find_heredoc_body_lines(ctx.source);
 
         for (line_index, line) in ctx.source.lines().enumerate() {
+            let line_byte_offset = byte_offset;
+            // Advance byte_offset past this line (line.len() for content + 1 for '\n')
+            byte_offset += line.len();
+            if byte_offset < ctx.source.len() {
+                byte_offset += 1; // skip the '\n'
+            }
+
             let is_in_heredoc = heredoc_body_lines
                 .get(line_index)
                 .copied()
@@ -142,13 +150,29 @@ impl Cop for TrailingWhitespace {
                 let line_char_len = line.chars().count();
                 let line_num = (line_index + 1) as u32;
 
-                offenses.push(Offense::new(
+                let mut offense = Offense::new(
                     self.name(),
                     "Trailing whitespace detected.",
                     self.severity(),
                     Location::new(line_num, ws_start as u32, line_num, line_char_len as u32),
                     ctx.filename,
-                ));
+                );
+
+                // Add correction for non-heredoc lines (heredoc corrections are complex)
+                if !is_in_heredoc {
+                    // Find byte position of ws_start within the line
+                    let ws_byte_start = line
+                        .char_indices()
+                        .nth(ws_start)
+                        .map(|(pos, _)| pos)
+                        .unwrap_or(line.len());
+                    offense = offense.with_correction(Correction::delete(
+                        line_byte_offset + ws_byte_start,
+                        line_byte_offset + line.len(),
+                    ));
+                }
+
+                offenses.push(offense);
             }
         }
 

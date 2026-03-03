@@ -3,7 +3,7 @@
 //! Ported from: https://github.com/rubocop/rubocop/blob/master/lib/rubocop/cop/style/raise_args.rb
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 
 /// Enforced style for raise arguments
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -162,7 +162,41 @@ impl Cop for RaiseArgs {
                     };
 
                     if !first_is_new_call {
-                        return vec![ctx.offense(
+                        // Correction: raise Ex, msg → raise Ex.new(msg)
+                        // Special case: raise Ex.new, msg → raise Ex.new(msg)
+                        let correction = if args.len() == 2 {
+                            let first_arg = &args[0];
+                            let second_arg = &args[1];
+                            let exception_src = &ctx.source[first_arg.location().start_offset()..first_arg.location().end_offset()];
+                            let msg_src = &ctx.source[second_arg.location().start_offset()..second_arg.location().end_offset()];
+
+                            // Check if the first arg is already a .new call (without args)
+                            let first_is_bare_new = if let ruby_prism::Node::CallNode { .. } = first_arg {
+                                let call = first_arg.as_call_node().unwrap();
+                                let name = String::from_utf8_lossy(call.name().as_slice());
+                                name == "new" && call.arguments().is_none()
+                            } else {
+                                false
+                            };
+
+                            let new_src = if first_is_bare_new {
+                                // raise Ex.new, msg → raise Ex.new(msg)
+                                format!("{}({})", exception_src, msg_src)
+                            } else {
+                                // raise Ex, msg → raise Ex.new(msg)
+                                format!("{}.new({})", exception_src, msg_src)
+                            };
+
+                            Some(Correction::replace(
+                                first_arg.location().start_offset(),
+                                second_arg.location().end_offset(),
+                                new_src,
+                            ))
+                        } else {
+                            None
+                        };
+
+                        let mut offense = ctx.offense(
                             self.name(),
                             &format!(
                                 "Provide an exception object as an argument to `{}`.",
@@ -170,7 +204,11 @@ impl Cop for RaiseArgs {
                             ),
                             self.severity(),
                             &node.location(),
-                        )];
+                        );
+                        if let Some(c) = correction {
+                            offense = offense.with_correction(c);
+                        }
+                        return vec![offense];
                     }
                 }
             }
@@ -195,7 +233,7 @@ impl Cop for RaiseArgs {
 
                                 // Check arguments to .new
                                 let new_args = call_arg.arguments();
-                                let should_flag = match new_args {
+                                let should_flag = match &new_args {
                                     None => true, // No args: raise Ex.new
                                     Some(args) => {
                                         let arg_list: Vec<_> = args.arguments().iter().collect();
@@ -214,7 +252,49 @@ impl Cop for RaiseArgs {
                                 };
 
                                 if should_flag {
-                                    return vec![ctx.offense(
+                                    // Correction: raise Ex.new(msg) → raise Ex, msg
+                                    //             raise Ex.new → raise Ex
+                                    let receiver_src = &ctx.source[receiver.location().start_offset()..receiver.location().end_offset()];
+                                    let correction = match &new_args {
+                                        None => {
+                                            // raise Ex.new → raise Ex
+                                            // Replace from receiver start to call_arg end
+                                            Some(Correction::replace(
+                                                receiver.location().start_offset(),
+                                                call_arg.location().end_offset(),
+                                                receiver_src.to_string(),
+                                            ))
+                                        }
+                                        Some(new_args_node) => {
+                                            let arg_list: Vec<_> = new_args_node.arguments().iter().collect();
+                                            if arg_list.len() == 1 {
+                                                let msg_arg = &arg_list[0];
+                                                let msg_src = &ctx.source[msg_arg.location().start_offset()..msg_arg.location().end_offset()];
+                                                // raise Ex.new(msg) → raise Ex, msg
+                                                let has_parens = node.opening_loc().is_some();
+                                                let new_src = if has_parens {
+                                                    format!("{}, {}", receiver_src, msg_src)
+                                                } else {
+                                                    format!("{}, {}", receiver_src, msg_src)
+                                                };
+                                                Some(Correction::replace(
+                                                    receiver.location().start_offset(),
+                                                    call_arg.location().end_offset(),
+                                                    new_src,
+                                                ))
+                                            } else if arg_list.is_empty() {
+                                                // raise Ex.new() → raise Ex
+                                                Some(Correction::replace(
+                                                    receiver.location().start_offset(),
+                                                    call_arg.location().end_offset(),
+                                                    receiver_src.to_string(),
+                                                ))
+                                            } else {
+                                                None
+                                            }
+                                        }
+                                    };
+                                    let mut offense = ctx.offense(
                                         self.name(),
                                         &format!(
                                             "Provide an exception class and message as arguments to `{}`.",
@@ -222,7 +302,11 @@ impl Cop for RaiseArgs {
                                         ),
                                         self.severity(),
                                         &node.location(),
-                                    )];
+                                    );
+                                    if let Some(c) = correction {
+                                        offense = offense.with_correction(c);
+                                    }
+                                    return vec![offense];
                                 }
                             }
                         }

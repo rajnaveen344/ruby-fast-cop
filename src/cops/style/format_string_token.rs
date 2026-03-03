@@ -3,7 +3,7 @@
 //! Ported from: https://github.com/rubocop/rubocop/blob/master/lib/rubocop/cop/style/format_string_token.rb
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use regex::Regex;
 use ruby_prism::Visit;
 
@@ -183,6 +183,43 @@ impl FormatStringToken {
         }
     }
 
+    /// Compute the corrected form of a format token.
+    /// Returns None if correction is not possible.
+    fn corrected_token(&self, token: &FormatToken, content: &str) -> Option<String> {
+        let token_str = &content[token.byte_offset..token.byte_offset + token.byte_length];
+        match (token.kind, self.enforced_style) {
+            (TokenKind::Template, EnforcedStyle::Annotated) => {
+                // %{name} → %<name>s
+                // Extract the name from %{name}
+                if let Some(name) = token_str.strip_prefix("%{").and_then(|s| s.strip_suffix('}')) {
+                    Some(format!("%<{}>s", name))
+                } else {
+                    None
+                }
+            }
+            (TokenKind::Annotated, EnforcedStyle::Template) => {
+                // %<name>s → %{name} (only when type is 's')
+                // Extract name from %<name>X
+                let re = regex::Regex::new(r"^%<(\w+)>[a-zA-Z]$").unwrap();
+                if let Some(caps) = re.captures(token_str) {
+                    let name = caps.get(1).unwrap().as_str();
+                    Some(format!("%{{{}}}", name))
+                } else {
+                    None
+                }
+            }
+            (TokenKind::Unannotated, EnforcedStyle::Annotated) => {
+                // Can't convert unannotated to annotated (no name available)
+                None
+            }
+            (TokenKind::Unannotated, EnforcedStyle::Template) => {
+                // Can't convert unannotated to template (no name available)
+                None
+            }
+            _ => None,
+        }
+    }
+
     /// Check if a method name is in the allowed list
     fn is_allowed_method(&self, method_name: &str) -> bool {
         if self.allowed_methods.iter().any(|m| m == method_name) {
@@ -345,13 +382,17 @@ impl<'a> FormatTokenVisitor<'a> {
             let end = start + token.byte_length;
             let message = self.cop.message(token.kind);
 
-            self.offenses.push(self.ctx.offense_with_range(
+            let mut offense = self.ctx.offense_with_range(
                 self.cop.name(),
                 &message,
                 self.cop.severity(),
                 start,
                 end,
-            ));
+            );
+            if let Some(corrected) = self.cop.corrected_token(token, content) {
+                offense = offense.with_correction(Correction::replace(start, end, corrected));
+            }
+            self.offenses.push(offense);
         }
     }
 
@@ -476,13 +517,19 @@ impl<'a> FormatTokenVisitor<'a> {
             let end = start + token.byte_length;
             let message = self.cop.message(token.kind);
 
-            self.offenses.push(self.ctx.offense_with_range(
+            // Get the content slice for this token's string part
+            let content = self.ctx.source.get(*content_start..).unwrap_or("");
+            let mut offense = self.ctx.offense_with_range(
                 self.cop.name(),
                 &message,
                 self.cop.severity(),
                 start,
                 end,
-            ));
+            );
+            if let Some(corrected) = self.cop.corrected_token(token, content) {
+                offense = offense.with_correction(Correction::replace(start, end, corrected));
+            }
+            self.offenses.push(offense);
         }
     }
 }

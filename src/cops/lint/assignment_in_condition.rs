@@ -3,7 +3,7 @@
 //! Ported from: https://github.com/rubocop/rubocop/blob/master/lib/rubocop/cop/lint/assignment_in_condition.rb
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Edit, Offense, Severity};
 
 pub struct AssignmentInCondition {
     allow_safe_assignment: bool,
@@ -74,8 +74,10 @@ impl AssignmentInCondition {
             ruby_prism::Node::LocalVariableWriteNode { .. } => {
                 let write_node = node.as_local_variable_write_node().unwrap();
                 if !self.is_safe_assignment_lvar(&write_node, ctx) {
-                    offenses.push(self.create_offense_at_operator(
+                    offenses.push(self.create_offense_at_operator_with_correction(
                         write_node.operator_loc(),
+                        node.location().start_offset(),
+                        node.location().end_offset(),
                         ctx,
                     ));
                 }
@@ -84,8 +86,10 @@ impl AssignmentInCondition {
             ruby_prism::Node::InstanceVariableWriteNode { .. } => {
                 let write_node = node.as_instance_variable_write_node().unwrap();
                 if !self.is_safe_assignment_node(node, ctx) {
-                    offenses.push(self.create_offense_at_operator(
+                    offenses.push(self.create_offense_at_operator_with_correction(
                         write_node.operator_loc(),
+                        node.location().start_offset(),
+                        node.location().end_offset(),
                         ctx,
                     ));
                 }
@@ -94,8 +98,10 @@ impl AssignmentInCondition {
             ruby_prism::Node::ClassVariableWriteNode { .. } => {
                 let write_node = node.as_class_variable_write_node().unwrap();
                 if !self.is_safe_assignment_node(node, ctx) {
-                    offenses.push(self.create_offense_at_operator(
+                    offenses.push(self.create_offense_at_operator_with_correction(
                         write_node.operator_loc(),
+                        node.location().start_offset(),
+                        node.location().end_offset(),
                         ctx,
                     ));
                 }
@@ -104,8 +110,10 @@ impl AssignmentInCondition {
             ruby_prism::Node::GlobalVariableWriteNode { .. } => {
                 let write_node = node.as_global_variable_write_node().unwrap();
                 if !self.is_safe_assignment_node(node, ctx) {
-                    offenses.push(self.create_offense_at_operator(
+                    offenses.push(self.create_offense_at_operator_with_correction(
                         write_node.operator_loc(),
+                        node.location().start_offset(),
+                        node.location().end_offset(),
                         ctx,
                     ));
                 }
@@ -114,8 +122,10 @@ impl AssignmentInCondition {
             ruby_prism::Node::ConstantWriteNode { .. } => {
                 let write_node = node.as_constant_write_node().unwrap();
                 if !self.is_safe_assignment_node(node, ctx) {
-                    offenses.push(self.create_offense_at_operator(
+                    offenses.push(self.create_offense_at_operator_with_correction(
                         write_node.operator_loc(),
+                        node.location().start_offset(),
+                        node.location().end_offset(),
                         ctx,
                     ));
                 }
@@ -124,8 +134,10 @@ impl AssignmentInCondition {
             ruby_prism::Node::IndexOperatorWriteNode { .. } => {
                 let write_node = node.as_index_operator_write_node().unwrap();
                 if !self.is_safe_assignment_node(node, ctx) {
-                    offenses.push(self.create_offense_at_operator(
+                    offenses.push(self.create_offense_at_operator_with_correction(
                         write_node.binary_operator_loc(),
+                        node.location().start_offset(),
+                        node.location().end_offset(),
                         ctx,
                     ));
                 }
@@ -134,8 +146,10 @@ impl AssignmentInCondition {
             ruby_prism::Node::CallOperatorWriteNode { .. } => {
                 let write_node = node.as_call_operator_write_node().unwrap();
                 if !self.is_safe_assignment_node(node, ctx) {
-                    offenses.push(self.create_offense_at_operator(
+                    offenses.push(self.create_offense_at_operator_with_correction(
                         write_node.binary_operator_loc(),
+                        node.location().start_offset(),
+                        node.location().end_offset(),
                         ctx,
                     ));
                 }
@@ -186,13 +200,31 @@ impl AssignmentInCondition {
                         // For a[0] = 1, we need to find = after the closing bracket
                         // For obj.attr = 1, we need to find = after the method name
                         if let Some(eq_pos) = self.find_assignment_operator_position(&call, ctx) {
-                            offenses.push(ctx.offense_with_range(
+                            let mut offense = ctx.offense_with_range(
                                 self.name(),
                                 self.get_message(),
                                 self.severity(),
                                 eq_pos,
                                 eq_pos + 1,
-                            ));
+                            );
+                            if self.allow_safe_assignment {
+                                let correction = Correction {
+                                    edits: vec![
+                                        Edit {
+                                            start_offset: node.location().start_offset(),
+                                            end_offset: node.location().start_offset(),
+                                            replacement: "(".to_string(),
+                                        },
+                                        Edit {
+                                            start_offset: node.location().end_offset(),
+                                            end_offset: node.location().end_offset(),
+                                            replacement: ")".to_string(),
+                                        },
+                                    ],
+                                };
+                                offense = offense.with_correction(correction);
+                            }
+                            offenses.push(offense);
                         }
                     }
                 }
@@ -306,12 +338,32 @@ impl AssignmentInCondition {
         }
     }
 
-    fn create_offense_at_operator(
+    fn create_offense_at_operator_with_correction(
         &self,
         operator_loc: ruby_prism::Location,
+        node_start: usize,
+        node_end: usize,
         ctx: &CheckContext,
     ) -> Offense {
-        ctx.offense(self.name(), self.get_message(), self.severity(), &operator_loc)
+        let mut offense = ctx.offense(self.name(), self.get_message(), self.severity(), &operator_loc);
+        if self.allow_safe_assignment {
+            let correction = Correction {
+                edits: vec![
+                    Edit {
+                        start_offset: node_start,
+                        end_offset: node_start,
+                        replacement: "(".to_string(),
+                    },
+                    Edit {
+                        start_offset: node_end,
+                        end_offset: node_end,
+                        replacement: ")".to_string(),
+                    },
+                ],
+            };
+            offense = offense.with_correction(correction);
+        }
+        offense
     }
 }
 

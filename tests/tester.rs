@@ -4,7 +4,7 @@
 //! against the source code, comparing actual offenses with expected offenses.
 
 use glob::glob;
-use ruby_fast_cop::{Config, Offense, check_source_with_cop_config_and_version};
+use ruby_fast_cop::{Config, Offense, apply_corrections, check_source_with_cop_config_and_version};
 use serde::Deserialize;
 use std::path::PathBuf;
 
@@ -206,8 +206,14 @@ fn decode_source(source: &str, base_indent: Option<usize>) -> String {
     source
 }
 
+/// Result of running a single test case
+struct TestCaseResult {
+    errors: Vec<String>,
+    correction_validated: bool,
+}
+
 /// Run a single test case and return any errors
-fn run_test_case(test_case: &TestCase, cop_name: &str) -> Vec<String> {
+fn run_test_case(test_case: &TestCase, cop_name: &str) -> TestCaseResult {
     let mut errors = Vec::new();
 
     // Build config from test case's config field (convert TOML to YAML for the library API)
@@ -284,7 +290,7 @@ fn run_test_case(test_case: &TestCase, cop_name: &str) -> Vec<String> {
             }
         }
 
-        return errors;
+        return TestCaseResult { errors, correction_validated: false };
     }
 
     // Compare each offense
@@ -308,13 +314,47 @@ fn run_test_case(test_case: &TestCase, cop_name: &str) -> Vec<String> {
         errors.extend(compare_offense(actual, expected, &test_case.name, cop_name));
     }
 
-    errors
+    // Correction validation: if TOML has `corrected` and offenses have corrections, compare
+    let mut correction_validated = false;
+    if let Some(ref corrected_toml) = test_case.corrected {
+        let has_corrections = offenses.iter().any(|o| o.correction.is_some());
+        if has_corrections {
+            let mut expected_corrected = decode_source(corrected_toml, test_case.base_indent);
+            if test_case.strip_trailing_newline && expected_corrected.ends_with('\n') {
+                expected_corrected.pop();
+            }
+            let actual_corrected = apply_corrections(&source, &offenses);
+            if actual_corrected != expected_corrected {
+                errors.push(format!(
+                    "[{}] {}: Correction mismatch",
+                    cop_name, test_case.name
+                ));
+                errors.push(format!("  Expected corrected:\n{}", indent_block(&expected_corrected)));
+                errors.push(format!("  Actual corrected:\n{}", indent_block(&actual_corrected)));
+            } else {
+                correction_validated = true;
+            }
+        }
+        // If TOML has `corrected` but offenses have no corrections, skip silently
+        // (cop hasn't implemented corrections yet)
+    }
+
+    TestCaseResult { errors, correction_validated }
+}
+
+/// Indent a block of text for debug display
+fn indent_block(text: &str) -> String {
+    text.lines()
+        .map(|line| format!("    |{}", line))
+        .collect::<Vec<_>>()
+        .join("\n")
 }
 
 /// Result of running tests for a single file
 struct TestFileResult {
     errors: Vec<String>,
     ran: usize,
+    corrections_validated: usize,
 }
 
 /// Run all tests from a single test file
@@ -322,6 +362,7 @@ fn run_test_file(test_file: &CopTestFile, file_path: &PathBuf) -> TestFileResult
     let mut result = TestFileResult {
         errors: Vec::new(),
         ran: 0,
+        corrections_validated: 0,
     };
 
     // Skip unimplemented cops
@@ -338,12 +379,15 @@ fn run_test_file(test_file: &CopTestFile, file_path: &PathBuf) -> TestFileResult
 
     for test_case in &test_file.tests {
         result.ran += 1;
-        let test_errors = run_test_case(test_case, &test_file.cop);
-        if !test_errors.is_empty() {
+        let tc_result = run_test_case(test_case, &test_file.cop);
+        if !tc_result.errors.is_empty() {
             result
                 .errors
                 .push(format!("Failures in {}:", file_path.display()));
-            result.errors.extend(test_errors);
+            result.errors.extend(tc_result.errors);
+        }
+        if tc_result.correction_validated {
+            result.corrections_validated += 1;
         }
     }
 
@@ -365,6 +409,7 @@ fn rubocop_parity_tests() {
     let mut total_tests = 0;
     let mut tests_ran = 0;
     let mut skipped_cops = 0;
+    let mut corrections_validated = 0;
 
     for file_path in &test_files {
         match load_test_file(file_path) {
@@ -376,6 +421,7 @@ fn rubocop_parity_tests() {
                 let result = run_test_file(&test_file, file_path);
                 all_errors.extend(result.errors);
                 tests_ran += result.ran;
+                corrections_validated += result.corrections_validated;
             }
             Err(e) => {
                 // Check if this file is likely unimplemented by looking for the marker
@@ -400,6 +446,7 @@ fn rubocop_parity_tests() {
     println!("  Skipped cops (unimplemented): {}", skipped_cops);
     println!("  Total test cases: {}", total_tests);
     println!("  Tests ran: {}", tests_ran);
+    println!("  Corrections validated: {}", corrections_validated);
 
     if !all_errors.is_empty() {
         println!();

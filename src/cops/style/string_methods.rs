@@ -3,7 +3,7 @@
 //! Ported from: https://github.com/rubocop/rubocop/blob/master/lib/rubocop/cop/style/string_methods.rb
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use std::collections::HashMap;
 
 /// Enforces the use of consistent method names from the String class.
@@ -51,12 +51,18 @@ impl Cop for StringMethods {
         if let Some(&preferred) = self.preferred_methods.get(method_name.as_ref()) {
             // Use message_loc() to get the location of just the method name, not the whole call
             if let Some(message_loc) = node.message_loc() {
-                return vec![ctx.offense(
+                let offense = ctx.offense(
                     self.name(),
                     &format!("Prefer `{}` over `{}`.", preferred, method_name),
                     self.severity(),
                     &message_loc,
-                )];
+                );
+                let correction = Correction::replace(
+                    message_loc.start_offset(),
+                    message_loc.end_offset(),
+                    preferred,
+                );
+                return vec![offense.with_correction(correction)];
             }
         }
 
