@@ -24,6 +24,17 @@ module TestDataCapture
   def self.reset!
     Thread.current[:test_data_captures] = []
     Thread.current[:pending_capture] = nil
+    Thread.current[:inside_expect] = false
+  end
+
+  # Flag to suppress _investigate/inspect_source captures when called
+  # from within expect_offense/expect_no_offenses (which call them internally).
+  def self.inside_expect?
+    Thread.current[:inside_expect] || false
+  end
+
+  def self.inside_expect=(val)
+    Thread.current[:inside_expect] = val
   end
 
   def self.flush_pending!
@@ -31,6 +42,16 @@ module TestDataCapture
       self.captures << capture
       self.pending_capture = nil
     end
+  end
+
+  # Convert a RuboCop offense object to our hash format
+  def self.offense_to_hash(offense)
+    {
+      line: offense.line,
+      column_start: offense.column,
+      column_end: offense.last_column,
+      message: offense.message
+    }
   end
 
   # Parse ^^^ annotation markers from annotated source.
@@ -78,6 +99,7 @@ module TestDataCapture
   def expect_offense(source, file = nil, severity: nil, chomp: false, **replacements)
     # Flush any pending capture from a previous expect_offense without expect_correction
     TestDataCapture.flush_pending!
+    TestDataCapture.inside_expect = true
 
     # Apply format replacements (same as RuboCop does)
     replacements.each do |keyword, value|
@@ -122,11 +144,14 @@ module TestDataCapture
     }
   rescue => e
     $stderr.puts "[TestDataCapture] Error in expect_offense: #{e.message}"
+  ensure
+    TestDataCapture.inside_expect = false
   end
 
   # Override expect_no_offenses to capture test data
   def expect_no_offenses(source, file = nil)
     TestDataCapture.flush_pending!
+    TestDataCapture.inside_expect = true
 
     config_hash = extract_config_hash
 
@@ -139,6 +164,8 @@ module TestDataCapture
   rescue => e
     $stderr.puts "[TestDataCapture] Error in expect_no_offenses: #{e.message}"
     super
+  ensure
+    TestDataCapture.inside_expect = false
   end
 
   # Override expect_correction to attach corrected source to pending capture
@@ -155,6 +182,67 @@ module TestDataCapture
   # Override expect_no_corrections to flush pending capture without correction
   def expect_no_corrections
     TestDataCapture.flush_pending!
+  end
+
+  # Override inspect_source to capture test data from specs that use it
+  # instead of expect_offense/expect_no_offenses.
+  # Skip capture when called internally by expect_offense/expect_no_offenses.
+  def inspect_source(source, file = nil)
+    return super if TestDataCapture.inside_expect?
+
+    TestDataCapture.flush_pending!
+
+    result = super
+    config_hash = extract_config_hash
+
+    offenses = if result.is_a?(Array)
+                 result.map { |o| TestDataCapture.offense_to_hash(o) }
+               else
+                 []
+               end
+
+    TestDataCapture.captures << {
+      source: source.to_s.chomp,
+      offenses: offenses,
+      config: config_hash,
+      corrected: nil
+    }
+
+    result
+  rescue => e
+    $stderr.puts "[TestDataCapture] Error in inspect_source: #{e.message}"
+    super
+  end
+
+  # Override _investigate to capture test data from specs that call it directly.
+  # Skip capture when called internally by expect_offense/expect_no_offenses.
+  def _investigate(cop_obj, processed_source)
+    return super if TestDataCapture.inside_expect?
+
+    TestDataCapture.flush_pending!
+
+    result = super
+    config_hash = extract_config_hash
+
+    source = processed_source.respond_to?(:raw_source) ? processed_source.raw_source : processed_source.to_s
+
+    offenses = if result.is_a?(Array)
+                 result.map { |o| TestDataCapture.offense_to_hash(o) }
+               else
+                 []
+               end
+
+    TestDataCapture.captures << {
+      source: source.to_s.chomp,
+      offenses: offenses,
+      config: config_hash,
+      corrected: nil
+    }
+
+    result
+  rescue => e
+    $stderr.puts "[TestDataCapture] Error in _investigate: #{e.message}"
+    super
   end
 
   private

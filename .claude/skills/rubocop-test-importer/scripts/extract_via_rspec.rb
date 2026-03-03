@@ -152,7 +152,10 @@ require core_ext if File.exist?(core_ext)
 require_relative 'test_data_capture'
 
 # Prepend our module onto RuboCop's ExpectOffense
+# Prepend onto ExpectOffense (expect_offense, expect_no_offenses, expect_correction)
 RuboCop::RSpec::ExpectOffense.prepend(TestDataCapture)
+# Prepend onto CopHelper (inspect_source, _investigate)
+CopHelper.prepend(TestDataCapture)
 
 # --- TOML Generation Helpers ---
 
