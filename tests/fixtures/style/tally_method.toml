@@ -1,0 +1,397 @@
+cop = "Style/TallyMethod"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocopcopstyletallymethod_when_targeting_ruby_27_with_each_with_objecthashnew0_pattern_registers_an_offense_and_corrects"
+source = '''
+array.each_with_object(Hash.new(0)) { |item, counts| counts[item] += 1 }
+'''
+corrected = '''
+array.tally
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 22
+message = "Use `tally` instead of `each_with_object`."
+
+[[tests]]
+name = "rubocopcopstyletallymethod_when_targeting_ruby_27_with_each_with_objecthashnew0_pattern_registers_an_offense_and_corrects_with_safe_navigation"
+source = '''
+array&.each_with_object(Hash.new(0)) { |item, counts| counts[item] += 1 }
+'''
+corrected = '''
+array&.tally
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 23
+message = "Use `tally` instead of `each_with_object`."
+
+[[tests]]
+name = "rubocopcopstyletallymethod_when_targeting_ruby_27_with_each_with_objecthashnew0_pattern_registers_an_offense_and_corrects_with_doend_block"
+source = '''
+array.each_with_object(Hash.new(0)) do |item, counts|
+  counts[item] += 1
+end
+'''
+corrected = '''
+array.tally
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 22
+message = "Use `tally` instead of `each_with_object`."
+
+[[tests]]
+name = "rubocopcopstyletallymethod_when_targeting_ruby_27_with_each_with_objecthashnew0_pattern_registers_an_offense_and_corrects_without_receiver"
+source = '''
+each_with_object(Hash.new(0)) { |item, counts| counts[item] += 1 }
+'''
+corrected = '''
+tally
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 16
+message = "Use `tally` instead of `each_with_object`."
+
+[[tests]]
+name = "rubocopcopstyletallymethod_when_targeting_ruby_27_with_each_with_objecthashnew0_pattern_registers_an_offense_and_corrects_with_hash"
+source = '''
+array.each_with_object(::Hash.new(0)) { |x, h| h[x] += 1 }
+'''
+corrected = '''
+array.tally
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 22
+message = "Use `tally` instead of `each_with_object`."
+
+[[tests]]
+name = "rubocopcopstyletallymethod_when_targeting_ruby_27_with_each_with_objecthashnew0_pattern_registers_an_offense_and_corrects_with_numbered_parameters"
+source = '''
+array.each_with_object(Hash.new(0)) { _2[_1] += 1 }
+'''
+corrected = '''
+array.tally
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 22
+message = "Use `tally` instead of `each_with_object`."
+
+[[tests]]
+name = "rubocopcopstyletallymethod_when_targeting_ruby_27_with_each_with_objecthashnew0_pattern_does_not_register_an_offense_when_incrementing_by_a_value_other_than_1"
+source = '''
+array.each_with_object(Hash.new(0)) { |item, counts| counts[item] += 2 }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyletallymethod_when_targeting_ruby_27_with_each_with_objecthashnew0_pattern_does_not_register_an_offense_when_keying_by_a_transformation"
+source = '''
+array.each_with_object(Hash.new(0)) { |item, counts| counts[item.to_s] += 1 }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyletallymethod_when_targeting_ruby_27_with_each_with_objecthashnew0_pattern_does_not_register_an_offense_with_a_different_initial_value"
+source = '''
+array.each_with_object({}) { |item, counts| counts[item] = true }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyletallymethod_when_targeting_ruby_27_with_each_with_objecthashnew0_pattern_does_not_register_an_offense_when_the_block_body_has_extra_logic"
+source = '''
+array.each_with_object(Hash.new(0)) do |item, counts|
+  counts[item] += 1
+  puts item
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyletallymethod_when_targeting_ruby_27_with_each_with_objecthashnew0_pattern_does_not_register_an_offense_when_keying_by_a_transformation_with_numbered_parameters"
+source = '''
+array.each_with_object(Hash.new(0)) { _2[_1.to_s] += 1 }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyletallymethod_when_targeting_ruby_27_with_group_byitselftransform_valuescount_pattern_registers_an_offense_and_corrects_with_count"
+source = '''
+array.group_by(&:itself).transform_values(&:count)
+'''
+corrected = '''
+array.tally
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 14
+message = "Use `tally` instead of `group_by` and `transform_values`."
+
+[[tests]]
+name = "rubocopcopstyletallymethod_when_targeting_ruby_27_with_group_byitselftransform_valuescount_pattern_registers_an_offense_and_corrects_with_size"
+source = '''
+array.group_by(&:itself).transform_values(&:size)
+'''
+corrected = '''
+array.tally
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 14
+message = "Use `tally` instead of `group_by` and `transform_values`."
+
+[[tests]]
+name = "rubocopcopstyletallymethod_when_targeting_ruby_27_with_group_byitselftransform_valuescount_pattern_registers_an_offense_and_corrects_with_length"
+source = '''
+array.group_by(&:itself).transform_values(&:length)
+'''
+corrected = '''
+array.tally
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 14
+message = "Use `tally` instead of `group_by` and `transform_values`."
+
+[[tests]]
+name = "rubocopcopstyletallymethod_when_targeting_ruby_27_with_group_byitselftransform_valuescount_pattern_registers_an_offense_and_corrects_with_safe_navigation"
+source = '''
+array&.group_by(&:itself)&.transform_values(&:count)
+'''
+corrected = '''
+array&.tally
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 15
+message = "Use `tally` instead of `group_by` and `transform_values`."
+
+[[tests]]
+name = "rubocopcopstyletallymethod_when_targeting_ruby_27_with_group_byitselftransform_valuescount_pattern_registers_an_offense_and_corrects_without_receiver"
+source = '''
+group_by(&:itself).transform_values(&:count)
+'''
+corrected = '''
+tally
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 8
+message = "Use `tally` instead of `group_by` and `transform_values`."
+
+[[tests]]
+name = "rubocopcopstyletallymethod_when_targeting_ruby_27_with_group_byitselftransform_valuescount_pattern_does_not_register_an_offense_when_group_by_uses_a_different_key"
+source = '''
+array.group_by(&:name).transform_values(&:count)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyletallymethod_when_targeting_ruby_27_with_group_byitselftransform_valuescount_pattern_does_not_register_an_offense_when_transform_values_uses_a_different_method"
+source = '''
+array.group_by(&:itself).transform_values(&:sum)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyletallymethod_when_targeting_ruby_27_with_group_by__x_x_transform_valuescount_pattern_registers_an_offense_and_corrects_with_identity_block"
+source = '''
+array.group_by { |x| x }.transform_values(&:count)
+'''
+corrected = '''
+array.tally
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 14
+message = "Use `tally` instead of `group_by` and `transform_values`."
+
+[[tests]]
+name = "rubocopcopstyletallymethod_when_targeting_ruby_27_with_group_by__x_x_transform_valuescount_pattern_registers_an_offense_and_corrects_with_identity_numblock"
+source = '''
+array.group_by { _1 }.transform_values(&:count)
+'''
+corrected = '''
+array.tally
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 14
+message = "Use `tally` instead of `group_by` and `transform_values`."
+
+[[tests]]
+name = "rubocopcopstyletallymethod_when_targeting_ruby_27_with_group_by__x_x_transform_valuescount_pattern_does_not_register_an_offense_when_group_by_block_transforms_the_element"
+source = '''
+array.group_by { |x| x.name }.transform_values(&:count)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyletallymethod_when_targeting_ruby_27_with_group_by__x_x_transform_valuescount_pattern_ruby__34_registers_an_offense_and_corrects_with_identity_itblock"
+ruby_version = ">= 3.4"
+source = '''
+array.group_by { it }.transform_values(&:count)
+'''
+corrected = '''
+array.tally
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 14
+message = "Use `tally` instead of `group_by` and `transform_values`."
+
+[[tests]]
+name = "rubocopcopstyletallymethod_when_targeting_ruby_27_with_group_by__x_x_transform_values__v_vcount__pattern_registers_an_offense_and_corrects_with_count"
+source = '''
+array.group_by { |x| x }.transform_values { |v| v.count }
+'''
+corrected = '''
+array.tally
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 14
+message = "Use `tally` instead of `group_by` and `transform_values`."
+
+[[tests]]
+name = "rubocopcopstyletallymethod_when_targeting_ruby_27_with_group_by__x_x_transform_values__v_vcount__pattern_registers_an_offense_and_corrects_with_size"
+source = '''
+array.group_by { |x| x }.transform_values { |v| v.size }
+'''
+corrected = '''
+array.tally
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 14
+message = "Use `tally` instead of `group_by` and `transform_values`."
+
+[[tests]]
+name = "rubocopcopstyletallymethod_when_targeting_ruby_27_with_group_by__x_x_transform_values__v_vcount__pattern_registers_an_offense_and_corrects_with_length"
+source = '''
+array.group_by { |x| x }.transform_values { |v| v.length }
+'''
+corrected = '''
+array.tally
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 14
+message = "Use `tally` instead of `group_by` and `transform_values`."
+
+[[tests]]
+name = "rubocopcopstyletallymethod_when_targeting_ruby_27_with_group_by__x_x_transform_values__v_vcount__pattern_registers_an_offense_and_corrects_with_group_byitself_and_transform_values_block"
+source = '''
+array.group_by(&:itself).transform_values { |v| v.count }
+'''
+corrected = '''
+array.tally
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 14
+message = "Use `tally` instead of `group_by` and `transform_values`."
+
+[[tests]]
+name = "rubocopcopstyletallymethod_when_targeting_ruby_27_with_group_by__x_x_transform_values__v_vcount__pattern_registers_an_offense_and_corrects_with_transform_values_numblock"
+source = '''
+array.group_by(&:itself).transform_values { _1.count }
+'''
+corrected = '''
+array.tally
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 14
+message = "Use `tally` instead of `group_by` and `transform_values`."
+
+[[tests]]
+name = "rubocopcopstyletallymethod_when_targeting_ruby_27_with_group_by__x_x_transform_values__v_vcount__pattern_does_not_register_an_offense_when_transform_values_block_does_something_else"
+source = '''
+array.group_by { |x| x }.transform_values { |v| v.sum }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyletallymethod_when_targeting_ruby_27_with_group_by__x_x_transform_values__v_vcount__pattern_does_not_register_an_offense_when_transform_values_block_has_complex_logic"
+source = '''
+array.group_by { |x| x }.transform_values { |v| v.count * 2 }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyletallymethod_when_targeting_ruby_27_with_group_by__x_x_transform_values__v_vcount__pattern_ruby__34_registers_an_offense_and_corrects_with_transform_values_itblock"
+ruby_version = ">= 3.4"
+source = '''
+array.group_by(&:itself).transform_values { it.count }
+'''
+corrected = '''
+array.tally
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 14
+message = "Use `tally` instead of `group_by` and `transform_values`."
+
+[[tests]]
+name = "rubocopcopstyletallymethod_when_targeting_ruby_26_does_not_register_an_offense_for_each_with_object_tally_pattern"
+ruby_version = ">= 2.6"
+source = '''
+array.each_with_object(Hash.new(0)) { |item, counts| counts[item] += 1 }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyletallymethod_when_targeting_ruby_26_does_not_register_an_offense_for_group_bytransform_values_tally_pattern"
+ruby_version = ">= 2.6"
+source = '''
+array.group_by(&:itself).transform_values(&:count)
+'''
+offenses = []

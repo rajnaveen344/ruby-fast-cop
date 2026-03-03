@@ -19,7 +19,7 @@ require 'fileutils'
 
 # --- Configuration ---
 
-DEPARTMENTS = %w[lint style layout metrics naming bundler gemspec security internal_affairs migration].freeze
+DEPARTMENTS = %w[lint style layout metrics naming bundler gemspec security migration].freeze
 
 DEPARTMENT_MAP = {
   'lint' => 'Lint',
@@ -30,7 +30,6 @@ DEPARTMENT_MAP = {
   'bundler' => 'Bundler',
   'gemspec' => 'Gemspec',
   'security' => 'Security',
-  'internal_affairs' => 'InternalAffairs',
   'migration' => 'Migration'
 }.freeze
 
@@ -43,7 +42,6 @@ DEFAULT_SEVERITY = {
   'Bundler' => 'convention',
   'Gemspec' => 'convention',
   'Security' => 'warning',
-  'InternalAffairs' => 'convention',
   'Migration' => 'convention'
 }.freeze
 

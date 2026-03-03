@@ -1,0 +1,365 @@
+cop = "Lint/UnreachablePatternBranch"
+department = "lint"
+severity = "warning"
+implemented = false
+
+[[tests]]
+name = "rubocopcoplintunreachablepatternbranch_registers_an_offense_for_in_branch_after_bare_variable_catchall"
+source = '''
+case value
+in x
+  handle_other
+in Integer
+  handle_integer
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 10
+message = "Unreachable `in` pattern branch detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablepatternbranch_registers_an_offense_for_in_branch_after_underscore_catchall"
+source = '''
+case value
+in _
+  handle_other
+in Integer
+  handle_integer
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 10
+message = "Unreachable `in` pattern branch detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablepatternbranch_registers_offenses_for_multiple_in_branches_after_catchall"
+source = '''
+case value
+in Integer
+  handle_integer
+in x
+  handle_other
+in String
+  handle_string
+in Symbol
+  handle_symbol
+end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 0
+column_end = 9
+message = "Unreachable `in` pattern branch detected."
+
+[[tests.offenses]]
+line = 8
+column_start = 0
+column_end = 9
+message = "Unreachable `in` pattern branch detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablepatternbranch_when_catchall_is_followed_by_else_registers_an_offense_for_unreachable_else_branch"
+source = '''
+case value
+in Integer
+  handle_integer
+in _
+  handle_other
+else
+  handle_else
+end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 0
+column_end = 4
+message = "Unreachable `else` branch detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablepatternbranch_when_catchall_is_followed_by_else_registers_offenses_for_both_unreachable_in_and_else_branches"
+source = '''
+case value
+in x
+  handle_other
+in Integer
+  handle_integer
+else
+  handle_else
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 10
+message = "Unreachable `in` pattern branch detected."
+
+[[tests.offenses]]
+line = 6
+column_start = 0
+column_end = 4
+message = "Unreachable `else` branch detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablepatternbranch_when_catchall_is_followed_by_else_registers_an_offense_for_a_single_catchall_with_else"
+source = '''
+case value
+in x
+  handle_any
+else
+  handle_else
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 4
+message = "Unreachable `else` branch detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablepatternbranch_with_match_as_patterns_registers_an_offense_when_catchall_uses_pattern_alias_with_underscore"
+source = '''
+case value
+in _ => y
+  handle_other
+in Integer
+  handle_integer
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 10
+message = "Unreachable `in` pattern branch detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablepatternbranch_with_match_as_patterns_registers_an_offense_when_catchall_uses_pattern_alias_with_variable"
+source = '''
+case value
+in x => y
+  handle_other
+in Integer
+  handle_integer
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 10
+message = "Unreachable `in` pattern branch detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablepatternbranch_with_match_as_patterns_does_not_register_an_offense_for_match_as_wrapping_noncatchall"
+source = '''
+case value
+in Integer => y
+  handle_integer
+in String
+  handle_string
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablepatternbranch_with_match_alt_patterns_registers_an_offense_when_alternation_includes_a_catchall_on_the_left"
+source = '''
+case value
+in _ | Integer
+  handle_other
+in String
+  handle_string
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 9
+message = "Unreachable `in` pattern branch detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablepatternbranch_with_match_alt_patterns_registers_an_offense_when_alternation_has_catchall_on_the_right"
+source = '''
+case value
+in Integer | _
+  handle_other
+in String
+  handle_string
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 9
+message = "Unreachable `in` pattern branch detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablepatternbranch_with_match_alt_patterns_does_not_register_an_offense_for_alternation_of_noncatchall_patterns"
+source = '''
+case value
+in Integer | String
+  handle_int_or_string
+in Symbol
+  handle_symbol
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablepatternbranch_with_guard_clauses_does_not_register_an_offense_when_catchall_has_an_if_guard"
+source = '''
+case value
+in x if x.positive?
+  handle_positive
+in Integer
+  handle_integer
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablepatternbranch_with_guard_clauses_does_not_register_an_offense_when_catchall_has_an_unless_guard"
+source = '''
+case value
+in x unless x.nil?
+  handle_not_nil
+in Integer
+  handle_integer
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablepatternbranch_with_guard_clauses_registers_an_offense_for_branch_after_unguarded_catchall_even_with_guarded_catchall_before_it"
+source = '''
+case value
+in x if x.positive?
+  handle_positive
+in y
+  handle_other
+in Integer
+  handle_integer
+end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 0
+column_end = 10
+message = "Unreachable `in` pattern branch detected."
+
+[[tests]]
+name = "rubocopcoplintunreachablepatternbranch_with_noncatchall_patterns_does_not_register_an_offense_for_only_specific_patterns"
+source = '''
+case value
+in Integer
+  handle_integer
+in String
+  handle_string
+else
+  handle_other
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablepatternbranch_with_noncatchall_patterns_does_not_register_an_offense_when_catchall_is_the_last_branch"
+source = '''
+case value
+in Integer
+  handle_integer
+in String
+  handle_string
+in x
+  handle_other
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablepatternbranch_with_noncatchall_patterns_does_not_register_an_offense_for_array_pattern"
+source = '''
+case value
+in [*]
+  handle_array
+in Integer
+  handle_integer
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablepatternbranch_with_noncatchall_patterns_does_not_register_an_offense_for_hash_pattern"
+source = '''
+case value
+in **rest
+  handle_hash
+in Integer
+  handle_integer
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablepatternbranch_with_noncatchall_patterns_does_not_register_an_offense_for_literal_patterns"
+source = '''
+case value
+in 1
+  handle_one
+in 2
+  handle_two
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablepatternbranch_with_noncatchall_patterns_does_not_register_an_offense_for_find_pattern"
+ruby_version = ">= 3.0"
+source = '''
+case value
+in [*, 1, *]
+  handle_contains_one
+in Integer
+  handle_integer
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablepatternbranch_with_edge_cases_does_not_register_an_offense_for_a_single_in_branch"
+source = '''
+case value
+in x
+  handle_any
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintunreachablepatternbranch_with_edge_cases_registers_an_offense_for_match_as_wrapping_a_match_alt_with_catchall"
+source = '''
+case value
+in (_ | Integer) => y
+  handle_other
+in String
+  handle_string
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 9
+message = "Unreachable `in` pattern branch detected."

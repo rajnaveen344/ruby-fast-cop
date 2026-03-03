@@ -1,0 +1,266 @@
+cop = "Style/ReduceToHash"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocopcopstylereducetohash_when_targeting_ruby_26_with_each_with_object_pattern_registers_an_offense_and_corrects_with_inline_block"
+ruby_version = ">= 2.6"
+source = '''
+array.each_with_object({}) { |elem, hash| hash[elem.id] = elem.name }
+'''
+corrected = '''
+array.to_h { |elem| [elem.id, elem.name] }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 22
+message = "Use `to_h { ... }` instead of `each_with_object`."
+
+[[tests]]
+name = "rubocopcopstylereducetohash_when_targeting_ruby_26_with_each_with_object_pattern_registers_an_offense_and_corrects_with_doend_block"
+ruby_version = ">= 2.6"
+source = '''
+array.each_with_object({}) do |elem, hash|
+  hash[elem.id] = elem.name
+end
+'''
+corrected = '''
+array.to_h do |elem|
+  [elem.id, elem.name]
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 22
+message = "Use `to_h { ... }` instead of `each_with_object`."
+
+[[tests]]
+name = "rubocopcopstylereducetohash_when_targeting_ruby_26_with_each_with_object_pattern_registers_an_offense_and_corrects_with_safe_navigation"
+ruby_version = ">= 2.6"
+source = '''
+array&.each_with_object({}) { |elem, hash| hash[elem.id] = elem.name }
+'''
+corrected = '''
+array&.to_h { |elem| [elem.id, elem.name] }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 23
+message = "Use `to_h { ... }` instead of `each_with_object`."
+
+[[tests]]
+name = "rubocopcopstylereducetohash_when_targeting_ruby_26_with_each_with_object_pattern_registers_an_offense_and_corrects_without_receiver"
+ruby_version = ">= 2.6"
+source = '''
+each_with_object({}) { |elem, hash| hash[elem] = elem.to_s }
+'''
+corrected = '''
+to_h { |elem| [elem, elem.to_s] }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 16
+message = "Use `to_h { ... }` instead of `each_with_object`."
+
+[[tests]]
+name = "rubocopcopstylereducetohash_when_targeting_ruby_26_with_each_with_object_pattern_registers_an_offense_and_corrects_with_simple_element_as_key"
+ruby_version = ">= 2.6"
+source = '''
+array.each_with_object({}) { |x, h| h[x] = true }
+'''
+corrected = '''
+array.to_h { |x| [x, true] }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 22
+message = "Use `to_h { ... }` instead of `each_with_object`."
+
+[[tests]]
+name = "rubocopcopstylereducetohash_when_targeting_ruby_26_with_each_with_object_pattern_does_not_register_an_offense_when_block_body_has_multiple_statements"
+ruby_version = ">= 2.6"
+source = '''
+array.each_with_object({}) do |elem, hash|
+  hash[elem.id] = elem.name
+  puts elem
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylereducetohash_when_targeting_ruby_26_with_each_with_object_pattern_does_not_register_an_offense_with_destructured_block_arguments"
+ruby_version = ">= 2.6"
+source = '''
+hash.each_with_object({}) { |(k, v), h| h[k.to_s] = v }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylereducetohash_when_targeting_ruby_26_with_each_with_object_pattern_does_not_register_an_offense_when_initial_value_is_not_an_empty_hash"
+ruby_version = ">= 2.6"
+source = '''
+array.each_with_object(Hash.new(0)) { |elem, hash| hash[elem] += 1 }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylereducetohash_when_targeting_ruby_26_with_each_with_object_pattern_does_not_register_an_offense_when_using_methods_other_than_"
+ruby_version = ">= 2.6"
+source = '''
+array.each_with_object({}) { |elem, hash| hash.merge!(elem => true) }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylereducetohash_when_targeting_ruby_26_with_each_with_object_pattern_does_not_register_an_offense_when_the_hash_variable_is_not_the_one_being_assigned_to"
+ruby_version = ">= 2.6"
+source = '''
+array.each_with_object({}) { |elem, hash| other[elem] = true }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylereducetohash_when_targeting_ruby_26_with_inject_pattern_registers_an_offense_and_corrects_with_inline_block"
+ruby_version = ">= 2.6"
+source = '''
+array.inject({}) { |hash, elem| hash[elem.id] = elem.name; hash }
+'''
+corrected = '''
+array.to_h { |elem| [elem.id, elem.name] }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 12
+message = "Use `to_h { ... }` instead of `inject`."
+
+[[tests]]
+name = "rubocopcopstylereducetohash_when_targeting_ruby_26_with_inject_pattern_registers_an_offense_and_corrects_with_doend_block"
+ruby_version = ">= 2.6"
+source = '''
+array.inject({}) do |hash, elem|
+  hash[elem.id] = elem.name
+  hash
+end
+'''
+corrected = '''
+array.to_h do |elem|
+  [elem.id, elem.name]
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 12
+message = "Use `to_h { ... }` instead of `inject`."
+
+[[tests]]
+name = "rubocopcopstylereducetohash_when_targeting_ruby_26_with_inject_pattern_registers_an_offense_and_corrects_with_safe_navigation"
+ruby_version = ">= 2.6"
+source = '''
+array&.inject({}) { |hash, elem| hash[elem.id] = elem.name; hash }
+'''
+corrected = '''
+array&.to_h { |elem| [elem.id, elem.name] }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 13
+message = "Use `to_h { ... }` instead of `inject`."
+
+[[tests]]
+name = "rubocopcopstylereducetohash_when_targeting_ruby_26_with_inject_pattern_does_not_register_an_offense_when_the_accumulator_is_not_returned"
+ruby_version = ">= 2.6"
+source = '''
+array.inject({}) { |hash, elem| hash[elem] = true; other }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylereducetohash_when_targeting_ruby_26_with_inject_pattern_does_not_register_an_offense_when_block_body_has_extra_statements"
+ruby_version = ">= 2.6"
+source = '''
+array.inject({}) do |hash, elem|
+  puts elem
+  hash[elem] = true
+  hash
+end
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylereducetohash_when_targeting_ruby_26_with_reduce_pattern_registers_an_offense_and_corrects"
+ruby_version = ">= 2.6"
+source = '''
+array.reduce({}) { |hash, elem| hash[elem.id] = elem.name; hash }
+'''
+corrected = '''
+array.to_h { |elem| [elem.id, elem.name] }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 12
+message = "Use `to_h { ... }` instead of `reduce`."
+
+[[tests]]
+name = "rubocopcopstylereducetohash_when_targeting_ruby_26_with_numbered_parameters_registers_an_offense_and_corrects_each_with_object_with_numbered_params"
+source = '''
+array.each_with_object({}) { _2[_1.id] = _1.name }
+'''
+corrected = '''
+array.to_h { [_1.id, _1.name] }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 22
+message = "Use `to_h { ... }` instead of `each_with_object`."
+
+[[tests]]
+name = "rubocopcopstylereducetohash_when_targeting_ruby_26_with_numbered_parameters_registers_an_offense_and_corrects_inject_with_numbered_params"
+source = '''
+array.inject({}) { _1[_2.id] = _2.name; _1 }
+'''
+corrected = '''
+array.to_h { [_1.id, _1.name] }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 12
+message = "Use `to_h { ... }` instead of `inject`."
+
+[[tests]]
+name = "rubocopcopstylereducetohash_when_targeting_ruby_25_does_not_register_an_offense_for_each_with_object_pattern"
+ruby_version = ">= 2.5"
+source = '''
+array.each_with_object({}) { |elem, hash| hash[elem.id] = elem.name }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylereducetohash_when_targeting_ruby_25_does_not_register_an_offense_for_inject_pattern"
+ruby_version = ">= 2.5"
+source = '''
+array.inject({}) { |hash, elem| hash[elem.id] = elem.name; hash }
+'''
+offenses = []

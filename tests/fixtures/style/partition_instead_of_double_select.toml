@@ -1,0 +1,500 @@
+cop = "Style/PartitionInsteadOfDoubleSelect"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocopcopstylepartitioninsteadofdoubleselect_when_using_select_and_reject_with_same_receiver_and_block_registers_an_offense_and_corrects_select_followed_by_reject"
+source = '''
+positives = arr.select { |x| x > 0 }
+negatives = arr.reject { |x| x > 0 }
+'''
+corrected = '''
+positives, negatives = arr.partition { |x| x > 0 }
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 36
+message = "Use `partition` instead of consecutive `select` and `reject` calls."
+
+[[tests]]
+name = "rubocopcopstylepartitioninsteadofdoubleselect_when_using_select_and_reject_with_same_receiver_and_block_registers_an_offense_and_corrects_reject_followed_by_select"
+source = '''
+negatives = arr.reject { |x| x > 0 }
+positives = arr.select { |x| x > 0 }
+'''
+corrected = '''
+positives, negatives = arr.partition { |x| x > 0 }
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 36
+message = "Use `partition` instead of consecutive `reject` and `select` calls."
+
+[[tests]]
+name = "rubocopcopstylepartitioninsteadofdoubleselect_when_using_select_and_reject_with_same_receiver_and_block_registers_an_offense_and_corrects_filter_followed_by_reject"
+source = '''
+positives = arr.filter { |x| x > 0 }
+negatives = arr.reject { |x| x > 0 }
+'''
+corrected = '''
+positives, negatives = arr.partition { |x| x > 0 }
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 36
+message = "Use `partition` instead of consecutive `filter` and `reject` calls."
+
+[[tests]]
+name = "rubocopcopstylepartitioninsteadofdoubleselect_when_using_select_and_reject_with_same_receiver_and_block_registers_an_offense_and_corrects_find_all_followed_by_reject"
+source = '''
+positives = arr.find_all { |x| x > 0 }
+negatives = arr.reject { |x| x > 0 }
+'''
+corrected = '''
+positives, negatives = arr.partition { |x| x > 0 }
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 36
+message = "Use `partition` instead of consecutive `find_all` and `reject` calls."
+
+[[tests]]
+name = "rubocopcopstylepartitioninsteadofdoubleselect_when_using_select_and_reject_with_same_receiver_and_block_registers_an_offense_and_corrects_with_doend_blocks"
+source = '''
+positives = arr.select do |x|
+  x > 0
+end
+negatives = arr.reject do |x|
+  x > 0
+end
+'''
+corrected = '''
+positives, negatives = arr.partition do |x|
+  x > 0
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 29
+message = "Use `partition` instead of consecutive `select` and `reject` calls."
+
+[[tests]]
+name = "rubocopcopstylepartitioninsteadofdoubleselect_when_using_select_and_reject_with_same_receiver_and_block_registers_an_offense_and_corrects_with_numbered_block_parameters"
+source = '''
+positives = arr.select { _1 > 0 }
+negatives = arr.reject { _1 > 0 }
+'''
+corrected = '''
+positives, negatives = arr.partition { _1 > 0 }
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 33
+message = "Use `partition` instead of consecutive `select` and `reject` calls."
+
+[[tests]]
+name = "rubocopcopstylepartitioninsteadofdoubleselect_when_using_select_and_reject_with_same_receiver_and_block_registers_an_offense_and_corrects_with_it_block_parameter"
+ruby_version = ">= 3.4"
+source = '''
+positives = arr.select { it > 0 }
+negatives = arr.reject { it > 0 }
+'''
+corrected = '''
+positives, negatives = arr.partition { it > 0 }
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 33
+message = "Use `partition` instead of consecutive `select` and `reject` calls."
+
+[[tests]]
+name = "rubocopcopstylepartitioninsteadofdoubleselect_when_using_select_and_reject_with_same_receiver_and_block_registers_an_offense_and_corrects_with_a_method_chain_receiver"
+source = '''
+positives = foo.bar.select { |x| x > 0 }
+negatives = foo.bar.reject { |x| x > 0 }
+'''
+corrected = '''
+positives, negatives = foo.bar.partition { |x| x > 0 }
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 40
+message = "Use `partition` instead of consecutive `select` and `reject` calls."
+
+[[tests]]
+name = "rubocopcopstylepartitioninsteadofdoubleselect_when_using_select_and_reject_with_same_receiver_and_block_registers_an_offense_and_corrects_with_safe_navigation"
+source = '''
+positives = arr&.select { |x| x > 0 }
+negatives = arr&.reject { |x| x > 0 }
+'''
+corrected = '''
+positives, negatives = arr&.partition { |x| x > 0 }
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 37
+message = "Use `partition` instead of consecutive `select` and `reject` calls."
+
+[[tests]]
+name = "rubocopcopstylepartitioninsteadofdoubleselect_when_using_select_and_reject_with_same_receiver_and_block_registers_an_offense_but_does_not_correct_bare_blocks_without_assignment"
+source = '''
+arr.select { |x| x > 0 }
+arr.reject { |x| x > 0 }
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 24
+message = "Use `partition` instead of consecutive `select` and `reject` calls."
+
+[[tests]]
+name = "rubocopcopstylepartitioninsteadofdoubleselect_when_using_select_and_reject_with_same_receiver_and_block_registers_an_offense_but_does_not_correct_instance_variable_assignments"
+source = '''
+@positives = arr.select { |x| x > 0 }
+@negatives = arr.reject { |x| x > 0 }
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 37
+message = "Use `partition` instead of consecutive `select` and `reject` calls."
+
+[[tests]]
+name = "rubocopcopstylepartitioninsteadofdoubleselect_when_using_select_and_reject_with_same_receiver_and_block_registers_an_offense_but_does_not_correct_mixed_assignment_types"
+source = '''
+positives = arr.select { |x| x > 0 }
+@negatives = arr.reject { |x| x > 0 }
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 37
+message = "Use `partition` instead of consecutive `select` and `reject` calls."
+
+[[tests]]
+name = "rubocopcopstylepartitioninsteadofdoubleselect_when_using_select_and_reject_with_same_receiver_and_block_preserves_surrounding_code_when_correcting"
+source = '''
+before_code
+positives = arr.select { |x| x > 0 }
+negatives = arr.reject { |x| x > 0 }
+after_code
+'''
+corrected = '''
+before_code
+positives, negatives = arr.partition { |x| x > 0 }
+after_code
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 0
+column_end = 36
+message = "Use `partition` instead of consecutive `select` and `reject` calls."
+
+[[tests]]
+name = "rubocopcopstylepartitioninsteadofdoubleselect_when_using_select_and_reject_with_block_pass_sym_form_registers_an_offense_and_corrects_select_followed_by_reject"
+source = '''
+positives = arr.select(&:positive?)
+negatives = arr.reject(&:positive?)
+'''
+corrected = '''
+positives, negatives = arr.partition(&:positive?)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 35
+message = "Use `partition` instead of consecutive `select` and `reject` calls."
+
+[[tests]]
+name = "rubocopcopstylepartitioninsteadofdoubleselect_when_using_select_and_reject_with_block_pass_sym_form_registers_an_offense_and_corrects_reject_followed_by_select"
+source = '''
+negatives = arr.reject(&:positive?)
+positives = arr.select(&:positive?)
+'''
+corrected = '''
+positives, negatives = arr.partition(&:positive?)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 35
+message = "Use `partition` instead of consecutive `reject` and `select` calls."
+
+[[tests]]
+name = "rubocopcopstylepartitioninsteadofdoubleselect_when_using_select_and_reject_with_block_pass_sym_form_registers_an_offense_and_corrects_filter_with_block_pass_followed_by_reject"
+source = '''
+positives = arr.filter(&:positive?)
+negatives = arr.reject(&:positive?)
+'''
+corrected = '''
+positives, negatives = arr.partition(&:positive?)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 35
+message = "Use `partition` instead of consecutive `filter` and `reject` calls."
+
+[[tests]]
+name = "rubocopcopstylepartitioninsteadofdoubleselect_when_using_select_and_reject_with_block_pass_sym_form_registers_an_offense_and_corrects_with_safe_navigation"
+source = '''
+positives = arr&.select(&:positive?)
+negatives = arr&.reject(&:positive?)
+'''
+corrected = '''
+positives, negatives = arr&.partition(&:positive?)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 36
+message = "Use `partition` instead of consecutive `select` and `reject` calls."
+
+[[tests]]
+name = "rubocopcopstylepartitioninsteadofdoubleselect_when_using_select_and_reject_with_block_pass_sym_form_registers_an_offense_but_does_not_correct_bare_calls_without_assignment"
+source = '''
+arr.select(&:positive?)
+arr.reject(&:positive?)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 23
+message = "Use `partition` instead of consecutive `select` and `reject` calls."
+
+[[tests]]
+name = "rubocopcopstylepartitioninsteadofdoubleselect_when_using_select_and_reject_with_block_pass_sym_form_does_not_register_an_offense_when_block_pass_arguments_differ"
+source = '''
+positives = arr.select(&:positive?)
+negatives = arr.reject(&:negative?)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylepartitioninsteadofdoubleselect_when_using_select_and_reject_with_block_pass_sym_form_does_not_register_an_offense_when_receivers_differ"
+source = '''
+positives = arr1.select(&:positive?)
+negatives = arr2.reject(&:positive?)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylepartitioninsteadofdoubleselect_when_using_select_and_reject_with_block_pass_sym_form_registers_an_offense_and_corrects_block_pass_select_with_block_reject"
+source = '''
+positives = arr.select(&:positive?)
+negatives = arr.reject { |x| x.positive? }
+'''
+corrected = '''
+positives, negatives = arr.partition(&:positive?)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 42
+message = "Use `partition` instead of consecutive `select` and `reject` calls."
+
+[[tests]]
+name = "rubocopcopstylepartitioninsteadofdoubleselect_when_using_select_and_reject_with_block_pass_sym_form_registers_an_offense_and_corrects_block_select_with_block_pass_reject"
+source = '''
+positives = arr.select { |x| x.positive? }
+negatives = arr.reject(&:positive?)
+'''
+corrected = '''
+positives, negatives = arr.partition { |x| x.positive? }
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 35
+message = "Use `partition` instead of consecutive `select` and `reject` calls."
+
+[[tests]]
+name = "rubocopcopstylepartitioninsteadofdoubleselect_when_using_select_and_reject_with_block_pass_sym_form_does_not_register_an_offense_for_nonequivalent_mixed_forms"
+source = '''
+positives = arr.select(&:positive?)
+negatives = arr.reject { |x| x.negative? }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylepartitioninsteadofdoubleselect_when_using_same_method_with_negated_predicate_registers_an_offense_and_corrects_two_select_calls_with_negation"
+source = '''
+a = arr.select { |x| x.positive? }
+b = arr.select { |x| !x.positive? }
+'''
+corrected = '''
+a, b = arr.partition { |x| x.positive? }
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 35
+message = "Use `partition` instead of consecutive `select` and `select` calls."
+
+[[tests]]
+name = "rubocopcopstylepartitioninsteadofdoubleselect_when_using_same_method_with_negated_predicate_registers_an_offense_and_corrects_reversed_select_calls_with_negation"
+source = '''
+b = arr.select { |x| !x.positive? }
+a = arr.select { |x| x.positive? }
+'''
+corrected = '''
+a, b = arr.partition { |x| x.positive? }
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 34
+message = "Use `partition` instead of consecutive `select` and `select` calls."
+
+[[tests]]
+name = "rubocopcopstylepartitioninsteadofdoubleselect_when_using_same_method_with_negated_predicate_registers_an_offense_and_corrects_two_reject_calls_with_negation"
+source = '''
+a = arr.reject { |x| x.positive? }
+b = arr.reject { |x| !x.positive? }
+'''
+corrected = '''
+b, a = arr.partition { |x| x.positive? }
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 35
+message = "Use `partition` instead of consecutive `reject` and `reject` calls."
+
+[[tests]]
+name = "rubocopcopstylepartitioninsteadofdoubleselect_when_using_same_method_with_negated_predicate_registers_an_offense_and_corrects_with_numbered_block_parameters"
+source = '''
+a = arr.select { _1.positive? }
+b = arr.select { !_1.positive? }
+'''
+corrected = '''
+a, b = arr.partition { _1.positive? }
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 32
+message = "Use `partition` instead of consecutive `select` and `select` calls."
+
+[[tests]]
+name = "rubocopcopstylepartitioninsteadofdoubleselect_when_using_same_method_with_negated_predicate_registers_an_offense_but_does_not_correct_bare_calls"
+source = '''
+arr.select { |x| x.positive? }
+arr.select { |x| !x.positive? }
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 0
+column_end = 31
+message = "Use `partition` instead of consecutive `select` and `select` calls."
+
+[[tests]]
+name = "rubocopcopstylepartitioninsteadofdoubleselect_when_using_same_method_with_negated_predicate_does_not_register_an_offense_when_negation_is_on_a_different_expression"
+source = '''
+a = arr.select { |x| x.positive? }
+b = arr.select { |x| !x.negative? }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylepartitioninsteadofdoubleselect_when_using_same_method_with_negated_predicate_does_not_register_an_offense_for_two_select_calls_with_same_body"
+source = '''
+a = arr.select { |x| x > 0 }
+b = arr.select { |x| x > 0 }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylepartitioninsteadofdoubleselect_when_using_same_method_with_negated_predicate_does_not_register_an_offense_for_two_reject_calls_with_same_body"
+source = '''
+a = arr.reject { |x| x > 0 }
+b = arr.reject { |x| x > 0 }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylepartitioninsteadofdoubleselect_when_blocks_differ_does_not_register_an_offense_when_block_bodies_differ"
+source = '''
+positives = arr.select { |x| x > 0 }
+negatives = arr.reject { |x| x < 0 }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylepartitioninsteadofdoubleselect_when_blocks_differ_does_not_register_an_offense_when_block_argument_names_differ"
+source = '''
+positives = arr.select { |x| x > 0 }
+negatives = arr.reject { |y| y > 0 }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylepartitioninsteadofdoubleselect_when_blocks_differ_does_not_register_an_offense_when_block_types_differ"
+source = '''
+positives = arr.select { |x| x > 0 }
+negatives = arr.reject { _1 > 0 }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylepartitioninsteadofdoubleselect_when_receivers_differ_does_not_register_an_offense_when_receivers_differ"
+source = '''
+positives = arr1.select { |x| x > 0 }
+negatives = arr2.reject { |x| x > 0 }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylepartitioninsteadofdoubleselect_when_calls_are_not_consecutive_does_not_register_an_offense_when_calls_are_separated_by_other_code"
+source = '''
+positives = arr.select { |x| x > 0 }
+do_something
+negatives = arr.reject { |x| x > 0 }
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylepartitioninsteadofdoubleselect_when_inside_conditional_branches_does_not_register_an_offense_when_in_separate_branches"
+source = '''
+if condition
+  arr.select { |x| x > 0 }
+else
+  arr.reject { |x| x > 0 }
+end
+'''
+offenses = []

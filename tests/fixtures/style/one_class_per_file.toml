@@ -1,0 +1,354 @@
+cop = "Style/OneClassPerFile"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocopcopstyleoneclassperfile_when_multiple_toplevel_definitions_exist_registers_an_offense_for_two_toplevel_classes"
+source = '''
+class Foo
+end
+
+class Bar
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 9
+message = "Do not define multiple classes/modules at the top level in a single file."
+
+[tests.config]
+AllowedClasses = []
+
+[[tests]]
+name = "rubocopcopstyleoneclassperfile_when_multiple_toplevel_definitions_exist_registers_an_offense_for_two_toplevel_modules"
+source = '''
+module Foo
+end
+
+module Bar
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 10
+message = "Do not define multiple classes/modules at the top level in a single file."
+
+[tests.config]
+AllowedClasses = []
+
+[[tests]]
+name = "rubocopcopstyleoneclassperfile_when_multiple_toplevel_definitions_exist_registers_an_offense_for_a_class_and_a_module_at_top_level"
+source = '''
+class Foo
+end
+
+module Bar
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 10
+message = "Do not define multiple classes/modules at the top level in a single file."
+
+[tests.config]
+AllowedClasses = []
+
+[[tests]]
+name = "rubocopcopstyleoneclassperfile_when_multiple_toplevel_definitions_exist_registers_an_offense_for_a_module_and_a_class_at_top_level"
+source = '''
+module Foo
+end
+
+class Bar
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 9
+message = "Do not define multiple classes/modules at the top level in a single file."
+
+[tests.config]
+AllowedClasses = []
+
+[[tests]]
+name = "rubocopcopstyleoneclassperfile_when_multiple_toplevel_definitions_exist_registers_offenses_for_three_toplevel_classes"
+source = '''
+class Foo
+end
+
+class Bar
+end
+
+class Baz
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 9
+message = "Do not define multiple classes/modules at the top level in a single file."
+
+[[tests.offenses]]
+line = 7
+column_start = 0
+column_end = 9
+message = "Do not define multiple classes/modules at the top level in a single file."
+
+[tests.config]
+AllowedClasses = []
+
+[[tests]]
+name = "rubocopcopstyleoneclassperfile_when_multiple_toplevel_definitions_exist_registers_an_offense_for_toplevel_classes_with_namespaced_names"
+source = '''
+class Foo::Baz
+end
+
+class Bar::Qux
+end
+'''
+
+[[tests.offenses]]
+line = 4
+column_start = 0
+column_end = 14
+message = "Do not define multiple classes/modules at the top level in a single file."
+
+[tests.config]
+AllowedClasses = []
+
+[[tests]]
+name = "rubocopcopstyleoneclassperfile_when_multiple_toplevel_definitions_exist_registers_an_offense_for_classes_preceded_by_other_statements"
+source = '''
+require 'something'
+
+class Foo
+end
+
+class Bar
+end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 0
+column_end = 9
+message = "Do not define multiple classes/modules at the top level in a single file."
+
+[tests.config]
+AllowedClasses = []
+
+[[tests]]
+name = "rubocopcopstyleoneclassperfile_when_multiple_toplevel_definitions_exist_registers_an_offense_for_toplevel_classes_with_bodies"
+source = '''
+class Foo
+  def method_one
+  end
+end
+
+class Bar
+  def method_two
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 6
+column_start = 0
+column_end = 9
+message = "Do not define multiple classes/modules at the top level in a single file."
+
+[tests.config]
+AllowedClasses = []
+
+[[tests]]
+name = "rubocopcopstyleoneclassperfile_when_only_one_toplevel_definition_exists_does_not_register_an_offense_for_a_single_toplevel_class"
+source = '''
+class Foo
+  def method_one
+  end
+end
+'''
+offenses = []
+
+[tests.config]
+AllowedClasses = []
+
+[[tests]]
+name = "rubocopcopstyleoneclassperfile_when_only_one_toplevel_definition_exists_does_not_register_an_offense_for_a_single_toplevel_module"
+source = '''
+module Foo
+  def method_one
+  end
+end
+'''
+offenses = []
+
+[tests.config]
+AllowedClasses = []
+
+[[tests]]
+name = "rubocopcopstyleoneclassperfile_when_only_one_toplevel_definition_exists_does_not_register_an_offense_for_a_single_class_with_no_body"
+source = '''
+class Foo
+end
+'''
+offenses = []
+
+[tests.config]
+AllowedClasses = []
+
+[[tests]]
+name = "rubocopcopstyleoneclassperfile_when_definitions_are_nested_does_not_register_an_offense_for_nested_classes"
+source = '''
+class Foo
+  class Bar
+  end
+end
+'''
+offenses = []
+
+[tests.config]
+AllowedClasses = []
+
+[[tests]]
+name = "rubocopcopstyleoneclassperfile_when_definitions_are_nested_does_not_register_an_offense_for_nested_modules"
+source = '''
+module Foo
+  module Bar
+  end
+end
+'''
+offenses = []
+
+[tests.config]
+AllowedClasses = []
+
+[[tests]]
+name = "rubocopcopstyleoneclassperfile_when_definitions_are_nested_does_not_register_an_offense_for_multiple_classes_inside_a_module"
+source = '''
+module Foo
+  class Bar
+  end
+
+  class Baz
+  end
+end
+'''
+offenses = []
+
+[tests.config]
+AllowedClasses = []
+
+[[tests]]
+name = "rubocopcopstyleoneclassperfile_when_file_has_no_class_or_module_definitions_does_not_register_an_offense_for_an_empty_file"
+source = '''
+
+'''
+offenses = []
+
+[tests.config]
+AllowedClasses = []
+
+[[tests]]
+name = "rubocopcopstyleoneclassperfile_when_file_has_no_class_or_module_definitions_does_not_register_an_offense_for_a_file_with_only_method_calls"
+source = '''
+require 'foo'
+require 'bar'
+'''
+offenses = []
+
+[tests.config]
+AllowedClasses = []
+
+[[tests]]
+name = "rubocopcopstyleoneclassperfile_when_a_singleton_class_is_at_top_level_does_not_register_an_offense_for_class__self_alongside_a_class"
+source = '''
+class Foo
+end
+
+class << self
+  def something
+  end
+end
+'''
+offenses = []
+
+[tests.config]
+AllowedClasses = []
+
+[[tests]]
+name = "rubocopcopstyleoneclassperfile_when_allowedclasses_is_configured_does_not_count_allowed_classes_toward_the_limit"
+source = '''
+class Foo
+end
+
+class SpecificError
+end
+'''
+offenses = []
+
+[tests.config]
+AllowedClasses = ["SpecificError"]
+
+[[tests]]
+name = "rubocopcopstyleoneclassperfile_when_allowedclasses_is_configured_still_registers_an_offense_for_nonallowed_additional_classes"
+source = '''
+class Foo
+end
+
+class SpecificError
+end
+
+class Bar
+end
+'''
+
+[[tests.offenses]]
+line = 7
+column_start = 0
+column_end = 9
+message = "Do not define multiple classes/modules at the top level in a single file."
+
+[tests.config]
+AllowedClasses = ["SpecificError"]
+
+[[tests]]
+name = "rubocopcopstyleoneclassperfile_when_allowedclasses_is_configured_does_not_count_allowed_modules_toward_the_limit"
+source = '''
+class Foo
+end
+
+module SpecificError
+end
+'''
+offenses = []
+
+[tests.config]
+AllowedClasses = ["SpecificError"]
+
+[[tests]]
+name = "rubocopcopstyleoneclassperfile_when_allowedclasses_contains_multiple_entries_does_not_count_any_allowed_classes_toward_the_limit"
+source = '''
+class Foo
+end
+
+class ErrorA
+end
+
+class ErrorB
+end
+'''
+offenses = []
+
+[tests.config]
+AllowedClasses = ["ErrorA", "ErrorB"]

@@ -2291,6 +2291,31 @@ end
 offenses = []
 
 [[tests]]
+name = "rubocopcoplintuselessassignment_when_a_useless_assignment_wraps_a_block_containing_another_useless_assignment_registers_offenses_and_corrects"
+source = '''
+foo = do_something {
+  bar = do_something_else
+}
+'''
+corrected = '''
+do_something {
+  do_something_else
+}
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 3
+message = "Useless assignment to variable - `foo`."
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 5
+message = "Useless assignment to variable - `bar`."
+
+[[tests]]
 name = "rubocopcoplintuselessassignment_using_numbered_block_parameter_does_not_register_an_offense_when_the_variable_is_used"
 source = '''
 var = 42

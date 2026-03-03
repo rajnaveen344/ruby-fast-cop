@@ -657,7 +657,7 @@ column_end = 12
 message = "Don't use parentheses around a method call."
 
 [[tests]]
-name = "rubocopcopstyleredundantparentheses_registers_an_offense_for_parens_around_a_block_body"
+name = "rubocopcopstyleredundantparentheses_registers_an_offense_for_parens_around_a_block_body_with_doend_syntax"
 source = '''
 x do
   (foo; bar)
@@ -673,7 +673,22 @@ end
 line = 2
 column_start = 2
 column_end = 12
-message = "Don't use parentheses around a method call."
+message = "Don't use parentheses around block body."
+
+[[tests]]
+name = "rubocopcopstyleredundantparentheses_registers_an_offense_for_parens_around_a_block_body_with_braces_syntax"
+source = '''
+let(:foo) { (bar + baz) }
+'''
+corrected = '''
+let(:foo) { bar + baz }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 12
+column_end = 23
+message = "Don't use parentheses around block body."
 
 [[tests]]
 name = "rubocopcopstyleredundantparentheses_registers_an_offense_for_parens_around_a_numblock_body"

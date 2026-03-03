@@ -7,7 +7,7 @@ implemented = false
 name = "rubocopcopstylehashtransformkeys_when_using_ruby_25_or_newer_does_not_flag_each_with_object_when_both_key__value_are_transformed"
 ruby_version = ">= 2.5"
 source = '''
-x.each_with_object({}) {|(k, v), h| h[k.to_sym] = foo(v)}
+{a: 1, b: 2}.each_with_object({}) {|(k, v), h| h[k.to_sym] = foo(v)}
 '''
 offenses = []
 
@@ -15,7 +15,7 @@ offenses = []
 name = "rubocopcopstylehashtransformkeys_when_using_ruby_25_or_newer_does_not_flag_each_with_object_when_key_transformation_uses_value"
 ruby_version = ">= 2.5"
 source = '''
-x.each_with_object({}) {|(k, v), h| h[foo(v)] = v}
+{a: 1, b: 2}.each_with_object({}) {|(k, v), h| h[foo(v)] = v}
 '''
 offenses = []
 
@@ -23,7 +23,7 @@ offenses = []
 name = "rubocopcopstylehashtransformkeys_when_using_ruby_25_or_newer_does_not_flag_each_with_object_when_no_transformation_occurs"
 ruby_version = ">= 2.5"
 source = '''
-x.each_with_object({}) {|(k, v), h| h[k] = v}
+{a: 1, b: 2}.each_with_object({}) {|(k, v), h| h[k] = v}
 '''
 offenses = []
 
@@ -31,7 +31,7 @@ offenses = []
 name = "rubocopcopstylehashtransformkeys_when_using_ruby_25_or_newer_does_not_flag_each_with_object_when_its_argument_is_not_modified"
 ruby_version = ">= 2.5"
 source = '''
-x.each_with_object({}) {|(k, v), h| other_h[k.to_sym] = v}
+{a: 1, b: 2}.each_with_object({}) {|(k, v), h| other_h[k.to_sym] = v}
 '''
 offenses = []
 
@@ -39,12 +39,20 @@ offenses = []
 name = "rubocopcopstylehashtransformkeys_when_using_ruby_25_or_newer_does_not_flag_each_with_object_when_its_argument_is_used_in_the_key"
 ruby_version = ">= 2.5"
 source = '''
-x.each_with_object({}) { |(k, v), h| h[h[k.to_sym]] = v }
+{a: 1, b: 2}.each_with_object({}) { |(k, v), h| h[h[k.to_sym]] = v }
 '''
 offenses = []
 
 [[tests]]
-name = "rubocopcopstylehashtransformkeys_when_using_ruby_25_or_newer_does_not_flag_each_with_object_when_its_receiver_is_array_literal"
+name = "rubocopcopstylehashtransformkeys_when_using_ruby_25_or_newer_does_not_flag_each_with_object_when_receiver_is_not_a_hash"
+ruby_version = ">= 2.5"
+source = '''
+x.each_with_object({}) {|(k, v), h| h[foo(k)] = v}
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylehashtransformkeys_when_using_ruby_25_or_newer_does_not_flag_each_with_object_when_receiver_is_an_array_literal"
 ruby_version = ">= 2.5"
 source = '''
 [1, 2, 3].each_with_object({}) {|(k, v), h| h[foo(k)] = v}
@@ -52,60 +60,76 @@ source = '''
 offenses = []
 
 [[tests]]
-name = "rubocopcopstylehashtransformkeys_when_using_ruby_25_or_newer_does_not_flag_each_with_object_when_its_receiver_is_each_with_index"
+name = "rubocopcopstylehashtransformkeys_when_using_ruby_25_or_newer_does_not_flag_each_with_object_when_receiver_is_a_method_chain_through_nonhash_methods"
 ruby_version = ">= 2.5"
 source = '''
-[1, 2, 3].each_with_index.each_with_object({}) { |(k, v), h| h[k.to_sym] = v }
+x.to_enum(:foreach, path).select { |entry| entry.file? }.each_with_object({}) {|(k, v), h| h[foo(k)] = v}
 '''
 offenses = []
 
 [[tests]]
-name = "rubocopcopstylehashtransformkeys_when_using_ruby_25_or_newer_does_not_flag_each_with_object_when_its_receiver_is_with_index"
+name = "rubocopcopstylehashtransformkeys_when_using_ruby_25_or_newer_flags_each_with_object_when_receiver_is_a_hashproducing_method"
 ruby_version = ">= 2.5"
 source = '''
-[1, 2, 3].each.with_index.each_with_object({}) { |(k, v), h| h[k.to_sym] = v }
-'''
-offenses = []
-
-[[tests]]
-name = "rubocopcopstylehashtransformkeys_when_using_ruby_25_or_newer_does_not_flag_each_with_object_when_its_receiver_is_zip"
-ruby_version = ">= 2.5"
-source = '''
-%i[a b c].zip([1, 2, 3]).each_with_object({}) { |(k, v), h| h[k.to_sym] = v }
-'''
-offenses = []
-
-[[tests]]
-name = "rubocopcopstylehashtransformkeys_when_using_ruby_25_or_newer_flags__mapto_h_when_transform_keys_could_be_used"
-ruby_version = ">= 2.5"
-source = '''
-x.map {|k, v| [k.to_sym, v]}.to_h
+x.to_h.each_with_object({}) {|(k, v), h| h[foo(k)] = v}
 '''
 corrected = '''
-x.transform_keys {|k| k.to_sym}
+x.to_h.transform_keys {|k| foo(k)}
 '''
 
 [[tests.offenses]]
 line = 1
 column_start = 0
-column_end = 33
+column_end = 55
+message = "Prefer `transform_keys` over `each_with_object`."
+
+[[tests]]
+name = "rubocopcopstylehashtransformkeys_when_using_ruby_25_or_newer_flags_each_with_object_when_receiver_is_a_group_by_block"
+ruby_version = ">= 2.5"
+source = '''
+x.group_by { |e| e.type }.each_with_object({}) {|(k, v), h| h[foo(k)] = v}
+'''
+corrected = '''
+x.group_by { |e| e.type }.transform_keys {|k| foo(k)}
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 74
+message = "Prefer `transform_keys` over `each_with_object`."
+
+[[tests]]
+name = "rubocopcopstylehashtransformkeys_when_using_ruby_25_or_newer_flags__mapto_h_when_transform_keys_could_be_used"
+ruby_version = ">= 2.5"
+source = '''
+{a: 1, b: 2}.map {|k, v| [k.to_sym, v]}.to_h
+'''
+corrected = '''
+{a: 1, b: 2}.transform_keys {|k| k.to_sym}
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 44
 message = "Prefer `transform_keys` over `map {...}.to_h`."
 
 [[tests]]
 name = "rubocopcopstylehashtransformkeys_when_using_ruby_25_or_newer_flags__mapto_h_when_transform_keys_could_be_used_when_line_break_before_to_h"
 ruby_version = ">= 2.5"
 source = '''
-x.map {|k, v| [k.to_sym, v]}.
+{a: 1, b: 2}.map {|k, v| [k.to_sym, v]}.
   to_h
 '''
 corrected = '''
-x.transform_keys {|k| k.to_sym}
+{a: 1, b: 2}.transform_keys {|k| k.to_sym}
 '''
 
 [[tests.offenses]]
 line = 1
 column_start = 0
-column_end = 29
+column_end = 40
 message = "Prefer `transform_keys` over `map {...}.to_h`."
 
 [[tests]]
@@ -113,14 +137,14 @@ name = "rubocopcopstylehashtransformkeys_when_using_ruby_25_or_newer_flags__map_
 ruby_version = ">= 2.5"
 source = '''
 wrapping do
-  x.map do |k, v|
+  {a: 1, b: 2}.map do |k, v|
     [k.to_sym, v]
   end.to_h
 end
 '''
 corrected = '''
 wrapping do
-  x.transform_keys do |k|
+  {a: 1, b: 2}.transform_keys do |k|
     k.to_sym
   end
 end
@@ -129,14 +153,14 @@ end
 [[tests.offenses]]
 line = 2
 column_start = 2
-column_end = 17
+column_end = 28
 message = "Prefer `transform_keys` over `map {...}.to_h`."
 
 [[tests]]
 name = "rubocopcopstylehashtransformkeys_when_using_ruby_25_or_newer_does_not_flag__mapto_h_when_both_key__value_are_transformed"
 ruby_version = ">= 2.5"
 source = '''
-x.map {|k, v| [k.to_sym, foo(v)]}.to_h
+{a: 1, b: 2}.map {|k, v| [k.to_sym, foo(v)]}.to_h
 '''
 offenses = []
 
@@ -144,23 +168,23 @@ offenses = []
 name = "rubocopcopstylehashtransformkeys_when_using_ruby_25_or_newer_flags_hash_map_when_transform_keys_could_be_used"
 ruby_version = ">= 2.5"
 source = '''
-Hash[x.map {|k, v| [k.to_sym, v]}]
+Hash[{a: 1, b: 2}.map {|k, v| [k.to_sym, v]}]
 '''
 corrected = '''
-x.transform_keys {|k| k.to_sym}
+{a: 1, b: 2}.transform_keys {|k| k.to_sym}
 '''
 
 [[tests.offenses]]
 line = 1
 column_start = 0
-column_end = 34
+column_end = 45
 message = "Prefer `transform_keys` over `Hash[_.map {...}]`."
 
 [[tests]]
 name = "rubocopcopstylehashtransformkeys_when_using_ruby_25_or_newer_does_not_flag_hash_map_when_both_key__value_are_transformed"
 ruby_version = ">= 2.5"
 source = '''
-Hash[x.map {|k, v| [k.to_sym, foo(v)]}]
+Hash[{a: 1, b: 2}.map {|k, v| [k.to_sym, foo(v)]}]
 '''
 offenses = []
 
@@ -168,7 +192,7 @@ offenses = []
 name = "rubocopcopstylehashtransformkeys_when_using_ruby_25_or_newer_does_not_flag__map_to_h_when_key_block_argument_is_unused"
 ruby_version = ">= 2.5"
 source = '''
-x.map {|_k, v| [v, v]}.to_h
+{a: 1, b: 2}.map {|_k, v| [v, v]}.to_h
 '''
 offenses = []
 
@@ -176,12 +200,20 @@ offenses = []
 name = "rubocopcopstylehashtransformkeys_when_using_ruby_25_or_newer_does_not_flag_key_transformation_in_the_absence_of_to_h"
 ruby_version = ">= 2.5"
 source = '''
-x.map {|k, v| [k.to_sym, v]}
+{a: 1, b: 2}.map {|k, v| [k.to_sym, v]}
 '''
 offenses = []
 
 [[tests]]
-name = "rubocopcopstylehashtransformkeys_when_using_ruby_25_or_newer_does_not_flag_key_transformation_when_receiver_is_array_literal"
+name = "rubocopcopstylehashtransformkeys_when_using_ruby_25_or_newer_does_not_flag_key_transformation_when_receiver_is_not_a_hash"
+ruby_version = ">= 2.5"
+source = '''
+x.map {|k, v| [k.to_sym, v]}.to_h
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylehashtransformkeys_when_using_ruby_25_or_newer_does_not_flag__mapto_h_when_its_receiver_is_an_array_literal"
 ruby_version = ">= 2.5"
 source = '''
 [1, 2, 3].map {|k, v| [k.to_sym, v]}.to_h
@@ -189,28 +221,52 @@ source = '''
 offenses = []
 
 [[tests]]
-name = "rubocopcopstylehashtransformkeys_when_using_ruby_25_or_newer_does_not_flag__mapto_h_when_its_receiver_is_each_with_index"
+name = "rubocopcopstylehashtransformkeys_when_using_ruby_25_or_newer_does_not_flag_hash_map_when_its_receiver_is_not_a_hash"
 ruby_version = ">= 2.5"
 source = '''
-[1, 2, 3].each_with_index.map { |k, v| [k.to_sym, v] }.to_h
+Hash[x.map { |k, v| [k.to_sym, v] }]
 '''
 offenses = []
 
 [[tests]]
-name = "rubocopcopstylehashtransformkeys_when_using_ruby_25_or_newer_does_not_flag__mapto_h_when_its_receiver_is_with_index"
+name = "rubocopcopstylehashtransformkeys_when_using_ruby_25_or_newer_does_not_flag_hash_map_when_its_receiver_is_an_array_literal"
 ruby_version = ">= 2.5"
 source = '''
-[1, 2, 3].each.with_index.map { |k, v| [k.to_sym, v] }.to_h
+Hash[[1, 2, 3].map { |k, v| [k.to_sym, v] }]
 '''
 offenses = []
 
 [[tests]]
-name = "rubocopcopstylehashtransformkeys_when_using_ruby_25_or_newer_does_not_flag__mapto_h_when_its_receiver_is_zip"
+name = "rubocopcopstylehashtransformkeys_when_using_ruby_25_or_newer_flags__mapto_h_when_receiver_is_a_hashproducing_method"
 ruby_version = ">= 2.5"
 source = '''
-%i[a b c].zip([1, 2, 3]).map { |k, v| [k.to_sym, v] }.to_h
+x.to_h.map {|k, v| [k.to_sym, v]}.to_h
 '''
-offenses = []
+corrected = '''
+x.to_h.transform_keys {|k| k.to_sym}
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 38
+message = "Prefer `transform_keys` over `map {...}.to_h`."
+
+[[tests]]
+name = "rubocopcopstylehashtransformkeys_when_using_ruby_25_or_newer_flags_hash_map_when_receiver_is_a_hashproducing_method"
+ruby_version = ">= 2.5"
+source = '''
+Hash[x.merge(y).map {|k, v| [k.to_sym, v]}]
+'''
+corrected = '''
+x.merge(y).transform_keys {|k| k.to_sym}
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 43
+message = "Prefer `transform_keys` over `Hash[_.map {...}]`."
 
 [[tests]]
 name = "rubocopcopstylehashtransformkeys_when_using_ruby_25_or_newer_correctly_autocorrects__mapto_h_without_block"
@@ -269,63 +325,31 @@ column_end = 31
 message = "Prefer `transform_keys` over `Hash[_.map {...}]`."
 
 [[tests]]
-name = "rubocopcopstylehashtransformkeys_when_using_ruby_25_or_newer_does_not_flag_hash_map_when_its_receiver_is_an_array_literal"
-ruby_version = ">= 2.5"
-source = '''
-Hash[[1, 2, 3].map { |k, v| [k.to_sym, v] }]
-'''
-offenses = []
-
-[[tests]]
-name = "rubocopcopstylehashtransformkeys_when_using_ruby_25_or_newer_does_not_flag_hash_map_when_its_receiver_is_each_with_index"
-ruby_version = ">= 2.5"
-source = '''
-Hash[[1, 2, 3].each_with_index.map { |k, v| [k.to_sym, v] }]
-'''
-offenses = []
-
-[[tests]]
-name = "rubocopcopstylehashtransformkeys_when_using_ruby_25_or_newer_does_not_flag_hash_map_when_its_receiver_is_with_index"
-ruby_version = ">= 2.5"
-source = '''
-Hash[[1, 2, 3].each.with_index.map { |k, v| [k.to_sym, v] }]
-'''
-offenses = []
-
-[[tests]]
-name = "rubocopcopstylehashtransformkeys_when_using_ruby_25_or_newer_does_not_flag_hash_map_when_its_receiver_is_zip"
-ruby_version = ">= 2.5"
-source = '''
-Hash[%i[a b c].zip([1, 2, 3]).map { |k, v| [k.to_sym, v] }]
-'''
-offenses = []
-
-[[tests]]
 name = "rubocopcopstylehashtransformkeys_when_using_ruby_25_or_newer_with_inline_block_flags_each_with_object_when_transform_keys_could_be_used"
 ruby_version = ">= 2.5"
 source = '''
-x.each_with_object({}) {|(k, v), h| h[foo(k)] = v}
+{a: 1, b: 2}.each_with_object({}) {|(k, v), h| h[foo(k)] = v}
 '''
 corrected = '''
-x.transform_keys {|k| foo(k)}
+{a: 1, b: 2}.transform_keys {|k| foo(k)}
 '''
 
 [[tests.offenses]]
 line = 1
 column_start = 0
-column_end = 50
+column_end = 61
 message = "Prefer `transform_keys` over `each_with_object`."
 
 [[tests]]
 name = "rubocopcopstylehashtransformkeys_when_using_ruby_25_or_newer_with_multiline_block_flags_each_with_object_when_transform_keys_could_be_used"
 ruby_version = ">= 2.5"
 source = '''
-some_hash.each_with_object({}) do |(key, val), memo|
+some_hash.to_h.each_with_object({}) do |(key, val), memo|
   memo[key.to_sym] = val
 end
 '''
 corrected = '''
-some_hash.transform_keys do |key|
+some_hash.to_h.transform_keys do |key|
   key.to_sym
 end
 '''
@@ -333,30 +357,30 @@ end
 [[tests.offenses]]
 line = 1
 column_start = 0
-column_end = 52
+column_end = 57
 message = "Prefer `transform_keys` over `each_with_object`."
 
 [[tests]]
 name = "rubocopcopstylehashtransformkeys_when_using_ruby_25_or_newer_with_safe_navigation_operator_flags_each_with_object_when_transform_keys_could_be_used"
 ruby_version = ">= 2.5"
 source = '''
-x&.each_with_object({}) {|(k, v), h| h[foo(k)] = v}
+x.to_h&.each_with_object({}) {|(k, v), h| h[foo(k)] = v}
 '''
 corrected = '''
-x&.transform_keys {|k| foo(k)}
+x.to_h&.transform_keys {|k| foo(k)}
 '''
 
 [[tests.offenses]]
 line = 1
 column_start = 0
-column_end = 51
+column_end = 56
 message = "Prefer `transform_keys` over `each_with_object`."
 
 [[tests]]
 name = "rubocopcopstylehashtransformkeys_below_ruby_25_does_not_flag_even_if_transform_keys_could_be_used"
 ruby_version = ">= 2.4"
 source = '''
-x.each_with_object({}) {|(k, v), h| h[foo(k)] = v}
+{a: 1, b: 2}.each_with_object({}) {|(k, v), h| h[foo(k)] = v}
 '''
 offenses = []
 
@@ -364,23 +388,55 @@ offenses = []
 name = "rubocopcopstylehashtransformkeys_when_using_ruby_26_or_newer_flags__to_h_when_transform_keys_could_be_used"
 ruby_version = ">= 2.6"
 source = '''
-x.to_h {|k, v| [k.to_sym, v]}
+{a: 1, b: 2}.to_h {|k, v| [k.to_sym, v]}
 '''
 corrected = '''
-x.transform_keys {|k| k.to_sym}
+{a: 1, b: 2}.transform_keys {|k| k.to_sym}
 '''
 
 [[tests.offenses]]
 line = 1
 column_start = 0
-column_end = 29
+column_end = 40
+message = "Prefer `transform_keys` over `to_h {...}`."
+
+[[tests]]
+name = "rubocopcopstylehashtransformkeys_when_using_ruby_26_or_newer_flags__to_h_when_receiver_is_a_hashproducing_method"
+ruby_version = ">= 2.6"
+source = '''
+x.merge(y).to_h {|k, v| [k.to_sym, v]}
+'''
+corrected = '''
+x.merge(y).transform_keys {|k| k.to_sym}
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 38
+message = "Prefer `transform_keys` over `to_h {...}`."
+
+[[tests]]
+name = "rubocopcopstylehashtransformkeys_when_using_ruby_26_or_newer_flags__to_h_when_receiver_is_tally"
+ruby_version = ">= 2.6"
+source = '''
+x.tally.to_h {|k, v| [k.to_sym, v]}
+'''
+corrected = '''
+x.tally.transform_keys {|k| k.to_sym}
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 35
 message = "Prefer `transform_keys` over `to_h {...}`."
 
 [[tests]]
 name = "rubocopcopstylehashtransformkeys_when_using_ruby_26_or_newer_does_not_flag__to_h_when_both_key__value_are_transformed"
 ruby_version = ">= 2.6"
 source = '''
-x.to_h { |k, v| [k.to_sym, foo(v)] }
+{a: 1, b: 2}.to_h { |k, v| [k.to_sym, foo(v)] }
 '''
 offenses = []
 
@@ -388,7 +444,15 @@ offenses = []
 name = "rubocopcopstylehashtransformkeys_when_using_ruby_26_or_newer_does_not_flag__to_h__when_key_block_argument_is_unused"
 ruby_version = ">= 2.6"
 source = '''
-x.to_h {|_k, v| [v, v]}
+{a: 1, b: 2}.to_h {|_k, v| [v, v]}
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylehashtransformkeys_when_using_ruby_26_or_newer_does_not_flag__to_h_when_receiver_is_not_a_hash"
+ruby_version = ">= 2.6"
+source = '''
+x.to_h { |k, v| [k.to_sym, v] }
 '''
 offenses = []
 
@@ -401,26 +465,10 @@ source = '''
 offenses = []
 
 [[tests]]
-name = "rubocopcopstylehashtransformkeys_when_using_ruby_26_or_newer_does_not_flag__to_h_when_its_receiver_is_each_with_index"
+name = "rubocopcopstylehashtransformkeys_when_using_ruby_26_or_newer_does_not_flag__to_h_when_its_receiver_is_a_method_chain_through_nonhash_methods"
 ruby_version = ">= 2.6"
 source = '''
-[1, 2, 3].each_with_index.to_h { |k, v| [k.to_sym, v] }
-'''
-offenses = []
-
-[[tests]]
-name = "rubocopcopstylehashtransformkeys_when_using_ruby_26_or_newer_does_not_flag__to_h_when_its_receiver_is_with_index"
-ruby_version = ">= 2.6"
-source = '''
-[1, 2, 3].each.with_index.to_h { |k, v| [k.to_sym, v] }
-'''
-offenses = []
-
-[[tests]]
-name = "rubocopcopstylehashtransformkeys_when_using_ruby_26_or_newer_does_not_flag__to_h_when_its_receiver_is_zip"
-ruby_version = ">= 2.6"
-source = '''
-%i[a b c].zip([1, 2, 3]).to_h { |k, v| [k.to_sym, v] }
+x.to_enum(:foreach, path).select { |e| e.file? }.map { |e| [e, name(e)] }.each { |e, p| e.extract(p) }.to_h { |k, v| [k.to_sym, v] }
 '''
 offenses = []
 
@@ -428,6 +476,6 @@ offenses = []
 name = "rubocopcopstylehashtransformkeys_below_ruby_26_does_not_flag__to_h"
 ruby_version = ">= 2.5"
 source = '''
-x.to_h {|k, v| [k.to_sym, v]}
+{a: 1, b: 2}.to_h {|k, v| [k.to_sym, v]}
 '''
 offenses = []

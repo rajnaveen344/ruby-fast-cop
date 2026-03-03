@@ -575,6 +575,20 @@ column_end = 71
 message = "Modifier form of `if` makes the line too long."
 
 [[tests]]
+name = "rubocopcopstyleifunlessmodifier_modifier_if_that_does_not_fit_on_one_line_when_layoutlinelength_is_enabled_and_the_long_line_is_allowed_because_modifier_forms_are_used_inside_string_interpolations_accepts_when_using_if_inside_string_interpolation"
+source = '''
+"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx#{'string1' if cond1} #{'string2' if cond2}"
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_modifier_if_that_does_not_fit_on_one_line_when_layoutlinelength_is_enabled_and_the_long_line_is_allowed_because_modifier_forms_are_used_inside_string_interpolations_accepts_when_using_unless_inside_string_interpolation"
+source = '''
+"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx#{'string1' unless cond1} #{'string2' unless cond2}"
+'''
+offenses = []
+
+[[tests]]
 name = "rubocopcopstyleifunlessmodifier_modifier_if_that_does_not_fit_on_one_line_when_layoutlinelength_is_enabled_and_the_long_line_is_allowed_because_allowuri_is_true_accepts"
 source = '''
 puts 1 if url == 'https://some.example.com/with/a/rather?long&and=very&complicated=path'
@@ -1687,6 +1701,52 @@ corrected = '''
 line = 2
 column_start = 5
 column_end = 7
+message = "Favor modifier `if` usage when having a single-line body. Another good alternative is the usage of control flow `&&`/`||`."
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_when_ifend_condition_is_a_value_in_a_hash_when_the_first_value_uses_a_normal_if_and_the_others_use_modifier_if_corrects_to_modifier_form"
+source = '''
+{
+  first_key: if first_cond
+                  first_expr
+                end,
+  second_key: (second_expr if second_cond)
+}
+'''
+corrected = '''
+{
+  first_key: (first_expr if first_cond),
+  second_key: (second_expr if second_cond)
+}
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 13
+column_end = 15
+message = "Favor modifier `if` usage when having a single-line body. Another good alternative is the usage of control flow `&&`/`||`."
+
+[[tests]]
+name = "rubocopcopstyleifunlessmodifier_when_ifend_condition_is_a_value_in_a_hash_when_the_first_value_uses_a_normal_if_and_the_others_use_ternary_operator_corrects_to_modifier_form"
+source = '''
+{
+  first_key: if first_cond
+               first_expr
+             end,
+  second_key: second_cond ? second_then : second_else
+}
+'''
+corrected = '''
+{
+  first_key: (first_expr if first_cond),
+  second_key: second_cond ? second_then : second_else
+}
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 13
+column_end = 15
 message = "Favor modifier `if` usage when having a single-line body. Another good alternative is the usage of control flow `&&`/`||`."
 
 [[tests]]

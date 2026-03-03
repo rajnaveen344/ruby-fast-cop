@@ -25,6 +25,48 @@ message = "Avoid endless method definitions."
 EnforcedStyle = "disallow"
 
 [[tests]]
+name = "rubocopcopstyleendlessmethod_ruby__30_enforcedstyle_disallow_registers_an_offense_for_an_endless_method_on_self"
+ruby_version = ">= 3.0"
+source = '''
+def self.my_method() = x
+'''
+corrected = '''
+def self.my_method
+  x
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 24
+message = "Avoid endless method definitions."
+
+[tests.config]
+EnforcedStyle = "disallow"
+
+[[tests]]
+name = "rubocopcopstyleendlessmethod_ruby__30_enforcedstyle_disallow_registers_an_offense_for_an_endless_method_on_self_with_"
+ruby_version = ">= 3.0"
+source = '''
+def self::my_method() = x
+'''
+corrected = '''
+def self::my_method
+  x
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 25
+message = "Avoid endless method definitions."
+
+[tests.config]
+EnforcedStyle = "disallow"
+
+[[tests]]
 name = "rubocopcopstyleendlessmethod_ruby__30_enforcedstyle_disallow_registers_an_offense_for_an_endless_method_with_arguments"
 ruby_version = ">= 3.0"
 source = '''
@@ -63,6 +105,17 @@ name = "rubocopcopstyleendlessmethod_ruby__30_enforcedstyle_allow_single_line_do
 ruby_version = ">= 3.0"
 source = '''
 def my_method() = x
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "allow_single_line"
+
+[[tests]]
+name = "rubocopcopstyleendlessmethod_ruby__30_enforcedstyle_allow_single_line_does_not_register_an_offense_for_an_endless_method_on_self"
+ruby_version = ">= 3.0"
+source = '''
+def self.my_method() = x
 '''
 offenses = []
 
@@ -113,6 +166,56 @@ end
 line = 1
 column_start = 0
 column_end = 23
+message = "Avoid endless method definitions with multiple lines."
+
+[tests.config]
+EnforcedStyle = "allow_single_line"
+
+[[tests]]
+name = "rubocopcopstyleendlessmethod_ruby__30_enforcedstyle_allow_single_line_registers_an_offense_and_corrects_for_a_multiline_endless_method_on_self"
+ruby_version = ">= 3.0"
+source = '''
+def self.my_method() = x.foo
+                       .bar
+                       .baz
+'''
+corrected = '''
+def self.my_method
+  x.foo
+                       .bar
+                       .baz
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 28
+message = "Avoid endless method definitions with multiple lines."
+
+[tests.config]
+EnforcedStyle = "allow_single_line"
+
+[[tests]]
+name = "rubocopcopstyleendlessmethod_ruby__30_enforcedstyle_allow_single_line_registers_an_offense_and_corrects_for_a_multiline_endless_method_on_self_with_"
+ruby_version = ">= 3.0"
+source = '''
+def self::my_method() = x.foo
+                         .bar
+                         .baz
+'''
+corrected = '''
+def self::my_method
+  x.foo
+                         .bar
+                         .baz
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 29
 message = "Avoid endless method definitions with multiple lines."
 
 [tests.config]
@@ -173,6 +276,17 @@ name = "rubocopcopstyleendlessmethod_ruby__30_enforcedstyle_allow_always_does_no
 ruby_version = ">= 3.0"
 source = '''
 def my_method() = x
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "allow_always"
+
+[[tests]]
+name = "rubocopcopstyleendlessmethod_ruby__30_enforcedstyle_allow_always_does_not_register_an_offense_for_an_endless_method_on_self"
+ruby_version = ">= 3.0"
+source = '''
+def self.my_method() = x
 '''
 offenses = []
 
@@ -254,6 +368,17 @@ offenses = []
 EnforcedStyle = "require_single_line"
 
 [[tests]]
+name = "rubocopcopstyleendlessmethod_ruby__30_enforcedstyle_require_single_line_does_not_register_an_offense_for_a_single_line_endless_method_on_self"
+ruby_version = ">= 3.0"
+source = '''
+def self.my_method() = x
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "require_single_line"
+
+[[tests]]
 name = "rubocopcopstyleendlessmethod_ruby__30_enforcedstyle_require_single_line_does_not_register_an_offense_for_a_single_line_endless_method_with_arguments"
 ruby_version = ">= 3.0"
 source = '''
@@ -284,6 +409,56 @@ end
 line = 1
 column_start = 0
 column_end = 23
+message = "Avoid endless method definitions with multiple lines."
+
+[tests.config]
+EnforcedStyle = "require_single_line"
+
+[[tests]]
+name = "rubocopcopstyleendlessmethod_ruby__30_enforcedstyle_require_single_line_registers_an_offense_and_corrects_for_a_multiline_endless_method_on_self"
+ruby_version = ">= 3.0"
+source = '''
+def self.my_method() = x.foo
+                        .bar
+                        .baz
+'''
+corrected = '''
+def self.my_method
+  x.foo
+                        .bar
+                        .baz
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 28
+message = "Avoid endless method definitions with multiple lines."
+
+[tests.config]
+EnforcedStyle = "require_single_line"
+
+[[tests]]
+name = "rubocopcopstyleendlessmethod_ruby__30_enforcedstyle_require_single_line_registers_an_offense_and_corrects_for_a_multiline_endless_method_on_self_with_"
+ruby_version = ">= 3.0"
+source = '''
+def self::my_method() = x.foo
+                          .bar
+                          .baz
+'''
+corrected = '''
+def self::my_method
+  x.foo
+                          .bar
+                          .baz
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 29
 message = "Avoid endless method definitions with multiple lines."
 
 [tests.config]
@@ -572,6 +747,17 @@ offenses = []
 EnforcedStyle = "require_always"
 
 [[tests]]
+name = "rubocopcopstyleendlessmethod_ruby__30_enforcedstyle_require_always_does_not_register_an_offense_for_an_endless_method_on_self"
+ruby_version = ">= 3.0"
+source = '''
+def self.my_method() = x
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "require_always"
+
+[[tests]]
 name = "rubocopcopstyleendlessmethod_ruby__30_enforcedstyle_require_always_does_not_register_an_offense_for_an_endless_method_with_arguments"
 ruby_version = ">= 3.0"
 source = '''
@@ -713,6 +899,48 @@ def my_method = x
 line = 1
 column_start = 0
 column_end = 13
+message = "Use endless method definitions."
+
+[tests.config]
+EnforcedStyle = "require_always"
+
+[[tests]]
+name = "rubocopcopstyleendlessmethod_ruby__30_enforcedstyle_require_always_registers_an_offense_and_corrects_for_a_single_line_method_on_self"
+ruby_version = ">= 3.0"
+source = '''
+def self.my_method
+  x
+end
+'''
+corrected = '''
+def self.my_method = x
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 18
+message = "Use endless method definitions."
+
+[tests.config]
+EnforcedStyle = "require_always"
+
+[[tests]]
+name = "rubocopcopstyleendlessmethod_ruby__30_enforcedstyle_require_always_registers_an_offense_and_corrects_for_a_single_line_method_on_self_with_"
+ruby_version = ">= 3.0"
+source = '''
+def self::my_method
+  x
+end
+'''
+corrected = '''
+def self::my_method = x
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 19
 message = "Use endless method definitions."
 
 [tests.config]

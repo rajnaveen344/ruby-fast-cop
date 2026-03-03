@@ -6,7 +6,7 @@ Instructions for Claude when working on this project.
 
 ruby-fast-cop is a high-performance Ruby linter written in Rust, designed as a drop-in replacement for RuboCop. The goal is 50-100x faster linting by rewriting cops in Rust, similar to how Ruff replaced Python linters.
 
-**Current state:** 11 of 631 cops implemented, 631 TOML test fixtures with ~26,968 test cases extracted from RuboCop v1.84.1's RSpec suite.
+**Current state:** 11 of 606 cops implemented, 606 TOML test fixtures with ~28,075 test cases extracted from RuboCop v1.85.0's RSpec suite.
 
 ## Key Design Decisions
 
@@ -58,7 +58,7 @@ src/
     └── emacs.rs         # Emacs-compatible output
 tests/
 ├── tester.rs            # Data-driven parity test runner
-└── fixtures/            # TOML test fixtures (1 per cop, 631 total)
+└── fixtures/            # TOML test fixtures (1 per cop, 606 total)
     ├── lint/
     ├── style/
     ├── layout/
@@ -67,7 +67,6 @@ tests/
     ├── bundler/
     ├── gemspec/
     ├── security/
-    ├── internal_affairs/
     └── migration/
 ```
 
@@ -88,7 +87,7 @@ rayon = "1.8"            # Parallel processing
 
 ### Data-Driven Parity Tests (TOML Fixtures)
 
-Test cases live in `tests/fixtures/{department}/{cop_name}.toml`. There is one TOML file per RuboCop cop (631 total). These are **extracted via RSpec monkey-patching** from RuboCop's actual test suite — all string interpolation, `let` blocks, and shared contexts are fully resolved.
+Test cases live in `tests/fixtures/{department}/{cop_name}.toml`. There is one TOML file per RuboCop cop (606 total). These are **extracted via RSpec monkey-patching** from RuboCop's actual test suite — all string interpolation, `let` blocks, and shared contexts are fully resolved.
 
 Run tests:
 ```bash
@@ -320,7 +319,7 @@ The CLI (`main.rs`) should be a thin wrapper around the library (`lib.rs`).
 
 - Ruby (for test extraction only): `/opt/homebrew/opt/ruby/bin/ruby` (installed via Homebrew)
 - RuboCop clone location: `/tmp/rubocop-repo`
-- RuboCop version tracked: v1.84.1
+- RuboCop version tracked: v1.85.0
 
 ## References
 

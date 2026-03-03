@@ -122,14 +122,249 @@ name = "rubocopcopstyleformatstringtoken_handles_dstrs"
 source = '''
 "c#{b}%{template}"
 '''
-corrected = '''
-"c#{b}%<template>s"
-'''
 
 [[tests.offenses]]
 line = 1
 column_start = 6
 column_end = 17
+message = "Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`)."
+
+[tests.config]
+AllowedMethods = []
+AllowedPatterns = []
+EnforcedStyle = "annotated"
+MaxUnannotatedPlaceholdersAllowed = 0
+Mode = "aggressive"
+
+[[tests]]
+name = "rubocopcopstyleformatstringtoken_handles_dstrs_in_format_context"
+source = '''
+format("c#{b}%{template}")
+'''
+corrected = '''
+format("c#{b}%<template>s")
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 13
+column_end = 24
+message = "Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`)."
+
+[tests.config]
+AllowedMethods = []
+AllowedPatterns = []
+EnforcedStyle = "annotated"
+MaxUnannotatedPlaceholdersAllowed = 0
+Mode = "aggressive"
+
+[[tests]]
+name = "rubocopcopstyleformatstringtoken_autocorrects_in_sprintf_context"
+source = '''
+sprintf('%{foo}', foo: 'bar')
+'''
+corrected = '''
+sprintf('%<foo>s', foo: 'bar')
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 9
+column_end = 15
+message = "Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`)."
+
+[tests.config]
+AllowedMethods = []
+AllowedPatterns = []
+EnforcedStyle = "annotated"
+MaxUnannotatedPlaceholdersAllowed = 0
+Mode = "aggressive"
+
+[[tests]]
+name = "rubocopcopstyleformatstringtoken_autocorrects_in_printf_context"
+source = '''
+printf('%{foo}', foo: 'bar')
+'''
+corrected = '''
+printf('%<foo>s', foo: 'bar')
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 8
+column_end = 14
+message = "Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`)."
+
+[tests.config]
+AllowedMethods = []
+AllowedPatterns = []
+EnforcedStyle = "annotated"
+MaxUnannotatedPlaceholdersAllowed = 0
+Mode = "aggressive"
+
+[[tests]]
+name = "rubocopcopstyleformatstringtoken_autocorrects_with_the_percent_operator"
+source = '''
+'%{foo}' % { foo: 'bar' }
+'''
+corrected = '''
+'%<foo>s' % { foo: 'bar' }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 1
+column_end = 7
+message = "Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`)."
+
+[tests.config]
+AllowedMethods = []
+AllowedPatterns = []
+EnforcedStyle = "annotated"
+MaxUnannotatedPlaceholdersAllowed = 0
+Mode = "aggressive"
+
+[[tests]]
+name = "rubocopcopstyleformatstringtoken_autocorrects_dstr_with_the_percent_operator"
+source = '''
+"c#{b}%{foo}" % { foo: 'bar' }
+'''
+corrected = '''
+"c#{b}%<foo>s" % { foo: 'bar' }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 12
+message = "Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`)."
+
+[tests.config]
+AllowedMethods = []
+AllowedPatterns = []
+EnforcedStyle = "annotated"
+MaxUnannotatedPlaceholdersAllowed = 0
+Mode = "aggressive"
+
+[[tests]]
+name = "rubocopcopstyleformatstringtoken_does_not_autocorrect_when_passed_to_a_nonformat_method"
+source = '''
+foo('%{bar}')
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 5
+column_end = 11
+message = "Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`)."
+
+[tests.config]
+AllowedMethods = []
+AllowedPatterns = []
+EnforcedStyle = "annotated"
+MaxUnannotatedPlaceholdersAllowed = 0
+Mode = "aggressive"
+
+[[tests]]
+name = "rubocopcopstyleformatstringtoken_does_not_autocorrect_a_bare_string_outside_of_format_context"
+source = '''
+'https://gitlab.com/%{project_path}/-/blob/%{default_branch}/file'
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 20
+column_end = 35
+message = "Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`)."
+
+[[tests.offenses]]
+line = 1
+column_start = 43
+column_end = 60
+message = "Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`)."
+
+[tests.config]
+AllowedMethods = []
+AllowedPatterns = []
+EnforcedStyle = "annotated"
+MaxUnannotatedPlaceholdersAllowed = 0
+Mode = "aggressive"
+
+[[tests]]
+name = "rubocopcopstyleformatstringtoken_does_not_autocorrect_a_string_in_a_hash_value"
+source = '''
+validates :colour, format: { message: '%{colour} is not a valid hex colour' }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 39
+column_end = 48
+message = "Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`)."
+
+[tests.config]
+AllowedMethods = []
+AllowedPatterns = []
+EnforcedStyle = "annotated"
+MaxUnannotatedPlaceholdersAllowed = 0
+Mode = "aggressive"
+
+[[tests]]
+name = "rubocopcopstyleformatstringtoken_does_not_autocorrect_a_bare_heredoc"
+source = '''
+<<-MSG
+  %{colour} is not valid
+MSG
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 11
+message = "Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`)."
+
+[tests.config]
+AllowedMethods = []
+AllowedPatterns = []
+EnforcedStyle = "annotated"
+MaxUnannotatedPlaceholdersAllowed = 0
+Mode = "aggressive"
+
+[[tests]]
+name = "rubocopcopstyleformatstringtoken_autocorrects_with_an_explicit_receiver_on_format"
+source = '''
+Kernel.format('%{foo}', foo: 'bar')
+'''
+corrected = '''
+Kernel.format('%<foo>s', foo: 'bar')
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 15
+column_end = 21
+message = "Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`)."
+
+[tests.config]
+AllowedMethods = []
+AllowedPatterns = []
+EnforcedStyle = "annotated"
+MaxUnannotatedPlaceholdersAllowed = 0
+Mode = "aggressive"
+
+[[tests]]
+name = "rubocopcopstyleformatstringtoken_autocorrects_with_an_explicit_receiver_on_sprintf"
+source = '''
+Kernel.sprintf('%{foo}', foo: 'bar')
+'''
+corrected = '''
+Kernel.sprintf('%<foo>s', foo: 'bar')
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 16
+column_end = 22
 message = "Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`)."
 
 [tests.config]
@@ -236,12 +471,12 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_registers_offenses_for_template_style"
 source = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %<named>A + bar %{template}
 HEREDOC
 '''
 corrected = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %<named>A + bar %<template>s
 HEREDOC
 '''
@@ -262,16 +497,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_supports_dynamic_string_with_interpolation"
 source = '''
-"a#{b}%<named>A c#{d}%{template} e#{f}"
+format("a#{b}%<named>A c#{d}%{template} e#{f}")
 '''
 corrected = '''
-"a#{b}%<named>A c#{d}%<template>s e#{f}"
+format("a#{b}%<named>A c#{d}%<template>s e#{f}")
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 21
-column_end = 32
+column_start = 28
+column_end = 39
 message = "Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`)."
 
 [tests.config]
@@ -284,7 +519,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_sets_the_enforced_style_to_annotated_after_inspecting_as"
 source = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 offenses = []
 
@@ -298,16 +533,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_detects_when_the_cop_must_be_disabled_to_avoid_offenses"
 source = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 corrected = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 1
-column_end = 5
+column_start = 8
+column_end = 12
 message = "Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`)."
 
 [tests.config]
@@ -387,7 +622,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_does_not_register_offenses_for_annotated_style"
 source = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %{template} + bar %{annotated}
 HEREDOC
 '''
@@ -403,7 +638,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_supports_dynamic_string_with_interpolation"
 source = '''
-"a#{b}%{template} c#{d}%{annotated} e#{f}"
+format("a#{b}%{template} c#{d}%{annotated} e#{f}")
 '''
 offenses = []
 
@@ -417,16 +652,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_detects_when_the_cop_must_be_disabled_to_avoid_offenses"
 source = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 corrected = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 1
-column_end = 6
+column_start = 8
+column_end = 13
 message = "Prefer template tokens (like `%{foo}`) over annotated tokens (like `%<foo>s`)."
 
 [tests.config]
@@ -439,7 +674,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_configures_the_enforced_style_to_template_after_inspecting_a"
 source = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 offenses = []
 
@@ -509,12 +744,12 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_registers_offenses_for_template_style_2"
 source = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %<named>B + bar %{template}
 HEREDOC
 '''
 corrected = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %<named>B + bar %<template>s
 HEREDOC
 '''
@@ -535,16 +770,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_supports_dynamic_string_with_interpolation_2"
 source = '''
-"a#{b}%<named>B c#{d}%{template} e#{f}"
+format("a#{b}%<named>B c#{d}%{template} e#{f}")
 '''
 corrected = '''
-"a#{b}%<named>B c#{d}%<template>s e#{f}"
+format("a#{b}%<named>B c#{d}%<template>s e#{f}")
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 21
-column_end = 32
+column_start = 28
+column_end = 39
 message = "Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`)."
 
 [tests.config]
@@ -557,7 +792,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_sets_the_enforced_style_to_annotated_after_inspecting_as_2"
 source = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 offenses = []
 
@@ -571,16 +806,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_detects_when_the_cop_must_be_disabled_to_avoid_offenses_2"
 source = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 corrected = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 1
-column_end = 5
+column_start = 8
+column_end = 12
 message = "Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`)."
 
 [tests.config]
@@ -660,7 +895,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_does_not_register_offenses_for_annotated_style_2"
 source = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %{template} + bar %{annotated}
 HEREDOC
 '''
@@ -676,7 +911,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_supports_dynamic_string_with_interpolation_2"
 source = '''
-"a#{b}%{template} c#{d}%{annotated} e#{f}"
+format("a#{b}%{template} c#{d}%{annotated} e#{f}")
 '''
 offenses = []
 
@@ -690,16 +925,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_detects_when_the_cop_must_be_disabled_to_avoid_offenses_2"
 source = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 corrected = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 1
-column_end = 6
+column_start = 8
+column_end = 13
 message = "Prefer template tokens (like `%{foo}`) over annotated tokens (like `%<foo>s`)."
 
 [tests.config]
@@ -712,7 +947,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_configures_the_enforced_style_to_template_after_inspecting_a_2"
 source = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 offenses = []
 
@@ -782,12 +1017,12 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_registers_offenses_for_template_style_3"
 source = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %<named>E + bar %{template}
 HEREDOC
 '''
 corrected = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %<named>E + bar %<template>s
 HEREDOC
 '''
@@ -808,16 +1043,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_supports_dynamic_string_with_interpolation_3"
 source = '''
-"a#{b}%<named>E c#{d}%{template} e#{f}"
+format("a#{b}%<named>E c#{d}%{template} e#{f}")
 '''
 corrected = '''
-"a#{b}%<named>E c#{d}%<template>s e#{f}"
+format("a#{b}%<named>E c#{d}%<template>s e#{f}")
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 21
-column_end = 32
+column_start = 28
+column_end = 39
 message = "Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`)."
 
 [tests.config]
@@ -830,7 +1065,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_sets_the_enforced_style_to_annotated_after_inspecting_as_3"
 source = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 offenses = []
 
@@ -844,16 +1079,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_detects_when_the_cop_must_be_disabled_to_avoid_offenses_3"
 source = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 corrected = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 1
-column_end = 5
+column_start = 8
+column_end = 12
 message = "Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`)."
 
 [tests.config]
@@ -933,7 +1168,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_does_not_register_offenses_for_annotated_style_3"
 source = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %{template} + bar %{annotated}
 HEREDOC
 '''
@@ -949,7 +1184,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_supports_dynamic_string_with_interpolation_3"
 source = '''
-"a#{b}%{template} c#{d}%{annotated} e#{f}"
+format("a#{b}%{template} c#{d}%{annotated} e#{f}")
 '''
 offenses = []
 
@@ -963,16 +1198,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_detects_when_the_cop_must_be_disabled_to_avoid_offenses_3"
 source = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 corrected = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 1
-column_end = 6
+column_start = 8
+column_end = 13
 message = "Prefer template tokens (like `%{foo}`) over annotated tokens (like `%<foo>s`)."
 
 [tests.config]
@@ -985,7 +1220,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_configures_the_enforced_style_to_template_after_inspecting_a_3"
 source = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 offenses = []
 
@@ -1055,12 +1290,12 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_registers_offenses_for_template_style_4"
 source = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %<named>G + bar %{template}
 HEREDOC
 '''
 corrected = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %<named>G + bar %<template>s
 HEREDOC
 '''
@@ -1081,16 +1316,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_supports_dynamic_string_with_interpolation_4"
 source = '''
-"a#{b}%<named>G c#{d}%{template} e#{f}"
+format("a#{b}%<named>G c#{d}%{template} e#{f}")
 '''
 corrected = '''
-"a#{b}%<named>G c#{d}%<template>s e#{f}"
+format("a#{b}%<named>G c#{d}%<template>s e#{f}")
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 21
-column_end = 32
+column_start = 28
+column_end = 39
 message = "Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`)."
 
 [tests.config]
@@ -1103,7 +1338,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_sets_the_enforced_style_to_annotated_after_inspecting_as_4"
 source = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 offenses = []
 
@@ -1117,16 +1352,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_detects_when_the_cop_must_be_disabled_to_avoid_offenses_4"
 source = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 corrected = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 1
-column_end = 5
+column_start = 8
+column_end = 12
 message = "Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`)."
 
 [tests.config]
@@ -1206,7 +1441,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_does_not_register_offenses_for_annotated_style_4"
 source = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %{template} + bar %{annotated}
 HEREDOC
 '''
@@ -1222,7 +1457,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_supports_dynamic_string_with_interpolation_4"
 source = '''
-"a#{b}%{template} c#{d}%{annotated} e#{f}"
+format("a#{b}%{template} c#{d}%{annotated} e#{f}")
 '''
 offenses = []
 
@@ -1236,16 +1471,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_detects_when_the_cop_must_be_disabled_to_avoid_offenses_4"
 source = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 corrected = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 1
-column_end = 6
+column_start = 8
+column_end = 13
 message = "Prefer template tokens (like `%{foo}`) over annotated tokens (like `%<foo>s`)."
 
 [tests.config]
@@ -1258,7 +1493,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_configures_the_enforced_style_to_template_after_inspecting_a_4"
 source = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 offenses = []
 
@@ -1328,12 +1563,12 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_registers_offenses_for_template_style_5"
 source = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %<named>X + bar %{template}
 HEREDOC
 '''
 corrected = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %<named>X + bar %<template>s
 HEREDOC
 '''
@@ -1354,16 +1589,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_supports_dynamic_string_with_interpolation_5"
 source = '''
-"a#{b}%<named>X c#{d}%{template} e#{f}"
+format("a#{b}%<named>X c#{d}%{template} e#{f}")
 '''
 corrected = '''
-"a#{b}%<named>X c#{d}%<template>s e#{f}"
+format("a#{b}%<named>X c#{d}%<template>s e#{f}")
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 21
-column_end = 32
+column_start = 28
+column_end = 39
 message = "Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`)."
 
 [tests.config]
@@ -1376,7 +1611,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_sets_the_enforced_style_to_annotated_after_inspecting_as_5"
 source = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 offenses = []
 
@@ -1390,16 +1625,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_detects_when_the_cop_must_be_disabled_to_avoid_offenses_5"
 source = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 corrected = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 1
-column_end = 5
+column_start = 8
+column_end = 12
 message = "Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`)."
 
 [tests.config]
@@ -1479,7 +1714,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_does_not_register_offenses_for_annotated_style_5"
 source = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %{template} + bar %{annotated}
 HEREDOC
 '''
@@ -1495,7 +1730,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_supports_dynamic_string_with_interpolation_5"
 source = '''
-"a#{b}%{template} c#{d}%{annotated} e#{f}"
+format("a#{b}%{template} c#{d}%{annotated} e#{f}")
 '''
 offenses = []
 
@@ -1509,16 +1744,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_detects_when_the_cop_must_be_disabled_to_avoid_offenses_5"
 source = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 corrected = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 1
-column_end = 6
+column_start = 8
+column_end = 13
 message = "Prefer template tokens (like `%{foo}`) over annotated tokens (like `%<foo>s`)."
 
 [tests.config]
@@ -1531,7 +1766,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_configures_the_enforced_style_to_template_after_inspecting_a_5"
 source = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 offenses = []
 
@@ -1601,12 +1836,12 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_registers_offenses_for_template_style_6"
 source = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %<named>a + bar %{template}
 HEREDOC
 '''
 corrected = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %<named>a + bar %<template>s
 HEREDOC
 '''
@@ -1627,16 +1862,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_supports_dynamic_string_with_interpolation_6"
 source = '''
-"a#{b}%<named>a c#{d}%{template} e#{f}"
+format("a#{b}%<named>a c#{d}%{template} e#{f}")
 '''
 corrected = '''
-"a#{b}%<named>a c#{d}%<template>s e#{f}"
+format("a#{b}%<named>a c#{d}%<template>s e#{f}")
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 21
-column_end = 32
+column_start = 28
+column_end = 39
 message = "Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`)."
 
 [tests.config]
@@ -1649,7 +1884,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_sets_the_enforced_style_to_annotated_after_inspecting_as_6"
 source = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 offenses = []
 
@@ -1663,16 +1898,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_detects_when_the_cop_must_be_disabled_to_avoid_offenses_6"
 source = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 corrected = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 1
-column_end = 5
+column_start = 8
+column_end = 12
 message = "Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`)."
 
 [tests.config]
@@ -1752,7 +1987,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_does_not_register_offenses_for_annotated_style_6"
 source = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %{template} + bar %{annotated}
 HEREDOC
 '''
@@ -1768,7 +2003,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_supports_dynamic_string_with_interpolation_6"
 source = '''
-"a#{b}%{template} c#{d}%{annotated} e#{f}"
+format("a#{b}%{template} c#{d}%{annotated} e#{f}")
 '''
 offenses = []
 
@@ -1782,16 +2017,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_detects_when_the_cop_must_be_disabled_to_avoid_offenses_6"
 source = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 corrected = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 1
-column_end = 6
+column_start = 8
+column_end = 13
 message = "Prefer template tokens (like `%{foo}`) over annotated tokens (like `%<foo>s`)."
 
 [tests.config]
@@ -1804,7 +2039,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_configures_the_enforced_style_to_template_after_inspecting_a_6"
 source = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 offenses = []
 
@@ -1874,12 +2109,12 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_registers_offenses_for_template_style_7"
 source = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %<named>b + bar %{template}
 HEREDOC
 '''
 corrected = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %<named>b + bar %<template>s
 HEREDOC
 '''
@@ -1900,16 +2135,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_supports_dynamic_string_with_interpolation_7"
 source = '''
-"a#{b}%<named>b c#{d}%{template} e#{f}"
+format("a#{b}%<named>b c#{d}%{template} e#{f}")
 '''
 corrected = '''
-"a#{b}%<named>b c#{d}%<template>s e#{f}"
+format("a#{b}%<named>b c#{d}%<template>s e#{f}")
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 21
-column_end = 32
+column_start = 28
+column_end = 39
 message = "Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`)."
 
 [tests.config]
@@ -1922,7 +2157,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_sets_the_enforced_style_to_annotated_after_inspecting_as_7"
 source = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 offenses = []
 
@@ -1936,16 +2171,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_detects_when_the_cop_must_be_disabled_to_avoid_offenses_7"
 source = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 corrected = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 1
-column_end = 5
+column_start = 8
+column_end = 12
 message = "Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`)."
 
 [tests.config]
@@ -2025,7 +2260,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_does_not_register_offenses_for_annotated_style_7"
 source = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %{template} + bar %{annotated}
 HEREDOC
 '''
@@ -2041,7 +2276,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_supports_dynamic_string_with_interpolation_7"
 source = '''
-"a#{b}%{template} c#{d}%{annotated} e#{f}"
+format("a#{b}%{template} c#{d}%{annotated} e#{f}")
 '''
 offenses = []
 
@@ -2055,16 +2290,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_detects_when_the_cop_must_be_disabled_to_avoid_offenses_7"
 source = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 corrected = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 1
-column_end = 6
+column_start = 8
+column_end = 13
 message = "Prefer template tokens (like `%{foo}`) over annotated tokens (like `%<foo>s`)."
 
 [tests.config]
@@ -2077,7 +2312,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_configures_the_enforced_style_to_template_after_inspecting_a_7"
 source = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 offenses = []
 
@@ -2147,12 +2382,12 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_registers_offenses_for_template_style_8"
 source = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %<named>c + bar %{template}
 HEREDOC
 '''
 corrected = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %<named>c + bar %<template>s
 HEREDOC
 '''
@@ -2173,16 +2408,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_supports_dynamic_string_with_interpolation_8"
 source = '''
-"a#{b}%<named>c c#{d}%{template} e#{f}"
+format("a#{b}%<named>c c#{d}%{template} e#{f}")
 '''
 corrected = '''
-"a#{b}%<named>c c#{d}%<template>s e#{f}"
+format("a#{b}%<named>c c#{d}%<template>s e#{f}")
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 21
-column_end = 32
+column_start = 28
+column_end = 39
 message = "Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`)."
 
 [tests.config]
@@ -2195,7 +2430,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_sets_the_enforced_style_to_annotated_after_inspecting_as_8"
 source = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 offenses = []
 
@@ -2209,16 +2444,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_detects_when_the_cop_must_be_disabled_to_avoid_offenses_8"
 source = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 corrected = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 1
-column_end = 5
+column_start = 8
+column_end = 12
 message = "Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`)."
 
 [tests.config]
@@ -2298,7 +2533,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_does_not_register_offenses_for_annotated_style_8"
 source = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %{template} + bar %{annotated}
 HEREDOC
 '''
@@ -2314,7 +2549,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_supports_dynamic_string_with_interpolation_8"
 source = '''
-"a#{b}%{template} c#{d}%{annotated} e#{f}"
+format("a#{b}%{template} c#{d}%{annotated} e#{f}")
 '''
 offenses = []
 
@@ -2328,16 +2563,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_detects_when_the_cop_must_be_disabled_to_avoid_offenses_8"
 source = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 corrected = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 1
-column_end = 6
+column_start = 8
+column_end = 13
 message = "Prefer template tokens (like `%{foo}`) over annotated tokens (like `%<foo>s`)."
 
 [tests.config]
@@ -2350,7 +2585,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_configures_the_enforced_style_to_template_after_inspecting_a_8"
 source = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 offenses = []
 
@@ -2420,12 +2655,12 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_registers_offenses_for_template_style_9"
 source = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %<named>d + bar %{template}
 HEREDOC
 '''
 corrected = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %<named>d + bar %<template>s
 HEREDOC
 '''
@@ -2446,16 +2681,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_supports_dynamic_string_with_interpolation_9"
 source = '''
-"a#{b}%<named>d c#{d}%{template} e#{f}"
+format("a#{b}%<named>d c#{d}%{template} e#{f}")
 '''
 corrected = '''
-"a#{b}%<named>d c#{d}%<template>s e#{f}"
+format("a#{b}%<named>d c#{d}%<template>s e#{f}")
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 21
-column_end = 32
+column_start = 28
+column_end = 39
 message = "Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`)."
 
 [tests.config]
@@ -2468,7 +2703,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_sets_the_enforced_style_to_annotated_after_inspecting_as_9"
 source = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 offenses = []
 
@@ -2482,16 +2717,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_detects_when_the_cop_must_be_disabled_to_avoid_offenses_9"
 source = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 corrected = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 1
-column_end = 5
+column_start = 8
+column_end = 12
 message = "Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`)."
 
 [tests.config]
@@ -2571,7 +2806,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_does_not_register_offenses_for_annotated_style_9"
 source = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %{template} + bar %{annotated}
 HEREDOC
 '''
@@ -2587,7 +2822,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_supports_dynamic_string_with_interpolation_9"
 source = '''
-"a#{b}%{template} c#{d}%{annotated} e#{f}"
+format("a#{b}%{template} c#{d}%{annotated} e#{f}")
 '''
 offenses = []
 
@@ -2601,16 +2836,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_detects_when_the_cop_must_be_disabled_to_avoid_offenses_9"
 source = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 corrected = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 1
-column_end = 6
+column_start = 8
+column_end = 13
 message = "Prefer template tokens (like `%{foo}`) over annotated tokens (like `%<foo>s`)."
 
 [tests.config]
@@ -2623,7 +2858,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_configures_the_enforced_style_to_template_after_inspecting_a_9"
 source = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 offenses = []
 
@@ -2693,12 +2928,12 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_registers_offenses_for_template_style_10"
 source = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %<named>e + bar %{template}
 HEREDOC
 '''
 corrected = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %<named>e + bar %<template>s
 HEREDOC
 '''
@@ -2719,16 +2954,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_supports_dynamic_string_with_interpolation_10"
 source = '''
-"a#{b}%<named>e c#{d}%{template} e#{f}"
+format("a#{b}%<named>e c#{d}%{template} e#{f}")
 '''
 corrected = '''
-"a#{b}%<named>e c#{d}%<template>s e#{f}"
+format("a#{b}%<named>e c#{d}%<template>s e#{f}")
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 21
-column_end = 32
+column_start = 28
+column_end = 39
 message = "Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`)."
 
 [tests.config]
@@ -2741,7 +2976,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_sets_the_enforced_style_to_annotated_after_inspecting_as_10"
 source = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 offenses = []
 
@@ -2755,16 +2990,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_detects_when_the_cop_must_be_disabled_to_avoid_offenses_10"
 source = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 corrected = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 1
-column_end = 5
+column_start = 8
+column_end = 12
 message = "Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`)."
 
 [tests.config]
@@ -2844,7 +3079,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_does_not_register_offenses_for_annotated_style_10"
 source = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %{template} + bar %{annotated}
 HEREDOC
 '''
@@ -2860,7 +3095,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_supports_dynamic_string_with_interpolation_10"
 source = '''
-"a#{b}%{template} c#{d}%{annotated} e#{f}"
+format("a#{b}%{template} c#{d}%{annotated} e#{f}")
 '''
 offenses = []
 
@@ -2874,16 +3109,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_detects_when_the_cop_must_be_disabled_to_avoid_offenses_10"
 source = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 corrected = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 1
-column_end = 6
+column_start = 8
+column_end = 13
 message = "Prefer template tokens (like `%{foo}`) over annotated tokens (like `%<foo>s`)."
 
 [tests.config]
@@ -2896,7 +3131,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_configures_the_enforced_style_to_template_after_inspecting_a_10"
 source = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 offenses = []
 
@@ -2966,12 +3201,12 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_registers_offenses_for_template_style_11"
 source = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %<named>f + bar %{template}
 HEREDOC
 '''
 corrected = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %<named>f + bar %<template>s
 HEREDOC
 '''
@@ -2992,16 +3227,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_supports_dynamic_string_with_interpolation_11"
 source = '''
-"a#{b}%<named>f c#{d}%{template} e#{f}"
+format("a#{b}%<named>f c#{d}%{template} e#{f}")
 '''
 corrected = '''
-"a#{b}%<named>f c#{d}%<template>s e#{f}"
+format("a#{b}%<named>f c#{d}%<template>s e#{f}")
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 21
-column_end = 32
+column_start = 28
+column_end = 39
 message = "Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`)."
 
 [tests.config]
@@ -3014,7 +3249,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_sets_the_enforced_style_to_annotated_after_inspecting_as_11"
 source = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 offenses = []
 
@@ -3028,16 +3263,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_detects_when_the_cop_must_be_disabled_to_avoid_offenses_11"
 source = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 corrected = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 1
-column_end = 5
+column_start = 8
+column_end = 12
 message = "Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`)."
 
 [tests.config]
@@ -3117,7 +3352,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_does_not_register_offenses_for_annotated_style_11"
 source = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %{template} + bar %{annotated}
 HEREDOC
 '''
@@ -3133,7 +3368,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_supports_dynamic_string_with_interpolation_11"
 source = '''
-"a#{b}%{template} c#{d}%{annotated} e#{f}"
+format("a#{b}%{template} c#{d}%{annotated} e#{f}")
 '''
 offenses = []
 
@@ -3147,16 +3382,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_detects_when_the_cop_must_be_disabled_to_avoid_offenses_11"
 source = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 corrected = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 1
-column_end = 6
+column_start = 8
+column_end = 13
 message = "Prefer template tokens (like `%{foo}`) over annotated tokens (like `%<foo>s`)."
 
 [tests.config]
@@ -3169,7 +3404,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_configures_the_enforced_style_to_template_after_inspecting_a_11"
 source = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 offenses = []
 
@@ -3239,12 +3474,12 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_registers_offenses_for_template_style_12"
 source = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %<named>g + bar %{template}
 HEREDOC
 '''
 corrected = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %<named>g + bar %<template>s
 HEREDOC
 '''
@@ -3265,16 +3500,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_supports_dynamic_string_with_interpolation_12"
 source = '''
-"a#{b}%<named>g c#{d}%{template} e#{f}"
+format("a#{b}%<named>g c#{d}%{template} e#{f}")
 '''
 corrected = '''
-"a#{b}%<named>g c#{d}%<template>s e#{f}"
+format("a#{b}%<named>g c#{d}%<template>s e#{f}")
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 21
-column_end = 32
+column_start = 28
+column_end = 39
 message = "Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`)."
 
 [tests.config]
@@ -3287,7 +3522,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_sets_the_enforced_style_to_annotated_after_inspecting_as_12"
 source = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 offenses = []
 
@@ -3301,16 +3536,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_detects_when_the_cop_must_be_disabled_to_avoid_offenses_12"
 source = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 corrected = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 1
-column_end = 5
+column_start = 8
+column_end = 12
 message = "Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`)."
 
 [tests.config]
@@ -3390,7 +3625,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_does_not_register_offenses_for_annotated_style_12"
 source = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %{template} + bar %{annotated}
 HEREDOC
 '''
@@ -3406,7 +3641,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_supports_dynamic_string_with_interpolation_12"
 source = '''
-"a#{b}%{template} c#{d}%{annotated} e#{f}"
+format("a#{b}%{template} c#{d}%{annotated} e#{f}")
 '''
 offenses = []
 
@@ -3420,16 +3655,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_detects_when_the_cop_must_be_disabled_to_avoid_offenses_12"
 source = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 corrected = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 1
-column_end = 6
+column_start = 8
+column_end = 13
 message = "Prefer template tokens (like `%{foo}`) over annotated tokens (like `%<foo>s`)."
 
 [tests.config]
@@ -3442,7 +3677,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_configures_the_enforced_style_to_template_after_inspecting_a_12"
 source = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 offenses = []
 
@@ -3512,12 +3747,12 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_registers_offenses_for_template_style_13"
 source = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %<named>i + bar %{template}
 HEREDOC
 '''
 corrected = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %<named>i + bar %<template>s
 HEREDOC
 '''
@@ -3538,16 +3773,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_supports_dynamic_string_with_interpolation_13"
 source = '''
-"a#{b}%<named>i c#{d}%{template} e#{f}"
+format("a#{b}%<named>i c#{d}%{template} e#{f}")
 '''
 corrected = '''
-"a#{b}%<named>i c#{d}%<template>s e#{f}"
+format("a#{b}%<named>i c#{d}%<template>s e#{f}")
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 21
-column_end = 32
+column_start = 28
+column_end = 39
 message = "Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`)."
 
 [tests.config]
@@ -3560,7 +3795,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_sets_the_enforced_style_to_annotated_after_inspecting_as_13"
 source = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 offenses = []
 
@@ -3574,16 +3809,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_detects_when_the_cop_must_be_disabled_to_avoid_offenses_13"
 source = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 corrected = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 1
-column_end = 5
+column_start = 8
+column_end = 12
 message = "Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`)."
 
 [tests.config]
@@ -3663,7 +3898,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_does_not_register_offenses_for_annotated_style_13"
 source = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %{template} + bar %{annotated}
 HEREDOC
 '''
@@ -3679,7 +3914,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_supports_dynamic_string_with_interpolation_13"
 source = '''
-"a#{b}%{template} c#{d}%{annotated} e#{f}"
+format("a#{b}%{template} c#{d}%{annotated} e#{f}")
 '''
 offenses = []
 
@@ -3693,16 +3928,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_detects_when_the_cop_must_be_disabled_to_avoid_offenses_13"
 source = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 corrected = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 1
-column_end = 6
+column_start = 8
+column_end = 13
 message = "Prefer template tokens (like `%{foo}`) over annotated tokens (like `%<foo>s`)."
 
 [tests.config]
@@ -3715,7 +3950,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_configures_the_enforced_style_to_template_after_inspecting_a_13"
 source = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 offenses = []
 
@@ -3785,12 +4020,12 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_registers_offenses_for_template_style_14"
 source = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %<named>o + bar %{template}
 HEREDOC
 '''
 corrected = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %<named>o + bar %<template>s
 HEREDOC
 '''
@@ -3811,16 +4046,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_supports_dynamic_string_with_interpolation_14"
 source = '''
-"a#{b}%<named>o c#{d}%{template} e#{f}"
+format("a#{b}%<named>o c#{d}%{template} e#{f}")
 '''
 corrected = '''
-"a#{b}%<named>o c#{d}%<template>s e#{f}"
+format("a#{b}%<named>o c#{d}%<template>s e#{f}")
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 21
-column_end = 32
+column_start = 28
+column_end = 39
 message = "Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`)."
 
 [tests.config]
@@ -3833,7 +4068,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_sets_the_enforced_style_to_annotated_after_inspecting_as_14"
 source = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 offenses = []
 
@@ -3847,16 +4082,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_detects_when_the_cop_must_be_disabled_to_avoid_offenses_14"
 source = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 corrected = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 1
-column_end = 5
+column_start = 8
+column_end = 12
 message = "Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`)."
 
 [tests.config]
@@ -3936,7 +4171,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_does_not_register_offenses_for_annotated_style_14"
 source = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %{template} + bar %{annotated}
 HEREDOC
 '''
@@ -3952,7 +4187,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_supports_dynamic_string_with_interpolation_14"
 source = '''
-"a#{b}%{template} c#{d}%{annotated} e#{f}"
+format("a#{b}%{template} c#{d}%{annotated} e#{f}")
 '''
 offenses = []
 
@@ -3966,16 +4201,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_detects_when_the_cop_must_be_disabled_to_avoid_offenses_14"
 source = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 corrected = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 1
-column_end = 6
+column_start = 8
+column_end = 13
 message = "Prefer template tokens (like `%{foo}`) over annotated tokens (like `%<foo>s`)."
 
 [tests.config]
@@ -3988,7 +4223,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_configures_the_enforced_style_to_template_after_inspecting_a_14"
 source = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 offenses = []
 
@@ -4058,12 +4293,12 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_registers_offenses_for_template_style_15"
 source = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %<named>p + bar %{template}
 HEREDOC
 '''
 corrected = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %<named>p + bar %<template>s
 HEREDOC
 '''
@@ -4084,16 +4319,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_supports_dynamic_string_with_interpolation_15"
 source = '''
-"a#{b}%<named>p c#{d}%{template} e#{f}"
+format("a#{b}%<named>p c#{d}%{template} e#{f}")
 '''
 corrected = '''
-"a#{b}%<named>p c#{d}%<template>s e#{f}"
+format("a#{b}%<named>p c#{d}%<template>s e#{f}")
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 21
-column_end = 32
+column_start = 28
+column_end = 39
 message = "Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`)."
 
 [tests.config]
@@ -4106,7 +4341,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_sets_the_enforced_style_to_annotated_after_inspecting_as_15"
 source = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 offenses = []
 
@@ -4120,16 +4355,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_detects_when_the_cop_must_be_disabled_to_avoid_offenses_15"
 source = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 corrected = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 1
-column_end = 5
+column_start = 8
+column_end = 12
 message = "Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`)."
 
 [tests.config]
@@ -4209,7 +4444,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_does_not_register_offenses_for_annotated_style_15"
 source = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %{template} + bar %{annotated}
 HEREDOC
 '''
@@ -4225,7 +4460,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_supports_dynamic_string_with_interpolation_15"
 source = '''
-"a#{b}%{template} c#{d}%{annotated} e#{f}"
+format("a#{b}%{template} c#{d}%{annotated} e#{f}")
 '''
 offenses = []
 
@@ -4239,16 +4474,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_detects_when_the_cop_must_be_disabled_to_avoid_offenses_15"
 source = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 corrected = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 1
-column_end = 6
+column_start = 8
+column_end = 13
 message = "Prefer template tokens (like `%{foo}`) over annotated tokens (like `%<foo>s`)."
 
 [tests.config]
@@ -4261,7 +4496,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_configures_the_enforced_style_to_template_after_inspecting_a_15"
 source = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 offenses = []
 
@@ -4331,12 +4566,12 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_registers_offenses_for_template_style_16"
 source = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %<named>s + bar %{template}
 HEREDOC
 '''
 corrected = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %<named>s + bar %<template>s
 HEREDOC
 '''
@@ -4357,16 +4592,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_supports_dynamic_string_with_interpolation_16"
 source = '''
-"a#{b}%<named>s c#{d}%{template} e#{f}"
+format("a#{b}%<named>s c#{d}%{template} e#{f}")
 '''
 corrected = '''
-"a#{b}%<named>s c#{d}%<template>s e#{f}"
+format("a#{b}%<named>s c#{d}%<template>s e#{f}")
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 21
-column_end = 32
+column_start = 28
+column_end = 39
 message = "Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`)."
 
 [tests.config]
@@ -4379,7 +4614,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_sets_the_enforced_style_to_annotated_after_inspecting_as_16"
 source = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 offenses = []
 
@@ -4393,16 +4628,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_detects_when_the_cop_must_be_disabled_to_avoid_offenses_16"
 source = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 corrected = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 1
-column_end = 5
+column_start = 8
+column_end = 12
 message = "Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`)."
 
 [tests.config]
@@ -4482,12 +4717,12 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_registers_offenses_for_annotated_style"
 source = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %{template} + bar %<named>s
 HEREDOC
 '''
 corrected = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %{template} + bar %{named}
 HEREDOC
 '''
@@ -4508,16 +4743,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_supports_dynamic_string_with_interpolation_16"
 source = '''
-"a#{b}%{template} c#{d}%<named>s e#{f}"
+format("a#{b}%{template} c#{d}%<named>s e#{f}")
 '''
 corrected = '''
-"a#{b}%{template} c#{d}%{named} e#{f}"
+format("a#{b}%{template} c#{d}%{named} e#{f}")
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 23
-column_end = 32
+column_start = 30
+column_end = 39
 message = "Prefer template tokens (like `%{foo}`) over annotated tokens (like `%<foo>s`)."
 
 [tests.config]
@@ -4530,16 +4765,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_detects_when_the_cop_must_be_disabled_to_avoid_offenses_16"
 source = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 corrected = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 1
-column_end = 6
+column_start = 8
+column_end = 13
 message = "Prefer template tokens (like `%{foo}`) over annotated tokens (like `%<foo>s`)."
 
 [tests.config]
@@ -4552,7 +4787,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_configures_the_enforced_style_to_template_after_inspecting_a_16"
 source = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 offenses = []
 
@@ -4633,12 +4868,12 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_registers_offenses_for_template_style_17"
 source = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %<named>u + bar %{template}
 HEREDOC
 '''
 corrected = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %<named>u + bar %<template>s
 HEREDOC
 '''
@@ -4659,16 +4894,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_supports_dynamic_string_with_interpolation_17"
 source = '''
-"a#{b}%<named>u c#{d}%{template} e#{f}"
+format("a#{b}%<named>u c#{d}%{template} e#{f}")
 '''
 corrected = '''
-"a#{b}%<named>u c#{d}%<template>s e#{f}"
+format("a#{b}%<named>u c#{d}%<template>s e#{f}")
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 21
-column_end = 32
+column_start = 28
+column_end = 39
 message = "Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`)."
 
 [tests.config]
@@ -4681,7 +4916,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_sets_the_enforced_style_to_annotated_after_inspecting_as_17"
 source = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 offenses = []
 
@@ -4695,16 +4930,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_detects_when_the_cop_must_be_disabled_to_avoid_offenses_17"
 source = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 corrected = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 1
-column_end = 5
+column_start = 8
+column_end = 12
 message = "Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`)."
 
 [tests.config]
@@ -4784,7 +5019,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_does_not_register_offenses_for_annotated_style_16"
 source = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %{template} + bar %{annotated}
 HEREDOC
 '''
@@ -4800,7 +5035,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_supports_dynamic_string_with_interpolation_17"
 source = '''
-"a#{b}%{template} c#{d}%{annotated} e#{f}"
+format("a#{b}%{template} c#{d}%{annotated} e#{f}")
 '''
 offenses = []
 
@@ -4814,16 +5049,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_detects_when_the_cop_must_be_disabled_to_avoid_offenses_17"
 source = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 corrected = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 1
-column_end = 6
+column_start = 8
+column_end = 13
 message = "Prefer template tokens (like `%{foo}`) over annotated tokens (like `%<foo>s`)."
 
 [tests.config]
@@ -4836,7 +5071,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_configures_the_enforced_style_to_template_after_inspecting_a_17"
 source = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 offenses = []
 
@@ -4906,12 +5141,12 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_registers_offenses_for_template_style_18"
 source = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %<named>x + bar %{template}
 HEREDOC
 '''
 corrected = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %<named>x + bar %<template>s
 HEREDOC
 '''
@@ -4932,16 +5167,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_supports_dynamic_string_with_interpolation_18"
 source = '''
-"a#{b}%<named>x c#{d}%{template} e#{f}"
+format("a#{b}%<named>x c#{d}%{template} e#{f}")
 '''
 corrected = '''
-"a#{b}%<named>x c#{d}%<template>s e#{f}"
+format("a#{b}%<named>x c#{d}%<template>s e#{f}")
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 21
-column_end = 32
+column_start = 28
+column_end = 39
 message = "Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`)."
 
 [tests.config]
@@ -4954,7 +5189,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_sets_the_enforced_style_to_annotated_after_inspecting_as_18"
 source = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 offenses = []
 
@@ -4968,16 +5203,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_annotated_detects_when_the_cop_must_be_disabled_to_avoid_offenses_18"
 source = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 corrected = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 1
-column_end = 5
+column_start = 8
+column_end = 12
 message = "Prefer annotated tokens (like `%<foo>s`) over template tokens (like `%{foo}`)."
 
 [tests.config]
@@ -5057,7 +5292,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_does_not_register_offenses_for_annotated_style_17"
 source = '''
-<<-HEREDOC
+format(<<-HEREDOC, foo: bar)
 foo %{template} + bar %{annotated}
 HEREDOC
 '''
@@ -5073,7 +5308,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_supports_dynamic_string_with_interpolation_18"
 source = '''
-"a#{b}%{template} c#{d}%{annotated} e#{f}"
+format("a#{b}%{template} c#{d}%{annotated} e#{f}")
 '''
 offenses = []
 
@@ -5087,16 +5322,16 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_detects_when_the_cop_must_be_disabled_to_avoid_offenses_18"
 source = '''
-"%<a>s"
+format("%<a>s", a: foo)
 '''
 corrected = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 
 [[tests.offenses]]
 line = 1
-column_start = 1
-column_end = 6
+column_start = 8
+column_end = 13
 message = "Prefer template tokens (like `%{foo}`) over annotated tokens (like `%<foo>s`)."
 
 [tests.config]
@@ -5109,7 +5344,7 @@ Mode = "aggressive"
 [[tests]]
 name = "rubocopcopstyleformatstringtoken_behaves_like_enforced_styles_for_format_string_tokens_when_enforced_style_is_template_configures_the_enforced_style_to_template_after_inspecting_a_18"
 source = '''
-"%{a}"
+format("%{a}", a: foo)
 '''
 offenses = []
 
@@ -5180,9 +5415,6 @@ Mode = "aggressive"
 name = "rubocopcopstyleformatstringtoken_when_enforced_style_is_annotated_gives_a_helpful_error_message"
 source = '''
 "%{foo}"
-'''
-corrected = '''
-"%<foo>s"
 '''
 
 [[tests.offenses]]
@@ -5334,9 +5566,6 @@ Mode = "aggressive"
 name = "rubocopcopstyleformatstringtoken_when_enforced_style_is_template_gives_a_helpful_error_message"
 source = '''
 "%<foo>s"
-'''
-corrected = '''
-"%{foo}"
 '''
 
 [[tests.offenses]]

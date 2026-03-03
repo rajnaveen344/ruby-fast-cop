@@ -419,6 +419,117 @@ EnforcedStyle = "aligned"
 IndentationWidth = ""
 
 [[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_accepts_aligned_method_chained_after_singleline_block_on_both_calls"
+source = '''
+(0..foo).bar { baz }
+        .qux { quux }
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "aligned"
+IndentationWidth = ""
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_accepts_aligned_method_chained_after_singleline_block_only_on_first_call"
+source = '''
+(0..foo).bar { baz }
+        .qux
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "aligned"
+IndentationWidth = ""
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_accepts_aligned_method_chained_after_singleline_block_only_on_second_call"
+source = '''
+(0..foo).bar
+        .qux { quux }
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "aligned"
+IndentationWidth = ""
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_accepts_aligned_method_chained_after_singleline_block_with_safe_navigation"
+source = '''
+(0..foo).bar { baz }
+        &.qux { quux }
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "aligned"
+IndentationWidth = ""
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_registers_an_offense_for_misaligned_method_chained_after_singleline_block_on_both_calls"
+source = '''
+(0..foo).bar { baz }
+  .qux { quux }
+'''
+corrected = '''
+(0..foo).bar { baz }
+        .qux { quux }
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 6
+message = "Align `.qux` with `.bar` on line 1."
+
+[tests.config]
+EnforcedStyle = "aligned"
+IndentationWidth = ""
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_registers_an_offense_for_misaligned_method_chained_after_singleline_block_only_on_first_call"
+source = '''
+(0..foo).bar { baz }
+  .qux
+'''
+corrected = '''
+(0..foo).bar { baz }
+        .qux
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 6
+message = "Align `.qux` with `.bar` on line 1."
+
+[tests.config]
+EnforcedStyle = "aligned"
+IndentationWidth = ""
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_registers_an_offense_for_misaligned_method_chained_after_singleline_block_only_on_second_call"
+source = '''
+(0..foo).bar
+  .qux { quux }
+'''
+corrected = '''
+(0..foo).bar
+        .qux { quux }
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 6
+message = "Align `.qux` with `.bar` on line 1."
+
+[tests.config]
+EnforcedStyle = "aligned"
+IndentationWidth = ""
+
+[[tests]]
 name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_registers_an_offense_and_corrects_misaligned_methods_in_local_variable_assignment"
 source = '''
 a = b.c.
@@ -916,6 +1027,21 @@ name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_ali
 source = '''
 MyClass.(my_args)
   .my_method
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "aligned"
+IndentationWidth = ""
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_behaves_like_common_does_not_register_an_offense_when_a_keyword_argument_value_is_a_method_call_with_a_block"
+source = '''
+Foo
+  .do_something(
+    key: value do
+    end
+  )
 '''
 offenses = []
 
@@ -1645,6 +1771,98 @@ EnforcedStyle = "aligned"
 IndentationWidth = ""
 
 [[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_for_semantic_alignment_when_inside_a_hash_pair_without_block_receiver_accepts_method_chain_in_hash_pair_passed_to_method_with_nonconstant_receiver"
+source = '''
+method(key: value.foo.bar
+                 .baz)
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "aligned"
+IndentationWidth = ""
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_for_semantic_alignment_when_inside_a_hash_pair_without_block_receiver_accepts_method_chain_in_hash_literal_with_nonconstant_receiver"
+source = '''
+{
+  key: value.foo.bar
+            .baz
+}
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "aligned"
+IndentationWidth = ""
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_for_semantic_alignment_when_inside_a_hash_pair_without_block_receiver_accepts_safe_navigation_method_chain_in_hash_pair"
+source = '''
+method(key: value&.foo&.bar
+                 &.baz)
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "aligned"
+IndentationWidth = ""
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_for_semantic_alignment_when_inside_a_hash_pair_without_block_receiver_accepts_multidot_chain_aligned_with_receiver_start_in_hash_pair"
+source = '''
+method(key: value.foo.bar
+            .baz)
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "aligned"
+IndentationWidth = ""
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_for_semantic_alignment_when_inside_a_hash_pair_without_block_receiver_registers_an_offense_for_misaligned_multidot_chain_in_hash_pair"
+source = '''
+method(key: value.foo.bar
+              .baz)
+'''
+corrected = '''
+method(key: value.foo.bar
+            .baz)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 14
+column_end = 18
+message = "Align `.baz` with `value.foo.bar` on line 1."
+
+[tests.config]
+EnforcedStyle = "aligned"
+IndentationWidth = ""
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_for_semantic_alignment_when_inside_a_hash_pair_without_block_receiver_registers_an_offense_for_trailing_dot_multidot_chain_in_hash_pair"
+source = '''
+method(key: value.foo.bar.
+                 baz)
+'''
+corrected = '''
+method(key: value.foo.bar.
+            baz)
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 17
+column_end = 20
+message = "Align `baz` with `value.foo.bar.` on line 1."
+
+[tests.config]
+EnforcedStyle = "aligned"
+IndentationWidth = ""
+
+[[tests]]
 name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_aligned_for_semantic_alignment_when_inside_a_hash_pair_without_block_receiver_registers_an_offense_for_misaligned_method_chain_in_hash_pair"
 source = '''
 {
@@ -1780,6 +1998,18 @@ source = '''
 1 + a
       .b
       .c
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented_relative_to_receiver"
+IndentationWidth = ""
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_accepts_correctly_indented_method_calls_after_a_hash_access"
+source = '''
+hash[:key]
+  .do_something
 '''
 offenses = []
 
@@ -1973,6 +2203,42 @@ source = '''
   **foo
     .bar { baz(it) }
 ]
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented_relative_to_receiver"
+IndentationWidth = ""
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_accepts_method_chained_after_singleline_block_on_both_calls_with_receiverrelative_indent"
+source = '''
+(0..foo).bar { baz }
+          .qux { quux }
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented_relative_to_receiver"
+IndentationWidth = ""
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_accepts_method_chained_after_singleline_block_only_on_first_call_with_receiverrelative_indent"
+source = '''
+(0..foo).bar { baz }
+          .qux
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented_relative_to_receiver"
+IndentationWidth = ""
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_accepts_method_chained_after_singleline_block_only_on_second_call_with_receiverrelative_indent"
+source = '''
+(0..foo).bar
+          .qux { quux }
 '''
 offenses = []
 
@@ -2350,6 +2616,18 @@ EnforcedStyle = "indented_relative_to_receiver"
 IndentationWidth = ""
 
 [[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_accepts_multidot_method_chain_in_hash_pair_passed_to_method"
+source = '''
+method(key: value.foo.bar
+              .baz)
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented_relative_to_receiver"
+IndentationWidth = ""
+
+[[tests]]
 name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_behaves_like_common_accepts_indented_methods_in_lhs_of__assignment"
 source = '''
 a
@@ -2512,6 +2790,21 @@ EnforcedStyle = "indented_relative_to_receiver"
 IndentationWidth = ""
 
 [[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_behaves_like_common_does_not_register_an_offense_when_a_keyword_argument_value_is_a_method_call_with_a_block"
+source = '''
+Foo
+  .do_something(
+    key: value do
+    end
+  )
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented_relative_to_receiver"
+IndentationWidth = ""
+
+[[tests]]
 name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_relative_to_receiver_behaves_like_common_accepts_alignment_of_method_with_assignment_and_operatorlike_method"
 source = '''
 query = x.|(
@@ -2599,6 +2892,42 @@ line = 3
 column_start = 2
 column_end = 7
 message = "Use 2 (not 0) spaces for indenting an expression spanning multiple lines."
+
+[tests.config]
+EnforcedStyle = "indented"
+IndentationWidth = ""
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_accepts_indented_method_chained_after_singleline_block_on_both_calls"
+source = '''
+(0..foo).bar { baz }
+  .qux { quux }
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented"
+IndentationWidth = ""
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_accepts_indented_method_chained_after_singleline_block_only_on_first_call"
+source = '''
+(0..foo).bar { baz }
+  .qux
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented"
+IndentationWidth = ""
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_accepts_indented_method_chained_after_singleline_block_only_on_second_call"
+source = '''
+(0..foo).bar
+  .qux { quux }
+'''
+offenses = []
 
 [tests.config]
 EnforcedStyle = "indented"
@@ -3234,6 +3563,18 @@ EnforcedStyle = "indented"
 IndentationWidth = ""
 
 [[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_accepts_multidot_method_chain_in_hash_pair_passed_to_method"
+source = '''
+method(key: value.foo.bar
+  .baz)
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented"
+IndentationWidth = ""
+
+[[tests]]
 name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_behaves_like_common_accepts_indented_methods_in_lhs_of__assignment"
 source = '''
 a
@@ -3388,6 +3729,21 @@ name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_ind
 source = '''
 MyClass.(my_args)
   .my_method
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "indented"
+IndentationWidth = ""
+
+[[tests]]
+name = "rubocopcoplayoutmultilinemethodcallindentation_when_enforcedstyle_is_indented_behaves_like_common_does_not_register_an_offense_when_a_keyword_argument_value_is_a_method_call_with_a_block"
+source = '''
+Foo
+  .do_something(
+    key: value do
+    end
+  )
 '''
 offenses = []
 

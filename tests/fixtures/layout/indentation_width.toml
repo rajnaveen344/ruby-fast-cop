@@ -3249,7 +3249,7 @@ end
 line = 3
 column_start = 0
 column_end = 1
-message = "Use 2 (not -2) spaces for indentation."
+message = "{} Use 2 (not 0) spaces for indentation."
 
 [tests.config]
 AllowedPatterns = []
@@ -3274,12 +3274,12 @@ SupportedStylesAlignWith = ["start_of_line", "relative_to_receiver"]
 Width = 2
 
 [[tests]]
-name = "rubocopcoplayoutindentationwidth_with_width_set_to_2_with_method_chain_blocks_accepts_block_body_indented_relative_to_dot_when_end_is_at_different_column"
+name = "rubocopcoplayoutindentationwidth_with_width_set_to_2_with_method_chain_blocks_accepts_block_body_indented_relative_to_start_of_line_when_a__body"
 source = '''
 out
   .break
   .sep_with_breaks(inner) { |v|
-    simplified_process(v)
+  simplified_process(v)
 }
 '''
 offenses = []
@@ -3291,36 +3291,15 @@ SupportedStylesAlignWith = ["start_of_line", "relative_to_receiver"]
 Width = 2
 
 [[tests]]
-name = "rubocopcoplayoutindentationwidth_with_width_set_to_2_with_method_chain_blocks_accepts_block_body_indented_relative_to_dot_with_doend"
+name = "rubocopcoplayoutindentationwidth_with_width_set_to_2_with_method_chain_blocks_accepts_block_body_indented_relative_to_start_of_line_when_a_doend_body"
 source = '''
 out
   .break
   .sep_with_breaks(inner) do |v|
-    simplified_process(v)
+  simplified_process(v)
 end
 '''
 offenses = []
-
-[tests.config]
-AllowedPatterns = []
-EnforcedStyleAlignWith = "start_of_line"
-SupportedStylesAlignWith = ["start_of_line", "relative_to_receiver"]
-Width = 2
-
-[[tests]]
-name = "rubocopcoplayoutindentationwidth_with_width_set_to_2_with_method_chain_blocks_registers_an_offense_when_the_chain_receiver_is_long_and_body_not_indented_relative_to_dot"
-source = '''
-::Some::Very::Long::Module::Name.active
-                                .in_batches do |batch|
-  process(batch)
-end
-'''
-
-[[tests.offenses]]
-line = 3
-column_start = 2
-column_end = 16
-message = "Use 2 (not -30) spaces for indentation."
 
 [tests.config]
 AllowedPatterns = []
@@ -3333,8 +3312,8 @@ name = "rubocopcoplayoutindentationwidth_with_width_set_to_2_with_method_chain_b
 source = '''
 ::Some::Very::Long::Module::Name.active
                                 .in_batches do |batch|
-                                  process(batch)
-                                end
+  process(batch)
+end
 '''
 offenses = []
 
@@ -3419,6 +3398,39 @@ foo
   .bar do |x|
     x
 end
+'''
+offenses = []
+
+[tests.config]
+AllowedPatterns = []
+EnforcedStyleAlignWith = "relative_to_receiver"
+SupportedStylesAlignWith = ["start_of_line", "relative_to_receiver"]
+Width = 2
+
+[[tests]]
+name = "rubocopcoplayoutindentationwidth_with_width_set_to_2_with_method_chain_blocks_when_enforcedstylealignwith_is_relative_to_receiver_accepts_block_body_indented_relative_to_dot_when_end_is_at_different_column"
+source = '''
+out
+  .break
+  .sep_with_breaks(inner) { |v|
+    simplified_process(v)
+}
+'''
+offenses = []
+
+[tests.config]
+AllowedPatterns = []
+EnforcedStyleAlignWith = "relative_to_receiver"
+SupportedStylesAlignWith = ["start_of_line", "relative_to_receiver"]
+Width = 2
+
+[[tests]]
+name = "rubocopcoplayoutindentationwidth_with_width_set_to_2_with_method_chain_blocks_when_enforcedstylealignwith_is_relative_to_receiver_accepts_correct_indentation_when_the_chain_receiver_is_long"
+source = '''
+::Some::Very::Long::Module::Name.active
+                                .in_batches do |batch|
+                                  process(batch)
+                                end
 '''
 offenses = []
 

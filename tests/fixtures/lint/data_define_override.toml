@@ -1,0 +1,110 @@
+cop = "Lint/DataDefineOverride"
+department = "lint"
+severity = "warning"
+implemented = false
+
+[[tests]]
+name = "rubocopcoplintdatadefineoverride_registers_an_offense_using_datadefinesymbol"
+source = '''
+Bad = Data.define(:members)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 18
+column_end = 26
+message = "`:members` member overrides `Data#members` and it may be unexpected."
+
+[[tests]]
+name = "rubocopcoplintdatadefineoverride_registers_an_offense_using_datadefinesymbol_2"
+source = '''
+Bad = ::Data.define(:members)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 20
+column_end = 28
+message = "`:members` member overrides `Data#members` and it may be unexpected."
+
+[[tests]]
+name = "rubocopcoplintdatadefineoverride_registers_an_offense_using_datadefinesymbols"
+source = '''
+Bad = Data.define(:name, :members, :address)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 25
+column_end = 33
+message = "`:members` member overrides `Data#members` and it may be unexpected."
+
+[[tests]]
+name = "rubocopcoplintdatadefineoverride_registers_an_offense_using_datadefinesymbol_string"
+source = '''
+Bad = Data.define(:name, "members")
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 25
+column_end = 34
+message = "`\"members\"` member overrides `Data#members` and it may be unexpected."
+
+[[tests]]
+name = "rubocopcoplintdatadefineoverride_registers_an_offense_using_datadefine_with_a_block"
+source = '''
+Data.define(:members) do
+  def members?
+    !members.empty?
+  end
+end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 12
+column_end = 20
+message = "`:members` member overrides `Data#members` and it may be unexpected."
+
+[[tests]]
+name = "rubocopcoplintdatadefineoverride_registers_an_offense_using_datadefine_with_multiple_overrides"
+source = '''
+Data.define(:members, :clone, :to_s)
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 30
+column_end = 35
+message = "`:to_s` member overrides `Data#to_s` and it may be unexpected."
+
+[[tests.offenses]]
+line = 1
+column_start = 22
+column_end = 28
+message = "`:clone` member overrides `Data#clone` and it may be unexpected."
+
+[[tests.offenses]]
+line = 1
+column_start = 12
+column_end = 20
+message = "`:members` member overrides `Data#members` and it may be unexpected."
+
+[[tests]]
+name = "rubocopcoplintdatadefineoverride_does_not_register_an_offense_with_no_overrides"
+source = '''
+Good = Data.define(:id, :name)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcoplintdatadefineoverride_does_not_register_an_offense_with_an_override_within_a_given_block"
+source = '''
+Good = Data.define(:id, :name) do
+  def members
+    super.tap { |ret| pp "members: " + ret.to_s }
+  end
+end
+'''
+offenses = []

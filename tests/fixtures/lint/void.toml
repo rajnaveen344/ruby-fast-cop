@@ -3832,7 +3832,7 @@ message = "Literal `42` used in void context."
 CheckForMethodsWithNoSideEffects = false
 
 [[tests]]
-name = "rubocopcoplintvoid_registers_two_offenses_for_void_literals_in_a_each_method"
+name = "rubocopcoplintvoid_registers_an_offense_only_for_nonlast_void_literal_in_a_each_method"
 source = '''
 array.each do |_item|
   42
@@ -3841,6 +3841,7 @@ end
 '''
 corrected = '''
 array.each do |_item|
+  42
 end
 '''
 
@@ -3850,53 +3851,29 @@ column_start = 2
 column_end = 4
 message = "Literal `42` used in void context."
 
-[[tests.offenses]]
-line = 3
-column_start = 2
-column_end = 4
-message = "Literal `42` used in void context."
-
 [tests.config]
 CheckForMethodsWithNoSideEffects = false
 
 [[tests]]
-name = "rubocopcoplintvoid_registers_an_offense_for_void_constant_in_a_each_method"
+name = "rubocopcoplintvoid_does_not_register_an_offense_for_a_constant_as_last_expression_in_a_each_method"
 source = '''
 array.each do |_item|
   CONST
 end
 '''
-corrected = '''
-array.each do |_item|
-end
-'''
-
-[[tests.offenses]]
-line = 2
-column_start = 2
-column_end = 7
-message = "Constant `CONST` used in void context."
+offenses = []
 
 [tests.config]
 CheckForMethodsWithNoSideEffects = false
 
 [[tests]]
-name = "rubocopcoplintvoid_handles_each_block_with_single_expression"
+name = "rubocopcoplintvoid_does_not_register_an_offense_for_a_literal_as_single_expression_in_each_block"
 source = '''
 array.each do |_item|
   42
 end
 '''
-corrected = '''
-array.each do |_item|
-end
-'''
-
-[[tests.offenses]]
-line = 2
-column_start = 2
-column_end = 4
-message = "Literal `42` used in void context."
+offenses = []
 
 [tests.config]
 CheckForMethodsWithNoSideEffects = false
@@ -4234,6 +4211,216 @@ line = 2
 column_start = 2
 column_end = 14
 message = "Variable `__ENCODING__` used in void context."
+
+[tests.config]
+CheckForMethodsWithNoSideEffects = false
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_literal_in_case_branch"
+source = '''
+case foo
+when 1 then 2
+end
+puts 3
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 12
+column_end = 13
+message = "Literal `2` used in void context."
+
+[tests.config]
+CheckForMethodsWithNoSideEffects = false
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_offenses_for_void_literals_in_multiple_case_branches"
+source = '''
+case foo
+when 1 then 2
+when 3 then 4
+else 5
+end
+puts 6
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 12
+column_end = 13
+message = "Literal `2` used in void context."
+
+[[tests.offenses]]
+line = 3
+column_start = 12
+column_end = 13
+message = "Literal `4` used in void context."
+
+[[tests.offenses]]
+line = 4
+column_start = 5
+column_end = 6
+message = "Literal `5` used in void context."
+
+[tests.config]
+CheckForMethodsWithNoSideEffects = false
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_variable_in_case_branch"
+source = '''
+x = 1
+case foo
+when 1 then x
+end
+puts 3
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 12
+column_end = 13
+message = "Variable `x` used in void context."
+
+[tests.config]
+CheckForMethodsWithNoSideEffects = false
+
+[[tests]]
+name = "rubocopcoplintvoid_does_not_register_an_offense_for_nonvoid_expression_in_case_branch"
+source = '''
+case foo
+when 1 then do_something
+end
+puts 3
+'''
+offenses = []
+
+[tests.config]
+CheckForMethodsWithNoSideEffects = false
+
+[[tests]]
+name = "rubocopcoplintvoid_does_not_register_an_offense_for_nil_in_case_branch"
+source = '''
+case foo
+when 1
+  nil
+end
+puts 3
+'''
+offenses = []
+
+[tests.config]
+CheckForMethodsWithNoSideEffects = false
+
+[[tests]]
+name = "rubocopcoplintvoid_does_not_register_an_offense_for_case_on_last_line"
+source = '''
+case foo
+when 1 then 2
+end
+'''
+offenses = []
+
+[tests.config]
+CheckForMethodsWithNoSideEffects = false
+
+[[tests]]
+name = "rubocopcoplintvoid_does_not_register_an_offense_for_case_without_when_body"
+source = '''
+case foo
+when 1
+end
+puts :ok
+'''
+offenses = []
+
+[tests.config]
+CheckForMethodsWithNoSideEffects = false
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_literal_in_casein_branch"
+source = '''
+case foo
+in 1 then 2
+in 2 then 3
+else 4
+end
+puts 5
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 10
+column_end = 11
+message = "Literal `2` used in void context."
+
+[[tests.offenses]]
+line = 3
+column_start = 10
+column_end = 11
+message = "Literal `3` used in void context."
+
+[[tests.offenses]]
+line = 4
+column_start = 5
+column_end = 6
+message = "Literal `4` used in void context."
+
+[tests.config]
+CheckForMethodsWithNoSideEffects = false
+
+[[tests]]
+name = "rubocopcoplintvoid_registers_an_offense_for_void_variable_in_casein_branch"
+source = '''
+x = 1
+case foo
+in 1 then x
+end
+puts 3
+'''
+
+[[tests.offenses]]
+line = 3
+column_start = 10
+column_end = 11
+message = "Variable `x` used in void context."
+
+[tests.config]
+CheckForMethodsWithNoSideEffects = false
+
+[[tests]]
+name = "rubocopcoplintvoid_does_not_register_an_offense_for_nonvoid_expression_in_casein_branch"
+source = '''
+case foo
+in 1 then do_something
+end
+puts 3
+'''
+offenses = []
+
+[tests.config]
+CheckForMethodsWithNoSideEffects = false
+
+[[tests]]
+name = "rubocopcoplintvoid_does_not_register_an_offense_for_casein_on_last_line"
+source = '''
+case foo
+in 1 then 2
+end
+'''
+offenses = []
+
+[tests.config]
+CheckForMethodsWithNoSideEffects = false
+
+[[tests]]
+name = "rubocopcoplintvoid_does_not_register_an_offense_for_casein_without_in_pattern_body"
+source = '''
+case foo
+in 1
+end
+puts :ok
+'''
+offenses = []
 
 [tests.config]
 CheckForMethodsWithNoSideEffects = false

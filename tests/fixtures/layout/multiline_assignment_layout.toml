@@ -188,6 +188,117 @@ EnforcedStyle = "new_line"
 SupportedTypes = ["block"]
 
 [[tests]]
+name = "rubocopcoplayoutmultilineassignmentlayout_new_line_style_when_supported_types_is_block_registers_an_offense_when_multiline_assignments_using_singleline_block_is_on_different_line"
+source = '''
+foo = items
+  .map { |item| item.do_something }
+'''
+corrected = '''
+foo =
+ items
+  .map { |item| item.do_something }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 11
+message = "Right hand side of multi-line assignment is on the same line as the assignment operator `=`."
+
+[tests.config]
+EnforcedStyle = "new_line"
+SupportedTypes = ["block"]
+
+[[tests]]
+name = "rubocopcoplayoutmultilineassignmentlayout_new_line_style_when_supported_types_is_block_allows_multiline_assignments_using_singleline_block_is_on_different_and_separate_line"
+source = '''
+foo =
+  items.map { |item| item.do_something }
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "new_line"
+SupportedTypes = ["block"]
+
+[[tests]]
+name = "rubocopcoplayoutmultilineassignmentlayout_new_line_style_when_supported_types_is_block_registers_an_offense_when_multiline_assignments_using_multiline_block_is_on_different_line"
+source = '''
+foo = items
+  .map do |item|
+    item.do_something
+  end
+'''
+corrected = '''
+foo =
+ items
+  .map do |item|
+    item.do_something
+  end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 11
+message = "Right hand side of multi-line assignment is on the same line as the assignment operator `=`."
+
+[tests.config]
+EnforcedStyle = "new_line"
+SupportedTypes = ["block"]
+
+[[tests]]
+name = "rubocopcoplayoutmultilineassignmentlayout_new_line_style_when_supported_types_is_block_allows_multiline_assignments_using_multiline_block_is_on_different_and_separate_line"
+source = '''
+foo =
+  items.map do |item|
+    item.do_something
+  end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "new_line"
+SupportedTypes = ["block"]
+
+[[tests]]
+name = "rubocopcoplayoutmultilineassignmentlayout_new_line_style_when_supported_types_is_block_registers_an_offense_for_numblock_on_the_same_line"
+source = '''
+bars = foo.map {
+  _1.bar
+}
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 16
+message = "Right hand side of multi-line assignment is on the same line as the assignment operator `=`."
+
+[tests.config]
+EnforcedStyle = "new_line"
+SupportedTypes = ["block"]
+
+[[tests]]
+name = "rubocopcoplayoutmultilineassignmentlayout_new_line_style_when_supported_types_is_block_registers_an_offense_for_itblock_on_the_same_line"
+ruby_version = ">= 3.4"
+source = '''
+bars = foo.map {
+  it.bar
+}
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 16
+message = "Right hand side of multi-line assignment is on the same line as the assignment operator `=`."
+
+[tests.config]
+EnforcedStyle = "new_line"
+SupportedTypes = ["block"]
+
+[[tests]]
 name = "rubocopcoplayoutmultilineassignmentlayout_same_line_style_registers_an_offense_when_the_rhs_is_a_different_line"
 source = '''
 blarg =
@@ -368,6 +479,115 @@ foo << items.map do |item|
 end
 '''
 offenses = []
+
+[tests.config]
+EnforcedStyle = "same_line"
+SupportedTypes = ["block"]
+
+[[tests]]
+name = "rubocopcoplayoutmultilineassignmentlayout_same_line_style_when_supported_types_is_block_allows_multiline_assignments_using_singleline_block_is_on_different_line"
+source = '''
+foo = items
+  .map { |item| item.do_something }
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "same_line"
+SupportedTypes = ["block"]
+
+[[tests]]
+name = "rubocopcoplayoutmultilineassignmentlayout_same_line_style_when_supported_types_is_block_registers_an_offense_multiline_assignments_using_singleline_block_is_on_different_and_separate_line"
+source = '''
+foo =
+  items.map { |item| item.do_something }
+'''
+corrected = '''
+foo = items.map { |item| item.do_something }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 5
+message = "Right hand side of multi-line assignment is not on the same line as the assignment operator `=`."
+
+[tests.config]
+EnforcedStyle = "same_line"
+SupportedTypes = ["block"]
+
+[[tests]]
+name = "rubocopcoplayoutmultilineassignmentlayout_same_line_style_when_supported_types_is_block_allows_multiline_assignments_using_multiline_block_is_on_different_line"
+source = '''
+foo = items
+  .map do |item|
+    item.do_something
+  end
+'''
+offenses = []
+
+[tests.config]
+EnforcedStyle = "same_line"
+SupportedTypes = ["block"]
+
+[[tests]]
+name = "rubocopcoplayoutmultilineassignmentlayout_same_line_style_when_supported_types_is_block_registers_an_offense_multiline_assignments_using_multiline_block_is_on_different_and_separate_line"
+source = '''
+foo =
+  items.map do |item|
+    item.do_something
+  end
+'''
+corrected = '''
+foo = items.map do |item|
+    item.do_something
+  end
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 5
+message = "Right hand side of multi-line assignment is not on the same line as the assignment operator `=`."
+
+[tests.config]
+EnforcedStyle = "same_line"
+SupportedTypes = ["block"]
+
+[[tests]]
+name = "rubocopcoplayoutmultilineassignmentlayout_same_line_style_when_supported_types_is_block_registers_an_offense_for_numblock_on_separate_lines"
+source = '''
+bars =
+  foo.map {
+    _1.bar
+  }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Right hand side of multi-line assignment is not on the same line as the assignment operator `=`."
+
+[tests.config]
+EnforcedStyle = "same_line"
+SupportedTypes = ["block"]
+
+[[tests]]
+name = "rubocopcoplayoutmultilineassignmentlayout_same_line_style_when_supported_types_is_block_registers_an_offense_for_itblock_on_separate_lines"
+ruby_version = ">= 3.4"
+source = '''
+bars =
+  foo.map {
+    it.bar
+  }
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 6
+message = "Right hand side of multi-line assignment is not on the same line as the assignment operator `=`."
 
 [tests.config]
 EnforcedStyle = "same_line"

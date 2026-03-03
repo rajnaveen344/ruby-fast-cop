@@ -144,6 +144,22 @@ column_end = 14
 message = "Don't unfreeze interpolated strings as they are already unfrozen."
 
 [[tests]]
+name = "rubocopcopstyleredundantinterpolationunfreeze_target_ruby_version__30_registers_an_offense_for_stringnew_with_interpolated_string"
+ruby_version = ">= 3.0"
+source = '''
+String.new("#{1}")
+'''
+corrected = '''
+"#{1}"
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 10
+message = "Don't unfreeze interpolated strings as they are already unfrozen."
+
+[[tests]]
 name = "rubocopcopstyleredundantinterpolationunfreeze_target_ruby_version__30_registers_no_offense_for_uninterpolated_heredoc"
 ruby_version = ">= 3.0"
 source = '''
@@ -191,6 +207,14 @@ name = "rubocopcopstyleredundantinterpolationunfreeze_target_ruby_version__30_re
 ruby_version = ">= 3.0"
 source = '''
 dup
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstyleredundantinterpolationunfreeze_target_ruby_version__30_registers_no_offense_for_stringnew_with_interpolated_string_and_keyword_arguments"
+ruby_version = ">= 3.0"
+source = '''
+String.new("#{1}", encoding: Encoding::US_ASCII)
 '''
 offenses = []
 

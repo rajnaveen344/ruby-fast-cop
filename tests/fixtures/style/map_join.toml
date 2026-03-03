@@ -1,0 +1,296 @@
+cop = "Style/MapJoin"
+department = "style"
+severity = "convention"
+implemented = false
+
+[[tests]]
+name = "rubocopcopstylemapjoin_with_mapto_sjoin_registers_an_offense_and_corrects"
+source = '''
+array.map(&:to_s).join(', ')
+'''
+corrected = '''
+array.join(', ')
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 9
+message = "Remove redundant `map(&:to_s)` before `join`."
+
+[[tests]]
+name = "rubocopcopstylemapjoin_with_mapto_sjoin_without_arguments_registers_an_offense_and_corrects"
+source = '''
+array.map(&:to_s).join
+'''
+corrected = '''
+array.join
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 9
+message = "Remove redundant `map(&:to_s)` before `join`."
+
+[[tests]]
+name = "rubocopcopstylemapjoin_with_map__x_xto_s_join_registers_an_offense_and_corrects"
+source = '''
+array.map { |x| x.to_s }.join(', ')
+'''
+corrected = '''
+array.join(', ')
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 9
+message = "Remove redundant `map(&:to_s)` before `join`."
+
+[[tests]]
+name = "rubocopcopstylemapjoin_with_mapto_sjoin_using_safe_navigation_registers_an_offense_and_corrects"
+source = '''
+array&.map(&:to_s)&.join(', ')
+'''
+corrected = '''
+array&.join(', ')
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 10
+message = "Remove redundant `map(&:to_s)` before `join`."
+
+[[tests]]
+name = "rubocopcopstylemapjoin_with_mapto_sjoin_without_receiver_registers_an_offense_and_corrects"
+source = '''
+map(&:to_s).join(', ')
+'''
+corrected = '''
+join(', ')
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 3
+message = "Remove redundant `map(&:to_s)` before `join`."
+
+[[tests]]
+name = "rubocopcopstylemapjoin_with_map__x_xto_s_join_without_receiver_registers_an_offense_and_corrects"
+source = '''
+map { |x| x.to_s }.join(', ')
+'''
+corrected = '''
+join(', ')
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 3
+message = "Remove redundant `map(&:to_s)` before `join`."
+
+[[tests]]
+name = "rubocopcopstylemapjoin_with_map_doing_something_other_than_to_s_does_not_register_an_offense"
+source = '''
+array.map(&:to_i).join(', ')
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylemapjoin_with_map_with_a_block_doing_something_other_than_to_s_does_not_register_an_offense"
+source = '''
+array.map { |x| x.to_i }.join(', ')
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylemapjoin_with_mapto_s_without_join_does_not_register_an_offense"
+source = '''
+array.map(&:to_s)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylemapjoin_with_collectto_sjoin_registers_an_offense_and_corrects"
+source = '''
+array.collect(&:to_s).join(', ')
+'''
+corrected = '''
+array.join(', ')
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 13
+message = "Remove redundant `collect(&:to_s)` before `join`."
+
+[[tests]]
+name = "rubocopcopstylemapjoin_with_collectto_sjoin_without_arguments_registers_an_offense_and_corrects"
+source = '''
+array.collect(&:to_s).join
+'''
+corrected = '''
+array.join
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 13
+message = "Remove redundant `collect(&:to_s)` before `join`."
+
+[[tests]]
+name = "rubocopcopstylemapjoin_with_collect__x_xto_s_join_registers_an_offense_and_corrects"
+source = '''
+array.collect { |x| x.to_s }.join(', ')
+'''
+corrected = '''
+array.join(', ')
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 13
+message = "Remove redundant `collect(&:to_s)` before `join`."
+
+[[tests]]
+name = "rubocopcopstylemapjoin_with_collectto_sjoin_using_safe_navigation_registers_an_offense_and_corrects"
+source = '''
+array&.collect(&:to_s)&.join(', ')
+'''
+corrected = '''
+array&.join(', ')
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 7
+column_end = 14
+message = "Remove redundant `collect(&:to_s)` before `join`."
+
+[[tests]]
+name = "rubocopcopstylemapjoin_with_collectto_sjoin_without_receiver_registers_an_offense_and_corrects"
+source = '''
+collect(&:to_s).join(', ')
+'''
+corrected = '''
+join(', ')
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 7
+message = "Remove redundant `collect(&:to_s)` before `join`."
+
+[[tests]]
+name = "rubocopcopstylemapjoin_with_collect__x_xto_s_join_without_receiver_registers_an_offense_and_corrects"
+source = '''
+collect { |x| x.to_s }.join(', ')
+'''
+corrected = '''
+join(', ')
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 0
+column_end = 7
+message = "Remove redundant `collect(&:to_s)` before `join`."
+
+[[tests]]
+name = "rubocopcopstylemapjoin_with_collect_doing_something_other_than_to_s_does_not_register_an_offense"
+source = '''
+array.collect(&:to_i).join(', ')
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylemapjoin_with_collect_with_a_block_doing_something_other_than_to_s_does_not_register_an_offense"
+source = '''
+array.collect { |x| x.to_i }.join(', ')
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylemapjoin_with_collectto_s_without_join_does_not_register_an_offense"
+source = '''
+array.collect(&:to_s)
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylemapjoin_with_numbered_parameters_registers_an_offense_and_corrects_map___1to_s_join"
+source = '''
+array.map { _1.to_s }.join(', ')
+'''
+corrected = '''
+array.join(', ')
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 9
+message = "Remove redundant `map(&:to_s)` before `join`."
+
+[[tests]]
+name = "rubocopcopstylemapjoin_with_it_parameter_registers_an_offense_and_corrects_map__itto_s_join"
+ruby_version = ">= 3.4"
+source = '''
+array.map { it.to_s }.join(', ')
+'''
+corrected = '''
+array.join(', ')
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 9
+message = "Remove redundant `map(&:to_s)` before `join`."
+
+[[tests]]
+name = "rubocopcopstylemapjoin_with_multiline_registers_an_offense_and_corrects"
+source = '''
+array
+  .map(&:to_s)
+  .join(', ')
+'''
+corrected = '''
+array
+  .join(', ')
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 3
+column_end = 6
+message = "Remove redundant `map(&:to_s)` before `join`."
+
+[[tests]]
+name = "rubocopcopstylemapjoin_with_map_followed_by_something_other_than_join_does_not_register_an_offense"
+source = '''
+array.map(&:to_s).compact
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylemapjoin_with_join_without_preceding_map_does_not_register_an_offense"
+source = '''
+array.join(', ')
+'''
+offenses = []
+
+[[tests]]
+name = "rubocopcopstylemapjoin_with_map_block_that_calls_to_s_with_arguments_does_not_register_an_offense"
+source = '''
+array.map { |x| x.to_s(16) }.join(', ')
+'''
+offenses = []

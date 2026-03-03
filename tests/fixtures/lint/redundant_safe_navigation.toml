@@ -398,9 +398,21 @@ AllowedMethods = ["respond_to?"]
 InferNonNilReceiver = false
 
 [[tests]]
-name = "rubocopcoplintredundantsafenavigation_does_not_register_an_offense_when_using_respond_to_with_nil_specific_method_as_argument_in_condition"
+name = "rubocopcoplintredundantsafenavigation_does_not_register_an_offense_when_using_respond_to_with_a_method_that_nil_responds_to_as_argument_in_condition"
 source = '''
 do_something if foo&.respond_to?(:to_a)
+'''
+offenses = []
+
+[tests.config]
+AdditionalNilMethods = ["present?"]
+AllowedMethods = ["respond_to?"]
+InferNonNilReceiver = false
+
+[[tests]]
+name = "rubocopcoplintredundantsafenavigation_does_not_register_an_offense_when_using_respond_to_with_a_method_defined_on_object_as_argument_in_condition"
+source = '''
+do_something if foo&.respond_to?(:class)
 '''
 offenses = []
 

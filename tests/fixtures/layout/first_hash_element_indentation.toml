@@ -250,6 +250,91 @@ EnforcedStyle = "special_inside_parentheses"
 IndentationWidth = ""
 
 [[tests]]
+name = "rubocopcoplayoutfirsthashelementindentation_when_hash_is_right_hand_side_in_assignment_registers_an_offense_and_corrects_only_the_key_line_when_value_starts_on_next_line"
+source = '''
+a = {
+    a:
+  {
+    b: 1
+  }
+}
+'''
+corrected = '''
+a = {
+  a:
+  {
+    b: 1
+  }
+}
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 4
+column_end = 6
+message = "Use 2 spaces for indentation in a hash, relative to the start of the line where the left curly brace is."
+
+[tests.config]
+EnforcedStyle = "special_inside_parentheses"
+IndentationWidth = ""
+
+[[tests]]
+name = "rubocopcoplayoutfirsthashelementindentation_when_hash_is_right_hand_side_in_assignment_registers_an_offense_and_corrects_key_and_value_lines_when_value_starts_on_the_same_line"
+source = '''
+a = {
+    a: {
+      b: 1
+    }
+}
+'''
+corrected = '''
+a = {
+  a: {
+    b: 1
+  }
+}
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 4
+column_end = 8
+message = "Use 2 spaces for indentation in a hash, relative to the start of the line where the left curly brace is."
+
+[tests.config]
+EnforcedStyle = "special_inside_parentheses"
+IndentationWidth = ""
+
+[[tests]]
+name = "rubocopcoplayoutfirsthashelementindentation_when_hash_is_right_hand_side_in_assignment_registers_an_offense_and_corrects_value_lines_when_value_starts_on_the_same_line"
+source = '''
+a = {
+    a: [
+      1,
+      2
+    ]
+}
+'''
+corrected = '''
+a = {
+  a: [
+    1,
+    2
+  ]
+}
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 4
+column_end = 8
+message = "Use 2 spaces for indentation in a hash, relative to the start of the line where the left curly brace is."
+
+[tests.config]
+EnforcedStyle = "special_inside_parentheses"
+IndentationWidth = ""
+
+[[tests]]
 name = "rubocopcoplayoutfirsthashelementindentation_when_hash_is_right_hand_side_in_assignment_accepts_correctly_indented_first_pair"
 source = '''
 a = {
@@ -481,6 +566,35 @@ EnforcedStyle = "special_inside_parentheses"
 IndentationWidth = ""
 
 [[tests]]
+name = "rubocopcoplayoutfirsthashelementindentation_when_hash_is_method_argument_and_arguments_are_surrounded_by_parentheses_and_enforcedstyle_is_special_inside_parentheses_registers_an_offense_and_corrects_only_the_key_line_when_value_starts_on_next_line_in_a_method_call"
+source = '''
+func({
+         a:
+       {
+         b: 1
+       }
+     })
+'''
+corrected = '''
+func({
+       a:
+       {
+         b: 1
+       }
+     })
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 9
+column_end = 11
+message = "Use 2 spaces for indentation in a hash, relative to the first position after the preceding left parenthesis."
+
+[tests.config]
+EnforcedStyle = "special_inside_parentheses"
+IndentationWidth = ""
+
+[[tests]]
 name = "rubocopcoplayoutfirsthashelementindentation_when_hash_is_method_argument_and_arguments_are_surrounded_by_parentheses_and_enforcedstyle_is_special_inside_parentheses_registers_an_offense_for_a_hash_that_is_a_value_of_a_multi_pairs_hashwhen_the_indent_of_its_elements_is_not_based_on_the_hash_key"
 source = '''
 func(x: {
@@ -665,6 +779,35 @@ func(x: {
 line = 2
 column_start = 6
 column_end = 10
+message = "Use 2 spaces for indentation in a hash, relative to the start of the line where the left curly brace is."
+
+[tests.config]
+EnforcedStyle = "consistent"
+IndentationWidth = ""
+
+[[tests]]
+name = "rubocopcoplayoutfirsthashelementindentation_when_hash_is_method_argument_and_arguments_are_surrounded_by_parentheses_and_enforcedstyle_is_consistent_registers_an_offense_and_corrects_only_the_key_line_when_value_starts_on_next_line_in_a_method_call"
+source = '''
+func({
+       a:
+  {
+    b: 1
+  }
+})
+'''
+corrected = '''
+func({
+  a:
+  {
+    b: 1
+  }
+})
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 7
+column_end = 9
 message = "Use 2 spaces for indentation in a hash, relative to the start of the line where the left curly brace is."
 
 [tests.config]
@@ -1063,6 +1206,41 @@ message = "Use 2 spaces for indentation in a hash, relative to the position of t
 line = 3
 column_start = 0
 column_end = 1
+message = "Indent the right brace the same as the left brace."
+
+[tests.config]
+EnforcedStyle = "align_braces"
+IndentationWidth = ""
+
+[[tests]]
+name = "rubocopcoplayoutfirsthashelementindentation_when_enforcedstyle_is_align_braces_when_consistent_style_is_used_registers_an_offense_and_corrects_only_the_key_line_when_value_starts_on_next_line"
+source = '''
+var = {
+          a:
+        {
+          b: 1
+        }
+        }
+'''
+corrected = '''
+var = {
+        a:
+        {
+          b: 1
+        }
+      }
+'''
+
+[[tests.offenses]]
+line = 2
+column_start = 10
+column_end = 12
+message = "Use 2 spaces for indentation in a hash, relative to the position of the opening brace."
+
+[[tests.offenses]]
+line = 6
+column_start = 8
+column_end = 9
 message = "Indent the right brace the same as the left brace."
 
 [tests.config]

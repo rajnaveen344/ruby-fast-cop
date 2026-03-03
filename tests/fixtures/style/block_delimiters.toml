@@ -1588,6 +1588,36 @@ FunctionalMethods = ["let", "let!", "subject", "watch"]
 ProceduralMethods = ["benchmark", "bm", "bmbm", "create", "each_with_object", "measure", "new", "realtime", "tap", "with_object"]
 
 [[tests]]
+name = "rubocopcopstyleblockdelimiters_enforcedstyle_line_count_based_when_there_are_braces_around_a_multiline_block_registers_an_offense_for_nested_multiline_blocks_with_trailing_comment"
+source = '''
+blcck {
+}
+block { foo {
+} }.bar # comment
+'''
+
+[[tests.offenses]]
+line = 1
+column_start = 6
+column_end = 7
+message = "Avoid using `{...}` for multi-line blocks."
+
+[[tests.offenses]]
+line = 3
+column_start = 6
+column_end = 7
+message = "Avoid using `{...}` for multi-line blocks."
+
+[tests.config]
+AllowBracesOnProceduralOneLiners = false
+AllowedMethods = ["proc"]
+AllowedPatterns = ["test"]
+BracesRequiredMethods = []
+EnforcedStyle = "line_count_based"
+FunctionalMethods = ["let", "let!", "subject", "watch"]
+ProceduralMethods = ["benchmark", "bm", "bmbm", "create", "each_with_object", "measure", "new", "realtime", "tap", "with_object"]
+
+[[tests]]
 name = "rubocopcopstyleblockdelimiters_enforcedstyle_line_count_based_when_there_are_braces_around_a_multiline_block_registers_an_offense_when_there_is_a_comment_after_the_closing_brace_and_block_body_is_not_empty"
 source = '''
 baz.map { |x|
@@ -1941,16 +1971,10 @@ source = '''
 }}
 '''
 corrected = '''
-(0..3).each do |a| a.times do
+(0..3).each do |a| a.times {
   puts a
-end end
+} end
 '''
-
-[[tests.offenses]]
-line = 1
-column_start = 26
-column_end = 27
-message = "Avoid using `{...}` for multi-line blocks."
 
 [[tests.offenses]]
 line = 1
