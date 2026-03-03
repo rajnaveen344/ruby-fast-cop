@@ -103,12 +103,72 @@ RuboCop (v1.84.1) has **631 cops** across 10 departments. We have **631 TOML tes
 | Style/MethodCalledOnDoEndBlock | 10    | Passing |
 | Style/RescueStandardError      | 37    | Passing |
 | Style/StringMethods            | 2     | Passing |
-| Lint/AssignmentInCondition     | 69    | Partial |
-| Lint/Debugger                  | 97    | Partial |
-| Layout/LineLength              | 192   | Partial |
-| Metrics/BlockLength            | 38    | Partial |
-| Style/FormatStringToken        | 355   | Partial |
-| Style/HashSyntax               | 189   | Partial |
+| Style/FormatStringToken        | 355   | Passing |
+| Style/HashSyntax               | 189   | Passing |
+| Lint/AssignmentInCondition     | 69    | Passing |
+| Lint/Debugger                  | 97    | Passing |
+| Layout/LineLength              | 192   | Passing |
+| Metrics/BlockLength            | 38    | Passing |
+
+### Implementation Roadmap
+
+RuboCop enables **most cops by default**. A `.rubocop.yml` file only overrides specific settings — all unmentioned cops run with their defaults. This means implementing the ~50 most commonly triggered default cops covers the vast majority of real-world usage.
+
+Frequency data sourced from the [300 Days of RuboCop](https://lovro-bikic.github.io/300-days-of-rubocop/) study (~3,000 CI runs on a large Rails codebase). Full list of all 606 cops: **[COPS.md](COPS.md)**.
+
+#### Tier 1 — Quick Wins (line/token-based, minimal AST)
+
+| Cop                              | Difficulty | Real-World Frequency                              |
+| -------------------------------- | ---------- | ------------------------------------------------- |
+| Layout/TrailingWhitespace        | Easy       | #4 — 297 violations                               |
+| Layout/TrailingEmptyLines        | Easy       | #5 — 227 violations                               |
+| Style/FrozenStringLiteralComment | Easy       | #3 — 364 violations                               |
+| Style/StringLiterals             | Easy       | Fires on every string literal                     |
+| Layout/SpaceAfterComma           | Easy       | Very common formatting cop                        |
+| Layout/LeadingCommentSpace       | Easy       | Common, simple regex                              |
+| Style/Semicolon                  | Easy       | Simple token scan                                 |
+| Style/NumericLiterals            | Easy       | Check integer underscores                         |
+| Metrics/MethodLength             | Easy       | Constant in legacy code (reuse BlockLength logic) |
+| Metrics/ClassLength              | Easy       | Constant in legacy code (reuse BlockLength logic) |
+
+#### Tier 2 — High Impact (AST-based, moderate complexity)
+
+| Cop                                 | Difficulty  | Real-World Frequency                              |
+| ----------------------------------- | ----------- | ------------------------------------------------- |
+| Style/RedundantReturn               | Medium      | Very common, check last expression                |
+| Style/SymbolProc                    | Medium      | Common Ruby idiom (83 tests)                      |
+| Style/MutableConstant               | Medium      | Very common (354 tests, largest Style fixture)    |
+| Style/TrailingCommaInArrayLiteral   | Medium      | Part of #6 trailing comma family — 148 violations |
+| Style/TrailingCommaInHashLiteral    | Medium      | #9 — 57 violations                                |
+| Style/RedundantSelf                 | Medium      | Very common, self. in method body                 |
+| Style/NegatedIf                     | Medium      | `unless` vs `if !`                                |
+| Lint/UselessAssignment              | Medium-Hard | High value error-finding cop (149 tests)          |
+| Lint/UnusedMethodArgument           | Medium      | Unused method args (41 tests)                     |
+| Lint/UnusedBlockArgument            | Medium      | Unused block args (30 tests)                      |
+| Lint/RedundantStringCoercion        | Medium      | `.to_s` inside interpolation                      |
+| Layout/IndentationConsistency       | Medium      | #14 — 43 violations                               |
+| Layout/SpaceAroundOperators         | Medium      | Common formatting (99 tests)                      |
+| Layout/SpaceInsideHashLiteralBraces | Medium      | Common formatting (40 tests)                      |
+| Layout/SpaceInsideBlockBraces       | Medium      | Common formatting (43 tests)                      |
+| Layout/EmptyLineBetweenDefs         | Medium      | Common formatting                                 |
+| Layout/FirstHashElementIndentation  | Medium      | #13 — 48 violations                               |
+| Naming/MethodName                   | Medium      | snake_case methods (239 tests)                    |
+| Naming/VariableName                 | Medium      | snake_case variables (118 tests)                  |
+
+#### Tier 3 — Complex but Valuable
+
+| Cop                                   | Difficulty | Real-World Frequency                        |
+| ------------------------------------- | ---------- | ------------------------------------------- |
+| Layout/MultilineMethodCallIndentation | Hard       | **#1 — 486 violations** (most violated cop) |
+| Layout/IndentationWidth               | Hard       | Foundational (177 tests)                    |
+| Layout/HashAlignment                  | Hard       | Very common in legacy (131 tests)           |
+| Layout/EndAlignment                   | Hard       | Keyword/variable alignment (207 tests)      |
+| Style/BlockDelimiters                 | Hard       | do/end vs `{}` rules (173 tests)            |
+| Style/GuardClause                     | Hard       | Control flow analysis (91 tests)            |
+| Style/IfUnlessModifier                | Medium     | #11 — 53 violations (126 tests)             |
+| Lint/UselessAccessModifier            | Hard       | Scope tracking (198 tests)                  |
+| Metrics/AbcSize                       | Medium     | Assignment/Branch/Condition counting        |
+| Metrics/CyclomaticComplexity          | Medium     | Decision point counting                     |
 
 ## Library Usage
 
@@ -188,8 +248,7 @@ cargo run --bin fixture_stats
 
 ### High Priority
 
-- [ ] **More cops** - 11 of 631 implemented; focus on most-used cops first
-- [ ] **Fix partial cops** - 6 implemented cops have failing tests from newly resolved test data
+- [ ] **More cops** - 11 of 631 implemented; see [Implementation Roadmap](#implementation-roadmap) for priority list
 - [ ] **Auto-correct** - Implement `-a` (safe) and `-A` (all) correction flags
 - [ ] **Parallel processing** - Use rayon for multi-threaded file processing
 
