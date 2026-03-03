@@ -79,57 +79,39 @@ Style/Documentation:
 
 ## Cop Coverage
 
-RuboCop (v1.84.1) has **631 cops** across 10 departments. We have **631 TOML test fixtures** — one per cop — with **26,968 test cases** extracted from RuboCop's own RSpec suite.
+RuboCop (v1.85.0) has **606 user-facing cops** across 9 departments. We have **606 TOML test fixtures** — one per cop — with **28,075 test cases** extracted from RuboCop's own RSpec suite.
 
-| Department      | Cops | Test Cases |
-| --------------- | ---- | ---------- |
-| Style           | 287  | 13,105     |
-| Lint            | 152  | 5,904      |
-| Layout          | 100  | 4,600      |
-| InternalAffairs | 38   | 474        |
-| Naming          | 19   | 2,217      |
-| Metrics         | 10   | 272        |
-| Gemspec         | 10   | 192        |
-| Bundler         | 7    | 94         |
-| Security        | 7    | 102        |
-| Migration       | 1    | 8          |
+### Implemented Cops (21 of 606 — all passing)
 
-### Implemented Cops (11 of 631)
-
-| Cop                            | Tests | Status  |
-| ------------------------------ | ----- | ------- |
-| Style/RaiseArgs                | 35    | Passing |
-| Style/AutoResourceCleanup      | 7     | Passing |
-| Style/MethodCalledOnDoEndBlock | 10    | Passing |
-| Style/RescueStandardError      | 37    | Passing |
-| Style/StringMethods            | 2     | Passing |
-| Style/FormatStringToken        | 355   | Passing |
-| Style/HashSyntax               | 189   | Passing |
-| Lint/AssignmentInCondition     | 69    | Passing |
-| Lint/Debugger                  | 97    | Passing |
-| Layout/LineLength              | 192   | Passing |
-| Metrics/BlockLength            | 38    | Passing |
+| Cop                              | Tests | Status  |
+| -------------------------------- | ----- | ------- |
+| Layout/LeadingCommentSpace       | 25    | Passing |
+| Layout/LineLength                | 192   | Passing |
+| Layout/SpaceAfterComma           | 9     | Passing |
+| Layout/TrailingEmptyLines        | 10    | Passing |
+| Layout/TrailingWhitespace        | 15    | Passing |
+| Lint/AssignmentInCondition       | 69    | Passing |
+| Lint/Debugger                    | 97    | Passing |
+| Metrics/BlockLength              | 38    | Passing |
+| Metrics/ClassLength              | 23    | Passing |
+| Metrics/MethodLength             | 30    | Passing |
+| Style/AutoResourceCleanup        | 7     | Passing |
+| Style/FormatStringToken          | 355   | Passing |
+| Style/FrozenStringLiteralComment | 25    | Passing |
+| Style/HashSyntax                 | 189   | Passing |
+| Style/MethodCalledOnDoEndBlock   | 10    | Passing |
+| Style/NumericLiterals            | 25    | Passing |
+| Style/RaiseArgs                  | 35    | Passing |
+| Style/RescueStandardError        | 37    | Passing |
+| Style/Semicolon                  | 24    | Passing |
+| Style/StringLiterals             | 48    | Passing |
+| Style/StringMethods              | 2     | Passing |
 
 ### Implementation Roadmap
 
 RuboCop enables **most cops by default**. A `.rubocop.yml` file only overrides specific settings — all unmentioned cops run with their defaults. This means implementing the ~50 most commonly triggered default cops covers the vast majority of real-world usage.
 
 Frequency data sourced from the [300 Days of RuboCop](https://lovro-bikic.github.io/300-days-of-rubocop/) study (~3,000 CI runs on a large Rails codebase). Full list of all 606 cops: **[COPS.md](COPS.md)**.
-
-#### Tier 1 — Quick Wins (line/token-based, minimal AST)
-
-| Cop                              | Difficulty | Real-World Frequency                              |
-| -------------------------------- | ---------- | ------------------------------------------------- |
-| Layout/TrailingWhitespace        | Easy       | #4 — 297 violations                               |
-| Layout/TrailingEmptyLines        | Easy       | #5 — 227 violations                               |
-| Style/FrozenStringLiteralComment | Easy       | #3 — 364 violations                               |
-| Style/StringLiterals             | Easy       | Fires on every string literal                     |
-| Layout/SpaceAfterComma           | Easy       | Very common formatting cop                        |
-| Layout/LeadingCommentSpace       | Easy       | Common, simple regex                              |
-| Style/Semicolon                  | Easy       | Simple token scan                                 |
-| Style/NumericLiterals            | Easy       | Check integer underscores                         |
-| Metrics/MethodLength             | Easy       | Constant in legacy code (reuse BlockLength logic) |
-| Metrics/ClassLength              | Easy       | Constant in legacy code (reuse BlockLength logic) |
 
 #### Tier 2 — High Impact (AST-based, moderate complexity)
 
@@ -248,7 +230,7 @@ cargo run --bin fixture_stats
 
 ### High Priority
 
-- [ ] **More cops** - 11 of 631 implemented; see [Implementation Roadmap](#implementation-roadmap) for priority list
+- [ ] **More cops** - 21 of 606 implemented; see [Implementation Roadmap](#implementation-roadmap) for priority list
 - [ ] **Auto-correct** - Implement `-a` (safe) and `-A` (all) correction flags
 - [ ] **Parallel processing** - Use rayon for multi-threaded file processing
 
@@ -273,8 +255,8 @@ cargo run --bin fixture_stats
 | Feature          | RuboCop         | ruby-fast-cop           |
 | ---------------- | --------------- | ----------------------- |
 | Performance      | Baseline        | 50-100x faster (target) |
-| Cop count        | 631             | 11 implemented          |
-| Test coverage    | ~27k test cases | 631 fixtures (1:1)      |
+| Cop count        | 606             | 21 implemented          |
+| Test coverage    | ~28k test cases | 606 fixtures (1:1)      |
 | Custom Ruby cops | Yes             | No                      |
 | .rubocop.yml     | Yes             | Yes                     |
 | Auto-correct     | Yes             | Planned                 |

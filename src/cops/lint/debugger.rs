@@ -365,10 +365,11 @@ fn full_const_path(node: &ruby_prism::Node, ctx: &CheckContext) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::check_source;
+    use crate::check_source_with_cops;
 
     fn check(source: &str) -> Vec<Offense> {
-        check_source(source, "test.rb")
+        let cops: Vec<Box<dyn crate::cops::Cop>> = vec![Box::new(Debugger::new())];
+        check_source_with_cops(source, "test.rb", &cops)
     }
 
     fn offense_at(offenses: &[Offense], line: u32) -> Option<&Offense> {

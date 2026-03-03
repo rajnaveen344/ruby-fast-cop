@@ -4,7 +4,7 @@
 //! against the source code, comparing actual offenses with expected offenses.
 
 use glob::glob;
-use ruby_fast_cop::{check_source_with_cop_config_and_version, Config, Offense};
+use ruby_fast_cop::{Config, Offense, check_source_with_cop_config_and_version};
 use serde::Deserialize;
 use std::path::PathBuf;
 
@@ -48,6 +48,12 @@ struct TestCase {
     /// Optional Ruby version requirement (e.g., ">= 3.1")
     #[serde(default)]
     ruby_version: Option<String>,
+    /// Optional filename override (e.g., "Gemfile", "config.ru")
+    #[serde(default)]
+    filename: Option<String>,
+    /// If true, strip the trailing newline from source (TOML ''' always adds one)
+    #[serde(default)]
+    strip_trailing_newline: bool,
 }
 
 /// An expected offense in a test case
@@ -69,10 +75,7 @@ fn default_toml_table() -> toml::Value {
 
 /// Find all TOML test fixture files
 fn discover_test_files() -> Vec<PathBuf> {
-    let pattern = concat!(
-        env!("CARGO_MANIFEST_DIR"),
-        "/tests/fixtures/**/*.toml"
-    );
+    let pattern = concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/**/*.toml");
 
     let mut files: Vec<PathBuf> = glob(pattern)
         .expect("Failed to read glob pattern")
@@ -88,8 +91,7 @@ fn load_test_file(path: &PathBuf) -> Result<CopTestFile, String> {
     let content = std::fs::read_to_string(path)
         .map_err(|e| format!("Failed to read {}: {}", path.display(), e))?;
 
-    toml::from_str(&content)
-        .map_err(|e| format!("Failed to parse {}: {}", path.display(), e))
+    toml::from_str(&content).map_err(|e| format!("Failed to parse {}: {}", path.display(), e))
 }
 
 /// Convert a toml::Value to serde_yaml::Value for Config::from_cop_yaml()
@@ -97,9 +99,7 @@ fn toml_to_yaml_value(value: &toml::Value) -> serde_yaml::Value {
     match value {
         toml::Value::String(s) => serde_yaml::Value::String(s.clone()),
         toml::Value::Integer(i) => serde_yaml::Value::Number((*i).into()),
-        toml::Value::Float(f) => {
-            serde_yaml::Value::Number(serde_yaml::Number::from(*f))
-        }
+        toml::Value::Float(f) => serde_yaml::Value::Number(serde_yaml::Number::from(*f)),
         toml::Value::Boolean(b) => serde_yaml::Value::Bool(*b),
         toml::Value::Datetime(dt) => serde_yaml::Value::String(dt.to_string()),
         toml::Value::Array(arr) => {
@@ -108,10 +108,7 @@ fn toml_to_yaml_value(value: &toml::Value) -> serde_yaml::Value {
         toml::Value::Table(table) => {
             let mut mapping = serde_yaml::Mapping::new();
             for (k, v) in table {
-                mapping.insert(
-                    serde_yaml::Value::String(k.clone()),
-                    toml_to_yaml_value(v),
-                );
+                mapping.insert(serde_yaml::Value::String(k.clone()), toml_to_yaml_value(v));
             }
             serde_yaml::Value::Mapping(mapping)
         }
@@ -148,10 +145,15 @@ fn compare_offense(
         ));
     }
 
-    if !actual.message.contains(&expected.message) {
+    // Strip RuboCop autocorrect annotation prefix "{} " from expected messages
+    let expected_msg = expected
+        .message
+        .strip_prefix("{} ")
+        .unwrap_or(&expected.message);
+    if !actual.message.contains(expected_msg) {
         errors.push(format!(
             "[{}] {}: Message mismatch - expected to contain '{}', got '{}'",
-            cop_name, test_name, expected.message, actual.message
+            cop_name, test_name, expected_msg, actual.message
         ));
     }
 
@@ -205,18 +207,22 @@ fn decode_source(source: &str, base_indent: Option<usize>) -> String {
 }
 
 /// Run a single test case and return any errors
-fn run_test_case(
-    test_case: &TestCase,
-    cop_name: &str,
-) -> Vec<String> {
+fn run_test_case(test_case: &TestCase, cop_name: &str) -> Vec<String> {
     let mut errors = Vec::new();
 
     // Build config from test case's config field (convert TOML to YAML for the library API)
     let yaml_config = toml_to_yaml_value(&test_case.config);
-    let config = Config::from_cop_yaml(cop_name, &yaml_config);
+    let config = Config::from_cop_toml(cop_name, &yaml_config);
 
     // Decode source
-    let source = decode_source(&test_case.source, test_case.base_indent);
+    let mut source = decode_source(&test_case.source, test_case.base_indent);
+
+    // Strip trailing newline if requested (TOML ''' always adds a trailing newline)
+    if test_case.strip_trailing_newline {
+        if source.ends_with('\n') {
+            source.pop();
+        }
+    }
 
     // Get Ruby version from test case, or use default
     let ruby_version = test_case
@@ -225,10 +231,13 @@ fn run_test_case(
         .and_then(|v| parse_ruby_version(v))
         .unwrap_or(DEFAULT_RUBY_VERSION);
 
+    // Use test-specified filename or default to "test.rb"
+    let test_filename = test_case.filename.as_deref().unwrap_or("test.rb");
+
     // Run the linter with the test-specific config and Ruby version
     let offenses = check_source_with_cop_config_and_version(
         &source,
-        "test.rb",
+        test_filename,
         cop_name,
         &config,
         ruby_version,
@@ -238,7 +247,10 @@ fn run_test_case(
     if offenses.len() != test_case.offenses.len() {
         errors.push(format!(
             "[{}] {}: Offense count mismatch - expected {}, got {}",
-            cop_name, test_case.name, test_case.offenses.len(), offenses.len()
+            cop_name,
+            test_case.name,
+            test_case.offenses.len(),
+            offenses.len()
         ));
 
         // Print actual offenses for debugging
@@ -267,10 +279,7 @@ fn run_test_case(
             for expected in &test_case.offenses {
                 errors.push(format!(
                     "  - line {}, col {}-{}: {}",
-                    expected.line,
-                    expected.column_start,
-                    expected.column_end,
-                    expected.message
+                    expected.line, expected.column_start, expected.column_end, expected.message
                 ));
             }
         }
@@ -282,13 +291,16 @@ fn run_test_case(
     // Sort both by line then column for consistent comparison
     let mut sorted_actual: Vec<_> = offenses.iter().collect();
     sorted_actual.sort_by(|a, b| {
-        a.location.line.cmp(&b.location.line)
+        a.location
+            .line
+            .cmp(&b.location.line)
             .then(a.location.column.cmp(&b.location.column))
     });
 
     let mut sorted_expected: Vec<_> = test_case.offenses.iter().collect();
     sorted_expected.sort_by(|a, b| {
-        a.line.cmp(&b.line)
+        a.line
+            .cmp(&b.line)
             .then(a.column_start.cmp(&b.column_start))
     });
 
@@ -314,10 +326,7 @@ fn run_test_file(test_file: &CopTestFile, file_path: &PathBuf) -> TestFileResult
 
     // Skip unimplemented cops
     if !test_file.implemented {
-        println!(
-            "  Skipping {} (not implemented)",
-            test_file.cop
-        );
+        println!("  Skipping {} (not implemented)", test_file.cop);
         return result;
     }
 
@@ -331,10 +340,9 @@ fn run_test_file(test_file: &CopTestFile, file_path: &PathBuf) -> TestFileResult
         result.ran += 1;
         let test_errors = run_test_case(test_case, &test_file.cop);
         if !test_errors.is_empty() {
-            result.errors.push(format!(
-                "Failures in {}:",
-                file_path.display()
-            ));
+            result
+                .errors
+                .push(format!("Failures in {}:", file_path.display()));
             result.errors.extend(test_errors);
         }
     }

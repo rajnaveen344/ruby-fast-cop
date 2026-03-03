@@ -225,6 +225,210 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         result.push(Box::new(cops::style::StringMethods::new()));
     }
 
+    // Layout/TrailingWhitespace
+    if config.is_cop_enabled("Layout/TrailingWhitespace") {
+        let cop_config = config.get_cop_config("Layout/TrailingWhitespace");
+        let allow_in_heredoc = cop_config
+            .and_then(|c| c.raw.get("AllowInHeredoc"))
+            .and_then(|v| v.as_bool())
+            .unwrap_or(false);
+        result.push(Box::new(cops::layout::TrailingWhitespace::with_config(
+            allow_in_heredoc,
+        )));
+    }
+
+    // Layout/TrailingEmptyLines
+    if config.is_cop_enabled("Layout/TrailingEmptyLines") {
+        let cop_config = config.get_cop_config("Layout/TrailingEmptyLines");
+        let style = cop_config
+            .and_then(|c| c.enforced_style.as_ref())
+            .map(|s| match s.as_str() {
+                "final_blank_line" => cops::layout::TrailingEmptyLinesStyle::FinalBlankLine,
+                _ => cops::layout::TrailingEmptyLinesStyle::FinalNewline,
+            })
+            .unwrap_or(cops::layout::TrailingEmptyLinesStyle::FinalNewline);
+        result.push(Box::new(cops::layout::TrailingEmptyLines::new(style)));
+    }
+
+    // Layout/LeadingCommentSpace
+    if config.is_cop_enabled("Layout/LeadingCommentSpace") {
+        result.push(Box::new(cops::layout::LeadingCommentSpace::new()));
+    }
+
+    // Layout/SpaceAfterComma
+    if config.is_cop_enabled("Layout/SpaceAfterComma") {
+        let space_inside_braces_is_space = config
+            .get_cop_config("Layout/SpaceInsideHashLiteralBraces")
+            .and_then(|c| c.enforced_style.as_ref())
+            .map(|s| s == "space")
+            .unwrap_or(false);
+        result.push(Box::new(cops::layout::SpaceAfterComma::with_config(
+            space_inside_braces_is_space,
+        )));
+    }
+
+    // Style/FrozenStringLiteralComment
+    if config.is_cop_enabled("Style/FrozenStringLiteralComment") {
+        let cop_config = config.get_cop_config("Style/FrozenStringLiteralComment");
+        let style = cop_config
+            .and_then(|c| c.enforced_style.as_ref())
+            .map(|s| match s.as_str() {
+                "never" => cops::style::FrozenStringLiteralCommentStyle::Never,
+                "always_true" => cops::style::FrozenStringLiteralCommentStyle::AlwaysTrue,
+                _ => cops::style::FrozenStringLiteralCommentStyle::Always,
+            })
+            .unwrap_or(cops::style::FrozenStringLiteralCommentStyle::Always);
+        result.push(Box::new(cops::style::FrozenStringLiteralComment::new(
+            style,
+        )));
+    }
+
+    // Style/Semicolon
+    if config.is_cop_enabled("Style/Semicolon") {
+        let cop_config = config.get_cop_config("Style/Semicolon");
+        let allow = cop_config
+            .and_then(|c| c.raw.get("AllowAsExpressionSeparator"))
+            .and_then(|v| v.as_bool())
+            .unwrap_or(false);
+        result.push(Box::new(cops::style::Semicolon::new(allow)));
+    }
+
+    // Style/StringLiterals
+    if config.is_cop_enabled("Style/StringLiterals") {
+        let cop_config = config.get_cop_config("Style/StringLiterals");
+        let style = cop_config
+            .and_then(|c| c.enforced_style.as_ref())
+            .map(|s| match s.as_str() {
+                "double_quotes" => cops::style::StringLiteralsStyle::DoubleQuotes,
+                _ => cops::style::StringLiteralsStyle::SingleQuotes,
+            })
+            .unwrap_or(cops::style::StringLiteralsStyle::SingleQuotes);
+        let consistent = cop_config
+            .and_then(|c| c.raw.get("ConsistentQuotesInMultiline"))
+            .and_then(|v| v.as_bool())
+            .unwrap_or(false);
+        result.push(Box::new(cops::style::StringLiterals::with_config(
+            style, consistent,
+        )));
+    }
+
+    // Style/NumericLiterals
+    if config.is_cop_enabled("Style/NumericLiterals") {
+        let cop_config = config.get_cop_config("Style/NumericLiterals");
+        let min_digits = cop_config
+            .and_then(|c| c.raw.get("MinDigits"))
+            .and_then(|v| v.as_u64())
+            .unwrap_or(6) as usize;
+        let strict = cop_config
+            .and_then(|c| c.raw.get("Strict"))
+            .and_then(|v| v.as_bool())
+            .unwrap_or(false);
+        let allowed_numbers = cop_config
+            .and_then(|c| c.raw.get("AllowedNumbers"))
+            .and_then(|v| v.as_sequence())
+            .map(|seq| {
+                    seq.iter()
+                        .filter_map(|v| {
+                            v.as_i64().or_else(|| {
+                                v.as_str().and_then(|s| s.parse::<i64>().ok())
+                            })
+                        })
+                        .collect()
+                })
+            .unwrap_or_default();
+        let allowed_patterns = cop_config
+            .and_then(|c| c.raw.get("AllowedPatterns"))
+            .and_then(|v| v.as_sequence())
+            .map(|seq| {
+                seq.iter()
+                    .filter_map(|v| v.as_str().map(String::from))
+                    .collect()
+            })
+            .unwrap_or_default();
+        result.push(Box::new(cops::style::NumericLiterals::with_config(
+            min_digits,
+            strict,
+            allowed_numbers,
+            allowed_patterns,
+        )));
+    }
+
+    // Metrics/MethodLength
+    if config.is_cop_enabled("Metrics/MethodLength") {
+        let cop_config = config.get_cop_config("Metrics/MethodLength");
+        let max = cop_config.and_then(|c| c.max).unwrap_or(10);
+        let count_comments = cop_config
+            .and_then(|c| c.raw.get("CountComments"))
+            .and_then(|v| v.as_bool())
+            .unwrap_or(false);
+        let count_as_one = cop_config
+            .and_then(|c| c.raw.get("CountAsOne"))
+            .and_then(|v| v.as_sequence())
+            .map(|seq| {
+                seq.iter()
+                    .filter_map(|v| v.as_str().map(|s| s.to_string()))
+                    .collect()
+            })
+            .unwrap_or_default();
+        let mut allowed_methods: Vec<String> = Vec::new();
+        for key in &["AllowedMethods", "IgnoredMethods", "ExcludedMethods"] {
+            if let Some(seq) = cop_config
+                .and_then(|c| c.raw.get(*key))
+                .and_then(|v| v.as_sequence())
+            {
+                for v in seq {
+                    if let Some(s) = v.as_str() {
+                        allowed_methods.push(s.to_string());
+                    }
+                }
+            }
+        }
+        let mut allowed_patterns: Vec<String> = Vec::new();
+        for key in &["AllowedPatterns", "IgnoredPatterns"] {
+            if let Some(seq) = cop_config
+                .and_then(|c| c.raw.get(*key))
+                .and_then(|v| v.as_sequence())
+            {
+                for v in seq {
+                    if let Some(s) = v.as_str() {
+                        allowed_patterns.push(s.to_string());
+                    }
+                }
+            }
+        }
+        result.push(Box::new(cops::metrics::MethodLength::with_config(
+            max,
+            count_comments,
+            count_as_one,
+            allowed_methods,
+            allowed_patterns,
+        )));
+    }
+
+    // Metrics/ClassLength
+    if config.is_cop_enabled("Metrics/ClassLength") {
+        let cop_config = config.get_cop_config("Metrics/ClassLength");
+        let max = cop_config.and_then(|c| c.max).unwrap_or(100);
+        let count_comments = cop_config
+            .and_then(|c| c.raw.get("CountComments"))
+            .and_then(|v| v.as_bool())
+            .unwrap_or(false);
+        let count_as_one = cop_config
+            .and_then(|c| c.raw.get("CountAsOne"))
+            .and_then(|v| v.as_sequence())
+            .map(|seq| {
+                seq.iter()
+                    .filter_map(|v| v.as_str().map(|s| s.to_string()))
+                    .collect()
+            })
+            .unwrap_or_default();
+        result.push(Box::new(cops::metrics::ClassLength::with_config(
+            max,
+            count_comments,
+            count_as_one,
+        )));
+    }
+
     result
 }
 
@@ -271,7 +475,9 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
                 .and_then(|c| c.raw.get("DebuggerRequires"))
                 .and_then(parse_debugger_list)
                 .unwrap_or_else(cops::lint::Debugger::default_requires);
-            Some(Box::new(cops::lint::Debugger::with_config(methods, requires)))
+            Some(Box::new(cops::lint::Debugger::with_config(
+                methods, requires,
+            )))
         }
 
         "Lint/AssignmentInCondition" => {
@@ -524,10 +730,9 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
                 })
                 .unwrap_or_default();
 
-            Some(Box::new(cops::style::RaiseArgs::with_allowed_compact_types(
-                style,
-                allowed_compact_types,
-            )))
+            Some(Box::new(
+                cops::style::RaiseArgs::with_allowed_compact_types(style, allowed_compact_types),
+            ))
         }
 
         "Style/RescueStandardError" => {
@@ -543,6 +748,232 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
         }
 
         "Style/StringMethods" => Some(Box::new(cops::style::StringMethods::new())),
+
+        "Layout/TrailingWhitespace" => {
+            let cop_config = config.get_cop_config("Layout/TrailingWhitespace");
+            let allow_in_heredoc = cop_config
+                .and_then(|c| c.raw.get("AllowInHeredoc"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
+            Some(Box::new(cops::layout::TrailingWhitespace::with_config(
+                allow_in_heredoc,
+            )))
+        }
+
+        "Layout/TrailingEmptyLines" => {
+            let cop_config = config.get_cop_config("Layout/TrailingEmptyLines");
+            let style = cop_config
+                .and_then(|c| c.enforced_style.as_ref())
+                .map(|s| match s.as_str() {
+                    "final_blank_line" => cops::layout::TrailingEmptyLinesStyle::FinalBlankLine,
+                    _ => cops::layout::TrailingEmptyLinesStyle::FinalNewline,
+                })
+                .unwrap_or(cops::layout::TrailingEmptyLinesStyle::FinalNewline);
+            Some(Box::new(cops::layout::TrailingEmptyLines::new(style)))
+        }
+
+        "Layout/LeadingCommentSpace" => {
+            let cop_config = config.get_cop_config("Layout/LeadingCommentSpace");
+            let allow_doxygen = cop_config
+                .and_then(|c| c.raw.get("AllowDoxygenCommentStyle"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
+            let allow_gemfile_ruby = cop_config
+                .and_then(|c| c.raw.get("AllowGemfileRubyComment"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
+            let allow_rbs = cop_config
+                .and_then(|c| c.raw.get("AllowRBSInlineAnnotation"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
+            let allow_steep = cop_config
+                .and_then(|c| c.raw.get("AllowSteepAnnotation"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
+            Some(Box::new(cops::layout::LeadingCommentSpace::with_config(
+                allow_doxygen,
+                allow_gemfile_ruby,
+                allow_rbs,
+                allow_steep,
+            )))
+        }
+
+        "Layout/SpaceAfterComma" => {
+            let space_inside_braces_is_space = config
+                .get_cop_config("Layout/SpaceInsideHashLiteralBraces")
+                .and_then(|c| c.enforced_style.as_ref())
+                .map(|s| s == "space")
+                .unwrap_or(false);
+            Some(Box::new(cops::layout::SpaceAfterComma::with_config(
+                space_inside_braces_is_space,
+            )))
+        }
+
+        "Style/FrozenStringLiteralComment" => {
+            let cop_config = config.get_cop_config("Style/FrozenStringLiteralComment");
+            let style = cop_config
+                .and_then(|c| c.enforced_style.as_ref())
+                .map(|s| match s.as_str() {
+                    "never" => cops::style::FrozenStringLiteralCommentStyle::Never,
+                    "always_true" => cops::style::FrozenStringLiteralCommentStyle::AlwaysTrue,
+                    _ => cops::style::FrozenStringLiteralCommentStyle::Always,
+                })
+                .unwrap_or(cops::style::FrozenStringLiteralCommentStyle::Always);
+            Some(Box::new(cops::style::FrozenStringLiteralComment::new(
+                style,
+            )))
+        }
+
+        "Style/Semicolon" => {
+            let cop_config = config.get_cop_config("Style/Semicolon");
+            let allow = cop_config
+                .and_then(|c| c.raw.get("AllowAsExpressionSeparator"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
+            Some(Box::new(cops::style::Semicolon::new(allow)))
+        }
+
+        "Style/StringLiterals" => {
+            let cop_config = config.get_cop_config("Style/StringLiterals");
+            let style = cop_config
+                .and_then(|c| c.enforced_style.as_ref())
+                .and_then(|s| match s.as_str() {
+                    "single_quotes" => Some(cops::style::StringLiteralsStyle::SingleQuotes),
+                    "double_quotes" => Some(cops::style::StringLiteralsStyle::DoubleQuotes),
+                    _ => None, // Invalid config value - skip cop
+                });
+            let style = match style {
+                Some(s) => s,
+                None => {
+                    // Unknown EnforcedStyle with explicit config - don't run cop
+                    if cop_config.and_then(|c| c.enforced_style.as_ref()).is_some() {
+                        return None;
+                    }
+                    cops::style::StringLiteralsStyle::SingleQuotes
+                }
+            };
+            let consistent = cop_config
+                .and_then(|c| c.raw.get("ConsistentQuotesInMultiline"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
+            Some(Box::new(cops::style::StringLiterals::with_config(
+                style, consistent,
+            )))
+        }
+
+        "Style/NumericLiterals" => {
+            let cop_config = config.get_cop_config("Style/NumericLiterals");
+            let min_digits = cop_config
+                .and_then(|c| c.raw.get("MinDigits"))
+                .and_then(|v| v.as_u64())
+                .unwrap_or(6) as usize;
+            let strict = cop_config
+                .and_then(|c| c.raw.get("Strict"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
+            let allowed_numbers = cop_config
+                .and_then(|c| c.raw.get("AllowedNumbers"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| {
+                    seq.iter()
+                        .filter_map(|v| {
+                            v.as_i64().or_else(|| {
+                                v.as_str().and_then(|s| s.parse::<i64>().ok())
+                            })
+                        })
+                        .collect()
+                })
+                .unwrap_or_default();
+            let allowed_patterns = cop_config
+                .and_then(|c| c.raw.get("AllowedPatterns"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| {
+                    seq.iter()
+                        .filter_map(|v| v.as_str().map(String::from))
+                        .collect()
+                })
+                .unwrap_or_default();
+            Some(Box::new(cops::style::NumericLiterals::with_config(
+                min_digits,
+                strict,
+                allowed_numbers,
+                allowed_patterns,
+            )))
+        }
+
+        "Metrics/MethodLength" => {
+            let cop_config = config.get_cop_config("Metrics/MethodLength");
+            let max = cop_config.and_then(|c| c.max).unwrap_or(10);
+            let count_comments = cop_config
+                .and_then(|c| c.raw.get("CountComments"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
+            let count_as_one = cop_config
+                .and_then(|c| c.raw.get("CountAsOne"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| {
+                    seq.iter()
+                        .filter_map(|v| v.as_str().map(|s| s.to_string()))
+                        .collect()
+                })
+                .unwrap_or_default();
+            let mut allowed_methods: Vec<String> = Vec::new();
+            for key in &["AllowedMethods", "IgnoredMethods", "ExcludedMethods"] {
+                if let Some(seq) = cop_config
+                    .and_then(|c| c.raw.get(*key))
+                    .and_then(|v| v.as_sequence())
+                {
+                    for v in seq {
+                        if let Some(s) = v.as_str() {
+                            allowed_methods.push(s.to_string());
+                        }
+                    }
+                }
+            }
+            let mut allowed_patterns: Vec<String> = Vec::new();
+            for key in &["AllowedPatterns", "IgnoredPatterns"] {
+                if let Some(seq) = cop_config
+                    .and_then(|c| c.raw.get(*key))
+                    .and_then(|v| v.as_sequence())
+                {
+                    for v in seq {
+                        if let Some(s) = v.as_str() {
+                            allowed_patterns.push(s.to_string());
+                        }
+                    }
+                }
+            }
+            Some(Box::new(cops::metrics::MethodLength::with_config(
+                max,
+                count_comments,
+                count_as_one,
+                allowed_methods,
+                allowed_patterns,
+            )))
+        }
+
+        "Metrics/ClassLength" => {
+            let cop_config = config.get_cop_config("Metrics/ClassLength");
+            let max = cop_config.and_then(|c| c.max).unwrap_or(100);
+            let count_comments = cop_config
+                .and_then(|c| c.raw.get("CountComments"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
+            let count_as_one = cop_config
+                .and_then(|c| c.raw.get("CountAsOne"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| {
+                    seq.iter()
+                        .filter_map(|v| v.as_str().map(|s| s.to_string()))
+                        .collect()
+                })
+                .unwrap_or_default();
+            Some(Box::new(cops::metrics::ClassLength::with_config(
+                max,
+                count_comments,
+                count_as_one,
+            )))
+        }
 
         _ => None,
     }

@@ -259,17 +259,49 @@ module TestDataCapture
   # Uses cop.cop_config (the merged config) instead of the cop_config
   # let variable, which may not reflect all config overrides (e.g.,
   # those set via `let(:config)` or `let(:cop_options)`).
+  #
+  # Also captures cross-cop config entries: when a test sets up config
+  # for other cops (e.g., SpaceInsideHashLiteralBraces for SpaceAfterComma),
+  # those entries are included under their short name (after the /).
   def extract_config_hash
+    result = {}
+
     # Try the cop object's fully-resolved config first
     if respond_to?(:cop, true)
       cop_obj = cop
+
+      # 1. Primary cop config
       if cop_obj.respond_to?(:cop_config)
         raw = cop_obj.cop_config
         if raw.is_a?(Hash)
           filtered = normalize_config(raw).reject { |k, _| CONFIG_META_KEYS.include?(k) }
-          return filtered
+          result.merge!(filtered)
         end
       end
+
+      # 2. Cross-cop config: scan the full config for other cop entries
+      #    that were explicitly set (e.g., via let(:config) or let(:other_cops)).
+      if cop_obj.respond_to?(:config) && cop_obj.config.respond_to?(:keys)
+        primary_name = cop_obj.class.respond_to?(:cop_name) ? cop_obj.class.cop_name : nil
+        cop_obj.config.keys.each do |key|
+          next if key == 'AllCops'
+          next if key == primary_name
+          next unless key.include?('/') # Only full cop names like "Layout/SpaceInsideHashLiteralBraces"
+
+          begin
+            cross_config = cop_obj.config[key]
+            if cross_config.is_a?(Hash) && !cross_config.empty?
+              short_name = key.split('/').last
+              filtered = normalize_config(cross_config).reject { |k, _| CONFIG_META_KEYS.include?(k) }
+              result[short_name] = filtered unless filtered.empty?
+            end
+          rescue => e
+            # Skip if config access fails
+          end
+        end
+      end
+
+      return result unless result.empty?
     end
 
     # Fallback: try the cop_config let variable (older-style tests)

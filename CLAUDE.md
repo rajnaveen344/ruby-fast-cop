@@ -6,7 +6,7 @@ Instructions for Claude when working on this project.
 
 ruby-fast-cop is a high-performance Ruby linter written in Rust, designed as a drop-in replacement for RuboCop. The goal is 50-100x faster linting by rewriting cops in Rust, similar to how Ruff replaced Python linters.
 
-**Current state:** 11 of 606 cops implemented, 606 TOML test fixtures with ~28,075 test cases extracted from RuboCop v1.85.0's RSpec suite.
+**Current state:** 21 of 606 cops implemented (all passing), 606 TOML test fixtures with ~28,075 test cases extracted from RuboCop v1.85.0's RSpec suite.
 
 ## Key Design Decisions
 
@@ -209,11 +209,11 @@ impl Cop for Debugger {
 7. Set `implemented = true` in the TOML fixture
 8. Run `cargo test --test tester` — verify tests pass
 9. If tests fail unexpectedly, compare with original RuboCop spec and fix implementation or TOML
-10. Update README.md (implemented cops table)
+10. Update README.md (implemented cops table), COPS.md (status column + summary counts), and CLAUDE.md (cop count)
 
 ### Fixing a partial cop
 
-6 implemented cops currently have test failures from newly-resolved test data. To fix:
+If any implemented cops have test failures after changes, fix them:
 
 1. Run `cargo test --test tester 2>&1 | grep "Failures in.*{cop_name}"` to see failing tests
 2. Read the failing test cases in the TOML fixture

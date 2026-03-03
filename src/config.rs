@@ -539,12 +539,34 @@ impl Config {
     }
 
     /// Create a Config with a single cop's configuration from YAML value
-    /// This is useful for testing where each test case has its own config
-    pub fn from_cop_yaml(cop_name: &str, yaml_value: &serde_yaml::Value) -> Self {
+    /// This is useful for testing where each test case has its own config.
+    /// Also handles cross-cop config: if a key's value is a mapping and the key
+    /// looks like a PascalCase cop short name, store it as a separate cop config
+    /// under `{department}/{key}` using the primary cop's department.
+    pub fn from_cop_toml(cop_name: &str, yaml_value: &serde_yaml::Value) -> Self {
         let mut config = Config::default();
 
         if yaml_value.is_null() || yaml_value.as_mapping().map_or(true, |m| m.is_empty()) {
             return config;
+        }
+
+        // Extract the department from the cop name (e.g., "Layout" from "Layout/SpaceAfterComma")
+        let department = cop_name.split('/').next().unwrap_or("");
+
+        // Look for cross-cop config entries: keys whose values are mappings
+        // and look like PascalCase cop short names (e.g., "SpaceInsideBlockBraces")
+        if let Some(mapping) = yaml_value.as_mapping() {
+            for (key, val) in mapping {
+                if let Some(key_str) = key.as_str() {
+                    // A cross-cop config entry is a PascalCase key whose value is a mapping
+                    if val.is_mapping() && is_pascal_case(key_str) && !department.is_empty() {
+                        let cross_cop_name = format!("{}/{}", department, key_str);
+                        if let Ok(cross_config) = Self::parse_cop_config(val) {
+                            config.cops.insert(cross_cop_name, cross_config);
+                        }
+                    }
+                }
+            }
         }
 
         if let Ok(cop_config) = Self::parse_cop_config(yaml_value) {
@@ -553,6 +575,18 @@ impl Config {
 
         config
     }
+}
+
+/// Check if a string looks like a PascalCase cop short name
+/// (starts with uppercase, contains at least one lowercase, no slashes)
+fn is_pascal_case(s: &str) -> bool {
+    let mut chars = s.chars();
+    match chars.next() {
+        Some(c) if c.is_ascii_uppercase() => {}
+        _ => return false,
+    }
+    // Must contain at least one lowercase letter and no slashes
+    s.chars().any(|c| c.is_ascii_lowercase()) && !s.contains('/')
 }
 
 impl CopConfig {
@@ -607,16 +641,26 @@ impl std::error::Error for ConfigError {}
 
 /// List of all supported cop names
 pub const SUPPORTED_COPS: &[&str] = &[
+    "Layout/LeadingCommentSpace",
     "Layout/LineLength",
+    "Layout/SpaceAfterComma",
+    "Layout/TrailingEmptyLines",
+    "Layout/TrailingWhitespace",
     "Lint/AssignmentInCondition",
     "Lint/Debugger",
     "Metrics/BlockLength",
+    "Metrics/ClassLength",
+    "Metrics/MethodLength",
     "Style/AutoResourceCleanup",
     "Style/FormatStringToken",
+    "Style/FrozenStringLiteralComment",
     "Style/HashSyntax",
     "Style/MethodCalledOnDoEndBlock",
+    "Style/NumericLiterals",
     "Style/RaiseArgs",
     "Style/RescueStandardError",
+    "Style/Semicolon",
+    "Style/StringLiterals",
     "Style/StringMethods",
 ];
 
@@ -752,28 +796,23 @@ Metrics/BlockLength:
         assert!(!config.is_excluded(Path::new("app/models/user.rb")));
 
         // Cop-specific excludes
-        assert!(config.is_excluded_for_cop(
-            Path::new("spec/models/user_spec.rb"),
-            "Metrics/BlockLength"
-        ));
+        assert!(
+            config
+                .is_excluded_for_cop(Path::new("spec/models/user_spec.rb"), "Metrics/BlockLength")
+        );
         assert!(config.is_excluded_for_cop(
             Path::new("db/migrate/001_create_users.rb"),
             "Metrics/BlockLength"
         ));
-        assert!(config.is_excluded_for_cop(
-            Path::new("config/routes.rb"),
-            "Metrics/BlockLength"
-        ));
-        assert!(!config.is_excluded_for_cop(
-            Path::new("app/models/user.rb"),
-            "Metrics/BlockLength"
-        ));
+        assert!(config.is_excluded_for_cop(Path::new("config/routes.rb"), "Metrics/BlockLength"));
+        assert!(
+            !config.is_excluded_for_cop(Path::new("app/models/user.rb"), "Metrics/BlockLength")
+        );
 
         // Global exclude applies to all cops
-        assert!(config.is_excluded_for_cop(
-            Path::new("vendor/bundle/foo.rb"),
-            "Metrics/BlockLength"
-        ));
+        assert!(
+            config.is_excluded_for_cop(Path::new("vendor/bundle/foo.rb"), "Metrics/BlockLength")
+        );
     }
 
     #[test]

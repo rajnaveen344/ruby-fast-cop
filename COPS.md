@@ -1,28 +1,28 @@
 # All Cops State (606 total)
 
 Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department and default status.
-11 of 606 implemented. See [README.md](README.md) for the implementation roadmap.
+21 of 606 implemented. See [README.md](README.md) for the implementation roadmap.
 
 ## Summary
 
 | Department | Enabled | Pending | Disabled | Implemented |      Tests |
 | ---------- | ------: | ------: | -------: | ----------: | ---------: |
-| Style      |     175 |      91 |       32 |           7 |     14,567 |
+| Style      |     175 |      91 |       32 |          11 |     14,567 |
 | Lint       |     100 |      50 |        4 |           2 |      5,961 |
-| Layout     |      81 |       5 |       14 |           1 |      4,654 |
-| Metrics    |       9 |       1 |        0 |           1 |        272 |
+| Layout     |      81 |       5 |       14 |           5 |      4,654 |
+| Metrics    |       9 |       1 |        0 |           3 |        272 |
 | Naming     |      16 |       2 |        1 |           0 |      2,217 |
 | Gemspec    |       4 |       5 |        1 |           0 |        193 |
 | Bundler    |       5 |       0 |        2 |           0 |        101 |
 | Security   |       5 |       2 |        0 |           0 |        102 |
 | Migration  |       1 |       0 |        0 |           0 |          8 |
-| **Total**  | **396** | **156** |   **54** |      **11** | **28,075** |
+| **Total**  | **396** | **156** |   **54** |      **21** | **28,075** |
 
 - **Enabled**: Runs by default on every codebase (highest priority to implement)
 - **Pending**: Runs only with `NewCops: enable` in config
 - **Disabled**: Runs only when explicitly enabled in config
 
-## Style (7/298 implemented, 14,567 tests)
+## Style (11/298 implemented, 14,567 tests)
 
 ### Enabled by Default (175 cops, 9,202 tests)
 
@@ -80,7 +80,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Style/For                              |    32 | -           |
 | Style/FormatString                     |    46 | -           |
 | Style/FormatStringToken                |   366 | Implemented |
-| Style/FrozenStringLiteralComment       |   107 | -           |
+| Style/FrozenStringLiteralComment       |   107 | Implemented |
 | Style/GlobalStdStream                  |     6 | -           |
 | Style/GlobalVars                       |    74 | -           |
 | Style/GuardClause                      |    91 | -           |
@@ -127,7 +127,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Style/NonNilCheck                      |    21 | -           |
 | Style/Not                              |     9 | -           |
 | Style/NumericLiteralPrefix             |    10 | -           |
-| Style/NumericLiterals                  |    28 | -           |
+| Style/NumericLiterals                  |    28 | Implemented |
 | Style/NumericPredicate                 |    43 | -           |
 | Style/OneLineConditional               |   108 | -           |
 | Style/OptionalArguments                |    12 | -           |
@@ -167,7 +167,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Style/SafeNavigation                   |   786 | -           |
 | Style/Sample                           |    82 | -           |
 | Style/SelfAssignment                   |   105 | -           |
-| Style/Semicolon                        |    33 | -           |
+| Style/Semicolon                        |    33 | Implemented |
 | Style/SignalException                  |    27 | -           |
 | Style/SingleArgumentDig                |    15 | -           |
 | Style/SingleLineMethods                |    16 | -           |
@@ -177,7 +177,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Style/StabbyLambdaParentheses          |     9 | -           |
 | Style/StderrPuts                       |     5 | -           |
 | Style/StringConcatenation              |    30 | -           |
-| Style/StringLiterals                   |    58 | -           |
+| Style/StringLiterals                   |    58 | Implemented |
 | Style/StringLiteralsInInterpolation    |    13 | -           |
 | Style/Strip                            |     6 | -           |
 | Style/StructInheritance                |    12 | -           |
@@ -508,7 +508,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Lint/NumberConversion            |    36 | -      |
 | Lint/ShadowingOuterLocalVariable |    31 | -      |
 
-## Layout (1/100 implemented, 4,654 tests)
+## Layout (5/100 implemented, 4,654 tests)
 
 ### Enabled by Default (81 cops, 4,067 tests)
 
@@ -556,7 +556,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Layout/IndentationStyle                          |    25 | -           |
 | Layout/IndentationWidth                          |   177 | -           |
 | Layout/InitialIndentation                        |     8 | -           |
-| Layout/LeadingCommentSpace                       |    27 | -           |
+| Layout/LeadingCommentSpace                       |    27 | Implemented |
 | Layout/LeadingEmptyLines                         |     9 | -           |
 | Layout/LineLength                                |   192 | Implemented |
 | Layout/MultilineArrayBraceLayout                 |    35 | -           |
@@ -569,7 +569,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Layout/ParameterAlignment                        |    19 | -           |
 | Layout/RescueEnsureAlignment                     |    99 | -           |
 | Layout/SpaceAfterColon                           |    12 | -           |
-| Layout/SpaceAfterComma                           |     9 | -           |
+| Layout/SpaceAfterComma                           |     9 | Implemented |
 | Layout/SpaceAfterMethodName                      |     8 | -           |
 | Layout/SpaceAfterNot                             |     6 | -           |
 | Layout/SpaceAfterSemicolon                       |     9 | -           |
@@ -593,8 +593,8 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Layout/SpaceInsideRangeLiteral                   |     7 | -           |
 | Layout/SpaceInsideReferenceBrackets              |    47 | -           |
 | Layout/SpaceInsideStringInterpolation            |    12 | -           |
-| Layout/TrailingEmptyLines                        |    18 | -           |
-| Layout/TrailingWhitespace                        |    19 | -           |
+| Layout/TrailingEmptyLines                        |    18 | Implemented |
+| Layout/TrailingWhitespace                        |    19 | Implemented |
 
 ### Pending by Default (5 cops, 209 tests)
 
@@ -625,7 +625,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Layout/RedundantLineBreak                 |   112 | -      |
 | Layout/SingleLineBlockChain               |     9 | -      |
 
-## Metrics (1/10 implemented, 272 tests)
+## Metrics (3/10 implemented, 272 tests)
 
 ### Enabled by Default (9 cops, 259 tests)
 
@@ -634,9 +634,9 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Metrics/AbcSize              |    25 | -           |
 | Metrics/BlockLength          |    38 | Implemented |
 | Metrics/BlockNesting         |    26 | -           |
-| Metrics/ClassLength          |    34 | -           |
+| Metrics/ClassLength          |    34 | Implemented |
 | Metrics/CyclomaticComplexity |    37 | -           |
-| Metrics/MethodLength         |    31 | -           |
+| Metrics/MethodLength         |    31 | Implemented |
 | Metrics/ModuleLength         |    21 | -           |
 | Metrics/ParameterLists       |    16 | -           |
 | Metrics/PerceivedComplexity  |    31 | -           |

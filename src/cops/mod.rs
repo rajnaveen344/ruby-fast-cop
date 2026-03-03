@@ -334,16 +334,26 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(lint::Debugger::new()),
         Box::new(lint::AssignmentInCondition::new(false)), // User's config: AllowSafeAssignment: false
         // Layout
+        Box::new(layout::LeadingCommentSpace::new()),
         Box::new(layout::LineLength::new(160)), // User's config: Max: 160 (allow_uri=true by default)
+        Box::new(layout::SpaceAfterComma::new()),
+        Box::new(layout::TrailingEmptyLines::new(layout::TrailingEmptyLinesStyle::FinalNewline)),
+        Box::new(layout::TrailingWhitespace::new()),
         // Metrics
         Box::new(metrics::BlockLength::new(50)), // User's config: Max: 50
+        Box::new(metrics::ClassLength::new(100)),
+        Box::new(metrics::MethodLength::new(10)),
         // Style
         Box::new(style::AutoResourceCleanup::new()),
         Box::new(style::FormatStringToken::new(style::FormatStringTokenStyle::Template)), // User's config
+        Box::new(style::FrozenStringLiteralComment::new(style::FrozenStringLiteralCommentStyle::Always)),
         Box::new(style::HashSyntax::new(style::HashSyntaxStyle::Ruby19NoMixedKeys)), // User's config
         Box::new(style::MethodCalledOnDoEndBlock::new()),
+        Box::new(style::NumericLiterals::new(5)),
         Box::new(style::RaiseArgs::new(style::RaiseArgsStyle::Compact)), // User's config
         Box::new(style::RescueStandardError::new(style::RescueStandardErrorStyle::Implicit)), // User's config
+        Box::new(style::Semicolon::new(false)),
+        Box::new(style::StringLiterals::new(style::StringLiteralsStyle::SingleQuotes)),
         Box::new(style::StringMethods::new()),
     ]
 }
