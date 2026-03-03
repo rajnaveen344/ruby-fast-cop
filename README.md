@@ -81,7 +81,7 @@ Style/Documentation:
 
 RuboCop (v1.85.0) has **606 user-facing cops** across 9 departments. We have **606 TOML test fixtures** — one per cop — with **28,075 test cases** extracted from RuboCop's own RSpec suite.
 
-### Implemented Cops (21 of 606 — all passing)
+### Implemented Cops (22 of 606 — all passing)
 
 | Cop                              | Tests | Status  |
 | -------------------------------- | ----- | ------- |
@@ -92,6 +92,7 @@ RuboCop (v1.85.0) has **606 user-facing cops** across 9 departments. We have **6
 | Layout/TrailingWhitespace        | 15    | Passing |
 | Lint/AssignmentInCondition       | 69    | Passing |
 | Lint/Debugger                    | 97    | Passing |
+| Lint/LiteralInInterpolation      | 378   | Passing |
 | Metrics/BlockLength              | 38    | Passing |
 | Metrics/ClassLength              | 23    | Passing |
 | Metrics/MethodLength             | 30    | Passing |
@@ -164,7 +165,7 @@ ruby-fast-cop -a .
 ruby-fast-cop -A .
 ```
 
-15 of 21 implemented cops support autocorrect (352 correction tests passing).
+16 of 22 implemented cops support autocorrect (716 correction tests passing).
 
 ### How Autocorrect Works: RuboCop vs Ruff vs ruby-fast-cop
 
@@ -305,7 +306,7 @@ cargo run --bin fixture_stats
 
 ### High Priority
 
-- [ ] **More cops** - 21 of 606 implemented; see [Implementation Roadmap](#implementation-roadmap) for priority list
+- [ ] **More cops** - 22 of 606 implemented; see [Implementation Roadmap](#implementation-roadmap) for priority list
 - [x] **Auto-correct** - `-a` (safe) and `-A` (all) flags with Ruff-style iterative correction
 - [ ] **Parallel processing** - Use rayon for multi-threaded file processing
 
@@ -330,11 +331,11 @@ cargo run --bin fixture_stats
 | Feature          | RuboCop         | ruby-fast-cop           |
 | ---------------- | --------------- | ----------------------- |
 | Performance      | Baseline        | 50-100x faster (target) |
-| Cop count        | 606             | 21 implemented          |
+| Cop count        | 606             | 22 implemented          |
 | Test coverage    | ~28k test cases | 606 fixtures (1:1)      |
 | Custom Ruby cops | Yes             | No                      |
 | .rubocop.yml     | Yes             | Yes                     |
-| Auto-correct     | Yes             | Yes (15 of 21 cops)     |
+| Auto-correct     | Yes             | Yes (16 of 22 cops)     |
 | Library API      | Limited         | Yes                     |
 | inherit_from     | Yes             | Yes                     |
 | inherit_gem      | Yes             | Yes                     |

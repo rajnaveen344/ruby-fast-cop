@@ -331,8 +331,11 @@ pub fn run_cops_with_version(
 pub fn all() -> Vec<Box<dyn Cop>> {
     vec![
         // Lint
-        Box::new(lint::Debugger::new()),
         Box::new(lint::AssignmentInCondition::new(false)), // User's config: AllowSafeAssignment: false
+        Box::new(lint::Debugger::new()),
+        Box::new(lint::DuplicateMethods::new()),
+        Box::new(lint::LiteralInInterpolation::new()),
+        Box::new(lint::RedundantTypeConversion::new()),
         // Layout
         Box::new(layout::LeadingCommentSpace::new()),
         Box::new(layout::LineLength::new(160)), // User's config: Max: 160 (allow_uri=true by default)
@@ -344,14 +347,19 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(metrics::ClassLength::new(100)),
         Box::new(metrics::MethodLength::new(10)),
         // Style
+        Box::new(style::AccessModifierDeclarations::new(style::AccessModifierDeclarationsStyle::Group)),
         Box::new(style::AutoResourceCleanup::new()),
+        Box::new(style::ConditionalAssignment::new(style::ConditionalAssignmentStyle::AssignInsideCondition)),
         Box::new(style::FormatStringToken::new(style::FormatStringTokenStyle::Template)), // User's config
         Box::new(style::FrozenStringLiteralComment::new(style::FrozenStringLiteralCommentStyle::Always)),
         Box::new(style::HashSyntax::new(style::HashSyntaxStyle::Ruby19NoMixedKeys)), // User's config
         Box::new(style::MethodCalledOnDoEndBlock::new()),
+        Box::new(style::MutableConstant::new(style::MutableConstantStyle::Literals)),
+        Box::new(style::NegativeArrayIndex::new()),
         Box::new(style::NumericLiterals::new(5)),
         Box::new(style::RaiseArgs::new(style::RaiseArgsStyle::Compact)), // User's config
         Box::new(style::RescueStandardError::new(style::RescueStandardErrorStyle::Implicit)), // User's config
+        Box::new(style::SafeNavigation::new()),
         Box::new(style::Semicolon::new(false)),
         Box::new(style::StringLiterals::new(style::StringLiteralsStyle::SingleQuotes)),
         Box::new(style::StringMethods::new()),

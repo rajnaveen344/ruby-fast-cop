@@ -1,14 +1,14 @@
 # All Cops State (606 total)
 
 Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department and default status.
-21 of 606 implemented. See [README.md](README.md) for the implementation roadmap.
+22 of 606 implemented. See [README.md](README.md) for the implementation roadmap.
 
 ## Summary
 
 | Department | Enabled | Pending | Disabled | Implemented |      Tests |
 | ---------- | ------: | ------: | -------: | ----------: | ---------: |
 | Style      |     175 |      91 |       32 |          11 |     14,567 |
-| Lint       |     100 |      50 |        4 |           2 |      5,961 |
+| Lint       |     100 |      50 |        4 |           3 |      5,961 |
 | Layout     |      81 |       5 |       14 |           5 |      4,654 |
 | Metrics    |       9 |       1 |        0 |           3 |        272 |
 | Naming     |      16 |       2 |        1 |           0 |      2,217 |
@@ -16,7 +16,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Bundler    |       5 |       0 |        2 |           0 |        101 |
 | Security   |       5 |       2 |        0 |           0 |        102 |
 | Migration  |       1 |       0 |        0 |           0 |          8 |
-| **Total**  | **396** | **156** |   **54** |      **21** | **28,075** |
+| **Total**  | **396** | **156** |   **54** |      **22** | **28,075** |
 
 - **Enabled**: Runs by default on every codebase (highest priority to implement)
 - **Pending**: Runs only with `NewCops: enable` in config
@@ -337,7 +337,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Style/UnlessLogicalOperators               |    28 | -           |
 | Style/YodaExpression                       |    10 | -           |
 
-## Lint (2/154 implemented, 5,961 tests)
+## Lint (3/154 implemented, 5,961 tests)
 
 ### Enabled by Default (100 cops, 3,859 tests)
 
@@ -383,7 +383,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Lint/InheritException                    |    13 | -           |
 | Lint/InterpolationCheck                  |    15 | -           |
 | Lint/LiteralAsCondition                  |   229 | -           |
-| Lint/LiteralInInterpolation              |   378 | -           |
+| Lint/LiteralInInterpolation              |   378 | Implemented |
 | Lint/Loop                                |     4 | -           |
 | Lint/MissingCopEnableDirective           |    11 | -           |
 | Lint/MissingSuper                        |    22 | -           |

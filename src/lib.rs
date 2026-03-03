@@ -179,11 +179,6 @@ pub fn check_and_correct_source(
 pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
     let mut result: Vec<Box<dyn cops::Cop>> = Vec::new();
 
-    // Lint/Debugger
-    if config.is_cop_enabled("Lint/Debugger") {
-        result.push(Box::new(cops::lint::Debugger::new()));
-    }
-
     // Lint/AssignmentInCondition
     if config.is_cop_enabled("Lint/AssignmentInCondition") {
         let allow_safe = config
@@ -191,6 +186,26 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
             .and_then(|c| c.allow_safe_assignment)
             .unwrap_or(true);
         result.push(Box::new(cops::lint::AssignmentInCondition::new(allow_safe)));
+    }
+
+    // Lint/Debugger
+    if config.is_cop_enabled("Lint/Debugger") {
+        result.push(Box::new(cops::lint::Debugger::new()));
+    }
+
+    // Lint/DuplicateMethods
+    if config.is_cop_enabled("Lint/DuplicateMethods") {
+        result.push(Box::new(cops::lint::DuplicateMethods::new()));
+    }
+
+    // Lint/LiteralInInterpolation
+    if config.is_cop_enabled("Lint/LiteralInInterpolation") {
+        result.push(Box::new(cops::lint::LiteralInInterpolation::new()));
+    }
+
+    // Lint/RedundantTypeConversion
+    if config.is_cop_enabled("Lint/RedundantTypeConversion") {
+        result.push(Box::new(cops::lint::RedundantTypeConversion::new()));
     }
 
     // Layout/LineLength
@@ -211,9 +226,64 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         result.push(Box::new(cops::metrics::BlockLength::new(max)));
     }
 
+    // Style/AccessModifierDeclarations
+    if config.is_cop_enabled("Style/AccessModifierDeclarations") {
+        let cop_config = config.get_cop_config("Style/AccessModifierDeclarations");
+        let style = cop_config
+            .and_then(|c| c.enforced_style.as_ref())
+            .map(|s| match s.as_str() {
+                "inline" => cops::style::AccessModifierDeclarationsStyle::Inline,
+                _ => cops::style::AccessModifierDeclarationsStyle::Group,
+            })
+            .unwrap_or(cops::style::AccessModifierDeclarationsStyle::Group);
+        let allow_symbols = cop_config
+            .and_then(|c| c.raw.get("AllowModifiersOnSymbols"))
+            .and_then(|v| v.as_bool())
+            .unwrap_or(true);
+        let allow_attrs = cop_config
+            .and_then(|c| c.raw.get("AllowModifiersOnAttrs"))
+            .and_then(|v| v.as_bool())
+            .unwrap_or(true);
+        let allow_alias = cop_config
+            .and_then(|c| c.raw.get("AllowModifiersOnAliasMethod"))
+            .and_then(|v| v.as_bool())
+            .unwrap_or(true);
+        result.push(Box::new(cops::style::AccessModifierDeclarations::with_config(
+            style,
+            allow_symbols,
+            allow_attrs,
+            allow_alias,
+        )));
+    }
+
     // Style/AutoResourceCleanup
     if config.is_cop_enabled("Style/AutoResourceCleanup") {
         result.push(Box::new(cops::style::AutoResourceCleanup::new()));
+    }
+
+    // Style/ConditionalAssignment
+    if config.is_cop_enabled("Style/ConditionalAssignment") {
+        let cop_config = config.get_cop_config("Style/ConditionalAssignment");
+        let style = cop_config
+            .and_then(|c| c.enforced_style.as_ref())
+            .map(|s| match s.as_str() {
+                "assign_to_condition" => cops::style::ConditionalAssignmentStyle::AssignToCondition,
+                _ => cops::style::ConditionalAssignmentStyle::AssignInsideCondition,
+            })
+            .unwrap_or(cops::style::ConditionalAssignmentStyle::AssignInsideCondition);
+        let include_ternary = cop_config
+            .and_then(|c| c.raw.get("IncludeTernaryExpressions"))
+            .and_then(|v| v.as_bool())
+            .unwrap_or(true);
+        let single_line_only = cop_config
+            .and_then(|c| c.raw.get("SingleLineConditionsOnly"))
+            .and_then(|v| v.as_bool())
+            .unwrap_or(true);
+        result.push(Box::new(cops::style::ConditionalAssignment::with_config(
+            style,
+            include_ternary,
+            single_line_only,
+        )));
     }
 
     // Style/FormatStringToken
@@ -307,6 +377,24 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         result.push(Box::new(cops::style::MethodCalledOnDoEndBlock::new()));
     }
 
+    // Style/MutableConstant
+    if config.is_cop_enabled("Style/MutableConstant") {
+        let cop_config = config.get_cop_config("Style/MutableConstant");
+        let style = cop_config
+            .and_then(|c| c.enforced_style.as_ref())
+            .map(|s| match s.as_str() {
+                "strict" => cops::style::MutableConstantStyle::Strict,
+                _ => cops::style::MutableConstantStyle::Literals,
+            })
+            .unwrap_or(cops::style::MutableConstantStyle::Literals);
+        result.push(Box::new(cops::style::MutableConstant::new(style)));
+    }
+
+    // Style/NegativeArrayIndex
+    if config.is_cop_enabled("Style/NegativeArrayIndex") {
+        result.push(Box::new(cops::style::NegativeArrayIndex::new()));
+    }
+
     // Style/RaiseArgs
     if config.is_cop_enabled("Style/RaiseArgs") {
         let style = config
@@ -331,6 +419,11 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
             })
             .unwrap_or(cops::style::RescueStandardErrorStyle::Explicit);
         result.push(Box::new(cops::style::RescueStandardError::new(style)));
+    }
+
+    // Style/SafeNavigation
+    if config.is_cop_enabled("Style/SafeNavigation") {
+        result.push(Box::new(cops::style::SafeNavigation::new()));
     }
 
     // Style/StringMethods
@@ -593,6 +686,23 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
             )))
         }
 
+        "Lint/DuplicateMethods" => {
+            let active_support = config
+                .get_cop_config("Lint/DuplicateMethods")
+                .and_then(|c| c.raw.get("ActiveSupportExtensionsEnabled"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(true);
+            Some(Box::new(cops::lint::DuplicateMethods::with_config(active_support)))
+        }
+
+        "Lint/LiteralInInterpolation" => {
+            Some(Box::new(cops::lint::LiteralInInterpolation::new()))
+        }
+
+        "Lint/RedundantTypeConversion" => {
+            Some(Box::new(cops::lint::RedundantTypeConversion::new()))
+        }
+
         "Lint/AssignmentInCondition" => {
             let allow_safe = config
                 .get_cop_config("Lint/AssignmentInCondition")
@@ -737,7 +847,60 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
             )))
         }
 
+        "Style/AccessModifierDeclarations" => {
+            let cop_config = config.get_cop_config("Style/AccessModifierDeclarations");
+            let style = cop_config
+                .and_then(|c| c.enforced_style.as_ref())
+                .map(|s| match s.as_str() {
+                    "inline" => cops::style::AccessModifierDeclarationsStyle::Inline,
+                    _ => cops::style::AccessModifierDeclarationsStyle::Group,
+                })
+                .unwrap_or(cops::style::AccessModifierDeclarationsStyle::Group);
+            let allow_symbols = cop_config
+                .and_then(|c| c.raw.get("AllowModifiersOnSymbols"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(true);
+            let allow_attrs = cop_config
+                .and_then(|c| c.raw.get("AllowModifiersOnAttrs"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(true);
+            let allow_alias = cop_config
+                .and_then(|c| c.raw.get("AllowModifiersOnAliasMethod"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(true);
+            Some(Box::new(cops::style::AccessModifierDeclarations::with_config(
+                style,
+                allow_symbols,
+                allow_attrs,
+                allow_alias,
+            )))
+        }
+
         "Style/AutoResourceCleanup" => Some(Box::new(cops::style::AutoResourceCleanup::new())),
+
+        "Style/ConditionalAssignment" => {
+            let cop_config = config.get_cop_config("Style/ConditionalAssignment");
+            let style = cop_config
+                .and_then(|c| c.enforced_style.as_ref())
+                .map(|s| match s.as_str() {
+                    "assign_to_condition" => cops::style::ConditionalAssignmentStyle::AssignToCondition,
+                    _ => cops::style::ConditionalAssignmentStyle::AssignInsideCondition,
+                })
+                .unwrap_or(cops::style::ConditionalAssignmentStyle::AssignInsideCondition);
+            let include_ternary = cop_config
+                .and_then(|c| c.raw.get("IncludeTernaryExpressions"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(true);
+            let single_line_only = cop_config
+                .and_then(|c| c.raw.get("SingleLineConditionsOnly"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(true);
+            Some(Box::new(cops::style::ConditionalAssignment::with_config(
+                style,
+                include_ternary,
+                single_line_only,
+            )))
+        }
 
         "Style/FormatStringToken" => {
             let cop_config = config.get_cop_config("Style/FormatStringToken");
@@ -827,6 +990,20 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
             Some(Box::new(cops::style::MethodCalledOnDoEndBlock::new()))
         }
 
+        "Style/MutableConstant" => {
+            let cop_config = config.get_cop_config("Style/MutableConstant");
+            let style = cop_config
+                .and_then(|c| c.enforced_style.as_ref())
+                .map(|s| match s.as_str() {
+                    "strict" => cops::style::MutableConstantStyle::Strict,
+                    _ => cops::style::MutableConstantStyle::Literals,
+                })
+                .unwrap_or(cops::style::MutableConstantStyle::Literals);
+            Some(Box::new(cops::style::MutableConstant::new(style)))
+        }
+
+        "Style/NegativeArrayIndex" => Some(Box::new(cops::style::NegativeArrayIndex::new())),
+
         "Style/RaiseArgs" => {
             let cop_config = config.get_cop_config("Style/RaiseArgs");
             let style = cop_config
@@ -863,6 +1040,40 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
                 })
                 .unwrap_or(cops::style::RescueStandardErrorStyle::Explicit);
             Some(Box::new(cops::style::RescueStandardError::new(style)))
+        }
+
+        "Style/SafeNavigation" => {
+            let cop_config = config.get_cop_config("Style/SafeNavigation");
+            let allowed_methods = cop_config
+                .and_then(|c| c.raw.get("AllowedMethods"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| {
+                    seq.iter()
+                        .filter_map(|v| v.as_str().map(String::from))
+                        .collect()
+                })
+                .unwrap_or_else(|| {
+                    vec![
+                        "present?".to_string(),
+                        "blank?".to_string(),
+                        "presence".to_string(),
+                        "try".to_string(),
+                        "try!".to_string(),
+                    ]
+                });
+            let convert_nil = cop_config
+                .and_then(|c| c.raw.get("ConvertCodeThatCanStartToReturnNil"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
+            let max_chain = cop_config
+                .and_then(|c| c.raw.get("MaxChainLength"))
+                .and_then(|v| v.as_u64())
+                .unwrap_or(2) as usize;
+            Some(Box::new(cops::style::SafeNavigation::with_config(
+                allowed_methods,
+                convert_nil,
+                max_chain,
+            )))
         }
 
         "Style/StringMethods" => Some(Box::new(cops::style::StringMethods::new())),
