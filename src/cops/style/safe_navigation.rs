@@ -13,6 +13,7 @@ pub struct SafeNavigation {
     allowed_methods: Vec<String>,
     convert_code_that_can_start_to_return_nil: bool,
     max_chain_length: usize,
+    safe_navigation_chain_enabled: bool,
 }
 
 impl SafeNavigation {
@@ -27,6 +28,7 @@ impl SafeNavigation {
             ],
             convert_code_that_can_start_to_return_nil: false,
             max_chain_length: 2,
+            safe_navigation_chain_enabled: true,
         }
     }
 
@@ -39,6 +41,21 @@ impl SafeNavigation {
             allowed_methods,
             convert_code_that_can_start_to_return_nil,
             max_chain_length,
+            safe_navigation_chain_enabled: true,
+        }
+    }
+
+    pub fn with_full_config(
+        allowed_methods: Vec<String>,
+        convert_code_that_can_start_to_return_nil: bool,
+        max_chain_length: usize,
+        safe_navigation_chain_enabled: bool,
+    ) -> Self {
+        Self {
+            allowed_methods,
+            convert_code_that_can_start_to_return_nil,
+            max_chain_length,
+            safe_navigation_chain_enabled,
         }
     }
 }
@@ -66,6 +83,7 @@ impl Cop for SafeNavigation {
             allowed_methods: &self.allowed_methods,
             convert_nil: self.convert_code_that_can_start_to_return_nil,
             max_chain_length: self.max_chain_length,
+            safe_navigation_chain_enabled: self.safe_navigation_chain_enabled,
             offenses: Vec::new(),
         };
         visitor.visit_statements_node(&node.statements());
@@ -159,64 +177,12 @@ fn is_comparison_or_arith(name: &[u8]) -> bool {
     )
 }
 
-/// Duplicate/reconstruct a Node by going through its typed form's as_node()
-fn dup_node<'pr>(node: &Node<'pr>) -> Node<'pr> {
-    match node {
-        Node::LocalVariableReadNode { .. } => node.as_local_variable_read_node().unwrap().as_node(),
-        Node::ConstantReadNode { .. } => node.as_constant_read_node().unwrap().as_node(),
-        Node::CallNode { .. } => node.as_call_node().unwrap().as_node(),
-        Node::AndNode { .. } => node.as_and_node().unwrap().as_node(),
-        Node::OrNode { .. } => node.as_or_node().unwrap().as_node(),
-        Node::ParenthesesNode { .. } => node.as_parentheses_node().unwrap().as_node(),
-        Node::NilNode { .. } => node.as_nil_node().unwrap().as_node(),
-        Node::IfNode { .. } => node.as_if_node().unwrap().as_node(),
-        Node::UnlessNode { .. } => node.as_unless_node().unwrap().as_node(),
-        Node::ElseNode { .. } => node.as_else_node().unwrap().as_node(),
-        Node::StatementsNode { .. } => node.as_statements_node().unwrap().as_node(),
-        Node::BreakNode { .. } => node.as_break_node().unwrap().as_node(),
-        Node::NextNode { .. } => node.as_next_node().unwrap().as_node(),
-        Node::ReturnNode { .. } => node.as_return_node().unwrap().as_node(),
-        Node::YieldNode { .. } => node.as_yield_node().unwrap().as_node(),
-        Node::IntegerNode { .. } => node.as_integer_node().unwrap().as_node(),
-        Node::FloatNode { .. } => node.as_float_node().unwrap().as_node(),
-        Node::StringNode { .. } => node.as_string_node().unwrap().as_node(),
-        Node::SymbolNode { .. } => node.as_symbol_node().unwrap().as_node(),
-        Node::TrueNode { .. } => node.as_true_node().unwrap().as_node(),
-        Node::FalseNode { .. } => node.as_false_node().unwrap().as_node(),
-        Node::SelfNode { .. } => node.as_self_node().unwrap().as_node(),
-        Node::InstanceVariableReadNode { .. } => node.as_instance_variable_read_node().unwrap().as_node(),
-        Node::ClassVariableReadNode { .. } => node.as_class_variable_read_node().unwrap().as_node(),
-        Node::GlobalVariableReadNode { .. } => node.as_global_variable_read_node().unwrap().as_node(),
-        Node::ConstantPathNode { .. } => node.as_constant_path_node().unwrap().as_node(),
-        Node::BlockNode { .. } => node.as_block_node().unwrap().as_node(),
-        Node::ArrayNode { .. } => node.as_array_node().unwrap().as_node(),
-        Node::HashNode { .. } => node.as_hash_node().unwrap().as_node(),
-        Node::InterpolatedStringNode { .. } => node.as_interpolated_string_node().unwrap().as_node(),
-        Node::RegularExpressionNode { .. } => node.as_regular_expression_node().unwrap().as_node(),
-        Node::BeginNode { .. } => node.as_begin_node().unwrap().as_node(),
-        Node::RangeNode { .. } => node.as_range_node().unwrap().as_node(),
-        Node::LambdaNode { .. } => node.as_lambda_node().unwrap().as_node(),
-        Node::DefNode { .. } => node.as_def_node().unwrap().as_node(),
-        Node::ClassNode { .. } => node.as_class_node().unwrap().as_node(),
-        Node::ModuleNode { .. } => node.as_module_node().unwrap().as_node(),
-        Node::LocalVariableWriteNode { .. } => node.as_local_variable_write_node().unwrap().as_node(),
-        Node::InstanceVariableWriteNode { .. } => node.as_instance_variable_write_node().unwrap().as_node(),
-        Node::MultiWriteNode { .. } => node.as_multi_write_node().unwrap().as_node(),
-        Node::SplatNode { .. } => node.as_splat_node().unwrap().as_node(),
-        // For any unhandled type, create a sentinel that will never match
-        // This is safe since we only use dup_node for comparison/storage
-        _ => {
-            // Fallback: just match on the same pointer data in the enum
-            // We can use unsafe to copy the raw data since Node is just pointers
-            // But let's avoid unsafe. Instead, we'll handle this by not needing dup for unknown types.
-            // In practice, the types above cover all cases in SafeNavigation.
-            // If we hit this, it means we have a node type we haven't handled.
-            // Let's panic in debug mode.
-            #[cfg(debug_assertions)]
-            panic!("dup_node: unhandled node type");
-            #[cfg(not(debug_assertions))]
-            node.as_nil_node().unwrap().as_node() // will panic anyway
-        }
+/// Find the end offset of the first line starting from a given offset
+fn end_of_first_line(source: &str, start_offset: usize) -> usize {
+    let remaining = &source[start_offset..];
+    match remaining.find('\n') {
+        Some(pos) => start_offset + pos,
+        None => source.len(),
     }
 }
 
@@ -226,106 +192,11 @@ struct SafeNavVisitor<'a> {
     allowed_methods: &'a [String],
     convert_nil: bool,
     max_chain_length: usize,
+    safe_navigation_chain_enabled: bool,
     offenses: Vec<Offense>,
 }
 
 impl<'a> SafeNavVisitor<'a> {
-    /// Compare two nodes by source text. For call nodes, compare ignoring dot/safe-nav type.
-    fn nodes_match(&self, a: &Node, b: &Node) -> bool {
-        match (a, b) {
-            (Node::CallNode { .. }, Node::CallNode { .. }) => {
-                let ac = a.as_call_node().unwrap();
-                let bc = b.as_call_node().unwrap();
-                if ac.name().as_slice() != bc.name().as_slice() {
-                    return false;
-                }
-                match (ac.receiver(), bc.receiver()) {
-                    (Some(ar), Some(br)) => {
-                        if !self.nodes_match(&ar, &br) {
-                            return false;
-                        }
-                        match (ac.arguments(), bc.arguments()) {
-                            (None, None) => true,
-                            (Some(aa), Some(ba)) => {
-                                let aa_loc = aa.location();
-                                let ba_loc = ba.location();
-                                &self.source[aa_loc.start_offset()..aa_loc.end_offset()]
-                                    == &self.source[ba_loc.start_offset()..ba_loc.end_offset()]
-                            }
-                            _ => false,
-                        }
-                    }
-                    (None, None) => true,
-                    _ => false,
-                }
-            }
-            _ => node_src(self.source, a) == node_src(self.source, b),
-        }
-    }
-
-    /// Find matching receiver in a call chain.
-    /// Walk down receivers from method_chain to find one matching checked_var.
-    fn find_matching_receiver(&self, method_chain: &Node, checked_var: &Node) -> bool {
-        if let Node::CallNode { .. } = method_chain {
-            let call = method_chain.as_call_node().unwrap();
-            if let Some(recv) = call.receiver() {
-                if self.nodes_match(&recv, checked_var) {
-                    return true;
-                }
-                return self.find_matching_receiver(&recv, checked_var);
-            }
-        }
-        false
-    }
-
-    /// Count chain length from method_chain down to checked_var
-    fn chain_length(&self, method_chain: &Node, checked_var: &Node) -> usize {
-        let mut count = 0;
-        self.count_chain_recursive(method_chain, checked_var, &mut count);
-        count
-    }
-
-    fn count_chain_recursive(&self, node: &Node, checked_var: &Node, count: &mut usize) {
-        if let Node::CallNode { .. } = node {
-            let call = node.as_call_node().unwrap();
-            if let Some(recv) = call.receiver() {
-                *count += 1;
-                if self.nodes_match(&recv, checked_var) {
-                    return;
-                }
-                self.count_chain_recursive(&recv, checked_var, count);
-            }
-        }
-    }
-
-    /// Check if chain has a dotless operator ([], []=, +, etc.) or double colon
-    fn chain_has_dotless_or_dcolon(&self, method_chain: &Node, checked_var: &Node) -> bool {
-        self.check_chain_dotless_recursive(method_chain, checked_var)
-    }
-
-    fn check_chain_dotless_recursive(&self, node: &Node, checked_var: &Node) -> bool {
-        if let Node::CallNode { .. } = node {
-            let call = node.as_call_node().unwrap();
-            if !has_dot(&call) {
-                let n = call.name();
-                if name_eq(n.as_slice(), "[]") || name_eq(n.as_slice(), "[]=") || is_operator(n.as_slice()) {
-                    return true;
-                }
-            }
-            if is_double_colon(self.source, &call) {
-                return true;
-            }
-            if let Some(recv) = call.receiver() {
-                if self.nodes_match(&recv, checked_var) {
-                    return false;
-                }
-                return self.check_chain_dotless_recursive(&recv, checked_var);
-            }
-        }
-        false
-    }
-
-    /// Get the terminal (outermost) method name
     fn terminal_method_name(&self, node: &Node) -> Option<Vec<u8>> {
         if let Node::CallNode { .. } = node {
             let call = node.as_call_node().unwrap();
@@ -357,90 +228,6 @@ impl<'a> SafeNavVisitor<'a> {
             name_eq(call.name().as_slice(), "!")
         } else {
             false
-        }
-    }
-
-    /// Check if node is `!foo.nil?` and return the span of the inner receiver
-    fn is_not_nil_check(&self, node: &Node) -> bool {
-        if let Node::CallNode { .. } = node {
-            let call = node.as_call_node().unwrap();
-            if name_eq(call.name().as_slice(), "!") {
-                if let Some(recv) = call.receiver() {
-                    if let Node::CallNode { .. } = &recv {
-                        let inner = recv.as_call_node().unwrap();
-                        if name_eq(inner.name().as_slice(), "nil?") && inner.receiver().is_some() {
-                            return true;
-                        }
-                    }
-                }
-            }
-        }
-        false
-    }
-
-    /// Extract checked var span from `!foo.nil?`: returns foo's span
-    fn not_nil_receiver_span(&self, node: &Node) -> Option<Span> {
-        if let Node::CallNode { .. } = node {
-            let call = node.as_call_node().unwrap();
-            if name_eq(call.name().as_slice(), "!") {
-                if let Some(recv) = call.receiver() {
-                    if let Node::CallNode { .. } = &recv {
-                        let inner = recv.as_call_node().unwrap();
-                        if name_eq(inner.name().as_slice(), "nil?") {
-                            if let Some(inner_recv) = inner.receiver() {
-                                return Some(node_span(&inner_recv));
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        None
-    }
-
-    /// Extract the checked variable span and whether it's a nil-check form from a condition.
-    fn extract_checked_var_span(&self, cond: &Node) -> Option<(Span, bool)> {
-        // Simple variable (local var, constant, ivar, cvar, gvar, constant path, or variable-call)
-        if is_simple_var(cond) {
-            return Some((node_span(cond), false));
-        }
-
-        match cond {
-            Node::CallNode { .. } => {
-                let call = cond.as_call_node().unwrap();
-                let name = call.name();
-
-                // foo.nil?
-                if name_eq(name.as_slice(), "nil?") {
-                    if let Some(recv) = call.receiver() {
-                        return Some((node_span(&recv), true));
-                    }
-                    return None;
-                }
-
-                // !foo or !foo.nil?
-                if name_eq(name.as_slice(), "!") {
-                    if let Some(recv) = call.receiver() {
-                        // !foo.nil? -> foo
-                        if let Node::CallNode { .. } = &recv {
-                            let inner = recv.as_call_node().unwrap();
-                            if name_eq(inner.name().as_slice(), "nil?") {
-                                if let Some(inner_recv) = inner.receiver() {
-                                    return Some((node_span(&inner_recv), true));
-                                }
-                            }
-                        }
-                        // !foo -> foo (any expression)
-                        return Some((node_span(&recv), false));
-                    }
-                    return None;
-                }
-
-                // Any other call expression used as a condition (e.g., foo[1], foo.bar)
-                // RuboCop's pattern $_  matches any node as checked variable
-                Some((node_span(cond), false))
-            }
-            _ => None,
         }
     }
 
@@ -481,53 +268,276 @@ impl<'a> SafeNavVisitor<'a> {
         }
     }
 
-    fn is_dotless_call_on_var(&self, body: &Node, checked_var: &Node) -> bool {
-        if let Node::CallNode { .. } = body {
-            let call = body.as_call_node().unwrap();
-            if let Some(recv) = call.receiver() {
-                if self.nodes_match(&recv, checked_var) && !has_dot(&call) {
-                    return true;
+    /// Check if node is `!foo.nil?`
+    fn is_not_nil_check(&self, node: &Node) -> bool {
+        if let Node::CallNode { .. } = node {
+            let call = node.as_call_node().unwrap();
+            if name_eq(call.name().as_slice(), "!") {
+                if let Some(recv) = call.receiver() {
+                    if let Node::CallNode { .. } = &recv {
+                        let inner = recv.as_call_node().unwrap();
+                        if name_eq(inner.name().as_slice(), "nil?") && inner.receiver().is_some() {
+                            return true;
+                        }
+                    }
                 }
             }
         }
         false
     }
 
-    /// Check if chain has operator without dot anywhere
-    fn has_operator_without_dot(&self, node: &Node, checked_var: &Node) -> bool {
+    /// Extract checked var span from a condition.
+    /// Returns (span, is_nil_form).
+    /// Only accepts simple variables, nil? checks, and ! negation.
+    /// Does NOT accept arbitrary method calls like `foo.bar?` as conditions.
+    fn extract_checked_var_span(&self, cond: &Node) -> Option<(Span, bool)> {
+        // Simple variable (local var, constant, ivar, cvar, gvar, constant path, or variable-call)
+        if is_simple_var(cond) {
+            return Some((node_span(cond), false));
+        }
+
+        match cond {
+            Node::CallNode { .. } => {
+                let call = cond.as_call_node().unwrap();
+                let name = call.name();
+
+                // foo.nil?
+                if name_eq(name.as_slice(), "nil?") {
+                    if let Some(recv) = call.receiver() {
+                        return Some((node_span(&recv), true));
+                    }
+                    return None;
+                }
+
+                // !foo or !foo.nil?
+                if name_eq(name.as_slice(), "!") {
+                    if let Some(recv) = call.receiver() {
+                        // !foo.nil? -> foo
+                        if let Node::CallNode { .. } = &recv {
+                            let inner = recv.as_call_node().unwrap();
+                            if name_eq(inner.name().as_slice(), "nil?") {
+                                if let Some(inner_recv) = inner.receiver() {
+                                    return Some((node_span(&inner_recv), true));
+                                }
+                            }
+                        }
+                        // !foo -> foo (any expression)
+                        return Some((node_span(&recv), false));
+                    }
+                    return None;
+                }
+
+                // For conditions like foo[1] (index access) - the checked var IS the whole thing
+                // But NOT for foo.bar? or foo.bar (method call that returns bool/result)
+                // RuboCop's pattern `$_` matches ANY node, but the overall pattern
+                // `(if $_ nil? $_)` means the condition IS the checked variable
+                // For if/unless with a method call condition like `if foo.bar?`,
+                // the whole `foo.bar?` is the checked var. But then body must use
+                // `foo.bar?.something` which is rare. The practical check is that
+                // the body must have a matching receiver.
+                // However, RuboCop's pattern does accept any node as the checked variable.
+                // The key filter is in `offending_node?` which checks `matching_nodes?`.
+                Some((node_span(cond), false))
+            }
+            _ => None,
+        }
+    }
+
+    // ---- Chain analysis helpers (source text based) ----
+
+    /// Find matching receiver in a call chain using source text comparison
+    fn find_matching_receiver_src(&self, method_chain: &Node, parent_src: &str, checked_var_src: &str) -> bool {
+        if let Node::CallNode { .. } = method_chain {
+            let call = method_chain.as_call_node().unwrap();
+            if let Some(recv) = call.receiver() {
+                let recv_src = node_src(parent_src, &recv);
+                if src_match_ignoring_safe_nav(recv_src, checked_var_src) {
+                    return true;
+                }
+                return self.find_matching_receiver_src(&recv, parent_src, checked_var_src);
+            }
+        }
+        false
+    }
+
+    /// Find matching receiver in a call chain using span-based comparison
+    fn find_matching_receiver_by_span(&self, method_chain: &Node, checked_var_span: Span) -> bool {
+        let checked_var_src = span_src(self.source, checked_var_span);
+        if let Node::CallNode { .. } = method_chain {
+            let call = method_chain.as_call_node().unwrap();
+            if let Some(recv) = call.receiver() {
+                let recv_src = node_src(self.source, &recv);
+                if src_match_ignoring_safe_nav(recv_src, checked_var_src) {
+                    return true;
+                }
+                return self.find_matching_receiver_by_span(&recv, checked_var_span);
+            }
+        }
+        false
+    }
+
+    /// Count chain length using source text comparison
+    fn chain_length_src(&self, node: &Node, parent_src: &str, checked_var_src: &str) -> usize {
+        let mut count = 0;
+        self.count_chain_src_recursive(node, parent_src, checked_var_src, &mut count);
+        count
+    }
+
+    fn count_chain_src_recursive(&self, node: &Node, parent_src: &str, checked_var_src: &str, count: &mut usize) {
+        if let Node::CallNode { .. } = node {
+            let call = node.as_call_node().unwrap();
+            if let Some(recv) = call.receiver() {
+                *count += 1;
+                let recv_src = node_src(parent_src, &recv);
+                if src_match_ignoring_safe_nav(recv_src, checked_var_src) {
+                    return;
+                }
+                self.count_chain_src_recursive(&recv, parent_src, checked_var_src, count);
+            }
+        }
+    }
+
+    fn chain_length_by_span(&self, node: &Node, checked_var_span: Span) -> usize {
+        let checked_var_src = span_src(self.source, checked_var_span);
+        let mut count = 0;
+        self.count_chain_by_span_recursive(node, checked_var_src, &mut count);
+        count
+    }
+
+    fn count_chain_by_span_recursive(&self, node: &Node, checked_var_src: &str, count: &mut usize) {
+        if let Node::CallNode { .. } = node {
+            let call = node.as_call_node().unwrap();
+            if let Some(recv) = call.receiver() {
+                *count += 1;
+                if src_match_ignoring_safe_nav(node_src(self.source, &recv), checked_var_src) {
+                    return;
+                }
+                self.count_chain_by_span_recursive(&recv, checked_var_src, count);
+            }
+        }
+    }
+
+    /// Check dotless/dcolon using source text comparison (for sub-parsed nodes)
+    fn chain_has_dotless_or_dcolon_src(&self, node: &Node, parent_src: &str, checked_var_src: &str) -> bool {
         if let Node::CallNode { .. } = node {
             let call = node.as_call_node().unwrap();
             if !has_dot(&call) {
                 let n = call.name();
-                if is_operator(n.as_slice()) || name_eq(n.as_slice(), "[]") || name_eq(n.as_slice(), "[]=") {
+                if name_eq(n.as_slice(), "[]") || name_eq(n.as_slice(), "[]=") || is_operator(n.as_slice()) {
                     return true;
                 }
             }
+            if is_double_colon(parent_src, &call) {
+                return true;
+            }
             if let Some(recv) = call.receiver() {
-                if self.nodes_match(&recv, checked_var) {
+                let recv_src = node_src(parent_src, &recv);
+                if src_match_ignoring_safe_nav(recv_src, checked_var_src) {
                     return false;
                 }
-                return self.has_operator_without_dot(&recv, checked_var);
+                return self.chain_has_dotless_or_dcolon_src(&recv, parent_src, checked_var_src);
             }
         }
         false
     }
 
-    // ---- Common body checks ----
+    fn chain_has_dotless_or_dcolon_by_span(&self, node: &Node, checked_var_span: Span) -> bool {
+        let checked_var_src = span_src(self.source, checked_var_span);
+        self.check_dotless_dcolon_by_src(node, checked_var_src)
+    }
 
-    /// Run all standard body checks. Returns true if the body should be skipped (not flagged).
-    fn should_skip_body(&self, body: &Node, checked_var: &Node) -> bool {
-        self.is_logic_jump(body)
-            || self.is_assignment_call(body)
-            || self.ends_with_empty(body)
-            || !self.find_matching_receiver(body, checked_var)
-            || self.chain_length(body, checked_var) > self.max_chain_length
-            || self.chain_has_dotless_or_dcolon(body, checked_var)
-            || self.is_operator_call(body)
-            || self.is_dotless_call_on_var(body, checked_var)
-            || self.is_allowed_method(body)
-            || self.ends_with_nil_check(body)
-            || self.is_negation(body)
+    fn check_dotless_dcolon_by_src(&self, node: &Node, checked_var_src: &str) -> bool {
+        if let Node::CallNode { .. } = node {
+            let call = node.as_call_node().unwrap();
+            if !has_dot(&call) {
+                let n = call.name();
+                if name_eq(n.as_slice(), "[]") || name_eq(n.as_slice(), "[]=") || is_operator(n.as_slice()) {
+                    return true;
+                }
+            }
+            if is_double_colon(self.source, &call) {
+                return true;
+            }
+            if let Some(recv) = call.receiver() {
+                if src_match_ignoring_safe_nav(node_src(self.source, &recv), checked_var_src) {
+                    return false;
+                }
+                return self.check_dotless_dcolon_by_src(&recv, checked_var_src);
+            }
+        }
+        false
+    }
+
+    fn is_dotless_call_on_var_by_span(&self, body: &Node, checked_var_span: Span) -> bool {
+        let checked_var_src = span_src(self.source, checked_var_span);
+        if let Node::CallNode { .. } = body {
+            let call = body.as_call_node().unwrap();
+            if let Some(recv) = call.receiver() {
+                if src_match_ignoring_safe_nav(node_src(self.source, &recv), checked_var_src) && !has_dot(&call) {
+                    return true;
+                }
+            }
+        }
+        false
+    }
+
+    /// Check if operator without dot anywhere in chain (for ternary)
+    /// Check if any ancestor in the chain is unsafe
+    fn has_unsafe_ancestor(&self, node: &Node, checked_var_src: &str) -> bool {
+        // For if/unless bodies, walk up the chain checking for unsafe methods
+        // This mirrors RuboCop's `unsafe_method_used?` which checks ancestors
+        if let Node::CallNode { .. } = node {
+            let call = node.as_call_node().unwrap();
+            if let Some(recv) = call.receiver() {
+                let recv_src = node_src(self.source, &recv);
+                if src_match_ignoring_safe_nav(recv_src, checked_var_src) {
+                    // Reached the checked var, no more ancestors to check
+                    return false;
+                }
+                // Check if this intermediate call in chain is unsafe
+                if !self.safe_navigation_chain_enabled {
+                    return true;
+                }
+                if self.is_negated(&recv) {
+                    return true;
+                }
+                // Recurse into receiver
+                return self.has_unsafe_ancestor(&recv, checked_var_src);
+            }
+        }
+        false
+    }
+
+    /// Check if a node is negated (method call with !)
+    fn is_negated(&self, node: &Node) -> bool {
+        if let Node::CallNode { .. } = node {
+            let call = node.as_call_node().unwrap();
+            if name_eq(call.name().as_slice(), "!") {
+                return true;
+            }
+        }
+        false
+    }
+
+    // ---- Body skip checks ----
+
+    /// Run body checks where checked_var is identified by span in self.source
+    fn should_skip_body_by_src(&self, body: &Node, checked_var_span: Span) -> bool {
+        if self.is_logic_jump(body) { return true; }
+        if self.is_assignment_call(body) { return true; }
+        if self.ends_with_empty(body) { return true; }
+        if !self.find_matching_receiver_by_span(body, checked_var_span) { return true; }
+        if self.chain_length_by_span(body, checked_var_span) > self.max_chain_length { return true; }
+        if self.chain_has_dotless_or_dcolon_by_span(body, checked_var_span) { return true; }
+        if self.is_operator_call(body) { return true; }
+        if self.is_dotless_call_on_var_by_span(body, checked_var_span) { return true; }
+        if self.is_allowed_method(body) { return true; }
+        if self.ends_with_nil_check(body) { return true; }
+        if self.is_negation(body) { return true; }
+        // Check for unsafe ancestors (SafeNavigationChain)
+        let checked_var_src = span_src(self.source, checked_var_span);
+        if self.has_unsafe_ancestor(body, checked_var_src) { return true; }
+        false
     }
 
     // ---- IfNode handling ----
@@ -588,26 +598,138 @@ impl<'a> SafeNavVisitor<'a> {
             None => return,
         };
 
-        // Create a "checked_var" node by re-parsing the span from original source
-        // Actually, we can use find_matching_receiver with source text comparison.
-        // Let's build a temporary checked_var node using the span.
         let checked_var_src = span_src(self.source, checked_var_span);
 
-        // Run body checks using source-text based matching
+        // Run body checks
         if self.should_skip_body_by_src(&body_node, checked_var_span) {
             return;
         }
 
-        let location = Location::from_offsets(self.source, node_loc.start_offset(), node_loc.end_offset());
+        // Additional check for dotless operator on the direct method call
+        if let Node::CallNode { .. } = &body_node {
+            let _call = body_node.as_call_node().unwrap();
+            let method_call_receiver = self.find_receiver_matching_var(&body_node, checked_var_src);
+            if let Some(method_call_node) = method_call_receiver {
+                // Check dotless_operator_call on the method call (not the receiver)
+                if self.is_dotless_operator_method(&method_call_node) {
+                    return;
+                }
+                // Check double colon
+                if let Node::CallNode { .. } = &method_call_node {
+                    if is_double_colon(self.source, &method_call_node.as_call_node().unwrap()) {
+                        return;
+                    }
+                }
+            }
+        }
+
+        // Compute offense range: use end of first line (matches RuboCop annotation style)
+        let offense_end = end_of_first_line(self.source, node_loc.start_offset());
+        let location = Location::from_offsets(self.source, node_loc.start_offset(), offense_end);
         let mut offense = Offense::new(COP_NAME, MSG, Severity::Convention, location, self.filename);
 
+        // Build correction
         let body_src = node_src(self.source, &body_node);
-        let corrected = self.add_safe_nav(body_src, checked_var_src);
+        let corrected_body = self.add_safe_nav_all(body_src, checked_var_src);
+
+        // Handle comments inside the if expression
+        let full_node_src = &self.source[node_loc.start_offset()..node_loc.end_offset()];
+        let corrected = self.build_if_correction(full_node_src, &corrected_body, &body_node, node_loc.start_offset());
+
         offense = offense.with_correction(Correction::replace(
             node_loc.start_offset(), node_loc.end_offset(), corrected,
         ));
 
         self.offenses.push(offense);
+    }
+
+    /// Find the parent CallNode whose receiver matches checked_var
+    fn find_receiver_matching_var<'b>(&self, node: &Node<'b>, checked_var_src: &str) -> Option<Node<'b>> {
+        if let Node::CallNode { .. } = node {
+            let call = node.as_call_node().unwrap();
+            if let Some(recv) = call.receiver() {
+                let recv_src = node_src(self.source, &recv);
+                if src_match_ignoring_safe_nav(recv_src, checked_var_src) {
+                    // The parent of recv is this call node
+                    return Some(call.as_node());
+                }
+                return self.find_receiver_matching_var(&recv, checked_var_src);
+            }
+        }
+        None
+    }
+
+    /// Check if a call is a dotless operator method ([], []=, or operator)
+    fn is_dotless_operator_method(&self, node: &Node) -> bool {
+        if let Node::CallNode { .. } = node {
+            let call = node.as_call_node().unwrap();
+            if call.call_operator_loc().is_none() {
+                let n = call.name();
+                return name_eq(n.as_slice(), "[]") || name_eq(n.as_slice(), "[]=") || is_operator(n.as_slice());
+            }
+        }
+        false
+    }
+
+    /// Build correction for if/unless expression, handling comments
+    fn build_if_correction(&self, if_src: &str, corrected_body: &str, body_node: &Node, if_start_offset: usize) -> String {
+        // Collect comments from inside the if expression
+        let mut comments_before = Vec::new();
+        let mut trailing_comment = String::new();
+
+        let lines: Vec<&str> = if_src.lines().collect();
+        let body_loc = body_node.location();
+        let body_start_offset = body_loc.start_offset();
+        let body_end_offset = body_loc.end_offset();
+
+        for (i, line) in lines.iter().enumerate() {
+            let line_trimmed = line.trim();
+
+            // Skip the first line (if/unless ...) and the last line (end)
+            // but extract inline comments from them
+            if i == 0 {
+                // Check for inline comment on the if/unless line
+                if let Some(hash_pos) = find_comment_in_line(line) {
+                    let comment = line[hash_pos..].trim();
+                    if !comment.is_empty() {
+                        comments_before.push(comment.to_string());
+                    }
+                }
+                continue;
+            }
+
+            if i == lines.len() - 1 {
+                // Last line - check for inline comment on `end`
+                if let Some(hash_pos) = find_comment_in_line(line) {
+                    trailing_comment = format!(" {}", line[hash_pos..].trim());
+                }
+                continue;
+            }
+
+            // For middle lines, check if they are comment-only lines
+            if line_trimmed.starts_with('#') {
+                // Check if this comment is inside an inner node (body)
+                // by checking line position relative to body
+                let line_offset = if_start_offset + if_src[..].lines().take(i).map(|l| l.len() + 1).sum::<usize>();
+                if line_offset < body_start_offset || line_offset >= body_end_offset {
+                    comments_before.push(line_trimmed.to_string());
+                }
+                // Comments inside inner nodes (body) stay with the body - they're already handled
+                // Actually, in RuboCop's comment handling, comments within inner nodes are NOT moved.
+                // But comments between if-line and body, and between body and end, ARE moved.
+                // For simplicity, we move all non-inner comments.
+                continue;
+            }
+        }
+
+        let mut result = String::new();
+        for comment in &comments_before {
+            result.push_str(comment);
+            result.push('\n');
+        }
+        result.push_str(corrected_body);
+        result.push_str(&trailing_comment);
+        result
     }
 
     // ---- UnlessNode handling ----
@@ -646,11 +768,18 @@ impl<'a> SafeNavVisitor<'a> {
             return;
         }
 
-        let location = Location::from_offsets(self.source, node_loc.start_offset(), node_loc.end_offset());
+        // Compute offense range: use end of first line (matches RuboCop annotation style)
+        let offense_end = end_of_first_line(self.source, node_loc.start_offset());
+        let location = Location::from_offsets(self.source, node_loc.start_offset(), offense_end);
         let mut offense = Offense::new(COP_NAME, MSG, Severity::Convention, location, self.filename);
 
         let body_src = node_src(self.source, &body_node);
-        let corrected = self.add_safe_nav(body_src, checked_var_src);
+        let corrected_body = self.add_safe_nav_all(body_src, checked_var_src);
+
+        // Handle comments
+        let full_node_src = &self.source[node_loc.start_offset()..node_loc.end_offset()];
+        let corrected = self.build_if_correction(full_node_src, &corrected_body, &body_node, node_loc.start_offset());
+
         offense = offense.with_correction(Correction::replace(
             node_loc.start_offset(), node_loc.end_offset(), corrected,
         ));
@@ -716,25 +845,31 @@ impl<'a> SafeNavVisitor<'a> {
             }
         };
 
-        // Re-get the method call node (we need it for body checks)
         let method_node = if else_is_nil { then_node } else { else_node };
+        let checked_var_src = span_src(self.source, checked_var_span);
 
-        if self.should_skip_body_by_src(&method_node, checked_var_span) {
-            return;
-        }
+        // Standard body checks for ternary
+        // RuboCop's unsafe_method? returns false for ternary, so assignment/negation checks are skipped
+        // But dotless operators in chain and allowed methods still apply
+        if self.is_logic_jump(&method_node) { return; }
+        if self.ends_with_empty(&method_node) { return; }
+        if !self.find_matching_receiver_by_span(&method_node, checked_var_span) { return; }
+        if self.chain_length_by_span(&method_node, checked_var_span) > self.max_chain_length { return; }
+        if self.chain_has_dotless_or_dcolon_by_span(&method_node, checked_var_span) { return; }
+        if self.is_allowed_method(&method_node) { return; }
+        if self.ends_with_nil_check(&method_node) { return; }
+        if self.is_negation(&method_node) { return; }
 
-        // Additional ternary-specific checks
-        if let Node::CallNode { .. } = &method_node {
-            let call = method_node.as_call_node().unwrap();
-            if !has_dot(&call) {
-                let n = call.name();
-                if name_eq(n.as_slice(), "[]") || name_eq(n.as_slice(), "[]=") || is_operator(n.as_slice()) {
+        // Additional ternary check: dotless_operator_call? on the direct method call
+        if let Some(method_call) = self.find_receiver_matching_var(&method_node, checked_var_src) {
+            if self.is_dotless_operator_method(&method_call) {
+                return;
+            }
+            if let Node::CallNode { .. } = &method_call {
+                if is_double_colon(self.source, &method_call.as_call_node().unwrap()) {
                     return;
                 }
             }
-        }
-        if self.has_operator_without_dot_by_src(&method_node, checked_var_span) {
-            return;
         }
 
         let node_loc = node.location();
@@ -743,7 +878,7 @@ impl<'a> SafeNavVisitor<'a> {
 
         let method_src = node_src(self.source, &method_node);
         let var_src = span_src(self.source, checked_var_span);
-        let corrected = self.add_safe_nav(method_src, var_src);
+        let corrected = self.add_safe_nav_all(method_src, var_src);
         offense = offense.with_correction(Correction::replace(
             node_loc.start_offset(), node_loc.end_offset(), corrected,
         ));
@@ -752,74 +887,230 @@ impl<'a> SafeNavVisitor<'a> {
     }
 
     // ---- AndNode handling ----
+    //
+    // This follows RuboCop's algorithm for processing && chains:
+    // 1. Collect "parts" from ALL descendant AND nodes (each_descendant(:and))
+    // 2. Each AND contributes: operator span, possibly LHS, possibly RHS
+    // 3. Parts are sorted by position, grouped into slices of 2 (node, operator)
+    // 4. Consecutive pairs of slices are checked for safe navigation offenses
 
     fn check_and(&mut self, node: &ruby_prism::AndNode) {
         let and_node = node.as_node();
-        let clauses = self.collect_and_clauses(&and_node);
+        let pairs = self.collect_and_clause_pairs(&and_node);
 
-        if clauses.len() < 2 {
-            return;
-        }
-
-        let mut i = 0;
-        while i + 1 < clauses.len() {
-            if self.check_and_pair(&clauses[i], &clauses[i + 1]) {
-                i += 2;
-            } else {
-                i += 1;
+        // Track the rhs_span of previous offending pairs to detect overlapping corrections
+        let mut prev_rhs_end: Option<usize> = None;
+        for (lhs_span, lhs_op_span, rhs_span) in &pairs {
+            let is_overlap = prev_rhs_end.map_or(false, |end| lhs_span.0 < end);
+            if self.check_and_pair_rubocop(lhs_span, lhs_op_span, rhs_span, is_overlap) {
+                prev_rhs_end = Some(rhs_span.1);
             }
         }
     }
 
-    /// Collect flattened and-clauses as (Node, Span) tuples.
-    /// We need to store nodes, but we can't clone them. Instead, store spans
-    /// and re-derive nodes when needed.
-    fn collect_and_clauses(&self, node: &Node) -> Vec<Span> {
-        let mut spans = Vec::new();
-        self.flatten_and(node, &mut spans);
-        spans
+    /// Represents a collected "part" - either a node span or an operator span
+    /// We tag them to distinguish during processing but sort them all by position.
+    fn collect_and_clause_pairs(&self, node: &Node) -> Vec<(Span, Span, Span)> {
+        // Step 1: Collect all parts from the top-level AND and all descendant AND nodes
+        let mut parts: Vec<(Span, bool)> = Vec::new(); // (span, is_operator)
+
+        // and_parts for the top-level node
+        self.rubocop_and_parts(node, &mut parts);
+
+        // Find all descendant AND nodes and collect their parts
+        self.collect_descendant_and_parts(node, &mut parts);
+
+        // Step 2: Sort by position
+        parts.sort_by_key(|&(span, _)| span.0);
+
+        // Step 3: Group into slices of 2 (like RuboCop's each_slice(2))
+        // Each slice should be (node_span, operator_span)
+        let mut slices: Vec<(Span, Option<Span>)> = Vec::new();
+        let mut i = 0;
+        while i < parts.len() {
+            let (span1, is_op1) = parts[i];
+            if i + 1 < parts.len() {
+                let (span2, is_op2) = parts[i + 1];
+                if !is_op1 && is_op2 {
+                    // (node, operator) pair
+                    slices.push((span1, Some(span2)));
+                    i += 2;
+                } else if !is_op1 && !is_op2 {
+                    // Two nodes in a row - first one has no operator (last element)
+                    slices.push((span1, None));
+                    i += 1;
+                } else {
+                    // Operator without preceding node? Skip it.
+                    i += 1;
+                }
+            } else {
+                // Last element - single node without operator
+                if !is_op1 {
+                    slices.push((span1, None));
+                }
+                i += 1;
+            }
+        }
+
+        // Step 4: Take consecutive pairs (each_cons(2))
+        let mut result = Vec::new();
+        for j in 0..slices.len().saturating_sub(1) {
+            let (lhs_span, lhs_op) = slices[j];
+            let (rhs_span, _rhs_op) = slices[j + 1];
+            if let Some(op_span) = lhs_op {
+                result.push((lhs_span, op_span, rhs_span));
+            }
+        }
+
+        result
     }
 
-    fn flatten_and(&self, node: &Node, out: &mut Vec<Span>) {
+    /// RuboCop's `and_parts(node)`: extract operator, maybe rhs, maybe lhs from an AND node
+    fn rubocop_and_parts(&self, node: &Node, parts: &mut Vec<(Span, bool)>) {
+        if let Node::AndNode { .. } = node {
+            let and = node.as_and_node().unwrap();
+
+            // Add operator
+            let op_loc = and.operator_loc();
+            let op_span = (op_loc.start_offset(), op_loc.end_offset());
+            parts.push((op_span, true));
+
+            let rhs = and.right();
+            let lhs = and.left();
+
+            // Add RHS unless and_inside_begin?(rhs) - i.e., rhs is/contains a paren wrapping an AND
+            if !self.and_inside_begin(&rhs) {
+                parts.push((node_span(&rhs), false));
+            }
+
+            // Add LHS unless lhs is an AND type or and_inside_begin?(lhs)
+            if !matches!(lhs, Node::AndNode { .. }) && !self.and_inside_begin(&lhs) {
+                parts.push((node_span(&lhs), false));
+            }
+        }
+    }
+
+    /// Find all descendant AND nodes and collect their parts
+    fn collect_descendant_and_parts(&self, node: &Node, parts: &mut Vec<(Span, bool)>) {
+        // Walk all descendants looking for AND nodes
+        // Skip the top-level node itself (already processed)
+        self.walk_descendants_for_and(node, parts, true);
+    }
+
+    fn walk_descendants_for_and(&self, node: &Node, parts: &mut Vec<(Span, bool)>, is_top: bool) {
         match node {
             Node::AndNode { .. } => {
                 let and = node.as_and_node().unwrap();
-                self.flatten_and(&and.left(), out);
-                self.flatten_and(&and.right(), out);
+                if !is_top {
+                    // Check if this AND is inside a block - if so, skip (RuboCop's concat_nodes check)
+                    if self.has_block_ancestor_in_source(node) {
+                        return;
+                    }
+                    // Collect parts from this descendant AND
+                    self.rubocop_and_parts(node, parts);
+                }
+                // Continue walking children to find more ANDs
+                self.walk_descendants_for_and(&and.left(), parts, false);
+                self.walk_descendants_for_and(&and.right(), parts, false);
             }
             Node::ParenthesesNode { .. } => {
                 let paren = node.as_parentheses_node().unwrap();
                 if let Some(body) = paren.body() {
-                    if let Node::StatementsNode { .. } = &body {
-                        let stmts = body.as_statements_node().unwrap();
-                        let body_list = stmts.body();
-                        if body_list.len() == 1 {
-                            let first = body_list.iter().next().unwrap();
-                            if let Node::AndNode { .. } = &first {
-                                self.flatten_and(&first, out);
-                                return;
-                            }
-                        }
-                    } else if let Node::AndNode { .. } = &body {
-                        self.flatten_and(&body, out);
-                        return;
-                    }
+                    self.walk_descendants_for_and(&body, parts, false);
                 }
-                out.push(node_span(node));
+            }
+            Node::StatementsNode { .. } => {
+                let stmts = node.as_statements_node().unwrap();
+                for stmt in stmts.body().iter() {
+                    self.walk_descendants_for_and(&stmt, parts, false);
+                }
+            }
+            Node::OrNode { .. } => {
+                // Walk into OR nodes to find AND descendants
+                let or = node.as_or_node().unwrap();
+                self.walk_descendants_for_and(&or.left(), parts, false);
+                self.walk_descendants_for_and(&or.right(), parts, false);
             }
             _ => {
-                out.push(node_span(node));
+                // Don't recurse into other node types (calls, blocks, etc.)
             }
         }
     }
 
-    /// Check a pair of and-clauses. Since we only have spans, we need to
-    /// sub-parse to work with nodes. However, sub-parsing changes offsets.
-    /// Instead, let's parse the LHS and RHS independently and compare source text.
-    fn check_and_pair(&mut self, lhs_span: &Span, rhs_span: &Span) -> bool {
+    /// Check if a node is conceptually inside a block (RuboCop: and_node.each_ancestor(:block).any?)
+    /// Since we walk the tree top-down, we approximate this by checking the source
+    fn has_block_ancestor_in_source(&self, _node: &Node) -> bool {
+        // In our tree walking, we don't recurse into BlockNode/LambdaNode,
+        // so any AND node we find won't be inside a block.
+        false
+    }
+
+    /// RuboCop's `and_inside_begin?`: checks if a node contains (in descendants)
+    /// a parenthesized expression wrapping an AND node.
+    /// Pattern: `(begin and ...)` - a begin/paren node whose child is an AND.
+    fn and_inside_begin(&self, node: &Node) -> bool {
+        self.check_and_inside_begin_recursive(node)
+    }
+
+    fn check_and_inside_begin_recursive(&self, node: &Node) -> bool {
+        match node {
+            Node::ParenthesesNode { .. } => {
+                let paren = node.as_parentheses_node().unwrap();
+                if let Some(body) = paren.body() {
+                    // Check if body is/contains an AND
+                    if self.body_contains_and(&body) {
+                        return true;
+                    }
+                    // Also recurse to check deeper
+                    return self.check_and_inside_begin_recursive(&body);
+                }
+                false
+            }
+            Node::StatementsNode { .. } => {
+                let stmts = node.as_statements_node().unwrap();
+                for stmt in stmts.body().iter() {
+                    if self.check_and_inside_begin_recursive(&stmt) {
+                        return true;
+                    }
+                }
+                false
+            }
+            Node::AndNode { .. } => {
+                let and = node.as_and_node().unwrap();
+                self.check_and_inside_begin_recursive(&and.left())
+                    || self.check_and_inside_begin_recursive(&and.right())
+            }
+            Node::OrNode { .. } => {
+                let or = node.as_or_node().unwrap();
+                self.check_and_inside_begin_recursive(&or.left())
+                    || self.check_and_inside_begin_recursive(&or.right())
+            }
+            _ => false,
+        }
+    }
+
+    fn body_contains_and(&self, node: &Node) -> bool {
+        match node {
+            Node::AndNode { .. } => true,
+            Node::StatementsNode { .. } => {
+                let stmts = node.as_statements_node().unwrap();
+                stmts.body().iter().any(|s| matches!(s, Node::AndNode { .. }))
+            }
+            _ => false,
+        }
+    }
+
+    /// Check a pair of and-clauses (RuboCop style with separate lhs, operator, and rhs spans)
+    /// `lhs_overlaps_prev_rhs`: true if this pair's LHS overlaps with a previous pair's RHS
+    fn check_and_pair_rubocop(
+        &mut self,
+        lhs_span: &Span,
+        lhs_op_span: &Span,
+        rhs_span: &Span,
+        lhs_overlaps_prev_rhs: bool,
+    ) -> bool {
         let lhs_src = span_src(self.source, *lhs_span);
         let rhs_src = span_src(self.source, *rhs_span);
-
 
         // Parse both sub-expressions to analyze structure
         let lhs_parsed = ruby_prism::parse(lhs_src.as_bytes());
@@ -867,16 +1158,16 @@ impl<'a> SafeNavVisitor<'a> {
         };
 
         // Validate LHS is a proper object check
-        if !is_not_nil {
-            if !self.is_valid_and_lhs(&lhs_node) {
-                return false;
-            }
+        if !is_not_nil && !self.is_valid_and_lhs(&lhs_node) {
+            return false;
         }
 
-        // Unwrap parens on RHS
-        let actual_rhs = self.unwrap_parens_parsed(&rhs_node);
-        let actual_rhs_src = node_src(rhs_src, &actual_rhs);
+        // Check lhs_method_chain == lhs_receiver (RuboCop: find_method_chain check)
+        // Ensures LHS is the checked variable itself, not a method chain containing it
+        // (already handled by extract_and_lhs_src returning the whole LHS)
 
+        // Unwrap parens on RHS (RuboCop's strip_begin)
+        let actual_rhs = self.unwrap_parens_parsed(&rhs_node);
         // Find matching receiver in RHS
         if !self.find_matching_receiver_src(&actual_rhs, rhs_src, &checked_var_src) {
             return false;
@@ -893,23 +1184,253 @@ impl<'a> SafeNavVisitor<'a> {
         if self.ends_with_empty(&actual_rhs) { return false; }
         if self.is_negation(&rhs_node) { return false; }
 
-        // Create offense
+        // Check for unsafe ancestors (SafeNavigationChain)
+        if self.has_unsafe_ancestor_src(&actual_rhs, rhs_src, &checked_var_src) { return false; }
+
+        // Create offense with range from lhs start to rhs end
         let location = Location::from_offsets(self.source, lhs_span.0, rhs_span.1);
         let mut offense = Offense::new(COP_NAME, MSG, Severity::Convention, location, self.filename);
 
-        // Build correction (not for OR-containing RHS)
-        if !self.node_contains_or(&rhs_node) {
-            let corrected = self.add_safe_nav(actual_rhs_src, &checked_var_src);
-            let final_corrected = if actual_rhs_src != rhs_src {
-                rhs_src.replace(actual_rhs_src, &corrected)
-            } else {
-                corrected
-            };
-            offense = offense.with_correction(Correction::replace(lhs_span.0, rhs_span.1, final_corrected));
+        // Build correction using granular edits (not for OR-containing RHS).
+        // Unlike RuboCop which uses ignore_node to prevent duplicate corrections,
+        // we generate granular edits for ALL offenses. The apply_corrections engine
+        // handles overlapping edits by skipping them, which produces the correct
+        // composed result in a single pass.
+        let rhs_contains_or = self.node_contains_or(&rhs_node);
+        if !rhs_contains_or {
+            let edits = self.build_and_correction_edits(
+                lhs_span, lhs_op_span, rhs_span,
+                &checked_var_src, rhs_src, &actual_rhs,
+                rhs_span.0, lhs_overlaps_prev_rhs,
+            );
+            if !edits.is_empty() {
+                offense = offense.with_correction(Correction { edits });
+            }
         }
 
         self.offenses.push(offense);
         true
+    }
+
+    /// Build granular correction edits for an AND-pair offense.
+    ///
+    /// Two strategies based on whether this pair overlaps with a previous pair:
+    ///
+    /// **Non-overlapping** (first pair or independent):
+    ///   Following RuboCop: delete LHS + operator (lhs_start to op_end+ws),
+    ///   leaving the RHS including any parens. Then insert `&` at dots.
+    ///   For `foo && foo.bar`: Delete(0,7) + Insert(&,10) = "foo&.bar"
+    ///   For `foo && (foo.bar? && ...)`: Delete(0,7) + Insert(&,11) = "(foo&.bar?...)"
+    ///
+    /// **Overlapping** (LHS is previous pair's RHS):
+    ///   For the second pair in `foo && foo.bar && foo.bar.baz`:
+    ///   Delete operator+ws, Delete receiver in RHS, Insert `&` at dots.
+    fn build_and_correction_edits(
+        &self,
+        lhs_span: &Span,
+        lhs_op_span: &Span,
+        _rhs_span: &Span,
+        checked_var_src: &str,
+        rhs_src: &str,
+        actual_rhs: &Node,
+        rhs_base_offset: usize,
+        lhs_overlaps_prev_rhs: bool,
+    ) -> Vec<crate::offense::Edit> {
+        use crate::offense::Edit;
+        let mut edits = Vec::new();
+
+        // Find dot positions in the chain
+        let mut dot_positions: Vec<usize> = Vec::new();
+        self.collect_chain_dots(actual_rhs, rhs_src, checked_var_src, rhs_base_offset, &mut dot_positions);
+
+        if dot_positions.is_empty() {
+            return edits;
+        }
+
+        dot_positions.sort();
+        let innermost_dot = dot_positions[0];
+
+        if lhs_overlaps_prev_rhs {
+            // Overlapping case: don't delete LHS (it's handled by previous pair's correction).
+            // Only delete the operator and the receiver in the RHS.
+
+            // Delete operator + surrounding whitespace
+            let op_start_with_ws = self.skip_left_whitespace(lhs_op_span.0);
+            let op_end_with_ws = self.skip_right_whitespace(lhs_op_span.1);
+            edits.push(Edit {
+                start_offset: op_start_with_ws,
+                end_offset: op_end_with_ws,
+                replacement: String::new(),
+            });
+
+            // Delete receiver text in the RHS (from recv_start to innermost_dot)
+            let recv_global_offset = self.find_receiver_global_offset(
+                actual_rhs, rhs_src, checked_var_src, rhs_base_offset,
+            );
+            if let Some((recv_start, _)) = recv_global_offset {
+                edits.push(Edit {
+                    start_offset: recv_start,
+                    end_offset: innermost_dot,
+                    replacement: String::new(),
+                });
+            }
+        } else {
+            // Non-overlapping case: Delete entire LHS + operator + trailing whitespace.
+            // This follows RuboCop which removes lhs.source_range (right side space)
+            // and operator_range (right side space) separately.
+            //
+            // For "foo && foo.bar": Delete(0, 7) removes "foo && "
+            // For "!foo.nil? && foo.bar": Delete(0, 14) removes "!foo.nil? && "
+            // For "foo && (foo.bar? && ...)": Delete(0, 7) removes "foo && "
+            //
+            // The RHS receiver (foo) stays - only the dots get & inserted.
+
+            let op_end_with_ws = self.skip_right_whitespace(lhs_op_span.1);
+            edits.push(Edit {
+                start_offset: lhs_span.0,
+                end_offset: op_end_with_ws,
+                replacement: String::new(),
+            });
+
+            // RuboCop: corrector.replace(rhs_receiver, lhs_receiver.source)
+            // Replace the receiver in the RHS with checked_var_src if they differ.
+            // This handles cases like `foo&.bar && foo.bar.baz` where the RHS receiver
+            // is `foo.bar` (without &.) but checked_var is `foo&.bar` (with &.).
+            let recv_global_offset = self.find_receiver_global_offset(
+                actual_rhs, rhs_src, checked_var_src, rhs_base_offset,
+            );
+            if let Some((recv_start, recv_end)) = recv_global_offset {
+                let recv_text = &self.source[recv_start..recv_end];
+                if recv_text != checked_var_src {
+                    edits.push(Edit {
+                        start_offset: recv_start,
+                        end_offset: recv_end,
+                        replacement: checked_var_src.to_string(),
+                    });
+                }
+            }
+        }
+
+        // Insert `&` before each `.` in the chain
+        for &dot_pos in &dot_positions {
+            if dot_pos < self.source.len() && self.source.as_bytes()[dot_pos] == b'.' {
+                if dot_pos == 0 || self.source.as_bytes()[dot_pos - 1] != b'&' {
+                    edits.push(Edit {
+                        start_offset: dot_pos,
+                        end_offset: dot_pos,
+                        replacement: "&".to_string(),
+                    });
+                }
+            }
+        }
+
+        edits
+    }
+
+    /// Skip whitespace to the left of a position in the source
+    fn skip_left_whitespace(&self, pos: usize) -> usize {
+        let bytes = self.source.as_bytes();
+        let mut p = pos;
+        while p > 0 && (bytes[p - 1] == b' ' || bytes[p - 1] == b'\t') {
+            p -= 1;
+        }
+        p
+    }
+
+    /// Find the global (start, end) offset of the receiver in the RHS that matches checked_var_src
+    fn find_receiver_global_offset(
+        &self,
+        rhs_node: &Node,
+        rhs_src: &str,
+        checked_var_src: &str,
+        rhs_base_offset: usize,
+    ) -> Option<Span> {
+        if let Node::CallNode { .. } = rhs_node {
+            let call = rhs_node.as_call_node().unwrap();
+            if let Some(recv) = call.receiver() {
+                let recv_local_src = node_src(rhs_src, &recv);
+                if src_match_ignoring_safe_nav(recv_local_src, checked_var_src) {
+                    let recv_loc = recv.location();
+                    return Some((
+                        rhs_base_offset + recv_loc.start_offset(),
+                        rhs_base_offset + recv_loc.end_offset(),
+                    ));
+                }
+                return self.find_receiver_global_offset(&recv, rhs_src, checked_var_src, rhs_base_offset);
+            }
+        }
+        None
+    }
+
+    /// Skip whitespace to the right of a position in the source
+    fn skip_right_whitespace(&self, pos: usize) -> usize {
+        let bytes = self.source.as_bytes();
+        let mut p = pos;
+        while p < bytes.len() && (bytes[p] == b' ' || bytes[p] == b'\t') {
+            p += 1;
+        }
+        p
+    }
+
+    /// Collect all dot positions in the chain from receiver to outermost call.
+    /// Returns global offsets of each `.` operator in the chain.
+    fn collect_chain_dots(
+        &self,
+        node: &Node,
+        rhs_src: &str,
+        checked_var_src: &str,
+        rhs_base_offset: usize,
+        dots: &mut Vec<usize>,
+    ) {
+        match node {
+            Node::CallNode { .. } => {
+                let call = node.as_call_node().unwrap();
+                if let Some(recv) = call.receiver() {
+                    let recv_src = node_src(rhs_src, &recv);
+
+                    // Add this call's dot to the list
+                    if let Some(dot_loc) = call.call_operator_loc() {
+                        let dot_global = rhs_base_offset + dot_loc.start_offset();
+                        let dot_end = rhs_base_offset + dot_loc.end_offset();
+                        let dot_src = &self.source[dot_global..dot_end];
+                        if dot_src == "." || dot_src == "&." {
+                            dots.push(dot_global);
+                        }
+                    }
+
+                    // If receiver matches checked var, stop recursion
+                    if src_match_ignoring_safe_nav(recv_src, checked_var_src) {
+                        return;
+                    }
+
+                    // Recurse into receiver for deeper chain dots
+                    self.collect_chain_dots(&recv, rhs_src, checked_var_src, rhs_base_offset, dots);
+                }
+            }
+            _ => {}
+        }
+    }
+
+    /// Check for unsafe ancestor in a sub-parsed chain
+    fn has_unsafe_ancestor_src(&self, node: &Node, parent_src: &str, checked_var_src: &str) -> bool {
+        if let Node::CallNode { .. } = node {
+            let call = node.as_call_node().unwrap();
+            if let Some(recv) = call.receiver() {
+                let recv_src = node_src(parent_src, &recv);
+                if src_match_ignoring_safe_nav(recv_src, checked_var_src) {
+                    return false;
+                }
+                // If SafeNavigationChain is disabled, any chain is unsafe
+                if !self.safe_navigation_chain_enabled {
+                    return true;
+                }
+                if self.is_negated(&recv) {
+                    return true;
+                }
+                return self.has_unsafe_ancestor_src(&recv, parent_src, checked_var_src);
+            }
+        }
+        false
     }
 
     /// Get the source text of the receiver in `!foo.nil?`
@@ -934,7 +1455,6 @@ impl<'a> SafeNavVisitor<'a> {
 
     /// Extract checked variable source text from an and-LHS
     fn extract_and_lhs_src<'b>(&self, parent_src: &'b str, lhs: &Node) -> Option<&'b str> {
-        // Simple variable first
         if is_simple_var(lhs) {
             return Some(node_src(parent_src, lhs));
         }
@@ -943,7 +1463,6 @@ impl<'a> SafeNavVisitor<'a> {
             Node::CallNode { .. } => {
                 let call = lhs.as_call_node().unwrap();
                 if call.call_operator_loc().is_some() || call.receiver().is_some() {
-                    // For `foo.bar` or `foo&.bar`, the "checked var" IS the whole LHS
                     Some(node_src(parent_src, lhs))
                 } else {
                     None
@@ -955,7 +1474,6 @@ impl<'a> SafeNavVisitor<'a> {
 
     /// Check if LHS is a valid object check for &&
     fn is_valid_and_lhs(&self, lhs: &Node) -> bool {
-        // Simple variable (including variable_call) is always a valid LHS
         if is_simple_var(lhs) {
             return true;
         }
@@ -963,97 +1481,14 @@ impl<'a> SafeNavVisitor<'a> {
         match lhs {
             Node::CallNode { .. } => {
                 let call = lhs.as_call_node().unwrap();
-                // Has dot operator (foo.bar or foo&.bar) or has receiver
                 if call.call_operator_loc().is_some() || call.receiver().is_some() {
                     true
                 } else {
-                    // Bare method without receiver: `foo?` -> not an object check
                     false
                 }
             }
             _ => false,
         }
-    }
-
-    /// Find matching receiver using source text comparison (for sub-parsed nodes)
-    fn find_matching_receiver_src(&self, method_chain: &Node, parent_src: &str, checked_var_src: &str) -> bool {
-        if let Node::CallNode { .. } = method_chain {
-            let call = method_chain.as_call_node().unwrap();
-            if let Some(recv) = call.receiver() {
-                let recv_src = node_src(parent_src, &recv);
-                if src_match_ignoring_safe_nav(recv_src, checked_var_src) {
-                    return true;
-                }
-                return self.find_matching_receiver_src(&recv, parent_src, checked_var_src);
-            }
-        }
-        false
-    }
-
-    /// Count chain length using source text comparison
-    fn chain_length_src(&self, node: &Node, parent_src: &str, checked_var_src: &str) -> usize {
-        let mut count = 0;
-        self.count_chain_src_recursive(node, parent_src, checked_var_src, &mut count);
-        count
-    }
-
-    fn count_chain_src_recursive(&self, node: &Node, parent_src: &str, checked_var_src: &str, count: &mut usize) {
-        if let Node::CallNode { .. } = node {
-            let call = node.as_call_node().unwrap();
-            if let Some(recv) = call.receiver() {
-                *count += 1;
-                let recv_src = node_src(parent_src, &recv);
-                if src_match_ignoring_safe_nav(recv_src, checked_var_src) {
-                    return;
-                }
-                self.count_chain_src_recursive(&recv, parent_src, checked_var_src, count);
-            }
-        }
-    }
-
-    /// Check dotless/dcolon using source text comparison
-    fn chain_has_dotless_or_dcolon_src(&self, node: &Node, parent_src: &str, checked_var_src: &str) -> bool {
-        if let Node::CallNode { .. } = node {
-            let call = node.as_call_node().unwrap();
-            if !has_dot(&call) {
-                let n = call.name();
-                if name_eq(n.as_slice(), "[]") || name_eq(n.as_slice(), "[]=") || is_operator(n.as_slice()) {
-                    return true;
-                }
-            }
-            if is_double_colon(parent_src, &call) {
-                return true;
-            }
-            if let Some(recv) = call.receiver() {
-                let recv_src = node_src(parent_src, &recv);
-                if src_match_ignoring_safe_nav(recv_src, checked_var_src) {
-                    return false;
-                }
-                return self.chain_has_dotless_or_dcolon_src(&recv, parent_src, checked_var_src);
-            }
-        }
-        false
-    }
-
-    /// Check operator without dot using source text
-    fn has_operator_without_dot_by_src(&self, node: &Node, checked_var_span: Span) -> bool {
-        if let Node::CallNode { .. } = node {
-            let call = node.as_call_node().unwrap();
-            if !has_dot(&call) {
-                let n = call.name();
-                if is_operator(n.as_slice()) || name_eq(n.as_slice(), "[]") || name_eq(n.as_slice(), "[]=") {
-                    return true;
-                }
-            }
-            if let Some(recv) = call.receiver() {
-                let recv_span = node_span(&recv);
-                if recv_span == checked_var_span || span_src(self.source, recv_span) == span_src(self.source, checked_var_span) {
-                    return false;
-                }
-                return self.has_operator_without_dot_by_src(&recv, checked_var_span);
-            }
-        }
-        false
     }
 
     /// Unwrap parens on a node from a sub-parse
@@ -1106,143 +1541,159 @@ impl<'a> SafeNavVisitor<'a> {
         }
     }
 
-    // ---- Body checks using span-based checked_var ----
-
-    /// Run body checks where checked_var is identified by span in self.source
-    fn should_skip_body_by_src(&self, body: &Node, checked_var_span: Span) -> bool {
-        if self.is_logic_jump(body) { return true; }
-        if self.is_assignment_call(body) { return true; }
-        if self.ends_with_empty(body) { return true; }
-
-        // find_matching_receiver using span
-        if !self.find_matching_receiver_by_span(body, checked_var_span) { return true; }
-
-        // chain_length using span
-        if self.chain_length_by_span(body, checked_var_span) > self.max_chain_length { return true; }
-
-        // dotless/dcolon using span
-        if self.chain_has_dotless_or_dcolon_by_span(body, checked_var_span) { return true; }
-
-        if self.is_operator_call(body) { return true; }
-
-        // dotless call on var using span
-        if self.is_dotless_call_on_var_by_span(body, checked_var_span) { return true; }
-
-        if self.is_allowed_method(body) { return true; }
-        if self.ends_with_nil_check(body) { return true; }
-        if self.is_negation(body) { return true; }
-
-        false
-    }
-
-    fn find_matching_receiver_by_span(&self, method_chain: &Node, checked_var_span: Span) -> bool {
-        let checked_var_src = span_src(self.source, checked_var_span);
-        if let Node::CallNode { .. } = method_chain {
-            let call = method_chain.as_call_node().unwrap();
-            if let Some(recv) = call.receiver() {
-                let recv_src = node_src(self.source, &recv);
-                if src_match_ignoring_safe_nav(recv_src, checked_var_src) {
-                    return true;
-                }
-                return self.find_matching_receiver_by_span(&recv, checked_var_span);
-            }
-        }
-        false
-    }
-
-    fn chain_length_by_span(&self, node: &Node, checked_var_span: Span) -> usize {
-        let checked_var_src = span_src(self.source, checked_var_span);
-        let mut count = 0;
-        self.count_chain_by_span_recursive(node, checked_var_src, &mut count);
-        count
-    }
-
-    fn count_chain_by_span_recursive(&self, node: &Node, checked_var_src: &str, count: &mut usize) {
-        if let Node::CallNode { .. } = node {
-            let call = node.as_call_node().unwrap();
-            if let Some(recv) = call.receiver() {
-                *count += 1;
-                if src_match_ignoring_safe_nav(node_src(self.source, &recv), checked_var_src) {
-                    return;
-                }
-                self.count_chain_by_span_recursive(&recv, checked_var_src, count);
-            }
-        }
-    }
-
-    fn chain_has_dotless_or_dcolon_by_span(&self, node: &Node, checked_var_span: Span) -> bool {
-        let checked_var_src = span_src(self.source, checked_var_span);
-        self.check_dotless_dcolon_by_src(node, checked_var_src)
-    }
-
-    fn check_dotless_dcolon_by_src(&self, node: &Node, checked_var_src: &str) -> bool {
-        if let Node::CallNode { .. } = node {
-            let call = node.as_call_node().unwrap();
-            if !has_dot(&call) {
-                let n = call.name();
-                if name_eq(n.as_slice(), "[]") || name_eq(n.as_slice(), "[]=") || is_operator(n.as_slice()) {
-                    return true;
-                }
-            }
-            if is_double_colon(self.source, &call) {
-                return true;
-            }
-            if let Some(recv) = call.receiver() {
-                if src_match_ignoring_safe_nav(node_src(self.source, &recv), checked_var_src) {
-                    return false;
-                }
-                return self.check_dotless_dcolon_by_src(&recv, checked_var_src);
-            }
-        }
-        false
-    }
-
-    fn is_dotless_call_on_var_by_span(&self, body: &Node, checked_var_span: Span) -> bool {
-        let checked_var_src = span_src(self.source, checked_var_span);
-        if let Node::CallNode { .. } = body {
-            let call = body.as_call_node().unwrap();
-            if let Some(recv) = call.receiver() {
-                if src_match_ignoring_safe_nav(node_src(self.source, &recv), checked_var_src) && !has_dot(&call) {
-                    return true;
-                }
-            }
-        }
-        false
-    }
-
     // ---- Correction ----
 
-    /// Add `&.` to the method chain, replacing the first `.` after the checked variable
-    fn add_safe_nav(&self, method_src: &str, var_src: &str) -> String {
-        // Try direct match first, then normalized match
+    /// Add `&.` to ALL method calls in the chain from checked variable to outermost call.
+    /// This replaces every `.` with `&.` between the checked variable and the end of the chain.
+    fn add_safe_nav_all(&self, method_src: &str, var_src: &str) -> String {
+        // Normalize var_src for matching (handle &. vs .)
         let norm_var = var_src.replace("&.", ".");
-        if let Some(pos) = method_src.find(var_src).or_else(|| method_src.find(&norm_var)) {
-            let matched_var = if method_src[pos..].starts_with(var_src) {
-                var_src
-            } else {
-                &norm_var
-            };
-            let after = pos + matched_var.len();
-            let rest = &method_src[after..];
-            let mut result = method_src[..after].to_string();
-            let mut replaced_first = false;
 
-            for ch in rest.chars() {
-                match ch {
-                    '.' if !replaced_first => {
-                        if result.ends_with('&') {
-                            result.push('.');
-                        } else {
-                            result.push_str("&.");
-                        }
-                        replaced_first = true;
+        // Find the var in method_src
+        let (pos, matched_len) = if let Some(p) = method_src.find(var_src) {
+            (p, var_src.len())
+        } else if let Some(p) = method_src.find(&norm_var) {
+            (p, norm_var.len())
+        } else {
+            return method_src.to_string();
+        };
+
+        let before = &method_src[..pos];
+        // Use the original var_src (with any &.) for the replacement prefix
+        let after = &method_src[pos + matched_len..];
+
+        let mut result = String::new();
+        result.push_str(before);
+        result.push_str(var_src);
+
+        // Now replace ALL `.` with `&.` in the remaining chain
+        // But be careful: don't replace `.` inside strings, blocks, or arguments
+        let mut chars = after.chars().peekable();
+        let mut depth = 0i32; // Track nesting depth for parens/blocks
+        let mut in_string = false;
+        let mut string_delim = '"';
+
+        while let Some(ch) = chars.next() {
+            match ch {
+                '"' | '\'' if !in_string => {
+                    in_string = true;
+                    string_delim = ch;
+                    result.push(ch);
+                }
+                c if in_string && c == string_delim => {
+                    in_string = false;
+                    result.push(ch);
+                }
+                _ if in_string => {
+                    result.push(ch);
+                }
+                '(' | '[' | '{' => {
+                    depth += 1;
+                    result.push(ch);
+                }
+                ')' | ']' | '}' => {
+                    depth -= 1;
+                    result.push(ch);
+                }
+                '.' if depth == 0 => {
+                    // Check for `..` or `...` range operator
+                    if chars.peek() == Some(&'.') {
+                        result.push('.');
+                    } else if result.ends_with('&') {
+                        // Already has &. prefix
+                        result.push('.');
+                    } else {
+                        result.push_str("&.");
                     }
-                    _ => result.push(ch),
+                }
+                '&' if depth == 0 && chars.peek() == Some(&'.') => {
+                    // Already a safe navigation call
+                    result.push('&');
+                }
+                _ => {
+                    result.push(ch);
                 }
             }
-            result
-        } else {
-            method_src.to_string()
+        }
+        result
+    }
+}
+
+/// Find position of a `#` comment in a line (not inside a string)
+fn find_comment_in_line(line: &str) -> Option<usize> {
+    let mut in_string = false;
+    let mut delim = '"';
+    let bytes = line.as_bytes();
+    let mut i = 0;
+    while i < bytes.len() {
+        let ch = bytes[i] as char;
+        match ch {
+            '"' | '\'' if !in_string => {
+                in_string = true;
+                delim = ch;
+            }
+            c if in_string && c == delim => {
+                in_string = false;
+            }
+            '#' if !in_string => {
+                return Some(i);
+            }
+            _ => {}
+        }
+        i += 1;
+    }
+    None
+}
+
+/// Duplicate/reconstruct a Node by going through its typed form's as_node()
+fn dup_node<'pr>(node: &Node<'pr>) -> Node<'pr> {
+    match node {
+        Node::LocalVariableReadNode { .. } => node.as_local_variable_read_node().unwrap().as_node(),
+        Node::ConstantReadNode { .. } => node.as_constant_read_node().unwrap().as_node(),
+        Node::CallNode { .. } => node.as_call_node().unwrap().as_node(),
+        Node::AndNode { .. } => node.as_and_node().unwrap().as_node(),
+        Node::OrNode { .. } => node.as_or_node().unwrap().as_node(),
+        Node::ParenthesesNode { .. } => node.as_parentheses_node().unwrap().as_node(),
+        Node::NilNode { .. } => node.as_nil_node().unwrap().as_node(),
+        Node::IfNode { .. } => node.as_if_node().unwrap().as_node(),
+        Node::UnlessNode { .. } => node.as_unless_node().unwrap().as_node(),
+        Node::ElseNode { .. } => node.as_else_node().unwrap().as_node(),
+        Node::StatementsNode { .. } => node.as_statements_node().unwrap().as_node(),
+        Node::BreakNode { .. } => node.as_break_node().unwrap().as_node(),
+        Node::NextNode { .. } => node.as_next_node().unwrap().as_node(),
+        Node::ReturnNode { .. } => node.as_return_node().unwrap().as_node(),
+        Node::YieldNode { .. } => node.as_yield_node().unwrap().as_node(),
+        Node::IntegerNode { .. } => node.as_integer_node().unwrap().as_node(),
+        Node::FloatNode { .. } => node.as_float_node().unwrap().as_node(),
+        Node::StringNode { .. } => node.as_string_node().unwrap().as_node(),
+        Node::SymbolNode { .. } => node.as_symbol_node().unwrap().as_node(),
+        Node::TrueNode { .. } => node.as_true_node().unwrap().as_node(),
+        Node::FalseNode { .. } => node.as_false_node().unwrap().as_node(),
+        Node::SelfNode { .. } => node.as_self_node().unwrap().as_node(),
+        Node::InstanceVariableReadNode { .. } => node.as_instance_variable_read_node().unwrap().as_node(),
+        Node::ClassVariableReadNode { .. } => node.as_class_variable_read_node().unwrap().as_node(),
+        Node::GlobalVariableReadNode { .. } => node.as_global_variable_read_node().unwrap().as_node(),
+        Node::ConstantPathNode { .. } => node.as_constant_path_node().unwrap().as_node(),
+        Node::BlockNode { .. } => node.as_block_node().unwrap().as_node(),
+        Node::ArrayNode { .. } => node.as_array_node().unwrap().as_node(),
+        Node::HashNode { .. } => node.as_hash_node().unwrap().as_node(),
+        Node::InterpolatedStringNode { .. } => node.as_interpolated_string_node().unwrap().as_node(),
+        Node::RegularExpressionNode { .. } => node.as_regular_expression_node().unwrap().as_node(),
+        Node::BeginNode { .. } => node.as_begin_node().unwrap().as_node(),
+        Node::RangeNode { .. } => node.as_range_node().unwrap().as_node(),
+        Node::LambdaNode { .. } => node.as_lambda_node().unwrap().as_node(),
+        Node::DefNode { .. } => node.as_def_node().unwrap().as_node(),
+        Node::ClassNode { .. } => node.as_class_node().unwrap().as_node(),
+        Node::ModuleNode { .. } => node.as_module_node().unwrap().as_node(),
+        Node::LocalVariableWriteNode { .. } => node.as_local_variable_write_node().unwrap().as_node(),
+        Node::InstanceVariableWriteNode { .. } => node.as_instance_variable_write_node().unwrap().as_node(),
+        Node::MultiWriteNode { .. } => node.as_multi_write_node().unwrap().as_node(),
+        Node::SplatNode { .. } => node.as_splat_node().unwrap().as_node(),
+        _ => {
+            #[cfg(debug_assertions)]
+            panic!("dup_node: unhandled node type");
+            #[cfg(not(debug_assertions))]
+            node.as_nil_node().unwrap().as_node()
         }
     }
 }

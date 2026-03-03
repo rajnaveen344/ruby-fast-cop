@@ -1069,10 +1069,15 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
                 .and_then(|c| c.raw.get("MaxChainLength"))
                 .and_then(|v| v.as_u64())
                 .unwrap_or(2) as usize;
-            Some(Box::new(cops::style::SafeNavigation::with_config(
+            let safe_nav_chain_enabled = cop_config
+                .and_then(|c| c.raw.get("SafeNavigationChainEnabled"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(true);
+            Some(Box::new(cops::style::SafeNavigation::with_full_config(
                 allowed_methods,
                 convert_nil,
                 max_chain,
+                safe_nav_chain_enabled,
             )))
         }
 
