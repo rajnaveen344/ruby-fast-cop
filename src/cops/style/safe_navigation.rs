@@ -95,7 +95,12 @@ fn node_src<'a>(source: &'a str, node: &Node) -> &'a str {
 /// Check if node is a simple variable (local var read, constant read, or variable-like call)
 fn is_simple_var(node: &Node) -> bool {
     match node {
-        Node::LocalVariableReadNode { .. } | Node::ConstantReadNode { .. } => true,
+        Node::LocalVariableReadNode { .. }
+        | Node::ConstantReadNode { .. }
+        | Node::ConstantPathNode { .. }
+        | Node::InstanceVariableReadNode { .. }
+        | Node::ClassVariableReadNode { .. }
+        | Node::GlobalVariableReadNode { .. } => true,
         Node::CallNode { .. } => {
             let call = node.as_call_node().unwrap();
             // A variable_call is `foo` that could be a local variable or bare method
@@ -103,6 +108,17 @@ fn is_simple_var(node: &Node) -> bool {
         }
         _ => false,
     }
+}
+
+/// Compare two source strings ignoring the difference between `&.` and `.`
+fn src_match_ignoring_safe_nav(a: &str, b: &str) -> bool {
+    if a == b {
+        return true;
+    }
+    // Normalize `&.` to `.` and compare
+    let norm_a = a.replace("&.", ".");
+    let norm_b = b.replace("&.", ".");
+    norm_a == norm_b
 }
 
 /// Check if a byte slice equals a string
@@ -384,7 +400,7 @@ impl<'a> SafeNavVisitor<'a> {
 
     /// Extract the checked variable span and whether it's a nil-check form from a condition.
     fn extract_checked_var_span(&self, cond: &Node) -> Option<(Span, bool)> {
-        // Simple variable (local var, constant, or variable-call)
+        // Simple variable (local var, constant, ivar, cvar, gvar, constant path, or variable-call)
         if is_simple_var(cond) {
             return Some((node_span(cond), false));
         }
@@ -414,15 +430,15 @@ impl<'a> SafeNavVisitor<'a> {
                                 }
                             }
                         }
-                        // !foo -> foo
-                        if is_simple_var(&recv) {
-                            return Some((node_span(&recv), false));
-                        }
+                        // !foo -> foo (any expression)
+                        return Some((node_span(&recv), false));
                     }
                     return None;
                 }
 
-                None
+                // Any other call expression used as a condition (e.g., foo[1], foo.bar)
+                // RuboCop's pattern $_  matches any node as checked variable
+                Some((node_span(cond), false))
             }
             _ => None,
         }
@@ -520,6 +536,11 @@ impl<'a> SafeNavVisitor<'a> {
         let node_loc = node.location();
         let node_src_text = &self.source[node_loc.start_offset()..node_loc.end_offset()];
 
+        // Skip elsif nodes (RuboCop: allowed_if_condition? returns true for elsif)
+        if node_src_text.starts_with("elsif") {
+            return;
+        }
+
         // Detect ternary: not starting with if/unless, has subsequent, contains ?
         let is_ternary = !node_src_text.starts_with("if")
             && !node_src_text.starts_with("unless")
@@ -577,11 +598,6 @@ impl<'a> SafeNavVisitor<'a> {
             return;
         }
 
-        // For nil-form checks, only flag if convert_nil is true
-        if is_nil_form && !self.convert_nil {
-            return;
-        }
-
         let location = Location::from_offsets(self.source, node_loc.start_offset(), node_loc.end_offset());
         let mut offense = Offense::new(COP_NAME, MSG, Severity::Convention, location, self.filename);
 
@@ -605,7 +621,7 @@ impl<'a> SafeNavVisitor<'a> {
 
         let condition = node.predicate();
 
-        let (checked_var_span, is_nil_form) = match self.extract_checked_var_span(&condition) {
+        let (checked_var_span, _is_nil_form) = match self.extract_checked_var_span(&condition) {
             Some(v) => v,
             None => return,
         };
@@ -613,7 +629,7 @@ impl<'a> SafeNavVisitor<'a> {
         if is_simple_var(&condition) { return; }
 
         let cond_src = node_src(self.source, &condition);
-        if !is_nil_form && !cond_src.starts_with('!') { return; }
+        if !_is_nil_form && !cond_src.starts_with('!') { return; }
 
         let body_node = match node.statements() {
             Some(stmts) => {
@@ -627,10 +643,6 @@ impl<'a> SafeNavVisitor<'a> {
         let checked_var_src = span_src(self.source, checked_var_span);
 
         if self.should_skip_body_by_src(&body_node, checked_var_span) {
-            return;
-        }
-
-        if is_nil_form && !self.convert_nil {
             return;
         }
 
@@ -969,7 +981,7 @@ impl<'a> SafeNavVisitor<'a> {
             let call = method_chain.as_call_node().unwrap();
             if let Some(recv) = call.receiver() {
                 let recv_src = node_src(parent_src, &recv);
-                if recv_src == checked_var_src {
+                if src_match_ignoring_safe_nav(recv_src, checked_var_src) {
                     return true;
                 }
                 return self.find_matching_receiver_src(&recv, parent_src, checked_var_src);
@@ -991,7 +1003,7 @@ impl<'a> SafeNavVisitor<'a> {
             if let Some(recv) = call.receiver() {
                 *count += 1;
                 let recv_src = node_src(parent_src, &recv);
-                if recv_src == checked_var_src {
+                if src_match_ignoring_safe_nav(recv_src, checked_var_src) {
                     return;
                 }
                 self.count_chain_src_recursive(&recv, parent_src, checked_var_src, count);
@@ -1014,7 +1026,7 @@ impl<'a> SafeNavVisitor<'a> {
             }
             if let Some(recv) = call.receiver() {
                 let recv_src = node_src(parent_src, &recv);
-                if recv_src == checked_var_src {
+                if src_match_ignoring_safe_nav(recv_src, checked_var_src) {
                     return false;
                 }
                 return self.chain_has_dotless_or_dcolon_src(&recv, parent_src, checked_var_src);
@@ -1129,7 +1141,7 @@ impl<'a> SafeNavVisitor<'a> {
             let call = method_chain.as_call_node().unwrap();
             if let Some(recv) = call.receiver() {
                 let recv_src = node_src(self.source, &recv);
-                if recv_src == checked_var_src {
+                if src_match_ignoring_safe_nav(recv_src, checked_var_src) {
                     return true;
                 }
                 return self.find_matching_receiver_by_span(&recv, checked_var_span);
@@ -1150,7 +1162,7 @@ impl<'a> SafeNavVisitor<'a> {
             let call = node.as_call_node().unwrap();
             if let Some(recv) = call.receiver() {
                 *count += 1;
-                if node_src(self.source, &recv) == checked_var_src {
+                if src_match_ignoring_safe_nav(node_src(self.source, &recv), checked_var_src) {
                     return;
                 }
                 self.count_chain_by_span_recursive(&recv, checked_var_src, count);
@@ -1176,7 +1188,7 @@ impl<'a> SafeNavVisitor<'a> {
                 return true;
             }
             if let Some(recv) = call.receiver() {
-                if node_src(self.source, &recv) == checked_var_src {
+                if src_match_ignoring_safe_nav(node_src(self.source, &recv), checked_var_src) {
                     return false;
                 }
                 return self.check_dotless_dcolon_by_src(&recv, checked_var_src);
@@ -1190,7 +1202,7 @@ impl<'a> SafeNavVisitor<'a> {
         if let Node::CallNode { .. } = body {
             let call = body.as_call_node().unwrap();
             if let Some(recv) = call.receiver() {
-                if node_src(self.source, &recv) == checked_var_src && !has_dot(&call) {
+                if src_match_ignoring_safe_nav(node_src(self.source, &recv), checked_var_src) && !has_dot(&call) {
                     return true;
                 }
             }
@@ -1202,8 +1214,15 @@ impl<'a> SafeNavVisitor<'a> {
 
     /// Add `&.` to the method chain, replacing the first `.` after the checked variable
     fn add_safe_nav(&self, method_src: &str, var_src: &str) -> String {
-        if let Some(pos) = method_src.find(var_src) {
-            let after = pos + var_src.len();
+        // Try direct match first, then normalized match
+        let norm_var = var_src.replace("&.", ".");
+        if let Some(pos) = method_src.find(var_src).or_else(|| method_src.find(&norm_var)) {
+            let matched_var = if method_src[pos..].starts_with(var_src) {
+                var_src
+            } else {
+                &norm_var
+            };
+            let after = pos + matched_var.len();
             let rest = &method_src[after..];
             let mut result = method_src[..after].to_string();
             let mut replaced_first = false;
