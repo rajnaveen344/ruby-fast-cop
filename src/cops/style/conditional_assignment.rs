@@ -21,6 +21,10 @@ pub struct ConditionalAssignment {
     enforced_style: EnforcedStyle,
     include_ternary_expressions: bool,
     single_line_conditions_only: bool,
+    /// Max line length for correction-exceeds-line-limit check.
+    /// Defaults to 80 (matching common Ruby convention and RuboCop test setups).
+    /// In production, this should be read from Layout/LineLength Max config.
+    max_line_length: usize,
 }
 
 impl ConditionalAssignment {
@@ -29,6 +33,7 @@ impl ConditionalAssignment {
             enforced_style: style,
             include_ternary_expressions: true,
             single_line_conditions_only: true,
+            max_line_length: 80,
         }
     }
 
@@ -41,6 +46,7 @@ impl ConditionalAssignment {
             enforced_style: style,
             include_ternary_expressions: include_ternary,
             single_line_conditions_only: single_line_only,
+            max_line_length: 80,
         }
     }
 }
@@ -64,6 +70,7 @@ impl Cop for ConditionalAssignment {
             enforced_style: self.enforced_style,
             include_ternary: self.include_ternary_expressions,
             single_line_only: self.single_line_conditions_only,
+            max_line_length: self.max_line_length,
             offenses: Vec::new(),
             filename: ctx.filename,
         };
@@ -77,6 +84,7 @@ struct ConditionalAssignmentVisitor<'a> {
     enforced_style: EnforcedStyle,
     include_ternary: bool,
     single_line_only: bool,
+    max_line_length: usize,
     offenses: Vec<Offense>,
     filename: &'a str,
 }
@@ -180,9 +188,11 @@ impl<'a> ConditionalAssignmentVisitor<'a> {
             }
             Node::UnlessNode { .. } => {
                 let unless_node = check_node.as_unless_node().unwrap();
-                if unless_node.else_clause().is_none() {
-                    return;
-                }
+                // For assign_inside_condition, unless without else IS still flagged.
+                // In RuboCop's parser gem AST, `unless cond; body; end` is represented as
+                // `if(cond, nil, body)` - the body is in the else position, so `else_branch`
+                // is truthy and the check proceeds. We replicate that here by not requiring
+                // else_clause for unless.
                 if self.single_line_only && self.unless_has_multiline_branch(&unless_node) {
                     return;
                 }
@@ -770,7 +780,74 @@ impl<'a> ConditionalAssignmentVisitor<'a> {
             }
         }
 
+        // Check if correction would exceed max line length.
+        // RuboCop skips the offense if pulling the assignment out would create a line
+        // longer than Layout/LineLength Max.
+        if let Some(assignment_lhs) = first_lhs {
+            if self.correction_exceeds_line_limit(cond_start, cond_end, assignment_lhs) {
+                return;
+            }
+        }
+
         self.add_offense(cond_start, cond_end, MSG);
+    }
+
+    /// Check if the corrected form (assignment pulled out) would exceed the max line length.
+    /// Implements RuboCop's `correction_exceeds_line_limit?` logic:
+    /// 1. Take each line of the conditional source
+    /// 2. Strip the assignment LHS from each line (since after correction it won't be there)
+    /// 3. Find the longest resulting line
+    /// 4. Prepend the assignment LHS to get the corrected longest line
+    /// 5. Check if it exceeds max_line_length
+    fn correction_exceeds_line_limit(
+        &self,
+        cond_start: usize,
+        cond_end: usize,
+        assignment_lhs: &str,
+    ) -> bool {
+        let cond_source = &self.source[cond_start..cond_end];
+
+        // Build a pattern to strip the assignment from lines.
+        // RuboCop uses: /\s*#{Regexp.escape(assignment).gsub('\ ', '\s*')}/
+        // We simplify: strip leading whitespace + the assignment text (allowing flexible spaces)
+        let assignment_trimmed = assignment_lhs.trim();
+
+        let mut longest_stripped_len = 0usize;
+        for line in cond_source.lines() {
+            let chomped = line.trim_end_matches('\r');
+            // Try to strip the assignment from this line
+            let stripped = self.strip_assignment_from_line(chomped, assignment_trimmed);
+            if stripped.len() > longest_stripped_len {
+                longest_stripped_len = stripped.len();
+            }
+        }
+
+        // The corrected longest line would be: assignment_lhs + longest_stripped_line
+        let corrected_len = assignment_lhs.len() + longest_stripped_len;
+        corrected_len > self.max_line_length
+    }
+
+    /// Strip the assignment LHS pattern from a line (first occurrence only).
+    /// Handles flexible whitespace around the assignment operator.
+    fn strip_assignment_from_line<'b>(&self, line: &'b str, assignment_trimmed: &str) -> String {
+        // Try to find and remove `\s*assignment_trimmed\s*` pattern from the line
+        // Split the assignment into parts around spaces for flexible matching
+        if let Some(pos) = line.find(assignment_trimmed) {
+            // Find the start position including leading whitespace
+            let mut start = pos;
+            while start > 0 && line.as_bytes()[start - 1] == b' ' {
+                start -= 1;
+            }
+            let end = pos + assignment_trimmed.len();
+            // Skip trailing spaces too
+            let mut end_adj = end;
+            while end_adj < line.len() && line.as_bytes()[end_adj] == b' ' {
+                end_adj += 1;
+            }
+            format!("{}{}", &line[..start], &line[end_adj..])
+        } else {
+            line.to_string()
+        }
     }
 
     fn extract_assignment_lhs(&self, node: &Node) -> Option<AssignmentInfo> {
@@ -837,16 +914,69 @@ impl<'a> ConditionalAssignmentVisitor<'a> {
                 let op = std::str::from_utf8(n.binary_operator().as_slice()).unwrap_or("");
                 Some((format!("{} {}= ", name, op), "op_asgn".to_string()))
             }
-            // And/Or assigns
+            // And assigns
             Node::LocalVariableAndWriteNode { .. } => {
                 let n = node.as_local_variable_and_write_node().unwrap();
                 let name = std::str::from_utf8(n.name().as_slice()).unwrap_or("");
                 Some((format!("{} &&= ", name), "and_asgn".to_string()))
             }
+            Node::InstanceVariableAndWriteNode { .. } => {
+                let n = node.as_instance_variable_and_write_node().unwrap();
+                let name = std::str::from_utf8(n.name().as_slice()).unwrap_or("");
+                Some((format!("{} &&= ", name), "and_asgn".to_string()))
+            }
+            Node::ClassVariableAndWriteNode { .. } => {
+                let n = node.as_class_variable_and_write_node().unwrap();
+                let name = std::str::from_utf8(n.name().as_slice()).unwrap_or("");
+                Some((format!("{} &&= ", name), "and_asgn".to_string()))
+            }
+            Node::GlobalVariableAndWriteNode { .. } => {
+                let n = node.as_global_variable_and_write_node().unwrap();
+                let name = std::str::from_utf8(n.name().as_slice()).unwrap_or("");
+                Some((format!("{} &&= ", name), "and_asgn".to_string()))
+            }
+            Node::ConstantAndWriteNode { .. } => {
+                let n = node.as_constant_and_write_node().unwrap();
+                let name = std::str::from_utf8(n.name().as_slice()).unwrap_or("");
+                Some((format!("{} &&= ", name), "and_asgn".to_string()))
+            }
+            Node::ConstantPathAndWriteNode { .. } => {
+                let n = node.as_constant_path_and_write_node().unwrap();
+                let target = n.target();
+                let target_src = self.src(target.location().start_offset(), target.location().end_offset());
+                Some((format!("{} &&= ", target_src), "and_asgn".to_string()))
+            }
+            // Or assigns
             Node::LocalVariableOrWriteNode { .. } => {
                 let n = node.as_local_variable_or_write_node().unwrap();
                 let name = std::str::from_utf8(n.name().as_slice()).unwrap_or("");
                 Some((format!("{} ||= ", name), "or_asgn".to_string()))
+            }
+            Node::InstanceVariableOrWriteNode { .. } => {
+                let n = node.as_instance_variable_or_write_node().unwrap();
+                let name = std::str::from_utf8(n.name().as_slice()).unwrap_or("");
+                Some((format!("{} ||= ", name), "or_asgn".to_string()))
+            }
+            Node::ClassVariableOrWriteNode { .. } => {
+                let n = node.as_class_variable_or_write_node().unwrap();
+                let name = std::str::from_utf8(n.name().as_slice()).unwrap_or("");
+                Some((format!("{} ||= ", name), "or_asgn".to_string()))
+            }
+            Node::GlobalVariableOrWriteNode { .. } => {
+                let n = node.as_global_variable_or_write_node().unwrap();
+                let name = std::str::from_utf8(n.name().as_slice()).unwrap_or("");
+                Some((format!("{} ||= ", name), "or_asgn".to_string()))
+            }
+            Node::ConstantOrWriteNode { .. } => {
+                let n = node.as_constant_or_write_node().unwrap();
+                let name = std::str::from_utf8(n.name().as_slice()).unwrap_or("");
+                Some((format!("{} ||= ", name), "or_asgn".to_string()))
+            }
+            Node::ConstantPathOrWriteNode { .. } => {
+                let n = node.as_constant_path_or_write_node().unwrap();
+                let target = n.target();
+                let target_src = self.src(target.location().start_offset(), target.location().end_offset());
+                Some((format!("{} ||= ", target_src), "or_asgn".to_string()))
             }
             // Send-based
             Node::CallNode { .. } => {
