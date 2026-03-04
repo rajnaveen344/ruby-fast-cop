@@ -81,31 +81,39 @@ Style/Documentation:
 
 RuboCop (v1.85.0) has **606 user-facing cops** across 9 departments. We have **606 TOML test fixtures** — one per cop — with **28,075 test cases** extracted from RuboCop's own RSpec suite.
 
-### Implemented Cops (22 of 606 — all passing)
+### Implemented Cops (30 of 606 — all passing)
 
 | Cop                              | Tests | Status  |
 | -------------------------------- | ----- | ------- |
-| Layout/LeadingCommentSpace       | 25    | Passing |
+| Layout/LeadingCommentSpace       | 27    | Passing |
 | Layout/LineLength                | 192   | Passing |
 | Layout/SpaceAfterComma           | 9     | Passing |
-| Layout/TrailingEmptyLines        | 10    | Passing |
-| Layout/TrailingWhitespace        | 15    | Passing |
+| Layout/TrailingEmptyLines        | 18    | Passing |
+| Layout/TrailingWhitespace        | 19    | Passing |
 | Lint/AssignmentInCondition       | 69    | Passing |
 | Lint/Debugger                    | 97    | Passing |
+| Lint/DuplicateMethods            | 329   | Passing |
 | Lint/LiteralInInterpolation      | 378   | Passing |
+| Lint/RedundantTypeConversion     | 613   | Passing |
 | Metrics/BlockLength              | 38    | Passing |
-| Metrics/ClassLength              | 23    | Passing |
-| Metrics/MethodLength             | 30    | Passing |
+| Metrics/ClassLength              | 34    | Passing |
+| Metrics/MethodLength             | 31    | Passing |
+| Naming/PredicateMethod           | 1262  | Passing |
+| Style/AccessModifierDeclarations | 377   | Passing |
 | Style/AutoResourceCleanup        | 7     | Passing |
-| Style/FormatStringToken          | 355   | Passing |
-| Style/FrozenStringLiteralComment | 25    | Passing |
+| Style/ConditionalAssignment      | 1199  | Passing |
+| Style/FormatStringToken          | 366   | Passing |
+| Style/FrozenStringLiteralComment | 107   | Passing |
 | Style/HashSyntax                 | 189   | Passing |
 | Style/MethodCalledOnDoEndBlock   | 10    | Passing |
-| Style/NumericLiterals            | 25    | Passing |
+| Style/MutableConstant            | 354   | Passing |
+| Style/NegativeArrayIndex         | 423   | Passing |
+| Style/NumericLiterals            | 28    | Passing |
 | Style/RaiseArgs                  | 35    | Passing |
 | Style/RescueStandardError        | 37    | Passing |
-| Style/Semicolon                  | 24    | Passing |
-| Style/StringLiterals             | 48    | Passing |
+| Style/SafeNavigation             | 786   | Passing |
+| Style/Semicolon                  | 33    | Passing |
+| Style/StringLiterals             | 58    | Passing |
 | Style/StringMethods              | 2     | Passing |
 
 ### Implementation Roadmap
@@ -165,7 +173,7 @@ ruby-fast-cop -a .
 ruby-fast-cop -A .
 ```
 
-16 of 22 implemented cops support autocorrect (716 correction tests passing).
+16 of 30 implemented cops support autocorrect (716 correction tests passing).
 
 ### How Autocorrect Works: RuboCop vs Ruff vs ruby-fast-cop
 
@@ -306,7 +314,7 @@ cargo run --bin fixture_stats
 
 ### High Priority
 
-- [ ] **More cops** - 22 of 606 implemented; see [Implementation Roadmap](#implementation-roadmap) for priority list
+- [ ] **More cops** - 30 of 606 implemented; see [Implementation Roadmap](#implementation-roadmap) for priority list
 - [x] **Auto-correct** - `-a` (safe) and `-A` (all) flags with Ruff-style iterative correction
 - [ ] **Parallel processing** - Use rayon for multi-threaded file processing
 

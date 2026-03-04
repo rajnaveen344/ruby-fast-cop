@@ -654,6 +654,7 @@ pub const SUPPORTED_COPS: &[&str] = &[
     "Metrics/BlockLength",
     "Metrics/ClassLength",
     "Metrics/MethodLength",
+    "Naming/PredicateMethod",
     "Style/AccessModifierDeclarations",
     "Style/AutoResourceCleanup",
     "Style/ConditionalAssignment",

@@ -1,6 +1,7 @@
 pub mod layout;
 pub mod lint;
 pub mod metrics;
+pub mod naming;
 pub mod style;
 
 use crate::offense::{Location, Offense, Severity};
@@ -346,6 +347,8 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(metrics::BlockLength::new(50)), // User's config: Max: 50
         Box::new(metrics::ClassLength::new(100)),
         Box::new(metrics::MethodLength::new(10)),
+        // Naming
+        Box::new(naming::PredicateMethod::new(naming::PredicateMethodMode::Conservative)),
         // Style
         Box::new(style::AccessModifierDeclarations::new(style::AccessModifierDeclarationsStyle::Group)),
         Box::new(style::AutoResourceCleanup::new()),

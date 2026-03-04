@@ -635,6 +635,57 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         )));
     }
 
+    // Naming/PredicateMethod
+    if config.is_cop_enabled("Naming/PredicateMethod") {
+        let cop_config = config.get_cop_config("Naming/PredicateMethod");
+        let mode = cop_config
+            .and_then(|c| c.raw.get("Mode"))
+            .and_then(|v| v.as_str())
+            .map(|s| match s {
+                "aggressive" => cops::naming::PredicateMethodMode::Aggressive,
+                _ => cops::naming::PredicateMethodMode::Conservative,
+            })
+            .unwrap_or(cops::naming::PredicateMethodMode::Conservative);
+        let allow_bang = cop_config
+            .and_then(|c| c.raw.get("AllowBangMethods"))
+            .and_then(|v| v.as_bool())
+            .unwrap_or(false);
+        let allowed_methods = cop_config
+            .and_then(|c| c.raw.get("AllowedMethods"))
+            .and_then(|v| v.as_sequence())
+            .map(|seq| {
+                seq.iter()
+                    .filter_map(|v| v.as_str().map(String::from))
+                    .collect()
+            })
+            .unwrap_or_default();
+        let allowed_patterns = cop_config
+            .and_then(|c| c.raw.get("AllowedPatterns"))
+            .and_then(|v| v.as_sequence())
+            .map(|seq| {
+                seq.iter()
+                    .filter_map(|v| v.as_str().map(String::from))
+                    .collect()
+            })
+            .unwrap_or_default();
+        let wayward_predicates = cop_config
+            .and_then(|c| c.raw.get("WaywardPredicates"))
+            .and_then(|v| v.as_sequence())
+            .map(|seq| {
+                seq.iter()
+                    .filter_map(|v| v.as_str().map(String::from))
+                    .collect()
+            })
+            .unwrap_or_default();
+        result.push(Box::new(cops::naming::PredicateMethod::with_config(
+            mode,
+            allow_bang,
+            allowed_methods,
+            allowed_patterns,
+            wayward_predicates,
+        )));
+    }
+
     result
 }
 
@@ -1306,6 +1357,56 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
                 max,
                 count_comments,
                 count_as_one,
+            )))
+        }
+
+        "Naming/PredicateMethod" => {
+            let cop_config = config.get_cop_config("Naming/PredicateMethod");
+            let mode = cop_config
+                .and_then(|c| c.raw.get("Mode"))
+                .and_then(|v| v.as_str())
+                .map(|s| match s {
+                    "aggressive" => cops::naming::PredicateMethodMode::Aggressive,
+                    _ => cops::naming::PredicateMethodMode::Conservative,
+                })
+                .unwrap_or(cops::naming::PredicateMethodMode::Conservative);
+            let allow_bang = cop_config
+                .and_then(|c| c.raw.get("AllowBangMethods"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
+            let allowed_methods = cop_config
+                .and_then(|c| c.raw.get("AllowedMethods"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| {
+                    seq.iter()
+                        .filter_map(|v| v.as_str().map(String::from))
+                        .collect()
+                })
+                .unwrap_or_default();
+            let allowed_patterns = cop_config
+                .and_then(|c| c.raw.get("AllowedPatterns"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| {
+                    seq.iter()
+                        .filter_map(|v| v.as_str().map(String::from))
+                        .collect()
+                })
+                .unwrap_or_default();
+            let wayward_predicates = cop_config
+                .and_then(|c| c.raw.get("WaywardPredicates"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| {
+                    seq.iter()
+                        .filter_map(|v| v.as_str().map(String::from))
+                        .collect()
+                })
+                .unwrap_or_default();
+            Some(Box::new(cops::naming::PredicateMethod::with_config(
+                mode,
+                allow_bang,
+                allowed_methods,
+                allowed_patterns,
+                wayward_predicates,
             )))
         }
 
