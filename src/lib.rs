@@ -408,6 +408,20 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         result.push(Box::new(cops::style::RaiseArgs::new(style)));
     }
 
+    // Style/RedundantParentheses
+    if config.is_cop_enabled("Style/RedundantParentheses") {
+        let (ternary_req, allow_multiline) = read_redundant_parens_cross_cop_config(config);
+        result.push(Box::new(cops::style::RedundantParentheses::with_config(
+            ternary_req,
+            allow_multiline,
+        )));
+    }
+
+    // Style/RedundantStringEscape
+    if config.is_cop_enabled("Style/RedundantStringEscape") {
+        result.push(Box::new(cops::style::RedundantStringEscape::new()));
+    }
+
     // Style/RescueStandardError
     if config.is_cop_enabled("Style/RescueStandardError") {
         let style = config
@@ -424,6 +438,11 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
     // Style/SafeNavigation
     if config.is_cop_enabled("Style/SafeNavigation") {
         result.push(Box::new(cops::style::SafeNavigation::new()));
+    }
+
+    // Style/SelectByRegexp
+    if config.is_cop_enabled("Style/SelectByRegexp") {
+        result.push(Box::new(cops::style::SelectByRegexp::new()));
     }
 
     // Style/StringMethods
@@ -1132,6 +1151,18 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
             )))
         }
 
+        "Style/RedundantParentheses" => {
+            let (ternary_req, allow_multiline) = read_redundant_parens_cross_cop_config(config);
+            Some(Box::new(cops::style::RedundantParentheses::with_config(
+                ternary_req,
+                allow_multiline,
+            )))
+        }
+
+        "Style/RedundantStringEscape" => Some(Box::new(cops::style::RedundantStringEscape::new())),
+
+        "Style/SelectByRegexp" => Some(Box::new(cops::style::SelectByRegexp::new())),
+
         "Style/StringMethods" => Some(Box::new(cops::style::StringMethods::new())),
 
         "Layout/TrailingWhitespace" => {
@@ -1416,6 +1447,39 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
 
 /// Parse a DebuggerMethods or DebuggerRequires config value.
 /// Handles both array format (flat list) and hash format (grouped by category).
+/// Read cross-cop config for Style/RedundantParentheses.
+/// Returns (ternary_parentheses_required, allow_in_multiline_conditions).
+fn read_redundant_parens_cross_cop_config(config: &Config) -> (bool, bool) {
+    // Style/TernaryParentheses: if enabled and EnforcedStyle is require_parentheses
+    // or require_parentheses_when_complex, ternary parens are required
+    let ternary_req = config
+        .get_cop_config("Style/TernaryParentheses")
+        .map(|c| {
+            let enabled = c.enabled.unwrap_or(true);
+            let style = c.enforced_style.as_deref().unwrap_or("");
+            enabled
+                && (style == "require_parentheses"
+                    || style == "require_parentheses_when_complex")
+        })
+        .unwrap_or(false);
+
+    // Style/ParenthesesAroundCondition: if enabled and AllowInMultilineConditions is true
+    let allow_multiline = config
+        .get_cop_config("Style/ParenthesesAroundCondition")
+        .map(|c| {
+            let enabled = c.enabled.unwrap_or(true);
+            let allow = c
+                .raw
+                .get("AllowInMultilineConditions")
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
+            enabled && allow
+        })
+        .unwrap_or(false);
+
+    (ternary_req, allow_multiline)
+}
+
 /// For hash format, values that are empty strings, false, or null are skipped (disabled groups).
 /// Returns None if the value is null/missing so the caller can use defaults.
 fn parse_debugger_list(value: &serde_yaml::Value) -> Option<Vec<String>> {

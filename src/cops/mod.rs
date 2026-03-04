@@ -361,8 +361,11 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(style::NegativeArrayIndex::new()),
         Box::new(style::NumericLiterals::new(5)),
         Box::new(style::RaiseArgs::new(style::RaiseArgsStyle::Compact)), // User's config
+        Box::new(style::RedundantParentheses::new()),
+        Box::new(style::RedundantStringEscape::new()),
         Box::new(style::RescueStandardError::new(style::RescueStandardErrorStyle::Implicit)), // User's config
         Box::new(style::SafeNavigation::new()),
+        Box::new(style::SelectByRegexp::new()),
         Box::new(style::Semicolon::new(false)),
         Box::new(style::StringLiterals::new(style::StringLiteralsStyle::SingleQuotes)),
         Box::new(style::StringMethods::new()),

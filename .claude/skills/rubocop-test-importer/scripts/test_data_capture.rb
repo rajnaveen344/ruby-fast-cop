@@ -284,15 +284,18 @@ module TestDataCapture
       if cop_obj.respond_to?(:config) && cop_obj.config.respond_to?(:keys)
         primary_name = cop_obj.class.respond_to?(:cop_name) ? cop_obj.class.cop_name : nil
         cop_obj.config.keys.each do |key|
-          next if key == 'AllCops'
-          next if key == primary_name
-          next unless key.include?('/') # Only full cop names like "Layout/SpaceInsideHashLiteralBraces"
+          key_s = key.to_s
+          next if key_s == 'AllCops'
+          next if key_s == primary_name.to_s
+          next unless key_s.include?('/') # Only full cop names like "Layout/SpaceInsideHashLiteralBraces"
 
           begin
             cross_config = cop_obj.config[key]
             if cross_config.is_a?(Hash) && !cross_config.empty?
-              short_name = key.split('/').last
-              filtered = normalize_config(cross_config).reject { |k, _| CONFIG_META_KEYS.include?(k) }
+              short_name = key_s.split('/').last
+              # For cross-cop config, keep 'Enabled' (it's meaningful) but filter other meta keys
+              cross_meta = CONFIG_META_KEYS - ['Enabled']
+              filtered = normalize_config(cross_config).reject { |k, _| cross_meta.include?(k) }
               result[short_name] = filtered unless filtered.empty?
             end
           rescue => e
