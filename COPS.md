@@ -11,12 +11,12 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Lint       |     100 |      50 |        4 |           7 |      5,961 |
 | Layout     |      81 |       5 |       14 |           7 |      4,654 |
 | Metrics    |       9 |       1 |        0 |           3 |        272 |
-| Naming     |      16 |       2 |        1 |           1 |      2,217 |
+| Naming     |      16 |       2 |        1 |           2 |      2,217 |
 | Gemspec    |       4 |       5 |        1 |           0 |        193 |
 | Bundler    |       5 |       0 |        2 |           0 |        101 |
 | Security   |       5 |       2 |        0 |           0 |        102 |
 | Migration  |       1 |       0 |        0 |           0 |          8 |
-| **Total**  | **396** | **156** |   **54** |      **37** | **28,075** |
+| **Total**  | **396** | **156** |   **54** |      **38** | **28,075** |
 
 - **Enabled**: Runs by default on every codebase (highest priority to implement)
 - **Pending**: Runs only with `NewCops: enable` in config
@@ -647,7 +647,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | ------------------------------- | ----: | ------ |
 | Metrics/CollectionLiteralLength |    13 | -      |
 
-## Naming (1/19 implemented, 2,217 tests)
+## Naming (2/19 implemented, 2,217 tests)
 
 ### Enabled by Default (16 cops, 884 tests)
 
@@ -663,7 +663,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Naming/HeredocDelimiterCase          |    26 | -      |
 | Naming/HeredocDelimiterNaming        |    19 | -      |
 | Naming/MemoizedInstanceVariableName  |    72 | -      |
-| Naming/MethodName                    |   239 | -      |
+| Naming/MethodName                    |   239 | Implemented |
 | Naming/MethodParameterName           |    23 | -      |
 | Naming/PredicatePrefix               |    24 | -      |
 | Naming/RescuedExceptionsVariableName |    36 | -      |

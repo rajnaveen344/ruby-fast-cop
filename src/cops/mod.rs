@@ -352,6 +352,7 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(metrics::ClassLength::new(100)),
         Box::new(metrics::MethodLength::new(10)),
         // Naming
+        Box::new(naming::MethodName::new()),
         Box::new(naming::PredicateMethod::new(naming::PredicateMethodMode::Conservative)),
         // Style
         Box::new(style::AccessModifierDeclarations::new(style::AccessModifierDeclarationsStyle::Group)),

@@ -87,7 +87,9 @@ RuboCop (v1.85.0) has **606 user-facing cops** across 9 departments. We have **6
 | -------------------------------- | ----- | ------- |
 | Layout/LeadingCommentSpace       | 27    | Passing |
 | Layout/LineLength                | 192   | Passing |
+| Layout/MultilineMethodCallIndentation | 252 | Passing |
 | Layout/SpaceAfterComma           | 9     | Passing |
+| Layout/SpaceInsidePercentLiteralDelimiters | 262 | Passing |
 | Layout/TrailingEmptyLines        | 18    | Passing |
 | Layout/TrailingWhitespace        | 19    | Passing |
 | Lint/AssignmentInCondition       | 69    | Passing |
@@ -95,9 +97,12 @@ RuboCop (v1.85.0) has **606 user-facing cops** across 9 departments. We have **6
 | Lint/DuplicateMethods            | 329   | Passing |
 | Lint/LiteralInInterpolation      | 378   | Passing |
 | Lint/RedundantTypeConversion     | 613   | Passing |
+| Lint/UnreachableCode             | 266   | Passing |
+| Lint/Void                        | 270   | Passing |
 | Metrics/BlockLength              | 38    | Passing |
 | Metrics/ClassLength              | 34    | Passing |
 | Metrics/MethodLength             | 31    | Passing |
+| Naming/MethodName                | 239   | Passing |
 | Naming/PredicateMethod           | 1262  | Passing |
 | Style/AccessModifierDeclarations | 377   | Passing |
 | Style/AutoResourceCleanup        | 7     | Passing |
@@ -176,7 +181,7 @@ ruby-fast-cop -a .
 ruby-fast-cop -A .
 ```
 
-24 of 37 implemented cops support autocorrect.
+24 of 38 implemented cops support autocorrect.
 
 ### How Autocorrect Works: RuboCop vs Ruff vs ruby-fast-cop
 
@@ -317,7 +322,7 @@ cargo run --bin fixture_stats
 
 ### High Priority
 
-- [ ] **More cops** - 37 of 606 implemented; see [Implementation Roadmap](#implementation-roadmap) for priority list
+- [ ] **More cops** - 38 of 606 implemented; see [Implementation Roadmap](#implementation-roadmap) for priority list
 - [x] **Auto-correct** - `-a` (safe) and `-A` (all) flags with Ruff-style iterative correction
 - [ ] **Parallel processing** - Use rayon for multi-threaded file processing
 
@@ -342,11 +347,11 @@ cargo run --bin fixture_stats
 | Feature          | RuboCop         | ruby-fast-cop           |
 | ---------------- | --------------- | ----------------------- |
 | Performance      | Baseline        | 50-100x faster (target) |
-| Cop count        | 606             | 37 implemented          |
+| Cop count        | 606             | 38 implemented          |
 | Test coverage    | ~28k test cases | 606 fixtures (1:1)      |
 | Custom Ruby cops | Yes             | No                      |
 | .rubocop.yml     | Yes             | Yes                     |
-| Auto-correct     | Yes             | Yes (24 of 37 cops)     |
+| Auto-correct     | Yes             | Yes (24 of 38 cops)     |
 | Library API      | Limited         | Yes                     |
 | inherit_from     | Yes             | Yes                     |
 | inherit_gem      | Yes             | Yes                     |

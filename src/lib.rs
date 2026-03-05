@@ -687,6 +687,36 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         )));
     }
 
+    // Naming/MethodName
+    if config.is_cop_enabled("Naming/MethodName") {
+        let cop_config = config.get_cop_config("Naming/MethodName");
+        let style = cop_config
+            .and_then(|c| c.enforced_style.as_ref())
+            .map(|s| match s.as_str() {
+                "camelCase" => cops::naming::MethodNameStyle::CamelCase,
+                _ => cops::naming::MethodNameStyle::SnakeCase,
+            })
+            .unwrap_or(cops::naming::MethodNameStyle::SnakeCase);
+        let allowed_patterns = cop_config
+            .and_then(|c| c.raw.get("AllowedPatterns"))
+            .and_then(|v| v.as_sequence())
+            .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+            .unwrap_or_default();
+        let forbidden_identifiers = cop_config
+            .and_then(|c| c.raw.get("ForbiddenIdentifiers"))
+            .and_then(|v| v.as_sequence())
+            .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+            .unwrap_or_else(|| vec!["__id__".to_string(), "__send__".to_string()]);
+        let forbidden_patterns = cop_config
+            .and_then(|c| c.raw.get("ForbiddenPatterns"))
+            .and_then(|v| v.as_sequence())
+            .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+            .unwrap_or_default();
+        result.push(Box::new(cops::naming::MethodName::with_config(
+            style, allowed_patterns, forbidden_identifiers, forbidden_patterns,
+        )));
+    }
+
     // Naming/PredicateMethod
     if config.is_cop_enabled("Naming/PredicateMethod") {
         let cop_config = config.get_cop_config("Naming/PredicateMethod");
@@ -1455,6 +1485,35 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
                 max,
                 count_comments,
                 count_as_one,
+            )))
+        }
+
+        "Naming/MethodName" => {
+            let cop_config = config.get_cop_config("Naming/MethodName");
+            let style = cop_config
+                .and_then(|c| c.enforced_style.as_ref())
+                .map(|s| match s.as_str() {
+                    "camelCase" => cops::naming::MethodNameStyle::CamelCase,
+                    _ => cops::naming::MethodNameStyle::SnakeCase,
+                })
+                .unwrap_or(cops::naming::MethodNameStyle::SnakeCase);
+            let allowed_patterns = cop_config
+                .and_then(|c| c.raw.get("AllowedPatterns"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+                .unwrap_or_default();
+            let forbidden_identifiers = cop_config
+                .and_then(|c| c.raw.get("ForbiddenIdentifiers"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+                .unwrap_or_else(|| vec!["__id__".to_string(), "__send__".to_string()]);
+            let forbidden_patterns = cop_config
+                .and_then(|c| c.raw.get("ForbiddenPatterns"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+                .unwrap_or_default();
+            Some(Box::new(cops::naming::MethodName::with_config(
+                style, allowed_patterns, forbidden_identifiers, forbidden_patterns,
             )))
         }
 
