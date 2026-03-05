@@ -1,20 +1,4 @@
-//! Naming/MethodName - Checks that method names match the configured style (snake_case or camelCase).
-//!
-//! Ported from: https://github.com/rubocop/rubocop/blob/master/lib/rubocop/cop/naming/method_name.rb
-//!
-//! Checks:
-//! - `def` / `def self.` method definitions
-//! - `attr`, `attr_reader`, `attr_writer`, `attr_accessor` arguments
-//! - `alias` statements (first argument)
-//! - `alias_method` calls (first argument)
-//! - `define_method` / `define_singleton_method` calls
-//! - `Struct.new` / `Data.define` symbol/string member arguments
-//!
-//! Config options:
-//! - EnforcedStyle: "snake_case" (default) or "camelCase"
-//! - AllowedPatterns: regexes that exempt matching method names
-//! - ForbiddenIdentifiers: exact names that are always forbidden
-//! - ForbiddenPatterns: regexes that flag matching method names as forbidden
+//! Naming/MethodName cop
 
 use crate::cops::{CheckContext, Cop};
 use crate::offense::{Offense, Severity};
@@ -117,29 +101,13 @@ fn style_message(style: MethodNameStyle) -> &'static str {
 }
 
 fn matches_any_pattern(name: &str, patterns: &[String]) -> bool {
-    for pat in patterns {
-        if let Ok(re) = Regex::new(pat) {
-            if re.is_match(name) {
-                return true;
-            }
-        }
-    }
-    false
+    patterns.iter().any(|pat| Regex::new(pat).map_or(false, |re| re.is_match(name)))
 }
 
 fn extract_name_from_node(node: &Node) -> Option<String> {
     match node {
-        Node::SymbolNode { .. } => {
-            let sym = node.as_symbol_node().unwrap();
-            let name = String::from_utf8_lossy(sym.unescaped().as_ref()).to_string();
-            Some(name)
-        }
-        Node::StringNode { .. } => {
-            let s = node.as_string_node().unwrap();
-            let name = String::from_utf8_lossy(s.unescaped().as_ref()).to_string();
-            Some(name)
-        }
-        Node::InterpolatedSymbolNode { .. } | Node::InterpolatedStringNode { .. } => None,
+        Node::SymbolNode { .. } => Some(String::from_utf8_lossy(node.as_symbol_node().unwrap().unescaped().as_ref()).to_string()),
+        Node::StringNode { .. } => Some(String::from_utf8_lossy(node.as_string_node().unwrap().unescaped().as_ref()).to_string()),
         _ => None,
     }
 }
@@ -153,18 +121,14 @@ struct MethodNameVisitor<'a> {
 
 impl<'a> MethodNameVisitor<'a> {
     fn check_name(&mut self, name: &str, start_offset: usize, end_offset: usize) {
-        if is_operator(name) {
-            return;
-        }
+        if is_operator(name) { return; }
 
-        // Check forbidden identifiers first (takes priority)
-        if self.cop.forbidden_identifiers.contains(&name.to_string()) {
+        if self.cop.forbidden_identifiers.contains(&name.to_string())
+            || matches_any_pattern(name, &self.cop.forbidden_patterns)
+        {
             self.offenses.push(self.ctx.offense_with_range(
                 "Naming/MethodName",
-                &format!(
-                    "`{}` is forbidden, use another method name instead.",
-                    name
-                ),
+                &format!("`{}` is forbidden, use another method name instead.", name),
                 Severity::Convention,
                 start_offset,
                 end_offset,
@@ -172,27 +136,8 @@ impl<'a> MethodNameVisitor<'a> {
             return;
         }
 
-        // Check forbidden patterns
-        if matches_any_pattern(name, &self.cop.forbidden_patterns) {
-            self.offenses.push(self.ctx.offense_with_range(
-                "Naming/MethodName",
-                &format!(
-                    "`{}` is forbidden, use another method name instead.",
-                    name
-                ),
-                Severity::Convention,
-                start_offset,
-                end_offset,
-            ));
-            return;
-        }
+        if matches_any_pattern(name, &self.cop.allowed_patterns) { return; }
 
-        // Check allowed patterns
-        if matches_any_pattern(name, &self.cop.allowed_patterns) {
-            return;
-        }
-
-        // Check style
         if !matches_style(name, self.cop.enforced_style) {
             self.offenses.push(self.ctx.offense_with_range(
                 "Naming/MethodName",
@@ -205,8 +150,6 @@ impl<'a> MethodNameVisitor<'a> {
     }
 
     fn is_class_emitter(&self, method_name: &str) -> bool {
-        // A "class emitter" method has a name that matches a class in scope
-        // Method names are capitalized when they're class emitters
         if method_name.is_empty() || !method_name.as_bytes()[0].is_ascii_uppercase() {
             return false;
         }
@@ -215,72 +158,37 @@ impl<'a> MethodNameVisitor<'a> {
 
     fn check_def_node(&mut self, node: &ruby_prism::DefNode) {
         let name = String::from_utf8_lossy(node.name().as_slice()).to_string();
-
-        if is_operator(&name) {
-            return;
-        }
-
-        // For class emitter methods: singleton method whose name matches a class in scope
-        if node.receiver().is_some() && self.is_class_emitter(&name) {
-            return;
-        }
-
-        // Get method name location
+        if is_operator(&name) { return; }
+        if node.receiver().is_some() && self.is_class_emitter(&name) { return; }
         let name_loc = node.name_loc();
         self.check_name(&name, name_loc.start_offset(), name_loc.end_offset());
     }
 
     fn check_attr_call(&mut self, node: &ruby_prism::CallNode) {
-        let args = match node.arguments() {
-            Some(a) => a,
-            None => return,
-        };
-
+        let args = match node.arguments() { Some(a) => a, None => return };
         let arguments: Vec<_> = args.arguments().iter().collect();
 
-        // Check if any argument violates the naming convention
-        // RuboCop reports a single offense spanning all arguments if any violate
         let mut has_violation = false;
         let mut forbidden_name: Option<String> = None;
 
         for arg in &arguments {
             if let Some(name) = extract_name_from_node(arg) {
-                if is_operator(&name) {
-                    continue;
-                }
-
-                // Check forbidden identifiers
-                if self.cop.forbidden_identifiers.contains(&name) {
-                    forbidden_name = Some(name.clone());
+                if is_operator(&name) { continue; }
+                if self.cop.forbidden_identifiers.contains(&name)
+                    || matches_any_pattern(&name, &self.cop.forbidden_patterns)
+                {
+                    forbidden_name = Some(name);
                     has_violation = true;
                     break;
                 }
-
-                // Check forbidden patterns
-                if matches_any_pattern(&name, &self.cop.forbidden_patterns) {
-                    forbidden_name = Some(name.clone());
-                    has_violation = true;
-                    break;
-                }
-
-                // Check allowed patterns
-                if matches_any_pattern(&name, &self.cop.allowed_patterns) {
-                    continue;
-                }
-
-                if !matches_style(&name, self.cop.enforced_style) {
-                    has_violation = true;
-                }
+                if matches_any_pattern(&name, &self.cop.allowed_patterns) { continue; }
+                if !matches_style(&name, self.cop.enforced_style) { has_violation = true; }
             }
         }
 
-        if !has_violation {
-            return;
-        }
+        if !has_violation { return; }
 
-        // For forbidden names, report each individually
-        if let Some(ref fname) = forbidden_name {
-            // Report each forbidden name argument individually
+        if forbidden_name.is_some() {
             for arg in &arguments {
                 if let Some(name) = extract_name_from_node(arg) {
                     if self.cop.forbidden_identifiers.contains(&name)
@@ -289,10 +197,7 @@ impl<'a> MethodNameVisitor<'a> {
                         let loc = arg.location();
                         self.offenses.push(self.ctx.offense_with_range(
                             "Naming/MethodName",
-                            &format!(
-                                "`{}` is forbidden, use another method name instead.",
-                                name
-                            ),
+                            &format!("`{}` is forbidden, use another method name instead.", name),
                             Severity::Convention,
                             loc.start_offset(),
                             loc.end_offset(),
@@ -300,16 +205,11 @@ impl<'a> MethodNameVisitor<'a> {
                     }
                 }
             }
-            let _ = fname;
             return;
         }
 
-        // For style violations, report a single offense spanning all arguments
-        let first_arg = &arguments[0];
-        let last_arg = &arguments[arguments.len() - 1];
-        let start = first_arg.location().start_offset();
-        let end = last_arg.location().end_offset();
-
+        let start = arguments[0].location().start_offset();
+        let end = arguments.last().unwrap().location().end_offset();
         self.offenses.push(self.ctx.offense_with_range(
             "Naming/MethodName",
             style_message(self.cop.enforced_style),
@@ -320,89 +220,46 @@ impl<'a> MethodNameVisitor<'a> {
     }
 
     fn check_alias_method_call(&mut self, node: &ruby_prism::CallNode) {
-        let args = match node.arguments() {
-            Some(a) => a,
-            None => return,
-        };
-
+        let args = match node.arguments() { Some(a) => a, None => return };
         let arguments: Vec<_> = args.arguments().iter().collect();
-
-        // alias_method expects exactly 2 arguments; if not, skip
-        if arguments.len() != 2 {
-            return;
-        }
-
-        let first_arg = &arguments[0];
-
-        // Only check symbol/string literals, skip variables and splats
-        if let Some(name) = extract_name_from_node(first_arg) {
-            let loc = first_arg.location();
+        if arguments.len() != 2 { return; }
+        if let Some(name) = extract_name_from_node(&arguments[0]) {
+            let loc = arguments[0].location();
             self.check_name(&name, loc.start_offset(), loc.end_offset());
         }
     }
 
     fn check_define_method_call(&mut self, node: &ruby_prism::CallNode) {
-        let args = match node.arguments() {
-            Some(a) => a,
-            None => return,
-        };
-
+        let args = match node.arguments() { Some(a) => a, None => return };
         let arguments: Vec<_> = args.arguments().iter().collect();
-        if arguments.is_empty() {
-            return;
-        }
-
-        let first_arg = &arguments[0];
-
-        if let Some(name) = extract_name_from_node(first_arg) {
-            // Operator methods defined via define_method are accepted
-            if is_operator(&name) {
-                return;
-            }
-            let loc = first_arg.location();
+        if arguments.is_empty() { return; }
+        if let Some(name) = extract_name_from_node(&arguments[0]) {
+            if is_operator(&name) { return; }
+            let loc = arguments[0].location();
             self.check_name(&name, loc.start_offset(), loc.end_offset());
         }
     }
 
     fn check_struct_new_or_data_define(&mut self, node: &ruby_prism::CallNode) {
-        let args = match node.arguments() {
-            Some(a) => a,
-            None => return,
-        };
-
-        let method_name = String::from_utf8_lossy(node.name().as_slice());
-        let is_struct_new = method_name == "new";
-
-        let arguments: Vec<_> = args.arguments().iter().collect();
-        let mut skip_first_string = is_struct_new;
-
-        for arg in &arguments {
-            match arg {
-                Node::StringNode { .. } if skip_first_string => {
-                    // First string arg to Struct.new is the struct name, skip it
-                    skip_first_string = false;
-                }
-                Node::SymbolNode { .. } | Node::StringNode { .. } => {
-                    if let Some(name) = extract_name_from_node(arg) {
-                        let loc = arg.location();
-                        self.check_name(&name, loc.start_offset(), loc.end_offset());
-                    }
-                    skip_first_string = false;
-                }
-                _ => {
-                    skip_first_string = false;
-                }
+        let args = match node.arguments() { Some(a) => a, None => return };
+        let mut skip_first_string = String::from_utf8_lossy(node.name().as_slice()) == "new";
+        for arg in args.arguments().iter() {
+            if skip_first_string && matches!(arg, Node::StringNode { .. }) {
+                skip_first_string = false;
+                continue;
+            }
+            skip_first_string = false;
+            if let Some(name) = extract_name_from_node(&arg) {
+                let loc = arg.location();
+                self.check_name(&name, loc.start_offset(), loc.end_offset());
             }
         }
     }
 
     fn check_alias_node(&mut self, node: &ruby_prism::AliasMethodNode) {
         let new_name_node = node.new_name();
-
         if let Some(name) = extract_name_from_node(&new_name_node) {
-            if is_operator(&name) {
-                return;
-            }
+            if is_operator(&name) { return; }
             let loc = new_name_node.location();
             self.check_name(&name, loc.start_offset(), loc.end_offset());
         }
@@ -410,47 +267,25 @@ impl<'a> MethodNameVisitor<'a> {
 
     fn is_struct_new_or_data_define(&self, node: &ruby_prism::CallNode) -> bool {
         let method_name = String::from_utf8_lossy(node.name().as_slice());
+        let expected_const = match method_name.as_ref() {
+            "new" => "Struct",
+            "define" => "Data",
+            _ => return false,
+        };
         let receiver = match node.receiver() {
             Some(r) => r,
             None => return false,
         };
-
-        match method_name.as_ref() {
-            "new" => {
-                if let Some(c) = receiver.as_constant_read_node() {
-                    let name = String::from_utf8_lossy(c.name().as_slice());
-                    name == "Struct"
-                } else if let Some(cp) = receiver.as_constant_path_node() {
-                    // ::Struct.new
-                    if cp.parent().is_some() {
-                        return false;
-                    }
-                    let child_name = String::from_utf8_lossy(cp.name().unwrap().as_slice());
-                    child_name == "Struct"
-                } else {
-                    false
-                }
-            }
-            "define" => {
-                if let Some(c) = receiver.as_constant_read_node() {
-                    let name = String::from_utf8_lossy(c.name().as_slice());
-                    name == "Data"
-                } else if let Some(cp) = receiver.as_constant_path_node() {
-                    // ::Data.define
-                    if cp.parent().is_some() {
-                        return false;
-                    }
-                    let child_name = String::from_utf8_lossy(cp.name().unwrap().as_slice());
-                    child_name == "Data"
-                } else {
-                    false
-                }
-            }
-            _ => false,
+        if let Some(c) = receiver.as_constant_read_node() {
+            String::from_utf8_lossy(c.name().as_slice()) == expected_const
+        } else if let Some(cp) = receiver.as_constant_path_node() {
+            cp.parent().is_none()
+                && cp.name().map_or(false, |n| String::from_utf8_lossy(n.as_slice()) == expected_const)
+        } else {
+            false
         }
     }
 
-    /// Collect all class names defined in the AST (for class emitter detection)
     fn collect_class_names(&mut self, node: &Node) {
         if let Some(c) = node.as_class_node() {
             let path = c.constant_path();
@@ -539,19 +374,8 @@ impl Cop for MethodName {
         node: &ruby_prism::ProgramNode,
         ctx: &CheckContext,
     ) -> Vec<Offense> {
-        let mut visitor = MethodNameVisitor {
-            ctx,
-            cop: self,
-            offenses: Vec::new(),
-            class_names: Vec::new(),
-        };
-
-        // First pass: collect class names for class emitter detection
-        for stmt in node.statements().body().iter() {
-            visitor.collect_class_names(&stmt);
-        }
-
-        // Second pass: check method names
+        let mut visitor = MethodNameVisitor { ctx, cop: self, offenses: Vec::new(), class_names: Vec::new() };
+        for stmt in node.statements().body().iter() { visitor.collect_class_names(&stmt); }
         visitor.visit_program_node(node);
         visitor.offenses
     }

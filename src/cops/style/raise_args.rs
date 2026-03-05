@@ -1,43 +1,14 @@
-//! Style/RaiseArgs - Checks the args passed to raise/fail.
-//!
-//! Ported from: https://github.com/rubocop/rubocop/blob/master/lib/rubocop/cop/style/raise_args.rb
+//! Style/RaiseArgs cop
 
 use crate::cops::{CheckContext, Cop};
 use crate::offense::{Correction, Offense, Severity};
 
-/// Enforced style for raise arguments
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub enum EnforcedStyle {
-    /// Require `raise ErrorClass, message` - separate args
     Explode,
-    /// Require `raise ErrorClass.new(message)` - explicit construction
     Compact,
 }
 
-/// Checks the args passed to `raise` and `fail`.
-///
-/// # Examples
-///
-/// ## EnforcedStyle: explode (default)
-/// ```ruby
-/// # bad
-/// raise StandardError.new("message")
-///
-/// # good
-/// raise StandardError, "message"
-/// fail "message"
-/// raise MyError.new("message", params)
-/// ```
-///
-/// ## EnforcedStyle: compact
-/// ```ruby
-/// # bad
-/// raise StandardError, "message"
-///
-/// # good
-/// raise StandardError.new("message")
-/// fail "message"
-/// ```
 pub struct RaiseArgs {
     enforced_style: EnforcedStyle,
     /// Exception types allowed to use compact form even in exploded style
@@ -62,12 +33,6 @@ impl RaiseArgs {
         }
     }
 
-    fn is_raise_or_fail(&self, name: &str) -> bool {
-        name == "raise" || name == "fail"
-    }
-
-    /// Check if an argument is "complex" (keyword hash, splat, forwarding, etc.)
-    /// These should not be flagged in exploded style
     fn is_complex_arg(arg: &ruby_prism::Node) -> bool {
         matches!(
             arg,
@@ -78,7 +43,6 @@ impl RaiseArgs {
         )
     }
 
-    /// Get the name of a constant from a node
     fn get_constant_name(node: &ruby_prism::Node) -> Option<String> {
         match node {
             ruby_prism::Node::ConstantReadNode { .. } => {
@@ -113,21 +77,9 @@ impl Cop for RaiseArgs {
 
     fn check_call(&self, node: &ruby_prism::CallNode, ctx: &CheckContext) -> Vec<Offense> {
         let method_name = String::from_utf8_lossy(node.name().as_slice());
-
-        // Only check raise and fail
-        if !self.is_raise_or_fail(&method_name) {
-            return vec![];
-        }
-
-        // Check if there's a receiver (we only want bare raise/fail)
-        if node.receiver().is_some() {
-            return vec![];
-        }
-
-        let arguments = match node.arguments() {
-            Some(args) => args,
-            None => return vec![], // No arguments, nothing to check
-        };
+        if method_name != "raise" && method_name != "fail" { return vec![]; }
+        if node.receiver().is_some() { return vec![]; }
+        let arguments = match node.arguments() { Some(args) => args, None => return vec![] };
 
         let args: Vec<_> = arguments.arguments().iter().collect();
 

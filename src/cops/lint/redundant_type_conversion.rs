@@ -1,10 +1,4 @@
-//! Lint/RedundantTypeConversion - Checks for redundant uses of type conversion methods.
-//!
-//! Detects calls like `"foo".to_s`, `42.to_i`, `[].to_a`, etc. where the receiver is already
-//! the target type. Also detects chained same-conversion (`foo.to_s.to_s`) and conversion
-//! after typed methods (`foo.inspect.to_s`).
-//!
-//! Ported from: https://github.com/rubocop/rubocop/blob/master/lib/rubocop/cop/lint/redundant_type_conversion.rb
+//! Lint/RedundantTypeConversion cop
 
 use crate::cops::{CheckContext, Cop};
 use crate::offense::{Correction, Offense, Severity};
@@ -14,7 +8,6 @@ const CONVERSION_METHODS: &[&str] = &[
     "to_s", "to_sym", "to_i", "to_f", "to_r", "to_c", "to_a", "to_h", "to_set", "to_d",
 ];
 
-/// Methods that are expected to return a specific type, making a further conversion redundant.
 fn is_typed_method_for(conversion: &str, method: &str) -> bool {
     if conversion == "to_s" {
         matches!(method, "inspect" | "to_json")
@@ -69,90 +62,37 @@ impl<'a> RedundantTypeConversionVisitor<'a> {
     fn check_call(&mut self, node: &ruby_prism::CallNode) {
         let method_name = String::from_utf8_lossy(node.name().as_slice());
         let method_str = method_name.as_ref();
+        if !CONVERSION_METHODS.contains(&method_str) { return; }
+        let receiver = match node.receiver() { Some(r) => r, None => return };
 
-        // Only handle our conversion methods
-        if !CONVERSION_METHODS.contains(&method_str) {
-            return;
-        }
-
-        // Must have a receiver (bare `to_s` is not flagged)
-        let receiver = match node.receiver() {
-            Some(r) => r,
-            None => return,
-        };
-
-        // For to_h and to_set: don't flag if there's a block
-        if method_str == "to_h" || method_str == "to_set" {
-            if self.has_block_or_block_pass(node) {
-                return;
-            }
-        }
-
-        // The node must not have non-empty arguments
-        // `foo.to_s(2)` is a base conversion, not redundant
-        // But `foo.to_s()` IS redundant (empty args)
+        if (method_str == "to_h" || method_str == "to_set") && self.has_block_or_block_pass(node) { return; }
         if let Some(args) = node.arguments() {
-            let arg_list: Vec<_> = args.arguments().iter().collect();
-            if !arg_list.is_empty() {
-                return;
-            }
+            if args.arguments().iter().count() > 0 { return; }
         }
 
-        // Check if this is a "redundant" conversion
-        let is_redundant = check_receiver_redundant(method_str, &receiver, self.ctx);
-
-        if !is_redundant {
-            return;
-        }
-
-        // Offense location: the method name (message_loc)
-        let msg_loc = match node.message_loc() {
-            Some(loc) => loc,
-            None => return,
-        };
-
-        let message = format!("Redundant `{}` detected.", method_str);
+        if !check_receiver_redundant(method_str, &receiver, self.ctx) { return; }
+        let msg_loc = match node.message_loc() { Some(loc) => loc, None => return };
 
         let offense = self.ctx.offense_with_range(
             "Lint/RedundantTypeConversion",
-            &message,
+            &format!("Redundant `{}` detected.", method_str),
             Severity::Warning,
             msg_loc.start_offset(),
             msg_loc.end_offset(),
         );
 
-        // Autocorrect: remove from the dot/&. through the end of the call (including parens)
         if let Some(dot) = node.call_operator_loc() {
-            let remove_start = dot.start_offset();
-            let remove_end = if let Some(closing) = node.closing_loc() {
-                closing.end_offset()
-            } else {
-                msg_loc.end_offset()
-            };
-            let correction = Correction::delete(remove_start, remove_end);
-            self.offenses.push(offense.with_correction(correction));
+            let remove_end = node.closing_loc().map_or(msg_loc.end_offset(), |c| c.end_offset());
+            self.offenses.push(offense.with_correction(Correction::delete(dot.start_offset(), remove_end)));
         } else {
             self.offenses.push(offense);
         }
     }
 
-    /// Check if to_h/to_set has a block attached.
     fn has_block_or_block_pass(&self, node: &ruby_prism::CallNode) -> bool {
-        // Check for block_pass argument (&:baz)
-        if let Some(args) = node.arguments() {
-            for arg in args.arguments().iter() {
-                if matches!(arg, ruby_prism::Node::BlockArgumentNode { .. }) {
-                    return true;
-                }
-            }
-        }
-
-        // Check if the CallNode has a block
-        if node.block().is_some() {
-            return true;
-        }
-
-        false
+        node.block().is_some()
+            || node.arguments().map_or(false, |args|
+                args.arguments().iter().any(|a| matches!(a, ruby_prism::Node::BlockArgumentNode { .. })))
     }
 }
 
@@ -163,10 +103,7 @@ impl Visit<'_> for RedundantTypeConversionVisitor<'_> {
     }
 }
 
-/// Check if the receiver makes this conversion redundant.
-/// Recursively unwraps parentheses.
 fn check_receiver_redundant(method: &str, receiver: &ruby_prism::Node, ctx: &CheckContext) -> bool {
-    // Unwrap parentheses first
     match receiver {
         ruby_prism::Node::ParenthesesNode { .. } => {
             let paren = receiver.as_parentheses_node().unwrap();
@@ -193,7 +130,6 @@ fn check_receiver_redundant(method: &str, receiver: &ruby_prism::Node, ctx: &Che
     }
 }
 
-/// Check if the receiver is a literal of the same type as the conversion.
 fn is_literal_receiver(method: &str, receiver: &ruby_prism::Node) -> bool {
     match method {
         "to_s" => matches!(
@@ -216,7 +152,6 @@ fn is_literal_receiver(method: &str, receiver: &ruby_prism::Node) -> bool {
     }
 }
 
-/// Check if the receiver is a constructor producing the same type.
 fn is_constructor_receiver(method: &str, receiver: &ruby_prism::Node, ctx: &CheckContext) -> bool {
     match receiver {
         ruby_prism::Node::CallNode { .. } => {
@@ -262,7 +197,6 @@ fn is_constructor_receiver(method: &str, receiver: &ruby_prism::Node, ctx: &Chec
     }
 }
 
-/// Check if the call has `exception: false` in its arguments.
 fn constructor_suppresses_exceptions(call: &ruby_prism::CallNode) -> bool {
     if let Some(args) = call.arguments() {
         for arg in args.arguments().iter() {
@@ -291,7 +225,6 @@ fn constructor_suppresses_exceptions(call: &ruby_prism::CallNode) -> bool {
     false
 }
 
-/// Check if the receiver is `Kernel`, `::Kernel`, or nil (bare call).
 fn is_kernel_receiver(receiver: &Option<ruby_prism::Node>) -> bool {
     match receiver {
         None => true,
@@ -299,7 +232,6 @@ fn is_kernel_receiver(receiver: &Option<ruby_prism::Node>) -> bool {
     }
 }
 
-/// Check if a node is a constant with the given name, possibly qualified (::Name, etc.).
 fn is_constant_named(node: &ruby_prism::Node, name: &str) -> bool {
     match node {
         ruby_prism::Node::ConstantReadNode { .. } => {
@@ -325,7 +257,6 @@ fn is_constant_named(node: &ruby_prism::Node, name: &str) -> bool {
     }
 }
 
-/// Check if a Kernel method name matches the conversion method.
 fn is_kernel_constructor_for(conversion_method: &str, kernel_method: &str) -> bool {
     match conversion_method {
         "to_s" => kernel_method == "String",
@@ -340,7 +271,6 @@ fn is_kernel_constructor_for(conversion_method: &str, kernel_method: &str) -> bo
     }
 }
 
-/// Check if a Class.method matches a constructor for the conversion.
 fn is_class_constructor_for(
     conversion_method: &str,
     call_method: &str,
@@ -364,28 +294,14 @@ fn is_class_constructor_for(
     }
 }
 
-/// Check if the conversion is chained on the same conversion method.
 fn is_chained_conversion(method: &str, receiver: &ruby_prism::Node) -> bool {
-    match receiver {
-        ruby_prism::Node::CallNode { .. } => {
-            let call = receiver.as_call_node().unwrap();
-            let recv_method = String::from_utf8_lossy(call.name().as_slice());
-            recv_method.as_ref() == method
-        }
-        _ => false,
-    }
+    receiver.as_call_node().map_or(false, |call|
+        String::from_utf8_lossy(call.name().as_slice()) == method)
 }
 
-/// Check if the conversion is chained on a typed method.
 fn is_chained_to_typed_method(method: &str, receiver: &ruby_prism::Node) -> bool {
-    match receiver {
-        ruby_prism::Node::CallNode { .. } => {
-            let call = receiver.as_call_node().unwrap();
-            let recv_method = String::from_utf8_lossy(call.name().as_slice());
-            is_typed_method_for(method, recv_method.as_ref())
-        }
-        _ => false,
-    }
+    receiver.as_call_node().map_or(false, |call|
+        is_typed_method_for(method, &String::from_utf8_lossy(call.name().as_slice())))
 }
 
 #[cfg(test)]

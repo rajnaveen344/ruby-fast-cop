@@ -1,6 +1,4 @@
-//! Style/StringLiterals - Checks if the use of double/single quotes matches the configured preference.
-//!
-//! Ported from: https://github.com/rubocop/rubocop/blob/master/lib/rubocop/cop/style/string_literals.rb
+//! Style/StringLiterals cop
 
 use crate::cops::{CheckContext, Cop};
 use crate::offense::{Correction, Location, Offense, Severity};
@@ -32,52 +30,31 @@ impl StringLiterals {
         }
     }
 
-    /// Check if a double-quoted string needs double quotes
-    /// (i.e., it contains interpolation, special escape sequences, or single quotes)
     fn needs_double_quotes(source_text: &str) -> bool {
-        // The source_text includes the quotes themselves
-        if source_text.len() < 2 {
-            return false;
-        }
+        if source_text.len() < 2 { return false; }
         let inner = &source_text[1..source_text.len() - 1];
-
-        // Check for interpolation: #{...}, #@var, #$var, #@@var
         let chars: Vec<char> = inner.chars().collect();
         let mut i = 0;
         while i < chars.len() {
-            if chars[i] == '#' && i + 1 < chars.len() {
-                match chars[i + 1] {
-                    '{' | '@' | '$' => return true,
-                    _ => {}
-                }
+            if chars[i] == '#' && i + 1 < chars.len() && matches!(chars[i + 1], '{' | '@' | '$') {
+                return true;
             }
             if chars[i] == '\\' && i + 1 < chars.len() {
                 match chars[i + 1] {
-                    // Special escape sequences that only work in double quotes
                     'n' | 't' | 'r' | 'a' | 'b' | 'e' | 'f' | 's' | 'v' | '0' | 'x' | 'u' | 'c'
-                    | 'C' | 'M' => return true,
-                    '\n' => return true, // line continuation
-                    // Escaped backslash, single quote, or double quote - safe to convert
-                    // \\ works the same in single quotes, \" becomes unescaped " in single quotes
+                    | 'C' | 'M' | '\n' => return true,
                     '\\' | '\'' | '"' => {}
-                    // Any other escape (e.g., \!, \%) - content differs in single quotes
                     _ => return true,
                 }
                 i += 2;
                 continue;
             }
-            // Contains a single quote - double quotes needed
-            if chars[i] == '\'' {
-                return true;
-            }
+            if chars[i] == '\'' { return true; }
             i += 1;
         }
-
         false
     }
 
-    /// Convert a double-quoted string to single-quoted.
-    /// Unescapes \" to " and keeps \\ as \\.
     fn to_single_quoted(source_text: &str) -> String {
         let inner = &source_text[1..source_text.len() - 1];
         let mut result = String::with_capacity(source_text.len());
@@ -108,8 +85,6 @@ impl StringLiterals {
         result
     }
 
-    /// Convert a single-quoted string to double-quoted.
-    /// Unescapes \' to ' and keeps \\ as \\.
     fn to_double_quoted(source_text: &str) -> String {
         let inner = &source_text[1..source_text.len() - 1];
         let mut result = String::with_capacity(source_text.len());
@@ -140,48 +115,28 @@ impl StringLiterals {
         result
     }
 
-    /// Check if a single-quoted string needs single quotes
-    /// (i.e., contains characters that would be special in double quotes)
     fn needs_single_quotes(source_text: &str) -> bool {
-        if source_text.len() < 2 {
-            return false;
-        }
+        if source_text.len() < 2 { return false; }
         let inner = &source_text[1..source_text.len() - 1];
-
         let chars: Vec<char> = inner.chars().collect();
         let mut i = 0;
         while i < chars.len() {
-            // Contains a double quote
-            if chars[i] == '"' {
+            if chars[i] == '"' { return true; }
+            if chars[i] == '#' && i + 1 < chars.len() && matches!(chars[i + 1], '{' | '@' | '$') {
                 return true;
             }
-            // Contains # followed by {, @, or $ (would be interpolation in double quotes)
-            if chars[i] == '#' && i + 1 < chars.len() {
-                match chars[i + 1] {
-                    '{' | '@' | '$' => return true,
-                    _ => {}
-                }
-            }
-            // Contains backslash followed by something that would be an escape in double quotes
             if chars[i] == '\\' && i + 1 < chars.len() {
                 match chars[i + 1] {
                     'n' | 't' | 'r' | 'a' | 'b' | 'e' | 'f' | 's' | 'v' | 'x' | 'u' | 'c' | 'C'
                     | 'M' | '0' => return true,
-                    '\'' | '\\' => {
-                        // Escaped single quote or backslash - doesn't require single quotes
-                    }
-                    _ => {
-                        // Other backslash sequences like \, \% etc. - would behave differently
-                        // in double quotes, so single quotes are needed
-                        return true;
-                    }
+                    '\'' | '\\' => {}
+                    _ => return true,
                 }
                 i += 2;
                 continue;
             }
             i += 1;
         }
-
         false
     }
 }
@@ -382,41 +337,27 @@ struct StringLiteralsVisitor<'a> {
     cop: &'a StringLiterals,
     ctx: &'a CheckContext<'a>,
     offenses: &'a mut Vec<Offense>,
-    /// Track whether we're inside an interpolated string (skip inner string checks)
     inside_interpolation: bool,
-    /// Track whether we're inside a %w or %W word array (skip inner string checks)
     inside_word_array: bool,
 }
 
 impl StringLiteralsVisitor<'_> {
     fn check_string_node(&mut self, node: &ruby_prism::StringNode) {
-        // Skip strings inside interpolation or %w/%W word arrays
-        if self.inside_interpolation || self.inside_word_array {
-            return;
-        }
+        if self.inside_interpolation || self.inside_word_array { return; }
 
         let loc = node.location();
         let source_text = &self.ctx.source[loc.start_offset()..loc.end_offset()];
 
-        // Skip heredocs, %q(), %Q(), %(), character literals (?x), __FILE__
-        if source_text.starts_with("<<")
-            || source_text.starts_with("%q")
-            || source_text.starts_with("%Q")
-            || source_text.starts_with("%(")
-            || source_text.starts_with("?")
-            || source_text == "__FILE__"
-        {
-            return;
-        }
+        if source_text.starts_with("<<") || source_text.starts_with("%q")
+            || source_text.starts_with("%Q") || source_text.starts_with("%(")
+            || source_text.starts_with("?") || source_text == "__FILE__"
+        { return; }
 
         let is_single_quoted = source_text.starts_with('\'');
         let is_double_quoted = source_text.starts_with('"');
 
-        if !is_single_quoted && !is_double_quoted {
-            return;
-        }
+        if !is_single_quoted && !is_double_quoted { return; }
 
-        // For ConsistentQuotesInMultiline, skip individual strings in continued lines
         if self.cop.consistent_quotes_in_multiline {
             let start_loc = self.ctx.location(&loc);
             let end_loc_line = {
@@ -514,8 +455,6 @@ impl Visit<'_> for StringLiteralsVisitor<'_> {
     }
 
     fn visit_interpolated_string_node(&mut self, node: &ruby_prism::InterpolatedStringNode) {
-        // Interpolated strings always need double quotes - skip the node itself
-        // But set the flag so inner StringNodes in embedded expressions are skipped
         let was = self.inside_interpolation;
         self.inside_interpolation = true;
         ruby_prism::visit_interpolated_string_node(self, node);
@@ -523,7 +462,6 @@ impl Visit<'_> for StringLiteralsVisitor<'_> {
     }
 
     fn visit_array_node(&mut self, node: &ruby_prism::ArrayNode) {
-        // Check if this is a %w or %W word array
         let loc = node.location();
         let source_text = &self.ctx.source[loc.start_offset()..loc.end_offset()];
         if source_text.starts_with("%w")
