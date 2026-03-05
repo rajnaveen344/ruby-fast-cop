@@ -81,7 +81,7 @@ Style/Documentation:
 
 RuboCop (v1.85.0) has **606 user-facing cops** across 9 departments. We have **606 TOML test fixtures** — one per cop — with **28,075 test cases** extracted from RuboCop's own RSpec suite.
 
-### Implemented Cops (30 of 606 — all passing)
+### Implemented Cops (33 of 606 — all passing)
 
 | Cop                              | Tests | Status  |
 | -------------------------------- | ----- | ------- |
@@ -110,8 +110,11 @@ RuboCop (v1.85.0) has **606 user-facing cops** across 9 departments. We have **6
 | Style/NegativeArrayIndex         | 423   | Passing |
 | Style/NumericLiterals            | 28    | Passing |
 | Style/RaiseArgs                  | 35    | Passing |
+| Style/RedundantParentheses       | 331   | Passing |
+| Style/RedundantStringEscape      | 328   | Passing |
 | Style/RescueStandardError        | 37    | Passing |
 | Style/SafeNavigation             | 786   | Passing |
+| Style/SelectByRegexp             | 320   | Passing |
 | Style/Semicolon                  | 33    | Passing |
 | Style/StringLiterals             | 58    | Passing |
 | Style/StringMethods              | 2     | Passing |
@@ -173,7 +176,7 @@ ruby-fast-cop -a .
 ruby-fast-cop -A .
 ```
 
-16 of 30 implemented cops support autocorrect (716 correction tests passing).
+24 of 33 implemented cops support autocorrect.
 
 ### How Autocorrect Works: RuboCop vs Ruff vs ruby-fast-cop
 
@@ -314,7 +317,7 @@ cargo run --bin fixture_stats
 
 ### High Priority
 
-- [ ] **More cops** - 30 of 606 implemented; see [Implementation Roadmap](#implementation-roadmap) for priority list
+- [ ] **More cops** - 33 of 606 implemented; see [Implementation Roadmap](#implementation-roadmap) for priority list
 - [x] **Auto-correct** - `-a` (safe) and `-A` (all) flags with Ruff-style iterative correction
 - [ ] **Parallel processing** - Use rayon for multi-threaded file processing
 
@@ -339,11 +342,11 @@ cargo run --bin fixture_stats
 | Feature          | RuboCop         | ruby-fast-cop           |
 | ---------------- | --------------- | ----------------------- |
 | Performance      | Baseline        | 50-100x faster (target) |
-| Cop count        | 606             | 22 implemented          |
+| Cop count        | 606             | 33 implemented          |
 | Test coverage    | ~28k test cases | 606 fixtures (1:1)      |
 | Custom Ruby cops | Yes             | No                      |
 | .rubocop.yml     | Yes             | Yes                     |
-| Auto-correct     | Yes             | Yes (16 of 22 cops)     |
+| Auto-correct     | Yes             | Yes (24 of 33 cops)     |
 | Library API      | Limited         | Yes                     |
 | inherit_from     | Yes             | Yes                     |
 | inherit_gem      | Yes             | Yes                     |
