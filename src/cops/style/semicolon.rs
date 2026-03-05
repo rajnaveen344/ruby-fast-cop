@@ -1,6 +1,4 @@
-//! Style/Semicolon - Checks for use of semicolons instead of newlines.
-//!
-//! Ported from: https://github.com/rubocop/rubocop/blob/master/lib/rubocop/cop/style/semicolon.rb
+//! Style/Semicolon cop
 
 use crate::cops::{CheckContext, Cop};
 use crate::offense::{Correction, Location, Offense, Severity};
@@ -11,14 +9,9 @@ pub struct Semicolon {
 
 impl Semicolon {
     pub fn new(allow_as_expression_separator: bool) -> Self {
-        Self {
-            allow_as_expression_separator,
-        }
+        Self { allow_as_expression_separator }
     }
 
-    /// Get positions of semicolons in a line that are not inside strings/comments,
-    /// but ARE detected inside string interpolation.
-    /// Returns (char_position, in_interpolation) pairs.
     fn find_semicolons(line: &str) -> Vec<(usize, bool)> {
         let chars: Vec<char> = line.chars().collect();
         let mut positions = Vec::new();
@@ -69,14 +62,9 @@ impl Semicolon {
         positions
     }
 
-    /// Check if a line contains a one-line def/class/module definition.
-    /// Returns the number of semicolons that are part of the one-liner structure
-    /// (which should be allowed).
-    /// Returns 0 if not a one-liner or if the one-liner has too many statements.
     fn allowed_semicolons_in_line(line: &str, semi_positions: &[(usize, bool)]) -> Vec<usize> {
         let trimmed = line.trim();
 
-        // Strip trailing semicolons to check the base pattern
         let base = trimmed.trim_end_matches(';').trim_end();
 
         let is_def_oneliner = base.starts_with("def ") && (base.ends_with(" end") || base.ends_with(";end"));
@@ -87,10 +75,7 @@ impl Semicolon {
             return vec![];
         }
 
-        // For class/module one-liners: `class Foo; end` or `module Foo; end`
-        // Allow the single semicolon between name and `end`
         if is_class_oneliner {
-            // Count semicolons in the base (without trailing `;`)
             let base_semis: Vec<usize> = semi_positions
                 .iter()
                 .filter(|&&(pos, _)| {
@@ -103,15 +88,10 @@ impl Semicolon {
                 .map(|&(pos, _)| pos)
                 .collect();
 
-            // One-liner class/module should have exactly 1 semicolon: `class Foo; end`
-            if base_semis.len() == 1 {
-                return base_semis;
-            }
-            // Too many semicolons in the body - none allowed
+            if base_semis.len() == 1 { return base_semis; }
             return vec![];
         }
 
-        // For def one-liners: count semicolons in the base
         let base_semis: Vec<usize> = semi_positions
             .iter()
             .filter(|&&(pos, _)| {
@@ -123,18 +103,10 @@ impl Semicolon {
             .map(|&(pos, _)| pos)
             .collect();
 
-        // def foo; end → 1 semi (OK)
-        // def foo; x(3); end → 2 semis (OK, single body statement)
-        // def foo; x; y; end → 3 semis (NOT OK, multiple body statements)
-        if base_semis.len() <= 2 {
-            return base_semis;
-        }
-
-        // Too many semicolons → all are offenses
+        if base_semis.len() <= 2 { return base_semis; }
         vec![]
     }
 
-    /// Check if a line before the semicolon ends with an endless range (.. or ...)
     fn is_endless_range_before(before: &str) -> bool {
         let trimmed = before.trim_end();
         trimmed.ends_with("..") || trimmed.ends_with("...")
