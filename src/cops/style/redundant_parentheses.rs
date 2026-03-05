@@ -6,7 +6,7 @@
 //! Ported from: https://github.com/rubocop/rubocop/blob/master/lib/rubocop/cop/style/redundant_parentheses.rb
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Correction, Offense, Severity};
+use crate::offense::{Correction, Edit, Offense, Severity};
 use ruby_prism::{Node, Visit};
 
 const COP_NAME: &str = "Style/RedundantParentheses";
@@ -617,16 +617,63 @@ impl<'a> Visitor<'a> {
 
         let (inner_start, inner_end) = get_inner_offsets(&body);
         let inner_text = self.src(inner_start, inner_end);
-        // If the char after closing paren is '?' (ternary), add trailing space
-        // to prevent identifier? method call interpretation
-        let replacement = if close < self.ctx.source.len()
-            && self.ctx.source.as_bytes()[close] == b'?'
-        {
-            format!("{} ", inner_text)
+
+        // Check if the inner expression is a heredoc (tag starts with <<)
+        let is_heredoc = inner_start + 2 <= self.ctx.source.len()
+            && &self.ctx.source[inner_start..inner_start + 2] == "<<";
+
+        if is_heredoc {
+            // Heredoc correction: multi-edit to remove parens and move comma
+            let src = self.ctx.source.as_bytes();
+            let mut edits = Vec::new();
+
+            // Edit 1: Delete from `(` to start of heredoc tag
+            edits.push(Edit { start_offset: open, end_offset: inner_start, replacement: String::new() });
+
+            // Find the newline before `)`: scan backwards from close paren
+            let close_paren = close - 1; // byte offset of `)`
+            let mut term_end = close_paren;
+            while term_end > inner_end && src[term_end - 1] != b'\n' {
+                term_end -= 1;
+            }
+            // term_end is now at first byte after terminator's \n (start of whitespace before `)`)
+
+            // Check for trailing comma after `)`
+            let mut line_end = close;
+            while line_end < src.len() && src[line_end] != b'\n' {
+                line_end += 1;
+            }
+            if line_end < src.len() { line_end += 1; } // include the \n
+
+            let trailing = &self.ctx.source[close..line_end];
+            if trailing.contains(',') {
+                // Insert comma after the heredoc tag (before its newline)
+                edits.push(Edit { start_offset: inner_end, end_offset: inner_end, replacement: ",".to_string() });
+                // Delete from after terminator newline through `) ,\n`
+                edits.push(Edit { start_offset: term_end, end_offset: line_end, replacement: String::new() });
+            } else {
+                // No comma: delete from after terminator newline through `)\n`
+                let mut paren_end = close;
+                if paren_end < src.len() && src[paren_end] == b'\n' {
+                    paren_end += 1;
+                }
+                edits.push(Edit { start_offset: term_end, end_offset: paren_end, replacement: String::new() });
+            }
+
+            offense = offense.with_correction(Correction { edits });
         } else {
-            inner_text.to_string()
-        };
-        offense = offense.with_correction(Correction::replace(open, close, &replacement));
+            // Standard correction: replace parens with inner text
+            // If the char after closing paren is '?' (ternary), add trailing space
+            // to prevent identifier? method call interpretation
+            let replacement = if close < self.ctx.source.len()
+                && self.ctx.source.as_bytes()[close] == b'?'
+            {
+                format!("{} ", inner_text)
+            } else {
+                inner_text.to_string()
+            };
+            offense = offense.with_correction(Correction::replace(open, close, &replacement));
+        }
 
         self.offenses.push(offense);
     }
