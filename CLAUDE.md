@@ -6,7 +6,7 @@ Instructions for Claude when working on this project.
 
 ruby-fast-cop is a high-performance Ruby linter written in Rust, designed as a drop-in replacement for RuboCop. The goal is 50-100x faster linting by rewriting cops in Rust, similar to how Ruff replaced Python linters.
 
-**Current state:** 38 of 606 cops implemented (all passing), 606 TOML test fixtures with ~28,075 test cases extracted from RuboCop v1.85.0's RSpec suite.
+**Current state:** 41 of 606 cops implemented (all passing), 606 TOML test fixtures with ~28,075 test cases extracted from RuboCop v1.85.0's RSpec suite.
 
 ## Key Design Decisions
 
@@ -194,6 +194,21 @@ impl Cop for Debugger {
 ```
 
 ## Common Tasks
+
+### Implementing multiple cops in parallel
+
+When implementing multiple cops at once, use **subagents with worktree isolation** to avoid file conflicts:
+
+```
+Agent(subagent_type="general-purpose", isolation="worktree", run_in_background=true, mode="bypassPermissions")
+```
+
+Each agent gets its own git worktree so they can independently edit `mod.rs`, `lib.rs`, and TOML fixtures without interfering. After each agent completes, manually merge its changes into the main working tree:
+1. Copy the new `.rs` cop file from the worktree
+2. Apply the registration edits (mod.rs, lib.rs) manually since other cops may have been merged first
+3. Set `implemented = true` in the TOML fixture
+4. Run `cargo test --test tester` to verify
+5. Clean up worktrees with `rm -rf .claude/worktrees/`
 
 ### Adding a new cop
 

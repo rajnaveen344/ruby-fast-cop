@@ -335,11 +335,13 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(lint::AssignmentInCondition::new(false)), // User's config: AllowSafeAssignment: false
         Box::new(lint::Debugger::new()),
         Box::new(lint::DuplicateMethods::new()),
+        Box::new(lint::LiteralAsCondition::new()),
         Box::new(lint::LiteralInInterpolation::new()),
         Box::new(lint::RedundantTypeConversion::new()),
         Box::new(lint::UnreachableCode::new()),
         Box::new(lint::Void::new(false)),
         // Layout
+        Box::new(layout::EndAlignment::new(layout::EndAlignmentStyle::Keyword)),
         Box::new(layout::LeadingCommentSpace::new()),
         Box::new(layout::LineLength::new(160)), // User's config: Max: 160 (allow_uri=true by default)
         Box::new(layout::SpaceAfterComma::new()),
@@ -367,6 +369,7 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(style::NumericLiterals::new(5)),
         Box::new(style::RaiseArgs::new(style::RaiseArgsStyle::Compact)), // User's config
         Box::new(style::RedundantParentheses::new()),
+        Box::new(style::RedundantRegexpEscape::new()),
         Box::new(style::RedundantStringEscape::new()),
         Box::new(style::RescueStandardError::new(style::RescueStandardErrorStyle::Implicit)), // User's config
         Box::new(style::SafeNavigation::new()),

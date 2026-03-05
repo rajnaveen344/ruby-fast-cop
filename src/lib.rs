@@ -427,6 +427,11 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         )));
     }
 
+    // Style/RedundantRegexpEscape
+    if config.is_cop_enabled("Style/RedundantRegexpEscape") {
+        result.push(Box::new(cops::style::RedundantRegexpEscape::new()));
+    }
+
     // Style/RedundantStringEscape
     if config.is_cop_enabled("Style/RedundantStringEscape") {
         result.push(Box::new(cops::style::RedundantStringEscape::new()));
@@ -483,6 +488,20 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
             })
             .unwrap_or(cops::layout::TrailingEmptyLinesStyle::FinalNewline);
         result.push(Box::new(cops::layout::TrailingEmptyLines::new(style)));
+    }
+
+    // Layout/EndAlignment
+    if config.is_cop_enabled("Layout/EndAlignment") {
+        let style = config.get_cop_config("Layout/EndAlignment")
+            .and_then(|c| c.raw.get("EnforcedStyleAlignWith"))
+            .and_then(|v| v.as_str())
+            .unwrap_or("keyword");
+        let align_style = match style {
+            "variable" => cops::layout::EndAlignmentStyle::Variable,
+            "start_of_line" => cops::layout::EndAlignmentStyle::StartOfLine,
+            _ => cops::layout::EndAlignmentStyle::Keyword,
+        };
+        result.push(Box::new(cops::layout::EndAlignment::new(align_style)));
     }
 
     // Layout/LeadingCommentSpace
@@ -826,6 +845,10 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
                 .and_then(|v| v.as_bool())
                 .unwrap_or(true);
             Some(Box::new(cops::lint::DuplicateMethods::with_config(active_support)))
+        }
+
+        "Lint/LiteralAsCondition" => {
+            Some(Box::new(cops::lint::LiteralAsCondition::new()))
         }
 
         "Lint/LiteralInInterpolation" => {
@@ -1235,6 +1258,7 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
             )))
         }
 
+        "Style/RedundantRegexpEscape" => Some(Box::new(cops::style::RedundantRegexpEscape::new())),
         "Style/RedundantStringEscape" => Some(Box::new(cops::style::RedundantStringEscape::new())),
 
         "Style/SelectByRegexp" => Some(Box::new(cops::style::SelectByRegexp::new())),
@@ -1262,6 +1286,19 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
                 })
                 .unwrap_or(cops::layout::TrailingEmptyLinesStyle::FinalNewline);
             Some(Box::new(cops::layout::TrailingEmptyLines::new(style)))
+        }
+
+        "Layout/EndAlignment" => {
+            let style = config.get_cop_config("Layout/EndAlignment")
+                .and_then(|c| c.raw.get("EnforcedStyleAlignWith"))
+                .and_then(|v| v.as_str())
+                .unwrap_or("keyword");
+            let align_style = match style {
+                "variable" => cops::layout::EndAlignmentStyle::Variable,
+                "start_of_line" => cops::layout::EndAlignmentStyle::StartOfLine,
+                _ => cops::layout::EndAlignmentStyle::Keyword,
+            };
+            Some(Box::new(cops::layout::EndAlignment::new(align_style)))
         }
 
         "Layout/LeadingCommentSpace" => {
