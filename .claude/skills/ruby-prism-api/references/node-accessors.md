@@ -369,7 +369,7 @@ Most bodies in the AST are wrapped in StatementsNode. Always check.
 | ---------------- | ----------- | -------------------------- |
 | `left()`         | `Node`      | Left operand (NOT Option)  |
 | `right()`        | `Node`      | Right operand (NOT Option) |
-| `operator_loc()` | `Location`  | `&&`/`and` or `\|\|`/`or`  |
+| `operator_loc()` | `Location`  | Logical operator position  |
 
 ## ParenthesesNode
 
