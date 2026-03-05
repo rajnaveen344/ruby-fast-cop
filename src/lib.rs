@@ -208,6 +208,16 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         result.push(Box::new(cops::lint::RedundantTypeConversion::new()));
     }
 
+    // Lint/UnreachableCode
+    if config.is_cop_enabled("Lint/UnreachableCode") {
+        result.push(Box::new(cops::lint::UnreachableCode::new()));
+    }
+
+    // Lint/Void
+    if config.is_cop_enabled("Lint/Void") {
+        result.push(Box::new(cops::lint::Void::new(false)));
+    }
+
     // Layout/LineLength
     if config.is_cop_enabled("Layout/LineLength") {
         let max = config
@@ -492,6 +502,29 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         )));
     }
 
+    // Layout/MultilineMethodCallIndentation
+    if config.is_cop_enabled("Layout/MultilineMethodCallIndentation") {
+        let cop_config = config.get_cop_config("Layout/MultilineMethodCallIndentation");
+        let style = cop_config
+            .and_then(|c| c.enforced_style.as_ref())
+            .map(|s| match s.as_str() {
+                "indented" => cops::layout::MultilineMethodCallIndentationStyle::Indented,
+                "indented_relative_to_receiver" => cops::layout::MultilineMethodCallIndentationStyle::IndentedRelativeToReceiver,
+                _ => cops::layout::MultilineMethodCallIndentationStyle::Aligned,
+            })
+            .unwrap_or(cops::layout::MultilineMethodCallIndentationStyle::Aligned);
+        let width = cop_config
+            .and_then(|c| c.raw.get("IndentationWidth"))
+            .and_then(|v| v.as_i64())
+            .map(|v| v as usize);
+        result.push(Box::new(cops::layout::MultilineMethodCallIndentation::new(style, width)));
+    }
+
+    // Layout/SpaceInsidePercentLiteralDelimiters
+    if config.is_cop_enabled("Layout/SpaceInsidePercentLiteralDelimiters") {
+        result.push(Box::new(cops::layout::SpaceInsidePercentLiteralDelimiters::new()));
+    }
+
     // Style/FrozenStringLiteralComment
     if config.is_cop_enabled("Style/FrozenStringLiteralComment") {
         let cop_config = config.get_cop_config("Style/FrozenStringLiteralComment");
@@ -771,6 +804,19 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
 
         "Lint/RedundantTypeConversion" => {
             Some(Box::new(cops::lint::RedundantTypeConversion::new()))
+        }
+
+        "Lint/UnreachableCode" => {
+            Some(Box::new(cops::lint::UnreachableCode::new()))
+        }
+
+        "Lint/Void" => {
+            let cop_config = config.get_cop_config("Lint/Void");
+            let check_methods = cop_config
+                .and_then(|c| c.raw.get("CheckForMethodsWithNoSideEffects"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
+            Some(Box::new(cops::lint::Void::new(check_methods)))
         }
 
         "Lint/AssignmentInCondition" => {
@@ -1223,6 +1269,27 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
             Some(Box::new(cops::layout::SpaceAfterComma::with_config(
                 space_inside_braces_is_space,
             )))
+        }
+
+        "Layout/MultilineMethodCallIndentation" => {
+            let cop_config = config.get_cop_config("Layout/MultilineMethodCallIndentation");
+            let style = cop_config
+                .and_then(|c| c.enforced_style.as_ref())
+                .map(|s| match s.as_str() {
+                    "indented" => cops::layout::MultilineMethodCallIndentationStyle::Indented,
+                    "indented_relative_to_receiver" => cops::layout::MultilineMethodCallIndentationStyle::IndentedRelativeToReceiver,
+                    _ => cops::layout::MultilineMethodCallIndentationStyle::Aligned,
+                })
+                .unwrap_or(cops::layout::MultilineMethodCallIndentationStyle::Aligned);
+            let width = cop_config
+                .and_then(|c| c.raw.get("IndentationWidth"))
+                .and_then(|v| v.as_i64())
+                .map(|v| v as usize);
+            Some(Box::new(cops::layout::MultilineMethodCallIndentation::new(style, width)))
+        }
+
+        "Layout/SpaceInsidePercentLiteralDelimiters" => {
+            Some(Box::new(cops::layout::SpaceInsidePercentLiteralDelimiters::new()))
         }
 
         "Style/FrozenStringLiteralComment" => {

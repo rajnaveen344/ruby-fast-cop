@@ -1,22 +1,22 @@
 # All Cops State (606 total)
 
 Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department and default status.
-33 of 606 implemented. See [README.md](README.md) for the implementation roadmap.
+37 of 606 implemented. See [README.md](README.md) for the implementation roadmap.
 
 ## Summary
 
 | Department | Enabled | Pending | Disabled | Implemented |      Tests |
 | ---------- | ------: | ------: | -------: | ----------: | ---------: |
 | Style      |     175 |      91 |       32 |          19 |     14,567 |
-| Lint       |     100 |      50 |        4 |           5 |      5,961 |
-| Layout     |      81 |       5 |       14 |           5 |      4,654 |
+| Lint       |     100 |      50 |        4 |           7 |      5,961 |
+| Layout     |      81 |       5 |       14 |           7 |      4,654 |
 | Metrics    |       9 |       1 |        0 |           3 |        272 |
 | Naming     |      16 |       2 |        1 |           1 |      2,217 |
 | Gemspec    |       4 |       5 |        1 |           0 |        193 |
 | Bundler    |       5 |       0 |        2 |           0 |        101 |
 | Security   |       5 |       2 |        0 |           0 |        102 |
 | Migration  |       1 |       0 |        0 |           0 |          8 |
-| **Total**  | **396** | **156** |   **54** |      **33** | **28,075** |
+| **Total**  | **396** | **156** |   **54** |      **37** | **28,075** |
 
 - **Enabled**: Runs by default on every codebase (highest priority to implement)
 - **Pending**: Runs only with `NewCops: enable` in config
@@ -337,7 +337,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Style/UnlessLogicalOperators               |    28 | -           |
 | Style/YodaExpression                       |    10 | -           |
 
-## Lint (5/154 implemented, 5,961 tests)
+## Lint (7/154 implemented, 5,961 tests)
 
 ### Enabled by Default (100 cops, 3,859 tests)
 
@@ -430,7 +430,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Lint/TrailingCommaInAttributeDeclaration |     2 | -           |
 | Lint/UnderscorePrefixedVariableName      |    19 | -           |
 | Lint/UnifiedInteger                      |    15 | -           |
-| Lint/UnreachableCode                     |   266 | -           |
+| Lint/UnreachableCode                     |   266 | Implemented |
 | Lint/UnreachableLoop                     |    28 | -           |
 | Lint/UnusedBlockArgument                 |    30 | -           |
 | Lint/UnusedMethodArgument                |    41 | -           |
@@ -442,7 +442,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Lint/UselessMethodDefinition             |    16 | -           |
 | Lint/UselessSetterCall                   |    20 | -           |
 | Lint/UselessTimes                        |    25 | -           |
-| Lint/Void                                |   270 | -           |
+| Lint/Void                                |   270 | Implemented |
 
 ### Pending by Default (50 cops, 2,007 tests)
 
@@ -508,7 +508,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Lint/NumberConversion            |    36 | -      |
 | Lint/ShadowingOuterLocalVariable |    31 | -      |
 
-## Layout (5/100 implemented, 4,654 tests)
+## Layout (7/100 implemented, 4,654 tests)
 
 ### Enabled by Default (81 cops, 4,067 tests)
 
@@ -563,7 +563,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Layout/MultilineBlockLayout                      |    30 | -           |
 | Layout/MultilineHashBraceLayout                  |    34 | -           |
 | Layout/MultilineMethodCallBraceLayout            |    44 | -           |
-| Layout/MultilineMethodCallIndentation            |   252 | -           |
+| Layout/MultilineMethodCallIndentation            |   252 | Implemented |
 | Layout/MultilineMethodDefinitionBraceLayout      |    26 | -           |
 | Layout/MultilineOperationIndentation             |   101 | -           |
 | Layout/ParameterAlignment                        |    19 | -           |
@@ -589,7 +589,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Layout/SpaceInsideBlockBraces                    |    43 | -           |
 | Layout/SpaceInsideHashLiteralBraces              |    40 | -           |
 | Layout/SpaceInsideParens                         |    28 | -           |
-| Layout/SpaceInsidePercentLiteralDelimiters       |   262 | -           |
+| Layout/SpaceInsidePercentLiteralDelimiters       |   262 | Implemented |
 | Layout/SpaceInsideRangeLiteral                   |     7 | -           |
 | Layout/SpaceInsideReferenceBrackets              |    47 | -           |
 | Layout/SpaceInsideStringInterpolation            |    12 | -           |

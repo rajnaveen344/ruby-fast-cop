@@ -3,9 +3,13 @@ mod debugger;
 mod duplicate_methods;
 mod literal_in_interpolation;
 mod redundant_type_conversion;
+mod unreachable_code;
+mod void;
 
 pub use assignment_in_condition::AssignmentInCondition;
 pub use debugger::Debugger;
 pub use duplicate_methods::DuplicateMethods;
 pub use literal_in_interpolation::LiteralInInterpolation;
 pub use redundant_type_conversion::RedundantTypeConversion;
+pub use unreachable_code::UnreachableCode;
+pub use void::Void;

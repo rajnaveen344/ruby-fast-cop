@@ -337,10 +337,14 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(lint::DuplicateMethods::new()),
         Box::new(lint::LiteralInInterpolation::new()),
         Box::new(lint::RedundantTypeConversion::new()),
+        Box::new(lint::UnreachableCode::new()),
+        Box::new(lint::Void::new(false)),
         // Layout
         Box::new(layout::LeadingCommentSpace::new()),
         Box::new(layout::LineLength::new(160)), // User's config: Max: 160 (allow_uri=true by default)
         Box::new(layout::SpaceAfterComma::new()),
+        Box::new(layout::MultilineMethodCallIndentation::new(layout::MultilineMethodCallIndentationStyle::Aligned, None)),
+        Box::new(layout::SpaceInsidePercentLiteralDelimiters::new()),
         Box::new(layout::TrailingEmptyLines::new(layout::TrailingEmptyLinesStyle::FinalNewline)),
         Box::new(layout::TrailingWhitespace::new()),
         // Metrics

@@ -176,7 +176,7 @@ ruby-fast-cop -a .
 ruby-fast-cop -A .
 ```
 
-24 of 33 implemented cops support autocorrect.
+24 of 37 implemented cops support autocorrect.
 
 ### How Autocorrect Works: RuboCop vs Ruff vs ruby-fast-cop
 
@@ -317,7 +317,7 @@ cargo run --bin fixture_stats
 
 ### High Priority
 
-- [ ] **More cops** - 33 of 606 implemented; see [Implementation Roadmap](#implementation-roadmap) for priority list
+- [ ] **More cops** - 37 of 606 implemented; see [Implementation Roadmap](#implementation-roadmap) for priority list
 - [x] **Auto-correct** - `-a` (safe) and `-A` (all) flags with Ruff-style iterative correction
 - [ ] **Parallel processing** - Use rayon for multi-threaded file processing
 
@@ -342,11 +342,11 @@ cargo run --bin fixture_stats
 | Feature          | RuboCop         | ruby-fast-cop           |
 | ---------------- | --------------- | ----------------------- |
 | Performance      | Baseline        | 50-100x faster (target) |
-| Cop count        | 606             | 33 implemented          |
+| Cop count        | 606             | 37 implemented          |
 | Test coverage    | ~28k test cases | 606 fixtures (1:1)      |
 | Custom Ruby cops | Yes             | No                      |
 | .rubocop.yml     | Yes             | Yes                     |
-| Auto-correct     | Yes             | Yes (24 of 33 cops)     |
+| Auto-correct     | Yes             | Yes (24 of 37 cops)     |
 | Library API      | Limited         | Yes                     |
 | inherit_from     | Yes             | Yes                     |
 | inherit_gem      | Yes             | Yes                     |
