@@ -1,6 +1,7 @@
 pub mod config;
 pub mod cops;
 pub mod correction;
+pub mod helpers;
 pub mod offense;
 
 pub use config::Config;
