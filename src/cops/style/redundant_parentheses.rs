@@ -201,12 +201,6 @@ impl<'a> Visitor<'a> {
         self.parent_stack.iter().any(|p| p.kind == kind)
     }
 
-    fn src(&self, s: usize, e: usize) -> &str { &self.ctx.source[s..e] }
-
-    fn line_of(&self, offset: usize) -> usize {
-        1 + self.ctx.source.as_bytes()[..offset].iter().filter(|&&b| b == b'\n').count()
-    }
-
     fn paren_offense_location(&self, open: usize, close: usize) -> crate::offense::Location {
         let loc = crate::offense::Location::from_offsets(self.ctx.source, open, close);
         if loc.line == loc.last_line {
@@ -299,7 +293,7 @@ impl<'a> Visitor<'a> {
         }
 
         if pk == PK::FlowControl || pk == PK::KeywordCall {
-            if self.line_of(open) != self.line_of(close - 1) { return true; }
+            if self.ctx.line_of(open) != self.ctx.line_of(close - 1) { return true; }
         }
 
         if pk == PK::Condition && open > 0 {
@@ -425,7 +419,7 @@ impl<'a> Visitor<'a> {
 
         if self.allow_in_multiline_conditions {
             if matches!(inner, Node::AndNode{..} | Node::OrNode{..}) {
-                if self.line_of(open) != self.line_of(close - 1) { return true; }
+                if self.ctx.line_of(open) != self.ctx.line_of(close - 1) { return true; }
             }
         }
 
@@ -503,7 +497,7 @@ impl<'a> Visitor<'a> {
         let mut offense = Offense::new(COP_NAME, &msg, Severity::Convention, loc, self.ctx.filename);
 
         let (inner_start, inner_end) = get_inner_offsets(&body);
-        let inner_text = self.src(inner_start, inner_end);
+        let inner_text = self.ctx.src(inner_start, inner_end);
         let is_heredoc = inner_start + 2 <= self.ctx.source.len()
             && &self.ctx.source[inner_start..inner_start + 2] == "<<";
 
@@ -550,7 +544,7 @@ impl<'a> Visitor<'a> {
         match node {
             Node::IntegerNode{..} | Node::FloatNode{..} => {
                 let loc = node.location();
-                self.src(loc.start_offset(), loc.end_offset()).starts_with('-')
+                self.ctx.src(loc.start_offset(), loc.end_offset()).starts_with('-')
             }
             Node::CallNode{..} => {
                 let call = node.as_call_node().unwrap();
@@ -591,7 +585,7 @@ impl<'a> Visitor<'a> {
             Node::UntilNode{..} => ("until", node.as_until_node().unwrap().location()),
             _ => return false,
         };
-        !self.src(loc.start_offset(), loc.end_offset()).starts_with(prefix)
+        !self.ctx.src(loc.start_offset(), loc.end_offset()).starts_with(prefix)
     }
 
     fn is_unparen_call(&self, node: &Node) -> bool {
@@ -626,16 +620,16 @@ impl<'a> Visitor<'a> {
             Node::CallNode{..} => {
                 let call = node.as_call_node().unwrap();
                 let m = String::from_utf8_lossy(call.name().as_slice());
-                m == "!" && self.src(call.location().start_offset(), call.location().end_offset()).starts_with("not ")
+                m == "!" && self.ctx.src(call.location().start_offset(), call.location().end_offset()).starts_with("not ")
             }
             Node::AliasMethodNode{..} | Node::AliasGlobalVariableNode{..} => true,
             Node::WhileNode{..} => {
                 let l = node.as_while_node().unwrap().location();
-                !self.src(l.start_offset(), l.end_offset()).starts_with("while")
+                !self.ctx.src(l.start_offset(), l.end_offset()).starts_with("while")
             }
             Node::UntilNode{..} => {
                 let l = node.as_until_node().unwrap().location();
-                !self.src(l.start_offset(), l.end_offset()).starts_with("until")
+                !self.ctx.src(l.start_offset(), l.end_offset()).starts_with("until")
             }
             Node::ReturnNode{..} => { let r = node.as_return_node().unwrap(); self.has_flow_kw_space(r.arguments(), r.keyword_loc().end_offset()) }
             Node::BreakNode{..} => { let b = node.as_break_node().unwrap(); self.has_flow_kw_space(b.arguments(), b.keyword_loc().end_offset()) }
@@ -648,11 +642,11 @@ impl<'a> Visitor<'a> {
         match node {
             Node::AndNode{..} => {
                 let ol = node.as_and_node().unwrap().operator_loc();
-                self.src(ol.start_offset(), ol.end_offset()) == "and"
+                self.ctx.src(ol.start_offset(), ol.end_offset()) == "and"
             }
             Node::OrNode{..} => {
                 let ol = node.as_or_node().unwrap().operator_loc();
-                self.src(ol.start_offset(), ol.end_offset()) == "or"
+                self.ctx.src(ol.start_offset(), ol.end_offset()) == "or"
             }
             _ => false,
         }
@@ -664,11 +658,11 @@ impl<'a> Visitor<'a> {
         let (iop, inner_is_and) = match inner {
             Node::AndNode{..} => {
                 let ol = inner.as_and_node().unwrap().operator_loc();
-                (self.src(ol.start_offset(), ol.end_offset()).to_string(), true)
+                (self.ctx.src(ol.start_offset(), ol.end_offset()).to_string(), true)
             }
             Node::OrNode{..} => {
                 let ol = inner.as_or_node().unwrap().operator_loc();
-                (self.src(ol.start_offset(), ol.end_offset()).to_string(), false)
+                (self.ctx.src(ol.start_offset(), ol.end_offset()).to_string(), false)
             }
             _ => return false,
         };
@@ -807,7 +801,7 @@ impl<'a> Visitor<'a> {
             Node::IfNode{..} => {
                 let n = node.as_if_node().unwrap();
                 let l = n.location();
-                let s = self.src(l.start_offset(), l.end_offset());
+                let s = self.ctx.src(l.start_offset(), l.end_offset());
                 let ternary = !s.starts_with("if") && !s.starts_with("elsif");
                 self.push(PC::new(if ternary { PK::TernaryCondition } else { PK::Condition }));
                 self.vn(&n.predicate()); self.pop();
@@ -1000,7 +994,7 @@ impl<'a> Visitor<'a> {
             }
             _ => return,
         };
-        let op = self.src(ol.start_offset(), ol.end_offset()).to_string();
+        let op = self.ctx.src(ol.start_offset(), ol.end_offset()).to_string();
         let mut c = PC::new(PK::BinaryOp); c.operator = Some(op.clone());
         self.push(c); self.vn(&left); self.pop();
         let mut c = PC::new(PK::BinaryOp); c.operator = Some(op);
@@ -1083,7 +1077,7 @@ impl<'a> Visitor<'a> {
             let lp = node.lparen_loc();
             let rp = node.rparen_loc();
             let (ps, pe) = (lp.start_offset(), rp.end_offset());
-            let inner_src = self.src(lp.end_offset(), rp.start_offset());
+            let inner_src = self.ctx.src(lp.end_offset(), rp.start_offset());
             let loc = crate::offense::Location::from_offsets(self.ctx.source, ps, pe);
             let offense = Offense::new(COP_NAME, "Don't use parentheses around a variable.", Severity::Convention, loc, self.ctx.filename)
                 .with_correction(Correction::replace(ps, pe, inner_src));

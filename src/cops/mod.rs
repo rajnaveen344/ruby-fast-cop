@@ -38,6 +38,8 @@ impl<'a> CheckContext<'a> {
         self.target_ruby_version >= required
     }
 
+    // ── Location helpers (mirrors RuboCop's RangeHelp mixin) ──
+
     /// Create a Location from a Prism node location
     pub fn location(&self, loc: &ruby_prism::Location) -> Location {
         Location::from_offsets(self.source, loc.start_offset(), loc.end_offset())
@@ -65,6 +67,78 @@ impl<'a> CheckContext<'a> {
     ) -> Offense {
         let location = Location::from_offsets(self.source, start_offset, end_offset);
         Offense::new(cop_name, message, severity, location, self.filename)
+    }
+
+    // ── Source position helpers (mirrors RuboCop's Alignment / RangeHelp) ──
+
+    /// Source bytes for efficient byte-level scanning.
+    #[inline]
+    pub fn bytes(&self) -> &[u8] {
+        self.source.as_bytes()
+    }
+
+    /// 1-indexed line number at byte offset.
+    #[inline]
+    pub fn line_of(&self, offset: usize) -> usize {
+        1 + self.source.as_bytes()[..offset].iter().filter(|&&b| b == b'\n').count()
+    }
+
+    /// 0-indexed column (byte-based) at byte offset.
+    #[inline]
+    pub fn col_of(&self, offset: usize) -> usize {
+        let mut i = offset;
+        while i > 0 && self.source.as_bytes()[i - 1] != b'\n' {
+            i -= 1;
+        }
+        offset - i
+    }
+
+    /// Byte offset of the start of the line containing `offset`.
+    #[inline]
+    pub fn line_start(&self, offset: usize) -> usize {
+        self.source[..offset].rfind('\n').map_or(0, |p| p + 1)
+    }
+
+    /// Whether `offset` is the first non-whitespace on its line.
+    pub fn begins_its_line(&self, offset: usize) -> bool {
+        let s = self.source.as_bytes();
+        let mut i = offset;
+        while i > 0 {
+            i -= 1;
+            if s[i] == b'\n' { return true; }
+            if s[i] != b' ' && s[i] != b'\t' { return false; }
+        }
+        true // start of file
+    }
+
+    /// Whether two byte offsets are on the same line.
+    #[inline]
+    pub fn same_line(&self, a: usize, b: usize) -> bool {
+        !self.source.as_bytes()[a.min(b)..a.max(b)].contains(&b'\n')
+    }
+
+    /// Column of the first non-whitespace character on the line containing `offset`.
+    pub fn indentation_of(&self, offset: usize) -> usize {
+        let ls = self.line_start(offset);
+        let s = self.source.as_bytes();
+        let mut i = ls;
+        while i < s.len() && (s[i] == b' ' || s[i] == b'\t') {
+            i += 1;
+        }
+        i - ls
+    }
+
+    /// Extract the text of the line containing `offset` (without trailing newline).
+    pub fn line_text(&self, offset: usize) -> &str {
+        let start = self.line_start(offset);
+        let end = self.source[start..].find('\n').map_or(self.source.len(), |p| start + p);
+        &self.source[start..end]
+    }
+
+    /// Slice source bytes as &str.
+    #[inline]
+    pub fn src(&self, start: usize, end: usize) -> &str {
+        &self.source[start..end]
     }
 }
 

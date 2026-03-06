@@ -1,7 +1,6 @@
 //! Lint/DuplicateMethods - Checks for duplicated instance (or singleton) method definitions.
 
 use crate::cops::{CheckContext, Cop};
-use crate::helpers::source::line_at_offset;
 use crate::offense::{Offense, Severity};
 use ruby_prism::Visit;
 use std::collections::HashMap;
@@ -200,7 +199,7 @@ impl<'a> DuplicateMethodsVisitor<'a> {
         let method_name = String::from_utf8_lossy(node.name().as_slice()).to_string();
         let args = match node.arguments() { Some(args) => args, None => return };
         let arg_list: Vec<_> = args.arguments().iter().collect();
-        let line = line_at_offset(self.ctx.source, node.location().start_offset());
+        let line = self.ctx.line_of(node.location().start_offset()) as u32;
         let (start, end) = (node.location().start_offset(), node.location().end_offset());
 
         match method_name.as_str() {
@@ -251,7 +250,7 @@ impl<'a> DuplicateMethodsVisitor<'a> {
         let original_name = match self.extract_name(&arg_list[1]) { Some(n) => n, None => return };
         if new_name == original_name { return; }
 
-        let line = line_at_offset(self.ctx.source, node.location().start_offset());
+        let line = self.ctx.line_of(node.location().start_offset()) as u32;
         let rescue_scope = self.current_rescue_ensure_scope.clone();
         self.found_instance_method(&new_name, line, node.location().start_offset(), node.location().end_offset(), rescue_scope.as_deref());
     }
@@ -277,7 +276,7 @@ impl<'a> DuplicateMethodsVisitor<'a> {
         let prefix = self.get_delegate_prefix(&kwargs_elements, &to_value);
         if prefix.as_deref() == Some("__dynamic__") { return; }
 
-        let line = line_at_offset(self.ctx.source, node.location().start_offset());
+        let line = self.ctx.line_of(node.location().start_offset()) as u32;
         let (start, end) = (node.location().start_offset(), node.location().end_offset());
 
         for i in 0..arg_list.len() - 1 {
@@ -323,7 +322,7 @@ impl<'a> DuplicateMethodsVisitor<'a> {
         let method_name = String::from_utf8_lossy(node.name().as_slice()).to_string();
         let args = match node.arguments() { Some(args) => args, None => return };
         let arg_list: Vec<_> = args.arguments().iter().collect();
-        let line = line_at_offset(self.ctx.source, node.location().start_offset());
+        let line = self.ctx.line_of(node.location().start_offset()) as u32;
         let (start, end) = (node.location().start_offset(), node.location().end_offset());
 
         match method_name.as_str() {
@@ -429,7 +428,7 @@ impl Visit<'_> for DuplicateMethodsVisitor<'_> {
 
         let def_keyword_start = node.def_keyword_loc().start_offset();
         let name_end = node.name_loc().end_offset();
-        let line = line_at_offset(self.ctx.source, def_keyword_start);
+        let line = self.ctx.line_of(def_keyword_start) as u32;
 
         if let Some(receiver) = node.receiver() {
             match &receiver {
@@ -458,7 +457,7 @@ impl Visit<'_> for DuplicateMethodsVisitor<'_> {
             _ => return,
         };
         if new_name == old_name { return; }
-        let line = line_at_offset(self.ctx.source, node.location().start_offset());
+        let line = self.ctx.line_of(node.location().start_offset()) as u32;
         self.found_instance_method(&new_name, line, node.location().start_offset(), node.location().end_offset(), None);
     }
 

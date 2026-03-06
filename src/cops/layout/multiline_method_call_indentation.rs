@@ -48,79 +48,34 @@ struct MultilineVisitor<'a> {
     offenses: Vec<Offense>,
 }
 
-// Source position helpers
 impl<'a> MultilineVisitor<'a> {
-    fn src(&self) -> &[u8] { self.ctx.source.as_bytes() }
-    fn source_str(&self) -> &str { self.ctx.source }
-
-    fn line_of(&self, offset: usize) -> usize {
-        self.src()[..offset].iter().filter(|&&b| b == b'\n').count() + 1
-    }
-
-    fn col_of(&self, offset: usize) -> usize {
-        let mut i = offset;
-        while i > 0 && self.src()[i - 1] != b'\n' { i -= 1; }
-        offset - i
-    }
-
-    fn line_start(&self, offset: usize) -> usize {
-        let mut i = offset;
-        while i > 0 && self.src()[i - 1] != b'\n' { i -= 1; }
-        i
-    }
-
-    fn begins_its_line(&self, offset: usize) -> bool {
-        let s = self.src();
-        let mut i = offset;
-        while i > 0 {
-            i -= 1;
-            if s[i] == b'\n' { return true; }
-            if s[i] != b' ' && s[i] != b'\t' { return false; }
-        }
-        true
-    }
-
-    fn indentation_of(&self, offset: usize) -> usize {
-        let ls = self.line_start(offset);
-        let s = self.src();
-        let mut i = ls;
-        while i < s.len() && (s[i] == b' ' || s[i] == b'\t') { i += 1; }
-        i - ls
-    }
-
-    fn line_text(&self, ls: usize) -> &str {
-        let src = self.source_str();
-        let end = src[ls..].find('\n').map(|p| ls + p).unwrap_or(src.len());
-        &src[ls..end]
-    }
-
     fn statement_indentation(&self, offset: usize) -> usize {
-        let mut ls = self.line_start(offset);
+        let mut ls = self.ctx.line_start(offset);
         loop {
-            if ls == 0 { return self.indentation_of(ls); }
-            let prev_ls = self.line_start(ls - 1);
-            let prev_trimmed = self.line_text(prev_ls).trim_end();
+            if ls == 0 { return self.ctx.indentation_of(ls); }
+            let prev_ls = self.ctx.line_start(ls - 1);
+            let prev_trimmed = self.ctx.line_text(prev_ls).trim_end();
             if prev_trimmed.ends_with('.') || prev_trimmed.ends_with("&.") {
                 ls = prev_ls;
                 continue;
             }
-            let cur_trimmed = self.line_text(ls).trim_start();
+            let cur_trimmed = self.ctx.line_text(ls).trim_start();
             if cur_trimmed.starts_with('.') || cur_trimmed.starts_with("&.") {
                 ls = prev_ls;
                 continue;
             }
-            return self.indentation_of(ls);
+            return self.ctx.indentation_of(ls);
         }
     }
 
-    fn text(&self, start: usize, end: usize) -> &str { &self.source_str()[start..end] }
+    fn text(&self, start: usize, end: usize) -> &str { self.ctx.src(start, end) }
 
     fn first_line_text(&self, start: usize, end: usize) -> &str {
         self.text(start, end).lines().next().unwrap_or("")
     }
 
     fn end_of_line(&self, offset: usize) -> usize {
-        let s = self.src();
+        let s = self.ctx.bytes();
         let mut i = offset;
         while i < s.len() && s[i] != b'\n' { i += 1; }
         i
@@ -148,7 +103,7 @@ impl<'a> MultilineVisitor<'a> {
         let sel_loc = node.message_loc();
 
         let (rhs_off, rhs_end) = if let Some(ref sel) = sel_loc {
-            if self.line_of(dot_off) == self.line_of(sel.start_offset()) {
+            if self.ctx.line_of(dot_off) == self.ctx.line_of(sel.start_offset()) {
                 (dot_off, sel.end_offset())
             } else {
                 (sel.start_offset(), sel.end_offset())
@@ -159,8 +114,8 @@ impl<'a> MultilineVisitor<'a> {
             (dot_off, dot_end)
         };
 
-        if !self.begins_its_line(rhs_off) { return; }
-        if self.line_of(receiver.location().start_offset()) == self.line_of(rhs_off) { return; }
+        if !self.ctx.begins_its_line(rhs_off) { return; }
+        if self.ctx.line_of(receiver.location().start_offset()) == self.ctx.line_of(rhs_off) { return; }
 
         let lhs_off = walk_up_chain(&receiver);
         let pair_ancestor = find_pair_ancestor(node, self);
@@ -183,7 +138,7 @@ impl<'a> MultilineVisitor<'a> {
 
         if pair_ancestor.is_none() && self.not_for_this_cop(node) { return; }
 
-        let rhs_col = self.col_of(rhs_off);
+        let rhs_col = self.ctx.col_of(rhs_off);
 
         match self.style {
             Style::Aligned => self.check_aligned(node, &receiver, lhs_off, rhs_off, rhs_end, rhs_col),
@@ -206,7 +161,7 @@ impl<'a> MultilineVisitor<'a> {
             Some(d) => d.start_offset(),
             None => return false,
         };
-        let s = self.src();
+        let s = self.ctx.bytes();
         let mut depth = 0i32;
         let mut i = dot_off;
         while i > 0 {
@@ -245,11 +200,11 @@ impl<'a> MultilineVisitor<'a> {
         &mut self, node: &ruby_prism::CallNode, receiver: &Node,
         lhs_off: usize, rhs_off: usize, rhs_end: usize,
     ) {
-        let rhs_col = self.col_of(rhs_off);
+        let rhs_col = self.ctx.col_of(rhs_off);
 
         if let Some(base) = self.find_hash_pair_alignment_base(receiver) {
             if self.aligned_with_first_line_dot(node, receiver, rhs_off, rhs_col) { return; }
-            let bc = self.col_of(base.offset);
+            let bc = self.ctx.col_of(base.offset);
             if rhs_col == bc { return; }
             let msg = self.align_msg(rhs_off, rhs_end, &base);
             self.offense(rhs_off, rhs_end, &msg, bc as isize - rhs_col as isize);
@@ -258,7 +213,7 @@ impl<'a> MultilineVisitor<'a> {
 
         if let Some(base) = self.hash_pair_receiver_base(node, receiver) {
             if self.aligned_with_first_line_dot(node, receiver, rhs_off, rhs_col) { return; }
-            let bc = self.col_of(base.offset);
+            let bc = self.ctx.col_of(base.offset);
             if rhs_col == bc { return; }
             let msg = self.align_msg(rhs_off, rhs_end, &base);
             self.offense(rhs_off, rhs_end, &msg, bc as isize - rhs_col as isize);
@@ -272,10 +227,10 @@ impl<'a> MultilineVisitor<'a> {
         &mut self, node: &ruby_prism::CallNode, receiver: &Node,
         rhs_off: usize, rhs_end: usize,
     ) {
-        let rhs_col = self.col_of(rhs_off);
+        let rhs_col = self.ctx.col_of(rhs_off);
 
         if let Some(base) = self.hash_pair_doend_block_base(receiver) {
-            let bc = self.col_of(base.offset);
+            let bc = self.ctx.col_of(base.offset);
             if rhs_col == bc { return; }
             let msg = self.align_msg(rhs_off, rhs_end, &base);
             self.offense(rhs_off, rhs_end, &msg, bc as isize - rhs_col as isize);
@@ -283,14 +238,14 @@ impl<'a> MultilineVisitor<'a> {
         }
 
         let chain_start = walk_up_chain(receiver);
-        let chain_col = self.col_of(chain_start);
+        let chain_col = self.ctx.col_of(chain_start);
 
         if self.aligned_with_first_line_dot(node, receiver, rhs_off, rhs_col) { return; }
 
         let recv_start = receiver.location().start_offset();
         let recv_end = receiver.location().end_offset();
         let recv_first_line_end = self.end_of_line(recv_start);
-        let s = self.src();
+        let s = self.ctx.bytes();
         let text_end = if recv_first_line_end < s.len() && s[recv_first_line_end - 1] == b'.' {
             recv_first_line_end
         } else if recv_first_line_end <= recv_end {
@@ -304,7 +259,7 @@ impl<'a> MultilineVisitor<'a> {
             "Align `{}` with `{}` on line {}.",
             self.text(rhs_off, rhs_end),
             self.first_line_text(recv_start, text_end),
-            self.line_of(recv_start),
+            self.ctx.line_of(recv_start),
         );
         self.offense(rhs_off, rhs_end, &msg, chain_col as isize - rhs_col as isize);
     }
@@ -361,13 +316,13 @@ impl<'a> MultilineVisitor<'a> {
     }
 
     fn aligned_with_first_line_dot(&self, node: &ruby_prism::CallNode, receiver: &Node, rhs_off: usize, rhs_col: usize) -> bool {
-        let b = *self.src().get(rhs_off).unwrap_or(&0);
+        let b = *self.ctx.bytes().get(rhs_off).unwrap_or(&0);
         if b != b'.' && b != b'&' { return false; }
         let first = match first_call_dot_for_alignment(receiver) {
             Some(f) => f,
             None => return false,
         };
-        let dot_col = self.col_of(first.0);
+        let dot_col = self.ctx.col_of(first.0);
         let node_dot = node.call_operator_loc().map(|d| d.start_offset()).unwrap_or(0);
         if first.0 == node_dot { return false; }
         if let Node::CallNode { .. } = receiver {
@@ -375,12 +330,12 @@ impl<'a> MultilineVisitor<'a> {
                 if recv_dot.start_offset() == first.0 { return false; }
             }
         }
-        self.line_of(first.0) == self.line_of(receiver.location().start_offset()) && dot_col == rhs_col
+        self.ctx.line_of(first.0) == self.ctx.line_of(receiver.location().start_offset()) && dot_col == rhs_col
     }
 
     fn check_hash_pair_indented_style(&mut self, rhs_off: usize, rhs_end: usize, pair_key_off: usize) {
-        let rhs_col = self.col_of(rhs_off);
-        let pair_key_col = self.col_of(pair_key_off);
+        let rhs_col = self.ctx.col_of(rhs_off);
+        let pair_key_col = self.ctx.col_of(pair_key_off);
         let correct_col = pair_key_col + self.indentation_width * 2;
         let hash_pair_base_col = pair_key_col + self.indentation_width;
 
@@ -400,7 +355,7 @@ impl<'a> MultilineVisitor<'a> {
         lhs_off: usize, rhs_off: usize, rhs_end: usize, rhs_col: usize,
     ) {
         if let Some(base) = self.semantic_base(node, receiver, rhs_off) {
-            let bc = self.col_of(base.offset);
+            let bc = self.ctx.col_of(base.offset);
             if rhs_col == bc { return; }
             let msg = self.align_msg(rhs_off, rhs_end, &base);
             self.offense(rhs_off, rhs_end, &msg, bc as isize - rhs_col as isize);
@@ -408,7 +363,7 @@ impl<'a> MultilineVisitor<'a> {
         }
 
         if let Some(base) = self.syntactic_base(node, receiver, lhs_off) {
-            let bc = self.col_of(base.offset);
+            let bc = self.ctx.col_of(base.offset);
             if rhs_col == bc { return; }
             let msg = self.align_msg(rhs_off, rhs_end, &base);
             self.offense(rhs_off, rhs_end, &msg, bc as isize - rhs_col as isize);
@@ -433,7 +388,7 @@ impl<'a> MultilineVisitor<'a> {
         lhs_off: usize, rhs_off: usize, rhs_end: usize, rhs_col: usize,
     ) {
         if let Some(kw) = self.find_keyword(lhs_off) {
-            let bi = self.indentation_of(kw.0);
+            let bi = self.ctx.indentation_of(kw.0);
             let expected = bi + self.indentation_width + 2;
             if rhs_col == expected { return; }
             let what = kw_message_tail(&kw.1);
@@ -446,7 +401,7 @@ impl<'a> MultilineVisitor<'a> {
         }
 
         if let Some(assign_off) = self.find_assign(lhs_off) {
-            let bi = self.indentation_of(assign_off);
+            let bi = self.ctx.indentation_of(assign_off);
             let expected = bi + self.indentation_width;
             if rhs_col == expected { return; }
             let used = rhs_col as isize - bi as isize;
@@ -476,7 +431,7 @@ impl<'a> MultilineVisitor<'a> {
         lhs_off: usize, rhs_off: usize, rhs_end: usize, rhs_col: usize,
     ) {
         if let Some(base) = self.receiver_base(node, receiver) {
-            let bc = self.col_of(base.offset);
+            let bc = self.ctx.col_of(base.offset);
             let extra = self.extra_indentation_for_relative(receiver);
             let expected = bc + extra;
             if rhs_col == expected { return; }
@@ -485,13 +440,13 @@ impl<'a> MultilineVisitor<'a> {
                 self.text(rhs_off, rhs_end),
                 self.indentation_width,
                 self.first_line_text(base.offset, base.end_offset),
-                self.line_of(base.offset),
+                self.ctx.line_of(base.offset),
             );
             self.offense(rhs_off, rhs_end, &msg, expected as isize - rhs_col as isize);
             return;
         }
 
-        let li = self.indentation_of(lhs_off);
+        let li = self.ctx.indentation_of(lhs_off);
         let expected = li + self.indentation_width;
         if rhs_col == expected { return; }
         let rs = receiver.location().start_offset();
@@ -499,14 +454,14 @@ impl<'a> MultilineVisitor<'a> {
         let msg = format!(
             "Indent `{}` {} spaces more than `{}` on line {}.",
             self.text(rhs_off, rhs_end), self.indentation_width,
-            self.first_line_text(rs, re), self.line_of(rs),
+            self.first_line_text(rs, re), self.ctx.line_of(rs),
         );
         self.offense(rhs_off, rhs_end, &msg, expected as isize - rhs_col as isize);
     }
 
     fn extra_indentation_for_relative(&self, receiver: &Node) -> usize {
         let top_off = walk_up_chain(receiver);
-        let s = self.src();
+        let s = self.ctx.bytes();
         if top_off > 0 && s[top_off - 1] == b'*' {
             if top_off > 1 && s[top_off - 2] == b'*' {
                 self.indentation_width.saturating_sub(2)
@@ -520,7 +475,7 @@ impl<'a> MultilineVisitor<'a> {
 
     // Semantic alignment base
     fn semantic_base(&self, node: &ruby_prism::CallNode, receiver: &Node, rhs_off: usize) -> Option<AlignBase> {
-        let b = *self.src().get(rhs_off)?;
+        let b = *self.ctx.bytes().get(rhs_off)?;
         if b != b'.' && b != b'&' { return None; }
         if self.is_argument_in_parenthesized_call(node) { return None; }
 
@@ -535,7 +490,7 @@ impl<'a> MultilineVisitor<'a> {
             None => return false,
         };
         let top_off = walk_up_chain(&recv);
-        let s = self.src();
+        let s = self.ctx.bytes();
         let mut depth = 0i32;
         let mut i = top_off;
         while i > 0 {
@@ -559,12 +514,12 @@ impl<'a> MultilineVisitor<'a> {
     fn dot_right_above(&self, node: &ruby_prism::CallNode, receiver: &Node) -> Option<AlignBase> {
         let dot = node.call_operator_loc()?;
         let dot_off = dot.start_offset();
-        let dot_col = self.col_of(dot_off);
-        let dot_line = self.line_of(dot_off);
+        let dot_col = self.ctx.col_of(dot_off);
+        let dot_line = self.ctx.line_of(dot_off);
 
         if let Some(result) = search_dot_above(receiver, dot_line, dot_col, self) {
             let (_, base_end, _, _, is_paren) = find_base_receiver_info(receiver);
-            if is_paren && self.line_of(result.offset) == self.line_of(base_end) {
+            if is_paren && self.ctx.line_of(result.offset) == self.ctx.line_of(base_end) {
                 return None;
             }
             return Some(result);
@@ -572,15 +527,15 @@ impl<'a> MultilineVisitor<'a> {
 
         // Fallback: source-based search for a dot at the same column on the line above
         if dot_line <= 1 { return None; }
-        let prev_line_start = self.line_start(dot_off);
+        let prev_line_start = self.ctx.line_start(dot_off);
         if prev_line_start == 0 { return None; }
-        let prev_ls = self.line_start(prev_line_start - 1);
-        let prev_line = self.line_text(prev_ls);
+        let prev_ls = self.ctx.line_start(prev_line_start - 1);
+        let prev_line = self.ctx.line_text(prev_ls);
         if dot_col < prev_line.len() {
             let ch = prev_line.as_bytes()[dot_col];
             if ch == b'.' || (ch == b'&' && dot_col + 1 < prev_line.len() && prev_line.as_bytes()[dot_col + 1] == b'.') {
                 let found_off = prev_ls + dot_col;
-                let s = self.src();
+                let s = self.ctx.bytes();
                 let mut end = found_off + 1;
                 if ch == b'&' { end += 1; }
                 while end < s.len() && (s[end].is_ascii_alphanumeric() || s[end] == b'_' || s[end] == b'!' || s[end] == b'?') {
@@ -622,12 +577,12 @@ impl<'a> MultilineVisitor<'a> {
 
             if let Some(recv_dot) = recv_call.call_operator_loc() {
                 if let Some(recv_recv) = recv_call.receiver() {
-                    let recv_recv_end_line = self.line_of(recv_recv.location().end_offset());
-                    if self.line_of(recv_dot.start_offset()) > recv_recv_end_line {
+                    let recv_recv_end_line = self.ctx.line_of(recv_recv.location().end_offset());
+                    if self.ctx.line_of(recv_dot.start_offset()) > recv_recv_end_line {
                         let (_, base_end, _, _, is_paren) = find_base_receiver_info(receiver);
                         if is_paren {
                             if let Some((first_dot, _, _, _)) = first_call_dot(receiver) {
-                                if self.line_of(first_dot) == self.line_of(base_end) {
+                                if self.ctx.line_of(first_dot) == self.ctx.line_of(base_end) {
                                     return None;
                                 }
                             }
@@ -671,9 +626,9 @@ impl<'a> MultilineVisitor<'a> {
 
         if !has_selector_at_first_call(receiver) { return None; }
 
-        let dot_line = self.line_of(first_dot);
-        let rs_line = self.line_of(rs);
-        let re_line = self.line_of(re);
+        let dot_line = self.ctx.line_of(first_dot);
+        let rs_line = self.ctx.line_of(rs);
+        let re_line = self.ctx.line_of(re);
 
         let (_, base_end, _, is_array, is_paren) = find_base_receiver_info(receiver);
         if is_array && dot_line == re_line {
@@ -682,7 +637,7 @@ impl<'a> MultilineVisitor<'a> {
             return Some(AlignBase { offset: first_dot, end_offset: first_sel_end });
         }
 
-        if is_paren && dot_line == self.line_of(base_end) { return None; }
+        if is_paren && dot_line == self.ctx.line_of(base_end) { return None; }
         if dot_line != rs_line { return None; }
 
         let node_dot = node.call_operator_loc()?.start_offset();
@@ -695,7 +650,7 @@ impl<'a> MultilineVisitor<'a> {
     fn syntactic_base(&self, _node: &ruby_prism::CallNode, _receiver: &Node, lhs_off: usize) -> Option<AlignBase> {
         if let Some(kw) = self.find_keyword(lhs_off) {
             let kw_end = kw.0 + kw.1.len();
-            let s = self.src();
+            let s = self.ctx.bytes();
             let mut expr_start = kw_end;
             while expr_start < s.len() && s[expr_start] == b' ' { expr_start += 1; }
             let expr_eol = self.end_of_line(expr_start);
@@ -707,12 +662,12 @@ impl<'a> MultilineVisitor<'a> {
         }
 
         if let Some(_assign_off) = self.find_assign(lhs_off) {
-            let ls = self.line_start(lhs_off);
-            let line = self.line_text(ls);
+            let ls = self.ctx.line_start(lhs_off);
+            let line = self.ctx.line_text(ls);
             let before = &line[..(lhs_off - ls).min(line.len())];
             if let Some(eq_pos) = before.rfind('=') {
                 let abs_eq_pos = ls + eq_pos;
-                let s = self.src();
+                let s = self.ctx.bytes();
                 let mut rhs_start = abs_eq_pos + 1;
                 while rhs_start < s.len() && s[rhs_start] == b' ' { rhs_start += 1; }
                 return Some(AlignBase { offset: rhs_start, end_offset: self.end_of_line(rhs_start) });
@@ -761,9 +716,9 @@ impl<'a> MultilineVisitor<'a> {
 
     // Keyword / assignment / operator helpers
     fn find_keyword(&self, lhs_off: usize) -> Option<(usize, String)> {
-        let ls = self.line_start(lhs_off);
-        if self.line_of(lhs_off) != self.line_of(ls) { return None; }
-        let line = self.line_text(ls);
+        let ls = self.ctx.line_start(lhs_off);
+        if self.ctx.line_of(lhs_off) != self.ctx.line_of(ls) { return None; }
+        let line = self.ctx.line_text(ls);
         let trimmed = line.trim_start();
         let indent = line.len() - trimmed.len();
 
@@ -779,14 +734,14 @@ impl<'a> MultilineVisitor<'a> {
     }
 
     fn find_return_keyword(&self, lhs_off: usize) -> Option<(usize, usize)> {
-        let ls = self.line_start(lhs_off);
-        let line = self.line_text(ls);
+        let ls = self.ctx.line_start(lhs_off);
+        let line = self.ctx.line_text(ls);
         let trimmed = line.trim_start();
         let indent = line.len() - trimmed.len();
 
         if trimmed.starts_with("return ") {
             let kw_off = ls + indent;
-            let s = self.src();
+            let s = self.ctx.bytes();
             let mut start = kw_off + 7;
             while start < s.len() && s[start] == b' ' { start += 1; }
             return Some((kw_off, start));
@@ -795,8 +750,8 @@ impl<'a> MultilineVisitor<'a> {
     }
 
     fn find_assign(&self, lhs_off: usize) -> Option<usize> {
-        let ls = self.line_start(lhs_off);
-        let line = self.line_text(ls);
+        let ls = self.ctx.line_start(lhs_off);
+        let line = self.ctx.line_text(ls);
         let before = &line[..(lhs_off - ls).min(line.len())];
 
         if let Some(eq_pos) = before.rfind('=') {
@@ -812,13 +767,13 @@ impl<'a> MultilineVisitor<'a> {
     }
 
     fn find_assign_above(&self, lhs_off: usize) -> Option<(usize, usize)> {
-        let ls = self.line_start(lhs_off);
+        let ls = self.ctx.line_start(lhs_off);
         if ls == 0 { return None; }
         let mut search_off = ls;
         for _ in 0..5 {
             if search_off == 0 { break; }
-            let prev_ls = self.line_start(search_off - 1);
-            let prev_line = self.line_text(prev_ls);
+            let prev_ls = self.ctx.line_start(search_off - 1);
+            let prev_line = self.ctx.line_text(prev_ls);
             let prev_trimmed = prev_line.trim_end();
 
             if prev_trimmed.ends_with('=') && !prev_trimmed.ends_with("==")
@@ -831,7 +786,7 @@ impl<'a> MultilineVisitor<'a> {
             if content.starts_with("return ") {
                 let indent = prev_trimmed.len() - content.len();
                 let kw_end = prev_ls + indent + 7;
-                let s = self.src();
+                let s = self.ctx.bytes();
                 let mut expr_start = kw_end;
                 while expr_start < s.len() && s[expr_start] == b' ' { expr_start += 1; }
                 return Some((prev_ls, expr_start));
@@ -846,12 +801,12 @@ impl<'a> MultilineVisitor<'a> {
         if self.find_assign(lhs_off).is_some() || self.find_assign_above(lhs_off).is_some() {
             return true;
         }
-        let ls = self.line_start(lhs_off);
+        let ls = self.ctx.line_start(lhs_off);
         let mut search_off = ls;
         for _ in 0..5 {
             if search_off == 0 { break; }
-            let prev_ls = self.line_start(search_off - 1);
-            let content = self.line_text(prev_ls).trim();
+            let prev_ls = self.ctx.line_start(search_off - 1);
+            let content = self.ctx.line_text(prev_ls).trim();
             for pat in &[" = ", " += ", " -= ", " *= ", " /= ", " ||= ", " &&= "] {
                 if content.contains(pat) && !content.starts_with("if ") && !content.starts_with("unless ")
                     && !content.starts_with("while ") && !content.starts_with("until ") {
@@ -864,8 +819,8 @@ impl<'a> MultilineVisitor<'a> {
     }
 
     fn find_operator(&self, lhs_off: usize) -> Option<AlignBase> {
-        let ls = self.line_start(lhs_off);
-        let line = self.line_text(ls);
+        let ls = self.ctx.line_start(lhs_off);
+        let line = self.ctx.line_text(ls);
         let before = &line[..(lhs_off - ls).min(line.len())];
         let trimmed = before.trim_end();
 
@@ -892,17 +847,17 @@ impl<'a> MultilineVisitor<'a> {
             "Align `{}` with `{}` on line {}.",
             self.text(rhs_off, rhs_end),
             self.first_line_text(base.offset, base.end_offset),
-            self.line_of(base.offset),
+            self.ctx.line_of(base.offset),
         )
     }
 
     // Correction helpers
     fn collect_extra_correction_lines(&self, rhs_off: usize) -> Vec<usize> {
-        let s = self.src();
-        let ls = self.line_start(rhs_off);
+        let s = self.ctx.bytes();
+        let ls = self.ctx.line_start(rhs_off);
         let eol = self.end_of_line(rhs_off);
         let line_str = std::str::from_utf8(&s[ls..eol]).unwrap_or("");
-        let rhs_col = self.col_of(rhs_off);
+        let rhs_col = self.ctx.col_of(rhs_off);
 
         let mut extra = Vec::new();
 
@@ -967,7 +922,7 @@ impl<'a> MultilineVisitor<'a> {
             "Layout/MultilineMethodCallIndentation", msg,
             Severity::Convention, rhs_off, rhs_end,
         );
-        let ls = self.line_start(rhs_off);
+        let ls = self.ctx.line_start(rhs_off);
         let cur = rhs_off - ls;
         let new = (cur as isize + delta).max(0) as usize;
 
@@ -975,9 +930,9 @@ impl<'a> MultilineVisitor<'a> {
             start_offset: ls, end_offset: rhs_off, replacement: " ".repeat(new),
         }];
 
-        let s = self.src();
+        let s = self.ctx.bytes();
         for &line_off in extra_line_offsets {
-            let el_ls = self.line_start(line_off);
+            let el_ls = self.ctx.line_start(line_off);
             let mut ws_end = el_ls;
             while ws_end < s.len() && (s[ws_end] == b' ' || s[ws_end] == b'\t') { ws_end += 1; }
             let el_new = ((ws_end - el_ls) as isize + delta).max(0) as usize;
@@ -1046,13 +1001,13 @@ fn find_base_receiver_info(node: &Node) -> (usize, usize, bool, bool, bool) {
 }
 
 fn is_single_line_node(node: &Node, vis: &MultilineVisitor) -> bool {
-    vis.line_of(node.location().start_offset()) == vis.line_of(node.location().end_offset())
+    vis.ctx.line_of(node.location().start_offset()) == vis.ctx.line_of(node.location().end_offset())
 }
 
 fn is_method_on_paren_end_line(call: &ruby_prism::CallNode, base: &Node, vis: &MultilineVisitor) -> bool {
     if matches!(base, Node::ParenthesesNode { .. }) {
         if let Some(dot) = call.call_operator_loc() {
-            return vis.line_of(dot.start_offset()) == vis.line_of(base.location().end_offset());
+            return vis.ctx.line_of(dot.start_offset()) == vis.ctx.line_of(base.location().end_offset());
         }
     }
     false
@@ -1069,7 +1024,7 @@ fn search_dot_above(node: &Node, target_line: usize, target_col: usize, vis: &Mu
         let call = node.as_call_node().unwrap();
         if let Some(d) = call.call_operator_loc() {
             let off = d.start_offset();
-            if vis.line_of(off) == target_line - 1 && vis.col_of(off) == target_col {
+            if vis.ctx.line_of(off) == target_line - 1 && vis.ctx.col_of(off) == target_col {
                 let end = call.message_loc().map(|s| s.end_offset()).unwrap_or(d.end_offset());
                 return Some(AlignBase { offset: off, end_offset: end });
             }
@@ -1113,8 +1068,8 @@ fn find_pair_ancestor(node: &ruby_prism::CallNode, vis: &MultilineVisitor) -> Op
     let recv = node.receiver()?;
     let top_off = walk_up_chain(&recv);
 
-    let ls = vis.line_start(top_off);
-    let before = &vis.source_str()[ls..top_off];
+    let ls = vis.ctx.line_start(top_off);
+    let before = &vis.ctx.source[ls..top_off];
     let trimmed = before.trim_end();
 
     if let Some(colon_pos) = trimmed.rfind(':') {
@@ -1140,8 +1095,8 @@ fn find_pair_ancestor(node: &ruby_prism::CallNode, vis: &MultilineVisitor) -> Op
     let mut check_off = ls;
     while check_off > 0 {
         check_off -= 1;
-        let prev_ls = vis.line_start(check_off);
-        let prev_line = vis.line_text(prev_ls);
+        let prev_ls = vis.ctx.line_start(check_off);
+        let prev_line = vis.ctx.line_text(prev_ls);
         let prev_trimmed = prev_line.trim();
 
         if prev_trimmed.contains(':') || prev_trimmed.contains("=>") {

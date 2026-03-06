@@ -48,7 +48,7 @@ impl TrailingCommaInArguments {
         let last_is_block_pass = matches!(last_arg, Node::BlockArgumentNode { .. });
 
         // Determine if this is a multiline call
-        let is_multiline = self.is_multiline_args(&args, open_offset, close_offset, source);
+        let is_multiline = self.is_multiline_args(&args, open_offset, close_offset, ctx);
 
         // Find trailing comma position between last arg and close delimiter.
         let search_start = trailing_comma_search_start(last_arg, source);
@@ -90,14 +90,9 @@ impl TrailingCommaInArguments {
         _args: &[Node],
         open_offset: usize,
         close_offset: usize,
-        source: &str,
+        ctx: &CheckContext,
     ) -> bool {
-        // Multiline if the opening and closing delimiters are on different lines.
-        // Heredocs within the args don't affect this - the `)` or `]` position
-        // is what determines single vs multi line.
-        let open_line = line_of(source, open_offset);
-        let close_line = line_of(source, close_offset);
-        open_line != close_line
+        !ctx.same_line(open_offset, close_offset)
     }
 
     fn check_single_line(
@@ -200,17 +195,16 @@ impl TrailingCommaInArguments {
             return vec![];
         }
 
-        let close_line = line_of(source, close_offset);
         let last_end = effective_end_offset(last_arg, source);
-        let last_end_line = line_of(source, last_end);
+        let close_on_same_line = ctx.same_line(last_end, close_offset);
 
         if !consistent {
             // "comma" style: only require comma when closing bracket is on a
             // different line than the last argument AND each item is on its own line
-            if last_end_line == close_line {
+            if close_on_same_line {
                 return vec![];
             }
-            if has_multiple_items_on_same_line(args, source) {
+            if has_multiple_items_on_same_line(args, ctx) {
                 return vec![];
             }
             if args.len() == 1 {
@@ -220,14 +214,14 @@ impl TrailingCommaInArguments {
             // "consistent_comma" style: always require comma in multiline, but
             // not for a single argument that doesn't span in the right way
             if args.len() == 1
-                && !is_multiline_single_arg_needing_comma(last_arg, source, close_offset)
+                && !is_multiline_single_arg_needing_comma(last_arg, ctx, close_offset)
             {
                 return vec![];
             }
 
             // If the last arg is a braced HashNode whose closing `}` is on the
             // same line as the call's closing bracket, no comma needed
-            if last_end_line == close_line && is_braced_hash_arg(last_arg) {
+            if close_on_same_line && is_braced_hash_arg(last_arg) {
                 return vec![];
             }
         }
@@ -253,10 +247,8 @@ impl TrailingCommaInArguments {
             return vec![];
         }
 
-        let close_line = line_of(source, close_offset);
         let last_end = effective_end_offset(last_arg, source);
-        let last_end_line = line_of(source, last_end);
-        let close_on_same_line = last_end_line == close_line;
+        let close_on_same_line = ctx.same_line(last_end, close_offset);
 
         if close_on_same_line {
             // Comma should NOT be present
@@ -280,7 +272,7 @@ impl TrailingCommaInArguments {
             if trailing_comma_pos.is_some() {
                 return vec![];
             }
-            if has_multiple_items_on_same_line(args, source) {
+            if has_multiple_items_on_same_line(args, ctx) {
                 return vec![];
             }
             if args.len() == 1 {
@@ -341,19 +333,6 @@ impl Cop for TrailingCommaInArguments {
 
 // ─── Helper functions ───────────────────────────────────────────────
 
-/// Get the 1-indexed line number of a byte offset
-fn line_of(source: &str, offset: usize) -> u32 {
-    let mut line = 1u32;
-    for (i, ch) in source.char_indices() {
-        if i >= offset {
-            break;
-        }
-        if ch == '\n' {
-            line += 1;
-        }
-    }
-    line
-}
 
 /// Get the offset from which to start searching for trailing commas.
 /// For plain heredoc args (no method call), scans from after the heredoc body.
@@ -532,24 +511,23 @@ fn find_trailing_comma(source: &str, search_start: usize, close_offset: usize) -
 }
 
 /// Check if any two logical items share the same starting line.
-fn has_multiple_items_on_same_line(args: &[Node], source: &str) -> bool {
-    let mut all_lines: Vec<u32> = Vec::new();
+fn has_multiple_items_on_same_line(args: &[Node], ctx: &CheckContext) -> bool {
+    let mut all_lines: Vec<usize> = Vec::new();
 
     for arg in args {
         match arg {
             Node::KeywordHashNode { .. } => {
                 let kh = arg.as_keyword_hash_node().unwrap();
                 for elem in kh.elements().iter() {
-                    all_lines.push(line_of(source, elem.location().start_offset()));
+                    all_lines.push(ctx.line_of(elem.location().start_offset()));
                 }
             }
             _ => {
-                all_lines.push(line_of(source, arg.location().start_offset()));
+                all_lines.push(ctx.line_of(arg.location().start_offset()));
             }
         }
     }
 
-    // Check for duplicate lines
     for i in 1..all_lines.len() {
         if all_lines[i] == all_lines[i - 1] {
             return true;
@@ -559,27 +537,21 @@ fn has_multiple_items_on_same_line(args: &[Node], source: &str) -> bool {
 }
 
 /// For consistent_comma with a single argument, determine if it needs a comma.
-fn is_multiline_single_arg_needing_comma(arg: &Node, source: &str, close_offset: usize) -> bool {
+fn is_multiline_single_arg_needing_comma(arg: &Node, ctx: &CheckContext, close_offset: usize) -> bool {
     match arg {
         Node::KeywordHashNode { .. } => {
             let kh = arg.as_keyword_hash_node().unwrap();
             let elements: Vec<Node> = kh.elements().iter().collect();
             if elements.len() >= 2 {
-                let first_line = line_of(source, elements[0].location().start_offset());
-                let last_line = line_of(
-                    source,
+                return !ctx.same_line(
+                    elements[0].location().start_offset(),
                     elements.last().unwrap().location().start_offset(),
                 );
-                return first_line != last_line;
             }
             false
         }
         Node::HashNode { .. } => false,
-        _ => {
-            let arg_end_line = line_of(source, arg.location().end_offset());
-            let close_line = line_of(source, close_offset);
-            arg_end_line != close_line
-        }
+        _ => !ctx.same_line(arg.location().end_offset(), close_offset),
     }
 }
 
