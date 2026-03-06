@@ -214,6 +214,33 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         result.push(Box::new(cops::lint::UnreachableCode::new()));
     }
 
+    // Lint/UselessAccessModifier
+    if config.is_cop_enabled("Lint/UselessAccessModifier") {
+        let cop_config = config.get_cop_config("Lint/UselessAccessModifier");
+        let context_creating = cop_config
+            .and_then(|c| c.raw.get("ContextCreatingMethods"))
+            .and_then(|v| v.as_sequence())
+            .map(|seq| {
+                seq.iter()
+                    .filter_map(|v| v.as_str().map(String::from))
+                    .collect()
+            })
+            .unwrap_or_default();
+        let method_creating = cop_config
+            .and_then(|c| c.raw.get("MethodCreatingMethods"))
+            .and_then(|v| v.as_sequence())
+            .map(|seq| {
+                seq.iter()
+                    .filter_map(|v| v.as_str().map(String::from))
+                    .collect()
+            })
+            .unwrap_or_default();
+        result.push(Box::new(cops::lint::UselessAccessModifier::with_config(
+            context_creating,
+            method_creating,
+        )));
+    }
+
     // Lint/Void
     if config.is_cop_enabled("Lint/Void") {
         result.push(Box::new(cops::lint::Void::new(false)));
@@ -466,6 +493,22 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         result.push(Box::new(cops::style::StringMethods::new()));
     }
 
+    // Style/TrailingCommaInArguments
+    if config.is_cop_enabled("Style/TrailingCommaInArguments") {
+        let cop_config = config.get_cop_config("Style/TrailingCommaInArguments");
+        let style = cop_config
+            .and_then(|c| c.raw.get("EnforcedStyleForMultiline"))
+            .and_then(|v| v.as_str())
+            .map(|s| match s {
+                "comma" => cops::style::TrailingCommaInArgumentsStyle::Comma,
+                "consistent_comma" => cops::style::TrailingCommaInArgumentsStyle::ConsistentComma,
+                "diff_comma" => cops::style::TrailingCommaInArgumentsStyle::DiffComma,
+                _ => cops::style::TrailingCommaInArgumentsStyle::NoComma,
+            })
+            .unwrap_or(cops::style::TrailingCommaInArgumentsStyle::NoComma);
+        result.push(Box::new(cops::style::TrailingCommaInArguments::new(style)));
+    }
+
     // Layout/TrailingWhitespace
     if config.is_cop_enabled("Layout/TrailingWhitespace") {
         let cop_config = config.get_cop_config("Layout/TrailingWhitespace");
@@ -489,6 +532,11 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
             })
             .unwrap_or(cops::layout::TrailingEmptyLinesStyle::FinalNewline);
         result.push(Box::new(cops::layout::TrailingEmptyLines::new(style)));
+    }
+
+    // Layout/IndentationWidth
+    if config.is_cop_enabled("Layout/IndentationWidth") {
+        result.push(build_indentation_width_cop(config));
     }
 
     // Layout/EndAlignment
@@ -862,6 +910,32 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
 
         "Lint/UnreachableCode" => {
             Some(Box::new(cops::lint::UnreachableCode::new()))
+        }
+
+        "Lint/UselessAccessModifier" => {
+            let cop_config = config.get_cop_config("Lint/UselessAccessModifier");
+            let context_creating = cop_config
+                .and_then(|c| c.raw.get("ContextCreatingMethods"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| {
+                    seq.iter()
+                        .filter_map(|v| v.as_str().map(String::from))
+                        .collect()
+                })
+                .unwrap_or_default();
+            let method_creating = cop_config
+                .and_then(|c| c.raw.get("MethodCreatingMethods"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| {
+                    seq.iter()
+                        .filter_map(|v| v.as_str().map(String::from))
+                        .collect()
+                })
+                .unwrap_or_default();
+            Some(Box::new(cops::lint::UselessAccessModifier::with_config(
+                context_creating,
+                method_creating,
+            )))
         }
 
         "Lint/Void" => {
@@ -1266,6 +1340,21 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
 
         "Style/StringMethods" => Some(Box::new(cops::style::StringMethods::new())),
 
+        "Style/TrailingCommaInArguments" => {
+            let cop_config = config.get_cop_config("Style/TrailingCommaInArguments");
+            let style = cop_config
+                .and_then(|c| c.raw.get("EnforcedStyleForMultiline"))
+                .and_then(|v| v.as_str())
+                .map(|s| match s {
+                    "comma" => cops::style::TrailingCommaInArgumentsStyle::Comma,
+                    "consistent_comma" => cops::style::TrailingCommaInArgumentsStyle::ConsistentComma,
+                    "diff_comma" => cops::style::TrailingCommaInArgumentsStyle::DiffComma,
+                    _ => cops::style::TrailingCommaInArgumentsStyle::NoComma,
+                })
+                .unwrap_or(cops::style::TrailingCommaInArgumentsStyle::NoComma);
+            Some(Box::new(cops::style::TrailingCommaInArguments::new(style)))
+        }
+
         "Layout/TrailingWhitespace" => {
             let cop_config = config.get_cop_config("Layout/TrailingWhitespace");
             let allow_in_heredoc = cop_config
@@ -1287,6 +1376,10 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
                 })
                 .unwrap_or(cops::layout::TrailingEmptyLinesStyle::FinalNewline);
             Some(Box::new(cops::layout::TrailingEmptyLines::new(style)))
+        }
+
+        "Layout/IndentationWidth" => {
+            Some(build_indentation_width_cop(config))
         }
 
         "Layout/EndAlignment" => {
@@ -1642,6 +1735,88 @@ fn read_redundant_parens_cross_cop_config(config: &Config) -> (bool, bool) {
         .unwrap_or(false);
 
     (ternary_req, allow_multiline)
+}
+
+/// Build IndentationWidth cop from config, reading cross-cop settings
+fn build_indentation_width_cop(config: &Config) -> Box<dyn cops::Cop> {
+    let cop_config = config.get_cop_config("Layout/IndentationWidth");
+    let width = cop_config
+        .and_then(|c| c.raw.get("Width"))
+        .and_then(|v| v.as_i64())
+        .unwrap_or(2) as usize;
+    let align_with = cop_config
+        .and_then(|c| c.raw.get("EnforcedStyleAlignWith"))
+        .and_then(|v| v.as_str())
+        .unwrap_or("start_of_line");
+    let align_style = match align_with {
+        "relative_to_receiver" => cops::layout::IndentationWidthAlignWithStyle::RelativeToReceiver,
+        _ => cops::layout::IndentationWidthAlignWithStyle::StartOfLine,
+    };
+    let consistency = config.get_cop_config("Layout/IndentationConsistency")
+        .and_then(|c| c.raw.get("EnforcedStyle").and_then(|v| v.as_str().map(|s| s.to_string()))
+            .or_else(|| c.enforced_style.clone()))
+        .map(|s| match s.as_str() {
+            "indented_internal_methods" => cops::layout::IndentationWidthConsistencyStyle::IndentedInternalMethods,
+            _ => cops::layout::IndentationWidthConsistencyStyle::Normal,
+        })
+        .unwrap_or(cops::layout::IndentationWidthConsistencyStyle::Normal);
+
+    // Cross-cop: Layout/EndAlignment
+    let end_align = config.get_cop_config("Layout/EndAlignment")
+        .and_then(|c| c.raw.get("EnforcedStyleAlignWith").and_then(|v| v.as_str().map(|s| s.to_string())))
+        .map(|s| match s.as_str() {
+            "variable" => cops::layout::IndentationWidthEndAlignStyle::Variable,
+            "start_of_line" => cops::layout::IndentationWidthEndAlignStyle::StartOfLine,
+            _ => cops::layout::IndentationWidthEndAlignStyle::Keyword,
+        })
+        .unwrap_or(cops::layout::IndentationWidthEndAlignStyle::Keyword);
+
+    // Cross-cop: Layout/DefEndAlignment
+    let def_end_align = config.get_cop_config("Layout/DefEndAlignment")
+        .and_then(|c| c.raw.get("EnforcedStyleAlignWith").and_then(|v| v.as_str().map(|s| s.to_string())))
+        .map(|s| match s.as_str() {
+            "def" => cops::layout::IndentationWidthDefEndAlignStyle::Def,
+            _ => cops::layout::IndentationWidthDefEndAlignStyle::StartOfLine,
+        })
+        .unwrap_or(cops::layout::IndentationWidthDefEndAlignStyle::StartOfLine);
+
+    // Cross-cop: Layout/IndentationStyle
+    let indent_style = config.get_cop_config("Layout/IndentationStyle")
+        .and_then(|c| c.raw.get("EnforcedStyle").and_then(|v| v.as_str().map(|s| s.to_string()))
+            .or_else(|| c.enforced_style.clone()))
+        .map(|s| match s.as_str() {
+            "tabs" => cops::layout::IndentationWidthIndentStyle::Tabs,
+            _ => cops::layout::IndentationWidthIndentStyle::Spaces,
+        })
+        .unwrap_or(cops::layout::IndentationWidthIndentStyle::Spaces);
+
+    // Cross-cop: Layout/AccessModifierIndentation
+    let access_mod_style = config.get_cop_config("Layout/AccessModifierIndentation")
+        .and_then(|c| c.raw.get("EnforcedStyle").and_then(|v| v.as_str().map(|s| s.to_string()))
+            .or_else(|| c.enforced_style.clone()))
+        .map(|s| match s.as_str() {
+            "outdent" => cops::layout::IndentationWidthAccessModifierStyle::Outdent,
+            _ => cops::layout::IndentationWidthAccessModifierStyle::Indent,
+        })
+        .unwrap_or(cops::layout::IndentationWidthAccessModifierStyle::Indent);
+
+    // AllowedPatterns
+    let allowed_patterns = cop_config
+        .and_then(|c| c.raw.get("AllowedPatterns"))
+        .and_then(|v| v.as_sequence())
+        .map(|seq| seq.iter().filter_map(|v| v.as_str().map(|s| s.to_string())).collect())
+        .unwrap_or_default();
+
+    Box::new(cops::layout::IndentationWidth::with_full_config(
+        width,
+        align_style,
+        consistency,
+        end_align,
+        def_end_align,
+        indent_style,
+        access_mod_style,
+        allowed_patterns,
+    ))
 }
 
 /// For hash format, values that are empty strings, false, or null are skipped (disabled groups).

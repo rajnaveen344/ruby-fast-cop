@@ -339,9 +339,11 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(lint::LiteralInInterpolation::new()),
         Box::new(lint::RedundantTypeConversion::new()),
         Box::new(lint::UnreachableCode::new()),
+        Box::new(lint::UselessAccessModifier::new()),
         Box::new(lint::Void::new(false)),
         // Layout
         Box::new(layout::EndAlignment::new(layout::EndAlignmentStyle::Keyword)),
+        Box::new(layout::IndentationWidth::new(2)),
         Box::new(layout::LeadingCommentSpace::new()),
         Box::new(layout::LineLength::new(160)), // User's config: Max: 160 (allow_uri=true by default)
         Box::new(layout::SpaceAfterComma::new()),
@@ -377,5 +379,6 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(style::Semicolon::new(false)),
         Box::new(style::StringLiterals::new(style::StringLiteralsStyle::SingleQuotes)),
         Box::new(style::StringMethods::new()),
+        Box::new(style::TrailingCommaInArguments::new(style::TrailingCommaInArgumentsStyle::NoComma)),
     ]
 }

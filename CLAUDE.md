@@ -6,7 +6,7 @@ Instructions for Claude when working on this project.
 
 ruby-fast-cop is a high-performance Ruby linter written in Rust, designed as a drop-in replacement for RuboCop. The goal is 50-100x faster linting by rewriting cops in Rust, similar to how Ruff replaced Python linters.
 
-**Current state:** 41 of 606 cops implemented (all passing), 606 TOML test fixtures with ~28,075 test cases extracted from RuboCop v1.85.0's RSpec suite.
+**Current state:** 44 of 606 cops implemented (all passing), 606 TOML test fixtures with ~28,075 test cases extracted from RuboCop v1.85.0's RSpec suite.
 
 ## Key Design Decisions
 
@@ -166,6 +166,20 @@ EnforcedStyle = "exploded"
 
 
 ## Implementing a Cop
+
+### Implementation Philosophy: Match RuboCop's Structure
+
+Our Rust implementations should be **comparable in size and structure** to the original RuboCop Ruby code. RuboCop cops are typically concise — a cop + its mixin is often under 150 lines of Ruby. Our Rust version should be similarly lean.
+
+**Before implementing, always read the original RuboCop source:**
+- Cop: `https://raw.githubusercontent.com/rubocop/rubocop/master/lib/rubocop/cop/{department}/{cop_name}.rb`
+- Mixins: `https://raw.githubusercontent.com/rubocop/rubocop/master/lib/rubocop/cop/mixin/{mixin_name}.rb`
+
+**Key principles:**
+- If RuboCop uses a shared mixin (e.g., `TrailingComma`), create a shared helper in `src/helpers/` that multiple cops can reuse
+- Don't over-engineer — a 100-line Ruby cop should be ~150-250 lines of Rust, not 500+
+- Reuse existing helpers from `src/helpers/source.rs` and `src/helpers/escape.rs`
+- Keep the visitor pattern simple — avoid deeply nested match arms when a flat approach works
 
 Each cop should:
 1. Live in the appropriate department directory (`cops/lint/`, `cops/style/`, etc.)

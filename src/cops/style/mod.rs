@@ -18,6 +18,7 @@ mod select_by_regexp;
 mod semicolon;
 mod string_literals;
 mod string_methods;
+mod trailing_comma_in_arguments;
 
 pub use access_modifier_declarations::{
     AccessModifierDeclarations, EnforcedStyle as AccessModifierDeclarationsStyle,
@@ -48,3 +49,6 @@ pub use select_by_regexp::SelectByRegexp;
 pub use semicolon::Semicolon;
 pub use string_literals::{EnforcedStyle as StringLiteralsStyle, StringLiterals};
 pub use string_methods::StringMethods;
+pub use trailing_comma_in_arguments::{
+    EnforcedStyleForMultiline as TrailingCommaInArgumentsStyle, TrailingCommaInArguments,
+};
