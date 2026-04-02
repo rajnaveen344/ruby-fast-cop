@@ -58,6 +58,8 @@ impl ScopeInfo {
 pub struct ScopeAnalyzer<'a> {
     ctx: &'a CheckContext<'a>,
     pub offenses: Vec<Offense>,
+    /// Track scope offsets already analyzed (prevents duplicates in loop warmup)
+    analyzed_scopes: HashSet<usize>,
 }
 
 impl<'a> ScopeAnalyzer<'a> {
@@ -65,6 +67,7 @@ impl<'a> ScopeAnalyzer<'a> {
         Self {
             ctx,
             offenses: Vec::new(),
+            analyzed_scopes: HashSet::new(),
         }
     }
 
@@ -81,9 +84,13 @@ impl<'a> ScopeAnalyzer<'a> {
     }
 
     fn analyze_scope(&mut self, body: &Option<Node>, params: HashSet<String>) {
-        let mut scope = ScopeInfo::new();
-        scope.params = params;
         if let Some(body_node) = body {
+            let offset = body_node.location().start_offset();
+            if !self.analyzed_scopes.insert(offset) {
+                return; // Already analyzed (e.g., during loop warmup)
+            }
+            let mut scope = ScopeInfo::new();
+            scope.params = params;
             self.analyze_body_as_scope(body_node, &mut scope);
         }
     }
@@ -468,16 +475,19 @@ impl<'a> ScopeAnalyzer<'a> {
                 scope.has_bare_super = true;
             }
 
-            // ── Pattern matching ──
+            // ── Pattern matching (in / =>) ──
+            // RuboCop does NOT flag variables assigned via standalone `in`/`=>`
+            // pattern match as useless. We register var names in the scope
+            // (so blocks can see them as captures) but don't track writes.
             Node::MatchPredicateNode { .. } => {
                 let mp = node.as_match_predicate_node().unwrap();
-                self.collect_pattern_writes(&mp.pattern(), live, useless, scope);
+                self.register_pattern_var_names(&mp.pattern(), scope);
                 self.collect_reads(&mp.value(), live);
             }
 
             Node::MatchRequiredNode { .. } => {
                 let mr = node.as_match_required_node().unwrap();
-                self.collect_pattern_writes(&mr.pattern(), live, useless, scope);
+                self.register_pattern_var_names(&mr.pattern(), scope);
                 self.collect_reads(&mr.value(), live);
             }
 
@@ -694,6 +704,67 @@ impl<'a> ScopeAnalyzer<'a> {
         }
     }
 
+    /// Register pattern variable names in the scope without flagging as useless.
+    fn register_pattern_var_names(&self, pattern: &Node, scope: &mut ScopeInfo) {
+        match pattern {
+            Node::LocalVariableTargetNode { .. } => {
+                let lv = pattern.as_local_variable_target_node().unwrap();
+                scope.all_var_names.insert(name_str(&lv.name()));
+            }
+            Node::HashPatternNode { .. } => {
+                let hp = pattern.as_hash_pattern_node().unwrap();
+                for elem in hp.elements().iter() {
+                    self.register_pattern_var_names(&elem, scope);
+                }
+                if let Some(rest) = hp.rest() {
+                    self.register_pattern_var_names(&rest, scope);
+                }
+            }
+            Node::ArrayPatternNode { .. } => {
+                let ap = pattern.as_array_pattern_node().unwrap();
+                for elem in ap.requireds().iter() {
+                    self.register_pattern_var_names(&elem, scope);
+                }
+                if let Some(rest) = ap.rest() {
+                    self.register_pattern_var_names(&rest, scope);
+                }
+                for elem in ap.posts().iter() {
+                    self.register_pattern_var_names(&elem, scope);
+                }
+            }
+            Node::AssocNode { .. } => {
+                let assoc = pattern.as_assoc_node().unwrap();
+                self.register_pattern_var_names(&assoc.value(), scope);
+            }
+            Node::CapturePatternNode { .. } => {
+                let cp = pattern.as_capture_pattern_node().unwrap();
+                scope.all_var_names.insert(name_str(&cp.target().name()));
+                self.register_pattern_var_names(&cp.value(), scope);
+            }
+            Node::SplatNode { .. } => {
+                let splat = pattern.as_splat_node().unwrap();
+                if let Some(expr) = splat.expression() {
+                    self.register_pattern_var_names(&expr, scope);
+                }
+            }
+            Node::FindPatternNode { .. } => {
+                let fp = pattern.as_find_pattern_node().unwrap();
+                if let Some(expr) = fp.left().expression() {
+                    self.register_pattern_var_names(&expr, scope);
+                }
+                for elem in fp.requireds().iter() {
+                    self.register_pattern_var_names(&elem, scope);
+                }
+                if let Some(splat) = fp.right().as_splat_node() {
+                    if let Some(expr) = splat.expression() {
+                        self.register_pattern_var_names(&expr, scope);
+                    }
+                }
+            }
+            _ => {}
+        }
+    }
+
     fn analyze_if_reverse(
         &mut self,
         if_node: ruby_prism::IfNode,
@@ -859,11 +930,12 @@ impl<'a> ScopeAnalyzer<'a> {
                 let mut temp_useless = Vec::new();
                 for stmt in body.iter().rev() {
                     self.analyze_node_reverse(stmt, &mut body_live, &mut temp_useless, scope);
-                    // Re-add condition reads after each statement
                     for var in &cond_reads {
                         body_live.insert(var.clone());
                     }
                 }
+                // Include predicate writes/reads in fixed-point
+                self.analyze_node_reverse(&while_node.predicate(), &mut body_live, &mut temp_useless, scope);
                 for var in body_live {
                     live.insert(var);
                 }
@@ -872,7 +944,15 @@ impl<'a> ScopeAnalyzer<'a> {
                     break;
                 }
             }
-            // Final pass to actually record useless writes
+            // Per RuboCop's mark_assignments_as_referenced_in_loop:
+            // After processing the loop, collect all reads and writes in the body.
+            // For variables that are both read and written in the loop:
+            //   - The LAST write is marked as referenced (for next iteration)
+            //   - Writes inside branch nodes (if/case/case_match/rescue) are ALL referenced
+            //   - Sequential duplicate writes are still flagged
+            let useless_before = useless.len();
+
+            // Final pass to record useless writes
             let mut body_live = live.clone();
             for stmt in body.iter().rev() {
                 self.analyze_node_reverse(stmt, &mut body_live, useless, scope);
@@ -880,8 +960,59 @@ impl<'a> ScopeAnalyzer<'a> {
                     body_live.insert(var.clone());
                 }
             }
+            // Also analyze the predicate for writes
+            self.analyze_node_reverse(&while_node.predicate(), &mut body_live, useless, scope);
+
+            // Now apply RuboCop's loop-reference logic: collect all reads in the loop
+            let mut ref_collector = VarRefCollector::new();
+            for stmt in &body {
+                ref_collector.visit(stmt);
+            }
+            ref_collector.visit(&while_node.predicate());
+            let all_loop_reads = &ref_collector.referenced_vars;
+
+            // Filter useless writes added during the final pass:
+            // If a variable is read somewhere in the loop, its writes inside
+            // branch nodes should be preserved (not flagged as useless)
+            let new_useless: Vec<WriteInfo> = useless.drain(useless_before..).collect();
+            for w in new_useless {
+                if all_loop_reads.contains(&w.name) {
+                    // Check if this write is inside a branch node in the loop body.
+                    // If so, don't flag it (it may be used in next iteration via
+                    // a different branch path).
+                    let write_offset = w.name_start;
+                    let in_branch = self.is_inside_branch_in_stmts(&body, write_offset);
+                    if in_branch {
+                        continue; // Don't flag — referenced via loop + branch
+                    }
+                }
+                useless.push(w);
+            }
+
             for var in body_live {
                 live.insert(var);
+            }
+        } else {
+            // No body: the predicate IS the loop body.
+            // Apply same loop-reference logic.
+            let useless_before = useless.len();
+            self.analyze_node_reverse(&while_node.predicate(), live, useless, scope);
+
+            let mut ref_collector = VarRefCollector::new();
+            ref_collector.visit(&while_node.predicate());
+            let all_loop_reads = &ref_collector.referenced_vars;
+
+            let pred = while_node.predicate();
+            let pred_slice = std::slice::from_ref(&pred);
+            let new_useless: Vec<WriteInfo> = useless.drain(useless_before..).collect();
+            for w in new_useless {
+                if all_loop_reads.contains(&w.name) {
+                    let in_branch = self.is_inside_branch_in_stmts(pred_slice, w.name_start);
+                    if in_branch {
+                        continue;
+                    }
+                }
+                useless.push(w);
             }
         }
 
@@ -918,6 +1049,8 @@ impl<'a> ScopeAnalyzer<'a> {
                 self.collect_reads(&until.predicate(), live);
                 if *live == prev_live { break; }
             }
+            let useless_before = useless.len();
+
             let mut body_live = live.clone();
             for stmt in body.iter().rev() {
                 self.analyze_node_reverse(stmt, &mut body_live, useless, scope);
@@ -925,6 +1058,26 @@ impl<'a> ScopeAnalyzer<'a> {
                     body_live.insert(var.clone());
                 }
             }
+
+            // Apply loop-reference filtering (same as while)
+            let mut ref_collector = VarRefCollector::new();
+            for stmt in &body {
+                ref_collector.visit(stmt);
+            }
+            ref_collector.visit(&until.predicate());
+            let all_loop_reads = &ref_collector.referenced_vars;
+
+            let new_useless: Vec<WriteInfo> = useless.drain(useless_before..).collect();
+            for w in new_useless {
+                if all_loop_reads.contains(&w.name) {
+                    let in_branch = self.is_inside_branch_in_stmts(&body, w.name_start);
+                    if in_branch {
+                        continue;
+                    }
+                }
+                useless.push(w);
+            }
+
             for var in body_live {
                 live.insert(var);
             }
@@ -1383,22 +1536,25 @@ impl<'a> ScopeAnalyzer<'a> {
             }
         }
 
-        // Determine which variables are outer-scope captures vs block-local:
-        // - If a variable is in the outer scope's live set or all_var_names, it's captured
-        // - Block parameters shadow outer variables (not captured)
-        // - Everything else is block-local
+        // Snapshot outer scope state BEFORE adding block refs.
+        // A variable is only a true outer-scope capture if it existed in the
+        // outer scope before we processed this block. Otherwise, variables
+        // only referenced within the block (e.g., `foo += _1` in numblock)
+        // are block-local and should be flagged if useless.
+        let outer_live: HashSet<String> = live.clone();
+        let outer_vars: HashSet<String> = scope.all_var_names.clone();
 
         // For captured variables (read or written in block, exist in outer scope):
         // Add to live to keep outer writes alive
         for var in &collector.referenced_vars {
-            if !block_params.contains(var) {
+            if !block_params.contains(var) &&
+               (outer_live.contains(var) || outer_vars.contains(var)) {
                 live.insert(var.clone());
             }
         }
         for var in &collector.written_vars {
             if !block_params.contains(var) {
-                // If the variable exists in outer scope, it's a capture
-                if live.contains(var) || scope.all_var_names.contains(var) {
+                if outer_live.contains(var) || outer_vars.contains(var) {
                     live.insert(var.clone());
                 }
             }
@@ -1421,7 +1577,7 @@ impl<'a> ScopeAnalyzer<'a> {
             // Report useless writes for block-local variables
             for w in block_useless {
                 let is_captured = !block_params.contains(&w.name) &&
-                    (live.contains(&w.name) || scope.all_var_names.contains(&w.name));
+                    (outer_live.contains(&w.name) || outer_vars.contains(&w.name));
                 if !is_captured {
                     self.report_single_useless(&w, &block_scope);
                 }
@@ -1568,6 +1724,57 @@ impl<'a> ScopeAnalyzer<'a> {
                 });
                 scope.all_var_names.insert(name);
             }
+        }
+    }
+
+    /// Check if offset falls inside a branch node (if/unless/case/case_match)
+    /// within the given statements. This is used by the loop analysis to
+    /// determine which writes should be preserved per RuboCop's logic.
+    fn is_inside_branch_in_stmts(&self, stmts: &[Node], offset: usize) -> bool {
+        for stmt in stmts {
+            let start = stmt.location().start_offset();
+            let end = stmt.location().end_offset();
+            if offset < start || offset >= end {
+                continue;
+            }
+            match stmt {
+                Node::IfNode { .. } | Node::UnlessNode { .. }
+                | Node::CaseNode { .. } | Node::CaseMatchNode { .. } => {
+                    return true;
+                }
+                _ => {
+                    // Check children recursively
+                    if self.node_contains_branch_around(stmt, offset) {
+                        return true;
+                    }
+                }
+            }
+        }
+        false
+    }
+
+    fn node_contains_branch_around(&self, node: &Node, offset: usize) -> bool {
+        match node {
+            Node::IfNode { .. } | Node::UnlessNode { .. }
+            | Node::CaseNode { .. } | Node::CaseMatchNode { .. } => {
+                let start = node.location().start_offset();
+                let end = node.location().end_offset();
+                offset >= start && offset < end
+            }
+            Node::StatementsNode { .. } => {
+                let stmts_node = node.as_statements_node().unwrap();
+                let children: Vec<_> = stmts_node.body().iter().collect();
+                self.is_inside_branch_in_stmts(&children, offset)
+            }
+            Node::ParenthesesNode { .. } => {
+                let p = node.as_parentheses_node().unwrap();
+                if let Some(body) = p.body() {
+                    self.node_contains_branch_around(&body, offset)
+                } else {
+                    false
+                }
+            }
+            _ => false,
         }
     }
 
