@@ -414,6 +414,7 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(lint::RedundantTypeConversion::new()),
         Box::new(lint::UnreachableCode::new()),
         Box::new(lint::UselessAccessModifier::new()),
+        Box::new(lint::UselessAssignment::new()),
         Box::new(lint::Void::new(false)),
         // Layout
         Box::new(layout::EmptyLinesAroundAccessModifier::new(layout::EmptyLinesAroundAccessModifierStyle::Around)),

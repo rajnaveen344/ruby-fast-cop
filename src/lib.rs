@@ -241,6 +241,11 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         )));
     }
 
+    // Lint/UselessAssignment
+    if config.is_cop_enabled("Lint/UselessAssignment") {
+        result.push(Box::new(cops::lint::UselessAssignment::new()));
+    }
+
     // Lint/Void
     if config.is_cop_enabled("Lint/Void") {
         result.push(Box::new(cops::lint::Void::new(false)));
@@ -956,6 +961,10 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
                 context_creating,
                 method_creating,
             )))
+        }
+
+        "Lint/UselessAssignment" => {
+            Some(Box::new(cops::lint::UselessAssignment::new()))
         }
 
         "Lint/Void" => {
