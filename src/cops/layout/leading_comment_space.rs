@@ -49,10 +49,6 @@ impl LeadingCommentSpace {
     /// Find the comment portion of a line (the # and everything after).
     /// Returns (byte_start, comment_text) where byte_start is the byte offset of `#`.
     /// Returns None if no comment found on this line.
-    fn find_comment(line: &str) -> Option<(usize, &str)> {
-        crate::helpers::source::find_comment_start(line)
-            .map(|pos| (pos, &line[pos..]))
-    }
 
     /// Check if a comment is exempt from the leading space rule.
     fn is_exempt_comment(
@@ -191,7 +187,8 @@ impl Cop for LeadingCommentSpace {
             }
 
             // Find comment on this line
-            if let Some((byte_start, comment_text)) = Self::find_comment(line) {
+            if let Some(byte_start) = crate::helpers::source::find_comment_start(line) {
+                let comment_text = &line[byte_start..];
                 // Check if this is a standalone comment (# at start of trimmed line)
                 let char_start = line[..byte_start].chars().count();
                 let is_first_on_line = line[..byte_start].trim().is_empty();

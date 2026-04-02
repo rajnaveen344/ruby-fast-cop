@@ -1,4 +1,5 @@
 use crate::cops::{CheckContext, Cop};
+use crate::helpers::source::find_comment_start as find_comment_in_line;
 use crate::offense::{Correction, Location, Offense, Severity};
 use ruby_prism::{Node, ProgramNode, Visit};
 
@@ -989,10 +990,6 @@ impl<'a> SafeNavVisitor<'a> {
         }
         result
     }
-}
-
-fn find_comment_in_line(line: &str) -> Option<usize> {
-    crate::helpers::source::find_comment_start(line)
 }
 
 fn dup_node<'pr>(node: &Node<'pr>) -> Node<'pr> {

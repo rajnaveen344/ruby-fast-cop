@@ -195,12 +195,7 @@ fn visual_column(source: &str, offset: usize, tab_width: usize) -> u32 {
 }
 
 
-use crate::helpers::access_modifier;
-
-/// Check if a node represents a standalone access modifier call (bare, no arguments)
-fn is_standalone_access_modifier(node: &ruby_prism::CallNode) -> bool {
-    access_modifier::is_bare_access_modifier(node)
-}
+use crate::helpers::access_modifier::is_bare_access_modifier as is_standalone_access_modifier;
 
 /// Check if the first thing on the body line IS the body node
 fn body_starts_at_line_start(source: &str, body_offset: usize) -> bool {
