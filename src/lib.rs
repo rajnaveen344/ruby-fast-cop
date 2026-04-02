@@ -299,6 +299,13 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         result.push(Box::new(cops::style::AutoResourceCleanup::new()));
     }
 
+    // Style/BlockDelimiters
+    if config.is_cop_enabled("Style/BlockDelimiters") {
+        if let Some(cop) = build_single_cop("Style/BlockDelimiters", config) {
+            result.push(cop);
+        }
+    }
+
     // Style/ConditionalAssignment
     if config.is_cop_enabled("Style/ConditionalAssignment") {
         let cop_config = config.get_cop_config("Style/ConditionalAssignment");
@@ -532,6 +539,19 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
             })
             .unwrap_or(cops::layout::TrailingEmptyLinesStyle::FinalNewline);
         result.push(Box::new(cops::layout::TrailingEmptyLines::new(style)));
+    }
+
+    // Layout/EmptyLinesAroundAccessModifier
+    if config.is_cop_enabled("Layout/EmptyLinesAroundAccessModifier") {
+        let cop_config = config.get_cop_config("Layout/EmptyLinesAroundAccessModifier");
+        let style = cop_config
+            .and_then(|c| c.enforced_style.as_ref())
+            .map(|s| match s.as_str() {
+                "only_before" => cops::layout::EmptyLinesAroundAccessModifierStyle::OnlyBefore,
+                _ => cops::layout::EmptyLinesAroundAccessModifierStyle::Around,
+            })
+            .unwrap_or(cops::layout::EmptyLinesAroundAccessModifierStyle::Around);
+        result.push(Box::new(cops::layout::EmptyLinesAroundAccessModifier::new(style)));
     }
 
     // Layout/IndentationWidth
@@ -1122,6 +1142,58 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
 
         "Style/AutoResourceCleanup" => Some(Box::new(cops::style::AutoResourceCleanup::new())),
 
+        "Style/BlockDelimiters" => {
+            let cop_config = config.get_cop_config("Style/BlockDelimiters");
+            let style = cop_config
+                .and_then(|c| c.enforced_style.as_ref())
+                .map(|s| match s.as_str() {
+                    "semantic" => cops::style::BlockDelimitersStyle::Semantic,
+                    "braces_for_chaining" => cops::style::BlockDelimitersStyle::BracesForChaining,
+                    "always_braces" => cops::style::BlockDelimitersStyle::AlwaysBraces,
+                    _ => cops::style::BlockDelimitersStyle::LineCountBased,
+                })
+                .unwrap_or(cops::style::BlockDelimitersStyle::LineCountBased);
+
+            let allow_braces = cop_config
+                .and_then(|c| c.raw.get("AllowBracesOnProceduralOneLiners"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
+
+            let braces_required = cop_config
+                .and_then(|c| c.raw.get("BracesRequiredMethods"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+                .unwrap_or_default();
+
+            let functional = cop_config
+                .and_then(|c| c.raw.get("FunctionalMethods"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+                .unwrap_or_default();
+
+            let procedural = cop_config
+                .and_then(|c| c.raw.get("ProceduralMethods"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+                .unwrap_or_default();
+
+            let allowed_methods = cop_config
+                .and_then(|c| c.raw.get("AllowedMethods"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+                .unwrap_or_else(|| vec!["lambda".to_string(), "proc".to_string(), "it".to_string()]);
+
+            let allowed_patterns = cop_config
+                .and_then(|c| c.raw.get("AllowedPatterns"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+                .unwrap_or_default();
+
+            Some(Box::new(cops::style::BlockDelimiters::with_config(
+                style, allow_braces, braces_required, functional, procedural, allowed_methods, allowed_patterns,
+            )))
+        }
+
         "Style/ConditionalAssignment" => {
             let cop_config = config.get_cop_config("Style/ConditionalAssignment");
             let style = cop_config
@@ -1376,6 +1448,18 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
                 })
                 .unwrap_or(cops::layout::TrailingEmptyLinesStyle::FinalNewline);
             Some(Box::new(cops::layout::TrailingEmptyLines::new(style)))
+        }
+
+        "Layout/EmptyLinesAroundAccessModifier" => {
+            let cop_config = config.get_cop_config("Layout/EmptyLinesAroundAccessModifier");
+            let style = cop_config
+                .and_then(|c| c.enforced_style.as_ref())
+                .map(|s| match s.as_str() {
+                    "only_before" => cops::layout::EmptyLinesAroundAccessModifierStyle::OnlyBefore,
+                    _ => cops::layout::EmptyLinesAroundAccessModifierStyle::Around,
+                })
+                .unwrap_or(cops::layout::EmptyLinesAroundAccessModifierStyle::Around);
+            Some(Box::new(cops::layout::EmptyLinesAroundAccessModifier::new(style)))
         }
 
         "Layout/IndentationWidth" => {

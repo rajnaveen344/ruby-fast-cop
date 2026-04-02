@@ -1,28 +1,28 @@
 # All Cops State (606 total)
 
 Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department and default status.
-37 of 606 implemented. See [README.md](README.md) for the implementation roadmap.
+46 of 606 implemented. See [README.md](README.md) for the implementation roadmap.
 
 ## Summary
 
 | Department | Enabled | Pending | Disabled | Implemented |      Tests |
 | ---------- | ------: | ------: | -------: | ----------: | ---------: |
-| Style      |     175 |      91 |       32 |          19 |     14,567 |
-| Lint       |     100 |      50 |        4 |           7 |      5,961 |
-| Layout     |      81 |       5 |       14 |           7 |      4,654 |
+| Style      |     175 |      91 |       32 |          22 |     14,567 |
+| Lint       |     100 |      50 |        4 |           9 |      5,961 |
+| Layout     |      81 |       5 |       14 |          10 |      4,654 |
 | Metrics    |       9 |       1 |        0 |           3 |        272 |
 | Naming     |      16 |       2 |        1 |           2 |      2,217 |
 | Gemspec    |       4 |       5 |        1 |           0 |        193 |
 | Bundler    |       5 |       0 |        2 |           0 |        101 |
 | Security   |       5 |       2 |        0 |           0 |        102 |
 | Migration  |       1 |       0 |        0 |           0 |          8 |
-| **Total**  | **396** | **156** |   **54** |      **38** | **28,075** |
+| **Total**  | **396** | **156** |   **54** |      **46** | **28,075** |
 
 - **Enabled**: Runs by default on every codebase (highest priority to implement)
 - **Pending**: Runs only with `NewCops: enable` in config
 - **Disabled**: Runs only when explicitly enabled in config
 
-## Style (19/298 implemented, 14,567 tests)
+## Style (22/298 implemented, 14,567 tests)
 
 ### Enabled by Default (175 cops, 9,202 tests)
 
@@ -40,7 +40,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Style/BeginBlock                       |     1 | -           |
 | Style/BisectedAttrAccessor             |    14 | -           |
 | Style/BlockComments                    |     5 | -           |
-| Style/BlockDelimiters                  |   173 | -           |
+| Style/BlockDelimiters                  |   173 | Implemented |
 | Style/CaseEquality                     |    25 | -           |
 | Style/CaseLikeIf                       |    38 | -           |
 | Style/CharacterLiteral                 |     5 | -           |
@@ -155,7 +155,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Style/RedundantParentheses             |   331 | Implemented |
 | Style/RedundantPercentQ                |    25 | -           |
 | Style/RedundantRegexpCharacterClass    |    47 | -           |
-| Style/RedundantRegexpEscape            |   217 | -           |
+| Style/RedundantRegexpEscape            |   217 | Implemented |
 | Style/RedundantReturn                  |    39 | -           |
 | Style/RedundantSelf                    |    62 | -           |
 | Style/RedundantSelfAssignment          |    14 | -           |
@@ -188,7 +188,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Style/TrailingBodyOnClass              |     7 | -           |
 | Style/TrailingBodyOnMethodDefinition   |    12 | -           |
 | Style/TrailingBodyOnModule             |     7 | -           |
-| Style/TrailingCommaInArguments         |   178 | -           |
+| Style/TrailingCommaInArguments         |   178 | Implemented |
 | Style/TrailingCommaInArrayLiteral      |    48 | -           |
 | Style/TrailingCommaInHashLiteral       |    41 | -           |
 | Style/TrailingMethodEndStatement       |    10 | -           |
@@ -337,7 +337,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Style/UnlessLogicalOperators               |    28 | -           |
 | Style/YodaExpression                       |    10 | -           |
 
-## Lint (7/154 implemented, 5,961 tests)
+## Lint (9/154 implemented, 5,961 tests)
 
 ### Enabled by Default (100 cops, 3,859 tests)
 
@@ -382,7 +382,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Lint/IneffectiveAccessModifier           |     8 | -           |
 | Lint/InheritException                    |    13 | -           |
 | Lint/InterpolationCheck                  |    15 | -           |
-| Lint/LiteralAsCondition                  |   229 | -           |
+| Lint/LiteralAsCondition                  |   229 | Implemented |
 | Lint/LiteralInInterpolation              |   378 | Implemented |
 | Lint/Loop                                |     4 | -           |
 | Lint/MissingCopEnableDirective           |    11 | -           |
@@ -436,7 +436,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Lint/UnusedMethodArgument                |    41 | -           |
 | Lint/UriEscapeUnescape                   |     9 | -           |
 | Lint/UriRegexp                           |    10 | -           |
-| Lint/UselessAccessModifier               |   198 | -           |
+| Lint/UselessAccessModifier               |   198 | Implemented |
 | Lint/UselessAssignment                   |   149 | -           |
 | Lint/UselessElseWithoutRescue            |     2 | -           |
 | Lint/UselessMethodDefinition             |    16 | -           |
@@ -508,7 +508,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Lint/NumberConversion            |    36 | -      |
 | Lint/ShadowingOuterLocalVariable |    31 | -      |
 
-## Layout (7/100 implemented, 4,654 tests)
+## Layout (10/100 implemented, 4,654 tests)
 
 ### Enabled by Default (81 cops, 4,067 tests)
 
@@ -534,7 +534,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Layout/EmptyLineAfterMagicComment                |    21 | -           |
 | Layout/EmptyLineBetweenDefs                      |    45 | -           |
 | Layout/EmptyLines                                |     5 | -           |
-| Layout/EmptyLinesAroundAccessModifier            |   176 | -           |
+| Layout/EmptyLinesAroundAccessModifier            |   176 | Implemented |
 | Layout/EmptyLinesAroundArguments                 |    22 | -           |
 | Layout/EmptyLinesAroundAttributeAccessor         |    20 | -           |
 | Layout/EmptyLinesAroundBeginBody                 |    11 | -           |
@@ -543,7 +543,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Layout/EmptyLinesAroundExceptionHandlingKeywords |    24 | -           |
 | Layout/EmptyLinesAroundMethodBody                |    14 | -           |
 | Layout/EmptyLinesAroundModuleBody                |    38 | -           |
-| Layout/EndAlignment                              |   207 | -           |
+| Layout/EndAlignment                              |   207 | Implemented |
 | Layout/EndOfLine                                 |    17 | -           |
 | Layout/ExtraSpacing                              |    82 | -           |
 | Layout/FirstArgumentIndentation                  |   139 | -           |
@@ -554,7 +554,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Layout/HeredocIndentation                        |   105 | -           |
 | Layout/IndentationConsistency                    |    53 | -           |
 | Layout/IndentationStyle                          |    25 | -           |
-| Layout/IndentationWidth                          |   177 | -           |
+| Layout/IndentationWidth                          |   177 | Implemented |
 | Layout/InitialIndentation                        |     8 | -           |
 | Layout/LeadingCommentSpace                       |    27 | Implemented |
 | Layout/LeadingEmptyLines                         |     9 | -           |

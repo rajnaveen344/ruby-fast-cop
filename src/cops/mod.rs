@@ -416,6 +416,7 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(lint::UselessAccessModifier::new()),
         Box::new(lint::Void::new(false)),
         // Layout
+        Box::new(layout::EmptyLinesAroundAccessModifier::new(layout::EmptyLinesAroundAccessModifierStyle::Around)),
         Box::new(layout::EndAlignment::new(layout::EndAlignmentStyle::Keyword)),
         Box::new(layout::IndentationWidth::new(2)),
         Box::new(layout::LeadingCommentSpace::new()),
@@ -435,6 +436,7 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         // Style
         Box::new(style::AccessModifierDeclarations::new(style::AccessModifierDeclarationsStyle::Group)),
         Box::new(style::AutoResourceCleanup::new()),
+        Box::new(style::BlockDelimiters::new(style::BlockDelimitersStyle::LineCountBased)),
         Box::new(style::ConditionalAssignment::new(style::ConditionalAssignmentStyle::AssignInsideCondition)),
         Box::new(style::FormatStringToken::new(style::FormatStringTokenStyle::Template)), // User's config
         Box::new(style::FrozenStringLiteralComment::new(style::FrozenStringLiteralCommentStyle::Always)),

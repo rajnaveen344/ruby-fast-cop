@@ -1,3 +1,4 @@
+mod empty_lines_around_access_modifier;
 mod end_alignment;
 mod indentation_width;
 mod leading_comment_space;
@@ -8,6 +9,10 @@ mod space_inside_percent_literal_delimiters;
 mod trailing_empty_lines;
 mod trailing_whitespace;
 
+pub use empty_lines_around_access_modifier::{
+    EmptyLinesAroundAccessModifier,
+    EnforcedStyle as EmptyLinesAroundAccessModifierStyle,
+};
 pub use end_alignment::{EndAlignment, EndAlignmentStyle};
 pub use indentation_width::{
     AccessModifierStyle as IndentationWidthAccessModifierStyle,

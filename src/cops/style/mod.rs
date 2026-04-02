@@ -1,5 +1,6 @@
 mod access_modifier_declarations;
 mod auto_resource_cleanup;
+mod block_delimiters;
 mod conditional_assignment;
 mod format_string_token;
 mod frozen_string_literal_comment;
@@ -24,6 +25,7 @@ pub use access_modifier_declarations::{
     AccessModifierDeclarations, EnforcedStyle as AccessModifierDeclarationsStyle,
 };
 pub use auto_resource_cleanup::AutoResourceCleanup;
+pub use block_delimiters::{BlockDelimiters, EnforcedStyle as BlockDelimitersStyle};
 pub use conditional_assignment::{
     ConditionalAssignment, EnforcedStyle as ConditionalAssignmentStyle,
 };
