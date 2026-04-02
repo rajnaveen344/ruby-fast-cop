@@ -170,24 +170,9 @@ struct IndentationWidthVisitor<'a> {
     current_call_receiver_last_line: Option<u32>,
 }
 
-/// Count leading tabs at the start of the line containing `offset`.
-fn count_leading_tabs(source: &str, offset: usize) -> usize {
-    let ls = line_start_offset(source, offset);
-    let bytes = source.as_bytes();
-    let mut count = 0;
-    let mut i = ls;
-    while i < bytes.len() && bytes[i] == b'\t' {
-        count += 1;
-        i += 1;
-    }
-    count
-}
-
 /// Get the indentation string (whitespace before first non-ws) at the line containing offset
 fn line_indentation_str(source: &str, offset: usize) -> &str {
     let ls = line_start_offset(source, offset);
-    let col = col_at_offset(source, offset);
-    // But we want the actual indentation, which is everything from ls to the first non-ws
     let first_nw = first_non_ws_col(source, offset);
     let end = ls + first_nw as usize;
     if end > source.len() {
@@ -209,13 +194,6 @@ fn visual_column(source: &str, offset: usize, tab_width: usize) -> u32 {
     (tab_count * tab_width + space_count) as u32
 }
 
-/// Check if a keyword at the given offset is a modifier (not first on its line).
-fn is_modifier_keyword(source: &str, keyword_offset: usize) -> bool {
-    let ls = line_start_offset(source, keyword_offset);
-    let before = &source[ls..keyword_offset];
-    let trimmed = before.trim();
-    !trimmed.is_empty()
-}
 
 /// Access modifier names
 const ACCESS_MODIFIERS: &[&str] = &["private", "protected", "public", "module_function"];
@@ -322,41 +300,26 @@ fn check_assignment_if(
     }
 }
 
-fn check_assignment_while(
+fn check_assignment_loop(
     visitor: &mut IndentationWidthVisitor,
     node: &ruby_prism::Node,
     base_off: usize,
+    target: ChainNodeType,
 ) {
     match node {
         ruby_prism::Node::CallNode { .. } => {
             let call = node.as_call_node().unwrap();
             if let Some(receiver) = call.receiver() {
-                check_assignment_while(visitor, &receiver, base_off);
+                check_assignment_loop(visitor, &receiver, base_off, target);
             }
         }
-        ruby_prism::Node::WhileNode { .. } => {
-            let while_node = node.as_while_node().unwrap();
-            visitor.check_while(&while_node, base_off);
+        ruby_prism::Node::WhileNode { .. } if matches!(target, ChainNodeType::While) => {
+            let n = node.as_while_node().unwrap();
+            visitor.check_loop(n.keyword_loc().start_offset(), n.closing_loc(), n.statements(), base_off);
         }
-        _ => {}
-    }
-}
-
-fn check_assignment_until(
-    visitor: &mut IndentationWidthVisitor,
-    node: &ruby_prism::Node,
-    base_off: usize,
-) {
-    match node {
-        ruby_prism::Node::CallNode { .. } => {
-            let call = node.as_call_node().unwrap();
-            if let Some(receiver) = call.receiver() {
-                check_assignment_until(visitor, &receiver, base_off);
-            }
-        }
-        ruby_prism::Node::UntilNode { .. } => {
-            let until_node = node.as_until_node().unwrap();
-            visitor.check_until(&until_node, base_off);
+        ruby_prism::Node::UntilNode { .. } if matches!(target, ChainNodeType::Until) => {
+            let n = node.as_until_node().unwrap();
+            visitor.check_loop(n.keyword_loc().start_offset(), n.closing_loc(), n.statements(), base_off);
         }
         _ => {}
     }
@@ -801,11 +764,35 @@ impl<'a> IndentationWidthVisitor<'a> {
         }
     }
 
+    /// Shared logic for class/singleton_class/module visitors
+    fn check_class_like_body(&mut self, kw_off: usize, end_off: usize, body: Option<ruby_prism::Node>) {
+        let source = self.ctx.source;
+        if line_at_offset(source, kw_off) == line_at_offset(source, end_off) {
+            return;
+        }
+
+        if let Some(body) = body {
+            match &body {
+                ruby_prism::Node::StatementsNode { .. } => {
+                    let stmts = body.as_statements_node().unwrap();
+                    self.check_class_body(kw_off, Some(&stmts));
+                }
+                ruby_prism::Node::BeginNode { .. } => {
+                    let begin = body.as_begin_node().unwrap();
+                    if let Some(stmts) = begin.statements() {
+                        self.check_class_body(kw_off, Some(&stmts));
+                    }
+                    self.check_rescue_ensure_bodies(&begin);
+                }
+                _ => {}
+            }
+        }
+    }
+
     fn check_class_body(
         &mut self,
         kw_off: usize,
         body: Option<&ruby_prism::StatementsNode>,
-        _end_off: Option<usize>,
     ) {
         let source = self.ctx.source;
 
@@ -916,47 +903,11 @@ impl<'a> IndentationWidthVisitor<'a> {
 
             if let Some(mod_off) = current_modifier_off {
                 let node_off = node.location().start_offset();
-                self.check_indentation_with_qualifier(
-                    mod_off,
-                    node_off,
-                    "indented_internal_methods",
-                );
+                self.check_indentation(mod_off, node_off, Some("indented_internal_methods"));
                 // Only check the first member after each modifier
                 current_modifier_off = None;
             }
         }
-    }
-
-    /// Like check_indentation but with a qualifier string
-    fn check_indentation_with_qualifier(
-        &mut self,
-        base_off: usize,
-        body_off: usize,
-        qualifier: &str,
-    ) {
-        let source = self.ctx.source;
-
-        if !body_starts_at_line_start(source, body_off) {
-            return;
-        }
-
-        if line_at_offset(source, base_off) == line_at_offset(source, body_off) {
-            return;
-        }
-
-        if matches_allowed_pattern(source, base_off, self.allowed_patterns) {
-            return;
-        }
-
-        let indentation = self.column_offset(source, body_off, base_off);
-        let configured = self.width as i32;
-        let delta = configured - indentation;
-
-        if delta == 0 {
-            return;
-        }
-
-        self.report_offense(source, body_off, indentation, Some(qualifier));
     }
 
     fn contains_access_modifier(&self, stmts: &[ruby_prism::Node]) -> bool {
@@ -1079,58 +1030,37 @@ impl<'a> IndentationWidthVisitor<'a> {
             }
             ChainNodeType::While => {
                 self.ignored_while_offsets.push(rhs_info.offset);
-                check_assignment_while(self, rhs, base_off);
+                check_assignment_loop(self, rhs, base_off, ChainNodeType::While);
             }
             ChainNodeType::Until => {
                 self.ignored_until_offsets.push(rhs_info.offset);
-                check_assignment_until(self, rhs, base_off);
+                check_assignment_loop(self, rhs, base_off, ChainNodeType::Until);
             }
             ChainNodeType::Other => {}
         }
     }
 
-    fn check_while(&mut self, node: &ruby_prism::WhileNode, base_off: usize) {
-        // Modifier while (e.g., `foo while bar`) has no closing keyword
-        if node.closing_loc().is_none() {
+    /// Shared check for while/until loops
+    fn check_loop(
+        &mut self,
+        kw_off: usize,
+        closing_loc: Option<ruby_prism::Location>,
+        statements: Option<ruby_prism::StatementsNode>,
+        base_off: usize,
+    ) {
+        let closing = match closing_loc {
+            Some(c) => c,
+            None => return, // modifier form (no closing keyword)
+        };
+
+        let source = self.ctx.source;
+        if line_at_offset(source, kw_off) == line_at_offset(source, closing.start_offset()) {
             return;
         }
 
-        if let Some(closing) = node.closing_loc() {
-            let source = self.ctx.source;
-            let kw_off = node.keyword_loc().start_offset();
-            let kw_line = line_at_offset(source, kw_off);
-            let end_line = line_at_offset(source, closing.start_offset());
-            if kw_line == end_line {
-                return;
-            }
-
-            if let Some(stmts) = node.statements() {
-                if let Some(first_off) = Self::first_statement_offset(&stmts) {
-                    self.check_indentation(base_off, first_off, None);
-                }
-            }
-        }
-    }
-
-    fn check_until(&mut self, node: &ruby_prism::UntilNode, base_off: usize) {
-        // Modifier until (e.g., `foo until bar`) has no closing keyword
-        if node.closing_loc().is_none() {
-            return;
-        }
-
-        if let Some(closing) = node.closing_loc() {
-            let source = self.ctx.source;
-            let kw_off = node.keyword_loc().start_offset();
-            let kw_line = line_at_offset(source, kw_off);
-            let end_line = line_at_offset(source, closing.start_offset());
-            if kw_line == end_line {
-                return;
-            }
-
-            if let Some(stmts) = node.statements() {
-                if let Some(first_off) = Self::first_statement_offset(&stmts) {
-                    self.check_indentation(base_off, first_off, None);
-                }
+        if let Some(stmts) = statements {
+            if let Some(first_off) = Self::first_statement_offset(&stmts) {
+                self.check_indentation(base_off, first_off, None);
             }
         }
     }
@@ -1168,8 +1098,6 @@ impl<'a> IndentationWidthVisitor<'a> {
             has_end: bool,
             is_multiline: bool,
             body_first_off: Option<usize>,
-            has_begin_body: bool,
-            begin_rescue_off: Option<usize>, // not used directly
         }
 
         fn extract_def_info(call: &ruby_prism::CallNode, source: &str) -> Option<DefInfo> {
@@ -1195,8 +1123,6 @@ impl<'a> IndentationWidthVisitor<'a> {
                                 has_end,
                                 is_multiline,
                                 body_first_off,
-                                has_begin_body: false,
-                                begin_rescue_off: None,
                             });
                         }
                         ruby_prism::Node::CallNode { .. } => {
@@ -1260,6 +1186,19 @@ impl<'a> IndentationWidthVisitor<'a> {
     // extract_rhs_from_node removed - handled directly in visitor methods
 }
 
+/// Generate visit methods for assignment nodes that check RHS indentation.
+/// All follow the same pattern: extract lhs offset + rhs value, check, visit children.
+macro_rules! impl_assignment_visit {
+    ($method:ident, $node_ty:ident, $visit_fn:path) => {
+        fn $method(&mut self, node: &ruby_prism::$node_ty) {
+            let lhs_off = node.location().start_offset();
+            let rhs = node.value();
+            self.check_assignment_rhs(lhs_off, &rhs);
+            $visit_fn(self, node);
+        }
+    };
+}
+
 impl Visit<'_> for IndentationWidthVisitor<'_> {
     fn visit_if_node(&mut self, node: &ruby_prism::IfNode) {
         if let Some(kw_loc) = node.if_keyword_loc() {
@@ -1314,7 +1253,7 @@ impl Visit<'_> for IndentationWidthVisitor<'_> {
     fn visit_while_node(&mut self, node: &ruby_prism::WhileNode) {
         let kw_off = node.keyword_loc().start_offset();
         if !self.ignored_while_offsets.contains(&kw_off) {
-            self.check_while(node, kw_off);
+            self.check_loop(kw_off, node.closing_loc(), node.statements(), kw_off);
         }
         ruby_prism::visit_while_node(self, node);
     }
@@ -1322,7 +1261,7 @@ impl Visit<'_> for IndentationWidthVisitor<'_> {
     fn visit_until_node(&mut self, node: &ruby_prism::UntilNode) {
         let kw_off = node.keyword_loc().start_offset();
         if !self.ignored_until_offsets.contains(&kw_off) {
-            self.check_until(node, kw_off);
+            self.check_loop(kw_off, node.closing_loc(), node.statements(), kw_off);
         }
         ruby_prism::visit_until_node(self, node);
     }
@@ -1346,107 +1285,36 @@ impl Visit<'_> for IndentationWidthVisitor<'_> {
     }
 
     fn visit_class_node(&mut self, node: &ruby_prism::ClassNode) {
-        let kw_off = node.class_keyword_loc().start_offset();
-        let end_off = Some(node.end_keyword_loc().start_offset());
-
-        let source = self.ctx.source;
-        let kw_line = line_at_offset(source, kw_off);
-        if let Some(e) = end_off {
-            if kw_line == line_at_offset(source, e) {
-                ruby_prism::visit_class_node(self, node);
-                return;
-            }
-        }
-
-        if let Some(body) = node.body() {
-            match &body {
-                ruby_prism::Node::StatementsNode { .. } => {
-                    let stmts = body.as_statements_node().unwrap();
-                    self.check_class_body(kw_off, Some(&stmts), end_off);
-                }
-                ruby_prism::Node::BeginNode { .. } => {
-                    let begin = body.as_begin_node().unwrap();
-                    if let Some(stmts) = begin.statements() {
-                        self.check_class_body(kw_off, Some(&stmts), end_off);
-                    }
-                    self.check_rescue_ensure_bodies(&begin);
-                }
-                _ => {}
-            }
-        }
-
+        self.check_class_like_body(
+            node.class_keyword_loc().start_offset(),
+            node.end_keyword_loc().start_offset(),
+            node.body(),
+        );
         ruby_prism::visit_class_node(self, node);
     }
 
     fn visit_singleton_class_node(&mut self, node: &ruby_prism::SingletonClassNode) {
-        let source = self.ctx.source;
         let kw_off = node.class_keyword_loc().start_offset();
-        let end_off = Some(node.end_keyword_loc().start_offset());
-
-        let kw_line = line_at_offset(source, kw_off);
-        if let Some(e) = end_off {
-            if kw_line == line_at_offset(source, e) {
-                ruby_prism::visit_singleton_class_node(self, node);
-                return;
-            }
-        }
+        let end_off = node.end_keyword_loc().start_offset();
 
         if let Some(body) = node.body() {
-            let body_off = body.location().start_offset();
-            if kw_line == line_at_offset(source, body_off) {
+            let kw_line = line_at_offset(self.ctx.source, kw_off);
+            if kw_line == line_at_offset(self.ctx.source, body.location().start_offset()) {
                 ruby_prism::visit_singleton_class_node(self, node);
                 return;
             }
-
-            match &body {
-                ruby_prism::Node::StatementsNode { .. } => {
-                    let stmts = body.as_statements_node().unwrap();
-                    self.check_class_body(kw_off, Some(&stmts), end_off);
-                }
-                ruby_prism::Node::BeginNode { .. } => {
-                    let begin = body.as_begin_node().unwrap();
-                    if let Some(stmts) = begin.statements() {
-                        self.check_class_body(kw_off, Some(&stmts), end_off);
-                    }
-                    self.check_rescue_ensure_bodies(&begin);
-                }
-                _ => {}
-            }
         }
 
+        self.check_class_like_body(kw_off, end_off, node.body());
         ruby_prism::visit_singleton_class_node(self, node);
     }
 
     fn visit_module_node(&mut self, node: &ruby_prism::ModuleNode) {
-        let source = self.ctx.source;
-        let kw_off = node.module_keyword_loc().start_offset();
-        let end_off = Some(node.end_keyword_loc().start_offset());
-
-        let kw_line = line_at_offset(source, kw_off);
-        if let Some(e) = end_off {
-            if kw_line == line_at_offset(source, e) {
-                ruby_prism::visit_module_node(self, node);
-                return;
-            }
-        }
-
-        if let Some(body) = node.body() {
-            match &body {
-                ruby_prism::Node::StatementsNode { .. } => {
-                    let stmts = body.as_statements_node().unwrap();
-                    self.check_class_body(kw_off, Some(&stmts), end_off);
-                }
-                ruby_prism::Node::BeginNode { .. } => {
-                    let begin = body.as_begin_node().unwrap();
-                    if let Some(stmts) = begin.statements() {
-                        self.check_class_body(kw_off, Some(&stmts), end_off);
-                    }
-                    self.check_rescue_ensure_bodies(&begin);
-                }
-                _ => {}
-            }
-        }
-
+        self.check_class_like_body(
+            node.module_keyword_loc().start_offset(),
+            node.end_keyword_loc().start_offset(),
+            node.body(),
+        );
         ruby_prism::visit_module_node(self, node);
     }
 
@@ -1495,70 +1363,6 @@ impl Visit<'_> for IndentationWidthVisitor<'_> {
     fn visit_case_match_node(&mut self, node: &ruby_prism::CaseMatchNode) {
         self.check_case_match(node);
         ruby_prism::visit_case_match_node(self, node);
-    }
-
-    // Handle assignment nodes for check_assignment
-    fn visit_local_variable_write_node(&mut self, node: &ruby_prism::LocalVariableWriteNode) {
-        let lhs_off = node.location().start_offset();
-        {
-            let rhs = node.value();
-            self.check_assignment_rhs(lhs_off, &rhs);
-        }
-        ruby_prism::visit_local_variable_write_node(self, node);
-    }
-
-    fn visit_instance_variable_write_node(&mut self, node: &ruby_prism::InstanceVariableWriteNode) {
-        let lhs_off = node.location().start_offset();
-        {
-            let rhs = node.value();
-            self.check_assignment_rhs(lhs_off, &rhs);
-        }
-        ruby_prism::visit_instance_variable_write_node(self, node);
-    }
-
-    fn visit_class_variable_write_node(&mut self, node: &ruby_prism::ClassVariableWriteNode) {
-        let lhs_off = node.location().start_offset();
-        {
-            let rhs = node.value();
-            self.check_assignment_rhs(lhs_off, &rhs);
-        }
-        ruby_prism::visit_class_variable_write_node(self, node);
-    }
-
-    fn visit_global_variable_write_node(&mut self, node: &ruby_prism::GlobalVariableWriteNode) {
-        let lhs_off = node.location().start_offset();
-        {
-            let rhs = node.value();
-            self.check_assignment_rhs(lhs_off, &rhs);
-        }
-        ruby_prism::visit_global_variable_write_node(self, node);
-    }
-
-    fn visit_constant_write_node(&mut self, node: &ruby_prism::ConstantWriteNode) {
-        let lhs_off = node.location().start_offset();
-        {
-            let rhs = node.value();
-            self.check_assignment_rhs(lhs_off, &rhs);
-        }
-        ruby_prism::visit_constant_write_node(self, node);
-    }
-
-    fn visit_constant_path_write_node(&mut self, node: &ruby_prism::ConstantPathWriteNode) {
-        let lhs_off = node.location().start_offset();
-        {
-            let rhs = node.value();
-            self.check_assignment_rhs(lhs_off, &rhs);
-        }
-        ruby_prism::visit_constant_path_write_node(self, node);
-    }
-
-    fn visit_multi_write_node(&mut self, node: &ruby_prism::MultiWriteNode) {
-        let lhs_off = node.location().start_offset();
-        {
-            let rhs = node.value();
-            self.check_assignment_rhs(lhs_off, &rhs);
-        }
-        ruby_prism::visit_multi_write_node(self, node);
     }
 
     // Handle call nodes for:
@@ -1616,55 +1420,17 @@ impl Visit<'_> for IndentationWidthVisitor<'_> {
         self.current_call_receiver_last_line = prev_receiver_last_line;
     }
 
-    // Handle op_asgn (+=, -=, etc.)
-    fn visit_local_variable_operator_write_node(
-        &mut self,
-        node: &ruby_prism::LocalVariableOperatorWriteNode,
-    ) {
-        let lhs_off = node.location().start_offset();
-        {
-            let rhs = node.value();
-            self.check_assignment_rhs(lhs_off, &rhs);
-        }
-        ruby_prism::visit_local_variable_operator_write_node(self, node);
-    }
-
-    fn visit_local_variable_or_write_node(&mut self, node: &ruby_prism::LocalVariableOrWriteNode) {
-        let lhs_off = node.location().start_offset();
-        {
-            let rhs = node.value();
-            self.check_assignment_rhs(lhs_off, &rhs);
-        }
-        ruby_prism::visit_local_variable_or_write_node(self, node);
-    }
-
-    fn visit_local_variable_and_write_node(
-        &mut self,
-        node: &ruby_prism::LocalVariableAndWriteNode,
-    ) {
-        let lhs_off = node.location().start_offset();
-        {
-            let rhs = node.value();
-            self.check_assignment_rhs(lhs_off, &rhs);
-        }
-        ruby_prism::visit_local_variable_and_write_node(self, node);
-    }
-
-    fn visit_index_operator_write_node(&mut self, node: &ruby_prism::IndexOperatorWriteNode) {
-        let lhs_off = node.location().start_offset();
-        {
-            let rhs = node.value();
-            self.check_assignment_rhs(lhs_off, &rhs);
-        }
-        ruby_prism::visit_index_operator_write_node(self, node);
-    }
-
-    fn visit_call_operator_write_node(&mut self, node: &ruby_prism::CallOperatorWriteNode) {
-        let lhs_off = node.location().start_offset();
-        {
-            let rhs = node.value();
-            self.check_assignment_rhs(lhs_off, &rhs);
-        }
-        ruby_prism::visit_call_operator_write_node(self, node);
-    }
+    // Assignment visitors — all identical pattern via macro
+    impl_assignment_visit!(visit_local_variable_write_node, LocalVariableWriteNode, ruby_prism::visit_local_variable_write_node);
+    impl_assignment_visit!(visit_instance_variable_write_node, InstanceVariableWriteNode, ruby_prism::visit_instance_variable_write_node);
+    impl_assignment_visit!(visit_class_variable_write_node, ClassVariableWriteNode, ruby_prism::visit_class_variable_write_node);
+    impl_assignment_visit!(visit_global_variable_write_node, GlobalVariableWriteNode, ruby_prism::visit_global_variable_write_node);
+    impl_assignment_visit!(visit_constant_write_node, ConstantWriteNode, ruby_prism::visit_constant_write_node);
+    impl_assignment_visit!(visit_constant_path_write_node, ConstantPathWriteNode, ruby_prism::visit_constant_path_write_node);
+    impl_assignment_visit!(visit_multi_write_node, MultiWriteNode, ruby_prism::visit_multi_write_node);
+    impl_assignment_visit!(visit_local_variable_operator_write_node, LocalVariableOperatorWriteNode, ruby_prism::visit_local_variable_operator_write_node);
+    impl_assignment_visit!(visit_local_variable_or_write_node, LocalVariableOrWriteNode, ruby_prism::visit_local_variable_or_write_node);
+    impl_assignment_visit!(visit_local_variable_and_write_node, LocalVariableAndWriteNode, ruby_prism::visit_local_variable_and_write_node);
+    impl_assignment_visit!(visit_index_operator_write_node, IndexOperatorWriteNode, ruby_prism::visit_index_operator_write_node);
+    impl_assignment_visit!(visit_call_operator_write_node, CallOperatorWriteNode, ruby_prism::visit_call_operator_write_node);
 }

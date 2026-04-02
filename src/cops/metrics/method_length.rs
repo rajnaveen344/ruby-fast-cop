@@ -1,8 +1,9 @@
 //! Metrics/MethodLength cop
 
 use crate::cops::{CheckContext, Cop};
+use crate::helpers::allowed_methods::is_method_allowed;
+use crate::helpers::code_length::{count_body_lines, find_end_of_first_line, line_number_at};
 use crate::offense::{Offense, Severity};
-use regex::Regex;
 
 pub struct MethodLength {
     max: usize,
@@ -21,91 +22,24 @@ impl MethodLength {
         Self { max, count_comments, count_as_one, allowed_methods, allowed_patterns }
     }
 
-    fn count_body_lines(&self, ctx: &CheckContext, body_start: usize, body_end: usize) -> usize {
+    fn count_body(&self, ctx: &CheckContext, body_start: usize, body_end: usize) -> usize {
         let lines: Vec<&str> = ctx.source.lines().collect();
-        if self.count_as_one.is_empty() {
-            (body_start..body_end).filter(|&i| {
-                lines.get(i).map_or(false, |line| {
-                    let t = line.trim();
-                    !t.is_empty() && (self.count_comments || !t.starts_with('#'))
-                })
-            }).count()
-        } else {
-            self.count_lines_with_folds(&lines, body_start, body_end)
-        }
-    }
-
-    fn count_lines_with_folds(&self, lines: &[&str], body_start: usize, body_end: usize) -> usize {
-        let mut count = 0;
-        let mut i = body_start;
-        while i < body_end {
-            let trimmed = match lines.get(i) { Some(l) => l.trim(), None => break };
-            if trimmed.is_empty() || (!self.count_comments && trimmed.starts_with('#')) {
-                i += 1;
-                continue;
-            }
-            let mut folded = false;
-            for &(tag, open, close) in &[("array", '[', ']'), ("hash", '{', '}')] {
-                if self.count_as_one.iter().any(|s| s == tag) && trimmed.contains(open) {
-                    if let Some(end_idx) = Self::find_closing_bracket(lines, i, body_end, open, close) {
-                        count += 1;
-                        i = end_idx + 1;
-                        folded = true;
-                        break;
-                    }
-                }
-            }
-            if folded { continue; }
-            count += 1;
-            i += 1;
-        }
-        count
-    }
-
-    fn find_closing_bracket(lines: &[&str], start: usize, end: usize, open: char, close: char) -> Option<usize> {
-        let mut depth = 0;
-        for i in start..end {
-            if let Some(line) = lines.get(i) {
-                for ch in line.chars() {
-                    if ch == open { depth += 1; }
-                    else if ch == close {
-                        depth -= 1;
-                        if depth == 0 { return Some(i); }
-                    }
-                }
-            }
-        }
-        None
-    }
-
-    fn is_method_allowed(&self, method_name: &str) -> bool {
-        self.allowed_methods.iter().any(|a| a == method_name)
-            || self.allowed_patterns.iter().any(|p|
-                Regex::new(p.trim_matches('/')).map_or(false, |re| re.is_match(method_name)))
-    }
-
-    fn line_at(source: &str, offset: usize) -> usize {
-        source[..offset.min(source.len())].chars().filter(|&c| c == '\n').count()
-    }
-
-    fn find_end_of_first_line(&self, start: usize, source: &str) -> usize {
-        source.as_bytes().iter().skip(start).position(|&b| b == b'\n')
-            .map_or(source.len(), |p| start + p)
+        count_body_lines(&lines, body_start, body_end, self.count_comments, &self.count_as_one, &[])
     }
 
     fn check_def_body(&self, ctx: &CheckContext, method_name: &str, start_offset: usize, end_offset: usize, body_start_offset: Option<usize>) -> Option<Offense> {
-        if self.is_method_allowed(method_name) { return None; }
-        let start_line = Self::line_at(ctx.source, start_offset);
-        let end_line = Self::line_at(ctx.source, end_offset);
+        if is_method_allowed(&self.allowed_methods, &self.allowed_patterns, method_name, None) { return None; }
+        let start_line = line_number_at(ctx.source, start_offset);
+        let end_line = line_number_at(ctx.source, end_offset);
         if end_line <= start_line { return None; }
 
-        let body_start = body_start_offset.map_or(start_line + 1, |o| Self::line_at(ctx.source, o));
-        let line_count = self.count_body_lines(ctx, body_start, end_line);
+        let body_start = body_start_offset.map_or(start_line + 1, |o| line_number_at(ctx.source, o));
+        let line_count = self.count_body(ctx, body_start, end_line);
         if line_count <= self.max { return None; }
 
         Some(ctx.offense_with_range("Metrics/MethodLength",
             &format!("Method has too many lines. [{}/{}]", line_count, self.max),
-            self.severity(), start_offset, self.find_end_of_first_line(start_offset, ctx.source)))
+            self.severity(), start_offset, find_end_of_first_line(ctx.source, start_offset)))
     }
 }
 
@@ -132,19 +66,19 @@ impl Cop for MethodLength {
                 .map(|sym| String::from_utf8_lossy(sym.unescaped().as_ref()).to_string())
         }).unwrap_or_default();
 
-        if !defined_name.is_empty() && self.is_method_allowed(&defined_name) { return vec![]; }
+        if !defined_name.is_empty() && is_method_allowed(&self.allowed_methods, &self.allowed_patterns, &defined_name, None) { return vec![]; }
 
         let block_loc = block_node.location();
-        let start_line = Self::line_at(ctx.source, block_loc.start_offset());
-        let end_line = Self::line_at(ctx.source, block_loc.end_offset());
+        let start_line = line_number_at(ctx.source, block_loc.start_offset());
+        let end_line = line_number_at(ctx.source, block_loc.end_offset());
         if end_line <= start_line { return vec![]; }
 
-        let line_count = self.count_body_lines(ctx, start_line + 1, end_line);
+        let line_count = self.count_body(ctx, start_line + 1, end_line);
         if line_count <= self.max { return vec![]; }
 
         let start = node.location().start_offset();
         vec![ctx.offense_with_range(self.name(),
             &format!("Method has too many lines. [{}/{}]", line_count, self.max),
-            self.severity(), start, self.find_end_of_first_line(start, ctx.source))]
+            self.severity(), start, find_end_of_first_line(ctx.source, start))]
     }
 }

@@ -1,6 +1,7 @@
 //! Metrics/ClassLength cop
 
 use crate::cops::{CheckContext, Cop};
+use crate::helpers::code_length::{count_body_lines, find_end_of_first_line, line_number_at};
 use crate::offense::{Offense, Severity};
 use ruby_prism::Visit;
 
@@ -17,76 +18,6 @@ impl ClassLength {
 
     pub fn with_config(max: usize, count_comments: bool, count_as_one: Vec<String>) -> Self {
         Self { max, count_comments, count_as_one }
-    }
-
-    fn line_at(source: &str, offset: usize) -> usize {
-        source[..offset.min(source.len())].chars().filter(|&c| c == '\n').count()
-    }
-
-    fn find_end_of_first_line(start: usize, source: &str) -> usize {
-        source.as_bytes().iter().skip(start).position(|&b| b == b'\n')
-            .map_or(source.len(), |p| start + p)
-    }
-
-    fn count_body_lines(&self, lines: &[&str], body_start: usize, body_end: usize, excluded: &[(usize, usize)]) -> usize {
-        if self.count_as_one.is_empty() {
-            (body_start..body_end).filter(|&i| {
-                if excluded.iter().any(|&(s, e)| i >= s && i < e) { return false; }
-                lines.get(i).map_or(false, |line| {
-                    let t = line.trim();
-                    !t.is_empty() && (self.count_comments || !t.starts_with('#'))
-                })
-            }).count()
-        } else {
-            self.count_lines_with_folds(lines, body_start, body_end, excluded)
-        }
-    }
-
-    fn count_lines_with_folds(&self, lines: &[&str], body_start: usize, body_end: usize, excluded: &[(usize, usize)]) -> usize {
-        let mut count = 0;
-        let mut i = body_start;
-        while i < body_end {
-            if let Some(&(_, end)) = excluded.iter().find(|&&(s, e)| i >= s && i < e) {
-                i = end;
-                continue;
-            }
-            let trimmed = match lines.get(i) { Some(l) => l.trim(), None => break };
-            if trimmed.is_empty() || (!self.count_comments && trimmed.starts_with('#')) {
-                i += 1;
-                continue;
-            }
-            let mut folded = false;
-            for &(tag, open, close) in &[("array", '[', ']'), ("hash", '{', '}')] {
-                if self.count_as_one.iter().any(|s| s == tag) && trimmed.contains(open) {
-                    if let Some(end_idx) = Self::find_closing_bracket(lines, i, body_end, open, close) {
-                        count += 1;
-                        i = end_idx + 1;
-                        folded = true;
-                        break;
-                    }
-                }
-            }
-            if folded { continue; }
-            count += 1;
-            i += 1;
-        }
-        count
-    }
-
-    fn find_closing_bracket(lines: &[&str], start: usize, end: usize, open: char, close: char) -> Option<usize> {
-        let mut depth = 0;
-        for i in start..end {
-            if let Some(line) = lines.get(i) {
-                for ch in line.chars() {
-                    if ch == open { depth += 1; }
-                    else if ch == close {
-                        depth -= 1;
-                        if depth == 0 { return Some(i); }
-                    }
-                }
-            }
-        }
-        None
     }
 
     fn is_class_or_struct_receiver(source: &str, receiver: &ruby_prism::Node) -> bool {
@@ -128,26 +59,25 @@ impl ClassLengthVisitor<'_> {
         stmts.body().iter().filter_map(|stmt| {
             if matches!(&stmt, ruby_prism::Node::ClassNode { .. } | ruby_prism::Node::ModuleNode { .. }) {
                 let loc = stmt.location();
-                Some((ClassLength::line_at(self.ctx.source, loc.start_offset()),
-                      ClassLength::line_at(self.ctx.source, loc.end_offset()) + 1))
+                Some((line_number_at(self.ctx.source, loc.start_offset()),
+                      line_number_at(self.ctx.source, loc.end_offset()) + 1))
             } else { None }
         }).collect()
     }
 
     fn check_class_body(&mut self, start_offset: usize, end_offset: usize, excluded: &[(usize, usize)]) {
-        let start_line = ClassLength::line_at(self.ctx.source, start_offset);
-        let end_line = ClassLength::line_at(self.ctx.source, end_offset);
+        let start_line = line_number_at(self.ctx.source, start_offset);
+        let end_line = line_number_at(self.ctx.source, end_offset);
         if end_line <= start_line { return; }
 
         let lines: Vec<&str> = self.ctx.source.lines().collect();
-        let line_count = self.cop.count_body_lines(&lines, start_line + 1, end_line, excluded);
+        let line_count = count_body_lines(&lines, start_line + 1, end_line, self.cop.count_comments, &self.cop.count_as_one, excluded);
         if line_count <= self.cop.max { return; }
 
-        let end_of_first_line = ClassLength::find_end_of_first_line(start_offset, self.ctx.source);
         self.offenses.push(self.ctx.offense_with_range(
             self.cop.name(),
             &format!("Class has too many lines. [{}/{}]", line_count, self.cop.max),
-            self.cop.severity(), start_offset, end_of_first_line,
+            self.cop.severity(), start_offset, find_end_of_first_line(self.ctx.source, start_offset),
         ));
     }
 }
