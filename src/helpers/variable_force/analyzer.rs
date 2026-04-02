@@ -1,59 +1,16 @@
-//! Variable liveness analysis (mirrors RuboCop's VariableForce).
-//!
-//! Provides scope-based tracking of local variable writes and reads,
-//! determining which assignments are "useless" (never read before being
-//! overwritten or going out of scope).
-//!
-//! Used by `Lint/UselessAssignment` and can be reused by other cops like
-//! `Lint/ShadowedArgument`, `Lint/UnusedBlockArgument`, etc.
+//! Core analysis engine: ScopeAnalyzer and reverse-flow liveness analysis.
 
 use crate::cops::CheckContext;
 use crate::offense::{Offense, Severity};
 use ruby_prism::{Node, Visit};
 use std::collections::HashSet;
 
-// ── Types ──
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum WriteKind {
-    Simple,
-    MultiAssign,
-    OpAssign,   // +=, -=, etc.
-    AndAssign,  // &&=
-    OrAssign,   // ||=
-    RegexpCapture,
-}
-
-#[derive(Debug, Clone)]
-pub struct WriteInfo {
-    pub name: String,
-    pub name_start: usize,
-    pub name_end: usize,
-    pub kind: WriteKind,
-    pub op: Option<String>,
-    pub regexp_start: usize,
-    pub regexp_end: usize,
-}
-
-pub struct ScopeInfo {
-    pub params: HashSet<String>,
-    pub has_bare_super: bool,
-    pub method_calls: HashSet<String>,
-    pub all_var_names: HashSet<String>,
-    pub all_reads: HashSet<String>,
-}
-
-impl ScopeInfo {
-    fn new() -> Self {
-        Self {
-            params: HashSet::new(),
-            has_bare_super: false,
-            method_calls: HashSet::new(),
-            all_var_names: HashSet::new(),
-            all_reads: HashSet::new(),
-        }
-    }
-}
+use super::collectors::{
+    AllReadCollector, NestedWriteFinder, ReadCollector, ScopeInfoCollector, VarRefCollector,
+};
+use super::helpers::{begin_has_retry, collect_all_writes_in_node, extract_param_names, name_str};
+use super::suggestion::{find_suggestion, find_suggestion_from_methods};
+use super::types::{ScopeInfo, WriteInfo, WriteKind};
 
 pub struct ScopeAnalyzer<'a> {
     ctx: &'a CheckContext<'a>,
@@ -600,110 +557,6 @@ impl<'a> ScopeAnalyzer<'a> {
         }
     }
 
-    fn collect_pattern_writes(
-        &mut self,
-        pattern: &Node,
-        live: &mut HashSet<String>,
-        useless: &mut Vec<WriteInfo>,
-        scope: &mut ScopeInfo,
-    ) {
-        match pattern {
-            Node::LocalVariableTargetNode { .. } => {
-                let lv = pattern.as_local_variable_target_node().unwrap();
-                let name = name_str(&lv.name());
-                if name.starts_with('_') { return; }
-                if live.contains(&name) {
-                    live.remove(&name);
-                } else {
-                    useless.push(WriteInfo {
-                        name: name.clone(),
-                        name_start: lv.location().start_offset(),
-                        name_end: lv.location().end_offset(),
-                        kind: WriteKind::Simple,
-                        op: None,
-                        regexp_start: 0,
-                        regexp_end: 0,
-                    });
-                }
-                scope.all_var_names.insert(name);
-            }
-            Node::HashPatternNode { .. } => {
-                let hp = pattern.as_hash_pattern_node().unwrap();
-                for elem in hp.elements().iter() {
-                    self.collect_pattern_writes(&elem, live, useless, scope);
-                }
-                if let Some(rest) = hp.rest() {
-                    self.collect_pattern_writes(&rest, live, useless, scope);
-                }
-            }
-            Node::ArrayPatternNode { .. } => {
-                let ap = pattern.as_array_pattern_node().unwrap();
-                for elem in ap.requireds().iter() {
-                    self.collect_pattern_writes(&elem, live, useless, scope);
-                }
-                if let Some(rest) = ap.rest() {
-                    self.collect_pattern_writes(&rest, live, useless, scope);
-                }
-                for elem in ap.posts().iter() {
-                    self.collect_pattern_writes(&elem, live, useless, scope);
-                }
-            }
-            Node::AssocNode { .. } => {
-                let assoc = pattern.as_assoc_node().unwrap();
-                self.collect_pattern_writes(&assoc.value(), live, useless, scope);
-            }
-            Node::CapturePatternNode { .. } => {
-                let cp = pattern.as_capture_pattern_node().unwrap();
-                let target = cp.target();
-                let name = name_str(&target.name());
-                if !name.starts_with('_') {
-                    if live.contains(&name) {
-                        live.remove(&name);
-                    } else {
-                        useless.push(WriteInfo {
-                            name: name.clone(),
-                            name_start: target.location().start_offset(),
-                            name_end: target.location().end_offset(),
-                            kind: WriteKind::Simple,
-                            op: None,
-                            regexp_start: 0,
-                            regexp_end: 0,
-                        });
-                    }
-                    scope.all_var_names.insert(name);
-                }
-                self.collect_pattern_writes(&cp.value(), live, useless, scope);
-            }
-            Node::SplatNode { .. } => {
-                let splat = pattern.as_splat_node().unwrap();
-                if let Some(expr) = splat.expression() {
-                    self.collect_pattern_writes(&expr, live, useless, scope);
-                }
-            }
-            Node::FindPatternNode { .. } => {
-                let fp = pattern.as_find_pattern_node().unwrap();
-                let left = fp.left();
-                if let Some(expr) = left.expression() {
-                    self.collect_pattern_writes(&expr, live, useless, scope);
-                }
-                for elem in fp.requireds().iter() {
-                    self.collect_pattern_writes(&elem, live, useless, scope);
-                }
-                let right = fp.right();
-                if let Some(splat) = right.as_splat_node() {
-                    if let Some(expr) = splat.expression() {
-                        self.collect_pattern_writes(&expr, live, useless, scope);
-                    }
-                }
-            }
-            Node::PinnedVariableNode { .. } => {
-                let pv = pattern.as_pinned_variable_node().unwrap();
-                self.collect_reads(&pv.variable(), live);
-            }
-            _ => {}
-        }
-    }
-
     /// Register pattern variable names in the scope without flagging as useless.
     fn register_pattern_var_names(&self, pattern: &Node, scope: &mut ScopeInfo) {
         match pattern {
@@ -923,6 +776,17 @@ impl<'a> ScopeAnalyzer<'a> {
 
         if let Some(stmts) = while_node.statements() {
             let body: Vec<_> = stmts.body().iter().collect();
+
+            // Also collect all reads in the loop body — these must stay live
+            // across iterations even if the condition writes to them.
+            // Example: `a = nil; puts a while (a = false)` — `a` is read in
+            // the body and written in the condition; `a = nil` provides the
+            // initial value and must not be flagged.
+            let mut body_reads = HashSet::new();
+            for stmt in &body {
+                self.collect_all_reads(stmt, &mut body_reads);
+            }
+
             // Iterate to fixed point
             for _ in 0..3 {
                 let prev_live = live.clone();
@@ -936,6 +800,10 @@ impl<'a> ScopeAnalyzer<'a> {
                 }
                 // Include predicate writes/reads in fixed-point
                 self.analyze_node_reverse(&while_node.predicate(), &mut body_live, &mut temp_useless, scope);
+                // Re-add body reads that may have been killed by predicate writes
+                for var in &body_reads {
+                    body_live.insert(var.clone());
+                }
                 for var in body_live {
                     live.insert(var);
                 }
@@ -1451,8 +1319,10 @@ impl<'a> ScopeAnalyzer<'a> {
                         self.analyze_node_reverse(stmt, &mut branch_live, useless, scope);
                     }
                 }
-                // Pattern can have writes
-                self.collect_pattern_writes(&in_n.pattern(), &mut branch_live, useless, scope);
+                // Pattern match variables are declarations, not assignments.
+                // RuboCop declares them but never assigns — so they can't be
+                // "useless assignments". Just register names in scope.
+                self.register_pattern_var_names(&in_n.pattern(), scope);
                 for var in branch_live {
                     combined_live.insert(var);
                 }
@@ -1490,7 +1360,7 @@ impl<'a> ScopeAnalyzer<'a> {
         &mut self,
         block: ruby_prism::BlockNode,
         live: &mut HashSet<String>,
-        useless: &mut Vec<WriteInfo>,
+        _useless: &mut Vec<WriteInfo>,
         scope: &mut ScopeInfo,
     ) {
         // Collect all variable refs in the block
@@ -1838,442 +1708,4 @@ impl<'a> ScopeAnalyzer<'a> {
             end,
         ));
     }
-}
-
-// ── Helper: read a ConstantId as String ──
-
-fn name_str(id: &ruby_prism::ConstantId) -> String {
-    String::from_utf8_lossy(id.as_slice()).to_string()
-}
-
-// ── ReadCollector: find all local variable reads in a subtree ──
-
-struct ReadCollector<'a> {
-    live: &'a mut HashSet<String>,
-}
-
-impl Visit<'_> for ReadCollector<'_> {
-    fn visit_local_variable_read_node(&mut self, node: &ruby_prism::LocalVariableReadNode) {
-        let name = name_str(&node.name());
-        self.live.insert(name);
-    }
-
-    // Don't descend into scope-creating nodes
-    fn visit_def_node(&mut self, _node: &ruby_prism::DefNode) {}
-    fn visit_class_node(&mut self, _node: &ruby_prism::ClassNode) {}
-    fn visit_module_node(&mut self, _node: &ruby_prism::ModuleNode) {}
-    fn visit_singleton_class_node(&mut self, _node: &ruby_prism::SingletonClassNode) {}
-}
-
-// ── AllReadCollector: reads including those across rescue boundaries ──
-
-struct AllReadCollector<'a> {
-    reads: &'a mut HashSet<String>,
-}
-
-impl Visit<'_> for AllReadCollector<'_> {
-    fn visit_local_variable_read_node(&mut self, node: &ruby_prism::LocalVariableReadNode) {
-        let name = name_str(&node.name());
-        self.reads.insert(name);
-    }
-    // Op-assign/and-assign/or-assign also read the variable
-    fn visit_local_variable_operator_write_node(&mut self, node: &ruby_prism::LocalVariableOperatorWriteNode) {
-        let name = name_str(&node.name());
-        self.reads.insert(name);
-        ruby_prism::visit_local_variable_operator_write_node(self, node);
-    }
-    fn visit_local_variable_and_write_node(&mut self, node: &ruby_prism::LocalVariableAndWriteNode) {
-        let name = name_str(&node.name());
-        self.reads.insert(name);
-        ruby_prism::visit_local_variable_and_write_node(self, node);
-    }
-    fn visit_local_variable_or_write_node(&mut self, node: &ruby_prism::LocalVariableOrWriteNode) {
-        let name = name_str(&node.name());
-        self.reads.insert(name);
-        ruby_prism::visit_local_variable_or_write_node(self, node);
-    }
-    fn visit_def_node(&mut self, _node: &ruby_prism::DefNode) {}
-    fn visit_class_node(&mut self, _node: &ruby_prism::ClassNode) {}
-    fn visit_module_node(&mut self, _node: &ruby_prism::ModuleNode) {}
-    fn visit_singleton_class_node(&mut self, _node: &ruby_prism::SingletonClassNode) {}
-}
-
-// ── ScopeInfoCollector ──
-
-struct ScopeInfoCollector<'a> {
-    scope: &'a mut ScopeInfo,
-}
-
-impl Visit<'_> for ScopeInfoCollector<'_> {
-    fn visit_forwarding_super_node(&mut self, _node: &ruby_prism::ForwardingSuperNode) {
-        self.scope.has_bare_super = true;
-    }
-
-    fn visit_call_node(&mut self, node: &ruby_prism::CallNode) {
-        // Track variable-like method calls
-        if node.receiver().is_none() {
-            if let Some(msg_loc) = node.message_loc() {
-                let name = String::from_utf8_lossy(msg_loc.as_slice()).to_string();
-                let has_args = if let Some(args) = node.arguments() {
-                    args.arguments().len() > 0
-                } else {
-                    false
-                };
-                if !has_args && node.block().is_none() {
-                    self.scope.method_calls.insert(name);
-                }
-            }
-        }
-        if node.is_variable_call() {
-            if let Some(msg_loc) = node.message_loc() {
-                let name = String::from_utf8_lossy(msg_loc.as_slice()).to_string();
-                self.scope.method_calls.insert(name);
-            }
-        }
-        ruby_prism::visit_call_node(self, node);
-    }
-
-    fn visit_local_variable_write_node(&mut self, node: &ruby_prism::LocalVariableWriteNode) {
-        let name = name_str(&node.name());
-        self.scope.all_var_names.insert(name);
-        ruby_prism::visit_local_variable_write_node(self, node);
-    }
-
-    fn visit_local_variable_read_node(&mut self, node: &ruby_prism::LocalVariableReadNode) {
-        let name = name_str(&node.name());
-        self.scope.all_reads.insert(name);
-    }
-
-    fn visit_local_variable_operator_write_node(&mut self, node: &ruby_prism::LocalVariableOperatorWriteNode) {
-        let name = name_str(&node.name());
-        self.scope.all_var_names.insert(name.clone());
-        self.scope.all_reads.insert(name);
-        ruby_prism::visit_local_variable_operator_write_node(self, node);
-    }
-
-    fn visit_local_variable_and_write_node(&mut self, node: &ruby_prism::LocalVariableAndWriteNode) {
-        let name = name_str(&node.name());
-        self.scope.all_var_names.insert(name.clone());
-        self.scope.all_reads.insert(name);
-        ruby_prism::visit_local_variable_and_write_node(self, node);
-    }
-
-    fn visit_local_variable_or_write_node(&mut self, node: &ruby_prism::LocalVariableOrWriteNode) {
-        let name = name_str(&node.name());
-        self.scope.all_var_names.insert(name.clone());
-        self.scope.all_reads.insert(name);
-        ruby_prism::visit_local_variable_or_write_node(self, node);
-    }
-
-    fn visit_local_variable_target_node(&mut self, node: &ruby_prism::LocalVariableTargetNode) {
-        let name = name_str(&node.name());
-        self.scope.all_var_names.insert(name);
-    }
-
-    // Don't descend into scope-creating nodes or blocks
-    fn visit_def_node(&mut self, _node: &ruby_prism::DefNode) {}
-    fn visit_class_node(&mut self, _node: &ruby_prism::ClassNode) {}
-    fn visit_module_node(&mut self, _node: &ruby_prism::ModuleNode) {}
-    fn visit_singleton_class_node(&mut self, _node: &ruby_prism::SingletonClassNode) {}
-    fn visit_block_node(&mut self, _node: &ruby_prism::BlockNode) {}
-    fn visit_lambda_node(&mut self, _node: &ruby_prism::LambdaNode) {}
-}
-
-// ── VarRefCollector: collect variable references in blocks ──
-
-struct VarRefCollector {
-    referenced_vars: HashSet<String>,
-    written_vars: HashSet<String>,
-}
-
-impl VarRefCollector {
-    fn new() -> Self {
-        Self {
-            referenced_vars: HashSet::new(),
-            written_vars: HashSet::new(),
-        }
-    }
-}
-
-impl Visit<'_> for VarRefCollector {
-    fn visit_local_variable_read_node(&mut self, node: &ruby_prism::LocalVariableReadNode) {
-        let name = name_str(&node.name());
-        self.referenced_vars.insert(name);
-    }
-
-    fn visit_local_variable_write_node(&mut self, node: &ruby_prism::LocalVariableWriteNode) {
-        let name = name_str(&node.name());
-        self.written_vars.insert(name);
-        ruby_prism::visit_local_variable_write_node(self, node);
-    }
-
-    fn visit_local_variable_target_node(&mut self, node: &ruby_prism::LocalVariableTargetNode) {
-        let name = name_str(&node.name());
-        self.written_vars.insert(name);
-    }
-
-    fn visit_local_variable_operator_write_node(&mut self, node: &ruby_prism::LocalVariableOperatorWriteNode) {
-        let name = name_str(&node.name());
-        self.referenced_vars.insert(name.clone());
-        self.written_vars.insert(name);
-        ruby_prism::visit_local_variable_operator_write_node(self, node);
-    }
-
-    fn visit_local_variable_and_write_node(&mut self, node: &ruby_prism::LocalVariableAndWriteNode) {
-        let name = name_str(&node.name());
-        self.referenced_vars.insert(name.clone());
-        self.written_vars.insert(name);
-        ruby_prism::visit_local_variable_and_write_node(self, node);
-    }
-
-    fn visit_local_variable_or_write_node(&mut self, node: &ruby_prism::LocalVariableOrWriteNode) {
-        let name = name_str(&node.name());
-        self.referenced_vars.insert(name.clone());
-        self.written_vars.insert(name);
-        ruby_prism::visit_local_variable_or_write_node(self, node);
-    }
-
-    fn visit_def_node(&mut self, _node: &ruby_prism::DefNode) {}
-    fn visit_class_node(&mut self, _node: &ruby_prism::ClassNode) {}
-    fn visit_module_node(&mut self, _node: &ruby_prism::ModuleNode) {}
-    fn visit_singleton_class_node(&mut self, _node: &ruby_prism::SingletonClassNode) {}
-}
-
-// ── NestedWriteFinder: find writes nested in expressions ──
-
-struct NestedWriteFinder {
-    // (offset, name, name_start, name_end)
-    writes: Vec<(usize, String, usize, usize)>,
-    in_container: bool,
-}
-
-impl NestedWriteFinder {
-    fn new() -> Self {
-        Self { writes: Vec::new(), in_container: false }
-    }
-}
-
-impl Visit<'_> for NestedWriteFinder {
-    fn visit_local_variable_write_node(&mut self, node: &ruby_prism::LocalVariableWriteNode) {
-        // Only record if we're inside a container (array, hash, arguments)
-        // not at the top level or in a simple chain
-        if self.in_container {
-            let name = name_str(&node.name());
-            self.writes.push((
-                node.location().start_offset(),
-                name,
-                node.name_loc().start_offset(),
-                node.name_loc().end_offset(),
-            ));
-        }
-        // Recurse into the value to find deeper nested writes
-        ruby_prism::visit_local_variable_write_node(self, node);
-    }
-
-    // Track when we're inside a container
-    fn visit_array_node(&mut self, node: &ruby_prism::ArrayNode) {
-        let was = self.in_container;
-        self.in_container = true;
-        ruby_prism::visit_array_node(self, node);
-        self.in_container = was;
-    }
-
-    fn visit_arguments_node(&mut self, node: &ruby_prism::ArgumentsNode) {
-        let was = self.in_container;
-        self.in_container = true;
-        ruby_prism::visit_arguments_node(self, node);
-        self.in_container = was;
-    }
-
-    // Don't descend into scope-creating nodes
-    fn visit_def_node(&mut self, _node: &ruby_prism::DefNode) {}
-    fn visit_class_node(&mut self, _node: &ruby_prism::ClassNode) {}
-    fn visit_module_node(&mut self, _node: &ruby_prism::ModuleNode) {}
-    fn visit_singleton_class_node(&mut self, _node: &ruby_prism::SingletonClassNode) {}
-    fn visit_block_node(&mut self, _node: &ruby_prism::BlockNode) {}
-    fn visit_lambda_node(&mut self, _node: &ruby_prism::LambdaNode) {}
-}
-
-// ── Helper: check if begin has retry ──
-
-fn begin_has_retry(begin: &ruby_prism::BeginNode) -> bool {
-    let mut checker = RetryChecker { has_retry: false };
-    let mut rescue = begin.rescue_clause();
-    while let Some(rc) = rescue {
-        if let Some(stmts) = rc.statements() {
-            for stmt in stmts.body().iter() {
-                checker.visit(&stmt);
-            }
-        }
-        if checker.has_retry { return true; }
-        rescue = rc.subsequent();
-    }
-    false
-}
-
-struct RetryChecker {
-    has_retry: bool,
-}
-
-impl Visit<'_> for RetryChecker {
-    fn visit_retry_node(&mut self, _node: &ruby_prism::RetryNode) {
-        self.has_retry = true;
-    }
-    fn visit_begin_node(&mut self, _node: &ruby_prism::BeginNode) {}
-}
-
-// ── Helper: collect all writes in a node ──
-
-fn collect_all_writes_in_node(node: &Node, writes: &mut HashSet<String>) {
-    let mut collector = WriteCollector { writes };
-    collector.visit(node);
-}
-
-struct WriteCollector<'a> {
-    writes: &'a mut HashSet<String>,
-}
-
-impl Visit<'_> for WriteCollector<'_> {
-    fn visit_local_variable_write_node(&mut self, node: &ruby_prism::LocalVariableWriteNode) {
-        let name = name_str(&node.name());
-        self.writes.insert(name);
-        ruby_prism::visit_local_variable_write_node(self, node);
-    }
-    fn visit_local_variable_target_node(&mut self, node: &ruby_prism::LocalVariableTargetNode) {
-        let name = name_str(&node.name());
-        self.writes.insert(name);
-    }
-    fn visit_def_node(&mut self, _node: &ruby_prism::DefNode) {}
-    fn visit_class_node(&mut self, _node: &ruby_prism::ClassNode) {}
-    fn visit_module_node(&mut self, _node: &ruby_prism::ModuleNode) {}
-    fn visit_singleton_class_node(&mut self, _node: &ruby_prism::SingletonClassNode) {}
-}
-
-// ── Helper: extract method parameter names ──
-
-fn extract_param_names(def: &ruby_prism::DefNode) -> HashSet<String> {
-    let mut params = HashSet::new();
-    if let Some(parameters) = def.parameters() {
-        for p in parameters.requireds().iter() {
-            if let Some(rp) = p.as_required_parameter_node() {
-                params.insert(name_str(&rp.name()));
-            }
-        }
-        for p in parameters.optionals().iter() {
-            if let Some(op) = p.as_optional_parameter_node() {
-                params.insert(name_str(&op.name()));
-            }
-        }
-        if let Some(rest) = parameters.rest() {
-            if let Some(rp) = rest.as_rest_parameter_node() {
-                if let Some(name_loc) = rp.name_loc() {
-                    params.insert(String::from_utf8_lossy(name_loc.as_slice()).to_string());
-                }
-            }
-        }
-        for p in parameters.keywords().iter() {
-            if let Some(kp) = p.as_required_keyword_parameter_node() {
-                let name = name_str(&kp.name());
-                params.insert(name.trim_end_matches(':').to_string());
-            } else if let Some(kp) = p.as_optional_keyword_parameter_node() {
-                let name = name_str(&kp.name());
-                params.insert(name.trim_end_matches(':').to_string());
-            }
-        }
-        if let Some(kr) = parameters.keyword_rest() {
-            if let Some(krp) = kr.as_keyword_rest_parameter_node() {
-                if let Some(name_loc) = krp.name_loc() {
-                    params.insert(String::from_utf8_lossy(name_loc.as_slice()).to_string());
-                }
-            }
-        }
-        if let Some(block_param) = parameters.block() {
-            if let Some(name_loc) = block_param.name_loc() {
-                params.insert(String::from_utf8_lossy(name_loc.as_slice()).to_string());
-            }
-        }
-        for p in parameters.posts().iter() {
-            if let Some(rp) = p.as_required_parameter_node() {
-                params.insert(name_str(&rp.name()));
-            }
-        }
-    }
-    params
-}
-
-// ── Levenshtein distance ──
-
-pub fn levenshtein(a: &str, b: &str) -> usize {
-    let a_bytes = a.as_bytes();
-    let b_bytes = b.as_bytes();
-    let a_len = a_bytes.len();
-    let b_len = b_bytes.len();
-
-    if a_len == 0 { return b_len; }
-    if b_len == 0 { return a_len; }
-
-    let mut prev: Vec<usize> = (0..=b_len).collect();
-    let mut curr = vec![0; b_len + 1];
-
-    for i in 1..=a_len {
-        curr[0] = i;
-        for j in 1..=b_len {
-            let cost = if a_bytes[i - 1] == b_bytes[j - 1] { 0 } else { 1 };
-            curr[j] = (prev[j] + 1)
-                .min(curr[j - 1] + 1)
-                .min(prev[j - 1] + cost);
-        }
-        std::mem::swap(&mut prev, &mut curr);
-    }
-
-    prev[b_len]
-}
-
-/// Find suggestion only from method calls (used for multi-assign / for-loop)
-pub fn find_suggestion_from_methods(name: &str, scope: &ScopeInfo) -> Option<String> {
-    let threshold = (name.len() + 2) / 3;
-    let mut best: Option<(String, usize)> = None;
-
-    let check = |other: &str, best: &mut Option<(String, usize)>| {
-        if other == name || other.starts_with('_') { return; }
-        let dist = levenshtein(name, other);
-        if dist > 0 && dist <= threshold {
-            if best.is_none() || dist < best.as_ref().unwrap().1 {
-                *best = Some((other.to_string(), dist));
-            }
-        }
-    };
-
-    for other in &scope.method_calls {
-        check(other, &mut best);
-    }
-
-    best.map(|(s, _)| s)
-}
-
-pub fn find_suggestion(name: &str, scope: &ScopeInfo) -> Option<String> {
-    let threshold = (name.len() + 2) / 3;
-    let mut best: Option<(String, usize)> = None;
-
-    let check = |other: &str, best: &mut Option<(String, usize)>| {
-        if other == name || other.starts_with('_') { return; }
-        let dist = levenshtein(name, other);
-        if dist > 0 && dist <= threshold {
-            if best.is_none() || dist < best.as_ref().unwrap().1 {
-                *best = Some((other.to_string(), dist));
-            }
-        }
-    };
-
-    for other in &scope.all_var_names {
-        check(other, &mut best);
-    }
-    for other in &scope.method_calls {
-        check(other, &mut best);
-    }
-    for other in &scope.all_reads {
-        check(other, &mut best);
-    }
-
-    best.map(|(s, _)| s)
 }

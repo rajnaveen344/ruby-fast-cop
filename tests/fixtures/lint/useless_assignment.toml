@@ -711,6 +711,8 @@ end
 offenses = []
 
 [[tests]]
+# NOTE: This test is `pending` in RuboCop v1.85.0 (requires advanced analysis
+# of operator assignment return values). RuboCop does NOT currently flag this.
 name = "rubocopcoplintuselessassignment_when_a_variable_is_reassigned_in_loop_body_but_wont_be_referenced_either_next_iteration_or_loop_condition_registers_an_offense"
 source = '''
 def some_method
@@ -725,25 +727,7 @@ def some_method
   total
 end
 '''
-corrected = '''
-def some_method
-  total = 0
-  foo = 0
-
-  while total < 100
-    total += 1
-    foo = 1
-  end
-
-  total
-end
-'''
-
-[[tests.offenses]]
-line = 7
-column_start = 4
-column_end = 7
-message = "Useless assignment to variable - `foo`."
+offenses = []
 
 [[tests]]
 name = "rubocopcoplintuselessassignment_when_a_referenced_variable_is_reassigned_but_not_rereferenced_in_a_method_defined_in_loop_registers_an_offense"
