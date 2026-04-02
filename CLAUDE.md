@@ -238,7 +238,8 @@ Each agent gets its own git worktree so they can independently edit `mod.rs`, `l
 7. Set `implemented = true` in the TOML fixture
 8. Run `cargo test --test tester` — verify tests pass
 9. If tests fail unexpectedly, compare with original RuboCop spec and fix implementation or TOML
-10. Update README.md (implemented cops table), COPS.md (status column + summary counts), and CLAUDE.md (cop count)
+10. Run `/cop-review` — compare Rust implementation against original Ruby source, evaluate size ratio and complexity, simplify if needed
+11. Update README.md (implemented cops table), COPS.md (status column + summary counts), and CLAUDE.md (cop count)
 
 ### Fixing a partial cop
 
