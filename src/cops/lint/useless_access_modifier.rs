@@ -1,9 +1,7 @@
 use crate::cops::{CheckContext, Cop};
+use crate::helpers::access_modifier::ACCESS_MODIFIERS_WITHOUT_MODULE_FUNCTION as ACCESS_MODIFIERS;
 use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::Node;
-
-/// Access modifier names
-const ACCESS_MODIFIERS: &[&str] = &["private", "protected", "public"];
 
 /// Methods that create new methods (always recognized)
 const BUILTIN_ATTR_METHODS: &[&str] = &[

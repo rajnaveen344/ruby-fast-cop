@@ -50,41 +50,8 @@ impl LeadingCommentSpace {
     /// Returns (byte_start, comment_text) where byte_start is the byte offset of `#`.
     /// Returns None if no comment found on this line.
     fn find_comment(line: &str) -> Option<(usize, &str)> {
-        // Simple approach: find # that's not inside a string
-        // We use a basic state machine to track string context
-        let chars: Vec<char> = line.chars().collect();
-        let mut i = 0;
-        while i < chars.len() {
-            match chars[i] {
-                '#' => {
-                    let byte_pos = line.char_indices().nth(i).map(|(pos, _)| pos).unwrap_or(0);
-                    return Some((byte_pos, &line[byte_pos..]));
-                }
-                '\'' => {
-                    // Skip single-quoted string
-                    i += 1;
-                    while i < chars.len() && chars[i] != '\'' {
-                        if chars[i] == '\\' {
-                            i += 1;
-                        }
-                        i += 1;
-                    }
-                }
-                '"' => {
-                    // Skip double-quoted string
-                    i += 1;
-                    while i < chars.len() && chars[i] != '"' {
-                        if chars[i] == '\\' {
-                            i += 1;
-                        }
-                        i += 1;
-                    }
-                }
-                _ => {}
-            }
-            i += 1;
-        }
-        None
+        crate::helpers::source::find_comment_start(line)
+            .map(|pos| (pos, &line[pos..]))
     }
 
     /// Check if a comment is exempt from the leading space rule.

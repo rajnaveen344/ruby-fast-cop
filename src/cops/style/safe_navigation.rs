@@ -992,18 +992,7 @@ impl<'a> SafeNavVisitor<'a> {
 }
 
 fn find_comment_in_line(line: &str) -> Option<usize> {
-    let mut in_string = false;
-    let mut delim = '"';
-    for (i, &b) in line.as_bytes().iter().enumerate() {
-        let ch = b as char;
-        match ch {
-            '"' | '\'' if !in_string => { in_string = true; delim = ch; }
-            c if in_string && c == delim => { in_string = false; }
-            '#' if !in_string => { return Some(i); }
-            _ => {}
-        }
-    }
-    None
+    crate::helpers::source::find_comment_start(line)
 }
 
 fn dup_node<'pr>(node: &Node<'pr>) -> Node<'pr> {

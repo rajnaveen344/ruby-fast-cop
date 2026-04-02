@@ -383,26 +383,7 @@ impl<'a> BlockVisitor<'a> {
 
     /// Check if the block is chained (`.method`, `&.method`, or `[...]` after closing)
     fn is_chained(&self, _call: &ruby_prism::CallNode, block: &ruby_prism::BlockNode) -> bool {
-        let close_end = block.closing_loc().end_offset();
-        let bytes = self.ctx.source.as_bytes();
-        let mut i = close_end;
-        // Skip whitespace including newlines for chaining detection
-        while i < bytes.len() && (bytes[i] == b' ' || bytes[i] == b'\t' || bytes[i] == b'\n' || bytes[i] == b'\r') {
-            i += 1;
-        }
-        if i >= bytes.len() {
-            return false;
-        }
-        if bytes[i] == b'.' {
-            return true;
-        }
-        if bytes[i] == b'&' && i + 1 < bytes.len() && bytes[i + 1] == b'.' {
-            return true;
-        }
-        if bytes[i] == b'[' {
-            return true;
-        }
-        false
+        crate::helpers::source::is_chained_after(self.ctx.source, block.closing_loc().end_offset())
     }
 
     fn functional_block(

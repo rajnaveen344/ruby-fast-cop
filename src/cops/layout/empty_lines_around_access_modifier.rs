@@ -3,10 +3,10 @@
 //! Ported from: https://github.com/rubocop/rubocop/blob/master/lib/rubocop/cop/layout/empty_lines_around_access_modifier.rb
 
 use crate::cops::{CheckContext, Cop};
+use crate::helpers::access_modifier::ACCESS_MODIFIERS;
+use crate::helpers::source::{line_byte_offset, line_end_byte_offset};
 use crate::offense::{Correction, Location, Offense, Severity};
 use ruby_prism::Visit;
-
-const ACCESS_MODIFIERS: &[&str] = &["private", "protected", "public", "module_function"];
 
 const MSG_AFTER: &str = "Keep a blank line after `%MOD%`.";
 const MSG_BEFORE_AND_AFTER: &str = "Keep a blank line before and after `%MOD%`.";
@@ -367,33 +367,3 @@ fn previous_line_empty(lines: &[&str], send_line: usize) -> bool {
     true // start of file
 }
 
-/// Get byte offset of start of 1-indexed line
-fn line_byte_offset(source: &str, line: usize) -> usize {
-    if line <= 1 {
-        return 0;
-    }
-    let mut count = 0;
-    for (i, &b) in source.as_bytes().iter().enumerate() {
-        if b == b'\n' {
-            count += 1;
-            if count == line - 1 {
-                return i + 1;
-            }
-        }
-    }
-    source.len()
-}
-
-/// Get byte offset of end of 1-indexed line (after the \n)
-fn line_end_byte_offset(source: &str, line: usize) -> usize {
-    let mut count = 0;
-    for (i, &b) in source.as_bytes().iter().enumerate() {
-        if b == b'\n' {
-            count += 1;
-            if count == line {
-                return i + 1;
-            }
-        }
-    }
-    source.len()
-}

@@ -195,16 +195,11 @@ fn visual_column(source: &str, offset: usize, tab_width: usize) -> u32 {
 }
 
 
-/// Access modifier names
-const ACCESS_MODIFIERS: &[&str] = &["private", "protected", "public", "module_function"];
+use crate::helpers::access_modifier;
 
 /// Check if a node represents a standalone access modifier call (bare, no arguments)
 fn is_standalone_access_modifier(node: &ruby_prism::CallNode) -> bool {
-    let name = String::from_utf8_lossy(node.name().as_slice());
-    if !ACCESS_MODIFIERS.contains(&name.as_ref()) {
-        return false;
-    }
-    node.arguments().is_none() && node.block().is_none()
+    access_modifier::is_bare_access_modifier(node)
 }
 
 /// Check if the first thing on the body line IS the body node

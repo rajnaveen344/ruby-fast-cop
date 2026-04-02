@@ -1,10 +1,9 @@
 //! Style/AccessModifierDeclarations cop
 
 use crate::cops::{CheckContext, Cop};
+use crate::helpers::access_modifier::ACCESS_MODIFIERS;
 use crate::offense::{Location, Offense, Severity};
 use ruby_prism::Visit;
-
-const ACCESS_MODIFIERS: &[&str] = &["private", "protected", "public", "module_function"];
 const ATTR_METHODS: &[&str] = &["attr", "attr_reader", "attr_writer", "attr_accessor"];
 
 #[derive(Debug, Clone, PartialEq)]
