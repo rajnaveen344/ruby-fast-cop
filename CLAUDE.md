@@ -6,7 +6,7 @@ Instructions for Claude when working on this project.
 
 ruby-fast-cop is a high-performance Ruby linter written in Rust, designed as a drop-in replacement for RuboCop. The goal is 50-100x faster linting by rewriting cops in Rust, similar to how Ruff replaced Python linters.
 
-**Current state:** 44 of 606 cops implemented (all passing), 606 TOML test fixtures with ~28,075 test cases extracted from RuboCop v1.85.0's RSpec suite.
+**Current state:** 47 of 606 cops implemented (all passing), 606 TOML test fixtures with ~28,075 test cases extracted from RuboCop v1.85.0's RSpec suite.
 
 ## Key Design Decisions
 
@@ -26,9 +26,11 @@ ruby-fast-cop is a high-performance Ruby linter written in Rust, designed as a d
 
 ### Cop Implementation Strategy
 - Rewrite cops in Rust (like Ruff did for Python)
-- Don't try to extract or translate Ruby cops automatically
+- **For complex cops (control flow analysis, variable tracking), always fetch and translate from RuboCop's Ruby source** — don't reinvent the algorithm. RuboCop's edge cases are battle-tested over years.
+- For simple cops (pattern matching, string checks), implementing from test fixtures is fine
 - Focus on most-used cops first (~50-100 covers 90% of real usage)
 - **Never hardcode fixes to pass specific test cases.** Always understand the underlying RuboCop behavior and implement the general solution. If a test fails, study the original RuboCop cop source to understand *why* it behaves that way, then replicate that logic broadly.
+- **When RuboCop uses a shared module (e.g., `VariableForce`), mirror its file structure** in `src/helpers/` so each concept is in its own file. Don't create monolithic files.
 
 ## Project Structure
 
@@ -50,6 +52,19 @@ src/
 │   └── naming/          # Naming/* cops
 ├── runner/
 │   └── mod.rs           # Parallel file processing
+├── helpers/
+│   ├── access_modifier.rs  # Shared access modifier detection
+│   ├── allowed_methods.rs  # AllowedMethods/AllowedPatterns helper
+│   ├── code_length.rs      # Shared code length counting
+│   ├── escape.rs           # String/regexp escape helpers
+│   ├── source.rs           # Line/offset/comment/chaining helpers
+│   └── variable_force/     # Variable liveness analysis (mirrors RuboCop's VariableForce)
+│       ├── mod.rs           # Re-exports
+│       ├── types.rs         # WriteKind, WriteInfo, ScopeInfo
+│       ├── analyzer.rs      # ScopeAnalyzer reverse-flow engine
+│       ├── collectors.rs    # AST visitor collectors
+│       ├── helpers.rs       # Param extraction, retry detection
+│       └── suggestion.rs    # Levenshtein "Did you mean?" logic
 ├── offense.rs           # Offense type (public)
 └── formatters/
     ├── mod.rs           # Formatter trait
@@ -226,20 +241,25 @@ Each agent gets its own git worktree so they can independently edit `mod.rs`, `l
 
 ### Adding a new cop
 
-1. Read the TOML fixture: `tests/fixtures/{department}/{cop_name}.toml`
-2. Spot-check a few test cases against the original RuboCop spec if anything looks off:
+1. **Fetch and read the original RuboCop source first:**
+   ```
+   https://raw.githubusercontent.com/rubocop/rubocop/master/lib/rubocop/cop/{department}/{cop_name}.rb
+   ```
+   Also fetch any mixins it uses. For complex cops with shared modules (like `VariableForce`), fetch ALL related files.
+2. Read the TOML fixture: `tests/fixtures/{department}/{cop_name}.toml`
+3. Spot-check a few test cases against the original RuboCop spec if anything looks off:
    ```bash
    curl -s "https://raw.githubusercontent.com/rubocop/rubocop/master/spec/rubocop/cop/{department}/{cop_name}_spec.rb"
    ```
-3. Create file in `src/cops/{department}/{cop_name}.rs`
-4. Implement `Cop` trait
-5. Add to department's `mod.rs`
-6. Register in cop registry
-7. Set `implemented = true` in the TOML fixture
-8. Run `cargo test --test tester` — verify tests pass
-9. If tests fail unexpectedly, compare with original RuboCop spec and fix implementation or TOML
-10. Run `/cop-review` — compare Rust implementation against original Ruby source, evaluate size ratio and complexity, simplify if needed
-11. Update README.md (implemented cops table), COPS.md (status column + summary counts), and CLAUDE.md (cop count)
+4. Create file in `src/cops/{department}/{cop_name}.rs`
+5. Implement `Cop` trait — translate from the Ruby source, don't reinvent
+6. Add to department's `mod.rs`
+7. Register in cop registry
+8. Set `implemented = true` in the TOML fixture
+9. Run `cargo test --test tester` — verify tests pass
+10. If tests fail unexpectedly, compare with original RuboCop spec and fix implementation or TOML
+11. Run `/cop-review` — compare Rust implementation against original Ruby source, evaluate size ratio and complexity, simplify if needed
+12. Update README.md (implemented cops table), COPS.md (status column + summary counts), and CLAUDE.md (cop count)
 
 ### Fixing a partial cop
 
