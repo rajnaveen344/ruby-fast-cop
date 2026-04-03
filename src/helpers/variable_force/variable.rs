@@ -10,6 +10,15 @@ pub struct Variable {
     pub is_argument: bool,
     /// Whether this variable is a method argument (as opposed to block argument)
     pub is_method_argument: bool,
+    /// Whether this is a keyword argument (kwarg, kwoptarg)
+    pub is_keyword_argument: bool,
+    /// Whether this is a block parameter (&block)
+    pub is_block_arg_type: bool,
+    /// Whether this is a block-local variable (declared after ; in |a; b|)
+    pub is_block_local_variable: bool,
+    /// Byte offset of the declaration name (for offense reporting)
+    pub declaration_start: usize,
+    pub declaration_end: usize,
     /// All assignments to this variable
     pub assignments: Vec<Assignment>,
     /// Whether any explicit reference exists
@@ -24,10 +33,20 @@ impl Variable {
             name,
             is_argument,
             is_method_argument,
+            is_keyword_argument: false,
+            is_block_arg_type: false,
+            is_block_local_variable: false,
+            declaration_start: 0,
+            declaration_end: 0,
             assignments: Vec::new(),
             reference_count: 0,
             captured_by_block: false,
         }
+    }
+
+    /// Whether this is a block argument (argument in a block scope, not a method scope)
+    pub fn is_block_argument(&self) -> bool {
+        self.is_argument && !self.is_method_argument
     }
 
     /// Add an assignment to this variable.

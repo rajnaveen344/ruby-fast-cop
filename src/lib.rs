@@ -299,6 +299,20 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         )));
     }
 
+    // Style/ArrayIntersect
+    if config.is_cop_enabled("Style/ArrayIntersect") {
+        if let Some(cop) = build_single_cop("Style/ArrayIntersect", config) {
+            result.push(cop);
+        }
+    }
+
+    // Style/AndOr
+    if config.is_cop_enabled("Style/AndOr") {
+        if let Some(cop) = build_single_cop("Style/AndOr", config) {
+            result.push(cop);
+        }
+    }
+
     // Style/AutoResourceCleanup
     if config.is_cop_enabled("Style/AutoResourceCleanup") {
         result.push(Box::new(cops::style::AutoResourceCleanup::new()));
@@ -307,6 +321,13 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
     // Style/BlockDelimiters
     if config.is_cop_enabled("Style/BlockDelimiters") {
         if let Some(cop) = build_single_cop("Style/BlockDelimiters", config) {
+            result.push(cop);
+        }
+    }
+
+    // Style/EmptyElse
+    if config.is_cop_enabled("Style/EmptyElse") {
+        if let Some(cop) = build_single_cop("Style/EmptyElse", config) {
             result.push(cop);
         }
     }
@@ -383,6 +404,13 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         )));
     }
 
+    // Style/GlobalVars
+    if config.is_cop_enabled("Style/GlobalVars") {
+        if let Some(cop) = build_single_cop("Style/GlobalVars", config) {
+            result.push(cop);
+        }
+    }
+
     // Style/HashSyntax
     if config.is_cop_enabled("Style/HashSyntax") {
         let cop_config = config.get_cop_config("Style/HashSyntax");
@@ -422,9 +450,23 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         )));
     }
 
+    // Style/InverseMethods
+    if config.is_cop_enabled("Style/InverseMethods") {
+        if let Some(cop) = build_single_cop("Style/InverseMethods", config) {
+            result.push(cop);
+        }
+    }
+
     // Style/MethodCalledOnDoEndBlock
     if config.is_cop_enabled("Style/MethodCalledOnDoEndBlock") {
         result.push(Box::new(cops::style::MethodCalledOnDoEndBlock::new()));
+    }
+
+    // Style/OneLineConditional
+    if config.is_cop_enabled("Style/OneLineConditional") {
+        if let Some(cop) = build_single_cop("Style/OneLineConditional", config) {
+            result.push(cop);
+        }
     }
 
     // Style/MutableConstant
@@ -495,14 +537,36 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         result.push(Box::new(cops::style::SafeNavigation::new()));
     }
 
+    // Style/Sample
+    if config.is_cop_enabled("Style/Sample") {
+        result.push(Box::new(cops::style::Sample::new()));
+    }
+
     // Style/SelectByRegexp
     if config.is_cop_enabled("Style/SelectByRegexp") {
         result.push(Box::new(cops::style::SelectByRegexp::new()));
     }
 
+    // Style/SelfAssignment
+    if config.is_cop_enabled("Style/SelfAssignment") {
+        result.push(Box::new(cops::style::SelfAssignment::new()));
+    }
+
     // Style/StringMethods
     if config.is_cop_enabled("Style/StringMethods") {
         result.push(Box::new(cops::style::StringMethods::new()));
+    }
+
+    // Style/TernaryParentheses
+    if config.is_cop_enabled("Style/TernaryParentheses") {
+        if let Some(cop) = build_single_cop("Style/TernaryParentheses", config) {
+            result.push(cop);
+        }
+    }
+
+    // Style/ZeroLengthPredicate
+    if config.is_cop_enabled("Style/ZeroLengthPredicate") {
+        result.push(Box::new(cops::style::ZeroLengthPredicate::new()));
     }
 
     // Style/TrailingCommaInArguments
@@ -933,8 +997,60 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
             Some(Box::new(cops::lint::RedundantTypeConversion::new()))
         }
 
+        "Lint/ShadowedArgument" => {
+            let cop_config = config.get_cop_config("Lint/ShadowedArgument");
+            let ignore_implicit = cop_config
+                .and_then(|c| c.raw.get("IgnoreImplicitReferences"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
+            Some(Box::new(cops::lint::ShadowedArgument::with_config(ignore_implicit)))
+        }
+
         "Lint/UnreachableCode" => {
             Some(Box::new(cops::lint::UnreachableCode::new()))
+        }
+
+        "Lint/UnusedBlockArgument" => {
+            let cop_config = config.get_cop_config("Lint/UnusedBlockArgument");
+            let allow_keyword = cop_config
+                .and_then(|c| c.raw.get("AllowUnusedKeywordArguments"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
+            let ignore_empty = cop_config
+                .and_then(|c| c.raw.get("IgnoreEmptyBlocks"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(true);
+            Some(Box::new(cops::lint::UnusedBlockArgument::with_config(
+                allow_keyword, ignore_empty,
+            )))
+        }
+
+        "Lint/UnusedMethodArgument" => {
+            let cop_config = config.get_cop_config("Lint/UnusedMethodArgument");
+            let allow_keyword = cop_config
+                .and_then(|c| c.raw.get("AllowUnusedKeywordArguments"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
+            let ignore_empty = cop_config
+                .and_then(|c| c.raw.get("IgnoreEmptyMethods"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(true);
+            let ignore_not_impl = cop_config
+                .and_then(|c| c.raw.get("IgnoreNotImplementedMethods"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(true);
+            let exceptions = cop_config
+                .and_then(|c| c.raw.get("NotImplementedExceptions"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| {
+                    seq.iter()
+                        .filter_map(|v| v.as_str().map(String::from))
+                        .collect()
+                })
+                .unwrap_or_else(|| vec!["NotImplementedError".to_string()]);
+            Some(Box::new(cops::lint::UnusedMethodArgument::with_config(
+                allow_keyword, ignore_empty, ignore_not_impl, exceptions,
+            )))
         }
 
         "Lint/UselessAccessModifier" => {
@@ -1149,6 +1265,27 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
             )))
         }
 
+        "Style/AndOr" => {
+            let cop_config = config.get_cop_config("Style/AndOr");
+            let style = cop_config
+                .and_then(|c| c.enforced_style.as_ref())
+                .map(|s| match s.as_str() {
+                    "always" => cops::style::AndOrStyle::Always,
+                    _ => cops::style::AndOrStyle::Conditionals,
+                })
+                .unwrap_or(cops::style::AndOrStyle::Conditionals);
+            Some(Box::new(cops::style::AndOr::new(style)))
+        }
+
+        "Style/ArrayIntersect" => {
+            let active_support = config
+                .get_cop_config("Style/ArrayIntersect")
+                .and_then(|c| c.raw.get("ActiveSupportExtensionsEnabled"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
+            Some(Box::new(cops::style::ArrayIntersect::with_config(active_support)))
+        }
+
         "Style/AutoResourceCleanup" => Some(Box::new(cops::style::AutoResourceCleanup::new())),
 
         "Style/BlockDelimiters" => {
@@ -1201,6 +1338,23 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
             Some(Box::new(cops::style::BlockDelimiters::with_config(
                 style, allow_braces, braces_required, functional, procedural, allowed_methods, allowed_patterns,
             )))
+        }
+
+        "Style/EmptyElse" => {
+            let cop_config = config.get_cop_config("Style/EmptyElse");
+            let style = cop_config
+                .and_then(|c| c.enforced_style.as_ref())
+                .map(|s| match s.as_str() {
+                    "empty" => cops::style::EmptyElseStyle::Empty,
+                    "nil" => cops::style::EmptyElseStyle::Nil,
+                    _ => cops::style::EmptyElseStyle::Both,
+                })
+                .unwrap_or(cops::style::EmptyElseStyle::Both);
+            let allow_comments = cop_config
+                .and_then(|c| c.raw.get("AllowComments"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
+            Some(Box::new(cops::style::EmptyElse::new(style, allow_comments)))
         }
 
         "Style/ConditionalAssignment" => {
@@ -1273,6 +1427,52 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
             )))
         }
 
+        "Style/GlobalVars" => {
+            let cop_config = config.get_cop_config("Style/GlobalVars");
+            let allowed: Vec<String> = cop_config
+                .and_then(|c| c.raw.get("AllowedVariables"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| {
+                    seq.iter()
+                        .filter_map(|v| v.as_str().map(String::from))
+                        .collect()
+                })
+                .unwrap_or_default();
+            Some(Box::new(cops::style::GlobalVars::with_allowed_variables(allowed)))
+        }
+
+        "Style/InverseMethods" => {
+            let cop_config = config.get_cop_config("Style/InverseMethods");
+            let inverse_methods = cop_config
+                .and_then(|c| c.raw.get("InverseMethods"))
+                .and_then(|v| v.as_mapping())
+                .map(|m| {
+                    m.iter()
+                        .filter_map(|(k, v)| {
+                            Some((k.as_str()?.to_string(), v.as_str()?.to_string()))
+                        })
+                        .collect::<std::collections::HashMap<_, _>>()
+                });
+            let inverse_blocks = cop_config
+                .and_then(|c| c.raw.get("InverseBlocks"))
+                .and_then(|v| v.as_mapping())
+                .map(|m| {
+                    m.iter()
+                        .filter_map(|(k, v)| {
+                            Some((k.as_str()?.to_string(), v.as_str()?.to_string()))
+                        })
+                        .collect::<std::collections::HashMap<_, _>>()
+                });
+            match (inverse_methods, inverse_blocks) {
+                (Some(im), Some(ib)) => Some(Box::new(cops::style::InverseMethods::with_config(im, ib))),
+                (Some(im), None) => Some(Box::new(cops::style::InverseMethods::with_config(
+                    im,
+                    std::collections::HashMap::new(),
+                ))),
+                _ => Some(Box::new(cops::style::InverseMethods::new())),
+            }
+        }
+
         "Style/HashSyntax" => {
             let cop_config = config.get_cop_config("Style/HashSyntax");
             let style = cop_config
@@ -1328,6 +1528,15 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
         }
 
         "Style/NegativeArrayIndex" => Some(Box::new(cops::style::NegativeArrayIndex::new())),
+
+        "Style/OneLineConditional" => {
+            let cop_config = config.get_cop_config("Style/OneLineConditional");
+            let always_multiline = cop_config
+                .and_then(|c| c.raw.get("AlwaysCorrectToMultiline"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
+            Some(Box::new(cops::style::OneLineConditional::with_config(always_multiline)))
+        }
 
         "Style/RaiseArgs" => {
             let cop_config = config.get_cop_config("Style/RaiseArgs");
@@ -1417,9 +1626,32 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
         "Style/RedundantRegexpEscape" => Some(Box::new(cops::style::RedundantRegexpEscape::new())),
         "Style/RedundantStringEscape" => Some(Box::new(cops::style::RedundantStringEscape::new())),
 
+        "Style/Sample" => Some(Box::new(cops::style::Sample::new())),
+
         "Style/SelectByRegexp" => Some(Box::new(cops::style::SelectByRegexp::new())),
 
+        "Style/SelfAssignment" => Some(Box::new(cops::style::SelfAssignment::new())),
+
         "Style/StringMethods" => Some(Box::new(cops::style::StringMethods::new())),
+
+        "Style/TernaryParentheses" => {
+            let cop_config = config.get_cop_config("Style/TernaryParentheses");
+            let style = cop_config
+                .and_then(|c| c.enforced_style.as_ref())
+                .map(|s| match s.as_str() {
+                    "require_parentheses" => cops::style::TernaryParenthesesStyle::RequireParentheses,
+                    "require_parentheses_when_complex" => cops::style::TernaryParenthesesStyle::RequireParenthesesWhenComplex,
+                    _ => cops::style::TernaryParenthesesStyle::RequireNoParentheses,
+                })
+                .unwrap_or(cops::style::TernaryParenthesesStyle::RequireNoParentheses);
+            let allow_safe = cop_config
+                .and_then(|c| c.raw.get("AllowSafeAssignment"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(true);
+            Some(Box::new(cops::style::TernaryParentheses::new(style, allow_safe)))
+        }
+
+        "Style/ZeroLengthPredicate" => Some(Box::new(cops::style::ZeroLengthPredicate::new())),
 
         "Style/TrailingCommaInArguments" => {
             let cop_config = config.get_cop_config("Style/TrailingCommaInArguments");

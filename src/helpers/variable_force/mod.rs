@@ -113,12 +113,14 @@ impl<'a, H: VariableForceHook> VariableForceDispatcher<'a, H> {
             Node::RequiredParameterNode { .. } => {
                 let p = node.as_required_parameter_node().unwrap();
                 let name = name_str(&p.name());
-                self.table.declare_variable(&name, true, self.is_in_method_scope());
+                let loc = p.location();
+                self.table.declare_argument(&name, self.is_in_method_scope(), false, false, false, loc.start_offset(), loc.end_offset());
             }
             Node::OptionalParameterNode { .. } => {
                 let p = node.as_optional_parameter_node().unwrap();
                 let name = name_str(&p.name());
-                self.table.declare_variable(&name, true, self.is_in_method_scope());
+                let name_loc = p.name_loc();
+                self.table.declare_argument(&name, self.is_in_method_scope(), false, false, false, name_loc.start_offset(), name_loc.end_offset());
                 // Process default value
                 self.process_node(&p.value());
             }
@@ -126,18 +128,22 @@ impl<'a, H: VariableForceHook> VariableForceDispatcher<'a, H> {
                 let p = node.as_rest_parameter_node().unwrap();
                 if let Some(name_loc) = p.name_loc() {
                     let name = String::from_utf8_lossy(name_loc.as_slice()).to_string();
-                    self.table.declare_variable(&name, true, self.is_in_method_scope());
+                    self.table.declare_argument(&name, self.is_in_method_scope(), false, false, false, name_loc.start_offset(), name_loc.end_offset());
                 }
             }
             Node::RequiredKeywordParameterNode { .. } => {
                 let p = node.as_required_keyword_parameter_node().unwrap();
                 let name = name_str(&p.name()).trim_end_matches(':').to_string();
-                self.table.declare_variable(&name, true, self.is_in_method_scope());
+                let name_loc = p.name_loc();
+                // name_loc includes trailing colon, subtract 1 for just the name
+                self.table.declare_argument(&name, self.is_in_method_scope(), true, false, false, name_loc.start_offset(), name_loc.end_offset() - 1);
             }
             Node::OptionalKeywordParameterNode { .. } => {
                 let p = node.as_optional_keyword_parameter_node().unwrap();
                 let name = name_str(&p.name()).trim_end_matches(':').to_string();
-                self.table.declare_variable(&name, true, self.is_in_method_scope());
+                let name_loc = p.name_loc();
+                // name_loc includes trailing colon, subtract 1 for just the name
+                self.table.declare_argument(&name, self.is_in_method_scope(), true, false, false, name_loc.start_offset(), name_loc.end_offset() - 1);
                 // Process default value
                 self.process_node(&p.value());
             }
@@ -145,20 +151,21 @@ impl<'a, H: VariableForceHook> VariableForceDispatcher<'a, H> {
                 let p = node.as_keyword_rest_parameter_node().unwrap();
                 if let Some(name_loc) = p.name_loc() {
                     let name = String::from_utf8_lossy(name_loc.as_slice()).to_string();
-                    self.table.declare_variable(&name, true, self.is_in_method_scope());
+                    self.table.declare_argument(&name, self.is_in_method_scope(), false, false, false, name_loc.start_offset(), name_loc.end_offset());
                 }
             }
             Node::BlockParameterNode { .. } => {
                 let p = node.as_block_parameter_node().unwrap();
                 if let Some(name_loc) = p.name_loc() {
                     let name = String::from_utf8_lossy(name_loc.as_slice()).to_string();
-                    self.table.declare_variable(&name, true, self.is_in_method_scope());
+                    self.table.declare_argument(&name, self.is_in_method_scope(), false, true, false, name_loc.start_offset(), name_loc.end_offset());
                 }
             }
             Node::BlockLocalVariableNode { .. } => {
                 let p = node.as_block_local_variable_node().unwrap();
                 let name = name_str(&p.name());
-                self.table.declare_variable(&name, false, false);
+                let loc = p.location();
+                self.table.declare_argument(&name, false, false, false, true, loc.start_offset(), loc.end_offset());
             }
 
             // ── Scope-creating nodes ──
@@ -200,6 +207,11 @@ impl<'a, H: VariableForceHook> VariableForceDispatcher<'a, H> {
             // ── Zero-arity super ──
             Node::ForwardingSuperNode { .. } => {
                 self.process_zero_arity_super();
+                // Process block child if present (e.g., super { |bar| })
+                let n = node.as_forwarding_super_node().unwrap();
+                if let Some(block) = n.block() {
+                    self.process_node(&block.as_node());
+                }
             }
 
             // ── binding() call ──
@@ -937,6 +949,11 @@ impl<'a, H: VariableForceHook> VariableForceDispatcher<'a, H> {
         match node {
             Node::DefNode { .. } => {
                 let def = node.as_def_node().unwrap();
+                let method_name = name_str(&def.name());
+                if let Some(scope) = self.table.current_scope_mut() {
+                    scope.name = Some(method_name);
+                    scope.body_is_empty = def.body().is_none();
+                }
                 if let Some(params) = def.parameters() {
                     self.process_node(&params.as_node());
                 }
@@ -964,6 +981,9 @@ impl<'a, H: VariableForceHook> VariableForceDispatcher<'a, H> {
             }
             Node::BlockNode { .. } => {
                 let block = node.as_block_node().unwrap();
+                if let Some(scope) = self.table.current_scope_mut() {
+                    scope.body_is_empty = block.body().is_none();
+                }
                 if let Some(params) = block.parameters() {
                     self.process_node(&params);
                 }
@@ -973,6 +993,9 @@ impl<'a, H: VariableForceHook> VariableForceDispatcher<'a, H> {
             }
             Node::LambdaNode { .. } => {
                 let lambda = node.as_lambda_node().unwrap();
+                if let Some(scope) = self.table.current_scope_mut() {
+                    scope.body_is_empty = lambda.body().is_none();
+                }
                 if let Some(params) = lambda.parameters() {
                     self.process_node(&params);
                 }

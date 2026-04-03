@@ -72,6 +72,28 @@ impl VariableTable {
         }
     }
 
+    /// Declare an argument variable with extra metadata.
+    pub fn declare_argument(
+        &mut self,
+        name: &str,
+        is_method_argument: bool,
+        is_keyword: bool,
+        is_block_arg_type: bool,
+        is_block_local: bool,
+        decl_start: usize,
+        decl_end: usize,
+    ) {
+        if let Some(scope) = self.scope_stack.last_mut() {
+            let mut variable = Variable::new(name.to_string(), !is_block_local, is_method_argument);
+            variable.is_keyword_argument = is_keyword;
+            variable.is_block_arg_type = is_block_arg_type;
+            variable.is_block_local_variable = is_block_local;
+            variable.declaration_start = decl_start;
+            variable.declaration_end = decl_end;
+            scope.variables.insert(name.to_string(), variable);
+        }
+    }
+
     /// Check if a variable exists in accessible scopes.
     pub fn variable_exist(&self, name: &str) -> bool {
         for scope in self.scope_stack.iter().rev() {

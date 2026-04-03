@@ -14,6 +14,12 @@ pub struct Scope {
     pub scope_type: ScopeType,
     /// Variables declared in this scope
     pub variables: HashMap<String, Variable>,
+    /// Method/block name (for message generation)
+    pub name: Option<String>,
+    /// Whether this scope's body is empty (no statements)
+    pub body_is_empty: bool,
+    /// Whether this is a lambda scope
+    pub is_lambda: bool,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -35,6 +41,9 @@ impl Scope {
             node_end_offset,
             scope_type,
             variables: HashMap::new(),
+            name: None,
+            body_is_empty: false,
+            is_lambda: matches!(scope_type, ScopeType::Lambda),
         }
     }
 

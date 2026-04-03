@@ -414,6 +414,9 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(lint::RedundantTypeConversion::new()),
         Box::new(lint::UnreachableCode::new()),
         Box::new(lint::UselessAccessModifier::new()),
+        Box::new(lint::ShadowedArgument::new()),
+        Box::new(lint::UnusedBlockArgument::new()),
+        Box::new(lint::UnusedMethodArgument::new()),
         Box::new(lint::UselessAssignment::new()),
         Box::new(lint::Void::new(false)),
         // Layout
@@ -436,26 +439,36 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(naming::PredicateMethod::new(naming::PredicateMethodMode::Conservative)),
         // Style
         Box::new(style::AccessModifierDeclarations::new(style::AccessModifierDeclarationsStyle::Group)),
+        Box::new(style::AndOr::new(style::AndOrStyle::Conditionals)),
+        Box::new(style::ArrayIntersect::new()),
         Box::new(style::AutoResourceCleanup::new()),
         Box::new(style::BlockDelimiters::new(style::BlockDelimitersStyle::LineCountBased)),
         Box::new(style::ConditionalAssignment::new(style::ConditionalAssignmentStyle::AssignInsideCondition)),
+        Box::new(style::EmptyElse::new(style::EmptyElseStyle::Both, false)),
         Box::new(style::FormatStringToken::new(style::FormatStringTokenStyle::Template)), // User's config
         Box::new(style::FrozenStringLiteralComment::new(style::FrozenStringLiteralCommentStyle::Always)),
+        Box::new(style::GlobalVars::new()),
         Box::new(style::HashSyntax::new(style::HashSyntaxStyle::Ruby19NoMixedKeys)), // User's config
+        Box::new(style::InverseMethods::new()),
         Box::new(style::MethodCalledOnDoEndBlock::new()),
         Box::new(style::MutableConstant::new(style::MutableConstantStyle::Literals)),
         Box::new(style::NegativeArrayIndex::new()),
         Box::new(style::NumericLiterals::new(5)),
+        Box::new(style::OneLineConditional::new()),
         Box::new(style::RaiseArgs::new(style::RaiseArgsStyle::Compact)), // User's config
         Box::new(style::RedundantParentheses::new()),
         Box::new(style::RedundantRegexpEscape::new()),
         Box::new(style::RedundantStringEscape::new()),
         Box::new(style::RescueStandardError::new(style::RescueStandardErrorStyle::Implicit)), // User's config
         Box::new(style::SafeNavigation::new()),
+        Box::new(style::Sample::new()),
         Box::new(style::SelectByRegexp::new()),
+        Box::new(style::SelfAssignment::new()),
         Box::new(style::Semicolon::new(false)),
         Box::new(style::StringLiterals::new(style::StringLiteralsStyle::SingleQuotes)),
         Box::new(style::StringMethods::new()),
+        Box::new(style::TernaryParentheses::new(style::TernaryParenthesesStyle::RequireNoParentheses, true)),
         Box::new(style::TrailingCommaInArguments::new(style::TrailingCommaInArgumentsStyle::NoComma)),
+        Box::new(style::ZeroLengthPredicate::new()),
     ]
 }

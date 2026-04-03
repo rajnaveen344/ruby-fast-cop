@@ -1,14 +1,14 @@
 # All Cops State (606 total)
 
 Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department and default status.
-46 of 606 implemented. See [README.md](README.md) for the implementation roadmap.
+60 of 606 implemented. See [README.md](README.md) for the implementation roadmap.
 
 ## Summary
 
 | Department | Enabled | Pending | Disabled | Implemented |      Tests |
 | ---------- | ------: | ------: | -------: | ----------: | ---------: |
-| Style      |     175 |      91 |       32 |          22 |     14,567 |
-| Lint       |     100 |      50 |        4 |           9 |      5,961 |
+| Style      |     175 |      91 |       32 |          32 |     14,567 |
+| Lint       |     100 |      50 |        4 |          12 |      5,961 |
 | Layout     |      81 |       5 |       14 |          10 |      4,654 |
 | Metrics    |       9 |       1 |        0 |           3 |        272 |
 | Naming     |      16 |       2 |        1 |           2 |      2,217 |
@@ -16,7 +16,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Bundler    |       5 |       0 |        2 |           0 |        101 |
 | Security   |       5 |       2 |        0 |           0 |        102 |
 | Migration  |       1 |       0 |        0 |           0 |          8 |
-| **Total**  | **396** | **156** |   **54** |      **46** | **28,075** |
+| **Total**  | **396** | **156** |   **54** |      **60** | **28,075** |
 
 - **Enabled**: Runs by default on every codebase (highest priority to implement)
 - **Pending**: Runs only with `NewCops: enable` in config
@@ -31,8 +31,8 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Style/AccessModifierDeclarations       |   377 | Implemented |
 | Style/AccessorGrouping                 |    26 | -           |
 | Style/Alias                            |    26 | -           |
-| Style/AndOr                            |    76 | -           |
-| Style/ArrayIntersect                   |    81 | -           |
+| Style/AndOr                            |    76 | Implemented |
+| Style/ArrayIntersect                   |    81 | Implemented |
 | Style/ArrayIntersectWithSingleElement  |     3 | -           |
 | Style/ArrayJoin                        |     5 | -           |
 | Style/Attr                             |    11 | -           |
@@ -65,7 +65,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Style/EachWithObject                   |    16 | -           |
 | Style/EmptyBlockParameter              |     9 | -           |
 | Style/EmptyCaseCondition               |    29 | -           |
-| Style/EmptyElse                        |   124 | -           |
+| Style/EmptyElse                        |   124 | Implemented |
 | Style/EmptyLambdaParameter             |     3 | -           |
 | Style/EmptyLiteral                     |    49 | -           |
 | Style/EmptyMethod                      |    32 | -           |
@@ -82,7 +82,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Style/FormatStringToken                |   366 | Implemented |
 | Style/FrozenStringLiteralComment       |   107 | Implemented |
 | Style/GlobalStdStream                  |     6 | -           |
-| Style/GlobalVars                       |    74 | -           |
+| Style/GlobalVars                       |    74 | Implemented |
 | Style/GuardClause                      |    91 | -           |
 | Style/HashAsLastArrayItem              |    19 | -           |
 | Style/HashEachMethods                  |    62 | -           |
@@ -96,7 +96,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Style/IfUnlessModifierOfIfUnless       |     7 | -           |
 | Style/IfWithSemicolon                  |    28 | -           |
 | Style/InfiniteLoop                     |    28 | -           |
-| Style/InverseMethods                   |   110 | -           |
+| Style/InverseMethods                   |   110 | Implemented |
 | Style/KeywordParametersOrder           |    10 | -           |
 | Style/Lambda                           |    38 | -           |
 | Style/LambdaCall                       |    19 | -           |
@@ -129,7 +129,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Style/NumericLiteralPrefix             |    10 | -           |
 | Style/NumericLiterals                  |    28 | Implemented |
 | Style/NumericPredicate                 |    43 | -           |
-| Style/OneLineConditional               |   108 | -           |
+| Style/OneLineConditional               |   108 | Implemented |
 | Style/OptionalArguments                |    12 | -           |
 | Style/OptionalBooleanParameter         |     8 | -           |
 | Style/OrAssignment                     |    25 | -           |
@@ -165,8 +165,8 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Style/RescueModifier                   |    21 | -           |
 | Style/RescueStandardError              |    37 | Implemented |
 | Style/SafeNavigation                   |   786 | Implemented |
-| Style/Sample                           |    82 | -           |
-| Style/SelfAssignment                   |   105 | -           |
+| Style/Sample                           |    82 | Implemented |
+| Style/SelfAssignment                   |   105 | Implemented |
 | Style/Semicolon                        |    33 | Implemented |
 | Style/SignalException                  |    27 | -           |
 | Style/SingleArgumentDig                |    15 | -           |
@@ -184,7 +184,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Style/SymbolArray                      |    33 | -           |
 | Style/SymbolLiteral                    |     4 | -           |
 | Style/SymbolProc                       |    83 | -           |
-| Style/TernaryParentheses               |    98 | -           |
+| Style/TernaryParentheses               |    98 | Implemented |
 | Style/TrailingBodyOnClass              |     7 | -           |
 | Style/TrailingBodyOnMethodDefinition   |    12 | -           |
 | Style/TrailingBodyOnModule             |     7 | -           |
@@ -202,7 +202,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Style/WhileUntilModifier               |    34 | -           |
 | Style/WordArray                        |    59 | -           |
 | Style/YodaCondition                    |    73 | -           |
-| Style/ZeroLengthPredicate              |    68 | -           |
+| Style/ZeroLengthPredicate              |    68 | Implemented |
 
 ### Pending by Default (91 cops, 4,624 tests)
 
@@ -420,7 +420,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Lint/ScriptPermission                    |     6 | -           |
 | Lint/SelfAssignment                      |    58 | -           |
 | Lint/SendWithMixinArgument               |    14 | -           |
-| Lint/ShadowedArgument                    |    54 | -           |
+| Lint/ShadowedArgument                    |    54 | Implemented |
 | Lint/ShadowedException                   |    38 | -           |
 | Lint/StructNewOverride                   |    10 | -           |
 | Lint/SuppressedException                 |    24 | -           |
@@ -432,12 +432,12 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Lint/UnifiedInteger                      |    15 | -           |
 | Lint/UnreachableCode                     |   266 | Implemented |
 | Lint/UnreachableLoop                     |    28 | -           |
-| Lint/UnusedBlockArgument                 |    30 | -           |
-| Lint/UnusedMethodArgument                |    41 | -           |
+| Lint/UnusedBlockArgument                 |    30 | Implemented |
+| Lint/UnusedMethodArgument                |    41 | Implemented |
 | Lint/UriEscapeUnescape                   |     9 | -           |
 | Lint/UriRegexp                           |    10 | -           |
 | Lint/UselessAccessModifier               |   198 | Implemented |
-| Lint/UselessAssignment                   |   149 | -           |
+| Lint/UselessAssignment                   |   149 | Implemented |
 | Lint/UselessElseWithoutRescue            |     2 | -           |
 | Lint/UselessMethodDefinition             |    16 | -           |
 | Lint/UselessSetterCall                   |    20 | -           |
