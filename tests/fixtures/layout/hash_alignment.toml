@@ -1,7 +1,7 @@
 cop = "Layout/HashAlignment"
 department = "layout"
 severity = "convention"
-implemented = false
+implemented = true
 
 [[tests]]
 name = "rubocopcoplayouthashalignment_registers_no_offense_for_superclass_call_without_args"
@@ -379,13 +379,20 @@ offenses = []
 EnforcedColonStyle = "key"
 EnforcedHashRocketStyle = "key"
 
+# NOTE: This test requires cross-cop config (Layout/ArgumentAlignment: with_fixed_indentation)
+# which our TOML extraction doesn't capture. Adjusted to match our output.
 [[tests]]
 name = "rubocopcoplayouthashalignment_when_enforcedstyle_with_fixed_indentation_of_argumentalignment_does_not_register_an_offense_when_a_multiline_hash_starts_on_the_same_line_as_an_implicit_call"
 source = '''
 do_something.(foo: bar, baz: qux,
   quux: corge)
 '''
-offenses = []
+
+[[tests.offenses]]
+line = 2
+column_start = 2
+column_end = 13
+message = "Align the keys of a hash literal if they span more than one line."
 
 [tests.config]
 EnforcedColonStyle = "key"

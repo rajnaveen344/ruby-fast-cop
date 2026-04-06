@@ -422,11 +422,18 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         // Layout
         Box::new(layout::EmptyLinesAroundAccessModifier::new(layout::EmptyLinesAroundAccessModifierStyle::Around)),
         Box::new(layout::EndAlignment::new(layout::EndAlignmentStyle::Keyword)),
+        Box::new(layout::FirstArgumentIndentation::new(layout::FirstArgumentIndentationStyle::SpecialForInnerMethodCallInParentheses, None)),
+        Box::new(layout::HashAlignment::new(
+            vec![layout::HashAlignmentStyle::Key],
+            vec![layout::HashAlignmentStyle::Key],
+            layout::HashAlignmentLastArgStyle::AlwaysInspect,
+        )),
         Box::new(layout::IndentationWidth::new(2)),
         Box::new(layout::LeadingCommentSpace::new()),
         Box::new(layout::LineLength::new(160)), // User's config: Max: 160 (allow_uri=true by default)
         Box::new(layout::SpaceAfterComma::new()),
         Box::new(layout::MultilineMethodCallIndentation::new(layout::MultilineMethodCallIndentationStyle::Aligned, None)),
+        Box::new(layout::SpaceInsideArrayPercentLiteral::new()),
         Box::new(layout::SpaceInsidePercentLiteralDelimiters::new()),
         Box::new(layout::TrailingEmptyLines::new(layout::TrailingEmptyLinesStyle::FinalNewline)),
         Box::new(layout::TrailingWhitespace::new()),
@@ -437,6 +444,8 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         // Naming
         Box::new(naming::MethodName::new()),
         Box::new(naming::PredicateMethod::new(naming::PredicateMethodMode::Conservative)),
+        Box::new(naming::VariableName::new()),
+        Box::new(naming::VariableNumber::new()),
         // Style
         Box::new(style::AccessModifierDeclarations::new(style::AccessModifierDeclarationsStyle::Group)),
         Box::new(style::AndOr::new(style::AndOrStyle::Conditionals)),

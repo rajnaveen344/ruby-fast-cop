@@ -628,6 +628,32 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         result.push(build_indentation_width_cop(config));
     }
 
+    // Layout/HashAlignment
+    if config.is_cop_enabled("Layout/HashAlignment") {
+        if let Some(cop) = build_single_cop("Layout/HashAlignment", config) {
+            result.push(cop);
+        }
+    }
+
+    // Layout/FirstArgumentIndentation
+    if config.is_cop_enabled("Layout/FirstArgumentIndentation") {
+        let cop_config = config.get_cop_config("Layout/FirstArgumentIndentation");
+        let style = cop_config
+            .and_then(|c| c.enforced_style.as_ref())
+            .map(|s| match s.as_str() {
+                "consistent" => cops::layout::FirstArgumentIndentationStyle::Consistent,
+                "consistent_relative_to_receiver" => cops::layout::FirstArgumentIndentationStyle::ConsistentRelativeToReceiver,
+                "special_for_inner_method_call" => cops::layout::FirstArgumentIndentationStyle::SpecialForInnerMethodCall,
+                _ => cops::layout::FirstArgumentIndentationStyle::SpecialForInnerMethodCallInParentheses,
+            })
+            .unwrap_or(cops::layout::FirstArgumentIndentationStyle::SpecialForInnerMethodCallInParentheses);
+        let width = cop_config
+            .and_then(|c| c.raw.get("IndentationWidth"))
+            .and_then(|v| v.as_i64())
+            .map(|v| v as usize);
+        result.push(Box::new(cops::layout::FirstArgumentIndentation::new(style, width)));
+    }
+
     // Layout/EndAlignment
     if config.is_cop_enabled("Layout/EndAlignment") {
         let style = config.get_cop_config("Layout/EndAlignment")
@@ -675,6 +701,11 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
             .and_then(|v| v.as_i64())
             .map(|v| v as usize);
         result.push(Box::new(cops::layout::MultilineMethodCallIndentation::new(style, width)));
+    }
+
+    // Layout/SpaceInsideArrayPercentLiteral
+    if config.is_cop_enabled("Layout/SpaceInsideArrayPercentLiteral") {
+        result.push(Box::new(cops::layout::SpaceInsideArrayPercentLiteral::new()));
     }
 
     // Layout/SpaceInsidePercentLiteralDelimiters
@@ -922,6 +953,75 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
             allowed_methods,
             allowed_patterns,
             wayward_predicates,
+        )));
+    }
+
+    // Naming/VariableName
+    if config.is_cop_enabled("Naming/VariableName") {
+        let cop_config = config.get_cop_config("Naming/VariableName");
+        let style = cop_config
+            .and_then(|c| c.enforced_style.as_ref())
+            .map(|s| match s.as_str() {
+                "camelCase" => cops::naming::VariableNameStyle::CamelCase,
+                _ => cops::naming::VariableNameStyle::SnakeCase,
+            })
+            .unwrap_or(cops::naming::VariableNameStyle::SnakeCase);
+        let allowed_identifiers = cop_config
+            .and_then(|c| c.raw.get("AllowedIdentifiers"))
+            .and_then(|v| v.as_sequence())
+            .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+            .unwrap_or_default();
+        let allowed_patterns = cop_config
+            .and_then(|c| c.raw.get("AllowedPatterns"))
+            .and_then(|v| v.as_sequence())
+            .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+            .unwrap_or_default();
+        let forbidden_identifiers = cop_config
+            .and_then(|c| c.raw.get("ForbiddenIdentifiers"))
+            .and_then(|v| v.as_sequence())
+            .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+            .unwrap_or_default();
+        let forbidden_patterns = cop_config
+            .and_then(|c| c.raw.get("ForbiddenPatterns"))
+            .and_then(|v| v.as_sequence())
+            .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+            .unwrap_or_default();
+        result.push(Box::new(cops::naming::VariableName::with_config(
+            style, allowed_identifiers, allowed_patterns, forbidden_identifiers, forbidden_patterns,
+        )));
+    }
+
+    // Naming/VariableNumber
+    if config.is_cop_enabled("Naming/VariableNumber") {
+        let cop_config = config.get_cop_config("Naming/VariableNumber");
+        let style = cop_config
+            .and_then(|c| c.enforced_style.as_ref())
+            .map(|s| match s.as_str() {
+                "snake_case" => cops::naming::VariableNumberStyle::SnakeCase,
+                "non_integer" => cops::naming::VariableNumberStyle::NonInteger,
+                _ => cops::naming::VariableNumberStyle::NormalCase,
+            })
+            .unwrap_or(cops::naming::VariableNumberStyle::NormalCase);
+        let check_method_names = cop_config
+            .and_then(|c| c.raw.get("CheckMethodNames"))
+            .and_then(|v| v.as_bool())
+            .unwrap_or(true);
+        let check_symbols = cop_config
+            .and_then(|c| c.raw.get("CheckSymbols"))
+            .and_then(|v| v.as_bool())
+            .unwrap_or(true);
+        let allowed_identifiers = cop_config
+            .and_then(|c| c.raw.get("AllowedIdentifiers"))
+            .and_then(|v| v.as_sequence())
+            .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+            .unwrap_or_default();
+        let allowed_patterns = cop_config
+            .and_then(|c| c.raw.get("AllowedPatterns"))
+            .and_then(|v| v.as_sequence())
+            .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+            .unwrap_or_default();
+        result.push(Box::new(cops::naming::VariableNumber::with_config(
+            style, check_method_names, check_symbols, allowed_identifiers, allowed_patterns,
         )));
     }
 
@@ -1707,6 +1807,73 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
             Some(build_indentation_width_cop(config))
         }
 
+        "Layout/HashAlignment" => {
+            let cop_config = config.get_cop_config("Layout/HashAlignment");
+
+            let parse_styles = |key: &str, default: &str| -> Vec<cops::layout::HashAlignmentStyle> {
+                let raw = cop_config.and_then(|c| c.raw.get(key));
+                let strings: Vec<String> = if let Some(val) = raw {
+                    if let Some(s) = val.as_str() {
+                        vec![s.to_string()]
+                    } else if let Some(seq) = val.as_sequence() {
+                        seq.iter().filter_map(|v| v.as_str().map(String::from)).collect()
+                    } else {
+                        vec![default.to_string()]
+                    }
+                } else {
+                    vec![default.to_string()]
+                };
+                strings.iter().filter_map(|s| match s.as_str() {
+                    "key" => Some(cops::layout::HashAlignmentStyle::Key),
+                    "separator" => Some(cops::layout::HashAlignmentStyle::Separator),
+                    "table" => Some(cops::layout::HashAlignmentStyle::Table),
+                    _ => None,
+                }).collect()
+            };
+
+            let rocket_styles = parse_styles("EnforcedHashRocketStyle", "key");
+            let colon_styles = parse_styles("EnforcedColonStyle", "key");
+
+            let last_arg_style = cop_config
+                .and_then(|c| c.raw.get("EnforcedLastArgumentHashStyle"))
+                .and_then(|v| v.as_str())
+                .map(|s| match s {
+                    "always_ignore" => cops::layout::HashAlignmentLastArgStyle::AlwaysIgnore,
+                    "ignore_implicit" => cops::layout::HashAlignmentLastArgStyle::IgnoreImplicit,
+                    "ignore_explicit" => cops::layout::HashAlignmentLastArgStyle::IgnoreExplicit,
+                    _ => cops::layout::HashAlignmentLastArgStyle::AlwaysInspect,
+                })
+                .unwrap_or(cops::layout::HashAlignmentLastArgStyle::AlwaysInspect);
+
+            if rocket_styles.is_empty() || colon_styles.is_empty() {
+                None
+            } else {
+                Some(Box::new(cops::layout::HashAlignment::new(
+                    rocket_styles,
+                    colon_styles,
+                    last_arg_style,
+                )))
+            }
+        }
+
+        "Layout/FirstArgumentIndentation" => {
+            let cop_config = config.get_cop_config("Layout/FirstArgumentIndentation");
+            let style = cop_config
+                .and_then(|c| c.enforced_style.as_ref())
+                .map(|s| match s.as_str() {
+                    "consistent" => cops::layout::FirstArgumentIndentationStyle::Consistent,
+                    "consistent_relative_to_receiver" => cops::layout::FirstArgumentIndentationStyle::ConsistentRelativeToReceiver,
+                    "special_for_inner_method_call" => cops::layout::FirstArgumentIndentationStyle::SpecialForInnerMethodCall,
+                    _ => cops::layout::FirstArgumentIndentationStyle::SpecialForInnerMethodCallInParentheses,
+                })
+                .unwrap_or(cops::layout::FirstArgumentIndentationStyle::SpecialForInnerMethodCallInParentheses);
+            let width = cop_config
+                .and_then(|c| c.raw.get("IndentationWidth"))
+                .and_then(|v| v.as_i64())
+                .map(|v| v as usize);
+            Some(Box::new(cops::layout::FirstArgumentIndentation::new(style, width)))
+        }
+
         "Layout/EndAlignment" => {
             let style = config.get_cop_config("Layout/EndAlignment")
                 .and_then(|c| c.raw.get("EnforcedStyleAlignWith"))
@@ -1772,6 +1939,10 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
                 .and_then(|v| v.as_i64())
                 .map(|v| v as usize);
             Some(Box::new(cops::layout::MultilineMethodCallIndentation::new(style, width)))
+        }
+
+        "Layout/SpaceInsideArrayPercentLiteral" => {
+            Some(Box::new(cops::layout::SpaceInsideArrayPercentLiteral::new()))
         }
 
         "Layout/SpaceInsidePercentLiteralDelimiters" => {
@@ -2020,6 +2191,73 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
                 allowed_methods,
                 allowed_patterns,
                 wayward_predicates,
+            )))
+        }
+
+        "Naming/VariableName" => {
+            let cop_config = config.get_cop_config("Naming/VariableName");
+            let style = cop_config
+                .and_then(|c| c.enforced_style.as_ref())
+                .map(|s| match s.as_str() {
+                    "camelCase" => cops::naming::VariableNameStyle::CamelCase,
+                    _ => cops::naming::VariableNameStyle::SnakeCase,
+                })
+                .unwrap_or(cops::naming::VariableNameStyle::SnakeCase);
+            let allowed_identifiers = cop_config
+                .and_then(|c| c.raw.get("AllowedIdentifiers"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+                .unwrap_or_default();
+            let allowed_patterns = cop_config
+                .and_then(|c| c.raw.get("AllowedPatterns"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+                .unwrap_or_default();
+            let forbidden_identifiers = cop_config
+                .and_then(|c| c.raw.get("ForbiddenIdentifiers"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+                .unwrap_or_default();
+            let forbidden_patterns = cop_config
+                .and_then(|c| c.raw.get("ForbiddenPatterns"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+                .unwrap_or_default();
+            Some(Box::new(cops::naming::VariableName::with_config(
+                style, allowed_identifiers, allowed_patterns, forbidden_identifiers, forbidden_patterns,
+            )))
+        }
+
+        "Naming/VariableNumber" => {
+            let cop_config = config.get_cop_config("Naming/VariableNumber");
+            let style = cop_config
+                .and_then(|c| c.enforced_style.as_ref())
+                .map(|s| match s.as_str() {
+                    "snake_case" => cops::naming::VariableNumberStyle::SnakeCase,
+                    "non_integer" => cops::naming::VariableNumberStyle::NonInteger,
+                    _ => cops::naming::VariableNumberStyle::NormalCase,
+                })
+                .unwrap_or(cops::naming::VariableNumberStyle::NormalCase);
+            let check_method_names = cop_config
+                .and_then(|c| c.raw.get("CheckMethodNames"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(true);
+            let check_symbols = cop_config
+                .and_then(|c| c.raw.get("CheckSymbols"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(true);
+            let allowed_identifiers = cop_config
+                .and_then(|c| c.raw.get("AllowedIdentifiers"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+                .unwrap_or_default();
+            let allowed_patterns = cop_config
+                .and_then(|c| c.raw.get("AllowedPatterns"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+                .unwrap_or_default();
+            Some(Box::new(cops::naming::VariableNumber::with_config(
+                style, check_method_names, check_symbols, allowed_identifiers, allowed_patterns,
             )))
         }
 

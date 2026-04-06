@@ -1,7 +1,7 @@
 # All Cops State (606 total)
 
 Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department and default status.
-60 of 606 implemented. See [README.md](README.md) for the implementation roadmap.
+65 of 606 implemented. See [README.md](README.md) for the implementation roadmap.
 
 ## Summary
 
@@ -9,14 +9,14 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | ---------- | ------: | ------: | -------: | ----------: | ---------: |
 | Style      |     175 |      91 |       32 |          32 |     14,567 |
 | Lint       |     100 |      50 |        4 |          12 |      5,961 |
-| Layout     |      81 |       5 |       14 |          10 |      4,654 |
+| Layout     |      81 |       5 |       14 |          13 |      4,654 |
 | Metrics    |       9 |       1 |        0 |           3 |        272 |
-| Naming     |      16 |       2 |        1 |           2 |      2,217 |
+| Naming     |      16 |       2 |        1 |           4 |      2,217 |
 | Gemspec    |       4 |       5 |        1 |           0 |        193 |
 | Bundler    |       5 |       0 |        2 |           0 |        101 |
 | Security   |       5 |       2 |        0 |           0 |        102 |
 | Migration  |       1 |       0 |        0 |           0 |          8 |
-| **Total**  | **396** | **156** |   **54** |      **60** | **28,075** |
+| **Total**  | **396** | **156** |   **54** |      **65** | **28,075** |
 
 - **Enabled**: Runs by default on every codebase (highest priority to implement)
 - **Pending**: Runs only with `NewCops: enable` in config
@@ -508,7 +508,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Lint/NumberConversion            |    36 | -      |
 | Lint/ShadowingOuterLocalVariable |    31 | -      |
 
-## Layout (10/100 implemented, 4,654 tests)
+## Layout (13/100 implemented, 4,654 tests)
 
 ### Enabled by Default (81 cops, 4,067 tests)
 
@@ -546,11 +546,11 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Layout/EndAlignment                              |   207 | Implemented |
 | Layout/EndOfLine                                 |    17 | -           |
 | Layout/ExtraSpacing                              |    82 | -           |
-| Layout/FirstArgumentIndentation                  |   139 | -           |
+| Layout/FirstArgumentIndentation                  |   139 | Implemented |
 | Layout/FirstArrayElementIndentation              |    53 | -           |
 | Layout/FirstHashElementIndentation               |    60 | -           |
 | Layout/FirstParameterIndentation                 |    20 | -           |
-| Layout/HashAlignment                             |   131 | -           |
+| Layout/HashAlignment                             |   131 | Implemented |
 | Layout/HeredocIndentation                        |   105 | -           |
 | Layout/IndentationConsistency                    |    53 | -           |
 | Layout/IndentationStyle                          |    25 | -           |
@@ -585,7 +585,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Layout/SpaceBeforeSemicolon                      |     9 | -           |
 | Layout/SpaceInLambdaLiteral                      |    15 | -           |
 | Layout/SpaceInsideArrayLiteralBrackets           |    99 | -           |
-| Layout/SpaceInsideArrayPercentLiteral            |   129 | -           |
+| Layout/SpaceInsideArrayPercentLiteral            |   129 | Implemented |
 | Layout/SpaceInsideBlockBraces                    |    43 | -           |
 | Layout/SpaceInsideHashLiteralBraces              |    40 | -           |
 | Layout/SpaceInsideParens                         |    28 | -           |
@@ -647,28 +647,28 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | ------------------------------- | ----: | ------ |
 | Metrics/CollectionLiteralLength |    13 | -      |
 
-## Naming (2/19 implemented, 2,217 tests)
+## Naming (4/19 implemented, 2,217 tests)
 
 ### Enabled by Default (16 cops, 884 tests)
 
-| Cop                                  | Tests | Status |
-| ------------------------------------ | ----: | ------ |
-| Naming/AccessorMethodName            |    23 | -      |
-| Naming/AsciiIdentifiers              |    12 | -      |
-| Naming/BinaryOperatorParameterName   |    15 | -      |
-| Naming/BlockParameterName            |    13 | -      |
-| Naming/ClassAndModuleCamelCase       |     5 | -      |
-| Naming/ConstantName                  |    24 | -      |
-| Naming/FileName                      |   120 | -      |
-| Naming/HeredocDelimiterCase          |    26 | -      |
-| Naming/HeredocDelimiterNaming        |    19 | -      |
-| Naming/MemoizedInstanceVariableName  |    72 | -      |
+| Cop                                  | Tests | Status      |
+| ------------------------------------ | ----: | ----------- |
+| Naming/AccessorMethodName            |    23 | -           |
+| Naming/AsciiIdentifiers              |    12 | -           |
+| Naming/BinaryOperatorParameterName   |    15 | -           |
+| Naming/BlockParameterName            |    13 | -           |
+| Naming/ClassAndModuleCamelCase       |     5 | -           |
+| Naming/ConstantName                  |    24 | -           |
+| Naming/FileName                      |   120 | -           |
+| Naming/HeredocDelimiterCase          |    26 | -           |
+| Naming/HeredocDelimiterNaming        |    19 | -           |
+| Naming/MemoizedInstanceVariableName  |    72 | -           |
 | Naming/MethodName                    |   239 | Implemented |
-| Naming/MethodParameterName           |    23 | -      |
-| Naming/PredicatePrefix               |    24 | -      |
-| Naming/RescuedExceptionsVariableName |    36 | -      |
-| Naming/VariableName                  |   118 | -      |
-| Naming/VariableNumber                |   115 | -      |
+| Naming/MethodParameterName           |    23 | -           |
+| Naming/PredicatePrefix               |    24 | -           |
+| Naming/RescuedExceptionsVariableName |    36 | -           |
+| Naming/VariableName                  |   118 | Implemented |
+| Naming/VariableNumber                |   115 | Implemented |
 
 ### Pending by Default (2 cops, 1,298 tests)
 
