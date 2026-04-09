@@ -413,6 +413,7 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(lint::LiteralAsCondition::new()),
         Box::new(lint::LiteralInInterpolation::new()),
         Box::new(lint::OutOfRangeRegexpRef::new()),
+        Box::new(lint::RedundantSafeNavigation::new()),
         Box::new(lint::RedundantSplatExpansion::new(true)),
         Box::new(lint::RedundantTypeConversion::new()),
         Box::new(lint::LintSelfAssignment::new(false)),
@@ -480,6 +481,7 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(style::OneLineConditional::new()),
         Box::new(style::PercentLiteralDelimiters::new()),
         Box::new(style::RaiseArgs::new(style::RaiseArgsStyle::Compact)), // User's config
+        Box::new(style::RedundantBegin::new()),
         Box::new(style::RedundantParentheses::new()),
         Box::new(style::RedundantRegexpEscape::new()),
         Box::new(style::RedundantStringEscape::new()),
@@ -488,6 +490,7 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(style::Sample::new()),
         Box::new(style::SelectByRegexp::new()),
         Box::new(style::SelfAssignment::new()),
+        Box::new(style::SoleNestedConditional::new()),
         Box::new(style::Semicolon::new(false)),
         Box::new(style::StringLiterals::new(style::StringLiteralsStyle::SingleQuotes)),
         Box::new(style::StringMethods::new()),

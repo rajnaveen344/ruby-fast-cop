@@ -232,6 +232,13 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         result.push(Box::new(cops::lint::RedundantSplatExpansion::new(true)));
     }
 
+    // Lint/RedundantSafeNavigation
+    if config.is_cop_enabled("Lint/RedundantSafeNavigation") {
+        if let Some(cop) = build_single_cop("Lint/RedundantSafeNavigation", config) {
+            result.push(cop);
+        }
+    }
+
     // Lint/RedundantTypeConversion
     if config.is_cop_enabled("Lint/RedundantTypeConversion") {
         result.push(Box::new(cops::lint::RedundantTypeConversion::new()));
@@ -582,6 +589,18 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
                 m
             });
         result.push(Box::new(cops::style::PercentLiteralDelimiters::with_config(preferred)));
+    }
+
+    // Style/RedundantBegin
+    if config.is_cop_enabled("Style/RedundantBegin") {
+        result.push(Box::new(cops::style::RedundantBegin::new()));
+    }
+
+    // Style/SoleNestedConditional
+    if config.is_cop_enabled("Style/SoleNestedConditional") {
+        if let Some(cop) = build_single_cop("Style/SoleNestedConditional", config) {
+            result.push(cop);
+        }
     }
 
     // Style/RaiseArgs
@@ -1359,6 +1378,27 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
             Some(Box::new(cops::lint::OutOfRangeRegexpRef::new()))
         }
 
+        "Lint/RedundantSafeNavigation" => {
+            let cop_config = config.get_cop_config("Lint/RedundantSafeNavigation");
+            let allowed_methods = cop_config
+                .and_then(|c| c.raw.get("AllowedMethods"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| seq.iter().filter_map(|v| v.as_str().map(|s| s.to_string())).collect())
+                .unwrap_or_else(|| vec!["respond_to?".to_string()]);
+            let infer = cop_config
+                .and_then(|c| c.raw.get("InferNonNilReceiver"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
+            let additional = cop_config
+                .and_then(|c| c.raw.get("AdditionalNilMethods"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| seq.iter().filter_map(|v| v.as_str().map(|s| s.to_string())).collect())
+                .unwrap_or_default();
+            Some(Box::new(cops::lint::RedundantSafeNavigation::with_config(
+                allowed_methods, infer, additional,
+            )))
+        }
+
         "Lint/RedundantSplatExpansion" => {
             let cop_config = config.get_cop_config("Lint/RedundantSplatExpansion");
             let allow_percent = cop_config
@@ -1987,6 +2027,17 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
                     m
                 });
             Some(Box::new(cops::style::PercentLiteralDelimiters::with_config(preferred)))
+        }
+
+        "Style/RedundantBegin" => Some(Box::new(cops::style::RedundantBegin::new())),
+
+        "Style/SoleNestedConditional" => {
+            let cop_config = config.get_cop_config("Style/SoleNestedConditional");
+            let allow_modifier = cop_config
+                .and_then(|c| c.raw.get("AllowModifier"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
+            Some(Box::new(cops::style::SoleNestedConditional::with_config(allow_modifier)))
         }
 
         "Style/RaiseArgs" => {
