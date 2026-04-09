@@ -232,20 +232,27 @@ impl Cop for Debugger {
 
 ## Common Tasks
 
-### Implementing multiple cops in parallel
+### Implementing multiple cops — mixin-cluster strategy
 
-When implementing multiple cops at once, use **subagents with worktree isolation** to avoid file conflicts:
+**When asked "what's next", always follow this workflow:**
+
+1. **Find unimplemented enabled-by-default cops** sorted by test count (descending) from COPS.md
+2. **Group by shared RuboCop mixin** — fetch each cop's Ruby source, check `include` statements, and cluster cops that share the same mixin (e.g., SurroundingSpace, EndKeywordAlignment, PrecedingFollowingAlignment)
+3. **One subagent per cluster** — each agent builds the shared helper first, then implements all cops in the cluster. This avoids duplicating mixin logic across agents.
+4. **Assess difficulty** (Easy/Medium/Hard) based on Ruby LOC + mixin LOC, config complexity, and AST surface area
+5. **Launch agents with worktree isolation**:
 
 ```
 Agent(subagent_type="general-purpose", isolation="worktree", run_in_background=true, mode="bypassPermissions")
 ```
 
 Each agent gets its own git worktree so they can independently edit `mod.rs`, `lib.rs`, and TOML fixtures without interfering. After each agent completes, manually merge its changes into the main working tree:
-1. Copy the new `.rs` cop file from the worktree
+1. Copy the new `.rs` cop file(s) from the worktree
 2. Apply the registration edits (mod.rs, lib.rs) manually since other cops may have been merged first
 3. Set `implemented = true` in the TOML fixture
 4. Run `cargo test --test tester` to verify
 5. Clean up worktrees with `rm -rf .claude/worktrees/`
+6. Run `/cop-review` to compare against Ruby source, simplify, then commit
 
 ### Adding a new cop
 
