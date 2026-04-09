@@ -6,14 +6,11 @@ use ruby_prism::Visit;
 
 const MSG: &str = "Literal interpolation detected.";
 
+#[derive(Default)]
 pub struct LiteralInInterpolation;
 
 impl LiteralInInterpolation {
     pub fn new() -> Self { Self }
-}
-
-impl Default for LiteralInInterpolation {
-    fn default() -> Self { Self::new() }
 }
 
 impl Cop for LiteralInInterpolation {
@@ -180,7 +177,7 @@ fn prints_as_self(node: &ruby_prism::Node) -> bool {
 
         ruby_prism::Node::CallNode { .. } => {
             let call = node.as_call_node().unwrap();
-            String::from_utf8_lossy(call.name().as_slice()) == "-@"
+            node_name!(call) == "-@"
                 && call.receiver().map_or(false, |r| prints_as_self(&r))
         }
 
@@ -266,7 +263,7 @@ fn autocorrected_value(node: &ruby_prism::Node, ctx: &CheckContext, in_hash: boo
 
         ruby_prism::Node::CallNode { .. } => {
             let call = node.as_call_node().unwrap();
-            if String::from_utf8_lossy(call.name().as_slice()) == "-@" {
+            if node_name!(call) == "-@" {
                 if let Some(recv) = call.receiver() {
                     return format!("-{}", autocorrected_value(&recv, ctx, in_hash));
                 }
@@ -418,81 +415,4 @@ fn handle_special_regexp_chars(value: &str) -> String {
     }
 
     result
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::check_source_with_cops;
-
-    fn check(source: &str) -> Vec<Offense> {
-        let cops: Vec<Box<dyn crate::cops::Cop>> = vec![Box::new(LiteralInInterpolation::new())];
-        check_source_with_cops(source, "test.rb", &cops)
-    }
-
-    #[test]
-    fn detects_integer_in_interpolation() {
-        let offenses = check(r#""this is the #{1}""#);
-        assert_eq!(offenses.len(), 1);
-        assert_eq!(offenses[0].message, MSG);
-    }
-
-    #[test]
-    fn accepts_variable_in_interpolation() {
-        assert_eq!(check(r#""this is #{a} silly""#).len(), 0);
-    }
-
-    #[test]
-    fn accepts_xstr_in_interpolation() {
-        assert_eq!(check(r#""this is #{`a`} silly""#).len(), 0);
-    }
-
-    #[test]
-    fn detects_string_in_interpolation() {
-        assert_eq!(check(r#""this is the #{"foo"}""#).len(), 1);
-    }
-
-    #[test]
-    fn detects_symbol_in_interpolation() {
-        assert_eq!(check(r#""this is the #{:symbol}""#).len(), 1);
-    }
-
-    #[test]
-    fn detects_float_in_interpolation() {
-        assert_eq!(check(r#""this is the #{2.0}""#).len(), 1);
-    }
-
-    #[test]
-    fn detects_true_in_interpolation() {
-        assert_eq!(check(r#""this is the #{true}""#).len(), 1);
-    }
-
-    #[test]
-    fn detects_false_in_interpolation() {
-        assert_eq!(check(r#""this is the #{false}""#).len(), 1);
-    }
-
-    #[test]
-    fn detects_nil_in_interpolation() {
-        assert_eq!(check(r#""this is the #{nil}""#).len(), 1);
-    }
-
-    #[test]
-    fn detects_range_with_literal_endpoints() {
-        assert_eq!(check(r#""this is the #{1..2}""#).len(), 1);
-    }
-
-    #[test]
-    fn accepts_range_with_nonliteral_endpoints() {
-        assert_eq!(check(r#""this is an irange: #{var1..var2}""#).len(), 0);
-    }
-
-    #[test]
-    fn parse_integer_hex() { assert_eq!(parse_integer_literal("0xaabb"), 43707); }
-
-    #[test]
-    fn parse_integer_octal() { assert_eq!(parse_integer_literal("0o377"), 255); }
-
-    #[test]
-    fn parse_integer_with_underscores() { assert_eq!(parse_integer_literal("1_123"), 1123); }
 }

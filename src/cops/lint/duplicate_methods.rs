@@ -162,7 +162,7 @@ impl<'a> DuplicateMethodsVisitor<'a> {
     fn extract_const_name(&self, node: &ruby_prism::Node) -> Option<String> {
         match node {
             ruby_prism::Node::ConstantReadNode { .. } => {
-                Some(String::from_utf8_lossy(node.as_constant_read_node().unwrap().name().as_slice()).to_string())
+                Some(node_name!(node.as_constant_read_node().unwrap()).to_string())
             }
             ruby_prism::Node::ConstantPathNode { .. } => {
                 let path_node = node.as_constant_path_node().unwrap();
@@ -196,7 +196,7 @@ impl<'a> DuplicateMethodsVisitor<'a> {
     }
 
     fn check_attr(&mut self, node: &ruby_prism::CallNode) {
-        let method_name = String::from_utf8_lossy(node.name().as_slice()).to_string();
+        let method_name = node_name!(node).to_string();
         let args = match node.arguments() { Some(args) => args, None => return };
         let arg_list: Vec<_> = args.arguments().iter().collect();
         let line = self.ctx.line_of(node.location().start_offset()) as u32;
@@ -319,7 +319,7 @@ impl<'a> DuplicateMethodsVisitor<'a> {
 
     fn check_forwardable_delegator(&mut self, node: &ruby_prism::CallNode) {
         if self.inside_if { return; }
-        let method_name = String::from_utf8_lossy(node.name().as_slice()).to_string();
+        let method_name = node_name!(node).to_string();
         let args = match node.arguments() { Some(args) => args, None => return };
         let arg_list: Vec<_> = args.arguments().iter().collect();
         let line = self.ctx.line_of(node.location().start_offset()) as u32;
@@ -344,12 +344,12 @@ impl<'a> DuplicateMethodsVisitor<'a> {
     }
 
     fn is_class_eval_call(&self, node: &ruby_prism::CallNode) -> bool {
-        let name = String::from_utf8_lossy(node.name().as_slice());
+        let name = node_name!(node);
         name == "class_eval" || name == "module_eval"
     }
 
     fn is_class_or_module_new(&self, node: &ruby_prism::CallNode) -> bool {
-        if String::from_utf8_lossy(node.name().as_slice()) != "new" { return false; }
+        if node_name!(node) != "new" { return false; }
         node.receiver().and_then(|r| self.extract_receiver_name(&r))
             .map_or(false, |name| name == "Class" || name == "Module")
     }
@@ -402,7 +402,7 @@ impl Visit<'_> for DuplicateMethodsVisitor<'_> {
     }
 
     fn visit_constant_write_node(&mut self, node: &ruby_prism::ConstantWriteNode) {
-        let const_name = String::from_utf8_lossy(node.name().as_slice()).to_string();
+        let const_name = node_name!(node).to_string();
         let value = node.value();
         if let ruby_prism::Node::CallNode { .. } = &value {
             let call = value.as_call_node().unwrap();
@@ -417,7 +417,7 @@ impl Visit<'_> for DuplicateMethodsVisitor<'_> {
     }
 
     fn visit_def_node(&mut self, node: &ruby_prism::DefNode) {
-        let method_name = String::from_utf8_lossy(node.name().as_slice()).to_string();
+        let method_name = node_name!(node).to_string();
 
         if self.inside_if {
             self.def_ancestor_stack.push(method_name);
@@ -436,7 +436,7 @@ impl Visit<'_> for DuplicateMethodsVisitor<'_> {
                     self.found_class_method(&method_name, line, def_keyword_start, name_end);
                 }
                 ruby_prism::Node::ConstantReadNode { .. } => {
-                    let const_name = String::from_utf8_lossy(receiver.as_constant_read_node().unwrap().name().as_slice()).to_string();
+                    let const_name = node_name!(receiver.as_constant_read_node().unwrap()).to_string();
                     self.found_named_receiver_method(&const_name, &method_name, line, def_keyword_start, name_end);
                 }
                 _ => {}
@@ -462,7 +462,7 @@ impl Visit<'_> for DuplicateMethodsVisitor<'_> {
     }
 
     fn visit_call_node(&mut self, node: &ruby_prism::CallNode) {
-        let method_name = String::from_utf8_lossy(node.name().as_slice()).to_string();
+        let method_name = node_name!(node).to_string();
 
         if node.receiver().is_none() {
             match method_name.as_str() {

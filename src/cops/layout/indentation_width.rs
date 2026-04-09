@@ -868,7 +868,7 @@ impl<'a> IndentationWidthVisitor<'a> {
             if let ruby_prism::Node::CallNode { .. } = node {
                 let call = node.as_call_node().unwrap();
                 if is_standalone_access_modifier(&call) {
-                    let name = String::from_utf8_lossy(call.name().as_slice());
+                    let name = node_name!(call);
                     if name == "module_function" {
                         current_modifier_off = None;
                         is_public_section = false;
@@ -1364,7 +1364,7 @@ impl Visit<'_> for IndentationWidthVisitor<'_> {
         self.check_modifier_def(node);
 
         // Check setter assignment (on_send for setter methods)
-        let name = String::from_utf8_lossy(node.name().as_slice());
+        let name = node_name!(node);
         if name.ends_with('=')
             && !name.starts_with('!')
             && !name.starts_with('=')

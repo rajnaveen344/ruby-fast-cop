@@ -104,7 +104,7 @@ impl<'a> BlockVisitor<'a> {
     }
 
     fn method_name_str(&self, call: &ruby_prism::CallNode) -> String {
-        String::from_utf8_lossy(call.name().as_slice()).to_string()
+        node_name!(call).to_string()
     }
 
     fn is_allowed_method(&self, name: &str) -> bool {

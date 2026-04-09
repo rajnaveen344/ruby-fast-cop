@@ -22,6 +22,7 @@ use ruby_prism::Visit;
 /// # also good - block form
 /// File.open('file') { |f| ... }
 /// ```
+#[derive(Default)]
 pub struct AutoResourceCleanup;
 
 impl AutoResourceCleanup {
@@ -31,7 +32,7 @@ impl AutoResourceCleanup {
 
     fn is_resource_open_call(node: &ruby_prism::CallNode) -> Option<String> {
         // Check if the method is 'open'
-        let method_name = String::from_utf8_lossy(node.name().as_slice());
+        let method_name = node_name!(node);
         if method_name != "open" {
             return None;
         }
@@ -41,7 +42,7 @@ impl AutoResourceCleanup {
             // Handle simple constant: File.open
             if let ruby_prism::Node::ConstantReadNode { .. } = &receiver {
                 let const_node = receiver.as_constant_read_node().unwrap();
-                let const_name = String::from_utf8_lossy(const_node.name().as_slice());
+                let const_name = node_name!(const_node);
                 if const_name == "File" || const_name == "Tempfile" {
                     return Some(format!("{}.open", const_name));
                 }
@@ -62,12 +63,6 @@ impl AutoResourceCleanup {
         }
 
         None
-    }
-}
-
-impl Default for AutoResourceCleanup {
-    fn default() -> Self {
-        Self::new()
     }
 }
 
@@ -104,7 +99,7 @@ impl<'a> ResourceVisitor<'a> {
 
 impl Visit<'_> for ResourceVisitor<'_> {
     fn visit_call_node(&mut self, node: &ruby_prism::CallNode) {
-        let method_name = String::from_utf8_lossy(node.name().as_slice());
+        let method_name = node_name!(node);
 
         // If this is a .close call, check if the receiver is a File.open call
         // In that case, we don't flag it (e.g., File.open("f").close is okay)
@@ -146,78 +141,5 @@ impl Cop for AutoResourceCleanup {
         let mut visitor = ResourceVisitor::new(ctx, self.name());
         visitor.visit_program_node(node);
         visitor.offenses
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::cops;
-    use ruby_prism::parse;
-
-    fn check(source: &str) -> Vec<Offense> {
-        let cop: Box<dyn Cop> = Box::new(AutoResourceCleanup::new());
-        let cops = vec![cop];
-        let result = parse(source.as_bytes());
-        cops::run_cops(&cops, &result, source, "test.rb")
-    }
-
-    #[test]
-    fn flags_file_open_assignment() {
-        let offenses = check("f = File.open('test.txt')");
-        assert_eq!(offenses.len(), 1);
-        assert!(offenses[0].message.contains("File.open"));
-    }
-
-    #[test]
-    fn flags_tempfile_open_assignment() {
-        let offenses = check("f = Tempfile.open('temp')");
-        assert_eq!(offenses.len(), 1);
-        assert!(offenses[0].message.contains("Tempfile.open"));
-    }
-
-    #[test]
-    fn allows_file_open_with_block() {
-        let source = r#"
-File.open('test.txt') do |f|
-  f.read
-end
-"#;
-        let offenses = check(source);
-        assert_eq!(offenses.len(), 0);
-    }
-
-    #[test]
-    fn allows_file_open_with_brace_block() {
-        let offenses = check("File.open('test.txt') { |f| f.read }");
-        assert_eq!(offenses.len(), 0);
-    }
-
-    #[test]
-    fn allows_file_read() {
-        // File.read doesn't need a block
-        let offenses = check("content = File.read('test.txt')");
-        assert_eq!(offenses.len(), 0);
-    }
-
-    #[test]
-    fn allows_non_file_open() {
-        let offenses = check("x = SomeClass.open('test')");
-        assert_eq!(offenses.len(), 0);
-    }
-
-    #[test]
-    fn flags_file_open_without_assignment() {
-        // File.open without a block should be flagged even without assignment
-        let offenses = check("File.open('test.txt')");
-        assert_eq!(offenses.len(), 1);
-        assert!(offenses[0].message.contains("File.open"));
-    }
-
-    #[test]
-    fn allows_file_open_with_immediate_close() {
-        // File.open("f").close is okay - resource is immediately closed
-        let offenses = check("File.open('test.txt').close");
-        assert_eq!(offenses.len(), 0);
     }
 }

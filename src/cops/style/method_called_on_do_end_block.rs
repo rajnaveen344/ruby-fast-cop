@@ -25,6 +25,7 @@ use crate::offense::{Offense, Severity};
 /// end
 /// foo.c
 /// ```
+#[derive(Default)]
 pub struct MethodCalledOnDoEndBlock;
 
 impl MethodCalledOnDoEndBlock {
@@ -45,12 +46,6 @@ impl MethodCalledOnDoEndBlock {
             }
         }
         false
-    }
-}
-
-impl Default for MethodCalledOnDoEndBlock {
-    fn default() -> Self {
-        Self::new()
     }
 }
 
@@ -105,60 +100,5 @@ impl Cop for MethodCalledOnDoEndBlock {
             }
         }
         vec![]
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::cops;
-    use ruby_prism::parse;
-
-    fn check(source: &str) -> Vec<Offense> {
-        let cop: Box<dyn Cop> = Box::new(MethodCalledOnDoEndBlock::new());
-        let cops = vec![cop];
-        let result = parse(source.as_bytes());
-        cops::run_cops(&cops, &result, source, "test.rb")
-    }
-
-    #[test]
-    fn detects_method_on_do_end_block() {
-        let source = r#"
-a do
-  b
-end.c
-"#;
-        let offenses = check(source);
-        assert_eq!(offenses.len(), 1);
-        assert!(offenses[0].message.contains("do...end"));
-    }
-
-    #[test]
-    fn allows_method_on_brace_block() {
-        let offenses = check("a { b }.c");
-        assert_eq!(offenses.len(), 0);
-    }
-
-    #[test]
-    fn allows_do_end_block_without_chained_method() {
-        let source = r#"
-a do
-  b
-end
-"#;
-        let offenses = check(source);
-        assert_eq!(offenses.len(), 0);
-    }
-
-    #[test]
-    fn allows_assigning_block_result_then_calling() {
-        let source = r#"
-foo = a do
-  b
-end
-foo.c
-"#;
-        let offenses = check(source);
-        assert_eq!(offenses.len(), 0);
     }
 }

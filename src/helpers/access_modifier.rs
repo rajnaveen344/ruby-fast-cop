@@ -19,7 +19,7 @@ pub fn is_bare_access_modifier(call: &ruby_prism::CallNode) -> bool {
     if call.receiver().is_some() {
         return false;
     }
-    let name = String::from_utf8_lossy(call.name().as_slice());
+    let name = node_name!(call);
     if !ACCESS_MODIFIERS.contains(&name.as_ref()) {
         return false;
     }
@@ -35,7 +35,7 @@ pub fn is_access_modifier(call: &ruby_prism::CallNode) -> bool {
     if call.receiver().is_some() {
         return false;
     }
-    let name = String::from_utf8_lossy(call.name().as_slice());
+    let name = node_name!(call);
     ACCESS_MODIFIERS.contains(&name.as_ref())
 }
 
@@ -47,11 +47,11 @@ pub fn extract_bare_access_modifier(node: &Node) -> Option<(String, usize, usize
         return None;
     }
     let msg_loc = call.message_loc()?;
-    let name = String::from_utf8_lossy(call.name().as_slice()).to_string();
+    let name = node_name!(call).to_string();
     Some((name, msg_loc.start_offset(), msg_loc.end_offset()))
 }
 
 /// Get the access modifier name from a CallNode (without checking if it's bare).
 pub fn access_modifier_name(call: &ruby_prism::CallNode) -> String {
-    String::from_utf8_lossy(call.name().as_slice()).to_string()
+    node_name!(call).to_string()
 }

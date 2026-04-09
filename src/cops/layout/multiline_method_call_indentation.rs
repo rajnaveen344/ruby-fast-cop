@@ -90,7 +90,7 @@ impl<'a> MultilineVisitor<'a> {
             None => return,
         };
 
-        let name = String::from_utf8_lossy(node.name().as_slice());
+        let name = node_name!(node);
         if name.as_ref() == "[]" || name.as_ref() == "[]=" { return; }
 
         let dot = match node.call_operator_loc() {
@@ -963,7 +963,7 @@ fn walk_up_chain(node: &Node) -> usize {
 }
 
 fn is_assignment_method(call: &ruby_prism::CallNode) -> bool {
-    let name = String::from_utf8_lossy(call.name().as_slice());
+    let name = node_name!(call);
     name.ends_with('=') && name.as_ref() != "==" && name.as_ref() != "!="
         && name.as_ref() != "<=" && name.as_ref() != ">="
 }

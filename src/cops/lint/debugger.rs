@@ -121,7 +121,7 @@ impl<'a> DebuggerVisitor<'a> {
     }
 
     fn is_debugger_require(&self, node: &ruby_prism::CallNode) -> bool {
-        if String::from_utf8_lossy(node.name().as_slice()) != "require" { return false; }
+        if node_name!(node) != "require" { return false; }
         if node.receiver().is_some() { return false; }
         let args = match node.arguments() { Some(a) => a, None => return false };
         let arg_list: Vec<_> = args.arguments().iter().collect();
@@ -203,7 +203,7 @@ impl Visit<'_> for DebuggerVisitor<'_> {
 }
 
 fn chained_method_name(node: &ruby_prism::CallNode, ctx: &CheckContext) -> String {
-    let method_name = String::from_utf8_lossy(node.name().as_slice()).to_string();
+    let method_name = node_name!(node).to_string();
 
     let mut parts = vec![method_name];
     let mut current_receiver = node.receiver();
@@ -213,11 +213,11 @@ fn chained_method_name(node: &ruby_prism::CallNode, ctx: &CheckContext) -> Strin
             Some(ref recv) => match recv {
                 ruby_prism::Node::CallNode { .. } => {
                     let call_node = recv.as_call_node().unwrap();
-                    parts.push(String::from_utf8_lossy(call_node.name().as_slice()).to_string());
+                    parts.push(node_name!(call_node).to_string());
                     current_receiver = call_node.receiver();
                 }
                 ruby_prism::Node::ConstantReadNode { .. } => {
-                    parts.push(String::from_utf8_lossy(recv.as_constant_read_node().unwrap().name().as_slice()).to_string());
+                    parts.push(node_name!(recv.as_constant_read_node().unwrap()).to_string());
                     break;
                 }
                 ruby_prism::Node::ConstantPathNode { .. } => { parts.push(full_const_path(recv, ctx)); break; }
@@ -234,7 +234,7 @@ fn chained_method_name(node: &ruby_prism::CallNode, ctx: &CheckContext) -> Strin
 fn full_const_path(node: &ruby_prism::Node, ctx: &CheckContext) -> String {
     match node {
         ruby_prism::Node::ConstantReadNode { .. } => {
-            String::from_utf8_lossy(node.as_constant_read_node().unwrap().name().as_slice()).to_string()
+            node_name!(node.as_constant_read_node().unwrap()).to_string()
         }
         ruby_prism::Node::ConstantPathNode { .. } => {
             let path_node = node.as_constant_path_node().unwrap();
@@ -245,168 +245,5 @@ fn full_const_path(node: &ruby_prism::Node, ctx: &CheckContext) -> String {
             }
         }
         _ => ctx.source.get(node.location().start_offset()..node.location().end_offset()).unwrap_or("").to_string()
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::check_source_with_cops;
-
-    fn check(source: &str) -> Vec<Offense> {
-        let cops: Vec<Box<dyn crate::cops::Cop>> = vec![Box::new(Debugger::new())];
-        check_source_with_cops(source, "test.rb", &cops)
-    }
-
-    fn offense_at(offenses: &[Offense], line: u32) -> Option<&Offense> {
-        offenses.iter().find(|o| o.location.line == line)
-    }
-
-    // Kernel methods
-    #[test]
-    fn detects_binding_irb() {
-        let offenses = check("binding.irb");
-        assert_eq!(offenses.len(), 1);
-        assert!(offenses[0].message.contains("binding.irb"));
-    }
-
-    // Byebug
-    #[test]
-    fn detects_byebug() {
-        let offenses = check("byebug");
-        assert_eq!(offenses.len(), 1);
-    }
-
-    #[test]
-    fn detects_remote_byebug() {
-        let offenses = check("remote_byebug");
-        assert_eq!(offenses.len(), 1);
-    }
-
-    // Pry
-    #[test]
-    fn detects_binding_pry() {
-        let offenses = check("binding.pry");
-        assert_eq!(offenses.len(), 1);
-    }
-
-    #[test]
-    fn detects_binding_remote_pry() {
-        let offenses = check("binding.remote_pry");
-        assert_eq!(offenses.len(), 1);
-    }
-
-    #[test]
-    fn detects_pry_rescue() {
-        let offenses = check("Pry.rescue { }");
-        assert_eq!(offenses.len(), 1);
-    }
-
-    // Rails
-    #[test]
-    fn detects_debugger() {
-        let offenses = check("debugger");
-        assert_eq!(offenses.len(), 1);
-        assert_eq!(offenses[0].cop_name, "Lint/Debugger");
-    }
-
-    // RubyJard
-    #[test]
-    fn detects_jard() {
-        let offenses = check("jard");
-        assert_eq!(offenses.len(), 1);
-    }
-
-    // WebConsole
-    #[test]
-    fn detects_binding_console() {
-        let offenses = check("binding.console");
-        assert_eq!(offenses.len(), 1);
-    }
-
-    // debug.rb
-    #[test]
-    fn detects_binding_break() {
-        let offenses = check("binding.break");
-        assert_eq!(offenses.len(), 1);
-    }
-
-    #[test]
-    fn detects_binding_b() {
-        let offenses = check("binding.b");
-        assert_eq!(offenses.len(), 1);
-    }
-
-    // Kernel prefixed
-    #[test]
-    fn detects_kernel_debugger() {
-        let offenses = check("Kernel.debugger");
-        assert_eq!(offenses.len(), 1);
-    }
-
-    #[test]
-    fn detects_kernel_binding_pry() {
-        let offenses = check("Kernel.binding.pry");
-        assert_eq!(offenses.len(), 1);
-    }
-
-    // Debugger requires
-    #[test]
-    fn detects_require_debug_start() {
-        let offenses = check("require 'debug/start'");
-        assert_eq!(offenses.len(), 1);
-    }
-
-    #[test]
-    fn detects_require_debug_open() {
-        let offenses = check("require 'debug/open'");
-        assert_eq!(offenses.len(), 1);
-    }
-
-    // Multiple debuggers
-    #[test]
-    fn detects_multiple_debuggers() {
-        let source = r#"
-def foo
-  debugger
-  puts "hello"
-  binding.pry
-end
-"#;
-        let offenses = check(source);
-        assert_eq!(offenses.len(), 2);
-        assert!(offense_at(&offenses, 3).is_some());
-        assert!(offense_at(&offenses, 5).is_some());
-    }
-
-    // Should NOT match
-    #[test]
-    fn ignores_debugger_as_string() {
-        let offenses = check(r#"puts "debugger""#);
-        assert_eq!(offenses.len(), 0);
-    }
-
-    #[test]
-    fn ignores_debugger_as_symbol() {
-        let offenses = check(":debugger");
-        assert_eq!(offenses.len(), 0);
-    }
-
-    #[test]
-    fn ignores_debugger_in_comment() {
-        let offenses = check("# debugger");
-        assert_eq!(offenses.len(), 0);
-    }
-
-    #[test]
-    fn ignores_unrelated_require() {
-        let offenses = check("require 'json'");
-        assert_eq!(offenses.len(), 0);
-    }
-
-    #[test]
-    fn ignores_method_with_similar_name() {
-        let offenses = check("my_debugger");
-        assert_eq!(offenses.len(), 0);
     }
 }

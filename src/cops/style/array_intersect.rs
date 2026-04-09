@@ -1,6 +1,7 @@
 use crate::cops::{CheckContext, Cop};
 use crate::offense::{Correction, Offense, Severity};
 
+#[derive(Default)]
 pub struct ArrayIntersect {
     active_support_extensions: bool,
 }
@@ -265,10 +266,6 @@ impl ArrayIntersect {
             _ => false,
         }
     }
-}
-
-impl Default for ArrayIntersect {
-    fn default() -> Self { Self::new() }
 }
 
 impl Cop for ArrayIntersect {

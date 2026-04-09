@@ -103,7 +103,7 @@ impl PredicateMethod {
 
             Node::CallNode { .. } => {
                 let call = node.as_call_node().unwrap();
-                let name = String::from_utf8_lossy(call.name().as_slice()).to_string();
+                let name = node_name!(call).to_string();
                 if name == "!" || is_comparison_method(&name) {
                     return ReturnKind::Boolean;
                 }
@@ -454,7 +454,7 @@ impl Cop for PredicateMethod {
     }
 
     fn check_def(&self, node: &ruby_prism::DefNode, ctx: &CheckContext) -> Vec<Offense> {
-        let method_name = String::from_utf8_lossy(node.name().as_slice()).to_string();
+        let method_name = node_name!(node).to_string();
         let name_loc = node.name_loc();
         self.check_method(&method_name, name_loc.start_offset(), name_loc.end_offset(), node.body(), ctx.source, ctx)
     }

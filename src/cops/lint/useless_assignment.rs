@@ -360,7 +360,7 @@ struct VarNameFinder<'a> {
 
 impl<'a> Visit<'_> for VarNameFinder<'a> {
     fn visit_local_variable_read_node(&mut self, node: &ruby_prism::LocalVariableReadNode) {
-        let name = String::from_utf8_lossy(node.name().as_slice()).to_string();
+        let name = node_name!(node).to_string();
         if name == self.name {
             self.found = true;
         }

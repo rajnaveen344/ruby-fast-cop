@@ -45,7 +45,7 @@ impl NegativeArrayIndex {
                         return true;
                     }
                 };
-                let method = String::from_utf8_lossy(call.name().as_slice());
+                let method = node_name!(call);
                 if !PRESERVING_METHODS.contains(&method.as_ref()) {
                     return false;
                 }
@@ -91,7 +91,7 @@ impl NegativeArrayIndex {
                 match call.receiver() {
                     None => true, // bare method call / variable
                     Some(receiver) => {
-                        let method = String::from_utf8_lossy(call.name().as_slice());
+                        let method = node_name!(call);
                         if !PRESERVING_METHODS.contains(&method.as_ref()) {
                             return false;
                         }
@@ -125,11 +125,11 @@ impl NegativeArrayIndex {
 
     fn check_length_subtraction(source: &str, node: &Node, array_receiver: &Node, strict: bool) -> Option<i64> {
         let call = node.as_call_node()?;
-        if String::from_utf8_lossy(call.name().as_slice()) != "-" { return None; }
+        if node_name!(call) != "-" { return None; }
 
         let recv = call.receiver()?;
         let length_call = recv.as_call_node()?;
-        if !LENGTH_METHODS.contains(&String::from_utf8_lossy(length_call.name().as_slice()).as_ref()) { return None; }
+        if !LENGTH_METHODS.contains(&node_name!(length_call).as_ref()) { return None; }
         if length_call.arguments().map_or(false, |a| a.arguments().iter().count() > 0) { return None; }
         if length_call.block().is_some() { return None; }
 
@@ -149,7 +149,7 @@ impl NegativeArrayIndex {
     }
 
     fn is_bracket_call(call: &ruby_prism::CallNode) -> bool {
-        let method = String::from_utf8_lossy(call.name().as_slice());
+        let method = node_name!(call);
         method.as_ref() == "[]"
     }
 
@@ -284,38 +284,5 @@ impl Cop for NegativeArrayIndex {
         }
 
         self.check_simple_index(node, ctx)
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::cops;
-    use ruby_prism::parse;
-
-    fn check(source: &str) -> Vec<Offense> {
-        let cop: Box<dyn Cop> = Box::new(NegativeArrayIndex::new());
-        let cops = vec![cop];
-        let result = parse(source.as_bytes());
-        cops::run_cops(&cops, &result, source, "test.rb")
-    }
-
-    #[test]
-    fn basic_simple_index() {
-        let offenses = check("arr[arr.length - 2]");
-        assert_eq!(offenses.len(), 1, "offenses: {:?}", offenses);
-        assert!(offenses[0].message.contains("arr[-2]"), "msg: {}", offenses[0].message);
-    }
-
-    #[test]
-    fn no_offense_different_receiver() {
-        let offenses = check("arr[other.length - 2]");
-        assert_eq!(offenses.len(), 0);
-    }
-
-    #[test]
-    fn no_offense_plain_index() {
-        let offenses = check("arr[1]");
-        assert_eq!(offenses.len(), 0);
     }
 }

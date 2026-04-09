@@ -172,7 +172,7 @@ impl Cop for Sample {
     }
 
     fn check_call(&self, node: &CallNode, ctx: &CheckContext) -> Vec<Offense> {
-        let method_name = String::from_utf8_lossy(node.name().as_slice());
+        let method_name = node_name!(node);
 
         // Must be one of: first, last, [], at, slice
         if !matches!(
@@ -193,7 +193,7 @@ impl Cop for Sample {
             _ => return vec![],
         };
 
-        let shuffle_name = String::from_utf8_lossy(shuffle_node.name().as_slice());
+        let shuffle_name = node_name!(shuffle_node);
         if shuffle_name != "shuffle" {
             return vec![];
         }

@@ -331,7 +331,7 @@ impl<'a> Visitor<'a> {
 
 impl Visit<'_> for Visitor<'_> {
     fn visit_call_node(&mut self, node: &ruby_prism::CallNode) {
-        let name = String::from_utf8_lossy(node.name().as_slice()).to_string();
+        let name = node_name!(node).to_string();
         let is_setter = name.ends_with('=') && !name.ends_with("==") && name != "!=";
         let is_operator = is_operator_method(&name);
         let has_dot = node.call_operator_loc().is_some();

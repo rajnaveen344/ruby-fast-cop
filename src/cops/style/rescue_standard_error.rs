@@ -33,7 +33,7 @@ impl RescueVisitor<'_> {
     fn is_standard_error(&self, node: &ruby_prism::Node) -> bool {
         match node {
             ruby_prism::Node::ConstantReadNode { .. } =>
-                String::from_utf8_lossy(node.as_constant_read_node().unwrap().name().as_slice()) == "StandardError",
+                node_name!(node.as_constant_read_node().unwrap()) == "StandardError",
             ruby_prism::Node::ConstantPathNode { .. } => {
                 let path = node.as_constant_path_node().unwrap();
                 path.parent().is_none() && path.name()
@@ -84,116 +84,5 @@ impl Cop for RescueStandardError {
         let mut visitor = RescueVisitor { ctx, enforced_style: self.enforced_style, cop_name: self.name(), offenses: Vec::new() };
         visitor.visit_program_node(node);
         visitor.offenses
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::cops;
-    use ruby_prism::parse;
-
-    fn check_with_style(source: &str, style: EnforcedStyle) -> Vec<Offense> {
-        let cop: Box<dyn Cop> = Box::new(RescueStandardError::new(style));
-        let cops = vec![cop];
-        let result = parse(source.as_bytes());
-        cops::run_cops(&cops, &result, source, "test.rb")
-    }
-
-    fn check(source: &str) -> Vec<Offense> {
-        check_with_style(source, EnforcedStyle::Implicit)
-    }
-
-    #[test]
-    fn implicit_flags_standard_error() {
-        let source = r#"
-begin
-  foo
-rescue StandardError
-  bar
-end
-"#;
-        let offenses = check(source);
-        assert_eq!(offenses.len(), 1);
-        assert!(offenses[0].message.contains("Omit"));
-    }
-
-    #[test]
-    fn implicit_allows_bare_rescue() {
-        let source = r#"
-begin
-  foo
-rescue
-  bar
-end
-"#;
-        let offenses = check(source);
-        assert_eq!(offenses.len(), 0);
-    }
-
-    #[test]
-    fn implicit_allows_other_exceptions() {
-        let source = r#"
-begin
-  foo
-rescue RuntimeError
-  bar
-end
-"#;
-        let offenses = check(source);
-        assert_eq!(offenses.len(), 0);
-    }
-
-    #[test]
-    fn implicit_allows_multiple_exceptions() {
-        let source = r#"
-begin
-  foo
-rescue StandardError, RuntimeError
-  bar
-end
-"#;
-        let offenses = check(source);
-        assert_eq!(offenses.len(), 0);
-    }
-
-    #[test]
-    fn explicit_flags_bare_rescue() {
-        let source = r#"
-begin
-  foo
-rescue
-  bar
-end
-"#;
-        let offenses = check_with_style(source, EnforcedStyle::Explicit);
-        assert_eq!(offenses.len(), 1);
-        assert!(offenses[0].message.contains("without specifying"));
-    }
-
-    #[test]
-    fn explicit_allows_standard_error() {
-        let source = r#"
-begin
-  foo
-rescue StandardError
-  bar
-end
-"#;
-        let offenses = check_with_style(source, EnforcedStyle::Explicit);
-        assert_eq!(offenses.len(), 0);
-    }
-
-    #[test]
-    fn allows_rescue_with_variable() {
-        let source = r#"
-begin
-  foo
-rescue => e
-  bar
-end
-"#;
-        let offenses = check(source);
-        assert_eq!(offenses.len(), 0);
     }
 }

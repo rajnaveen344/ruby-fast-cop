@@ -1,3 +1,16 @@
+// ── Crate-wide macros (must appear before `mod` declarations) ──
+
+/// Extract a Prism node's name as a `Cow<str>`.
+/// Shorthand for `String::from_utf8_lossy(node.name().as_slice())`.
+#[macro_export]
+macro_rules! node_name {
+    ($node:expr) => {
+        String::from_utf8_lossy($node.name().as_slice())
+    };
+}
+
+// ── Modules ──
+
 pub mod config;
 pub mod cops;
 pub mod correction;

@@ -128,7 +128,7 @@ impl Visit<'_> for InfoCollector {
 
     fn visit_call_node(&mut self, node: &ruby_prism::CallNode) {
         if self.def_depth == 0 && self.args_depth == 0 {
-            let name = String::from_utf8_lossy(node.name().as_slice());
+            let name = node_name!(node);
             if ACCESS_MODIFIERS.contains(&name.as_ref())
                 && node.receiver().is_none()
                 && node.arguments().map_or(true, |a| a.arguments().is_empty())

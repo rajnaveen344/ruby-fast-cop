@@ -12,6 +12,7 @@ use crate::cops::{CheckContext, Cop};
 use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::Node;
 
+#[derive(Default)]
 pub struct ZeroLengthPredicate;
 
 impl ZeroLengthPredicate {
@@ -20,15 +21,9 @@ impl ZeroLengthPredicate {
     }
 }
 
-impl Default for ZeroLengthPredicate {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
 /// Check if a call node is a `.length` or `.size` method call with a receiver and no args
 fn is_length_or_size(node: &ruby_prism::CallNode) -> bool {
-    let name = String::from_utf8_lossy(node.name().as_slice());
+    let name = node_name!(node);
     (name == "length" || name == "size") && node.receiver().is_some() && node.arguments().is_none()
 }
 
@@ -56,7 +51,7 @@ fn is_non_polymorphic(length_call: &ruby_prism::CallNode, source: &str) -> bool 
         None => return false,
     };
 
-    let inner_name = String::from_utf8_lossy(inner_call.name().as_slice());
+    let inner_name = node_name!(inner_call);
 
     if inner_name == "stat" {
         if let Some(inner_recv) = inner_call.receiver() {
@@ -78,7 +73,7 @@ fn is_non_polymorphic(length_call: &ruby_prism::CallNode, source: &str) -> bool 
 /// Check if a node is a constant with the given name (handles both `Foo` and `::Foo`)
 fn is_constant_named(node: &Node, name: &str, source: &str) -> bool {
     if let Some(c) = node.as_constant_read_node() {
-        let cname = String::from_utf8_lossy(c.name().as_slice());
+        let cname = node_name!(c);
         return cname == name;
     }
     if let Node::ConstantPathNode { .. } = node {
@@ -107,7 +102,7 @@ impl Cop for ZeroLengthPredicate {
     }
 
     fn check_call(&self, node: &ruby_prism::CallNode, ctx: &CheckContext) -> Vec<Offense> {
-        let method_name = String::from_utf8_lossy(node.name().as_slice());
+        let method_name = node_name!(node);
 
         match method_name.as_ref() {
             "zero?" => self.check_zero_predicate(node, ctx),
@@ -162,7 +157,7 @@ impl ZeroLengthPredicate {
 
     /// Handle comparison patterns
     fn check_comparison(&self, node: &ruby_prism::CallNode, ctx: &CheckContext) -> Vec<Offense> {
-        let op = String::from_utf8_lossy(node.name().as_slice()).to_string();
+        let op = node_name!(node).to_string();
 
         let receiver = match node.receiver() {
             Some(r) => r,
@@ -210,7 +205,7 @@ impl ZeroLengthPredicate {
         int_val: i64,
         ctx: &CheckContext,
     ) -> Vec<Offense> {
-        let length_name = String::from_utf8_lossy(length_call.name().as_slice());
+        let length_name = node_name!(length_call);
 
         let is_zero = match (op, int_val) {
             ("==", 0) => Some(true),
@@ -264,7 +259,7 @@ impl ZeroLengthPredicate {
         int_val: i64,
         ctx: &CheckContext,
     ) -> Vec<Offense> {
-        let length_name = String::from_utf8_lossy(length_call.name().as_slice());
+        let length_name = node_name!(length_call);
 
         let is_zero = match (op, int_val) {
             ("==", 0) => Some(true),

@@ -200,7 +200,7 @@ impl<'a> AndOrVisitor<'a> {
 
     /// Correct a call node - handle !, setter, comparison, and regular calls
     fn correct_call(&self, call: &ruby_prism::CallNode, edits: &mut Vec<Edit>) {
-        let method_name = String::from_utf8_lossy(call.name().as_slice());
+        let method_name = node_name!(call);
 
         // Handle `!` (bang/not) operator
         if method_name == "!" {
@@ -315,7 +315,7 @@ impl<'a> AndOrVisitor<'a> {
 
     /// Check if a call node is correctable (bare args, not subscript)
     fn is_correctable_send(&self, call: &ruby_prism::CallNode) -> bool {
-        let method_name = String::from_utf8_lossy(call.name().as_slice());
+        let method_name = node_name!(call);
         call.opening_loc().is_none()
             && call.arguments().map_or(false, |a| a.arguments().iter().count() > 0)
             && method_name != "[]"

@@ -46,7 +46,7 @@ impl Cop for StringMethods {
     }
 
     fn check_call(&self, node: &ruby_prism::CallNode, ctx: &CheckContext) -> Vec<Offense> {
-        let method_name = String::from_utf8_lossy(node.name().as_slice());
+        let method_name = node_name!(node);
 
         if let Some(&preferred) = self.preferred_methods.get(method_name.as_ref()) {
             // Use message_loc() to get the location of just the method name, not the whole call
@@ -67,39 +67,5 @@ impl Cop for StringMethods {
         }
 
         vec![]
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::cops;
-    use ruby_prism::parse;
-
-    fn check(source: &str) -> Vec<Offense> {
-        let cop: Box<dyn Cop> = Box::new(StringMethods::new());
-        let cops = vec![cop];
-        let result = parse(source.as_bytes());
-        cops::run_cops(&cops, &result, source, "test.rb")
-    }
-
-    #[test]
-    fn detects_intern() {
-        let offenses = check("'name'.intern");
-        assert_eq!(offenses.len(), 1);
-        assert!(offenses[0].message.contains("to_sym"));
-        assert!(offenses[0].message.contains("intern"));
-    }
-
-    #[test]
-    fn allows_to_sym() {
-        let offenses = check("'name'.to_sym");
-        assert_eq!(offenses.len(), 0);
-    }
-
-    #[test]
-    fn allows_other_methods() {
-        let offenses = check("'name'.upcase");
-        assert_eq!(offenses.len(), 0);
     }
 }

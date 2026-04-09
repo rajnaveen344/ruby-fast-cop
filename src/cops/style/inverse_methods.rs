@@ -101,7 +101,7 @@ impl InverseMethods {
         if !Self::is_csend(call, source) {
             return false;
         }
-        let method = String::from_utf8_lossy(call.name().as_slice());
+        let method = node_name!(call);
         SAFE_NAV_INCOMPATIBLE.contains(&method.as_ref())
     }
 
@@ -149,7 +149,7 @@ impl InverseMethods {
         match node {
             Node::CallNode { .. } => {
                 let call = node.as_call_node().unwrap();
-                let method = String::from_utf8_lossy(call.name().as_slice());
+                let method = node_name!(call);
                 method == "!" || NEGATED_EQUALITY_METHODS.contains(&method.as_ref())
             }
             Node::ParenthesesNode { .. } => {
@@ -212,7 +212,7 @@ impl<'a> InverseMethodsVisitor<'a> {
             None => return,
         };
 
-        let method_name = String::from_utf8_lossy(method_call.name().as_slice()).to_string();
+        let method_name = node_name!(method_call).to_string();
 
         if !self.cop.inverse_methods.contains_key(&method_name) {
             return;
@@ -275,7 +275,7 @@ impl<'a> InverseMethodsVisitor<'a> {
     /// Check calls with blocks for inverse block pattern
     fn check_inverse_block(&mut self, call_node: &ruby_prism::CallNode) {
         let source = self.ctx.source;
-        let method_name = String::from_utf8_lossy(call_node.name().as_slice()).to_string();
+        let method_name = node_name!(call_node).to_string();
 
         if !self.cop.inverse_blocks.contains_key(&method_name) {
             return;
@@ -368,7 +368,7 @@ impl<'a> InverseMethodsVisitor<'a> {
 
 impl Visit<'_> for InverseMethodsVisitor<'_> {
     fn visit_call_node(&mut self, node: &ruby_prism::CallNode) {
-        let method_name = String::from_utf8_lossy(node.name().as_slice());
+        let method_name = node_name!(node);
 
         if method_name == "!" {
             self.check_inverse_method(node);

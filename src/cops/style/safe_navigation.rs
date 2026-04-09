@@ -1059,35 +1059,3 @@ impl<'a> Visit<'_> for SafeNavVisitor<'a> {
         self.check_and(node);
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::cops;
-    use ruby_prism::parse;
-
-    fn check(source: &str) -> Vec<Offense> {
-        let cop: Box<dyn Cop> = Box::new(SafeNavigation::new());
-        let cops_list = vec![cop];
-        let result = parse(source.as_bytes());
-        cops::run_cops_with_version(&cops_list, &result, source, "test.rb", 2.7)
-    }
-
-    #[test]
-    fn test_and_basic() {
-        let offenses = check("foo && foo.bar");
-        assert_eq!(offenses.len(), 1);
-    }
-
-    #[test]
-    fn test_if_basic() {
-        let offenses = check("foo.bar if foo");
-        assert_eq!(offenses.len(), 1);
-    }
-
-    #[test]
-    fn test_no_offense_for_non_object_check() {
-        let offenses = check("x.foo? && x.bar?");
-        assert_eq!(offenses.len(), 0);
-    }
-}

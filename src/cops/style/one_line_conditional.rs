@@ -2,6 +2,7 @@ use crate::cops::{CheckContext, Cop};
 use crate::offense::{Offense, Severity};
 use ruby_prism::Node;
 
+#[derive(Default)]
 pub struct OneLineConditional {
     always_multiline: bool,
 }
@@ -86,12 +87,6 @@ impl OneLineConditional {
                 keyword
             )
         }
-    }
-}
-
-impl Default for OneLineConditional {
-    fn default() -> Self {
-        Self::new()
     }
 }
 

@@ -385,7 +385,7 @@ struct VarRefFinder<'a> {
 
 impl<'a> Visit<'_> for VarRefFinder<'a> {
     fn visit_local_variable_read_node(&mut self, node: &ruby_prism::LocalVariableReadNode) {
-        let name = String::from_utf8_lossy(node.name().as_slice()).to_string();
+        let name = node_name!(node).to_string();
         if name == self.name {
             self.found = true;
         }
@@ -408,7 +408,7 @@ impl<'a> Visit<'_> for RefBeforeOffsetFinder<'a> {
             && offset < self.scope_end
             && offset < self.before_offset
         {
-            let name = String::from_utf8_lossy(node.name().as_slice()).to_string();
+            let name = node_name!(node).to_string();
             if name == self.var_name {
                 self.found = true;
             }
@@ -441,7 +441,7 @@ impl Visit<'_> for ImplicitRefFinder {
 
     fn visit_call_node(&mut self, node: &ruby_prism::CallNode) {
         if self.in_scope(&node.as_node()) {
-            let name = String::from_utf8_lossy(node.name().as_slice()).to_string();
+            let name = node_name!(node).to_string();
             if name == "binding" && node.arguments().is_none() && node.receiver().is_none() {
                 self.found = true;
                 return;

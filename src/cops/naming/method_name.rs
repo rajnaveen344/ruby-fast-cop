@@ -157,7 +157,7 @@ impl<'a> MethodNameVisitor<'a> {
     }
 
     fn check_def_node(&mut self, node: &ruby_prism::DefNode) {
-        let name = String::from_utf8_lossy(node.name().as_slice()).to_string();
+        let name = node_name!(node).to_string();
         if is_operator(&name) { return; }
         if node.receiver().is_some() && self.is_class_emitter(&name) { return; }
         let name_loc = node.name_loc();
@@ -242,7 +242,7 @@ impl<'a> MethodNameVisitor<'a> {
 
     fn check_struct_new_or_data_define(&mut self, node: &ruby_prism::CallNode) {
         let args = match node.arguments() { Some(a) => a, None => return };
-        let mut skip_first_string = String::from_utf8_lossy(node.name().as_slice()) == "new";
+        let mut skip_first_string = node_name!(node) == "new";
         for arg in args.arguments().iter() {
             if skip_first_string && matches!(arg, Node::StringNode { .. }) {
                 skip_first_string = false;
@@ -266,7 +266,7 @@ impl<'a> MethodNameVisitor<'a> {
     }
 
     fn is_struct_new_or_data_define(&self, node: &ruby_prism::CallNode) -> bool {
-        let method_name = String::from_utf8_lossy(node.name().as_slice());
+        let method_name = node_name!(node);
         let expected_const = match method_name.as_ref() {
             "new" => "Struct",
             "define" => "Data",
@@ -277,7 +277,7 @@ impl<'a> MethodNameVisitor<'a> {
             None => return false,
         };
         if let Some(c) = receiver.as_constant_read_node() {
-            String::from_utf8_lossy(c.name().as_slice()) == expected_const
+            node_name!(c) == expected_const
         } else if let Some(cp) = receiver.as_constant_path_node() {
             cp.parent().is_none()
                 && cp.name().map_or(false, |n| String::from_utf8_lossy(n.as_slice()) == expected_const)
@@ -290,7 +290,7 @@ impl<'a> MethodNameVisitor<'a> {
         if let Some(c) = node.as_class_node() {
             let path = c.constant_path();
             if let Some(cr) = path.as_constant_read_node() {
-                let name = String::from_utf8_lossy(cr.name().as_slice()).to_string();
+                let name = node_name!(cr).to_string();
                 self.class_names.push(name);
             }
             if let Some(body) = c.body() {
@@ -331,7 +331,7 @@ impl Visit<'_> for MethodNameVisitor<'_> {
     }
 
     fn visit_call_node(&mut self, node: &ruby_prism::CallNode) {
-        let method_name = String::from_utf8_lossy(node.name().as_slice()).to_string();
+        let method_name = node_name!(node).to_string();
 
         if node.receiver().is_none() {
             match method_name.as_str() {

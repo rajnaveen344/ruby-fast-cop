@@ -4,6 +4,7 @@ use ruby_prism::{Node, Visit};
 
 const COP_NAME: &str = "Style/RedundantParentheses";
 
+#[derive(Default)]
 pub struct RedundantParentheses {
     ternary_parentheses_required: bool,
     allow_in_multiline_conditions: bool,
@@ -25,12 +26,6 @@ impl RedundantParentheses {
             ternary_parentheses_required,
             allow_in_multiline_conditions,
         }
-    }
-}
-
-impl Default for RedundantParentheses {
-    fn default() -> Self {
-        Self::new()
     }
 }
 
@@ -163,7 +158,7 @@ fn is_single_statement(body: &Node) -> bool {
 }
 
 fn is_unary_op(call: &ruby_prism::CallNode) -> bool {
-    let m = String::from_utf8_lossy(call.name().as_slice());
+    let m = node_name!(call);
     call.receiver().is_some() && call.arguments().is_none() && matches!(m.as_ref(), "!" | "~" | "-@" | "+@")
 }
 
@@ -253,7 +248,7 @@ impl<'a> Visitor<'a> {
 
             Node::CallNode{..} => {
                 let call = node.as_call_node().unwrap();
-                let m = String::from_utf8_lossy(call.name().as_slice());
+                let m = node_name!(call);
                 if is_comparison_op(&m) { return "a comparison expression"; }
                 if is_unary_op(&call) { return "a unary operation"; }
                 if call.receiver().is_none()
@@ -360,7 +355,7 @@ impl<'a> Visitor<'a> {
                 if is_arith_op(op) && matches!(inner, Node::AndNode{..} | Node::OrNode{..}) { return true; }
                 if is_logical_op(op) {
                     if let Node::CallNode{..} = inner {
-                        let m = String::from_utf8_lossy(inner.as_call_node().unwrap().name().as_slice());
+                        let m = node_name!(inner.as_call_node().unwrap());
                         if is_comparison_op(&m) { return true; }
                     }
                 }
@@ -368,7 +363,7 @@ impl<'a> Visitor<'a> {
                 if self.is_kw_logical(inner) && is_kw_logical_op(op) { return true; }
                 if is_comparison_op(op) {
                     if let Node::CallNode{..} = inner {
-                        let m = String::from_utf8_lossy(inner.as_call_node().unwrap().name().as_slice());
+                        let m = node_name!(inner.as_call_node().unwrap());
                         if is_arith_op(&m) { return true; }
                     }
                 }
@@ -383,7 +378,7 @@ impl<'a> Visitor<'a> {
                 Node::AndNode{..} | Node::OrNode{..} => return true,
                 Node::CallNode{..} => {
                     let call = inner.as_call_node().unwrap();
-                    let m = String::from_utf8_lossy(call.name().as_slice());
+                    let m = node_name!(call);
                     if is_comparison_op(&m) || m == "&" { return true; }
                     if self.has_do_end(inner) { return true; }
                 }
@@ -482,7 +477,7 @@ impl<'a> Visitor<'a> {
         let should_skip_call = with_inner(&body, |inner| {
             if let Node::CallNode{..} = inner {
                 let call = inner.as_call_node().unwrap();
-                let m = String::from_utf8_lossy(call.name().as_slice());
+                let m = node_name!(call);
                 if is_operator_method(&m) && !is_unary_op(&call) && call.call_operator_loc().is_none() {
                     if matches!(pk, PK::BinaryOp | PK::ExponentBase | PK::ExponentPower) { return true; }
                 }
@@ -548,7 +543,7 @@ impl<'a> Visitor<'a> {
             }
             Node::CallNode{..} => {
                 let call = node.as_call_node().unwrap();
-                let m = String::from_utf8_lossy(call.name().as_slice());
+                let m = node_name!(call);
                 m == "-@" && call.receiver().map_or(false, |r| matches!(r, Node::IntegerNode{..} | Node::FloatNode{..}))
             }
             _ => false,
@@ -592,7 +587,7 @@ impl<'a> Visitor<'a> {
         match node {
             Node::CallNode{..} => {
                 let call = node.as_call_node().unwrap();
-                let m = String::from_utf8_lossy(call.name().as_slice());
+                let m = node_name!(call);
                 if is_unary_op(&call) || (is_operator_method(&m) && call.call_operator_loc().is_none()) { return false; }
                 call.arguments().map_or(false, |a| a.arguments().iter().count() > 0) && call.opening_loc().is_none()
             }
@@ -619,7 +614,7 @@ impl<'a> Visitor<'a> {
             Node::DefinedNode{..} | Node::SuperNode{..} | Node::YieldNode{..} => self.has_bare_kw_args(node),
             Node::CallNode{..} => {
                 let call = node.as_call_node().unwrap();
-                let m = String::from_utf8_lossy(call.name().as_slice());
+                let m = node_name!(call);
                 m == "!" && self.ctx.src(call.location().start_offset(), call.location().end_offset()).starts_with("not ")
             }
             Node::AliasMethodNode{..} | Node::AliasGlobalVariableNode{..} => true,
@@ -693,7 +688,7 @@ impl<'a> Visitor<'a> {
     fn is_lambda_proc_do_end(&self, node: &Node) -> bool {
         if let Node::CallNode{..} = node {
             let call = node.as_call_node().unwrap();
-            let m = String::from_utf8_lossy(call.name().as_slice());
+            let m = node_name!(call);
             if (m == "lambda" || m == "proc") && call.receiver().is_none() {
                 return Self::has_do_end_block(&call, self.ctx.source);
             }
@@ -715,7 +710,7 @@ impl<'a> Visitor<'a> {
     fn is_unary_with_unparen(&self, node: &Node) -> bool {
         if let Node::CallNode{..} = node {
             let call = node.as_call_node().unwrap();
-            let m = String::from_utf8_lossy(call.name().as_slice());
+            let m = node_name!(call);
             if m == "!" || m == "~" {
                 if let Some(recv) = call.receiver() {
                     return self.has_unparen_args(&recv);
@@ -737,7 +732,7 @@ impl<'a> Visitor<'a> {
     }
 
     fn visit_call_children(&mut self, node: &ruby_prism::CallNode) {
-        let method_name = String::from_utf8_lossy(node.name().as_slice()).to_string();
+        let method_name = node_name!(node).to_string();
 
         if let Some(recv) = node.receiver() {
             if is_operator_method(&method_name) {
@@ -791,7 +786,7 @@ impl<'a> Visitor<'a> {
                 if is_unary_op(&cn) {
                     if let Some(recv) = cn.receiver() {
                         let mut ctx = PC::new(PK::UnaryOp);
-                        ctx.operator = Some(String::from_utf8_lossy(cn.name().as_slice()).to_string());
+                        ctx.operator = Some(node_name!(cn).to_string());
                         self.push(ctx); self.vn(&recv); self.pop();
                     }
                 } else {

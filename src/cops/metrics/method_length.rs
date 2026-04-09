@@ -50,12 +50,12 @@ impl Cop for MethodLength {
     fn check_def(&self, node: &ruby_prism::DefNode, ctx: &CheckContext) -> Vec<Offense> {
         let loc = node.location();
         let body_start = node.body().map(|b| b.location().start_offset()).unwrap_or(loc.start_offset());
-        self.check_def_body(ctx, &String::from_utf8_lossy(node.name().as_slice()),
+        self.check_def_body(ctx, &node_name!(node),
             loc.start_offset(), loc.end_offset(), Some(body_start)).into_iter().collect()
     }
 
     fn check_call(&self, node: &ruby_prism::CallNode, ctx: &CheckContext) -> Vec<Offense> {
-        if String::from_utf8_lossy(node.name().as_slice()) != "define_method" { return vec![]; }
+        if node_name!(node) != "define_method" { return vec![]; }
         let block_node = match node.block() {
             Some(ruby_prism::Node::BlockNode { .. }) => node.block().unwrap().as_block_node().unwrap(),
             _ => return vec![],

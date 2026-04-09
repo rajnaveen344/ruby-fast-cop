@@ -8,17 +8,12 @@ use ruby_prism::{Node, Visit};
 
 const OPS: &[&str] = &["+", "-", "*", "**", "/", "%", "^", "<<", ">>", "|", "&"];
 
+#[derive(Default)]
 pub struct SelfAssignment;
 
 impl SelfAssignment {
     pub fn new() -> Self {
         Self
-    }
-}
-
-impl Default for SelfAssignment {
-    fn default() -> Self {
-        Self::new()
     }
 }
 
@@ -64,7 +59,7 @@ impl VarInfo {
             VarInfo::Local(name) => {
                 if let Node::LocalVariableReadNode { .. } = node {
                     let read = node.as_local_variable_read_node().unwrap();
-                    let read_name = String::from_utf8_lossy(read.name().as_slice());
+                    let read_name = node_name!(read);
                     return read_name == name.as_str();
                 }
                 false
@@ -72,7 +67,7 @@ impl VarInfo {
             VarInfo::Instance(name) => {
                 if let Node::InstanceVariableReadNode { .. } = node {
                     let read = node.as_instance_variable_read_node().unwrap();
-                    let read_name = String::from_utf8_lossy(read.name().as_slice());
+                    let read_name = node_name!(read);
                     return read_name == name.as_str();
                 }
                 false
@@ -80,7 +75,7 @@ impl VarInfo {
             VarInfo::Class(name) => {
                 if let Node::ClassVariableReadNode { .. } = node {
                     let read = node.as_class_variable_read_node().unwrap();
-                    let read_name = String::from_utf8_lossy(read.name().as_slice());
+                    let read_name = node_name!(read);
                     return read_name == name.as_str();
                 }
                 false
@@ -101,7 +96,7 @@ impl<'a> SelfAssignmentVisitor<'a> {
         // Check for arithmetic/bitwise: x = x + y  or  x = x.+(y)
         if let Node::CallNode { .. } = value {
             let call = value.as_call_node().unwrap();
-            let method = String::from_utf8_lossy(call.name().as_slice());
+            let method = node_name!(call);
 
             if !OPS.contains(&method.as_ref()) {
                 return;
@@ -199,7 +194,7 @@ impl<'a> SelfAssignmentVisitor<'a> {
 
 impl Visit<'_> for SelfAssignmentVisitor<'_> {
     fn visit_local_variable_write_node(&mut self, node: &ruby_prism::LocalVariableWriteNode) {
-        let name = String::from_utf8_lossy(node.name().as_slice()).to_string();
+        let name = node_name!(node).to_string();
         let var_info = VarInfo::Local(name);
         let value = node.value();
         let start = node.location().start_offset();
@@ -214,7 +209,7 @@ impl Visit<'_> for SelfAssignmentVisitor<'_> {
         &mut self,
         node: &ruby_prism::InstanceVariableWriteNode,
     ) {
-        let name = String::from_utf8_lossy(node.name().as_slice()).to_string();
+        let name = node_name!(node).to_string();
         let var_info = VarInfo::Instance(name);
         let value = node.value();
         let start = node.location().start_offset();
@@ -226,7 +221,7 @@ impl Visit<'_> for SelfAssignmentVisitor<'_> {
     }
 
     fn visit_class_variable_write_node(&mut self, node: &ruby_prism::ClassVariableWriteNode) {
-        let name = String::from_utf8_lossy(node.name().as_slice()).to_string();
+        let name = node_name!(node).to_string();
         let var_info = VarInfo::Class(name);
         let value = node.value();
         let start = node.location().start_offset();

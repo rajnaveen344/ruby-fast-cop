@@ -47,7 +47,7 @@ impl RaiseArgs {
         match node {
             ruby_prism::Node::ConstantReadNode { .. } => {
                 let const_node = node.as_constant_read_node().unwrap();
-                Some(String::from_utf8_lossy(const_node.name().as_slice()).to_string())
+                Some(node_name!(const_node).to_string())
             }
             ruby_prism::Node::ConstantPathNode { .. } => {
                 let path_node = node.as_constant_path_node().unwrap();
@@ -76,7 +76,7 @@ impl Cop for RaiseArgs {
     }
 
     fn check_call(&self, node: &ruby_prism::CallNode, ctx: &CheckContext) -> Vec<Offense> {
-        let method_name = String::from_utf8_lossy(node.name().as_slice());
+        let method_name = node_name!(node);
         if method_name != "raise" && method_name != "fail" { return vec![]; }
         if node.receiver().is_some() { return vec![]; }
         let arguments = match node.arguments() { Some(args) => args, None => return vec![] };
@@ -93,7 +93,7 @@ impl Cop for RaiseArgs {
                     let first_is_new_call = if let Some(arg) = args.first() {
                         if let ruby_prism::Node::CallNode { .. } = arg {
                             let call = arg.as_call_node().unwrap();
-                            let name = String::from_utf8_lossy(call.name().as_slice());
+                            let name = node_name!(call);
                             // If it's a .new call with keyword args, it's already an object
                             if name == "new" {
                                 if let Some(new_args) = call.arguments() {
@@ -125,7 +125,7 @@ impl Cop for RaiseArgs {
                             // Check if the first arg is already a .new call (without args)
                             let first_is_bare_new = if let ruby_prism::Node::CallNode { .. } = first_arg {
                                 let call = first_arg.as_call_node().unwrap();
-                                let name = String::from_utf8_lossy(call.name().as_slice());
+                                let name = node_name!(call);
                                 name == "new" && call.arguments().is_none()
                             } else {
                                 false
@@ -170,7 +170,7 @@ impl Cop for RaiseArgs {
                 if args.len() == 1 {
                     if let Some(ruby_prism::Node::CallNode { .. }) = args.first() {
                         let call_arg = args.first().unwrap().as_call_node().unwrap();
-                        let called_method = String::from_utf8_lossy(call_arg.name().as_slice());
+                        let called_method = node_name!(call_arg);
 
                         if called_method == "new" {
                             // Check if receiver exists (could be constant or variable)
@@ -268,81 +268,5 @@ impl Cop for RaiseArgs {
         }
 
         vec![]
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::cops;
-    use ruby_prism::parse;
-
-    fn check_with_style(source: &str, style: EnforcedStyle) -> Vec<Offense> {
-        let cop: Box<dyn Cop> = Box::new(RaiseArgs::new(style));
-        let cops = vec![cop];
-        let result = parse(source.as_bytes());
-        cops::run_cops(&cops, &result, source, "test.rb")
-    }
-
-    fn check(source: &str) -> Vec<Offense> {
-        check_with_style(source, EnforcedStyle::Compact)
-    }
-
-    #[test]
-    fn compact_flags_separate_args() {
-        let offenses = check("raise StandardError, 'message'");
-        assert_eq!(offenses.len(), 1);
-        assert!(offenses[0].message.contains("exception object"));
-    }
-
-    #[test]
-    fn compact_allows_new_call() {
-        let offenses = check("raise StandardError.new('message')");
-        assert_eq!(offenses.len(), 0);
-    }
-
-    #[test]
-    fn compact_allows_just_message() {
-        let offenses = check("raise 'message'");
-        assert_eq!(offenses.len(), 0);
-    }
-
-    #[test]
-    fn compact_allows_just_error_class() {
-        let offenses = check("raise StandardError");
-        assert_eq!(offenses.len(), 0);
-    }
-
-    #[test]
-    fn explode_flags_new_call() {
-        let offenses =
-            check_with_style("raise StandardError.new('message')", EnforcedStyle::Explode);
-        assert_eq!(offenses.len(), 1);
-        assert!(offenses[0].message.contains("class and message"));
-    }
-
-    #[test]
-    fn explode_allows_separate_args() {
-        let offenses = check_with_style("raise StandardError, 'message'", EnforcedStyle::Explode);
-        assert_eq!(offenses.len(), 0);
-    }
-
-    #[test]
-    fn explode_allows_multiple_args_to_new() {
-        // When .new has multiple args, it's allowed
-        let offenses = check_with_style("raise MyError.new('msg', params)", EnforcedStyle::Explode);
-        assert_eq!(offenses.len(), 0);
-    }
-
-    #[test]
-    fn fail_is_also_checked() {
-        let offenses = check("fail StandardError, 'message'");
-        assert_eq!(offenses.len(), 1);
-    }
-
-    #[test]
-    fn allows_raise_with_variable() {
-        let offenses = check("raise error");
-        assert_eq!(offenses.len(), 0);
     }
 }

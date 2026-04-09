@@ -8,6 +8,11 @@ ruby-fast-cop is a high-performance Ruby linter written in Rust, designed as a d
 
 **Current state:** 65 of 606 cops implemented (all passing), 606 TOML test fixtures with ~28,075 test cases extracted from RuboCop v1.85.0's RSpec suite.
 
+### Boilerplate Conventions
+- **`node_name!` macro** (defined in `src/lib.rs`): Use `node_name!(node)` instead of `String::from_utf8_lossy(node.name().as_slice())`. Works with any Prism node that has `.name().as_slice()` — including chained access like `node_name!(n.as_constant_read_node().unwrap())`.
+- **No inline unit tests in cop files.** All cop testing is via TOML fixtures in `tests/fixtures/`. Do not add `#[cfg(test)] mod tests` blocks to cop files.
+- **Use `#[derive(Default)]`** for cops where `new()` returns `Self` or all fields have Rust default values (false, empty collections). Only write manual `impl Default` when defaults differ.
+
 ## Key Design Decisions
 
 ### Parser: Prism (ruby-prism crate)
@@ -204,20 +209,23 @@ Each cop should:
 
 Example cop structure:
 ```rust
-use crate::cops::{Cop, Offense, Severity};
-use ruby_prism::Node;
+use crate::cops::{Cop, CheckContext, Offense, Severity};
+use crate::node_name;
 
-pub struct Debugger {
-    enabled: bool,
+#[derive(Default)]
+pub struct Debugger;
+
+impl Debugger {
+    pub fn new() -> Self { Self }
 }
 
 impl Cop for Debugger {
-    fn name(&self) -> &'static str {
-        "Lint/Debugger"
-    }
+    fn name(&self) -> &'static str { "Lint/Debugger" }
 
-    fn check(&self, node: &Node, source: &str) -> Vec<Offense> {
+    fn check_call(&self, node: &ruby_prism::CallNode, ctx: &CheckContext) -> Vec<Offense> {
+        let method = node_name!(node); // instead of String::from_utf8_lossy(...)
         // Implementation
+        vec![]
     }
 }
 ```
@@ -258,7 +266,7 @@ Each agent gets its own git worktree so they can independently edit `mod.rs`, `l
 8. Set `implemented = true` in the TOML fixture
 9. Run `cargo test --test tester` — verify tests pass
 10. If tests fail unexpectedly, compare with original RuboCop spec and fix implementation or TOML
-11. Run `/cop-review` — compare Rust implementation against original Ruby source, evaluate size ratio and complexity, simplify if needed
+11. **Always run `/cop-review` after implementation** — this compares the Rust implementation against the original Ruby source, checks size ratio and complexity, and identifies simplification opportunities. Fix any issues it flags before moving on.
 12. Update README.md (implemented cops table), COPS.md (status column + summary counts), and CLAUDE.md (cop count)
 
 ### Fixing a partial cop

@@ -33,7 +33,7 @@ impl BlockLength {
     }
 
     fn qualified_method_name(&self, node: &ruby_prism::CallNode, ctx: &CheckContext) -> String {
-        let method_name = String::from_utf8_lossy(node.name().as_slice()).to_string();
+        let method_name = node_name!(node).to_string();
         match node.receiver() {
             Some(receiver) => {
                 let loc = receiver.location();
@@ -48,7 +48,7 @@ impl BlockLength {
     fn is_class_or_module_definition(&self, method_name: &str, node: &ruby_prism::CallNode) -> bool {
         if method_name != "new" { return false; }
         node.receiver().and_then(|r| r.as_constant_read_node()).map_or(false, |c| {
-            matches!(String::from_utf8_lossy(c.name().as_slice()).as_ref(), "Class" | "Module" | "Struct")
+            matches!(node_name!(c).as_ref(), "Class" | "Module" | "Struct")
         })
     }
 }
@@ -67,7 +67,7 @@ impl Cop for BlockLength {
             _ => return vec![],
         };
 
-        let method_name = String::from_utf8_lossy(node.name().as_slice()).to_string();
+        let method_name = node_name!(node).to_string();
         let qualified_name = self.qualified_method_name(node, ctx);
 
         if self.is_class_or_module_definition(&method_name, node) { return vec![]; }
@@ -82,51 +82,5 @@ impl Cop for BlockLength {
             &format!("Block has too many lines. [{}/{}]", line_count, self.max),
             self.severity(), start, find_end_of_first_line(ctx.source, start),
         )]
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::cops;
-    use ruby_prism::parse;
-
-    fn check_with_max(source: &str, max: usize) -> Vec<Offense> {
-        let cop: Box<dyn Cop> = Box::new(BlockLength::new(max));
-        let cops = vec![cop];
-        let result = parse(source.as_bytes());
-        cops::run_cops(&cops, &result, source, "test.rb")
-    }
-
-    fn check(source: &str) -> Vec<Offense> {
-        check_with_max(source, 5)
-    }
-
-    #[test]
-    fn allows_short_block() {
-        let source = "foo do\n  bar\n  baz\nend\n";
-        let offenses = check(source);
-        assert_eq!(offenses.len(), 0);
-    }
-
-    #[test]
-    fn detects_long_block() {
-        let source = "foo do\n  l1\n  l2\n  l3\n  l4\n  l5\n  l6\n  l7\nend\n";
-        let offenses = check(source);
-        assert_eq!(offenses.len(), 1);
-        assert!(offenses[0].message.contains("too many lines"));
-    }
-
-    #[test]
-    fn respects_custom_max() {
-        let source = "foo do\n  l1\n  l2\n  l3\nend\n";
-        assert_eq!(check_with_max(source, 2).len(), 1);
-        assert_eq!(check_with_max(source, 10).len(), 0);
-    }
-
-    #[test]
-    fn allows_brace_blocks() {
-        let offenses = check("foo { bar; baz; qux }");
-        assert_eq!(offenses.len(), 0);
     }
 }

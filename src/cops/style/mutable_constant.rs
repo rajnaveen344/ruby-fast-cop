@@ -29,7 +29,7 @@ fn first_line_end(source: &str, start: usize, end: usize) -> usize {
 fn is_const_named(node: &Node, target: &str) -> bool {
     match node {
         Node::ConstantReadNode { .. } => {
-            String::from_utf8_lossy(node.as_constant_read_node().unwrap().name().as_slice()) == target
+            node_name!(node.as_constant_read_node().unwrap()) == target
         }
         Node::ConstantPathNode { .. } => {
             let cp = node.as_constant_path_node().unwrap();
@@ -132,7 +132,7 @@ impl MutableConstant {
 
     fn is_frozen(node: &Node) -> bool {
         node.as_call_node().map_or(false, |call| {
-            String::from_utf8_lossy(call.name().as_slice()) == "freeze"
+            node_name!(call) == "freeze"
         })
     }
 
@@ -141,7 +141,7 @@ impl MutableConstant {
             Node::ConstantReadNode { .. } | Node::ConstantPathNode { .. } => true,
             Node::CallNode { .. } => {
                 let call = node.as_call_node().unwrap();
-                let method_name = String::from_utf8_lossy(call.name().as_slice());
+                let method_name = node_name!(call);
                 if method_name == "freeze" { return true; }
                 if method_name == "new" {
                     if let Some(receiver) = call.receiver() {
@@ -164,7 +164,7 @@ impl MutableConstant {
             Node::OrNode { .. } => {
                 let left = node.as_or_node().unwrap().left();
                 if let Some(call) = left.as_call_node() {
-                    if String::from_utf8_lossy(call.name().as_slice()) == "[]" {
+                    if node_name!(call) == "[]" {
                         return call.receiver().as_ref().map_or(false, |r| is_const_named(r, "ENV"));
                     }
                 }
@@ -295,7 +295,7 @@ impl MutableConstant {
             Node::RangeNode { .. } => true,
             Node::CallNode { .. } => {
                 let call = node.as_call_node().unwrap();
-                let method_name = String::from_utf8_lossy(call.name().as_slice());
+                let method_name = node_name!(call);
                 call.call_operator_loc().is_none()
                     && matches!(method_name.as_ref(), "+" | "-" | "*" | "**" | "/" | "%" | "<<" | ">>")
             }

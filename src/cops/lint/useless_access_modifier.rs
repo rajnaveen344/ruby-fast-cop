@@ -612,7 +612,7 @@ fn get_child_statements<'b>(node: &'b Node<'b>) -> Vec<Node<'b>> {
 }
 
 fn call_method_name(call: &ruby_prism::CallNode) -> String {
-    String::from_utf8_lossy(call.name().as_slice()).to_string()
+    node_name!(call).to_string()
 }
 
 fn is_scope_creating_new_receiver(recv: &Node) -> bool {

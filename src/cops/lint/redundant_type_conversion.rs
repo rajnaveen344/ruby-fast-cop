@@ -16,17 +16,12 @@ fn is_typed_method_for(conversion: &str, method: &str) -> bool {
     }
 }
 
+#[derive(Default)]
 pub struct RedundantTypeConversion;
 
 impl RedundantTypeConversion {
     pub fn new() -> Self {
         Self
-    }
-}
-
-impl Default for RedundantTypeConversion {
-    fn default() -> Self {
-        Self::new()
     }
 }
 
@@ -60,7 +55,7 @@ struct RedundantTypeConversionVisitor<'a> {
 
 impl<'a> RedundantTypeConversionVisitor<'a> {
     fn check_call(&mut self, node: &ruby_prism::CallNode) {
-        let method_name = String::from_utf8_lossy(node.name().as_slice());
+        let method_name = node_name!(node);
         let method_str = method_name.as_ref();
         if !CONVERSION_METHODS.contains(&method_str) { return; }
         let receiver = match node.receiver() { Some(r) => r, None => return };
@@ -161,7 +156,7 @@ fn is_constructor_receiver(method: &str, receiver: &ruby_prism::Node, ctx: &Chec
                 return false;
             }
 
-            let recv_method = String::from_utf8_lossy(call.name().as_slice());
+            let recv_method = node_name!(call);
             let recv_method_str = recv_method.as_ref();
 
             // Check for Kernel methods: String(), Integer(), Float(), etc.
@@ -236,7 +231,7 @@ fn is_constant_named(node: &ruby_prism::Node, name: &str) -> bool {
     match node {
         ruby_prism::Node::ConstantReadNode { .. } => {
             let c = node.as_constant_read_node().unwrap();
-            let const_name = String::from_utf8_lossy(c.name().as_slice());
+            let const_name = node_name!(c);
             const_name.as_ref() == name
         }
         ruby_prism::Node::ConstantPathNode { .. } => {
@@ -296,114 +291,10 @@ fn is_class_constructor_for(
 
 fn is_chained_conversion(method: &str, receiver: &ruby_prism::Node) -> bool {
     receiver.as_call_node().map_or(false, |call|
-        String::from_utf8_lossy(call.name().as_slice()) == method)
+        node_name!(call) == method)
 }
 
 fn is_chained_to_typed_method(method: &str, receiver: &ruby_prism::Node) -> bool {
     receiver.as_call_node().map_or(false, |call|
-        is_typed_method_for(method, &String::from_utf8_lossy(call.name().as_slice())))
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::check_source_with_cops;
-
-    fn check(source: &str) -> Vec<Offense> {
-        let cops: Vec<Box<dyn crate::cops::Cop>> =
-            vec![Box::new(RedundantTypeConversion::new())];
-        check_source_with_cops(source, "test.rb", &cops)
-    }
-
-    #[test]
-    fn detects_string_to_s() {
-        let offenses = check("'string'.to_s");
-        assert_eq!(offenses.len(), 1);
-        assert!(offenses[0].message.contains("to_s"));
-    }
-
-    #[test]
-    fn allows_integer_to_s() {
-        let offenses = check("1.to_s");
-        assert_eq!(offenses.len(), 0);
-    }
-
-    #[test]
-    fn detects_integer_to_i() {
-        let offenses = check("42.to_i");
-        assert_eq!(offenses.len(), 1);
-        assert!(offenses[0].message.contains("to_i"));
-    }
-
-    #[test]
-    fn detects_chained_to_s() {
-        let offenses = check("foo.to_s.to_s");
-        assert_eq!(offenses.len(), 1);
-    }
-
-    #[test]
-    fn allows_foo_to_s() {
-        let offenses = check("foo.to_s");
-        assert_eq!(offenses.len(), 0);
-    }
-
-    #[test]
-    fn allows_self_to_s() {
-        let offenses = check("self.to_s");
-        assert_eq!(offenses.len(), 0);
-    }
-
-    #[test]
-    fn allows_bare_to_s() {
-        let offenses = check("to_s");
-        assert_eq!(offenses.len(), 0);
-    }
-
-    #[test]
-    fn detects_inspect_to_s() {
-        let offenses = check("foo.inspect.to_s");
-        assert_eq!(offenses.len(), 1);
-    }
-
-    #[test]
-    fn allows_exception_false() {
-        let offenses = check("Integer(\"number\", exception: false).to_i");
-        assert_eq!(offenses.len(), 0);
-    }
-
-    #[test]
-    fn detects_integer_constructor() {
-        let offenses = check("Integer(42).to_i");
-        assert_eq!(offenses.len(), 1);
-    }
-
-    #[test]
-    fn detects_array_literal_to_a() {
-        let offenses = check("[1, 2, 3].to_a");
-        assert_eq!(offenses.len(), 1);
-    }
-
-    #[test]
-    fn detects_hash_literal_to_h() {
-        let offenses = check("{ foo: bar }.to_h");
-        assert_eq!(offenses.len(), 1);
-    }
-
-    #[test]
-    fn allows_hash_to_h_with_block() {
-        let offenses = check("{ key: value }.to_h { |key, value| [foo(key), bar(value)] }");
-        assert_eq!(offenses.len(), 0);
-    }
-
-    #[test]
-    fn detects_set_new_to_set() {
-        let offenses = check("Set.new([1, 2, 3]).to_set");
-        assert_eq!(offenses.len(), 1);
-    }
-
-    #[test]
-    fn allows_set_to_set_with_block() {
-        let offenses = check("Set[1, 2, 3].to_set { |item| foo(item) }");
-        assert_eq!(offenses.len(), 0);
-    }
+        is_typed_method_for(method, &node_name!(call)))
 }

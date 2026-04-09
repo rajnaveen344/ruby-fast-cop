@@ -83,7 +83,7 @@ impl<'a> VoidVisitor<'a> {
             None => return,
         };
 
-        let method_name = String::from_utf8_lossy(call.name().as_slice());
+        let method_name = node_name!(call);
         let method_str = method_name.as_ref();
 
         let is_binary = BINARY_OPERATORS.contains(&method_str);
@@ -288,7 +288,7 @@ impl<'a> VoidVisitor<'a> {
             Node::CallNode { .. } => node.as_call_node().unwrap(),
             _ => return,
         };
-        let method_name = String::from_utf8_lossy(call.name().as_slice()).to_string();
+        let method_name = node_name!(call).to_string();
         let is_nonmutating_bang = NONMUTATING_METHODS_WITH_BANG.contains(&method_name.as_str());
         let is_replaceable_by_each = METHODS_REPLACEABLE_BY_EACH.contains(&method_name.as_str());
         if !is_nonmutating_bang && !is_replaceable_by_each {
@@ -336,7 +336,7 @@ impl<'a> VoidVisitor<'a> {
     }
 
     fn is_void_method(def_node: &ruby_prism::DefNode) -> bool {
-        let name = String::from_utf8_lossy(def_node.name().as_slice());
+        let name = node_name!(def_node);
         let name_str = name.as_ref();
         name_str == "initialize"
             || (name_str.ends_with('=')
@@ -405,7 +405,7 @@ impl Visit<'_> for VoidVisitor<'_> {
     fn visit_call_node(&mut self, node: &ruby_prism::CallNode) {
         if let Some(block_node) = node.block() {
             if let Node::BlockNode { .. } = &block_node {
-                let method_name = String::from_utf8_lossy(node.name().as_slice());
+                let method_name = node_name!(node);
                 self.check_block_body(&block_node, method_name == "each", method_name == "tap");
             }
         }
@@ -472,7 +472,7 @@ fn is_lambda_or_proc(node: &Node) -> bool {
         Node::LambdaNode { .. } => true,
         Node::CallNode { .. } => {
             let call = node.as_call_node().unwrap();
-            let method_name = String::from_utf8_lossy(call.name().as_slice());
+            let method_name = node_name!(call);
             let method_str = method_name.as_ref();
 
             if call.receiver().is_none()
@@ -485,7 +485,7 @@ fn is_lambda_or_proc(node: &Node) -> bool {
             if method_str == "new" {
                 if let Some(recv) = call.receiver() {
                     if let Node::ConstantReadNode { .. } = &recv {
-                        let name = String::from_utf8_lossy(recv.as_constant_read_node().unwrap().name().as_slice());
+                        let name = node_name!(recv.as_constant_read_node().unwrap());
                         if name.as_ref() == "Proc" && call.block().is_some() {
                             return true;
                         }
@@ -526,7 +526,7 @@ fn entirely_literal(node: &Node) -> bool {
 
         Node::CallNode { .. } => {
             let call = node.as_call_node().unwrap();
-            let method_name = String::from_utf8_lossy(call.name().as_slice());
+            let method_name = node_name!(call);
             method_name.as_ref() == "freeze"
                 && call.receiver().map_or(false, |recv| entirely_literal(&recv))
         }

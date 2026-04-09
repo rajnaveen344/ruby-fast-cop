@@ -1,6 +1,7 @@
 use crate::cops::{CheckContext, Cop};
 use crate::offense::{Correction, Offense, Severity};
 
+#[derive(Default)]
 pub struct SelectByRegexp;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -41,7 +42,7 @@ impl SelectByRegexp {
             ruby_prism::Node::HashNode { .. } => true,
             ruby_prism::Node::CallNode { .. } => {
                 let call = receiver.as_call_node().unwrap();
-                let method_name = String::from_utf8_lossy(call.name().as_slice());
+                let method_name = node_name!(call);
                 if let Some(recv) = call.receiver() {
                     if let Some(name) = Self::constant_name(&recv, source) {
                         if name == "Hash" && matches!(method_name.as_ref(), "new" | "[]") {
@@ -52,7 +53,7 @@ impl SelectByRegexp {
                 matches!(method_name.as_ref(), "to_h" | "to_hash")
             }
             ruby_prism::Node::ConstantReadNode { .. } => {
-                String::from_utf8_lossy(receiver.as_constant_read_node().unwrap().name().as_slice()) == "ENV"
+                node_name!(receiver.as_constant_read_node().unwrap()) == "ENV"
             }
             ruby_prism::Node::ConstantPathNode { .. } => {
                 let path_node = receiver.as_constant_path_node().unwrap();
@@ -66,7 +67,7 @@ impl SelectByRegexp {
     fn constant_name(node: &ruby_prism::Node, _source: &str) -> Option<String> {
         match node {
             ruby_prism::Node::ConstantReadNode { .. } => {
-                Some(String::from_utf8_lossy(node.as_constant_read_node().unwrap().name().as_slice()).into_owned())
+                Some(node_name!(node.as_constant_read_node().unwrap()).into_owned())
             }
             ruby_prism::Node::ConstantPathNode { .. } => {
                 let path_node = node.as_constant_path_node().unwrap();
@@ -94,7 +95,7 @@ impl SelectByRegexp {
                 }
                 let requireds: Vec<_> = inner_params.requireds().iter().collect();
                 if let ruby_prism::Node::RequiredParameterNode { .. } = &requireds[0] {
-                    Some(String::from_utf8_lossy(requireds[0].as_required_parameter_node().unwrap().name().as_slice()).into_owned())
+                    Some(node_name!(requireds[0].as_required_parameter_node().unwrap()).into_owned())
                 } else {
                     None
                 }
@@ -126,7 +127,7 @@ impl SelectByRegexp {
     ) -> Option<(MatchKind, String)> {
         if let ruby_prism::Node::CallNode { .. } = stmt {
             let call = stmt.as_call_node().unwrap();
-            if String::from_utf8_lossy(call.name().as_slice()) == "!" {
+            if node_name!(call) == "!" {
                 if let Some(inner) = call.receiver() {
                     if let Some((k, r)) = Self::analyze_match_expr(&inner, param_name, source) {
                         return Some((k.negate(), r));
@@ -168,7 +169,7 @@ impl SelectByRegexp {
     fn analyze_call(
         call: &ruby_prism::CallNode, param_name: &str, source: &str,
     ) -> Option<(MatchKind, String)> {
-        let method = String::from_utf8_lossy(call.name().as_slice());
+        let method = node_name!(call);
         let receiver = call.receiver()?;
         let args: Vec<_> = call.arguments().map_or(vec![], |a| a.arguments().iter().collect());
         if args.len() != 1 { return None; }
@@ -200,11 +201,11 @@ impl SelectByRegexp {
     fn is_param_ref(node: &ruby_prism::Node, param_name: &str) -> bool {
         match node {
             ruby_prism::Node::LocalVariableReadNode { .. } => {
-                String::from_utf8_lossy(node.as_local_variable_read_node().unwrap().name().as_slice()) == param_name
+                node_name!(node.as_local_variable_read_node().unwrap()) == param_name
             }
             ruby_prism::Node::CallNode { .. } => {
                 let call = node.as_call_node().unwrap();
-                String::from_utf8_lossy(call.name().as_slice()) == param_name
+                node_name!(call) == param_name
                     && call.receiver().is_none()
                     && call.arguments().is_none()
             }
@@ -235,16 +236,12 @@ impl SelectByRegexp {
     }
 }
 
-impl Default for SelectByRegexp {
-    fn default() -> Self { Self::new() }
-}
-
 impl Cop for SelectByRegexp {
     fn name(&self) -> &'static str { "Style/SelectByRegexp" }
     fn severity(&self) -> Severity { Severity::Convention }
 
     fn check_call(&self, node: &ruby_prism::CallNode, ctx: &CheckContext) -> Vec<Offense> {
-        let method_name = String::from_utf8_lossy(node.name().as_slice());
+        let method_name = node_name!(node);
         let method_kind = match Self::method_kind(&method_name) {
             Some(kind) => kind,
             None => return vec![],

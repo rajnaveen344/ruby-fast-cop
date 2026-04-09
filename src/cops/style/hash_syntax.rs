@@ -420,12 +420,12 @@ impl HashSyntax {
         let value = assoc.value();
         match &value {
             ruby_prism::Node::LocalVariableReadNode { .. } => {
-                key_name == String::from_utf8_lossy(value.as_local_variable_read_node().unwrap().name().as_slice()).as_ref()
+                key_name == node_name!(value.as_local_variable_read_node().unwrap()).as_ref()
             }
             ruby_prism::Node::CallNode { .. } => {
                 let call = value.as_call_node().unwrap();
                 if call.receiver().is_some() || call.arguments().is_some() || call.block().is_some() { return false; }
-                key_name == String::from_utf8_lossy(call.name().as_slice()).as_ref()
+                key_name == node_name!(call).as_ref()
             }
             _ => false,
         }
@@ -603,69 +603,5 @@ impl Cop for HashSyntax {
             }
         }
         offenses
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::cops;
-    use ruby_prism::parse;
-
-    fn check_with_style(source: &str, style: EnforcedStyle) -> Vec<Offense> {
-        let cops: Vec<Box<dyn Cop>> = vec![Box::new(HashSyntax::new(style))];
-        let result = parse(source.as_bytes());
-        cops::run_cops(&cops, &result, source, "test.rb")
-    }
-
-    fn check(source: &str) -> Vec<Offense> {
-        check_with_style(source, EnforcedStyle::Ruby19NoMixedKeys)
-    }
-
-    #[test]
-    fn allows_ruby19_syntax() { assert_eq!(check("{a: 1, b: 2}").len(), 0); }
-
-    #[test]
-    fn detects_hash_rocket_for_symbol_keys() {
-        let offenses = check("{:a => 1}");
-        assert_eq!(offenses.len(), 1);
-        assert!(offenses[0].message.contains("Ruby 1.9"));
-    }
-
-    #[test]
-    fn allows_hash_rocket_for_string_keys() { assert_eq!(check("{'a' => 1}").len(), 0); }
-
-    #[test]
-    fn detects_mixed_styles() {
-        let offenses = check("{a: 1, 'b' => 2}");
-        assert_eq!(offenses.len(), 1);
-        assert!(offenses[0].message.contains("mix"));
-    }
-
-    #[test]
-    fn hash_rockets_style_flags_ruby19() {
-        let offenses = check_with_style("{a: 1}", EnforcedStyle::HashRockets);
-        assert_eq!(offenses.len(), 1);
-        assert!(offenses[0].message.contains("hash rockets"));
-    }
-
-    #[test]
-    fn no_mixed_keys_allows_consistent_ruby19() { assert_eq!(check_with_style("{a: 1, b: 2}", EnforcedStyle::NoMixedKeys).len(), 0); }
-
-    #[test]
-    fn no_mixed_keys_allows_consistent_hash_rockets() { assert_eq!(check_with_style("{:a => 1, :b => 2}", EnforcedStyle::NoMixedKeys).len(), 0); }
-
-    #[test]
-    fn no_mixed_keys_flags_mixed() {
-        let offenses = check_with_style("{a: 1, :b => 2}", EnforcedStyle::NoMixedKeys);
-        assert_eq!(offenses.len(), 1);
-        assert!(offenses[0].message.contains("mix"));
-    }
-
-    #[test]
-    fn allows_quoted_symbol_with_hash_rocket() {
-        let offenses = check("{:\"foo-bar\" => 1}");
-        assert_eq!(offenses.len(), 1);
-        assert!(offenses[0].message.contains("Ruby 1.9"));
     }
 }

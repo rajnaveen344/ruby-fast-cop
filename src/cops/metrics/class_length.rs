@@ -100,7 +100,7 @@ impl Visit<'_> for ClassLengthVisitor<'_> {
     }
 
     fn visit_call_node(&mut self, node: &ruby_prism::CallNode) {
-        if String::from_utf8_lossy(node.name().as_slice()) == "new" {
+        if node_name!(node) == "new" {
             if let Some(receiver) = node.receiver() {
                 if ClassLength::is_class_or_struct_receiver(self.ctx.source, &receiver) {
                     if let Some(ruby_prism::Node::BlockNode { .. }) = node.block() {

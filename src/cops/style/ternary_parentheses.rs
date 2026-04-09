@@ -125,7 +125,7 @@ impl TernaryParentheses {
 
     /// Non-complex send: not an operator method, or is []
     fn is_non_complex_send(call: &ruby_prism::CallNode) -> bool {
-        let name = String::from_utf8_lossy(call.name().as_slice());
+        let name = node_name!(call);
         // If it's an operator method and not [], it's complex
         if Self::is_operator_method(&name) && name != "[]" {
             return false;
@@ -208,7 +208,7 @@ impl TernaryParentheses {
             Node::CallNode { .. } => {
                 // prefix `not`
                 let call = node.as_call_node().unwrap();
-                let name = String::from_utf8_lossy(call.name().as_slice());
+                let name = node_name!(call);
                 name == "!" && call.receiver().is_some() && call.opening_loc().is_none()
             }
             _ => false,
@@ -304,7 +304,7 @@ impl TernaryParentheses {
                 if has_dot { return true; }
 
                 // Check if it's an unparenthesized method call (name starts with letter)
-                let name = String::from_utf8_lossy(call.name().as_slice());
+                let name = node_name!(call);
                 name.chars().next().map_or(false, |c| c.is_alphabetic())
             }
             Node::DefinedNode { .. } => {

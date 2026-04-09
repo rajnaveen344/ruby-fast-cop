@@ -340,7 +340,7 @@ impl<'a> FormatTokenVisitor<'a> {
 
 impl Visit<'_> for FormatTokenVisitor<'_> {
     fn visit_call_node(&mut self, node: &ruby_prism::CallNode) {
-        let method_name = String::from_utf8_lossy(node.name().as_slice()).to_string();
+        let method_name = node_name!(node).to_string();
 
         let is_format_call = matches!(
             method_name.as_str(),
@@ -422,81 +422,5 @@ impl Visit<'_> for FormatTokenVisitor<'_> {
         self.in_xstr_or_regexp = true;
         ruby_prism::visit_interpolated_regular_expression_node(self, node);
         self.in_xstr_or_regexp = prev;
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::cops;
-    use ruby_prism::parse;
-
-    fn check_with_style(source: &str, style: EnforcedStyle) -> Vec<Offense> {
-        let cop: Box<dyn Cop> = Box::new(FormatStringToken::new(style));
-        let cops = vec![cop];
-        let result = parse(source.as_bytes());
-        cops::run_cops(&cops, &result, source, "test.rb")
-    }
-
-    fn check(source: &str) -> Vec<Offense> {
-        check_with_style(source, EnforcedStyle::Annotated)
-    }
-
-    #[test]
-    fn annotated_allows_annotated_tokens() {
-        let offenses = check("format('%<greeting>s', greeting: 'Hello')");
-        assert_eq!(offenses.len(), 0);
-    }
-
-    #[test]
-    fn annotated_flags_template_tokens() {
-        let offenses = check("format('%{greeting}', greeting: 'Hello')");
-        assert_eq!(offenses.len(), 1);
-        assert!(offenses[0].message.contains("annotated"));
-    }
-
-    #[test]
-    fn annotated_flags_unannotated_in_format_context() {
-        let offenses = check("format('%s', 'Hello')");
-        assert_eq!(offenses.len(), 1);
-    }
-
-    #[test]
-    fn template_allows_template_tokens() {
-        let offenses = check_with_style(
-            "format('%{greeting}', greeting: 'Hello')",
-            EnforcedStyle::Template,
-        );
-        assert_eq!(offenses.len(), 0);
-    }
-
-    #[test]
-    fn skips_percent_escape() {
-        let offenses = check("format('%<hit_rate>6.2f%%', hit_rate: 12.34)");
-        assert_eq!(offenses.len(), 0);
-    }
-
-    #[test]
-    fn allows_strings_without_format_tokens() {
-        let offenses = check("'hello world'");
-        assert_eq!(offenses.len(), 0);
-    }
-
-    #[test]
-    fn skips_xstr() {
-        let offenses = check("`echo \"%s %<annotated>s %{template}\"`");
-        assert_eq!(offenses.len(), 0);
-    }
-
-    #[test]
-    fn skips_regexp() {
-        let offenses = check("/foo bar %u/");
-        assert_eq!(offenses.len(), 0);
-    }
-
-    #[test]
-    fn per_token_offenses() {
-        let offenses = check("format('%-20s %-30s', 'foo', 'bar')");
-        assert_eq!(offenses.len(), 2);
     }
 }

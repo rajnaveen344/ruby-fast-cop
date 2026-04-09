@@ -35,7 +35,7 @@ impl<'a> LiteralConditionVisitor<'a> {
             Node::OrNode { .. } => self.check_condition(&condition.as_or_node().unwrap().left()),
             Node::CallNode { .. } => {
                 let call = condition.as_call_node().unwrap();
-                if String::from_utf8_lossy(call.name().as_slice()) == "!" {
+                if node_name!(call) == "!" {
                     if let Some(recv) = call.receiver() { self.check_condition(&recv); }
                 } else if is_literal(condition) {
                     self.add_offense(condition);
@@ -112,7 +112,7 @@ impl Visit<'_> for LiteralConditionVisitor<'_> {
     }
 
     fn visit_call_node(&mut self, node: &ruby_prism::CallNode) {
-        if String::from_utf8_lossy(node.name().as_slice()) == "!" {
+        if node_name!(node) == "!" {
             if let Some(recv) = node.receiver() {
                 if is_literal(&recv) { self.add_offense(&recv); }
             }

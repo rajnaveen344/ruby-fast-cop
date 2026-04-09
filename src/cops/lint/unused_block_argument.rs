@@ -233,7 +233,7 @@ impl Visit<'_> for BindingRefFinder {
     fn visit_call_node(&mut self, node: &ruby_prism::CallNode) {
         let offset = node.location().start_offset();
         if self.scope_depth == 0 && offset >= self.scope_start && offset < self.scope_end {
-            let name = String::from_utf8_lossy(node.name().as_slice()).to_string();
+            let name = node_name!(node).to_string();
             if name == "binding" && node.arguments().is_none() && node.receiver().is_none() {
                 self.found = true;
                 return;
@@ -271,7 +271,7 @@ impl Visit<'_> for DefineMethodFinder {
         if let Some(block) = node.block() {
             if let ruby_prism::Node::BlockNode { .. } = &block {
                 if block.location().start_offset() == self.scope_start {
-                    let name = String::from_utf8_lossy(node.name().as_slice()).to_string();
+                    let name = node_name!(node).to_string();
                     if name == "define_method" {
                         self.found = true;
                         return;

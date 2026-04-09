@@ -40,6 +40,7 @@ const BUILT_IN_VARS: &[&str] = &[
     "$CLASSPATH", "$JRUBY_VERSION", "$JRUBY_REVISION", "$ENV_JAVA",
 ];
 
+#[derive(Default)]
 pub struct GlobalVars {
     allowed_variables: HashSet<String>,
 }
@@ -63,12 +64,6 @@ impl GlobalVars {
             return true;
         }
         BUILT_IN_VARS.contains(&name) || self.allowed_variables.contains(name)
-    }
-}
-
-impl Default for GlobalVars {
-    fn default() -> Self {
-        Self::new()
     }
 }
 

@@ -8,14 +8,11 @@ use std::collections::HashSet;
 const MSG: &str = "Unreachable code detected.";
 const FLOW_METHODS: &[&str] = &["raise", "fail", "throw", "exit", "exit!", "abort"];
 
+#[derive(Default)]
 pub struct UnreachableCode;
 
 impl UnreachableCode {
     pub fn new() -> Self { Self }
-}
-
-impl Default for UnreachableCode {
-    fn default() -> Self { Self }
 }
 
 impl Cop for UnreachableCode {
@@ -47,7 +44,7 @@ impl<'a> UnreachableCodeVisitor<'a> {
             | Node::RetryNode { .. } | Node::RedoNode { .. } => true,
             Node::CallNode { .. } => {
                 let call = node.as_call_node().unwrap();
-                let method_name = String::from_utf8_lossy(call.name().as_slice());
+                let method_name = node_name!(call);
                 if !FLOW_METHODS.contains(&method_name.as_ref()) { return false; }
                 if let Some(receiver) = call.receiver() { return self.is_kernel_receiver(&receiver); }
                 if self.instance_eval_depth > 0 { return false; }
@@ -59,7 +56,7 @@ impl<'a> UnreachableCodeVisitor<'a> {
             Node::CaseNode { .. } => self.check_case_flow(&node.as_case_node().unwrap()),
             Node::CaseMatchNode { .. } => self.check_case_match_flow(&node.as_case_match_node().unwrap()),
             Node::DefNode { .. } => {
-                let name = String::from_utf8_lossy(node.as_def_node().unwrap().name().as_slice());
+                let name = node_name!(node.as_def_node().unwrap());
                 if FLOW_METHODS.contains(&name.as_ref()) { self.redefined.insert(name.into_owned()); }
                 false
             }
@@ -70,7 +67,7 @@ impl<'a> UnreachableCodeVisitor<'a> {
     fn is_kernel_receiver(&self, node: &Node) -> bool {
         match node {
             Node::ConstantReadNode { .. } =>
-                String::from_utf8_lossy(node.as_constant_read_node().unwrap().name().as_slice()) == "Kernel",
+                node_name!(node.as_constant_read_node().unwrap()) == "Kernel",
             Node::ConstantPathNode { .. } => {
                 let path = node.as_constant_path_node().unwrap();
                 path.name().map_or(false, |n| String::from_utf8_lossy(n.as_slice()) == "Kernel")
@@ -126,7 +123,7 @@ impl<'a> Visit<'_> for UnreachableCodeVisitor<'a> {
     }
 
     fn visit_call_node(&mut self, node: &ruby_prism::CallNode) {
-        if String::from_utf8_lossy(node.name().as_slice()) == "instance_eval" {
+        if node_name!(node) == "instance_eval" {
             if let Some(Node::BlockNode { .. }) = node.block() {
                 self.instance_eval_depth += 1;
                 ruby_prism::visit_call_node(self, node);

@@ -254,7 +254,7 @@ impl<'a> NotImplementedChecker<'a> {
     fn check_not_implemented(&mut self, node: &ruby_prism::Node) {
         if let ruby_prism::Node::CallNode { .. } = node {
             let call = node.as_call_node().unwrap();
-            let name = String::from_utf8_lossy(call.name().as_slice()).to_string();
+            let name = node_name!(call).to_string();
 
             if call.receiver().is_none() {
                 if name == "raise" {
@@ -279,7 +279,7 @@ impl<'a> NotImplementedChecker<'a> {
         match node {
             ruby_prism::Node::ConstantReadNode { .. } => {
                 let c = node.as_constant_read_node().unwrap();
-                let name = String::from_utf8_lossy(c.name().as_slice()).to_string();
+                let name = node_name!(c).to_string();
                 self.not_implemented_exceptions.contains(&name)
             }
             ruby_prism::Node::ConstantPathNode { .. } => {
@@ -308,7 +308,7 @@ impl<'a> NotImplementedChecker<'a> {
             }
             ruby_prism::Node::ConstantReadNode { .. } => {
                 let c = node.as_constant_read_node().unwrap();
-                String::from_utf8_lossy(c.name().as_slice()).to_string()
+                node_name!(c).to_string()
             }
             _ => String::new(),
         }
@@ -358,7 +358,7 @@ impl Visit<'_> for ImplicitRefFinder {
     fn visit_call_node(&mut self, node: &ruby_prism::CallNode) {
         let offset = node.location().start_offset();
         if self.scope_depth == 0 && offset >= self.scope_start && offset < self.scope_end {
-            let name = String::from_utf8_lossy(node.name().as_slice()).to_string();
+            let name = node_name!(node).to_string();
             if name == "binding" && node.arguments().is_none() && node.receiver().is_none() {
                 self.found = true;
                 return;

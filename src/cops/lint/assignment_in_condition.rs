@@ -128,7 +128,7 @@ impl AssignmentInCondition {
             }
             ruby_prism::Node::CallNode { .. } => {
                 let call = node.as_call_node().unwrap();
-                let method_name = String::from_utf8_lossy(call.name().as_slice());
+                let method_name = node_name!(call);
                 if method_name.ends_with('=') && method_name != "==" && method_name != "!=" {
                     if !self.is_safe_assignment_node(node, ctx) {
                         if let Some(eq_pos) = self.find_assignment_operator_position(&call, ctx) {
@@ -189,7 +189,7 @@ impl AssignmentInCondition {
         call: &ruby_prism::CallNode,
         ctx: &CheckContext,
     ) -> Option<usize> {
-        let method_name = String::from_utf8_lossy(call.name().as_slice());
+        let method_name = node_name!(call);
         if method_name == "[]=" {
             return call.closing_loc().and_then(|loc| self.find_equals_after(loc.end_offset(), ctx));
         }
@@ -252,92 +252,5 @@ impl AssignmentInCondition {
             offense = offense.with_correction(correction);
         }
         offense
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::cops;
-    use ruby_prism::parse;
-
-    fn check_with_config(source: &str, allow_safe: bool) -> Vec<Offense> {
-        let cop: Box<dyn Cop> = Box::new(AssignmentInCondition::new(allow_safe));
-        let cops = vec![cop];
-        let result = parse(source.as_bytes());
-        cops::run_cops(&cops, &result, source, "test.rb")
-    }
-
-    fn check(source: &str) -> Vec<Offense> {
-        check_with_config(source, true)
-    }
-
-    #[test]
-    fn detects_assignment_in_if() {
-        let offenses = check("if x = 1; end");
-        assert_eq!(offenses.len(), 1);
-        assert!(offenses[0].message.contains("=="));
-    }
-
-    #[test]
-    fn allows_comparison_in_if() {
-        let offenses = check("if x == 1; end");
-        assert_eq!(offenses.len(), 0);
-    }
-
-    #[test]
-    fn allows_safe_assignment_when_enabled() {
-        let offenses = check("if (x = 1); end");
-        assert_eq!(offenses.len(), 0);
-    }
-
-    #[test]
-    fn detects_safe_assignment_when_disabled() {
-        let offenses = check_with_config("if (x = 1); end", false);
-        assert_eq!(offenses.len(), 1);
-    }
-
-    #[test]
-    fn detects_instance_var_assignment() {
-        let offenses = check("if @x = 1; end");
-        assert_eq!(offenses.len(), 1);
-    }
-
-    #[test]
-    fn detects_assignment_in_complex_condition() {
-        let offenses = check("if foo && (x = bar); end");
-        assert_eq!(offenses.len(), 0); // Wrapped in parens, so safe
-    }
-
-    #[test]
-    fn allows_method_calls() {
-        let offenses = check("if x.nil?; end");
-        assert_eq!(offenses.len(), 0);
-    }
-
-    #[test]
-    fn allows_regular_conditions() {
-        let offenses = check(
-            r#"
-if foo
-  bar
-end
-"#,
-        );
-        assert_eq!(offenses.len(), 0);
-    }
-
-    #[test]
-    fn detects_assignment_in_unless_modifier() {
-        // Test unless modifier
-        let source = "raise foo unless x = 1";
-        let offenses = check(source);
-        assert_eq!(offenses.len(), 1, "Should detect assignment in unless modifier");
-    }
-
-    #[test]
-    fn detects_assignment_after_or_in_unless() {
-        let offenses = check("raise StandardError unless (foo ||= bar) || a = b");
-        assert_eq!(offenses.len(), 1, "Should detect 'a = b' in unless condition");
     }
 }

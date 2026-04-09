@@ -101,7 +101,7 @@ impl ModifierCollector {
             if first_arg.as_symbol_node().is_some() { return (true, ModifierArgKind::Symbol); }
             if first_arg.as_splat_node().is_some() { return (true, ModifierArgKind::Splat); }
             if let Some(call) = first_arg.as_call_node() {
-                let call_name = String::from_utf8_lossy(call.name().as_slice());
+                let call_name = node_name!(call);
                 if ATTR_METHODS.contains(&call_name.as_ref()) { return (true, ModifierArgKind::AttrMethod); }
                 if call_name == "alias_method" { return (true, ModifierArgKind::AliasMethod); }
                 return (true, ModifierArgKind::Other);
@@ -196,7 +196,7 @@ impl Visit<'_> for ModifierCollector {
     }
 
     fn visit_call_node(&mut self, node: &ruby_prism::CallNode) {
-        let name_str = String::from_utf8_lossy(node.name().as_slice()).to_string();
+        let name_str = node_name!(node).to_string();
 
         if ACCESS_MODIFIERS.contains(&name_str.as_str()) {
             let msg_loc = node.message_loc().unwrap();

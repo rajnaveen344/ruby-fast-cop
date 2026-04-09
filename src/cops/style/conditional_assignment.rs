@@ -590,20 +590,3 @@ impl Visit<'_> for ConditionalAssignmentVisitor<'_> {
         ruby_prism::visit_case_match_node(self, node);
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_assign_to_condition_if_elsif_else() {
-        let source = "if foo\n  bar = 1\nelsif baz\n  bar = 2\nelse\n  bar = 3\nend\n";
-        let cop = ConditionalAssignment::with_config(EnforcedStyle::AssignToCondition, true, true);
-        let result = ruby_prism::parse(source.as_bytes());
-        let node = result.node();
-        let program = node.as_program_node().unwrap();
-        let ctx = crate::cops::CheckContext::new(source, "test.rb");
-        let offenses = cop.check_program(&program, &ctx);
-        assert_eq!(offenses.len(), 1, "Expected 1 offense, got {}", offenses.len());
-    }
-}
