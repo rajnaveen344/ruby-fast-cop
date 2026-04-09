@@ -136,11 +136,15 @@ module TestDataCapture
     # Extract cop config if available
     config_hash = extract_config_hash
 
+    # Capture filename if provided (used by cops like Naming/FileName)
+    filename = file || extract_test_filename
+
     TestDataCapture.pending_capture = {
       source: clean_source,
       offenses: offenses,
       config: config_hash,
-      corrected: nil
+      corrected: nil,
+      filename: filename
     }
   rescue => e
     $stderr.puts "[TestDataCapture] Error in expect_offense: #{e.message}"
@@ -154,12 +158,14 @@ module TestDataCapture
     TestDataCapture.inside_expect = true
 
     config_hash = extract_config_hash
+    filename = file || extract_test_filename
 
     TestDataCapture.captures << {
       source: source.chomp,
       offenses: [],
       config: config_hash,
-      corrected: nil
+      corrected: nil,
+      filename: filename
     }
   rescue => e
     $stderr.puts "[TestDataCapture] Error in expect_no_offenses: #{e.message}"
@@ -194,6 +200,7 @@ module TestDataCapture
 
     result = super
     config_hash = extract_config_hash
+    filename = file || extract_test_filename
 
     offenses = if result.is_a?(Array)
                  result.map { |o| TestDataCapture.offense_to_hash(o) }
@@ -205,7 +212,8 @@ module TestDataCapture
       source: source.to_s.chomp,
       offenses: offenses,
       config: config_hash,
-      corrected: nil
+      corrected: nil,
+      filename: filename
     }
 
     result
@@ -247,6 +255,19 @@ module TestDataCapture
 
   private
 
+  # Extract filename from the test context.
+  # RuboCop tests set filenames via `let(:file_path)` or by passing `file` to
+  # expect_offense/expect_no_offenses. We try to capture the `file_path` let.
+  def extract_test_filename
+    if respond_to?(:file_path, true)
+      fp = file_path
+      return fp.to_s if fp && !fp.to_s.empty?
+    end
+    nil
+  rescue NameError, NoMethodError
+    nil
+  end
+
   # Meta keys that should be filtered out from cop config.
   # These are RuboCop infrastructure keys, not behavioral settings.
   CONFIG_META_KEYS = %w[
@@ -281,22 +302,23 @@ module TestDataCapture
 
       # 2. Cross-cop config: scan the full config for other cop entries
       #    that were explicitly set (e.g., via let(:config) or let(:other_cops)).
+      #    Uses full cop names (e.g., "Layout/LineLength") to support cross-department config.
       if cop_obj.respond_to?(:config) && cop_obj.config.respond_to?(:keys)
         primary_name = cop_obj.class.respond_to?(:cop_name) ? cop_obj.class.cop_name : nil
         cop_obj.config.keys.each do |key|
           key_s = key.to_s
           next if key_s == 'AllCops'
           next if key_s == primary_name.to_s
-          next unless key_s.include?('/') # Only full cop names like "Layout/SpaceInsideHashLiteralBraces"
+          next unless key_s.include?('/') # Only full cop names like "Layout/LineLength"
 
           begin
             cross_config = cop_obj.config[key]
             if cross_config.is_a?(Hash) && !cross_config.empty?
-              short_name = key_s.split('/').last
+              # Use full cop name as key (e.g., "Layout/LineLength") to preserve department info
               # For cross-cop config, keep 'Enabled' (it's meaningful) but filter other meta keys
               cross_meta = CONFIG_META_KEYS - ['Enabled']
               filtered = normalize_config(cross_config).reject { |k, _| cross_meta.include?(k) }
-              result[short_name] = filtered unless filtered.empty?
+              result[key_s] = filtered unless filtered.empty?
             end
           rescue => e
             # Skip if config access fails

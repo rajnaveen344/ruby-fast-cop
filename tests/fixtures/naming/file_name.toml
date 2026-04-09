@@ -1,10 +1,11 @@
 cop = "Naming/FileName"
 department = "naming"
 severity = "convention"
-implemented = false
+implemented = true
 
 [[tests]]
 name = "rubocopcopnamingfilename_with_camelcase_file_names_ending_in_rb_registers_an_offense"
+filename = "/some/dir/testCase.rb"
 source = '''
 print 1
 '''
@@ -24,6 +25,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_with_camelcase_file_names_without_file_extension_registers_an_offense"
+filename = "/some/dir/testCase"
 source = '''
 print 1
 '''
@@ -43,6 +45,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_with_snake_case_file_names_ending_in_rb_does_not_register_an_offense"
+filename = "/some/dir/test_case.rb"
 source = '''
 print 1
 '''
@@ -57,6 +60,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_with_snake_case_file_names_without_file_extension_does_not_register_an_offense"
+filename = "/some/dir/test_case"
 source = '''
 print 1
 '''
@@ -71,6 +75,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_with_snake_case_file_names_with_nonrb_extension_does_not_register_an_offense"
+filename = "/some/dir/test_case.rake"
 source = '''
 print 1
 '''
@@ -85,6 +90,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_with_snake_case_file_names_with_multiple_extensions_does_not_register_an_offense"
+filename = "some/dir/some_view.html.slim_spec.rb"
 source = '''
 print 1
 '''
@@ -99,6 +105,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_with_snake_case_names_which_use__and__does_not_register_an_offense"
+filename = "some/dir/file?!.rb"
 source = '''
 print 1
 '''
@@ -113,6 +120,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_with_snake_case_names_which_use__does_not_register_an_offense"
+filename = "some/dir/some_file.xlsx+mobile.axlsx"
 source = '''
 print 1
 '''
@@ -127,6 +135,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_with_nonsnakecase_file_names_with_a_shebang_does_not_register_an_offense"
+filename = "/some/dir/test-case"
 source = '''
 #!/usr/bin/env ruby
 print 1
@@ -142,6 +151,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_with_nonsnakecase_file_names_with_a_shebang_when_ignoreexecutablescripts_is_disabled_registers_an_offense"
+filename = "/some/dir/test-case"
 source = '''
 #!/usr/bin/env ruby
 print 1
@@ -160,22 +170,10 @@ ExpectMatchingDefinition = false
 IgnoreExecutableScripts = false
 Regex = ""
 
-[[tests]]
-name = "rubocopcopnamingfilename_when_the_file_is_specified_in_allcopsinclude_with_a_nonsnake_case_file_name_does_not_register_an_offense"
-source = '''
-print 1
-'''
-offenses = []
-
-[tests.config]
-CheckDefinitionPathHierarchy = true
-CheckDefinitionPathHierarchyRoots = ["lib", "spec", "test", "src"]
-ExpectMatchingDefinition = false
-IgnoreExecutableScripts = true
-Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_no_class_or_module_at_all_under_lib_registers_an_offense"
+filename = "/some/dir/lib/file/test_case.rb"
 source = '''
 print 1
 '''
@@ -195,6 +193,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_no_class_or_module_at_all_under_src_registers_an_offense"
+filename = "/some/dir/src/file/test_case.rb"
 source = '''
 print 1
 '''
@@ -214,6 +213,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_no_class_or_module_at_all_under_test_registers_an_offense"
+filename = "/some/dir/test/file/test_case.rb"
 source = '''
 print 1
 '''
@@ -233,6 +233,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_no_class_or_module_at_all_under_spec_registers_an_offense"
+filename = "/some/dir/spec/file/test_case.rb"
 source = '''
 print 1
 '''
@@ -252,6 +253,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_no_class_or_module_at_all_under_lib_when_not_added_to_root_registers_an_offense"
+filename = "/some/other/dir/test_case.rb"
 source = '''
 print 1
 '''
@@ -271,6 +273,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_no_class_or_module_at_all_under_some_other_random_directory_registers_an_offense"
+filename = "/some/other/dir/test_case.rb"
 source = '''
 print 1
 '''
@@ -290,6 +293,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_an_empty_file_registers_an_offense"
+filename = "/lib/rubocop/blah.rb"
 source = '''
 
 '''
@@ -309,6 +313,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_an_empty_file_with_a_space_in_its_filename_registers_an_offense"
+filename = "a file.rb"
 source = '''
 
 '''
@@ -328,6 +333,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_nested_module_behaves_like_matching_module_or_class_in_a_matching_directory_under_lib_does_not_register_an_offense"
+filename = "/some/dir/lib/a/b.rb"
 source = '''
 module A
   module B
@@ -345,6 +351,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_nested_module_behaves_like_matching_module_or_class_in_a_nonmatching_directory_under_lib_registers_an_offense"
+filename = "/some/dir/lib/c/b.rb"
 source = '''
 # b.rb
 module A
@@ -368,6 +375,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_nested_module_behaves_like_matching_module_or_class_in_a_directory_with_multiple_instances_of_lib_does_not_register_an_offense"
+filename = "/some/dir/lib/project/lib/a/b.rb"
 source = '''
 module A
   module B
@@ -385,6 +393,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_nested_module_behaves_like_matching_module_or_class_in_a_matching_directory_under_src_does_not_register_an_offense"
+filename = "/some/dir/src/a/b.rb"
 source = '''
 module A
   module B
@@ -402,6 +411,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_nested_module_behaves_like_matching_module_or_class_in_a_nonmatching_directory_under_src_registers_an_offense"
+filename = "/some/dir/src/c/b.rb"
 source = '''
 # b.rb
 module A
@@ -425,6 +435,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_nested_module_behaves_like_matching_module_or_class_in_a_directory_with_multiple_instances_of_src_does_not_register_an_offense"
+filename = "/some/dir/src/project/src/a/b.rb"
 source = '''
 module A
   module B
@@ -442,6 +453,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_nested_module_behaves_like_matching_module_or_class_in_a_matching_directory_under_test_does_not_register_an_offense"
+filename = "/some/dir/test/a/b.rb"
 source = '''
 module A
   module B
@@ -459,6 +471,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_nested_module_behaves_like_matching_module_or_class_in_a_nonmatching_directory_under_test_registers_an_offense"
+filename = "/some/dir/test/c/b.rb"
 source = '''
 # b.rb
 module A
@@ -482,6 +495,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_nested_module_behaves_like_matching_module_or_class_in_a_directory_with_multiple_instances_of_test_does_not_register_an_offense"
+filename = "/some/dir/test/project/test/a/b.rb"
 source = '''
 module A
   module B
@@ -499,6 +513,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_nested_module_behaves_like_matching_module_or_class_in_a_matching_directory_under_spec_does_not_register_an_offense"
+filename = "/some/dir/spec/a/b.rb"
 source = '''
 module A
   module B
@@ -516,6 +531,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_nested_module_behaves_like_matching_module_or_class_in_a_nonmatching_directory_under_spec_registers_an_offense"
+filename = "/some/dir/spec/c/b.rb"
 source = '''
 # b.rb
 module A
@@ -539,6 +555,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_nested_module_behaves_like_matching_module_or_class_in_a_directory_with_multiple_instances_of_spec_does_not_register_an_offense"
+filename = "/some/dir/spec/project/spec/a/b.rb"
 source = '''
 module A
   module B
@@ -556,6 +573,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_nested_module_behaves_like_matching_module_or_class_in_a_directory_elsewhere_which_only_matches_the_module_name_does_not_register_an_offense"
+filename = "/some/dir/b.rb"
 source = '''
 module A
   module B
@@ -573,6 +591,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_nested_module_behaves_like_matching_module_or_class_in_a_directory_elsewhere_which_does_not_match_the_module_name_registers_an_offense"
+filename = "/some/dir/e.rb"
 source = '''
 # start of file
 module A
@@ -596,6 +615,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_nested_class_behaves_like_matching_module_or_class_in_a_matching_directory_under_lib_does_not_register_an_offense"
+filename = "/some/dir/lib/a/b.rb"
 source = '''
 module A
   class B
@@ -613,6 +633,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_nested_class_behaves_like_matching_module_or_class_in_a_nonmatching_directory_under_lib_registers_an_offense"
+filename = "/some/dir/lib/c/b.rb"
 source = '''
 # b.rb
 module A
@@ -636,6 +657,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_nested_class_behaves_like_matching_module_or_class_in_a_directory_with_multiple_instances_of_lib_does_not_register_an_offense"
+filename = "/some/dir/lib/project/lib/a/b.rb"
 source = '''
 module A
   class B
@@ -653,6 +675,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_nested_class_behaves_like_matching_module_or_class_in_a_matching_directory_under_src_does_not_register_an_offense"
+filename = "/some/dir/src/a/b.rb"
 source = '''
 module A
   class B
@@ -670,6 +693,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_nested_class_behaves_like_matching_module_or_class_in_a_nonmatching_directory_under_src_registers_an_offense"
+filename = "/some/dir/src/c/b.rb"
 source = '''
 # b.rb
 module A
@@ -693,6 +717,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_nested_class_behaves_like_matching_module_or_class_in_a_directory_with_multiple_instances_of_src_does_not_register_an_offense"
+filename = "/some/dir/src/project/src/a/b.rb"
 source = '''
 module A
   class B
@@ -710,6 +735,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_nested_class_behaves_like_matching_module_or_class_in_a_matching_directory_under_test_does_not_register_an_offense"
+filename = "/some/dir/test/a/b.rb"
 source = '''
 module A
   class B
@@ -727,6 +753,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_nested_class_behaves_like_matching_module_or_class_in_a_nonmatching_directory_under_test_registers_an_offense"
+filename = "/some/dir/test/c/b.rb"
 source = '''
 # b.rb
 module A
@@ -750,6 +777,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_nested_class_behaves_like_matching_module_or_class_in_a_directory_with_multiple_instances_of_test_does_not_register_an_offense"
+filename = "/some/dir/test/project/test/a/b.rb"
 source = '''
 module A
   class B
@@ -767,6 +795,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_nested_class_behaves_like_matching_module_or_class_in_a_matching_directory_under_spec_does_not_register_an_offense"
+filename = "/some/dir/spec/a/b.rb"
 source = '''
 module A
   class B
@@ -784,6 +813,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_nested_class_behaves_like_matching_module_or_class_in_a_nonmatching_directory_under_spec_registers_an_offense"
+filename = "/some/dir/spec/c/b.rb"
 source = '''
 # b.rb
 module A
@@ -807,6 +837,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_nested_class_behaves_like_matching_module_or_class_in_a_directory_with_multiple_instances_of_spec_does_not_register_an_offense"
+filename = "/some/dir/spec/project/spec/a/b.rb"
 source = '''
 module A
   class B
@@ -824,6 +855,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_nested_class_behaves_like_matching_module_or_class_in_a_directory_elsewhere_which_only_matches_the_module_name_does_not_register_an_offense"
+filename = "/some/dir/b.rb"
 source = '''
 module A
   class B
@@ -841,6 +873,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_nested_class_behaves_like_matching_module_or_class_in_a_directory_elsewhere_which_does_not_match_the_module_name_registers_an_offense"
+filename = "/some/dir/e.rb"
 source = '''
 # start of file
 module A
@@ -864,6 +897,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_uses_namespacedmodule_syntax_behaves_like_matching_module_or_class_in_a_matching_directory_under_lib_does_not_register_an_offense"
+filename = "/some/dir/lib/a/b.rb"
 source = '''
 begin
   module A::B
@@ -881,6 +915,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_uses_namespacedmodule_syntax_behaves_like_matching_module_or_class_in_a_nonmatching_directory_under_lib_registers_an_offense"
+filename = "/some/dir/lib/c/b.rb"
 source = '''
 # b.rb
 begin
@@ -904,6 +939,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_uses_namespacedmodule_syntax_behaves_like_matching_module_or_class_in_a_directory_with_multiple_instances_of_lib_does_not_register_an_offense"
+filename = "/some/dir/lib/project/lib/a/b.rb"
 source = '''
 begin
   module A::B
@@ -921,6 +957,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_uses_namespacedmodule_syntax_behaves_like_matching_module_or_class_in_a_matching_directory_under_src_does_not_register_an_offense"
+filename = "/some/dir/src/a/b.rb"
 source = '''
 begin
   module A::B
@@ -938,6 +975,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_uses_namespacedmodule_syntax_behaves_like_matching_module_or_class_in_a_nonmatching_directory_under_src_registers_an_offense"
+filename = "/some/dir/src/c/b.rb"
 source = '''
 # b.rb
 begin
@@ -961,6 +999,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_uses_namespacedmodule_syntax_behaves_like_matching_module_or_class_in_a_directory_with_multiple_instances_of_src_does_not_register_an_offense"
+filename = "/some/dir/src/project/src/a/b.rb"
 source = '''
 begin
   module A::B
@@ -978,6 +1017,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_uses_namespacedmodule_syntax_behaves_like_matching_module_or_class_in_a_matching_directory_under_test_does_not_register_an_offense"
+filename = "/some/dir/test/a/b.rb"
 source = '''
 begin
   module A::B
@@ -995,6 +1035,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_uses_namespacedmodule_syntax_behaves_like_matching_module_or_class_in_a_nonmatching_directory_under_test_registers_an_offense"
+filename = "/some/dir/test/c/b.rb"
 source = '''
 # b.rb
 begin
@@ -1018,6 +1059,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_uses_namespacedmodule_syntax_behaves_like_matching_module_or_class_in_a_directory_with_multiple_instances_of_test_does_not_register_an_offense"
+filename = "/some/dir/test/project/test/a/b.rb"
 source = '''
 begin
   module A::B
@@ -1035,6 +1077,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_uses_namespacedmodule_syntax_behaves_like_matching_module_or_class_in_a_matching_directory_under_spec_does_not_register_an_offense"
+filename = "/some/dir/spec/a/b.rb"
 source = '''
 begin
   module A::B
@@ -1052,6 +1095,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_uses_namespacedmodule_syntax_behaves_like_matching_module_or_class_in_a_nonmatching_directory_under_spec_registers_an_offense"
+filename = "/some/dir/spec/c/b.rb"
 source = '''
 # b.rb
 begin
@@ -1075,6 +1119,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_uses_namespacedmodule_syntax_behaves_like_matching_module_or_class_in_a_directory_with_multiple_instances_of_spec_does_not_register_an_offense"
+filename = "/some/dir/spec/project/spec/a/b.rb"
 source = '''
 begin
   module A::B
@@ -1092,6 +1137,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_uses_namespacedmodule_syntax_behaves_like_matching_module_or_class_in_a_directory_elsewhere_which_only_matches_the_module_name_does_not_register_an_offense"
+filename = "/some/dir/b.rb"
 source = '''
 begin
   module A::B
@@ -1109,6 +1155,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_uses_namespacedmodule_syntax_behaves_like_matching_module_or_class_in_a_directory_elsewhere_which_does_not_match_the_module_name_registers_an_offense"
+filename = "/some/dir/e.rb"
 source = '''
 # start of file
 begin
@@ -1132,6 +1179,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_multiple_classes_behaves_like_matching_module_or_class_in_a_matching_directory_under_lib_does_not_register_an_offense"
+filename = "/some/dir/lib/a/b.rb"
 source = '''
 class X
 end
@@ -1153,6 +1201,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_multiple_classes_behaves_like_matching_module_or_class_in_a_nonmatching_directory_under_lib_registers_an_offense"
+filename = "/some/dir/lib/c/b.rb"
 source = '''
 # b.rb
 class X
@@ -1180,6 +1229,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_multiple_classes_behaves_like_matching_module_or_class_in_a_directory_with_multiple_instances_of_lib_does_not_register_an_offense"
+filename = "/some/dir/lib/project/lib/a/b.rb"
 source = '''
 class X
 end
@@ -1201,6 +1251,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_multiple_classes_behaves_like_matching_module_or_class_in_a_matching_directory_under_src_does_not_register_an_offense"
+filename = "/some/dir/src/a/b.rb"
 source = '''
 class X
 end
@@ -1222,6 +1273,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_multiple_classes_behaves_like_matching_module_or_class_in_a_nonmatching_directory_under_src_registers_an_offense"
+filename = "/some/dir/src/c/b.rb"
 source = '''
 # b.rb
 class X
@@ -1249,6 +1301,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_multiple_classes_behaves_like_matching_module_or_class_in_a_directory_with_multiple_instances_of_src_does_not_register_an_offense"
+filename = "/some/dir/src/project/src/a/b.rb"
 source = '''
 class X
 end
@@ -1270,6 +1323,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_multiple_classes_behaves_like_matching_module_or_class_in_a_matching_directory_under_test_does_not_register_an_offense"
+filename = "/some/dir/test/a/b.rb"
 source = '''
 class X
 end
@@ -1291,6 +1345,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_multiple_classes_behaves_like_matching_module_or_class_in_a_nonmatching_directory_under_test_registers_an_offense"
+filename = "/some/dir/test/c/b.rb"
 source = '''
 # b.rb
 class X
@@ -1318,6 +1373,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_multiple_classes_behaves_like_matching_module_or_class_in_a_directory_with_multiple_instances_of_test_does_not_register_an_offense"
+filename = "/some/dir/test/project/test/a/b.rb"
 source = '''
 class X
 end
@@ -1339,6 +1395,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_multiple_classes_behaves_like_matching_module_or_class_in_a_matching_directory_under_spec_does_not_register_an_offense"
+filename = "/some/dir/spec/a/b.rb"
 source = '''
 class X
 end
@@ -1360,6 +1417,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_multiple_classes_behaves_like_matching_module_or_class_in_a_nonmatching_directory_under_spec_registers_an_offense"
+filename = "/some/dir/spec/c/b.rb"
 source = '''
 # b.rb
 class X
@@ -1387,6 +1445,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_multiple_classes_behaves_like_matching_module_or_class_in_a_directory_with_multiple_instances_of_spec_does_not_register_an_offense"
+filename = "/some/dir/spec/project/spec/a/b.rb"
 source = '''
 class X
 end
@@ -1408,6 +1467,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_multiple_classes_behaves_like_matching_module_or_class_in_a_directory_elsewhere_which_only_matches_the_module_name_does_not_register_an_offense"
+filename = "/some/dir/b.rb"
 source = '''
 class X
 end
@@ -1429,6 +1489,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_multiple_classes_behaves_like_matching_module_or_class_in_a_directory_elsewhere_which_does_not_match_the_module_name_registers_an_offense"
+filename = "/some/dir/e.rb"
 source = '''
 # start of file
 class X
@@ -1456,6 +1517,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_struct_without_a_block_behaves_like_matching_module_or_class_in_a_matching_directory_under_lib_does_not_register_an_offense"
+filename = "/some/dir/lib/a/b.rb"
 source = '''
 module A
   B = Struct.new(:foo, :bar)
@@ -1472,6 +1534,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_struct_without_a_block_behaves_like_matching_module_or_class_in_a_nonmatching_directory_under_lib_registers_an_offense"
+filename = "/some/dir/lib/c/b.rb"
 source = '''
 # b.rb
 module A
@@ -1494,6 +1557,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_struct_without_a_block_behaves_like_matching_module_or_class_in_a_directory_with_multiple_instances_of_lib_does_not_register_an_offense"
+filename = "/some/dir/lib/project/lib/a/b.rb"
 source = '''
 module A
   B = Struct.new(:foo, :bar)
@@ -1510,6 +1574,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_struct_without_a_block_behaves_like_matching_module_or_class_in_a_matching_directory_under_src_does_not_register_an_offense"
+filename = "/some/dir/src/a/b.rb"
 source = '''
 module A
   B = Struct.new(:foo, :bar)
@@ -1526,6 +1591,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_struct_without_a_block_behaves_like_matching_module_or_class_in_a_nonmatching_directory_under_src_registers_an_offense"
+filename = "/some/dir/src/c/b.rb"
 source = '''
 # b.rb
 module A
@@ -1548,6 +1614,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_struct_without_a_block_behaves_like_matching_module_or_class_in_a_directory_with_multiple_instances_of_src_does_not_register_an_offense"
+filename = "/some/dir/src/project/src/a/b.rb"
 source = '''
 module A
   B = Struct.new(:foo, :bar)
@@ -1564,6 +1631,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_struct_without_a_block_behaves_like_matching_module_or_class_in_a_matching_directory_under_test_does_not_register_an_offense"
+filename = "/some/dir/test/a/b.rb"
 source = '''
 module A
   B = Struct.new(:foo, :bar)
@@ -1580,6 +1648,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_struct_without_a_block_behaves_like_matching_module_or_class_in_a_nonmatching_directory_under_test_registers_an_offense"
+filename = "/some/dir/test/c/b.rb"
 source = '''
 # b.rb
 module A
@@ -1602,6 +1671,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_struct_without_a_block_behaves_like_matching_module_or_class_in_a_directory_with_multiple_instances_of_test_does_not_register_an_offense"
+filename = "/some/dir/test/project/test/a/b.rb"
 source = '''
 module A
   B = Struct.new(:foo, :bar)
@@ -1618,6 +1688,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_struct_without_a_block_behaves_like_matching_module_or_class_in_a_matching_directory_under_spec_does_not_register_an_offense"
+filename = "/some/dir/spec/a/b.rb"
 source = '''
 module A
   B = Struct.new(:foo, :bar)
@@ -1634,6 +1705,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_struct_without_a_block_behaves_like_matching_module_or_class_in_a_nonmatching_directory_under_spec_registers_an_offense"
+filename = "/some/dir/spec/c/b.rb"
 source = '''
 # b.rb
 module A
@@ -1656,6 +1728,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_struct_without_a_block_behaves_like_matching_module_or_class_in_a_directory_with_multiple_instances_of_spec_does_not_register_an_offense"
+filename = "/some/dir/spec/project/spec/a/b.rb"
 source = '''
 module A
   B = Struct.new(:foo, :bar)
@@ -1672,6 +1745,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_struct_without_a_block_behaves_like_matching_module_or_class_in_a_directory_elsewhere_which_only_matches_the_module_name_does_not_register_an_offense"
+filename = "/some/dir/b.rb"
 source = '''
 module A
   B = Struct.new(:foo, :bar)
@@ -1688,6 +1762,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_struct_without_a_block_behaves_like_matching_module_or_class_in_a_directory_elsewhere_which_does_not_match_the_module_name_registers_an_offense"
+filename = "/some/dir/e.rb"
 source = '''
 # start of file
 module A
@@ -1710,6 +1785,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_struct_with_a_block_behaves_like_matching_module_or_class_in_a_matching_directory_under_lib_does_not_register_an_offense"
+filename = "/some/dir/lib/a/b.rb"
 source = '''
 module A
   B = Struct.new(:foo, :bar) do
@@ -1727,6 +1803,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_struct_with_a_block_behaves_like_matching_module_or_class_in_a_nonmatching_directory_under_lib_registers_an_offense"
+filename = "/some/dir/lib/c/b.rb"
 source = '''
 # b.rb
 module A
@@ -1750,6 +1827,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_struct_with_a_block_behaves_like_matching_module_or_class_in_a_directory_with_multiple_instances_of_lib_does_not_register_an_offense"
+filename = "/some/dir/lib/project/lib/a/b.rb"
 source = '''
 module A
   B = Struct.new(:foo, :bar) do
@@ -1767,6 +1845,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_struct_with_a_block_behaves_like_matching_module_or_class_in_a_matching_directory_under_src_does_not_register_an_offense"
+filename = "/some/dir/src/a/b.rb"
 source = '''
 module A
   B = Struct.new(:foo, :bar) do
@@ -1784,6 +1863,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_struct_with_a_block_behaves_like_matching_module_or_class_in_a_nonmatching_directory_under_src_registers_an_offense"
+filename = "/some/dir/src/c/b.rb"
 source = '''
 # b.rb
 module A
@@ -1807,6 +1887,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_struct_with_a_block_behaves_like_matching_module_or_class_in_a_directory_with_multiple_instances_of_src_does_not_register_an_offense"
+filename = "/some/dir/src/project/src/a/b.rb"
 source = '''
 module A
   B = Struct.new(:foo, :bar) do
@@ -1824,6 +1905,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_struct_with_a_block_behaves_like_matching_module_or_class_in_a_matching_directory_under_test_does_not_register_an_offense"
+filename = "/some/dir/test/a/b.rb"
 source = '''
 module A
   B = Struct.new(:foo, :bar) do
@@ -1841,6 +1923,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_struct_with_a_block_behaves_like_matching_module_or_class_in_a_nonmatching_directory_under_test_registers_an_offense"
+filename = "/some/dir/test/c/b.rb"
 source = '''
 # b.rb
 module A
@@ -1864,6 +1947,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_struct_with_a_block_behaves_like_matching_module_or_class_in_a_directory_with_multiple_instances_of_test_does_not_register_an_offense"
+filename = "/some/dir/test/project/test/a/b.rb"
 source = '''
 module A
   B = Struct.new(:foo, :bar) do
@@ -1881,6 +1965,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_struct_with_a_block_behaves_like_matching_module_or_class_in_a_matching_directory_under_spec_does_not_register_an_offense"
+filename = "/some/dir/spec/a/b.rb"
 source = '''
 module A
   B = Struct.new(:foo, :bar) do
@@ -1898,6 +1983,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_struct_with_a_block_behaves_like_matching_module_or_class_in_a_nonmatching_directory_under_spec_registers_an_offense"
+filename = "/some/dir/spec/c/b.rb"
 source = '''
 # b.rb
 module A
@@ -1921,6 +2007,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_struct_with_a_block_behaves_like_matching_module_or_class_in_a_directory_with_multiple_instances_of_spec_does_not_register_an_offense"
+filename = "/some/dir/spec/project/spec/a/b.rb"
 source = '''
 module A
   B = Struct.new(:foo, :bar) do
@@ -1938,6 +2025,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_struct_with_a_block_behaves_like_matching_module_or_class_in_a_directory_elsewhere_which_only_matches_the_module_name_does_not_register_an_offense"
+filename = "/some/dir/b.rb"
 source = '''
 module A
   B = Struct.new(:foo, :bar) do
@@ -1955,6 +2043,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_expectmatchingdefinition_is_true_on_a_file_which_defines_a_struct_with_a_block_behaves_like_matching_module_or_class_in_a_directory_elsewhere_which_does_not_match_the_module_name_registers_an_offense"
+filename = "/some/dir/e.rb"
 source = '''
 # start of file
 module A
@@ -1978,6 +2067,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_checkdefinitionpathhierarchy_is_false_on_a_file_with_a_matching_class_does_not_register_an_offense"
+filename = "/lib/image_collection.rb"
 source = '''
 begin
   class ImageCollection
@@ -1995,6 +2085,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_checkdefinitionpathhierarchy_is_false_on_a_file_with_a_nonmatching_class_registers_an_offense"
+filename = "/lib/image_collection.rb"
 source = '''
 begin
   class PictureCollection
@@ -2017,6 +2108,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_checkdefinitionpathhierarchy_is_false_on_a_file_with_a_matching_struct_does_not_register_an_offense"
+filename = "/lib/image_collection.rb"
 source = '''
 ImageCollection = Struct.new
 '''
@@ -2031,6 +2123,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_checkdefinitionpathhierarchy_is_false_on_a_file_with_a_nonmatching_struct_registers_an_offense"
+filename = "/lib/image_collection.rb"
 source = '''
 PictureCollection = Struct.new
 '''
@@ -2050,6 +2143,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_checkdefinitionpathhierarchy_is_false_on_an_empty_file_registers_an_offense"
+filename = "/lib/rubocop/foo.rb"
 source = '''
 
 '''
@@ -2069,6 +2163,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_checkdefinitionpathhierarchy_is_false_in_a_nonmatching_directory_but_with_a_matching_class_does_not_register_an_offense"
+filename = "/lib/some/path/foo.rb"
 source = '''
 begin
   module Foo
@@ -2086,6 +2181,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_checkdefinitionpathhierarchy_is_false_with_a_nonmatching_module_containing_a_matching_class_does_not_register_an_offense"
+filename = "lib/foo.rb"
 source = '''
 begin
   module NonMatching
@@ -2105,6 +2201,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_checkdefinitionpathhierarchy_is_false_with_a_matching_module_containing_a_nonmatching_class_does_not_register_an_offense"
+filename = "lib/foo.rb"
 source = '''
 begin
   module Foo
@@ -2124,6 +2221,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_checkdefinitionpathhierarchy_is_false_with_a_nonmatching_module_containing_a_matching_struct_does_not_register_an_offense"
+filename = "lib/foo.rb"
 source = '''
 begin
   module NonMatching
@@ -2142,6 +2240,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_checkdefinitionpathhierarchy_is_false_with_a_matching_module_containing_a_nonmatching_struct_does_not_register_an_offense"
+filename = "lib/foo.rb"
 source = '''
 begin
   module Foo
@@ -2160,6 +2259,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_regex_is_set_with_a_matching_name_does_not_register_an_offense"
+filename = "a.rb"
 source = '''
 print 1
 '''
@@ -2170,6 +2270,7 @@ Regex = "(?i-mx:\\A[aeiou]\\z)"
 
 [[tests]]
 name = "rubocopcopnamingfilename_when_regex_is_set_with_a_nonmatching_name_registers_an_offense"
+filename = "z.rb"
 source = '''
 print 1
 '''
@@ -2185,6 +2286,7 @@ Regex = "(?i-mx:\\A[aeiou]\\z)"
 
 [[tests]]
 name = "rubocopcopnamingfilename_with_acronym_namespace_does_not_register_an_offense"
+filename = "/lib/my/cli/admin_user.rb"
 source = '''
 module My
   module CLI
@@ -2205,6 +2307,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_with_acronym_class_name_does_not_register_an_offense"
+filename = "/lib/my/cli.rb"
 source = '''
 module My
   class CLI
@@ -2223,6 +2326,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_with_include_acronym_name_does_not_register_an_offense"
+filename = "/lib/my/http_server.rb"
 source = '''
 module My
   class HTTPServer
@@ -2241,6 +2345,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_with_dotfiles_does_not_register_an_offense"
+filename = ".pryrc"
 source = '''
 print 1
 '''
@@ -2255,6 +2360,7 @@ Regex = ""
 
 [[tests]]
 name = "rubocopcopnamingfilename_with_nonascii_characters_in_filename_does_not_register_an_offense"
+filename = "/some/dir/ünbound_sérvér.rb"
 source = '''
 print 1
 '''

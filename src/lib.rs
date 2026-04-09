@@ -217,6 +217,11 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         result.push(Box::new(cops::lint::LiteralInInterpolation::new()));
     }
 
+    // Lint/OutOfRangeRegexpRef
+    if config.is_cop_enabled("Lint/OutOfRangeRegexpRef") {
+        result.push(Box::new(cops::lint::OutOfRangeRegexpRef::new()));
+    }
+
     // Lint/RedundantTypeConversion
     if config.is_cop_enabled("Lint/RedundantTypeConversion") {
         result.push(Box::new(cops::lint::RedundantTypeConversion::new()));
@@ -463,6 +468,31 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         )));
     }
 
+    // Style/IfUnlessModifier
+    if config.is_cop_enabled("Style/IfUnlessModifier") {
+        let ll_config = config.get_cop_config("Layout/LineLength");
+        let ll_enabled = config.is_cop_enabled("Layout/LineLength");
+        let max_ll = ll_config.and_then(|c| c.max).unwrap_or(80) as usize;
+        let allow_uri = ll_config
+            .and_then(|c| c.raw.get("AllowURI"))
+            .and_then(|v| v.as_bool())
+            .unwrap_or(true);
+        let allow_cop_directives = ll_config
+            .and_then(|c| c.raw.get("AllowCopDirectives"))
+            .and_then(|v| v.as_bool())
+            .unwrap_or(true);
+        let tab_width = config.get_cop_config("Layout/IndentationStyle")
+            .and_then(|c| c.raw.get("IndentationWidth"))
+            .and_then(|v| v.as_i64())
+            .or_else(|| config.get_cop_config("Layout/IndentationWidth")
+                .and_then(|c| c.raw.get("Width"))
+                .and_then(|v| v.as_i64()))
+            .map(|v| v as usize);
+        result.push(Box::new(cops::style::IfUnlessModifier::with_config(
+            max_ll, ll_enabled, allow_uri, allow_cop_directives, tab_width,
+        )));
+    }
+
     // Style/InverseMethods
     if config.is_cop_enabled("Style/InverseMethods") {
         if let Some(cop) = build_single_cop("Style/InverseMethods", config) {
@@ -636,6 +666,18 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         result.push(Box::new(cops::layout::EmptyLinesAroundAccessModifier::new(style)));
     }
 
+    // Layout/HeredocIndentation
+    if config.is_cop_enabled("Layout/HeredocIndentation") {
+        let cop_config = config.get_cop_config("Layout/HeredocIndentation");
+        let active_support = cop_config
+            .and_then(|c| c.raw.get("ActiveSupportExtensionsEnabled"))
+            .and_then(|v| v.as_bool())
+            .unwrap_or(false);
+        result.push(Box::new(cops::layout::HeredocIndentation::with_config(
+            2, active_support, None, true,
+        )));
+    }
+
     // Layout/IndentationWidth
     if config.is_cop_enabled("Layout/IndentationWidth") {
         result.push(build_indentation_width_cop(config));
@@ -696,6 +738,11 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         result.push(Box::new(cops::layout::SpaceAfterComma::with_config(
             space_inside_braces_is_space,
         )));
+    }
+
+    // Layout/SpaceAroundKeyword
+    if config.is_cop_enabled("Layout/SpaceAroundKeyword") {
+        result.push(Box::new(cops::layout::SpaceAroundKeyword::new()));
     }
 
     // Layout/MultilineMethodCallIndentation
@@ -885,6 +932,46 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
             max,
             count_comments,
             count_as_one,
+        )));
+    }
+
+    // Naming/FileName
+    if config.is_cop_enabled("Naming/FileName") {
+        let cop_config = config.get_cop_config("Naming/FileName");
+        let ignore_executable_scripts = cop_config
+            .and_then(|c| c.raw.get("IgnoreExecutableScripts"))
+            .and_then(|v| v.as_bool())
+            .unwrap_or(true);
+        let expect_matching_definition = cop_config
+            .and_then(|c| c.raw.get("ExpectMatchingDefinition"))
+            .and_then(|v| v.as_bool())
+            .unwrap_or(false);
+        let check_definition_path_hierarchy = cop_config
+            .and_then(|c| c.raw.get("CheckDefinitionPathHierarchy"))
+            .and_then(|v| v.as_bool())
+            .unwrap_or(true);
+        let check_definition_path_hierarchy_roots = cop_config
+            .and_then(|c| c.raw.get("CheckDefinitionPathHierarchyRoots"))
+            .and_then(|v| v.as_sequence())
+            .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+            .unwrap_or_else(|| vec!["lib".into(), "spec".into(), "test".into(), "src".into()]);
+        let regex = cop_config
+            .and_then(|c| c.raw.get("Regex"))
+            .and_then(|v| v.as_str())
+            .filter(|s| !s.is_empty())
+            .map(String::from);
+        let allowed_acronyms = cop_config
+            .and_then(|c| c.raw.get("AllowedAcronyms"))
+            .and_then(|v| v.as_sequence())
+            .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+            .unwrap_or_default();
+        result.push(Box::new(cops::naming::FileName::with_full_config(
+            ignore_executable_scripts,
+            expect_matching_definition,
+            check_definition_path_hierarchy,
+            check_definition_path_hierarchy_roots,
+            regex,
+            allowed_acronyms,
         )));
     }
 
@@ -1104,6 +1191,10 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
 
         "Lint/LiteralInInterpolation" => {
             Some(Box::new(cops::lint::LiteralInInterpolation::new()))
+        }
+
+        "Lint/OutOfRangeRegexpRef" => {
+            Some(Box::new(cops::lint::OutOfRangeRegexpRef::new()))
         }
 
         "Lint/RedundantTypeConversion" => {
@@ -1554,6 +1645,30 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
             Some(Box::new(cops::style::GlobalVars::with_allowed_variables(allowed)))
         }
 
+        "Style/IfUnlessModifier" => {
+            let ll_config = config.get_cop_config("Layout/LineLength");
+            let ll_enabled = config.is_cop_enabled("Layout/LineLength");
+            let max_ll = ll_config.and_then(|c| c.max).unwrap_or(80) as usize;
+            let allow_uri = ll_config
+                .and_then(|c| c.raw.get("AllowURI"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(true);
+            let allow_cop_directives = ll_config
+                .and_then(|c| c.raw.get("AllowCopDirectives"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(true);
+            let tab_width = config.get_cop_config("Layout/IndentationStyle")
+                .and_then(|c| c.raw.get("IndentationWidth"))
+                .and_then(|v| v.as_i64())
+                .or_else(|| config.get_cop_config("Layout/IndentationWidth")
+                    .and_then(|c| c.raw.get("Width"))
+                    .and_then(|v| v.as_i64()))
+                .map(|v| v as usize);
+            Some(Box::new(cops::style::IfUnlessModifier::with_config(
+                max_ll, ll_enabled, allow_uri, allow_cop_directives, tab_width,
+            )))
+        }
+
         "Style/InverseMethods" => {
             let cop_config = config.get_cop_config("Style/InverseMethods");
             let inverse_methods = cop_config
@@ -1816,6 +1931,25 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
             Some(Box::new(cops::layout::EmptyLinesAroundAccessModifier::new(style)))
         }
 
+        "Layout/HeredocIndentation" => {
+            let cop_config = config.get_cop_config("Layout/HeredocIndentation");
+            let active_support = cop_config
+                .and_then(|c| c.raw.get("ActiveSupportExtensionsEnabled"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
+            let max_line_length = cop_config
+                .and_then(|c| c.raw.get("MaxLineLength"))
+                .and_then(|v| v.as_i64())
+                .map(|v| v as usize);
+            let allow_heredoc = cop_config
+                .and_then(|c| c.raw.get("AllowHeredoc"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(true);
+            Some(Box::new(cops::layout::HeredocIndentation::with_config(
+                2, active_support, max_line_length, allow_heredoc,
+            )))
+        }
+
         "Layout/IndentationWidth" => {
             Some(build_indentation_width_cop(config))
         }
@@ -1935,6 +2069,10 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
             Some(Box::new(cops::layout::SpaceAfterComma::with_config(
                 space_inside_braces_is_space,
             )))
+        }
+
+        "Layout/SpaceAroundKeyword" => {
+            Some(Box::new(cops::layout::SpaceAroundKeyword::new()))
         }
 
         "Layout/MultilineMethodCallIndentation" => {
@@ -2125,6 +2263,45 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
                 max,
                 count_comments,
                 count_as_one,
+            )))
+        }
+
+        "Naming/FileName" => {
+            let cop_config = config.get_cop_config("Naming/FileName");
+            let ignore_executable_scripts = cop_config
+                .and_then(|c| c.raw.get("IgnoreExecutableScripts"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(true);
+            let expect_matching_definition = cop_config
+                .and_then(|c| c.raw.get("ExpectMatchingDefinition"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
+            let check_definition_path_hierarchy = cop_config
+                .and_then(|c| c.raw.get("CheckDefinitionPathHierarchy"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(true);
+            let check_definition_path_hierarchy_roots = cop_config
+                .and_then(|c| c.raw.get("CheckDefinitionPathHierarchyRoots"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+                .unwrap_or_else(|| vec!["lib".into(), "spec".into(), "test".into(), "src".into()]);
+            let regex = cop_config
+                .and_then(|c| c.raw.get("Regex"))
+                .and_then(|v| v.as_str())
+                .filter(|s| !s.is_empty())
+                .map(String::from);
+            let allowed_acronyms = cop_config
+                .and_then(|c| c.raw.get("AllowedAcronyms"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+                .unwrap_or_default();
+            Some(Box::new(cops::naming::FileName::with_full_config(
+                ignore_executable_scripts,
+                expect_matching_definition,
+                check_definition_path_hierarchy,
+                check_definition_path_hierarchy_roots,
+                regex,
+                allowed_acronyms,
             )))
         }
 

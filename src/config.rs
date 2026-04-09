@@ -558,11 +558,19 @@ impl Config {
         if let Some(mapping) = yaml_value.as_mapping() {
             for (key, val) in mapping {
                 if let Some(key_str) = key.as_str() {
-                    // A cross-cop config entry is a PascalCase key whose value is a mapping
-                    if val.is_mapping() && is_pascal_case(key_str) && !department.is_empty() {
-                        let cross_cop_name = format!("{}/{}", department, key_str);
-                        if let Ok(cross_config) = Self::parse_cop_config(val) {
-                            config.cops.insert(cross_cop_name, cross_config);
+                    if val.is_mapping() {
+                        // Full cop name with slash (e.g., "Layout/LineLength") - cross-department config
+                        if key_str.contains('/') {
+                            if let Ok(cross_config) = Self::parse_cop_config(val) {
+                                config.cops.insert(key_str.to_string(), cross_config);
+                            }
+                        }
+                        // PascalCase short name (e.g., "SpaceInsideBlockBraces") - same department
+                        else if is_pascal_case(key_str) && !department.is_empty() {
+                            let cross_cop_name = format!("{}/{}", department, key_str);
+                            if let Ok(cross_config) = Self::parse_cop_config(val) {
+                                config.cops.insert(cross_cop_name, cross_config);
+                            }
                         }
                     }
                 }

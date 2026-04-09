@@ -9,6 +9,7 @@ mod format_string_token;
 mod frozen_string_literal_comment;
 mod global_vars;
 mod hash_syntax;
+mod if_unless_modifier;
 mod inverse_methods;
 mod method_called_on_do_end_block;
 mod mutable_constant;
@@ -51,6 +52,7 @@ pub use hash_syntax::{
     EnforcedShorthandSyntax as HashSyntaxShorthandStyle, EnforcedStyle as HashSyntaxStyle,
     HashSyntax,
 };
+pub use if_unless_modifier::IfUnlessModifier;
 pub use inverse_methods::InverseMethods;
 pub use method_called_on_do_end_block::MethodCalledOnDoEndBlock;
 pub use mutable_constant::{EnforcedStyle as MutableConstantStyle, MutableConstant};

@@ -411,6 +411,7 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(lint::DuplicateMethods::new()),
         Box::new(lint::LiteralAsCondition::new()),
         Box::new(lint::LiteralInInterpolation::new()),
+        Box::new(lint::OutOfRangeRegexpRef::new()),
         Box::new(lint::RedundantTypeConversion::new()),
         Box::new(lint::UnreachableCode::new()),
         Box::new(lint::UselessAccessModifier::new()),
@@ -423,6 +424,7 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(layout::EmptyLinesAroundAccessModifier::new(layout::EmptyLinesAroundAccessModifierStyle::Around)),
         Box::new(layout::EndAlignment::new(layout::EndAlignmentStyle::Keyword)),
         Box::new(layout::FirstArgumentIndentation::new(layout::FirstArgumentIndentationStyle::SpecialForInnerMethodCallInParentheses, None)),
+        Box::new(layout::HeredocIndentation::new()),
         Box::new(layout::HashAlignment::new(
             vec![layout::HashAlignmentStyle::Key],
             vec![layout::HashAlignmentStyle::Key],
@@ -432,6 +434,7 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(layout::LeadingCommentSpace::new()),
         Box::new(layout::LineLength::new(160)), // User's config: Max: 160 (allow_uri=true by default)
         Box::new(layout::SpaceAfterComma::new()),
+        Box::new(layout::SpaceAroundKeyword::new()),
         Box::new(layout::MultilineMethodCallIndentation::new(layout::MultilineMethodCallIndentationStyle::Aligned, None)),
         Box::new(layout::SpaceInsideArrayPercentLiteral::new()),
         Box::new(layout::SpaceInsidePercentLiteralDelimiters::new()),
@@ -442,6 +445,7 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(metrics::ClassLength::new(100)),
         Box::new(metrics::MethodLength::new(10)),
         // Naming
+        Box::new(naming::FileName::new()),
         Box::new(naming::MethodName::new()),
         Box::new(naming::PredicateMethod::new(naming::PredicateMethodMode::Conservative)),
         Box::new(naming::VariableName::new()),
@@ -458,6 +462,7 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(style::FrozenStringLiteralComment::new(style::FrozenStringLiteralCommentStyle::Always)),
         Box::new(style::GlobalVars::new()),
         Box::new(style::HashSyntax::new(style::HashSyntaxStyle::Ruby19NoMixedKeys)), // User's config
+        Box::new(style::IfUnlessModifier::new()),
         Box::new(style::InverseMethods::new()),
         Box::new(style::MethodCalledOnDoEndBlock::new()),
         Box::new(style::MutableConstant::new(style::MutableConstantStyle::Literals)),

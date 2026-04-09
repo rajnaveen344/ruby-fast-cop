@@ -251,6 +251,11 @@ def generate_toml(cop:, department:, severity:, implemented:, tests:)
       lines << "ruby_version = #{toml_string(">= #{test[:ruby_version]}")}"
     end
 
+    # Output filename if captured (used by cops like Naming/FileName)
+    if test[:filename] && !test[:filename].empty?
+      lines << "filename = #{toml_string(ensure_utf8(test[:filename]))}"
+    end
+
     source = ensure_utf8(test[:source] || '')
     base_indent = compute_base_indent(source)
 
@@ -288,10 +293,32 @@ def generate_toml(cop:, department:, severity:, implemented:, tests:)
 
     config = test[:config]
     if config && !config.empty?
-      lines << ""
-      lines << "[tests.config]"
+      # Separate scalar config (for [tests.config]) from cross-cop config (sub-tables)
+      scalar_config = {}
+      cross_cop_config = {}
       config.sort.each do |key, value|
-        lines << "#{toml_key(key)} = #{toml_value(value)}"
+        if value.is_a?(Hash) && key.include?('/')
+          cross_cop_config[key] = value
+        else
+          scalar_config[key] = value
+        end
+      end
+
+      unless scalar_config.empty?
+        lines << ""
+        lines << "[tests.config]"
+        scalar_config.sort.each do |key, value|
+          lines << "#{toml_key(key)} = #{toml_value(value)}"
+        end
+      end
+
+      # Output cross-cop config as separate TOML table sections
+      cross_cop_config.sort.each do |cop_key, cop_value|
+        lines << ""
+        lines << "[tests.config.#{toml_key(cop_key)}]"
+        cop_value.sort.each do |k, v|
+          lines << "#{toml_key(k)} = #{toml_value(v)}"
+        end
       end
     end
 
