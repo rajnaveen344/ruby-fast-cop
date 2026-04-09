@@ -419,6 +419,7 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(lint::UnusedBlockArgument::new()),
         Box::new(lint::UnusedMethodArgument::new()),
         Box::new(lint::UselessAssignment::new()),
+        Box::new(lint::SafeNavigationChain::new()),
         Box::new(lint::Void::new(false)),
         // Layout
         Box::new(layout::EmptyLinesAroundAccessModifier::new(layout::EmptyLinesAroundAccessModifierStyle::Around)),
@@ -487,6 +488,9 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(style::StringMethods::new()),
         Box::new(style::TernaryParentheses::new(style::TernaryParenthesesStyle::RequireNoParentheses, true)),
         Box::new(style::TrailingCommaInArguments::new(style::TrailingCommaInArgumentsStyle::NoComma)),
+        Box::new(style::RedundantFreeze::new()),
+        Box::new(style::RedundantSelf::new()),
+        Box::new(style::YodaCondition::default()),
         Box::new(style::ZeroLengthPredicate::new()),
     ]
 }

@@ -17,6 +17,8 @@ mod negative_array_index;
 mod numeric_literals;
 mod one_line_conditional;
 mod raise_args;
+mod redundant_freeze;
+mod redundant_self;
 mod redundant_parentheses;
 mod redundant_regexp_escape;
 mod redundant_string_escape;
@@ -30,6 +32,7 @@ mod string_literals;
 mod string_methods;
 mod ternary_parentheses;
 mod trailing_comma_in_arguments;
+mod yoda_condition;
 mod zero_length_predicate;
 
 pub use access_modifier_declarations::{
@@ -60,6 +63,8 @@ pub use negative_array_index::NegativeArrayIndex;
 pub use numeric_literals::NumericLiterals;
 pub use one_line_conditional::OneLineConditional;
 pub use raise_args::{EnforcedStyle as RaiseArgsStyle, RaiseArgs};
+pub use redundant_freeze::RedundantFreeze;
+pub use redundant_self::RedundantSelf;
 pub use redundant_parentheses::RedundantParentheses;
 pub use redundant_regexp_escape::RedundantRegexpEscape;
 pub use redundant_string_escape::RedundantStringEscape;
@@ -75,4 +80,5 @@ pub use ternary_parentheses::{EnforcedStyle as TernaryParenthesesStyle, TernaryP
 pub use trailing_comma_in_arguments::{
     EnforcedStyleForMultiline as TrailingCommaInArgumentsStyle, TrailingCommaInArguments,
 };
+pub use yoda_condition::{EnforcedStyle as YodaConditionStyle, YodaCondition};
 pub use zero_length_predicate::ZeroLengthPredicate;

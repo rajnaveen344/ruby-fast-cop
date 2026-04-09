@@ -227,6 +227,17 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         result.push(Box::new(cops::lint::RedundantTypeConversion::new()));
     }
 
+    // Lint/SafeNavigationChain
+    if config.is_cop_enabled("Lint/SafeNavigationChain") {
+        let cop_config = config.get_cop_config("Lint/SafeNavigationChain");
+        let allowed = cop_config
+            .and_then(|c| c.raw.get("AllowedMethods"))
+            .and_then(|v| v.as_sequence())
+            .map(|seq| seq.iter().filter_map(|v| v.as_str().map(|s| s.to_string())).collect())
+            .unwrap_or_default();
+        result.push(Box::new(cops::lint::SafeNavigationChain::with_allowed_methods(allowed)));
+    }
+
     // Lint/UnreachableCode
     if config.is_cop_enabled("Lint/UnreachableCode") {
         result.push(Box::new(cops::lint::UnreachableCode::new()));
@@ -552,6 +563,16 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         )));
     }
 
+    // Style/RedundantFreeze
+    if config.is_cop_enabled("Style/RedundantFreeze") {
+        result.push(Box::new(cops::style::RedundantFreeze::new()));
+    }
+
+    // Style/RedundantSelf
+    if config.is_cop_enabled("Style/RedundantSelf") {
+        result.push(Box::new(cops::style::RedundantSelf::new()));
+    }
+
     // Style/RedundantRegexpEscape
     if config.is_cop_enabled("Style/RedundantRegexpEscape") {
         result.push(Box::new(cops::style::RedundantRegexpEscape::new()));
@@ -605,6 +626,18 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         if let Some(cop) = build_single_cop("Style/TernaryParentheses", config) {
             result.push(cop);
         }
+    }
+
+    // Style/YodaCondition
+    if config.is_cop_enabled("Style/YodaCondition") {
+        let cop_config = config.get_cop_config("Style/YodaCondition");
+        let style = match cop_config.and_then(|c| c.raw.get("EnforcedStyle")).and_then(|v| v.as_str()) {
+            Some("forbid_for_equality_operators_only") => cops::style::YodaConditionStyle::ForbidForEqualityOperatorsOnly,
+            Some("require_for_all_comparison_operators") => cops::style::YodaConditionStyle::RequireForAllComparisonOperators,
+            Some("require_for_equality_operators_only") => cops::style::YodaConditionStyle::RequireForEqualityOperatorsOnly,
+            _ => cops::style::YodaConditionStyle::ForbidForAllComparisonOperators,
+        };
+        result.push(Box::new(cops::style::YodaCondition::new(style)));
     }
 
     // Style/ZeroLengthPredicate
@@ -1266,6 +1299,16 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
 
         "Lint/RedundantTypeConversion" => {
             Some(Box::new(cops::lint::RedundantTypeConversion::new()))
+        }
+
+        "Lint/SafeNavigationChain" => {
+            let cop_config = config.get_cop_config("Lint/SafeNavigationChain");
+            let allowed = cop_config
+                .and_then(|c| c.raw.get("AllowedMethods"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| seq.iter().filter_map(|v| v.as_str().map(|s| s.to_string())).collect())
+                .unwrap_or_default();
+            Some(Box::new(cops::lint::SafeNavigationChain::with_allowed_methods(allowed)))
         }
 
         "Lint/ShadowedArgument" => {
@@ -1932,6 +1975,8 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
             )))
         }
 
+        "Style/RedundantFreeze" => Some(Box::new(cops::style::RedundantFreeze::new())),
+        "Style/RedundantSelf" => Some(Box::new(cops::style::RedundantSelf::new())),
         "Style/RedundantRegexpEscape" => Some(Box::new(cops::style::RedundantRegexpEscape::new())),
         "Style/RedundantStringEscape" => Some(Box::new(cops::style::RedundantStringEscape::new())),
 
@@ -1960,6 +2005,16 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
             Some(Box::new(cops::style::TernaryParentheses::new(style, allow_safe)))
         }
 
+        "Style/YodaCondition" => {
+            let cop_config = config.get_cop_config("Style/YodaCondition");
+            let style = match cop_config.and_then(|c| c.raw.get("EnforcedStyle")).and_then(|v| v.as_str()) {
+                Some("forbid_for_equality_operators_only") => cops::style::YodaConditionStyle::ForbidForEqualityOperatorsOnly,
+                Some("require_for_all_comparison_operators") => cops::style::YodaConditionStyle::RequireForAllComparisonOperators,
+                Some("require_for_equality_operators_only") => cops::style::YodaConditionStyle::RequireForEqualityOperatorsOnly,
+                _ => cops::style::YodaConditionStyle::ForbidForAllComparisonOperators,
+            };
+            Some(Box::new(cops::style::YodaCondition::new(style)))
+        }
         "Style/ZeroLengthPredicate" => Some(Box::new(cops::style::ZeroLengthPredicate::new())),
 
         "Style/TrailingCommaInArguments" => {
