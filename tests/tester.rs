@@ -237,8 +237,9 @@ fn run_test_case(test_case: &TestCase, cop_name: &str) -> TestCaseResult {
         .and_then(|v| parse_ruby_version(v))
         .unwrap_or(DEFAULT_RUBY_VERSION);
 
-    // Use test-specified filename or default to "test.rb"
-    let test_filename = test_case.filename.as_deref().unwrap_or("test.rb");
+    // Use test-specified filename or default to "(string)" (matches RuboCop's default
+    // when source is provided as a string without a file path)
+    let test_filename = test_case.filename.as_deref().unwrap_or("(string)");
 
     // Run the linter with the test-specific config and Ruby version
     let offenses = check_source_with_cop_config_and_version(
