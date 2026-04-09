@@ -16,6 +16,7 @@ mod mutable_constant;
 mod negative_array_index;
 mod numeric_literals;
 mod one_line_conditional;
+mod percent_literal_delimiters;
 mod raise_args;
 mod redundant_freeze;
 mod redundant_self;
@@ -62,6 +63,7 @@ pub use mutable_constant::{EnforcedStyle as MutableConstantStyle, MutableConstan
 pub use negative_array_index::NegativeArrayIndex;
 pub use numeric_literals::NumericLiterals;
 pub use one_line_conditional::OneLineConditional;
+pub use percent_literal_delimiters::PercentLiteralDelimiters;
 pub use raise_args::{EnforcedStyle as RaiseArgsStyle, RaiseArgs};
 pub use redundant_freeze::RedundantFreeze;
 pub use redundant_self::RedundantSelf;

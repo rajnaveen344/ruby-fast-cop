@@ -454,6 +454,7 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(metrics::MethodLength::new(10)),
         // Naming
         Box::new(naming::FileName::new()),
+        Box::new(naming::MemoizedInstanceVariableName::new()),
         Box::new(naming::MethodName::new()),
         Box::new(naming::PredicateMethod::new(naming::PredicateMethodMode::Conservative)),
         Box::new(naming::VariableName::new()),
@@ -477,6 +478,7 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(style::NegativeArrayIndex::new()),
         Box::new(style::NumericLiterals::new(5)),
         Box::new(style::OneLineConditional::new()),
+        Box::new(style::PercentLiteralDelimiters::new()),
         Box::new(style::RaiseArgs::new(style::RaiseArgsStyle::Compact)), // User's config
         Box::new(style::RedundantParentheses::new()),
         Box::new(style::RedundantRegexpEscape::new()),

@@ -561,6 +561,29 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         result.push(Box::new(cops::style::NegativeArrayIndex::new()));
     }
 
+    // Style/PercentLiteralDelimiters
+    if config.is_cop_enabled("Style/PercentLiteralDelimiters") {
+        let cop_config = config.get_cop_config("Style/PercentLiteralDelimiters");
+        let preferred = cop_config
+            .and_then(|c| c.raw.get("PreferredDelimiters"))
+            .and_then(|v| v.as_mapping())
+            .map(|m| {
+                let mut map = std::collections::HashMap::new();
+                for (k, v) in m.iter() {
+                    if let (Some(key), Some(val)) = (k.as_str(), v.as_str()) {
+                        map.insert(key.to_string(), val.to_string());
+                    }
+                }
+                map
+            })
+            .unwrap_or_else(|| {
+                let mut m = std::collections::HashMap::new();
+                m.insert("default".to_string(), "()".to_string());
+                m
+            });
+        result.push(Box::new(cops::style::PercentLiteralDelimiters::with_config(preferred)));
+    }
+
     // Style/RaiseArgs
     if config.is_cop_enabled("Style/RaiseArgs") {
         let style = config
@@ -1090,6 +1113,21 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
             allowed_acronyms,
             include_patterns,
         )));
+    }
+
+    // Naming/MemoizedInstanceVariableName
+    if config.is_cop_enabled("Naming/MemoizedInstanceVariableName") {
+        let cop_config = config.get_cop_config("Naming/MemoizedInstanceVariableName");
+        let style = cop_config
+            .and_then(|c| c.raw.get("EnforcedStyleForLeadingUnderscores"))
+            .and_then(|v| v.as_str())
+            .map(|s| match s {
+                "required" => cops::naming::LeadingUnderscoreStyle::Required,
+                "optional" => cops::naming::LeadingUnderscoreStyle::Optional,
+                _ => cops::naming::LeadingUnderscoreStyle::Disallowed,
+            })
+            .unwrap_or(cops::naming::LeadingUnderscoreStyle::Disallowed);
+        result.push(Box::new(cops::naming::MemoizedInstanceVariableName::with_style(style)));
     }
 
     // Naming/MethodName
@@ -1929,6 +1967,28 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
             Some(Box::new(cops::style::OneLineConditional::with_config(always_multiline)))
         }
 
+        "Style/PercentLiteralDelimiters" => {
+            let cop_config = config.get_cop_config("Style/PercentLiteralDelimiters");
+            let preferred = cop_config
+                .and_then(|c| c.raw.get("PreferredDelimiters"))
+                .and_then(|v| v.as_mapping())
+                .map(|m| {
+                    let mut map = std::collections::HashMap::new();
+                    for (k, v) in m.iter() {
+                        if let (Some(key), Some(val)) = (k.as_str(), v.as_str()) {
+                            map.insert(key.to_string(), val.to_string());
+                        }
+                    }
+                    map
+                })
+                .unwrap_or_else(|| {
+                    let mut m = std::collections::HashMap::new();
+                    m.insert("default".to_string(), "()".to_string());
+                    m
+                });
+            Some(Box::new(cops::style::PercentLiteralDelimiters::with_config(preferred)))
+        }
+
         "Style/RaiseArgs" => {
             let cop_config = config.get_cop_config("Style/RaiseArgs");
             let style = cop_config
@@ -2555,6 +2615,20 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
                 allowed_acronyms,
                 include_patterns,
             )))
+        }
+
+        "Naming/MemoizedInstanceVariableName" => {
+            let cop_config = config.get_cop_config("Naming/MemoizedInstanceVariableName");
+            let style = cop_config
+                .and_then(|c| c.raw.get("EnforcedStyleForLeadingUnderscores"))
+                .and_then(|v| v.as_str())
+                .map(|s| match s {
+                    "required" => cops::naming::LeadingUnderscoreStyle::Required,
+                    "optional" => cops::naming::LeadingUnderscoreStyle::Optional,
+                    _ => cops::naming::LeadingUnderscoreStyle::Disallowed,
+                })
+                .unwrap_or(cops::naming::LeadingUnderscoreStyle::Disallowed);
+            Some(Box::new(cops::naming::MemoizedInstanceVariableName::with_style(style)))
         }
 
         "Naming/MethodName" => {
