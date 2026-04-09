@@ -63,19 +63,32 @@ impl Cop for TrailingEmptyLines {
         let ends_with_newline = effective_source.ends_with('\n');
 
         if !ends_with_newline {
-            // No final newline - offense for both styles
+            // No final newline
             let last_line_num = effective_source.lines().count() as u32;
             let last_line = effective_source.lines().last().unwrap_or("");
             let last_line_len = last_line.chars().count() as u32;
 
+            let (message, correction, loc) = match self.enforced_style {
+                EnforcedStyle::FinalNewline => (
+                    "Final newline missing.",
+                    Correction::insert(source.len(), "\n"),
+                    Location::new(last_line_num, last_line_len, last_line_num, last_line_len + 1),
+                ),
+                EnforcedStyle::FinalBlankLine => (
+                    "Trailing blank line missing.",
+                    Correction::insert(source.len(), "\n\n"),
+                    Location::new(last_line_num + 1, 0, last_line_num + 1, 1),
+                ),
+            };
+
             return vec![Offense::new(
                 self.name(),
-                "Final newline missing.",
+                message,
                 self.severity(),
-                Location::new(last_line_num, last_line_len, last_line_num, last_line_len + 1),
+                loc,
                 ctx.filename,
             )
-            .with_correction(Correction::insert(source.len(), "\n"))];
+            .with_correction(correction)];
         }
 
         // Count trailing blank lines (lines that are empty after the last non-empty line)

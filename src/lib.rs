@@ -1191,7 +1191,7 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
                 .or_else(|| cop_config
                     .and_then(|c| c.raw.get("AllCopsActiveSupportExtensionsEnabled"))
                     .and_then(|v| v.as_bool()))
-                .unwrap_or(true);
+                .unwrap_or(false);
             Some(Box::new(cops::lint::DuplicateMethods::with_config(active_support)))
         }
 

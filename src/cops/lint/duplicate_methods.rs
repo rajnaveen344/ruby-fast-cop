@@ -11,7 +11,7 @@ pub struct DuplicateMethods {
 
 impl DuplicateMethods {
     pub fn new() -> Self {
-        Self { active_support_extensions: true }
+        Self { active_support_extensions: false }
     }
 
     pub fn with_config(active_support_extensions: bool) -> Self {
