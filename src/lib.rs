@@ -653,6 +653,32 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         result.push(Box::new(cops::layout::TrailingEmptyLines::new(style)));
     }
 
+    // Layout/BeginEndAlignment
+    if config.is_cop_enabled("Layout/BeginEndAlignment") {
+        let style = config.get_cop_config("Layout/BeginEndAlignment")
+            .and_then(|c| c.raw.get("EnforcedStyleAlignWith"))
+            .and_then(|v| v.as_str())
+            .unwrap_or("start_of_line");
+        let align_style = match style {
+            "begin" => cops::layout::BeginEndAlignmentStyle::Begin,
+            _ => cops::layout::BeginEndAlignmentStyle::StartOfLine,
+        };
+        result.push(Box::new(cops::layout::BeginEndAlignment::new(align_style)));
+    }
+
+    // Layout/DefEndAlignment
+    if config.is_cop_enabled("Layout/DefEndAlignment") {
+        let style = config.get_cop_config("Layout/DefEndAlignment")
+            .and_then(|c| c.raw.get("EnforcedStyleAlignWith"))
+            .and_then(|v| v.as_str())
+            .unwrap_or("start_of_line");
+        let align_style = match style {
+            "def" => cops::layout::DefEndAlignmentStyle::Def,
+            _ => cops::layout::DefEndAlignmentStyle::StartOfLine,
+        };
+        result.push(Box::new(cops::layout::DefEndAlignment::new(align_style)));
+    }
+
     // Layout/EmptyLinesAroundAccessModifier
     if config.is_cop_enabled("Layout/EmptyLinesAroundAccessModifier") {
         let cop_config = config.get_cop_config("Layout/EmptyLinesAroundAccessModifier");
@@ -723,6 +749,20 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         result.push(Box::new(cops::layout::EndAlignment::new(align_style)));
     }
 
+    // Layout/RescueEnsureAlignment
+    if config.is_cop_enabled("Layout/RescueEnsureAlignment") {
+        let begin_end_style = config.get_cop_config("Layout/BeginEndAlignment")
+            .and_then(|c| {
+                let enabled = c.raw.get("Enabled").and_then(|v| v.as_bool()).unwrap_or(true);
+                if enabled {
+                    c.raw.get("EnforcedStyleAlignWith").and_then(|v| v.as_str().map(|s| s.to_string()))
+                } else {
+                    None
+                }
+            });
+        result.push(Box::new(cops::layout::RescueEnsureAlignment::with_begin_end_style(begin_end_style)));
+    }
+
     // Layout/LeadingCommentSpace
     if config.is_cop_enabled("Layout/LeadingCommentSpace") {
         result.push(Box::new(cops::layout::LeadingCommentSpace::new()));
@@ -761,6 +801,23 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
             .and_then(|v| v.as_i64())
             .map(|v| v as usize);
         result.push(Box::new(cops::layout::MultilineMethodCallIndentation::new(style, width)));
+    }
+
+    // Layout/MultilineOperationIndentation
+    if config.is_cop_enabled("Layout/MultilineOperationIndentation") {
+        let cop_config = config.get_cop_config("Layout/MultilineOperationIndentation");
+        let style = cop_config
+            .and_then(|c| c.enforced_style.as_ref())
+            .map(|s| match s.as_str() {
+                "indented" => cops::layout::MultilineOperationIndentationStyle::Indented,
+                _ => cops::layout::MultilineOperationIndentationStyle::Aligned,
+            })
+            .unwrap_or(cops::layout::MultilineOperationIndentationStyle::Aligned);
+        let width = cop_config
+            .and_then(|c| c.raw.get("IndentationWidth"))
+            .and_then(|v| v.as_i64())
+            .map(|v| v as usize);
+        result.push(Box::new(cops::layout::MultilineOperationIndentation::new(style, width)));
     }
 
     // Layout/SpaceInsideArrayPercentLiteral
@@ -1943,6 +2000,30 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
             Some(Box::new(cops::layout::TrailingEmptyLines::new(style)))
         }
 
+        "Layout/BeginEndAlignment" => {
+            let style = config.get_cop_config("Layout/BeginEndAlignment")
+                .and_then(|c| c.raw.get("EnforcedStyleAlignWith"))
+                .and_then(|v| v.as_str())
+                .unwrap_or("start_of_line");
+            let align_style = match style {
+                "begin" => cops::layout::BeginEndAlignmentStyle::Begin,
+                _ => cops::layout::BeginEndAlignmentStyle::StartOfLine,
+            };
+            Some(Box::new(cops::layout::BeginEndAlignment::new(align_style)))
+        }
+
+        "Layout/DefEndAlignment" => {
+            let style = config.get_cop_config("Layout/DefEndAlignment")
+                .and_then(|c| c.raw.get("EnforcedStyleAlignWith"))
+                .and_then(|v| v.as_str())
+                .unwrap_or("start_of_line");
+            let align_style = match style {
+                "def" => cops::layout::DefEndAlignmentStyle::Def,
+                _ => cops::layout::DefEndAlignmentStyle::StartOfLine,
+            };
+            Some(Box::new(cops::layout::DefEndAlignment::new(align_style)))
+        }
+
         "Layout/EmptyLinesAroundAccessModifier" => {
             let cop_config = config.get_cop_config("Layout/EmptyLinesAroundAccessModifier");
             let style = cop_config
@@ -2072,6 +2153,19 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
             Some(Box::new(cops::layout::EndAlignment::new(align_style)))
         }
 
+        "Layout/RescueEnsureAlignment" => {
+            let begin_end_style = config.get_cop_config("Layout/BeginEndAlignment")
+                .and_then(|c| {
+                    let enabled = c.raw.get("Enabled").and_then(|v| v.as_bool()).unwrap_or(true);
+                    if enabled {
+                        c.raw.get("EnforcedStyleAlignWith").and_then(|v| v.as_str().map(|s| s.to_string()))
+                    } else {
+                        None
+                    }
+                });
+            Some(Box::new(cops::layout::RescueEnsureAlignment::with_begin_end_style(begin_end_style)))
+        }
+
         "Layout/LeadingCommentSpace" => {
             let cop_config = config.get_cop_config("Layout/LeadingCommentSpace");
             let allow_doxygen = cop_config
@@ -2128,6 +2222,22 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
                 .and_then(|v| v.as_i64())
                 .map(|v| v as usize);
             Some(Box::new(cops::layout::MultilineMethodCallIndentation::new(style, width)))
+        }
+
+        "Layout/MultilineOperationIndentation" => {
+            let cop_config = config.get_cop_config("Layout/MultilineOperationIndentation");
+            let style = cop_config
+                .and_then(|c| c.enforced_style.as_ref())
+                .map(|s| match s.as_str() {
+                    "indented" => cops::layout::MultilineOperationIndentationStyle::Indented,
+                    _ => cops::layout::MultilineOperationIndentationStyle::Aligned,
+                })
+                .unwrap_or(cops::layout::MultilineOperationIndentationStyle::Aligned);
+            let width = cop_config
+                .and_then(|c| c.raw.get("IndentationWidth"))
+                .and_then(|v| v.as_i64())
+                .map(|v| v as usize);
+            Some(Box::new(cops::layout::MultilineOperationIndentation::new(style, width)))
         }
 
         "Layout/SpaceInsideArrayPercentLiteral" => {

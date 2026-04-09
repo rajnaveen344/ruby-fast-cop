@@ -1,3 +1,5 @@
+mod begin_end_alignment;
+mod def_end_alignment;
 mod empty_lines_around_access_modifier;
 mod end_alignment;
 mod first_argument_indentation;
@@ -7,6 +9,8 @@ mod indentation_width;
 mod leading_comment_space;
 mod line_length;
 mod multiline_method_call_indentation;
+mod multiline_operation_indentation;
+mod rescue_ensure_alignment;
 mod space_after_comma;
 mod space_around_keyword;
 mod space_inside_array_percent_literal;
@@ -14,11 +18,14 @@ mod space_inside_percent_literal_delimiters;
 mod trailing_empty_lines;
 mod trailing_whitespace;
 
+pub use begin_end_alignment::{BeginEndAlignment, BeginEndAlignmentStyle};
+pub use def_end_alignment::{DefEndAlignment, DefEndAlignmentStyle};
 pub use empty_lines_around_access_modifier::{
     EmptyLinesAroundAccessModifier,
     EnforcedStyle as EmptyLinesAroundAccessModifierStyle,
 };
 pub use end_alignment::{EndAlignment, EndAlignmentStyle};
+pub use rescue_ensure_alignment::RescueEnsureAlignment;
 pub use first_argument_indentation::{FirstArgumentIndentation, FirstArgumentIndentationStyle};
 pub use heredoc_indentation::HeredocIndentation;
 pub use hash_alignment::{
@@ -40,6 +47,10 @@ pub use line_length::{AllowHeredoc, LineLength};
 pub use multiline_method_call_indentation::{
     MultilineMethodCallIndentation,
     Style as MultilineMethodCallIndentationStyle,
+};
+pub use multiline_operation_indentation::{
+    MultilineOperationIndentation,
+    Style as MultilineOperationIndentationStyle,
 };
 pub use space_after_comma::SpaceAfterComma;
 pub use space_around_keyword::SpaceAroundKeyword;

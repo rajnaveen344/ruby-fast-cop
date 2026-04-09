@@ -81,19 +81,25 @@ Style/Documentation:
 
 RuboCop (v1.85.0) has **606 user-facing cops** across 9 departments. We have **606 TOML test fixtures** — one per cop — with **28,075 test cases** extracted from RuboCop's own RSpec suite.
 
-### Implemented Cops (65 of 606 — all passing)
+### Implemented Cops (74 of 606 — all passing)
 
 | Cop                                        | Tests | Status  |
 | ------------------------------------------ | ----- | ------- |
+| Layout/BeginEndAlignment                   | 7     | Passing |
+| Layout/DefEndAlignment                     | 18    | Passing |
 | Layout/EmptyLinesAroundAccessModifier      | 176   | Passing |
 | Layout/EndAlignment                        | 207   | Passing |
 | Layout/FirstArgumentIndentation            | 139   | Passing |
 | Layout/HashAlignment                       | 131   | Passing |
+| Layout/HeredocIndentation                  | 105   | Passing |
 | Layout/IndentationWidth                    | 177   | Passing |
 | Layout/LeadingCommentSpace                 | 27    | Passing |
 | Layout/LineLength                          | 192   | Passing |
 | Layout/MultilineMethodCallIndentation      | 252   | Passing |
+| Layout/MultilineOperationIndentation       | 101   | Passing |
+| Layout/RescueEnsureAlignment               | 99    | Passing |
 | Layout/SpaceAfterComma                     | 9     | Passing |
+| Layout/SpaceAroundKeyword                  | 112   | Passing |
 | Layout/SpaceInsideArrayPercentLiteral      | 129   | Passing |
 | Layout/SpaceInsidePercentLiteralDelimiters | 262   | Passing |
 | Layout/TrailingEmptyLines                  | 18    | Passing |
@@ -103,6 +109,7 @@ RuboCop (v1.85.0) has **606 user-facing cops** across 9 departments. We have **6
 | Lint/DuplicateMethods                      | 329   | Passing |
 | Lint/LiteralAsCondition                    | 229   | Passing |
 | Lint/LiteralInInterpolation                | 378   | Passing |
+| Lint/OutOfRangeRegexpRef                   | 122   | Passing |
 | Lint/RedundantTypeConversion               | 613   | Passing |
 | Lint/ShadowedArgument                      | 54    | Passing |
 | Lint/UnreachableCode                       | 266   | Passing |
@@ -114,6 +121,7 @@ RuboCop (v1.85.0) has **606 user-facing cops** across 9 departments. We have **6
 | Metrics/BlockLength                        | 38    | Passing |
 | Metrics/ClassLength                        | 34    | Passing |
 | Metrics/MethodLength                       | 31    | Passing |
+| Naming/FileName                            | 120   | Passing |
 | Naming/MethodName                          | 239   | Passing |
 | Naming/PredicateMethod                     | 1262  | Passing |
 | Naming/VariableName                        | 118   | Passing |
@@ -129,6 +137,7 @@ RuboCop (v1.85.0) has **606 user-facing cops** across 9 departments. We have **6
 | Style/FrozenStringLiteralComment           | 107   | Passing |
 | Style/GlobalVars                           | 74    | Passing |
 | Style/HashSyntax                           | 189   | Passing |
+| Style/IfUnlessModifier                     | 126   | Passing |
 | Style/InverseMethods                       | 110   | Passing |
 | Style/MethodCalledOnDoEndBlock             | 10    | Passing |
 | Style/MutableConstant                      | 354   | Passing |
@@ -208,7 +217,7 @@ ruby-fast-cop -a .
 ruby-fast-cop -A .
 ```
 
-24 of 65 implemented cops support autocorrect.
+24 of 74 implemented cops support autocorrect.
 
 ### How Autocorrect Works: RuboCop vs Ruff vs ruby-fast-cop
 
@@ -349,7 +358,7 @@ cargo run --bin fixture_stats
 
 ### High Priority
 
-- [ ] **More cops** - 65 of 606 implemented; see [Implementation Roadmap](#implementation-roadmap) for priority list
+- [ ] **More cops** - 74 of 606 implemented; see [Implementation Roadmap](#implementation-roadmap) for priority list
 - [x] **Auto-correct** - `-a` (safe) and `-A` (all) flags with Ruff-style iterative correction
 - [ ] **Parallel processing** - Use rayon for multi-threaded file processing
 
@@ -374,11 +383,11 @@ cargo run --bin fixture_stats
 | Feature          | RuboCop         | ruby-fast-cop           |
 | ---------------- | --------------- | ----------------------- |
 | Performance      | Baseline        | 50-100x faster (target) |
-| Cop count        | 606             | 38 implemented          |
+| Cop count        | 606             | 74 implemented          |
 | Test coverage    | ~28k test cases | 606 fixtures (1:1)      |
 | Custom Ruby cops | Yes             | No                      |
 | .rubocop.yml     | Yes             | Yes                     |
-| Auto-correct     | Yes             | Yes (24 of 65 cops)     |
+| Auto-correct     | Yes             | Yes (24 of 74 cops)     |
 | Library API      | Limited         | Yes                     |
 | inherit_from     | Yes             | Yes                     |
 | inherit_gem      | Yes             | Yes                     |

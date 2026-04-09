@@ -422,7 +422,10 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(lint::Void::new(false)),
         // Layout
         Box::new(layout::EmptyLinesAroundAccessModifier::new(layout::EmptyLinesAroundAccessModifierStyle::Around)),
+        Box::new(layout::BeginEndAlignment::new(layout::BeginEndAlignmentStyle::StartOfLine)),
+        Box::new(layout::DefEndAlignment::new(layout::DefEndAlignmentStyle::StartOfLine)),
         Box::new(layout::EndAlignment::new(layout::EndAlignmentStyle::Keyword)),
+        Box::new(layout::RescueEnsureAlignment::new()),
         Box::new(layout::FirstArgumentIndentation::new(layout::FirstArgumentIndentationStyle::SpecialForInnerMethodCallInParentheses, None)),
         Box::new(layout::HeredocIndentation::new()),
         Box::new(layout::HashAlignment::new(
@@ -436,6 +439,7 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(layout::SpaceAfterComma::new()),
         Box::new(layout::SpaceAroundKeyword::new()),
         Box::new(layout::MultilineMethodCallIndentation::new(layout::MultilineMethodCallIndentationStyle::Aligned, None)),
+        Box::new(layout::MultilineOperationIndentation::new(layout::MultilineOperationIndentationStyle::Aligned, None)),
         Box::new(layout::SpaceInsideArrayPercentLiteral::new()),
         Box::new(layout::SpaceInsidePercentLiteralDelimiters::new()),
         Box::new(layout::TrailingEmptyLines::new(layout::TrailingEmptyLinesStyle::FinalNewline)),
