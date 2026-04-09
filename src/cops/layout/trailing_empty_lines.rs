@@ -111,25 +111,27 @@ impl Cop for TrailingEmptyLines {
             }
         }
 
+        // trailing_newlines counts raw \n chars. Blank lines = trailing_newlines - 1
+        // (one \n is the final newline, the rest are blank lines).
+        let blank_lines = if trailing_newlines > 0 { trailing_newlines - 1 } else { 0 };
+
         match self.enforced_style {
             EnforcedStyle::FinalNewline => {
                 // Should have exactly 1 trailing newline (no blank lines)
-                if trailing_newlines > 1 {
-                    // Find the line number where extra blank lines start
+                if blank_lines > 0 {
                     let content_lines: Vec<&str> = effective_source.lines().collect();
                     let last_content_line_idx = content_lines
                         .iter()
                         .rposition(|l| !l.trim().is_empty())
                         .unwrap_or(0);
-                    let offense_line = (last_content_line_idx + 2) as u32; // 1-indexed, +1 for next line
+                    let offense_line = (last_content_line_idx + 2) as u32;
 
-                    // Correction: strip all trailing whitespace, add single \n
                     let stripped_len = source.trim_end().len();
                     let correction = Correction::replace(stripped_len, source.len(), "\n");
 
                     return vec![Offense::new(
                         self.name(),
-                        &format!("{} trailing blank lines detected.", trailing_newlines),
+                        &format!("{} trailing blank lines detected.", blank_lines),
                         self.severity(),
                         Location::new(offense_line, 0, offense_line, 1),
                         ctx.filename,
@@ -139,12 +141,11 @@ impl Cop for TrailingEmptyLines {
                 vec![]
             }
             EnforcedStyle::FinalBlankLine => {
-                if trailing_newlines == 1 {
-                    // Need a blank line but only have a newline
+                if blank_lines == 0 {
+                    // Need a blank line but only have a final newline
                     let total_lines = effective_source.lines().count();
                     let offense_line = (total_lines + 1) as u32;
 
-                    // Correction: insert an extra \n to create the blank line
                     let correction = Correction::insert(source.len(), "\n");
 
                     return vec![Offense::new(
@@ -155,7 +156,7 @@ impl Cop for TrailingEmptyLines {
                         ctx.filename,
                     )
                     .with_correction(correction)];
-                } else if trailing_newlines > 2 {
+                } else if blank_lines > 1 {
                     // Too many blank lines (should be exactly 1 blank line = 2 newlines)
                     let content_lines: Vec<&str> = effective_source.lines().collect();
                     let last_content_line_idx = content_lines
@@ -164,16 +165,14 @@ impl Cop for TrailingEmptyLines {
                         .unwrap_or(0);
                     let offense_line = (last_content_line_idx + 2) as u32;
 
-                    // Correction: strip all trailing whitespace, add single \n
-                    // (RuboCop corrects "too many" to \n in one pass)
                     let stripped_len = source.trim_end().len();
-                    let correction = Correction::replace(stripped_len, source.len(), "\n");
+                    let correction = Correction::replace(stripped_len, source.len(), "\n\n");
 
                     return vec![Offense::new(
                         self.name(),
                         &format!(
                             "{} trailing blank lines instead of 1 detected.",
-                            trailing_newlines
+                            blank_lines
                         ),
                         self.severity(),
                         Location::new(offense_line, 0, offense_line, 1),

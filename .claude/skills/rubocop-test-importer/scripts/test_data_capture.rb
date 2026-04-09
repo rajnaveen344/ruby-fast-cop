@@ -91,7 +91,9 @@ module TestDataCapture
       end
     end
 
-    clean_source = source_lines.join.chomp
+    # Don't chomp — toml_literal_string handles the single chomp needed for TOML format.
+    # This preserves trailing blank lines in source.
+    clean_source = source_lines.join
     [clean_source, offenses]
   end
 
@@ -164,7 +166,7 @@ module TestDataCapture
     filename = (file.is_a?(String) ? file : nil) || extract_test_filename
 
     TestDataCapture.captures << {
-      source: source.chomp,
+      source: source,
       offenses: [],
       config: config_hash,
       corrected: nil,
@@ -181,7 +183,7 @@ module TestDataCapture
   # Override expect_correction to attach corrected source to pending capture
   def expect_correction(correction, loop: true, source: nil)
     if TestDataCapture.pending_capture
-      TestDataCapture.pending_capture[:corrected] = correction.chomp
+      TestDataCapture.pending_capture[:corrected] = correction
       TestDataCapture.flush_pending!
     end
   rescue => e
@@ -213,7 +215,7 @@ module TestDataCapture
                end
 
     TestDataCapture.captures << {
-      source: source.to_s.chomp,
+      source: source.to_s,
       offenses: offenses,
       config: config_hash,
       corrected: nil,
@@ -245,7 +247,7 @@ module TestDataCapture
                end
 
     TestDataCapture.captures << {
-      source: source.to_s.chomp,
+      source: source.to_s,
       offenses: offenses,
       config: config_hash,
       corrected: nil
