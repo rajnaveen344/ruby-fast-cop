@@ -252,7 +252,7 @@ def generate_toml(cop:, department:, severity:, implemented:, tests:)
     end
 
     # Output filename if captured (used by cops like Naming/FileName)
-    if test[:filename] && !test[:filename].empty?
+    if test[:filename].is_a?(String) && !test[:filename].empty?
       lines << "filename = #{toml_string(ensure_utf8(test[:filename]))}"
     end
 

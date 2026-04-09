@@ -3941,9 +3941,6 @@ end
 '''
 offenses = []
 
-[tests.config]
-ContextCreatingMethods = ["included"]
-
 [[tests]]
 name = "rubocopcoplintuselessaccessmodifier_when_allcopsactivesupportextensionsenabled_true_when_using_same_access_modifier_inside_and_outside_the_included_block_registers_an_offense_when_using_repeated_access_modifier_insideoutside_the_included_block"
 source = '''
@@ -3962,7 +3959,6 @@ corrected = '''
 class SomeClass
   included do
     private
-    private
     def foo; end
   end
   private
@@ -3970,8 +3966,11 @@ class SomeClass
 end
 '''
 
-[tests.config]
-ContextCreatingMethods = ["included"]
+[[tests.offenses]]
+line = 4
+column_start = 4
+column_end = 11
+message = "Useless `private` access modifier."
 
 [[tests.offenses]]
 line = 8

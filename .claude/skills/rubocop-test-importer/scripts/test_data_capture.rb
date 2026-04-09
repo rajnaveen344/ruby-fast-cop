@@ -137,7 +137,7 @@ module TestDataCapture
     config_hash = extract_config_hash
 
     # Capture filename if provided (used by cops like Naming/FileName)
-    filename = file || extract_test_filename
+    filename = (file.is_a?(String) ? file : nil) || extract_test_filename
 
     TestDataCapture.pending_capture = {
       source: clean_source,
@@ -158,7 +158,7 @@ module TestDataCapture
     TestDataCapture.inside_expect = true
 
     config_hash = extract_config_hash
-    filename = file || extract_test_filename
+    filename = (file.is_a?(String) ? file : nil) || extract_test_filename
 
     TestDataCapture.captures << {
       source: source.chomp,
@@ -200,7 +200,7 @@ module TestDataCapture
 
     result = super
     config_hash = extract_config_hash
-    filename = file || extract_test_filename
+    filename = (file.is_a?(String) ? file : nil) || extract_test_filename
 
     offenses = if result.is_a?(Array)
                  result.map { |o| TestDataCapture.offense_to_hash(o) }
@@ -261,7 +261,8 @@ module TestDataCapture
   def extract_test_filename
     if respond_to?(:file_path, true)
       fp = file_path
-      return fp.to_s if fp && !fp.to_s.empty?
+      # Only capture string paths, not Tempfile or other IO objects
+      return fp.to_s if fp.is_a?(String) && !fp.empty?
     end
     nil
   rescue NameError, NoMethodError
