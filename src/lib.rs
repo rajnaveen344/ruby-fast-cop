@@ -568,6 +568,27 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         result.push(Box::new(cops::style::NegativeArrayIndex::new()));
     }
 
+    // Style/Next
+    if config.is_cop_enabled("Style/Next") {
+        if let Some(cop) = build_single_cop("Style/Next", config) {
+            result.push(cop);
+        }
+    }
+
+    // Style/RedundantCondition
+    if config.is_cop_enabled("Style/RedundantCondition") {
+        if let Some(cop) = build_single_cop("Style/RedundantCondition", config) {
+            result.push(cop);
+        }
+    }
+
+    // Style/SymbolProc
+    if config.is_cop_enabled("Style/SymbolProc") {
+        if let Some(cop) = build_single_cop("Style/SymbolProc", config) {
+            result.push(cop);
+        }
+    }
+
     // Style/PercentLiteralDelimiters
     if config.is_cop_enabled("Style/PercentLiteralDelimiters") {
         let cop_config = config.get_cop_config("Style/PercentLiteralDelimiters");
@@ -2005,6 +2026,68 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
                 .and_then(|v| v.as_bool())
                 .unwrap_or(false);
             Some(Box::new(cops::style::OneLineConditional::with_config(always_multiline)))
+        }
+
+        "Style/Next" => {
+            let cop_config = config.get_cop_config("Style/Next");
+            let style = cop_config
+                .and_then(|c| c.enforced_style.as_ref())
+                .map(|s| match s.as_str() {
+                    "always" => cops::style::NextStyle::Always,
+                    _ => cops::style::NextStyle::SkipModifierIfs,
+                })
+                .unwrap_or(cops::style::NextStyle::SkipModifierIfs);
+            let min_body_length = cop_config
+                .and_then(|c| c.raw.get("MinBodyLength"))
+                .and_then(|v| v.as_i64())
+                .unwrap_or(1);
+            let allow_consecutive = cop_config
+                .and_then(|c| c.raw.get("AllowConsecutiveConditionals"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
+            Some(Box::new(cops::style::Next::with_config(
+                style, min_body_length, allow_consecutive,
+            )))
+        }
+
+        "Style/RedundantCondition" => {
+            let cop_config = config.get_cop_config("Style/RedundantCondition");
+            let allowed_methods = cop_config
+                .and_then(|c| c.raw.get("AllowedMethods"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+                .unwrap_or_else(|| vec!["infinite?".to_string(), "nonzero?".to_string()]);
+            Some(Box::new(cops::style::RedundantCondition::with_config(allowed_methods)))
+        }
+
+        "Style/SymbolProc" => {
+            let cop_config = config.get_cop_config("Style/SymbolProc");
+            let allowed_methods = cop_config
+                .and_then(|c| c.raw.get("AllowedMethods"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+                .unwrap_or_else(|| vec!["define_method".to_string()]);
+            let allowed_patterns = cop_config
+                .and_then(|c| c.raw.get("AllowedPatterns"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+                .unwrap_or_default();
+            let allow_methods_with_arguments = cop_config
+                .and_then(|c| c.raw.get("AllowMethodsWithArguments"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
+            let allow_comments = cop_config
+                .and_then(|c| c.raw.get("AllowComments"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
+            let active_support = cop_config
+                .and_then(|c| c.raw.get("ActiveSupportExtensionsEnabled"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
+            Some(Box::new(cops::style::SymbolProc::with_config(
+                allowed_methods, allowed_patterns, allow_methods_with_arguments,
+                allow_comments, active_support,
+            )))
         }
 
         "Style/PercentLiteralDelimiters" => {
