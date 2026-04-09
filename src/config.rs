@@ -27,6 +27,8 @@ pub struct Config {
 /// AllCops configuration
 #[derive(Debug, Default, Clone)]
 pub struct AllCopsConfig {
+    /// Files/patterns to include globally
+    pub include: Vec<String>,
     /// Files/patterns to exclude globally
     pub exclude: Vec<String>,
     /// Target Ruby version
@@ -91,6 +93,12 @@ enum GemConfigPaths {
 #[derive(Debug, Deserialize, Default)]
 #[serde(default)]
 struct RawAllCops {
+    #[serde(
+        rename = "Include",
+        default,
+        deserialize_with = "deserialize_string_or_vec"
+    )]
+    include: Vec<String>,
     #[serde(
         rename = "Exclude",
         default,
@@ -187,6 +195,7 @@ impl Config {
 
         // Process AllCops
         if let Some(all_cops) = raw.all_cops {
+            config.all_cops.include.extend(all_cops.include);
             config.all_cops.exclude.extend(all_cops.exclude);
             if all_cops.target_ruby_version.is_some() {
                 config.all_cops.target_ruby_version = all_cops.target_ruby_version;
@@ -331,7 +340,8 @@ impl Config {
     }
 
     fn merge(&mut self, other: &Config) {
-        // Merge AllCops excludes
+        // Merge AllCops includes and excludes
+        self.all_cops.include.extend(other.all_cops.include.clone());
         self.all_cops.exclude.extend(other.all_cops.exclude.clone());
 
         if other.all_cops.target_ruby_version.is_some() {
@@ -441,6 +451,15 @@ impl Config {
     /// Get cop configuration
     pub fn get_cop_config(&self, cop_name: &str) -> Option<&CopConfig> {
         self.cops.get(cop_name)
+    }
+
+    /// Get AllCops/Include patterns
+    pub fn all_cops_include(&self) -> Option<Vec<String>> {
+        if self.all_cops.include.is_empty() {
+            None
+        } else {
+            Some(self.all_cops.include.clone())
+        }
     }
 
     fn matches_pattern(&self, file_path: &str, pattern: &str) -> bool {

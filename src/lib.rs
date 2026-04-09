@@ -965,6 +965,12 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
             .and_then(|v| v.as_sequence())
             .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
             .unwrap_or_default();
+        let include_patterns = cop_config
+            .and_then(|c| c.raw.get("Include"))
+            .and_then(|v| v.as_sequence())
+            .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+            .or_else(|| config.all_cops_include())
+            .unwrap_or_default();
         result.push(Box::new(cops::naming::FileName::with_full_config(
             ignore_executable_scripts,
             expect_matching_definition,
@@ -972,6 +978,7 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
             check_definition_path_hierarchy_roots,
             regex,
             allowed_acronyms,
+            include_patterns,
         )));
     }
 
@@ -2295,6 +2302,12 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
                 .and_then(|v| v.as_sequence())
                 .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
                 .unwrap_or_default();
+            let include_patterns = cop_config
+                .and_then(|c| c.raw.get("Include"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+                .or_else(|| config.all_cops_include())
+                .unwrap_or_default();
             Some(Box::new(cops::naming::FileName::with_full_config(
                 ignore_executable_scripts,
                 expect_matching_definition,
@@ -2302,6 +2315,7 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
                 check_definition_path_hierarchy_roots,
                 regex,
                 allowed_acronyms,
+                include_patterns,
             )))
         }
 

@@ -19,6 +19,8 @@ pub struct FileName {
     check_definition_path_hierarchy_roots: Vec<String>,
     regex: Option<String>,
     allowed_acronyms: Vec<String>,
+    /// AllCops/Include patterns — used for allowed_camel_case_file? check
+    include_patterns: Vec<String>,
 }
 
 impl Default for FileName {
@@ -32,6 +34,7 @@ impl Default for FileName {
             ],
             regex: None,
             allowed_acronyms: vec![],
+            include_patterns: vec![],
         }
     }
 }
@@ -48,6 +51,7 @@ impl FileName {
         check_definition_path_hierarchy_roots: Vec<String>,
         regex: Option<String>,
         allowed_acronyms: Vec<String>,
+        include_patterns: Vec<String>,
     ) -> Self {
         Self {
             ignore_executable_scripts,
@@ -56,6 +60,7 @@ impl FileName {
             check_definition_path_hierarchy_roots,
             regex,
             allowed_acronyms,
+            include_patterns,
         }
     }
 
@@ -81,6 +86,39 @@ impl FileName {
 
     fn bad_filename_allowed(&self, source: &str) -> bool {
         self.ignore_executable_scripts && source.starts_with("#!")
+    }
+
+    /// Mirrors RuboCop's Config#allowed_camel_case_file?
+    /// Returns true for .gemspec files or files matching an AllCops/Include
+    /// pattern that contains uppercase letters.
+    fn allowed_camel_case_file(&self, file_path: &str) -> bool {
+        if file_path.ends_with(".gemspec") {
+            return true;
+        }
+        // Check if file matches any Include pattern that contains uppercase
+        for pattern in &self.include_patterns {
+            if !pattern.chars().any(|c| c.is_ascii_uppercase()) {
+                continue;
+            }
+            if Self::glob_matches(pattern, file_path) {
+                return true;
+            }
+        }
+        false
+    }
+
+    /// Simple glob matching for AllCops/Include patterns like "**/Gemfile"
+    fn glob_matches(pattern: &str, path: &str) -> bool {
+        // Handle **/Name pattern (most common case)
+        if let Some(suffix) = pattern.strip_prefix("**/") {
+            let basename = Path::new(path)
+                .file_name()
+                .map(|f| f.to_string_lossy().to_string())
+                .unwrap_or_default();
+            return basename == suffix || path.ends_with(&format!("/{}", suffix));
+        }
+        // Simple exact match fallback
+        path.ends_with(pattern)
     }
 
     fn to_module_name(basename: &str) -> String {
@@ -243,6 +281,12 @@ impl Cop for FileName {
             .unwrap_or_default();
 
         if basename.is_empty() {
+            return vec![];
+        }
+
+        // Mirror RuboCop's allowed_camel_case_file? check:
+        // Skip .gemspec files and files matching AllCops/Include patterns with uppercase
+        if self.allowed_camel_case_file(file_path) {
             return vec![];
         }
 

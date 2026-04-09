@@ -300,6 +300,23 @@ module TestDataCapture
         end
       end
 
+      # 1b. AllCops/Include — capture when non-default (used by Naming/FileName's
+      #     allowed_camel_case_file? check). Default is ['**/*.rb'].
+      if cop_obj.respond_to?(:config) && cop_obj.config.respond_to?(:[])
+        begin
+          all_cops = cop_obj.config['AllCops']
+          if all_cops.is_a?(Hash) && all_cops['Include'].is_a?(Array)
+            includes = all_cops['Include'].map(&:to_s)
+            default_includes = ['**/*.rb']
+            if includes != default_includes
+              result['Include'] = includes
+            end
+          end
+        rescue => e
+          # Skip if AllCops access fails
+        end
+      end
+
       # 2. Cross-cop config: scan the full config for other cop entries
       #    that were explicitly set (e.g., via let(:config) or let(:other_cops)).
       #    Uses full cop names (e.g., "Layout/LineLength") to support cross-department config.
