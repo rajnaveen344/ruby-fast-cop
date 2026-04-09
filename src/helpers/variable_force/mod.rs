@@ -1080,7 +1080,7 @@ impl<'a, H: VariableForceHook> VariableForceDispatcher<'a, H> {
         }
 
         // After processing the loop, mark assignments as referenced in loop
-        self.mark_assignments_as_referenced_in_loop(node);
+        self.mark_assignments_as_referenced_in_loop(node, false);
     }
 
     fn process_for_loop(&mut self, node: &Node) {
@@ -1102,7 +1102,7 @@ impl<'a, H: VariableForceHook> VariableForceDispatcher<'a, H> {
         self.table.pop_branch();
 
         // Mark loop references
-        self.mark_assignments_as_referenced_in_loop(node);
+        self.mark_assignments_as_referenced_in_loop(node, false);
     }
 
     fn process_for_index(&mut self, node: &Node) {
@@ -1146,11 +1146,15 @@ impl<'a, H: VariableForceHook> VariableForceDispatcher<'a, H> {
 
     /// Mark last assignments referenced in a loop body as referenced.
     /// This is RuboCop's mark_assignments_as_referenced_in_loop.
-    fn mark_assignments_as_referenced_in_loop(&mut self, loop_node: &Node) {
+    fn mark_assignments_as_referenced_in_loop(&mut self, loop_node: &Node, is_retry_loop: bool) {
         // Collect all variable references and assignment offsets in the loop
         let mut ref_names: HashSet<String> = HashSet::new();
         let mut assign_offsets: HashSet<usize> = HashSet::new();
         collect_loop_refs(loop_node, &mut ref_names, &mut assign_offsets);
+
+        // Also collect "pure read" names — variables read via LocalVariableReadNode
+        // (not just via operator-assignment self-reference)
+        let pure_read_names = collect_pure_read_names(loop_node);
 
         // For each referenced variable, find its assignments that are in this loop
         // and mark them as referenced
@@ -1166,6 +1170,17 @@ impl<'a, H: VariableForceHook> VariableForceDispatcher<'a, H> {
                         .collect();
 
                     if loop_assignments.is_empty() {
+                        continue;
+                    }
+
+                    // If the variable is only referenced via operator/and/or assignments
+                    // (no separate LocalVariableReadNode in the loop), and there's only
+                    // one assignment in the loop, then it's purely self-referencing and
+                    // useless — don't mark as referenced.
+                    // Skip this optimization for retry loops (begin/rescue/retry), where
+                    // the operator assignment's return value may be used within the
+                    // same expression (e.g., `fail if (count += 1) > 3`).
+                    if !is_retry_loop && !pure_read_names.contains(name) && loop_assignments.len() == 1 {
                         continue;
                     }
 
@@ -1240,9 +1255,9 @@ impl<'a, H: VariableForceHook> VariableForceDispatcher<'a, H> {
             }
         }
 
-        // With retry, treat as loop
+        // With retry, treat as loop (but don't apply op-assign-only optimization)
         if has_retry {
-            self.mark_assignments_as_referenced_in_loop(node);
+            self.mark_assignments_as_referenced_in_loop(node, true);
         }
     }
 
@@ -1810,6 +1825,31 @@ impl<'a, 'b, H: VariableForceHook> Visit<'_> for FallbackVisitor<'a, 'b, H> {
 
 fn name_str(id: &ruby_prism::ConstantId) -> String {
     String::from_utf8_lossy(id.as_slice()).to_string()
+}
+
+/// Collect variable names that are read via LocalVariableReadNode in a loop body.
+/// This does NOT include variables only referenced via operator/and/or assignment self-references.
+fn collect_pure_read_names(node: &Node) -> HashSet<String> {
+    let mut names = HashSet::new();
+    let mut collector = PureReadCollector { names: &mut names };
+    collector.visit(node);
+    names
+}
+
+struct PureReadCollector<'a> {
+    names: &'a mut HashSet<String>,
+}
+
+impl Visit<'_> for PureReadCollector<'_> {
+    fn visit_local_variable_read_node(&mut self, node: &ruby_prism::LocalVariableReadNode) {
+        let name = name_str(&node.name());
+        self.names.insert(name);
+    }
+    // Don't descend into scopes
+    fn visit_def_node(&mut self, _node: &ruby_prism::DefNode) {}
+    fn visit_class_node(&mut self, _node: &ruby_prism::ClassNode) {}
+    fn visit_module_node(&mut self, _node: &ruby_prism::ModuleNode) {}
+    fn visit_singleton_class_node(&mut self, _node: &ruby_prism::SingletonClassNode) {}
 }
 
 /// Collect variable refs and assignment offsets in a loop body.

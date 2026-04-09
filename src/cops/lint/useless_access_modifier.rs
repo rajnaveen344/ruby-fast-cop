@@ -264,7 +264,8 @@ impl<'a> Checker<'a> {
                 }
                 // Don't change cur_vis or unused
             } else if self.is_included_block(child) {
-                // Skip included blocks (ActiveSupport extensions enabled)
+                // Included blocks are separate scopes — check them independently
+                self.check_new_scope(child);
                 continue;
             } else if self.is_method_definition(child) {
                 // Method definition makes the pending modifier useful

@@ -2028,11 +2028,16 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
             if rocket_styles.is_empty() || colon_styles.is_empty() {
                 None
             } else {
+                let arg_align_config = config.get_cop_config("Layout/ArgumentAlignment");
+                let arg_align_fixed = arg_align_config
+                    .and_then(|c| c.enforced_style.as_ref())
+                    .map(|s| s == "with_fixed_indentation")
+                    .unwrap_or(false);
                 Some(Box::new(cops::layout::HashAlignment::new(
                     rocket_styles,
                     colon_styles,
                     last_arg_style,
-                )))
+                ).with_argument_alignment_fixed(arg_align_fixed)))
             }
         }
 

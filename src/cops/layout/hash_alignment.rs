@@ -49,6 +49,9 @@ pub struct HashAlignment {
     rocket_styles: Vec<AlignmentStyle>,
     colon_styles: Vec<AlignmentStyle>,
     last_arg_style: LastArgumentHashStyle,
+    /// When Layout/ArgumentAlignment uses "with_fixed_indentation", skip keyword
+    /// hashes that are method-call arguments (alignment is handled by that cop).
+    argument_alignment_fixed: bool,
 }
 
 impl HashAlignment {
@@ -61,7 +64,13 @@ impl HashAlignment {
             rocket_styles,
             colon_styles,
             last_arg_style,
+            argument_alignment_fixed: false,
         }
+    }
+
+    pub fn with_argument_alignment_fixed(mut self, fixed: bool) -> Self {
+        self.argument_alignment_fixed = fixed;
+        self
     }
 }
 
@@ -84,6 +93,7 @@ impl Cop for HashAlignment {
             rocket_styles: &self.rocket_styles,
             colon_styles: &self.colon_styles,
             last_arg_style: self.last_arg_style,
+            argument_alignment_fixed: self.argument_alignment_fixed,
             offenses: Vec::new(),
             ignored_hashes: Vec::new(),
         };
@@ -99,6 +109,7 @@ struct HashAlignmentVisitor<'a> {
     rocket_styles: &'a [AlignmentStyle],
     colon_styles: &'a [AlignmentStyle],
     last_arg_style: LastArgumentHashStyle,
+    argument_alignment_fixed: bool,
     offenses: Vec<Offense>,
     ignored_hashes: Vec<usize>,
 }
@@ -509,6 +520,34 @@ impl<'a> HashAlignmentVisitor<'a> {
                 self.ignored_hashes.push(hash.location().start_offset());
             }
         } else if let Some(kwh) = last_arg.as_keyword_hash_node() {
+            // When ArgumentAlignment uses with_fixed_indentation, ignore keyword
+            // hashes whose first element is on the same line as a preceding
+            // positional argument (i.e. inline kwargs following other args).
+            // This prevents conflicts between HashAlignment and ArgumentAlignment.
+            if self.argument_alignment_fixed && args.len() > 1 {
+                let left_sibling = &args[args.len() - 2];
+                let sib_end_line = self.ctx.line_of(left_sibling.location().end_offset().saturating_sub(1));
+                let kwh_start_line = self.ctx.line_of(kwh.location().start_offset());
+                if sib_end_line == kwh_start_line {
+                    self.ignored_hashes.push(kwh.location().start_offset());
+                    return;
+                }
+            }
+            // When ArgumentAlignment uses with_fixed_indentation and there are
+            // no positional args, ignore if the first kwarg is on the call line.
+            if self.argument_alignment_fixed && args.len() == 1 {
+                // The kwh IS the only argument. Check if it starts on the same
+                // line as the method call (looking at the call node's message location).
+                // We don't have access to the call node here, but we can check if
+                // the kwh starts on the same line as content before it on that line
+                // (i.e., not on a new indented line). We approximate by checking
+                // if kwh doesn't begin its line.
+                let kwh_start = kwh.location().start_offset();
+                if !self.ctx.begins_its_line(kwh_start) {
+                    self.ignored_hashes.push(kwh_start);
+                    return;
+                }
+            }
             let should_ignore = match self.last_arg_style {
                 LastArgumentHashStyle::AlwaysInspect => false,
                 LastArgumentHashStyle::AlwaysIgnore => true,

@@ -68,18 +68,12 @@ impl Cop for TrailingEmptyLines {
             let last_line = effective_source.lines().last().unwrap_or("");
             let last_line_len = last_line.chars().count() as u32;
 
-            let (message, correction, loc) = match self.enforced_style {
-                EnforcedStyle::FinalNewline => (
-                    "Final newline missing.",
-                    Correction::insert(source.len(), "\n"),
-                    Location::new(last_line_num, last_line_len, last_line_num, last_line_len + 1),
-                ),
-                EnforcedStyle::FinalBlankLine => (
-                    "Trailing blank line missing.",
-                    Correction::insert(source.len(), "\n\n"),
-                    Location::new(last_line_num + 1, 0, last_line_num + 1, 1),
-                ),
-            };
+            // Both styles report "Final newline missing" when there's no newline at all.
+            // RuboCop uses iterative correction — first adds \n, then on second pass
+            // would add the blank line for FinalBlankLine style.
+            let message = "Final newline missing.";
+            let correction = Correction::insert(source.len(), "\n");
+            let loc = Location::new(last_line_num, last_line_len, last_line_num, last_line_len + 1);
 
             return vec![Offense::new(
                 self.name(),
