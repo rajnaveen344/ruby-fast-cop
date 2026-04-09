@@ -251,6 +251,11 @@ def generate_toml(cop:, department:, severity:, implemented:, tests:)
       lines << "ruby_version = #{toml_string(">= #{test[:ruby_version]}")}"
     end
 
+    # Output strip_trailing_newline if source originally had no trailing newline
+    if test[:strip_trailing_newline]
+      lines << "strip_trailing_newline = true"
+    end
+
     # Output filename if captured (used by cops like Naming/FileName)
     if test[:filename].is_a?(String) && !test[:filename].empty?
       lines << "filename = #{toml_string(ensure_utf8(test[:filename]))}"

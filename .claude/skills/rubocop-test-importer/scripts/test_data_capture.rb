@@ -139,12 +139,15 @@ module TestDataCapture
     # Capture filename if provided (used by cops like Naming/FileName)
     filename = (file.is_a?(String) ? file : nil) || extract_test_filename
 
+    # The `chomp` parameter in expect_offense tells RuboCop to strip the trailing
+    # newline before processing. This maps to our `strip_trailing_newline` flag.
     TestDataCapture.pending_capture = {
       source: clean_source,
       offenses: offenses,
       config: config_hash,
       corrected: nil,
-      filename: filename
+      filename: filename,
+      strip_trailing_newline: chomp
     }
   rescue => e
     $stderr.puts "[TestDataCapture] Error in expect_offense: #{e.message}"
@@ -165,7 +168,8 @@ module TestDataCapture
       offenses: [],
       config: config_hash,
       corrected: nil,
-      filename: filename
+      filename: filename,
+      strip_trailing_newline: !source.end_with?("\n")
     }
   rescue => e
     $stderr.puts "[TestDataCapture] Error in expect_no_offenses: #{e.message}"
@@ -301,16 +305,25 @@ module TestDataCapture
         end
       end
 
-      # 1b. AllCops/Include — capture when non-default (used by Naming/FileName's
-      #     allowed_camel_case_file? check). Default is ['**/*.rb'].
+      # 1b. AllCops config — capture non-default values that affect cop behavior.
+      #     Includes: Include patterns (for Naming/FileName), ActiveSupportExtensionsEnabled
+      #     (for many cops that handle ActiveSupport-specific methods).
       if cop_obj.respond_to?(:config) && cop_obj.config.respond_to?(:[])
         begin
           all_cops = cop_obj.config['AllCops']
-          if all_cops.is_a?(Hash) && all_cops['Include'].is_a?(Array)
-            includes = all_cops['Include'].map(&:to_s)
-            default_includes = ['**/*.rb']
-            if includes != default_includes
-              result['Include'] = includes
+          if all_cops.is_a?(Hash)
+            # AllCops/Include (non-default)
+            if all_cops['Include'].is_a?(Array)
+              includes = all_cops['Include'].map(&:to_s)
+              default_includes = ['**/*.rb']
+              if includes != default_includes
+                result['Include'] = includes
+              end
+            end
+            # AllCops/ActiveSupportExtensionsEnabled (default is false)
+            if all_cops.key?('ActiveSupportExtensionsEnabled')
+              val = all_cops['ActiveSupportExtensionsEnabled']
+              result['AllCopsActiveSupportExtensionsEnabled'] = val if val == true
             end
           end
         rescue => e

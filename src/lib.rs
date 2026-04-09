@@ -1184,10 +1184,13 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
         }
 
         "Lint/DuplicateMethods" => {
-            let active_support = config
-                .get_cop_config("Lint/DuplicateMethods")
+            let cop_config = config.get_cop_config("Lint/DuplicateMethods");
+            let active_support = cop_config
                 .and_then(|c| c.raw.get("ActiveSupportExtensionsEnabled"))
                 .and_then(|v| v.as_bool())
+                .or_else(|| cop_config
+                    .and_then(|c| c.raw.get("AllCopsActiveSupportExtensionsEnabled"))
+                    .and_then(|v| v.as_bool()))
                 .unwrap_or(true);
             Some(Box::new(cops::lint::DuplicateMethods::with_config(active_support)))
         }
@@ -1266,7 +1269,11 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
 
         "Lint/UselessAccessModifier" => {
             let cop_config = config.get_cop_config("Lint/UselessAccessModifier");
-            let context_creating = cop_config
+            let active_support = cop_config
+                .and_then(|c| c.raw.get("AllCopsActiveSupportExtensionsEnabled"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
+            let mut context_creating: Vec<String> = cop_config
                 .and_then(|c| c.raw.get("ContextCreatingMethods"))
                 .and_then(|v| v.as_sequence())
                 .map(|seq| {
@@ -1275,6 +1282,10 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
                         .collect()
                 })
                 .unwrap_or_default();
+            // When ActiveSupport is enabled, 'included' is a context-creating method
+            if active_support && !context_creating.contains(&"included".to_string()) {
+                context_creating.push("included".to_string());
+            }
             let method_creating = cop_config
                 .and_then(|c| c.raw.get("MethodCreatingMethods"))
                 .and_then(|v| v.as_sequence())
@@ -1489,10 +1500,13 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
         }
 
         "Style/ArrayIntersect" => {
-            let active_support = config
-                .get_cop_config("Style/ArrayIntersect")
+            let cop_config = config.get_cop_config("Style/ArrayIntersect");
+            let active_support = cop_config
                 .and_then(|c| c.raw.get("ActiveSupportExtensionsEnabled"))
                 .and_then(|v| v.as_bool())
+                .or_else(|| cop_config
+                    .and_then(|c| c.raw.get("AllCopsActiveSupportExtensionsEnabled"))
+                    .and_then(|v| v.as_bool()))
                 .unwrap_or(false);
             Some(Box::new(cops::style::ArrayIntersect::with_config(active_support)))
         }
@@ -1838,9 +1852,12 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
                 .and_then(|c| c.raw.get("MaxChainLength"))
                 .and_then(|v| v.as_u64())
                 .unwrap_or(2) as usize;
+            // Read from cop's own config or from Lint/SafeNavigationChain cross-cop config
             let safe_nav_chain_enabled = cop_config
                 .and_then(|c| c.raw.get("SafeNavigationChainEnabled"))
                 .and_then(|v| v.as_bool())
+                .or_else(|| config.get_cop_config("Lint/SafeNavigationChain")
+                    .and_then(|c| c.enabled))
                 .unwrap_or(true);
             Some(Box::new(cops::style::SafeNavigation::with_full_config(
                 allowed_methods,
@@ -1943,14 +1960,23 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
             let active_support = cop_config
                 .and_then(|c| c.raw.get("ActiveSupportExtensionsEnabled"))
                 .and_then(|v| v.as_bool())
+                .or_else(|| cop_config
+                    .and_then(|c| c.raw.get("AllCopsActiveSupportExtensionsEnabled"))
+                    .and_then(|v| v.as_bool()))
                 .unwrap_or(false);
+            // Read MaxLineLength/AllowHeredoc from Layout/LineLength cross-cop config
+            let ll_config = config.get_cop_config("Layout/LineLength");
             let max_line_length = cop_config
                 .and_then(|c| c.raw.get("MaxLineLength"))
                 .and_then(|v| v.as_i64())
+                .or_else(|| ll_config.and_then(|c| c.max).map(|v| v as i64))
                 .map(|v| v as usize);
             let allow_heredoc = cop_config
                 .and_then(|c| c.raw.get("AllowHeredoc"))
                 .and_then(|v| v.as_bool())
+                .or_else(|| ll_config
+                    .and_then(|c| c.raw.get("AllowHeredoc"))
+                    .and_then(|v| v.as_bool()))
                 .unwrap_or(true);
             Some(Box::new(cops::layout::HeredocIndentation::with_config(
                 2, active_support, max_line_length, allow_heredoc,
