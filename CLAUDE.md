@@ -236,11 +236,38 @@ impl Cop for Debugger {
 
 **When asked "what's next", always follow this workflow:**
 
-1. **Find unimplemented enabled-by-default cops** sorted by test count (descending) from COPS.md
+1. **Find candidates from TOML fixtures** (NOT COPS.md which may be stale):
+   ```python
+   # Scan TOML fixtures for implemented=false, cross-check no .rs file exists
+   python3 -c "
+   import re, os, glob
+   implemented = set()
+   candidates = []
+   for f in glob.glob('tests/fixtures/**/*.toml', recursive=True):
+       with open(f) as fh: content = fh.read()
+       m = re.search(r'cop = \"(.+?)\"', content)
+       if not m: continue
+       cop = m.group(1)
+       if 'implemented = true' in content:
+           implemented.add(cop)
+           continue
+       # Check no .rs file already exists
+       dept = cop.split('/')[0].lower()
+       name = re.sub(r'(?<!^)(?=[A-Z])', '_', cop.split('/')[1]).lower()
+       if os.path.exists(f'src/cops/{dept}/{name}.rs'):
+           print(f'WARNING: {cop} has .rs but TOML says false!')
+           continue
+       tests = len(re.findall(r'\[\[tests\]\]', content))
+       candidates.append((tests, cop))
+   candidates.sort(reverse=True)
+   for t, n in candidates[:20]: print(f'{t:>5}  {n}')
+   "
+   ```
 2. **Group by shared RuboCop mixin** — fetch each cop's Ruby source, check `include` statements, and cluster cops that share the same mixin (e.g., SurroundingSpace, EndKeywordAlignment, PrecedingFollowingAlignment)
 3. **One subagent per cluster** — each agent builds the shared helper first, then implements all cops in the cluster. This avoids duplicating mixin logic across agents.
-4. **Assess difficulty** (Easy/Medium/Hard) based on Ruby LOC + mixin LOC, config complexity, and AST surface area
-5. **Launch agents with worktree isolation**:
+4. **Include existing similar cop as reference** — when briefing agents, name a specific existing cop that uses a similar pattern (e.g., `src/cops/style/redundant_freeze.rs` for simple check_call, `src/cops/lint/redundant_safe_navigation.rs` for visitor with scope tracking)
+5. **Assess difficulty** (Easy/Medium/Hard) based on Ruby LOC + mixin LOC, config complexity, and AST surface area
+6. **Launch agents with worktree isolation**:
 
 ```
 Agent(subagent_type="general-purpose", isolation="worktree", run_in_background=true, mode="bypassPermissions")
@@ -268,9 +295,11 @@ Each agent gets its own git worktree so they can independently edit `mod.rs`, `l
    ```
 4. Create file in `src/cops/{department}/{cop_name}.rs`
 5. Implement `Cop` trait — translate from the Ruby source, don't reinvent
-6. Add to department's `mod.rs`
-7. Register in cop registry
-8. Set `implemented = true` in the TOML fixture
+6. **Register in ALL 3 places** (missing any = cop won't run):
+   a. `src/cops/{dept}/mod.rs` — `mod` + `pub use` declarations
+   b. `src/cops/mod.rs` — `Box::new(...)` in `all()` function
+   c. `src/lib.rs` — BOTH `build_cops_from_config()` AND `build_single_cop()` match
+7. Set `implemented = true` in the TOML fixture
 9. Run `cargo test --test tester` — verify tests pass
 10. If tests fail unexpectedly, compare with original RuboCop spec and fix implementation or TOML
 11. **Always run `/cop-review` after implementation** — this compares the Rust implementation against the original Ruby source, checks size ratio and complexity, and identifies simplification opportunities. Fix any issues it flags before moving on.
