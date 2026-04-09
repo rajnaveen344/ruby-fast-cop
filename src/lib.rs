@@ -217,14 +217,34 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         result.push(Box::new(cops::lint::LiteralInInterpolation::new()));
     }
 
+    // Lint/FormatParameterMismatch
+    if config.is_cop_enabled("Lint/FormatParameterMismatch") {
+        result.push(Box::new(cops::lint::FormatParameterMismatch::new()));
+    }
+
     // Lint/OutOfRangeRegexpRef
     if config.is_cop_enabled("Lint/OutOfRangeRegexpRef") {
         result.push(Box::new(cops::lint::OutOfRangeRegexpRef::new()));
     }
 
+    // Lint/RedundantSplatExpansion
+    if config.is_cop_enabled("Lint/RedundantSplatExpansion") {
+        result.push(Box::new(cops::lint::RedundantSplatExpansion::new(true)));
+    }
+
     // Lint/RedundantTypeConversion
     if config.is_cop_enabled("Lint/RedundantTypeConversion") {
         result.push(Box::new(cops::lint::RedundantTypeConversion::new()));
+    }
+
+    // Lint/SelfAssignment
+    if config.is_cop_enabled("Lint/SelfAssignment") {
+        let cop_config = config.get_cop_config("Lint/SelfAssignment");
+        let allow_rbs = cop_config
+            .and_then(|c| c.raw.get("AllowRBSInlineAnnotation"))
+            .and_then(|v| v.as_bool())
+            .unwrap_or(false);
+        result.push(Box::new(cops::lint::LintSelfAssignment::new(allow_rbs)));
     }
 
     // Lint/SafeNavigationChain
@@ -1289,12 +1309,25 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
             Some(Box::new(cops::lint::LiteralAsCondition::new()))
         }
 
+        "Lint/FormatParameterMismatch" => {
+            Some(Box::new(cops::lint::FormatParameterMismatch::new()))
+        }
+
         "Lint/LiteralInInterpolation" => {
             Some(Box::new(cops::lint::LiteralInInterpolation::new()))
         }
 
         "Lint/OutOfRangeRegexpRef" => {
             Some(Box::new(cops::lint::OutOfRangeRegexpRef::new()))
+        }
+
+        "Lint/RedundantSplatExpansion" => {
+            let cop_config = config.get_cop_config("Lint/RedundantSplatExpansion");
+            let allow_percent = cop_config
+                .and_then(|c| c.raw.get("AllowPercentLiteralArrayArgument"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(true);
+            Some(Box::new(cops::lint::RedundantSplatExpansion::new(allow_percent)))
         }
 
         "Lint/RedundantTypeConversion" => {
@@ -1309,6 +1342,15 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
                 .map(|seq| seq.iter().filter_map(|v| v.as_str().map(|s| s.to_string())).collect())
                 .unwrap_or_default();
             Some(Box::new(cops::lint::SafeNavigationChain::with_allowed_methods(allowed)))
+        }
+
+        "Lint/SelfAssignment" => {
+            let cop_config = config.get_cop_config("Lint/SelfAssignment");
+            let allow_rbs = cop_config
+                .and_then(|c| c.raw.get("AllowRBSInlineAnnotation"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
+            Some(Box::new(cops::lint::LintSelfAssignment::new(allow_rbs)))
         }
 
         "Lint/ShadowedArgument" => {

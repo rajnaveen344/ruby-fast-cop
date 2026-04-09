@@ -409,10 +409,13 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(lint::AssignmentInCondition::new(false)), // User's config: AllowSafeAssignment: false
         Box::new(lint::Debugger::new()),
         Box::new(lint::DuplicateMethods::new()),
+        Box::new(lint::FormatParameterMismatch::new()),
         Box::new(lint::LiteralAsCondition::new()),
         Box::new(lint::LiteralInInterpolation::new()),
         Box::new(lint::OutOfRangeRegexpRef::new()),
+        Box::new(lint::RedundantSplatExpansion::new(true)),
         Box::new(lint::RedundantTypeConversion::new()),
+        Box::new(lint::LintSelfAssignment::new(false)),
         Box::new(lint::UnreachableCode::new()),
         Box::new(lint::UselessAccessModifier::new()),
         Box::new(lint::ShadowedArgument::new()),
