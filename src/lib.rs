@@ -244,6 +244,11 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         result.push(Box::new(cops::lint::RedundantTypeConversion::new()));
     }
 
+    // Lint/RescueType
+    if config.is_cop_enabled("Lint/RescueType") {
+        result.push(Box::new(cops::lint::RescueType::new()));
+    }
+
     // Lint/SelfAssignment
     if config.is_cop_enabled("Lint/SelfAssignment") {
         let cop_config = config.get_cop_config("Lint/SelfAssignment");
@@ -413,6 +418,20 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         )));
     }
 
+    // Style/Documentation
+    if config.is_cop_enabled("Style/Documentation") {
+        if let Some(cop) = build_single_cop("Style/Documentation", config) {
+            result.push(cop);
+        }
+    }
+
+    // Style/EmptyLiteral
+    if config.is_cop_enabled("Style/EmptyLiteral") {
+        if let Some(cop) = build_single_cop("Style/EmptyLiteral", config) {
+            result.push(cop);
+        }
+    }
+
     // Style/FormatStringToken
     if config.is_cop_enabled("Style/FormatStringToken") {
         let cop_config = config.get_cop_config("Style/FormatStringToken");
@@ -458,6 +477,13 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
             allowed_methods,
             allowed_patterns,
         )));
+    }
+
+    // Style/HashEachMethods
+    if config.is_cop_enabled("Style/HashEachMethods") {
+        if let Some(cop) = build_single_cop("Style/HashEachMethods", config) {
+            result.push(cop);
+        }
     }
 
     // Style/GlobalVars
@@ -531,6 +557,11 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         )));
     }
 
+    // Style/IdenticalConditionalBranches
+    if config.is_cop_enabled("Style/IdenticalConditionalBranches") {
+        result.push(Box::new(cops::style::IdenticalConditionalBranches::new()));
+    }
+
     // Style/InverseMethods
     if config.is_cop_enabled("Style/InverseMethods") {
         if let Some(cop) = build_single_cop("Style/InverseMethods", config) {
@@ -541,6 +572,13 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
     // Style/MethodCalledOnDoEndBlock
     if config.is_cop_enabled("Style/MethodCalledOnDoEndBlock") {
         result.push(Box::new(cops::style::MethodCalledOnDoEndBlock::new()));
+    }
+
+    // Style/MethodDefParentheses
+    if config.is_cop_enabled("Style/MethodDefParentheses") {
+        if let Some(cop) = build_single_cop("Style/MethodDefParentheses", config) {
+            result.push(cop);
+        }
     }
 
     // Style/OneLineConditional
@@ -656,6 +694,11 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         result.push(Box::new(cops::style::RedundantSelf::new()));
     }
 
+    // Style/RedundantRegexpCharacterClass
+    if config.is_cop_enabled("Style/RedundantRegexpCharacterClass") {
+        result.push(Box::new(cops::style::RedundantRegexpCharacterClass::new()));
+    }
+
     // Style/RedundantRegexpEscape
     if config.is_cop_enabled("Style/RedundantRegexpEscape") {
         result.push(Box::new(cops::style::RedundantRegexpEscape::new()));
@@ -726,6 +769,13 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
     // Style/ZeroLengthPredicate
     if config.is_cop_enabled("Style/ZeroLengthPredicate") {
         result.push(Box::new(cops::style::ZeroLengthPredicate::new()));
+    }
+
+    // Style/TrailingUnderscoreVariable
+    if config.is_cop_enabled("Style/TrailingUnderscoreVariable") {
+        if let Some(cop) = build_single_cop("Style/TrailingUnderscoreVariable", config) {
+            result.push(cop);
+        }
     }
 
     // Style/TrailingCommaInArguments
@@ -1433,6 +1483,10 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
             Some(Box::new(cops::lint::RedundantTypeConversion::new()))
         }
 
+        "Lint/RescueType" => {
+            Some(Box::new(cops::lint::RescueType::new()))
+        }
+
         "Lint/SafeNavigationChain" => {
             let cop_config = config.get_cop_config("Lint/SafeNavigationChain");
             let allowed = cop_config
@@ -1823,6 +1877,35 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
             Some(Box::new(cops::style::EmptyElse::new(style, allow_comments)))
         }
 
+        "Style/Documentation" => {
+            let cop_config = config.get_cop_config("Style/Documentation");
+            let allowed: Vec<String> = cop_config
+                .and_then(|c| c.raw.get("AllowedConstants"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| {
+                    seq.iter()
+                        .filter_map(|v| v.as_str().map(String::from))
+                        .collect()
+                })
+                .unwrap_or_default();
+            Some(Box::new(cops::style::Documentation::with_allowed_constants(allowed)))
+        }
+
+        "Style/EmptyLiteral" => {
+            // Cross-cop: check Style/StringLiterals EnforcedStyle for quote preference
+            let prefer_double = config.get_cop_config("Style/EmptyLiteral")
+                .and_then(|c| c.enforced_style.as_ref())
+                .or_else(|| config.get_cop_config("Style/StringLiterals")
+                    .and_then(|c| c.enforced_style.as_ref()))
+                .map(|s| s == "double_quotes")
+                .unwrap_or(false);
+            // Cross-cop: check if Style/FrozenStringLiteralComment is enabled
+            let frozen_cop_enabled = config.get_cop_config("Style/FrozenStringLiteralComment")
+                .and_then(|c| c.enabled)
+                .unwrap_or(false);
+            Some(Box::new(cops::style::EmptyLiteral::with_full_config(prefer_double, frozen_cop_enabled)))
+        }
+
         "Style/ConditionalAssignment" => {
             let cop_config = config.get_cop_config("Style/ConditionalAssignment");
             let style = cop_config
@@ -2001,8 +2084,39 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
             )))
         }
 
+        "Style/HashEachMethods" => {
+            let cop_config = config.get_cop_config("Style/HashEachMethods");
+            let allowed_receivers: Vec<String> = cop_config
+                .and_then(|c| c.raw.get("AllowedReceivers"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| {
+                    seq.iter()
+                        .filter_map(|v| v.as_str().map(String::from))
+                        .collect()
+                })
+                .unwrap_or_default();
+            Some(Box::new(cops::style::HashEachMethods::with_config(allowed_receivers)))
+        }
+
+        "Style/IdenticalConditionalBranches" => {
+            Some(Box::new(cops::style::IdenticalConditionalBranches::new()))
+        }
+
         "Style/MethodCalledOnDoEndBlock" => {
             Some(Box::new(cops::style::MethodCalledOnDoEndBlock::new()))
+        }
+
+        "Style/MethodDefParentheses" => {
+            let cop_config = config.get_cop_config("Style/MethodDefParentheses");
+            let style = cop_config
+                .and_then(|c| c.enforced_style.as_ref())
+                .map(|s| match s.as_str() {
+                    "require_no_parentheses" => cops::style::MethodDefParenthesesStyle::RequireNoParentheses,
+                    "require_no_parentheses_except_multiline" => cops::style::MethodDefParenthesesStyle::RequireNoParenthesesExceptMultiline,
+                    _ => cops::style::MethodDefParenthesesStyle::RequireParentheses,
+                })
+                .unwrap_or(cops::style::MethodDefParenthesesStyle::RequireParentheses);
+            Some(Box::new(cops::style::MethodDefParentheses::new(style)))
         }
 
         "Style/MutableConstant" => {
@@ -2213,6 +2327,10 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
 
         "Style/RedundantFreeze" => Some(Box::new(cops::style::RedundantFreeze::new())),
         "Style/RedundantSelf" => Some(Box::new(cops::style::RedundantSelf::new())),
+        "Style/RedundantRegexpCharacterClass" => {
+            Some(Box::new(cops::style::RedundantRegexpCharacterClass::new()))
+        }
+
         "Style/RedundantRegexpEscape" => Some(Box::new(cops::style::RedundantRegexpEscape::new())),
         "Style/RedundantStringEscape" => Some(Box::new(cops::style::RedundantStringEscape::new())),
 
@@ -2252,6 +2370,15 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
             Some(Box::new(cops::style::YodaCondition::new(style)))
         }
         "Style/ZeroLengthPredicate" => Some(Box::new(cops::style::ZeroLengthPredicate::new())),
+
+        "Style/TrailingUnderscoreVariable" => {
+            let cop_config = config.get_cop_config("Style/TrailingUnderscoreVariable");
+            let allow_named = cop_config
+                .and_then(|c| c.raw.get("AllowNamedUnderscoreVariables"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(true);
+            Some(Box::new(cops::style::TrailingUnderscoreVariable::new(allow_named)))
+        }
 
         "Style/TrailingCommaInArguments" => {
             let cop_config = config.get_cop_config("Style/TrailingCommaInArguments");

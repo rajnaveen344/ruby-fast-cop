@@ -423,6 +423,7 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(lint::UnusedBlockArgument::new()),
         Box::new(lint::UnusedMethodArgument::new()),
         Box::new(lint::UselessAssignment::new()),
+        Box::new(lint::RescueType::new()),
         Box::new(lint::SafeNavigationChain::new()),
         Box::new(lint::Void::new(false)),
         // Layout
@@ -467,14 +468,19 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(style::AutoResourceCleanup::new()),
         Box::new(style::BlockDelimiters::new(style::BlockDelimitersStyle::LineCountBased)),
         Box::new(style::ConditionalAssignment::new(style::ConditionalAssignmentStyle::AssignInsideCondition)),
+        Box::new(style::Documentation::new()),
         Box::new(style::EmptyElse::new(style::EmptyElseStyle::Both, false)),
+        Box::new(style::EmptyLiteral::new()),
         Box::new(style::FormatStringToken::new(style::FormatStringTokenStyle::Template)), // User's config
         Box::new(style::FrozenStringLiteralComment::new(style::FrozenStringLiteralCommentStyle::Always)),
         Box::new(style::GlobalVars::new()),
+        Box::new(style::HashEachMethods::new()),
         Box::new(style::HashSyntax::new(style::HashSyntaxStyle::Ruby19NoMixedKeys)), // User's config
+        Box::new(style::IdenticalConditionalBranches::new()),
         Box::new(style::IfUnlessModifier::new()),
         Box::new(style::InverseMethods::new()),
         Box::new(style::MethodCalledOnDoEndBlock::new()),
+        Box::new(style::MethodDefParentheses::new(style::MethodDefParenthesesStyle::RequireParentheses)),
         Box::new(style::MutableConstant::new(style::MutableConstantStyle::Literals)),
         Box::new(style::NegativeArrayIndex::new()),
         Box::new(style::Next::new()),
@@ -485,6 +491,7 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(style::RedundantCondition::new()),
         Box::new(style::RedundantBegin::new()),
         Box::new(style::RedundantParentheses::new()),
+        Box::new(style::RedundantRegexpCharacterClass::new()),
         Box::new(style::RedundantRegexpEscape::new()),
         Box::new(style::RedundantStringEscape::new()),
         Box::new(style::RescueStandardError::new(style::RescueStandardErrorStyle::Implicit)), // User's config
@@ -499,6 +506,7 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(style::SymbolProc::new()),
         Box::new(style::TernaryParentheses::new(style::TernaryParenthesesStyle::RequireNoParentheses, true)),
         Box::new(style::TrailingCommaInArguments::new(style::TrailingCommaInArgumentsStyle::NoComma)),
+        Box::new(style::TrailingUnderscoreVariable::default()),
         Box::new(style::RedundantFreeze::new()),
         Box::new(style::RedundantSelf::new()),
         Box::new(style::YodaCondition::default()),

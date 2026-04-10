@@ -1,28 +1,28 @@
 # All Cops State (606 total)
 
 Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department and default status.
-88 of 606 implemented. See [README.md](README.md) for the implementation roadmap.
+97 of 606 implemented. See [README.md](README.md) for the implementation roadmap.
 
 ## Summary
 
 | Department | Enabled | Pending | Disabled | Implemented |      Tests |
 | ---------- | ------: | ------: | -------: | ----------: | ---------: |
-| Style      |     175 |      91 |       32 |          42 |     14,567 |
-| Lint       |     100 |      50 |        4 |          19 |      5,961 |
-| Layout     |      81 |       5 |       14 |          18 |      4,654 |
+| Style      |     175 |      91 |       32 |          49 |     14,567 |
+| Lint       |     100 |      50 |        4 |          20 |      5,961 |
+| Layout     |      81 |       5 |       14 |          19 |      4,654 |
 | Metrics    |       9 |       1 |        0 |           3 |        272 |
 | Naming     |      16 |       2 |        1 |           6 |      2,217 |
 | Gemspec    |       4 |       5 |        1 |           0 |        193 |
 | Bundler    |       5 |       0 |        2 |           0 |        101 |
 | Security   |       5 |       2 |        0 |           0 |        102 |
 | Migration  |       1 |       0 |        0 |           0 |          8 |
-| **Total**  | **396** | **156** |   **54** |      **88** | **28,075** |
+| **Total**  | **396** | **156** |   **54** |      **97** | **28,075** |
 
 - **Enabled**: Runs by default on every codebase (highest priority to implement)
 - **Pending**: Runs only with `NewCops: enable` in config
 - **Disabled**: Runs only when explicitly enabled in config
 
-## Style (42/298 implemented, 14,567 tests)
+## Style (49/298 implemented, 14,567 tests)
 
 ### Enabled by Default (175 cops, 9,202 tests)
 
@@ -58,7 +58,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Style/ConditionalAssignment            |  1199 | Implemented |
 | Style/DefWithParentheses               |     9 | -           |
 | Style/Dir                              |     4 | -           |
-| Style/Documentation                    |    55 | -           |
+| Style/Documentation                    |    55 | Implemented |
 | Style/DoubleCopDisableDirective        |     3 | -           |
 | Style/DoubleNegation                   |    47 | -           |
 | Style/EachForSimpleLoop                |    20 | -           |
@@ -67,7 +67,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Style/EmptyCaseCondition               |    29 | -           |
 | Style/EmptyElse                        |   124 | Implemented |
 | Style/EmptyLambdaParameter             |     3 | -           |
-| Style/EmptyLiteral                     |    49 | -           |
+| Style/EmptyLiteral                     |    49 | Implemented |
 | Style/EmptyMethod                      |    32 | -           |
 | Style/Encoding                         |    13 | -           |
 | Style/EndBlock                         |     2 | -           |
@@ -85,12 +85,12 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Style/GlobalVars                       |    74 | Implemented |
 | Style/GuardClause                      |    91 | -           |
 | Style/HashAsLastArrayItem              |    19 | -           |
-| Style/HashEachMethods                  |    62 | -           |
+| Style/HashEachMethods                  |    62 | Implemented |
 | Style/HashLikeCase                     |     8 | -           |
 | Style/HashSyntax                       |   189 | Implemented |
 | Style/HashTransformKeys                |    40 | -           |
 | Style/HashTransformValues              |    40 | -           |
-| Style/IdenticalConditionalBranches     |    48 | -           |
+| Style/IdenticalConditionalBranches     |    48 | Implemented |
 | Style/IfInsideElse                     |    21 | -           |
 | Style/IfUnlessModifier                 |   126 | Implemented |
 | Style/IfUnlessModifierOfIfUnless       |     7 | -           |
@@ -102,7 +102,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Style/LambdaCall                       |    19 | -           |
 | Style/LineEndConcatenation             |    19 | -           |
 | Style/MethodCallWithoutArgsParentheses |    34 | -           |
-| Style/MethodDefParentheses             |    49 | -           |
+| Style/MethodDefParentheses             |    49 | Implemented |
 | Style/MinMax                           |    12 | -           |
 | Style/MissingRespondToMissing          |     8 | -           |
 | Style/MixinGrouping                    |    18 | -           |
@@ -154,7 +154,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Style/RedundantInterpolation           |    29 | -           |
 | Style/RedundantParentheses             |   331 | Implemented |
 | Style/RedundantPercentQ                |    25 | -           |
-| Style/RedundantRegexpCharacterClass    |    47 | -           |
+| Style/RedundantRegexpCharacterClass    |    47 | Implemented |
 | Style/RedundantRegexpEscape            |   217 | Implemented |
 | Style/RedundantReturn                  |    39 | -           |
 | Style/RedundantSelf                    |    62 | Implemented |
@@ -192,7 +192,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Style/TrailingCommaInArrayLiteral      |    48 | -           |
 | Style/TrailingCommaInHashLiteral       |    41 | -           |
 | Style/TrailingMethodEndStatement       |    10 | -           |
-| Style/TrailingUnderscoreVariable       |    58 | -           |
+| Style/TrailingUnderscoreVariable       |    58 | Implemented |
 | Style/TrivialAccessors                 |    38 | -           |
 | Style/UnlessElse                       |     5 | -           |
 | Style/UnpackFirst                      |    11 | -           |
@@ -337,7 +337,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Style/UnlessLogicalOperators               |    28 | -           |
 | Style/YodaExpression                       |    10 | -           |
 
-## Lint (19/154 implemented, 5,961 tests)
+## Lint (20/154 implemented, 5,961 tests)
 
 ### Enabled by Default (100 cops, 3,859 tests)
 
@@ -412,7 +412,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Lint/RegexpAsCondition                   |     5 | -           |
 | Lint/RequireParentheses                  |    16 | -           |
 | Lint/RescueException                     |    11 | -           |
-| Lint/RescueType                          |    52 | -           |
+| Lint/RescueType                          |    52 | Implemented |
 | Lint/ReturnInVoidContext                 |    18 | -           |
 | Lint/SafeNavigationChain                 |    63 | Implemented |
 | Lint/SafeNavigationConsistency           |    43 | -           |
@@ -508,7 +508,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Lint/NumberConversion            |    36 | -      |
 | Lint/ShadowingOuterLocalVariable |    31 | -      |
 
-## Layout (18/100 implemented, 4,654 tests)
+## Layout (19/100 implemented, 4,654 tests)
 
 ### Enabled by Default (81 cops, 4,067 tests)
 

@@ -4,14 +4,19 @@ mod array_intersect;
 mod auto_resource_cleanup;
 mod block_delimiters;
 mod conditional_assignment;
+mod documentation;
 mod empty_else;
+mod empty_literal;
 mod format_string_token;
 mod frozen_string_literal_comment;
 mod global_vars;
+mod hash_each_methods;
 mod hash_syntax;
+mod identical_conditional_branches;
 mod if_unless_modifier;
 mod inverse_methods;
 mod method_called_on_do_end_block;
+mod method_def_parentheses;
 mod mutable_constant;
 mod negative_array_index;
 mod next;
@@ -24,6 +29,7 @@ mod redundant_begin;
 mod redundant_freeze;
 mod redundant_self;
 mod redundant_parentheses;
+mod redundant_regexp_character_class;
 mod redundant_regexp_escape;
 mod redundant_string_escape;
 mod rescue_standard_error;
@@ -38,6 +44,7 @@ mod string_methods;
 mod symbol_proc;
 mod ternary_parentheses;
 mod trailing_comma_in_arguments;
+mod trailing_underscore_variable;
 mod yoda_condition;
 mod zero_length_predicate;
 
@@ -51,19 +58,24 @@ pub use block_delimiters::{BlockDelimiters, EnforcedStyle as BlockDelimitersStyl
 pub use conditional_assignment::{
     ConditionalAssignment, EnforcedStyle as ConditionalAssignmentStyle,
 };
+pub use documentation::Documentation;
 pub use empty_else::{EmptyElse, EnforcedStyle as EmptyElseStyle};
+pub use empty_literal::EmptyLiteral;
 pub use format_string_token::{EnforcedStyle as FormatStringTokenStyle, FormatStringToken};
 pub use frozen_string_literal_comment::{
     EnforcedStyle as FrozenStringLiteralCommentStyle, FrozenStringLiteralComment,
 };
 pub use global_vars::GlobalVars;
+pub use hash_each_methods::HashEachMethods;
 pub use hash_syntax::{
     EnforcedShorthandSyntax as HashSyntaxShorthandStyle, EnforcedStyle as HashSyntaxStyle,
     HashSyntax,
 };
+pub use identical_conditional_branches::IdenticalConditionalBranches;
 pub use if_unless_modifier::IfUnlessModifier;
 pub use inverse_methods::InverseMethods;
 pub use method_called_on_do_end_block::MethodCalledOnDoEndBlock;
+pub use method_def_parentheses::{MethodDefParentheses, EnforcedStyle as MethodDefParenthesesStyle};
 pub use mutable_constant::{EnforcedStyle as MutableConstantStyle, MutableConstant};
 pub use negative_array_index::NegativeArrayIndex;
 pub use next::{Next, EnforcedStyle as NextStyle};
@@ -76,6 +88,7 @@ pub use redundant_begin::RedundantBegin;
 pub use redundant_freeze::RedundantFreeze;
 pub use redundant_self::RedundantSelf;
 pub use redundant_parentheses::RedundantParentheses;
+pub use redundant_regexp_character_class::RedundantRegexpCharacterClass;
 pub use redundant_regexp_escape::RedundantRegexpEscape;
 pub use redundant_string_escape::RedundantStringEscape;
 pub use rescue_standard_error::{EnforcedStyle as RescueStandardErrorStyle, RescueStandardError};
@@ -89,6 +102,7 @@ pub use string_literals::{EnforcedStyle as StringLiteralsStyle, StringLiterals};
 pub use string_methods::StringMethods;
 pub use symbol_proc::SymbolProc;
 pub use ternary_parentheses::{EnforcedStyle as TernaryParenthesesStyle, TernaryParentheses};
+pub use trailing_underscore_variable::TrailingUnderscoreVariable;
 pub use trailing_comma_in_arguments::{
     EnforcedStyleForMultiline as TrailingCommaInArgumentsStyle, TrailingCommaInArguments,
 };
