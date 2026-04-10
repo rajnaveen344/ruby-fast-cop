@@ -1,28 +1,28 @@
 # All Cops State (606 total)
 
 Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department and default status.
-74 of 606 implemented. See [README.md](README.md) for the implementation roadmap.
+88 of 606 implemented. See [README.md](README.md) for the implementation roadmap.
 
 ## Summary
 
 | Department | Enabled | Pending | Disabled | Implemented |      Tests |
 | ---------- | ------: | ------: | -------: | ----------: | ---------: |
-| Style      |     175 |      91 |       32 |          33 |     14,567 |
-| Lint       |     100 |      50 |        4 |          14 |      5,961 |
+| Style      |     175 |      91 |       32 |          42 |     14,567 |
+| Lint       |     100 |      50 |        4 |          19 |      5,961 |
 | Layout     |      81 |       5 |       14 |          18 |      4,654 |
 | Metrics    |       9 |       1 |        0 |           3 |        272 |
-| Naming     |      16 |       2 |        1 |           5 |      2,217 |
+| Naming     |      16 |       2 |        1 |           6 |      2,217 |
 | Gemspec    |       4 |       5 |        1 |           0 |        193 |
 | Bundler    |       5 |       0 |        2 |           0 |        101 |
 | Security   |       5 |       2 |        0 |           0 |        102 |
 | Migration  |       1 |       0 |        0 |           0 |          8 |
-| **Total**  | **396** | **156** |   **54** |      **74** | **28,075** |
+| **Total**  | **396** | **156** |   **54** |      **88** | **28,075** |
 
 - **Enabled**: Runs by default on every codebase (highest priority to implement)
 - **Pending**: Runs only with `NewCops: enable` in config
 - **Disabled**: Runs only when explicitly enabled in config
 
-## Style (33/298 implemented, 14,567 tests)
+## Style (42/298 implemented, 14,567 tests)
 
 ### Enabled by Default (175 cops, 9,202 tests)
 
@@ -122,7 +122,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Style/NestedModifier                   |    13 | -           |
 | Style/NestedParenthesizedCalls         |    12 | -           |
 | Style/NestedTernaryOperator            |     7 | -           |
-| Style/Next                             |    72 | -           |
+| Style/Next                             |    72 | Implemented |
 | Style/NilComparison                    |     8 | -           |
 | Style/NonNilCheck                      |    21 | -           |
 | Style/Not                              |     9 | -           |
@@ -135,7 +135,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Style/OrAssignment                     |    25 | -           |
 | Style/ParallelAssignment               |    86 | -           |
 | Style/ParenthesesAroundCondition       |    30 | -           |
-| Style/PercentLiteralDelimiters         |    65 | -           |
+| Style/PercentLiteralDelimiters         |    65 | Implemented |
 | Style/PercentQLiterals                 |    21 | -           |
 | Style/PerlBackrefs                     |    14 | -           |
 | Style/PreferredHashMethods             |     9 | -           |
@@ -143,21 +143,21 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Style/RaiseArgs                        |    35 | Implemented |
 | Style/RandomWithOffset                 |    29 | -           |
 | Style/RedundantAssignment              |    11 | -           |
-| Style/RedundantBegin                   |    63 | -           |
+| Style/RedundantBegin                   |    63 | Implemented |
 | Style/RedundantCapitalW                |    13 | -           |
-| Style/RedundantCondition               |   102 | -           |
+| Style/RedundantCondition               |   102 | Implemented |
 | Style/RedundantConditional             |    11 | -           |
 | Style/RedundantException               |    30 | -           |
 | Style/RedundantFetchBlock              |    15 | -           |
 | Style/RedundantFileExtensionInRequire  |     4 | -           |
-| Style/RedundantFreeze                  |    62 | -           |
+| Style/RedundantFreeze                  |    62 | Implemented |
 | Style/RedundantInterpolation           |    29 | -           |
 | Style/RedundantParentheses             |   331 | Implemented |
 | Style/RedundantPercentQ                |    25 | -           |
 | Style/RedundantRegexpCharacterClass    |    47 | -           |
 | Style/RedundantRegexpEscape            |   217 | Implemented |
 | Style/RedundantReturn                  |    39 | -           |
-| Style/RedundantSelf                    |    62 | -           |
+| Style/RedundantSelf                    |    62 | Implemented |
 | Style/RedundantSelfAssignment          |    14 | -           |
 | Style/RedundantSort                    |    50 | -           |
 | Style/RedundantSortBy                  |     8 | -           |
@@ -172,7 +172,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Style/SingleArgumentDig                |    15 | -           |
 | Style/SingleLineMethods                |    16 | -           |
 | Style/SlicingWithRange                 |    28 | -           |
-| Style/SoleNestedConditional            |    73 | -           |
+| Style/SoleNestedConditional            |    73 | Implemented |
 | Style/SpecialGlobalVars                |    31 | -           |
 | Style/StabbyLambdaParentheses          |     9 | -           |
 | Style/StderrPuts                       |     5 | -           |
@@ -183,7 +183,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Style/StructInheritance                |    12 | -           |
 | Style/SymbolArray                      |    33 | -           |
 | Style/SymbolLiteral                    |     4 | -           |
-| Style/SymbolProc                       |    83 | -           |
+| Style/SymbolProc                       |    83 | Implemented |
 | Style/TernaryParentheses               |    98 | Implemented |
 | Style/TrailingBodyOnClass              |     7 | -           |
 | Style/TrailingBodyOnMethodDefinition   |    12 | -           |
@@ -201,7 +201,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Style/WhileUntilDo                     |     6 | -           |
 | Style/WhileUntilModifier               |    34 | -           |
 | Style/WordArray                        |    59 | -           |
-| Style/YodaCondition                    |    73 | -           |
+| Style/YodaCondition                    |    73 | Implemented |
 | Style/ZeroLengthPredicate              |    68 | Implemented |
 
 ### Pending by Default (91 cops, 4,624 tests)
@@ -337,7 +337,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Style/UnlessLogicalOperators               |    28 | -           |
 | Style/YodaExpression                       |    10 | -           |
 
-## Lint (14/154 implemented, 5,961 tests)
+## Lint (19/154 implemented, 5,961 tests)
 
 ### Enabled by Default (100 cops, 3,859 tests)
 
@@ -375,7 +375,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Lint/FlipFlop                            |     2 | -           |
 | Lint/FloatComparison                     |    17 | -           |
 | Lint/FloatOutOfRange                     |     5 | -           |
-| Lint/FormatParameterMismatch             |    75 | -           |
+| Lint/FormatParameterMismatch             |    75 | Implemented |
 | Lint/HashCompareByIdentity               |     4 | -           |
 | Lint/IdentityComparison                  |    12 | -           |
 | Lint/ImplicitStringConcatenation         |    12 | -           |
@@ -404,8 +404,8 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Lint/RedundantCopDisableDirective        |    44 | -           |
 | Lint/RedundantCopEnableDirective         |    23 | -           |
 | Lint/RedundantRequireStatement           |    15 | -           |
-| Lint/RedundantSafeNavigation             |    72 | -           |
-| Lint/RedundantSplatExpansion             |    59 | -           |
+| Lint/RedundantSafeNavigation             |    72 | Implemented |
+| Lint/RedundantSplatExpansion             |    59 | Implemented |
 | Lint/RedundantStringCoercion             |    18 | -           |
 | Lint/RedundantWithIndex                  |    17 | -           |
 | Lint/RedundantWithObject                 |    14 | -           |
@@ -414,11 +414,11 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Lint/RescueException                     |    11 | -           |
 | Lint/RescueType                          |    52 | -           |
 | Lint/ReturnInVoidContext                 |    18 | -           |
-| Lint/SafeNavigationChain                 |    63 | -           |
+| Lint/SafeNavigationChain                 |    63 | Implemented |
 | Lint/SafeNavigationConsistency           |    43 | -           |
 | Lint/SafeNavigationWithEmpty             |     3 | -           |
 | Lint/ScriptPermission                    |     6 | -           |
-| Lint/SelfAssignment                      |    58 | -           |
+| Lint/SelfAssignment                      |    58 | Implemented |
 | Lint/SendWithMixinArgument               |    14 | -           |
 | Lint/ShadowedArgument                    |    54 | Implemented |
 | Lint/ShadowedException                   |    38 | -           |
@@ -647,7 +647,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | ------------------------------- | ----: | ------ |
 | Metrics/CollectionLiteralLength |    13 | -      |
 
-## Naming (5/19 implemented, 2,217 tests)
+## Naming (6/19 implemented, 2,217 tests)
 
 ### Enabled by Default (16 cops, 884 tests)
 
@@ -662,7 +662,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Naming/FileName                      |   120 | Implemented |
 | Naming/HeredocDelimiterCase          |    26 | -           |
 | Naming/HeredocDelimiterNaming        |    19 | -           |
-| Naming/MemoizedInstanceVariableName  |    72 | -           |
+| Naming/MemoizedInstanceVariableName  |    72 | Implemented |
 | Naming/MethodName                    |   239 | Implemented |
 | Naming/MethodParameterName           |    23 | -           |
 | Naming/PredicatePrefix               |    24 | -           |
