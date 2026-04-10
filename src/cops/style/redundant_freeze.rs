@@ -13,11 +13,39 @@ use ruby_prism::Node;
 const MSG: &str = "Do not freeze immutable objects, as freezing them has no effect.";
 
 #[derive(Default)]
-pub struct RedundantFreeze;
+pub struct RedundantFreeze {
+    /// AllCops/StringLiteralsFrozenByDefault — when true, string literals are
+    /// implicitly frozen unless `# frozen_string_literal: false` is present.
+    string_literals_frozen_by_default: bool,
+}
 
 impl RedundantFreeze {
     pub fn new() -> Self {
-        Self
+        Self::default()
+    }
+
+    pub fn with_config(string_literals_frozen_by_default: bool) -> Self {
+        Self { string_literals_frozen_by_default }
+    }
+
+    /// Check for `# frozen_string_literal: false` magic comment.
+    fn frozen_string_literals_disabled(source: &str) -> bool {
+        for line in source.lines() {
+            let trimmed = line.trim();
+            if trimmed.is_empty() {
+                continue;
+            }
+            if !trimmed.starts_with('#') {
+                break;
+            }
+            let content = trimmed[1..].trim();
+            if let Some((key, val)) = content.split_once(':') {
+                if key.trim().to_lowercase().replace(['-', '_'], "") == "frozenstringliteral" {
+                    return val.trim().eq_ignore_ascii_case("false");
+                }
+            }
+        }
+        false
     }
 
     /// Check for `# frozen_string_literal: true` magic comment.
@@ -67,12 +95,22 @@ impl RedundantFreeze {
         )
     }
 
+    /// Whether string literals are effectively frozen for this source.
+    /// True if magic comment is `true`, OR if StringLiteralsFrozenByDefault
+    /// is enabled and no explicit `false` magic comment is present.
+    fn strings_effectively_frozen(&self, source: &str) -> bool {
+        if Self::frozen_string_literals_enabled(source) {
+            return true;
+        }
+        self.string_literals_frozen_by_default && !Self::frozen_string_literals_disabled(source)
+    }
+
     /// Check if node is a frozen string (magic comment present).
-    fn is_frozen_string(node: &Node, source: &str, ruby_version: f64) -> bool {
+    fn is_frozen_string(&self, node: &Node, source: &str, ruby_version: f64) -> bool {
         match node {
-            Node::StringNode { .. } => Self::frozen_string_literals_enabled(source),
+            Node::StringNode { .. } => self.strings_effectively_frozen(source),
             Node::InterpolatedStringNode { .. } => {
-                if !Self::frozen_string_literals_enabled(source) {
+                if !self.strings_effectively_frozen(source) {
                     return false;
                 }
                 if ruby_version >= 3.0 {
@@ -95,9 +133,9 @@ impl RedundantFreeze {
     }
 
     /// Check if a node is an immutable literal (directly or inside parens).
-    fn check_immutable(node: &Node, source: &str, ruby_version: f64) -> bool {
+    fn check_immutable(&self, node: &Node, source: &str, ruby_version: f64) -> bool {
         Self::is_always_immutable(node)
-            || Self::is_frozen_string(node, source, ruby_version)
+            || self.is_frozen_string(node, source, ruby_version)
             || (ruby_version >= 3.0
                 && matches!(
                     node,
@@ -108,8 +146,8 @@ impl RedundantFreeze {
     }
 
     /// Check immutable literal, including stripping parentheses.
-    fn is_immutable_receiver(node: &Node, source: &str, ruby_version: f64) -> bool {
-        if Self::check_immutable(node, source, ruby_version) {
+    fn is_immutable_receiver(&self, node: &Node, source: &str, ruby_version: f64) -> bool {
+        if self.check_immutable(node, source, ruby_version) {
             return true;
         }
 
@@ -119,10 +157,10 @@ impl RedundantFreeze {
                 if let Some(stmts) = body.as_statements_node() {
                     let items: Vec<_> = stmts.body().iter().collect();
                     if items.len() == 1 {
-                        return Self::check_immutable(&items[0], source, ruby_version);
+                        return self.check_immutable(&items[0], source, ruby_version);
                     }
                 } else {
-                    return Self::check_immutable(&body, source, ruby_version);
+                    return self.check_immutable(&body, source, ruby_version);
                 }
             }
         }
@@ -247,7 +285,7 @@ impl Cop for RedundantFreeze {
             return vec![];
         }
 
-        let flagged = Self::is_immutable_receiver(&receiver, ctx.source, ctx.target_ruby_version)
+        let flagged = self.is_immutable_receiver(&receiver, ctx.source, ctx.target_ruby_version)
             || Self::is_immutable_operation(&receiver)
             || Self::is_immutable_paren_operation(&receiver);
 

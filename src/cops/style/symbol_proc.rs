@@ -120,6 +120,7 @@ impl<'a> SymbolProcVisitor<'a> {
                 let lv = recv.as_local_variable_read_node().unwrap();
                 String::from_utf8_lossy(lv.name().as_slice()).to_string()
             }
+            Node::ItLocalVariableReadNode { .. } => "it".to_string(),
             _ => return None,
         };
 

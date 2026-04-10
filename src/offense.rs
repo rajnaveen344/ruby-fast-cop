@@ -40,15 +40,30 @@ impl Location {
         }
     }
 
-    /// Create a Location from byte offsets and source code
+    /// Create a Location from byte offsets and source code.
+    ///
+    /// When the range spans multiple lines, `last_column` is clamped to the end
+    /// of the start line. This matches RuboCop's `expect_offense` format which
+    /// only highlights a single line; our test fixtures capture `column_end` as
+    /// the end of that single-line highlight.
     pub fn from_offsets(source: &str, start_offset: usize, end_offset: usize) -> Self {
         let (start_line, start_col) = offset_to_line_col(source, start_offset);
         let (end_line, end_col) = offset_to_line_col(source, end_offset);
+        let last_column = if end_line != start_line {
+            let bytes = source.as_bytes();
+            let mut i = start_offset;
+            while i < bytes.len() && bytes[i] != b'\n' {
+                i += 1;
+            }
+            offset_to_line_col(source, i).1
+        } else {
+            end_col
+        };
         Self {
             line: start_line,
             column: start_col,
             last_line: end_line,
-            last_column: end_col,
+            last_column,
         }
     }
 }

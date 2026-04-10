@@ -2197,6 +2197,9 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
             let active_support = cop_config
                 .and_then(|c| c.raw.get("ActiveSupportExtensionsEnabled"))
                 .and_then(|v| v.as_bool())
+                .or_else(|| cop_config
+                    .and_then(|c| c.raw.get("AllCopsActiveSupportExtensionsEnabled"))
+                    .and_then(|v| v.as_bool()))
                 .unwrap_or(false);
             Some(Box::new(cops::style::SymbolProc::with_config(
                 allowed_methods, allowed_patterns, allow_methods_with_arguments,
@@ -2325,7 +2328,15 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
             )))
         }
 
-        "Style/RedundantFreeze" => Some(Box::new(cops::style::RedundantFreeze::new())),
+        "Style/RedundantFreeze" => {
+            // AllCops/StringLiteralsFrozenByDefault is extracted as a flat key
+            // `AllCopsStringLiteralsFrozenByDefault` in cop test config.
+            let frozen_by_default = config.get_cop_config("Style/RedundantFreeze")
+                .and_then(|c| c.raw.get("AllCopsStringLiteralsFrozenByDefault"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
+            Some(Box::new(cops::style::RedundantFreeze::with_config(frozen_by_default)))
+        }
         "Style/RedundantSelf" => Some(Box::new(cops::style::RedundantSelf::new())),
         "Style/RedundantRegexpCharacterClass" => {
             Some(Box::new(cops::style::RedundantRegexpCharacterClass::new()))

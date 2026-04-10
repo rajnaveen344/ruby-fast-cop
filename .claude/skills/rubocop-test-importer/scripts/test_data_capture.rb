@@ -327,6 +327,11 @@ module TestDataCapture
               val = all_cops['ActiveSupportExtensionsEnabled']
               result['AllCopsActiveSupportExtensionsEnabled'] = val if val == true
             end
+            # AllCops/StringLiteralsFrozenByDefault (default is false)
+            if all_cops.key?('StringLiteralsFrozenByDefault')
+              val = all_cops['StringLiteralsFrozenByDefault']
+              result['AllCopsStringLiteralsFrozenByDefault'] = val if val == true
+            end
           end
         rescue => e
           # Skip if AllCops access fails
