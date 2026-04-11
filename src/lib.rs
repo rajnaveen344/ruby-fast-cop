@@ -493,6 +493,13 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         }
     }
 
+    // Style/GuardClause
+    if config.is_cop_enabled("Style/GuardClause") {
+        if let Some(cop) = build_single_cop("Style/GuardClause", config) {
+            result.push(cop);
+        }
+    }
+
     // Style/HashSyntax
     if config.is_cop_enabled("Style/HashSyntax") {
         let cop_config = config.get_cop_config("Style/HashSyntax");
@@ -845,6 +852,11 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         result.push(Box::new(cops::layout::DefEndAlignment::new(align_style)));
     }
 
+    // Layout/EmptyLineAfterGuardClause
+    if config.is_cop_enabled("Layout/EmptyLineAfterGuardClause") {
+        result.push(Box::new(cops::layout::EmptyLineAfterGuardClause::new()));
+    }
+
     // Layout/EmptyLinesAroundAccessModifier
     if config.is_cop_enabled("Layout/EmptyLinesAroundAccessModifier") {
         let cop_config = config.get_cop_config("Layout/EmptyLinesAroundAccessModifier");
@@ -899,6 +911,20 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
             .and_then(|v| v.as_i64())
             .map(|v| v as usize);
         result.push(Box::new(cops::layout::FirstArgumentIndentation::new(style, width)));
+    }
+
+    // Layout/FirstHashElementIndentation
+    if config.is_cop_enabled("Layout/FirstHashElementIndentation") {
+        if let Some(cop) = build_single_cop("Layout/FirstHashElementIndentation", config) {
+            result.push(cop);
+        }
+    }
+
+    // Layout/FirstArrayElementIndentation
+    if config.is_cop_enabled("Layout/FirstArrayElementIndentation") {
+        if let Some(cop) = build_single_cop("Layout/FirstArrayElementIndentation", config) {
+            result.push(cop);
+        }
     }
 
     // Layout/EndAlignment
@@ -986,14 +1012,42 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         result.push(Box::new(cops::layout::MultilineOperationIndentation::new(style, width)));
     }
 
+    // Layout/SpaceInsideArrayLiteralBrackets
+    if config.is_cop_enabled("Layout/SpaceInsideArrayLiteralBrackets") {
+        if let Some(cop) = build_single_cop("Layout/SpaceInsideArrayLiteralBrackets", config) {
+            result.push(cop);
+        }
+    }
+
     // Layout/SpaceInsideArrayPercentLiteral
     if config.is_cop_enabled("Layout/SpaceInsideArrayPercentLiteral") {
         result.push(Box::new(cops::layout::SpaceInsideArrayPercentLiteral::new()));
     }
 
+    // Layout/SpaceInsideBlockBraces
+    if config.is_cop_enabled("Layout/SpaceInsideBlockBraces") {
+        if let Some(cop) = build_single_cop("Layout/SpaceInsideBlockBraces", config) {
+            result.push(cop);
+        }
+    }
+
+    // Layout/SpaceInsideHashLiteralBraces
+    if config.is_cop_enabled("Layout/SpaceInsideHashLiteralBraces") {
+        if let Some(cop) = build_single_cop("Layout/SpaceInsideHashLiteralBraces", config) {
+            result.push(cop);
+        }
+    }
+
     // Layout/SpaceInsidePercentLiteralDelimiters
     if config.is_cop_enabled("Layout/SpaceInsidePercentLiteralDelimiters") {
         result.push(Box::new(cops::layout::SpaceInsidePercentLiteralDelimiters::new()));
+    }
+
+    // Layout/SpaceInsideReferenceBrackets
+    if config.is_cop_enabled("Layout/SpaceInsideReferenceBrackets") {
+        if let Some(cop) = build_single_cop("Layout/SpaceInsideReferenceBrackets", config) {
+            result.push(cop);
+        }
     }
 
     // Style/FrozenStringLiteralComment
@@ -1990,6 +2044,31 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
             Some(Box::new(cops::style::GlobalVars::with_allowed_variables(allowed)))
         }
 
+        "Style/GuardClause" => {
+            let cop_config = config.get_cop_config("Style/GuardClause");
+            let min_body_length = cop_config
+                .and_then(|c| c.raw.get("MinBodyLength"))
+                .and_then(|v| v.as_i64())
+                .unwrap_or(1);
+            let allow_consecutive = cop_config
+                .and_then(|c| c.raw.get("AllowConsecutiveConditionals"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
+            // Only enforce too-long-for-single-line when Layout/LineLength is enabled.
+            // The test fixtures set Max=80 but Enabled=false in some cases — reading Max
+            // unconditionally would falsely trigger the multi-statement form.
+            let max_line_length = if config.is_cop_enabled("Layout/LineLength") {
+                config.get_cop_config("Layout/LineLength")
+                    .and_then(|c| c.max)
+                    .map(|m| m as usize)
+            } else {
+                None
+            };
+            Some(Box::new(cops::style::GuardClause::with_config(
+                min_body_length, allow_consecutive, max_line_length,
+            )))
+        }
+
         "Style/IfUnlessModifier" => {
             let ll_config = config.get_cop_config("Layout/LineLength");
             let ll_enabled = config.is_cop_enabled("Layout/LineLength");
@@ -2453,6 +2532,10 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
             Some(Box::new(cops::layout::DefEndAlignment::new(align_style)))
         }
 
+        "Layout/EmptyLineAfterGuardClause" => {
+            Some(Box::new(cops::layout::EmptyLineAfterGuardClause::new()))
+        }
+
         "Layout/EmptyLinesAroundAccessModifier" => {
             let cop_config = config.get_cop_config("Layout/EmptyLinesAroundAccessModifier");
             let style = cop_config
@@ -2569,6 +2652,53 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
             Some(Box::new(cops::layout::FirstArgumentIndentation::new(style, width)))
         }
 
+        "Layout/FirstHashElementIndentation" => {
+            let cop_config = config.get_cop_config("Layout/FirstHashElementIndentation");
+            let style = cop_config
+                .and_then(|c| c.enforced_style.as_ref())
+                .map(|s| match s.as_str() {
+                    "consistent" => cops::layout::FirstHashElementIndentationStyle::Consistent,
+                    "align_braces" => cops::layout::FirstHashElementIndentationStyle::AlignBraces,
+                    _ => cops::layout::FirstHashElementIndentationStyle::SpecialInsideParentheses,
+                })
+                .unwrap_or(cops::layout::FirstHashElementIndentationStyle::SpecialInsideParentheses);
+            let width = cop_config
+                .and_then(|c| c.raw.get("IndentationWidth"))
+                .and_then(|v| v.as_i64())
+                .map(|v| v as usize);
+            let ha = config.get_cop_config("Layout/HashAlignment");
+            let colon_sep = ha
+                .and_then(|c| c.raw.get("EnforcedColonStyle"))
+                .and_then(|v| v.as_str())
+                .map(|s| s == "separator")
+                .unwrap_or(false);
+            let rocket_sep = ha
+                .and_then(|c| c.raw.get("EnforcedHashRocketStyle"))
+                .and_then(|v| v.as_str())
+                .map(|s| s == "separator")
+                .unwrap_or(false);
+            Some(Box::new(cops::layout::FirstHashElementIndentation::new(
+                style, width, colon_sep, rocket_sep,
+            )))
+        }
+
+        "Layout/FirstArrayElementIndentation" => {
+            let cop_config = config.get_cop_config("Layout/FirstArrayElementIndentation");
+            let style = cop_config
+                .and_then(|c| c.enforced_style.as_ref())
+                .map(|s| match s.as_str() {
+                    "consistent" => cops::layout::FirstArrayElementIndentationStyle::Consistent,
+                    "align_brackets" => cops::layout::FirstArrayElementIndentationStyle::AlignBrackets,
+                    _ => cops::layout::FirstArrayElementIndentationStyle::SpecialInsideParentheses,
+                })
+                .unwrap_or(cops::layout::FirstArrayElementIndentationStyle::SpecialInsideParentheses);
+            let width = cop_config
+                .and_then(|c| c.raw.get("IndentationWidth"))
+                .and_then(|v| v.as_i64())
+                .map(|v| v as usize);
+            Some(Box::new(cops::layout::FirstArrayElementIndentation::new(style, width)))
+        }
+
         "Layout/EndAlignment" => {
             let style = config.get_cop_config("Layout/EndAlignment")
                 .and_then(|c| c.raw.get("EnforcedStyleAlignWith"))
@@ -2669,12 +2799,109 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
             Some(Box::new(cops::layout::MultilineOperationIndentation::new(style, width)))
         }
 
+        "Layout/SpaceInsideArrayLiteralBrackets" => {
+            let cop_config = config.get_cop_config("Layout/SpaceInsideArrayLiteralBrackets");
+            let style = cop_config
+                .and_then(|c| c.enforced_style.as_ref())
+                .map(|s| match s.as_str() {
+                    "space" => cops::layout::SpaceInsideArrayLiteralBracketsStyle::Space,
+                    "compact" => cops::layout::SpaceInsideArrayLiteralBracketsStyle::Compact,
+                    _ => cops::layout::SpaceInsideArrayLiteralBracketsStyle::NoSpace,
+                })
+                .unwrap_or(cops::layout::SpaceInsideArrayLiteralBracketsStyle::NoSpace);
+            let empty_style = cop_config
+                .and_then(|c| c.raw.get("EnforcedStyleForEmptyBrackets"))
+                .and_then(|v| v.as_str())
+                .map(|s| match s {
+                    "space" => cops::layout::SpaceInsideArrayLiteralBracketsEmptyStyle::Space,
+                    _ => cops::layout::SpaceInsideArrayLiteralBracketsEmptyStyle::NoSpace,
+                })
+                .unwrap_or(cops::layout::SpaceInsideArrayLiteralBracketsEmptyStyle::NoSpace);
+            Some(Box::new(cops::layout::SpaceInsideArrayLiteralBrackets::new(
+                style, empty_style,
+            )))
+        }
+
         "Layout/SpaceInsideArrayPercentLiteral" => {
             Some(Box::new(cops::layout::SpaceInsideArrayPercentLiteral::new()))
         }
 
+        "Layout/SpaceInsideBlockBraces" => {
+            let cop_config = config.get_cop_config("Layout/SpaceInsideBlockBraces");
+            let style = cop_config
+                .and_then(|c| c.enforced_style.as_ref())
+                .map(|s| match s.as_str() {
+                    "no_space" => cops::layout::SpaceInsideBlockBracesStyle::NoSpace,
+                    _ => cops::layout::SpaceInsideBlockBracesStyle::Space,
+                })
+                .unwrap_or(cops::layout::SpaceInsideBlockBracesStyle::Space);
+            // Mirror RuboCop: invalid EnforcedStyleForEmptyBraces value raises an error
+            // (which the parity test "fails_with_an_error" exercises). We model that
+            // by disabling the cop instead of registering it.
+            let raw_empty = cop_config
+                .and_then(|c| c.raw.get("EnforcedStyleForEmptyBraces"))
+                .and_then(|v| v.as_str());
+            let empty_style = match raw_empty {
+                Some("space") => cops::layout::SpaceInsideBlockBracesEmptyStyle::Space,
+                Some("no_space") | None => cops::layout::SpaceInsideBlockBracesEmptyStyle::NoSpace,
+                Some(_) => return None,
+            };
+            let space_before_params = cop_config
+                .and_then(|c| c.raw.get("SpaceBeforeBlockParameters"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(true);
+            Some(Box::new(cops::layout::SpaceInsideBlockBraces::new(
+                style, empty_style, space_before_params,
+            )))
+        }
+
+        "Layout/SpaceInsideHashLiteralBraces" => {
+            let cop_config = config.get_cop_config("Layout/SpaceInsideHashLiteralBraces");
+            let style = cop_config
+                .and_then(|c| c.enforced_style.as_ref())
+                .map(|s| match s.as_str() {
+                    "no_space" => cops::layout::SpaceInsideHashLiteralBracesStyle::NoSpace,
+                    "compact" => cops::layout::SpaceInsideHashLiteralBracesStyle::Compact,
+                    _ => cops::layout::SpaceInsideHashLiteralBracesStyle::Space,
+                })
+                .unwrap_or(cops::layout::SpaceInsideHashLiteralBracesStyle::Space);
+            let empty_style = cop_config
+                .and_then(|c| c.raw.get("EnforcedStyleForEmptyBraces"))
+                .and_then(|v| v.as_str())
+                .map(|s| match s {
+                    "space" => cops::layout::SpaceInsideHashLiteralBracesEmptyStyle::Space,
+                    _ => cops::layout::SpaceInsideHashLiteralBracesEmptyStyle::NoSpace,
+                })
+                .unwrap_or(cops::layout::SpaceInsideHashLiteralBracesEmptyStyle::NoSpace);
+            Some(Box::new(cops::layout::SpaceInsideHashLiteralBraces::new(
+                style, empty_style,
+            )))
+        }
+
         "Layout/SpaceInsidePercentLiteralDelimiters" => {
             Some(Box::new(cops::layout::SpaceInsidePercentLiteralDelimiters::new()))
+        }
+
+        "Layout/SpaceInsideReferenceBrackets" => {
+            let cop_config = config.get_cop_config("Layout/SpaceInsideReferenceBrackets");
+            let style = cop_config
+                .and_then(|c| c.enforced_style.as_ref())
+                .map(|s| match s.as_str() {
+                    "space" => cops::layout::SpaceInsideReferenceBracketsStyle::Space,
+                    _ => cops::layout::SpaceInsideReferenceBracketsStyle::NoSpace,
+                })
+                .unwrap_or(cops::layout::SpaceInsideReferenceBracketsStyle::NoSpace);
+            let empty_style = cop_config
+                .and_then(|c| c.raw.get("EnforcedStyleForEmptyBrackets"))
+                .and_then(|v| v.as_str())
+                .map(|s| match s {
+                    "space" => cops::layout::SpaceInsideReferenceBracketsEmptyStyle::Space,
+                    _ => cops::layout::SpaceInsideReferenceBracketsEmptyStyle::NoSpace,
+                })
+                .unwrap_or(cops::layout::SpaceInsideReferenceBracketsEmptyStyle::NoSpace);
+            Some(Box::new(cops::layout::SpaceInsideReferenceBrackets::new(
+                style, empty_style,
+            )))
         }
 
         "Style/FrozenStringLiteralComment" => {

@@ -235,6 +235,24 @@ pub trait Cop: Send + Sync {
         vec![]
     }
 
+    /// Check an ArrayPatternNode (pattern matching: `in [a, b]`)
+    fn check_array_pattern(
+        &self,
+        _node: &ruby_prism::ArrayPatternNode,
+        _ctx: &CheckContext,
+    ) -> Vec<Offense> {
+        vec![]
+    }
+
+    /// Check a HashPatternNode (pattern matching: `in {a: 1}`)
+    fn check_hash_pattern(
+        &self,
+        _node: &ruby_prism::HashPatternNode,
+        _ctx: &CheckContext,
+    ) -> Vec<Offense> {
+        vec![]
+    }
+
     /// Check the entire program (for file-level checks like frozen string literal)
     fn check_program(
         &self,
@@ -376,6 +394,20 @@ impl Visit<'_> for CopRunner<'_> {
         }
         ruby_prism::visit_block_node(self, node);
     }
+
+    fn visit_array_pattern_node(&mut self, node: &ruby_prism::ArrayPatternNode) {
+        for cop in self.cops {
+            self.offenses.extend(cop.check_array_pattern(node, &self.ctx));
+        }
+        ruby_prism::visit_array_pattern_node(self, node);
+    }
+
+    fn visit_hash_pattern_node(&mut self, node: &ruby_prism::HashPatternNode) {
+        for cop in self.cops {
+            self.offenses.extend(cop.check_hash_pattern(node, &self.ctx));
+        }
+        ruby_prism::visit_hash_pattern_node(self, node);
+    }
 }
 
 /// Run all cops against a parse result
@@ -427,12 +459,15 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(lint::SafeNavigationChain::new()),
         Box::new(lint::Void::new(false)),
         // Layout
+        Box::new(layout::EmptyLineAfterGuardClause::new()),
         Box::new(layout::EmptyLinesAroundAccessModifier::new(layout::EmptyLinesAroundAccessModifierStyle::Around)),
         Box::new(layout::BeginEndAlignment::new(layout::BeginEndAlignmentStyle::StartOfLine)),
         Box::new(layout::DefEndAlignment::new(layout::DefEndAlignmentStyle::StartOfLine)),
         Box::new(layout::EndAlignment::new(layout::EndAlignmentStyle::Keyword)),
         Box::new(layout::RescueEnsureAlignment::new()),
         Box::new(layout::FirstArgumentIndentation::new(layout::FirstArgumentIndentationStyle::SpecialForInnerMethodCallInParentheses, None)),
+        Box::new(layout::FirstArrayElementIndentation::new(layout::FirstArrayElementIndentationStyle::SpecialInsideParentheses, None)),
+        Box::new(layout::FirstHashElementIndentation::new(layout::FirstHashElementIndentationStyle::SpecialInsideParentheses, None, false, false)),
         Box::new(layout::HeredocIndentation::new()),
         Box::new(layout::HashAlignment::new(
             vec![layout::HashAlignmentStyle::Key],
@@ -446,8 +481,21 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(layout::SpaceAroundKeyword::new()),
         Box::new(layout::MultilineMethodCallIndentation::new(layout::MultilineMethodCallIndentationStyle::Aligned, None)),
         Box::new(layout::MultilineOperationIndentation::new(layout::MultilineOperationIndentationStyle::Aligned, None)),
+        Box::new(layout::SpaceInsideArrayLiteralBrackets::new(
+            layout::SpaceInsideArrayLiteralBracketsStyle::NoSpace,
+            layout::SpaceInsideArrayLiteralBracketsEmptyStyle::NoSpace,
+        )),
         Box::new(layout::SpaceInsideArrayPercentLiteral::new()),
+        Box::new(layout::SpaceInsideBlockBraces::default()),
+        Box::new(layout::SpaceInsideHashLiteralBraces::new(
+            layout::SpaceInsideHashLiteralBracesStyle::Space,
+            layout::SpaceInsideHashLiteralBracesEmptyStyle::NoSpace,
+        )),
         Box::new(layout::SpaceInsidePercentLiteralDelimiters::new()),
+        Box::new(layout::SpaceInsideReferenceBrackets::new(
+            layout::SpaceInsideReferenceBracketsStyle::NoSpace,
+            layout::SpaceInsideReferenceBracketsEmptyStyle::NoSpace,
+        )),
         Box::new(layout::TrailingEmptyLines::new(layout::TrailingEmptyLinesStyle::FinalNewline)),
         Box::new(layout::TrailingWhitespace::new()),
         // Metrics
@@ -474,6 +522,7 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(style::FormatStringToken::new(style::FormatStringTokenStyle::Template)), // User's config
         Box::new(style::FrozenStringLiteralComment::new(style::FrozenStringLiteralCommentStyle::Always)),
         Box::new(style::GlobalVars::new()),
+        Box::new(style::GuardClause::new()),
         Box::new(style::HashEachMethods::new()),
         Box::new(style::HashSyntax::new(style::HashSyntaxStyle::Ruby19NoMixedKeys)), // User's config
         Box::new(style::IdenticalConditionalBranches::new()),

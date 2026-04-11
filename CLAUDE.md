@@ -6,12 +6,37 @@ Instructions for Claude when working on this project.
 
 ruby-fast-cop is a high-performance Ruby linter written in Rust, designed as a drop-in replacement for RuboCop. The goal is 50-100x faster linting by rewriting cops in Rust, similar to how Ruff replaced Python linters.
 
-**Current state:** 97 of 606 cops implemented (all passing), 606 TOML test fixtures with ~28,075 test cases extracted from RuboCop v1.85.0's RSpec suite.
+**Current state:** 105 of 606 cops implemented (3 known edge-case test gaps in Cluster 1 multiline alignment), 606 TOML test fixtures with ~28,075 test cases extracted from RuboCop v1.85.0's RSpec suite.
 
 ### Boilerplate Conventions
 - **`node_name!` macro** (defined in `src/lib.rs`): Use `node_name!(node)` instead of `String::from_utf8_lossy(node.name().as_slice())`. Works with any Prism node that has `.name().as_slice()` — including chained access like `node_name!(n.as_constant_read_node().unwrap())`.
 - **No inline unit tests in cop files.** All cop testing is via TOML fixtures in `tests/fixtures/`. Do not add `#[cfg(test)] mod tests` blocks to cop files.
 - **Use `#[derive(Default)]`** for cops where `new()` returns `Self` or all fields have Rust default values (false, empty collections). Only write manual `impl Default` when defaults differ.
+
+### Offense range gotchas (`src/offense.rs::Location::from_offsets`)
+When translating RuboCop's `add_offense(range, ...)` calls, remember that fixtures capture RuboCop's `expect_offense` `^` markers — which are **always ≥ 1 column wide** even for zero-width ranges. `Location::from_offsets` widens two cases to match:
+
+1. **Zero-width range** (`start_offset == end_offset`) → `last_column = start_col + 1`. Emit zero-width ranges (not `+1`) when translating RuboCop code that calls `add_offense` on a zero-width range (e.g. `side_space_range` with `include_newlines: false` over a newline). The widening happens for free.
+2. **Range starting at a newline byte** (`start_offset == newline_pos && end_offset > start_offset`) → newline char counts as 1 display column, so `last_column = col_at_newline + 1`.
+
+Do **not** broaden this to "any multi-line range" — that regressed 30+ tests where the range legitimately spans content on multiple lines (LineLength, FirstHashElementIndentation, Next, SymbolProc, etc.). The current narrow rules are what `expect_offense` actually does.
+
+### Cross-cop config must check `is_cop_enabled`
+When one cop reads another's config (e.g. `Style/GuardClause` reading `Layout/LineLength.Max` for its too-long-for-single-line check), **always gate on `config.is_cop_enabled("Layout/LineLength")` first**. Test fixtures frequently set `Enabled = false` and leave `Max = 80` — reading Max unconditionally produces false positives. Pattern:
+```rust
+let max_line_length = if config.is_cop_enabled("Layout/LineLength") {
+    config.get_cop_config("Layout/LineLength").and_then(|c| c.max).map(|m| m as usize)
+} else {
+    None
+};
+```
+
+### Prism API gotchas (keep in sync with `.claude/skills/ruby-prism-api`)
+- `Node`, `IfNode`, `UnlessNode`, etc. do **not** implement `Clone` or `Copy`. For helpers that need an `IfNode`, take `&IfNode<'a>`, not owned. Never `node.clone()` expecting a deep copy.
+- `Vec<Node>::clone()` fails for the same reason. If a visitor needs siblings in a parent frame, **move** the Vec in and re-iterate the parent's `StatementsNode` separately for the walk — don't try to hold a shared copy.
+- There is **no `ruby_prism::visit_node`** dispatcher. Inside a `Visit` impl, use `self.visit(node)` to dispatch an arbitrary `&Node` variant.
+- `opening_loc()` / `closing_loc()` return types are **inconsistent across string variants**: `StringNode`, `InterpolatedStringNode`, `ArrayNode`, `HashNode` return `Option<Location>`, but `XStringNode`, `InterpolatedXStringNode`, `BlockNode`, `LambdaNode`, `RegularExpressionNode`, `ParenthesesNode`, `EmbeddedStatementsNode` return `Location` directly (no `Option`). Check `.claude/skills/ruby-prism-api/references/node-accessors.md` before assuming.
+- `AssocNode::operator_loc()` returns `Option<Location>`. `None` means colon-style (`key: val`), `Some("=>")` means rocket-style. Don't call `.as_slice()` on the `Option`.
 
 ## Key Design Decisions
 
@@ -236,22 +261,31 @@ impl Cop for Debugger {
 
 **When asked "what's next", always follow this workflow:**
 
-1. **Find candidates from TOML fixtures** (NOT COPS.md which may be stale):
+1. **Find candidates from TOML fixtures, filtered by COPS.md's "Enabled by Default" sections**:
+   - The TOML fixtures are the source of truth for *implementation status* (`implemented = true/false`), because COPS.md's status column can drift.
+   - COPS.md is the source of truth for *which cops are enabled by default*. Per the "Only enabled-by-default cops" feedback memory, we skip pending and disabled cops.
+   - **IMPORTANT: COPS.md has three `### Enabled by Default` / `### Pending by Default` / `### Disabled by Default` subsections _per department_ (H3, not H2).** A naive `## Enabled by Default` regex will incorrectly swallow Pending/Disabled cops from later departments because the lookahead extends past the H3 boundary. The script below collects every H3 "Enabled by Default" section individually, stopping at the next `###` or `##` header.
    ```python
-   # Scan TOML fixtures for implemented=false, cross-check no .rs file exists
-   python3 -c "
+   python3 << 'PYEOF'
    import re, os, glob
-   implemented = set()
+   # 1. Parse COPS.md — grab every "### Enabled by Default" section across all departments,
+   #    bounded by the next ### or ## header (NOT by the next ## alone).
+   with open('COPS.md') as f: cops_md = f.read()
+   sections = re.findall(r'### Enabled by Default.*?\n(.*?)(?=^##+ |\Z)', cops_md, re.DOTALL | re.MULTILINE)
+   enabled = set()
+   for sec in sections:
+       enabled.update(re.findall(r'\b([A-Z][a-zA-Z]+/[A-Z][a-zA-Z0-9]+)\b', sec))
+   # Sanity check: should be ~396 cops across all 9 departments for RuboCop v1.85.0.
+   # If you see only ~175, your regex is matching Style's section only — fix the regex.
+   # 2. Scan TOML fixtures for unimplemented cops, cross-check no .rs file exists
    candidates = []
    for f in glob.glob('tests/fixtures/**/*.toml', recursive=True):
        with open(f) as fh: content = fh.read()
-       m = re.search(r'cop = \"(.+?)\"', content)
+       m = re.search(r'cop = "(.+?)"', content)
        if not m: continue
        cop = m.group(1)
-       if 'implemented = true' in content:
-           implemented.add(cop)
-           continue
-       # Check no .rs file already exists
+       if cop not in enabled: continue                       # skip pending/disabled
+       if 'implemented = true' in content: continue
        dept = cop.split('/')[0].lower()
        name = re.sub(r'(?<!^)(?=[A-Z])', '_', cop.split('/')[1]).lower()
        if os.path.exists(f'src/cops/{dept}/{name}.rs'):
@@ -260,8 +294,9 @@ impl Cop for Debugger {
        tests = len(re.findall(r'\[\[tests\]\]', content))
        candidates.append((tests, cop))
    candidates.sort(reverse=True)
-   for t, n in candidates[:20]: print(f'{t:>5}  {n}')
-   "
+   print(f'Enabled-by-default unimplemented: {len(candidates)}')
+   for t, n in candidates[:30]: print(f'{t:>5}  {n}')
+   PYEOF
    ```
 2. **Group by shared RuboCop mixin** — fetch each cop's Ruby source, check `include` statements, and cluster cops that share the same mixin (e.g., SurroundingSpace, EndKeywordAlignment, PrecedingFollowingAlignment)
 3. **One subagent per cluster** — each agent builds the shared helper first, then implements all cops in the cluster. This avoids duplicating mixin logic across agents.

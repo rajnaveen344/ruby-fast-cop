@@ -49,13 +49,24 @@ impl Location {
     pub fn from_offsets(source: &str, start_offset: usize, end_offset: usize) -> Self {
         let (start_line, start_col) = offset_to_line_col(source, start_offset);
         let (end_line, end_col) = offset_to_line_col(source, end_offset);
-        let last_column = if end_line != start_line {
+        let last_column = if start_offset == end_offset {
+            // Zero-width range: RuboCop's `expect_offense` marks a `^` which is
+            // always at least 1 column wide, so report last_column = col + 1.
+            start_col + 1
+        } else if end_line != start_line {
             let bytes = source.as_bytes();
             let mut i = start_offset;
             while i < bytes.len() && bytes[i] != b'\n' {
                 i += 1;
             }
-            offset_to_line_col(source, i).1
+            let col_at_nl = offset_to_line_col(source, i).1;
+            // If the range starts AT a newline and ends past it, the newline
+            // char itself counts as one display column in expect_offense output.
+            if start_offset == i && end_offset > i {
+                col_at_nl + 1
+            } else {
+                col_at_nl
+            }
         } else {
             end_col
         };

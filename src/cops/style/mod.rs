@@ -10,6 +10,7 @@ mod empty_literal;
 mod format_string_token;
 mod frozen_string_literal_comment;
 mod global_vars;
+mod guard_clause;
 mod hash_each_methods;
 mod hash_syntax;
 mod identical_conditional_branches;
@@ -66,6 +67,7 @@ pub use frozen_string_literal_comment::{
     EnforcedStyle as FrozenStringLiteralCommentStyle, FrozenStringLiteralComment,
 };
 pub use global_vars::GlobalVars;
+pub use guard_clause::GuardClause;
 pub use hash_each_methods::HashEachMethods;
 pub use hash_syntax::{
     EnforcedShorthandSyntax as HashSyntaxShorthandStyle, EnforcedStyle as HashSyntaxStyle,

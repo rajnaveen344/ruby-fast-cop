@@ -2,5 +2,8 @@ pub mod access_modifier;
 pub mod allowed_methods;
 pub mod code_length;
 pub mod escape;
+pub mod guard_clause;
+pub mod multiline_element_indentation;
 pub mod source;
+pub mod surrounding_space;
 pub mod variable_force;
