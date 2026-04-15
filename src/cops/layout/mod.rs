@@ -6,6 +6,8 @@ mod else_alignment;
 mod empty_line_after_guard_clause;
 mod empty_line_between_defs;
 mod empty_lines_around_access_modifier;
+mod empty_lines_around_class_body;
+mod empty_lines_around_module_body;
 mod end_alignment;
 mod first_argument_indentation;
 mod first_array_element_indentation;
@@ -43,6 +45,8 @@ pub use empty_lines_around_access_modifier::{
     EmptyLinesAroundAccessModifier,
     EnforcedStyle as EmptyLinesAroundAccessModifierStyle,
 };
+pub use empty_lines_around_class_body::{EmptyLinesAroundClassBody, EmptyLinesAroundClassBodyStyle};
+pub use empty_lines_around_module_body::{EmptyLinesAroundModuleBody, EmptyLinesAroundModuleBodyStyle};
 pub use end_alignment::{EndAlignment, EndAlignmentStyle};
 pub use rescue_ensure_alignment::RescueEnsureAlignment;
 pub use first_argument_indentation::{FirstArgumentIndentation, FirstArgumentIndentationStyle};

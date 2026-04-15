@@ -1,6 +1,7 @@
 pub mod access_modifier;
 pub mod allowed_methods;
 pub mod code_length;
+pub mod empty_lines_around_body;
 pub mod escape;
 pub mod guard_clause;
 pub mod hash_transform_method;

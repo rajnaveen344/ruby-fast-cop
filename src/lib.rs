@@ -697,6 +697,34 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         result.push(Box::new(cops::style::RedundantBegin::new()));
     }
 
+    // Style/RedundantReturn
+    if config.is_cop_enabled("Style/RedundantReturn") {
+        if let Some(cop) = build_single_cop("Style/RedundantReturn", config) {
+            result.push(cop);
+        }
+    }
+
+    // Style/Lambda
+    if config.is_cop_enabled("Style/Lambda") {
+        if let Some(cop) = build_single_cop("Style/Lambda", config) {
+            result.push(cop);
+        }
+    }
+
+    // Style/TrivialAccessors
+    if config.is_cop_enabled("Style/TrivialAccessors") {
+        if let Some(cop) = build_single_cop("Style/TrivialAccessors", config) {
+            result.push(cop);
+        }
+    }
+
+    // Style/CaseLikeIf
+    if config.is_cop_enabled("Style/CaseLikeIf") {
+        if let Some(cop) = build_single_cop("Style/CaseLikeIf", config) {
+            result.push(cop);
+        }
+    }
+
     // Style/SoleNestedConditional
     if config.is_cop_enabled("Style/SoleNestedConditional") {
         if let Some(cop) = build_single_cop("Style/SoleNestedConditional", config) {
@@ -978,6 +1006,24 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
             })
             .unwrap_or(cops::layout::EmptyLinesAroundAccessModifierStyle::Around);
         result.push(Box::new(cops::layout::EmptyLinesAroundAccessModifier::new(style)));
+    }
+
+    if config.is_cop_enabled("Layout/EmptyLinesAroundClassBody") {
+        let cop_config = config.get_cop_config("Layout/EmptyLinesAroundClassBody");
+        let style = cop_config
+            .and_then(|c| c.enforced_style.as_ref())
+            .map(|s| cops::layout::EmptyLinesAroundClassBodyStyle::parse(s))
+            .unwrap_or(cops::layout::EmptyLinesAroundClassBodyStyle::NoEmptyLines);
+        result.push(Box::new(cops::layout::EmptyLinesAroundClassBody::new(style)));
+    }
+
+    if config.is_cop_enabled("Layout/EmptyLinesAroundModuleBody") {
+        let cop_config = config.get_cop_config("Layout/EmptyLinesAroundModuleBody");
+        let style = cop_config
+            .and_then(|c| c.enforced_style.as_ref())
+            .map(|s| cops::layout::EmptyLinesAroundModuleBodyStyle::parse(s))
+            .unwrap_or(cops::layout::EmptyLinesAroundModuleBodyStyle::NoEmptyLines);
+        result.push(Box::new(cops::layout::EmptyLinesAroundModuleBody::new(style)));
     }
 
     // Layout/HeredocIndentation
@@ -2527,6 +2573,58 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
 
         "Style/RedundantBegin" => Some(Box::new(cops::style::RedundantBegin::new())),
 
+        "Style/RedundantReturn" => {
+            let cop_config = config.get_cop_config("Style/RedundantReturn");
+            let allow_multi = cop_config
+                .and_then(|c| c.raw.get("AllowMultipleReturnValues"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
+            Some(Box::new(cops::style::RedundantReturn::with_config(allow_multi)))
+        }
+
+        "Style/Lambda" => {
+            let cop_config = config.get_cop_config("Style/Lambda");
+            let style = cop_config
+                .and_then(|c| c.enforced_style.as_ref())
+                .map(|s| match s.as_str() {
+                    "lambda" => cops::style::LambdaStyle::Lambda,
+                    "literal" => cops::style::LambdaStyle::Literal,
+                    _ => cops::style::LambdaStyle::LineCountDependent,
+                })
+                .unwrap_or(cops::style::LambdaStyle::LineCountDependent);
+            Some(Box::new(cops::style::Lambda::with_style(style)))
+        }
+
+        "Style/TrivialAccessors" => {
+            let cop_config = config.get_cop_config("Style/TrivialAccessors");
+            let default_methods: Vec<String> = vec![
+                "to_ary", "to_a", "to_c", "to_enum", "to_h", "to_hash", "to_i", "to_int", "to_io",
+                "to_open", "to_path", "to_proc", "to_r", "to_regexp", "to_str", "to_s", "to_sym",
+            ].into_iter().map(String::from).collect();
+            let allowed_methods = cop_config
+                .and_then(|c| c.raw.get("AllowedMethods"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| seq.iter().filter_map(|x| x.as_str().map(String::from)).collect::<Vec<_>>())
+                .unwrap_or(default_methods);
+            let exact = cop_config.and_then(|c| c.raw.get("ExactNameMatch")).and_then(|v| v.as_bool()).unwrap_or(true);
+            let allow_pred = cop_config.and_then(|c| c.raw.get("AllowPredicates")).and_then(|v| v.as_bool()).unwrap_or(true);
+            let allow_dsl = cop_config.and_then(|c| c.raw.get("AllowDSLWriters")).and_then(|v| v.as_bool()).unwrap_or(true);
+            let ignore_class = cop_config.and_then(|c| c.raw.get("IgnoreClassMethods")).and_then(|v| v.as_bool()).unwrap_or(false);
+            Some(Box::new(cops::style::TrivialAccessors::with_config(
+                allowed_methods, exact, allow_pred, allow_dsl, ignore_class,
+            )))
+        }
+
+        "Style/CaseLikeIf" => {
+            let cop_config = config.get_cop_config("Style/CaseLikeIf");
+            let min_branches = cop_config
+                .and_then(|c| c.raw.get("MinBranchesCount"))
+                .and_then(|v| v.as_u64())
+                .map(|v| v as usize)
+                .unwrap_or(3);
+            Some(Box::new(cops::style::CaseLikeIf::with_config(min_branches)))
+        }
+
         "Style/SoleNestedConditional" => {
             let cop_config = config.get_cop_config("Style/SoleNestedConditional");
             let allow_modifier = cop_config
@@ -2838,6 +2936,24 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
                 })
                 .unwrap_or(cops::layout::EmptyLinesAroundAccessModifierStyle::Around);
             Some(Box::new(cops::layout::EmptyLinesAroundAccessModifier::new(style)))
+        }
+
+        "Layout/EmptyLinesAroundClassBody" => {
+            let cop_config = config.get_cop_config("Layout/EmptyLinesAroundClassBody");
+            let style = cop_config
+                .and_then(|c| c.enforced_style.as_ref())
+                .map(|s| cops::layout::EmptyLinesAroundClassBodyStyle::parse(s))
+                .unwrap_or(cops::layout::EmptyLinesAroundClassBodyStyle::NoEmptyLines);
+            Some(Box::new(cops::layout::EmptyLinesAroundClassBody::new(style)))
+        }
+
+        "Layout/EmptyLinesAroundModuleBody" => {
+            let cop_config = config.get_cop_config("Layout/EmptyLinesAroundModuleBody");
+            let style = cop_config
+                .and_then(|c| c.enforced_style.as_ref())
+                .map(|s| cops::layout::EmptyLinesAroundModuleBodyStyle::parse(s))
+                .unwrap_or(cops::layout::EmptyLinesAroundModuleBodyStyle::NoEmptyLines);
+            Some(Box::new(cops::layout::EmptyLinesAroundModuleBody::new(style)))
         }
 
         "Layout/HeredocIndentation" => {
