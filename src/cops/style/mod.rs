@@ -6,6 +6,7 @@ mod block_delimiters;
 mod commented_keyword;
 mod conditional_assignment;
 mod documentation;
+mod double_negation;
 mod empty_else;
 mod empty_literal;
 mod format_string_token;
@@ -25,6 +26,7 @@ mod mutable_constant;
 mod negative_array_index;
 mod next;
 mod numeric_literals;
+mod numeric_predicate;
 mod one_line_conditional;
 mod percent_literal_delimiters;
 mod raise_args;
@@ -52,6 +54,7 @@ mod trailing_comma_in_arguments;
 mod trailing_comma_in_array_literal;
 mod trailing_comma_in_hash_literal;
 mod trailing_underscore_variable;
+mod word_array;
 mod yoda_condition;
 mod zero_length_predicate;
 
@@ -67,6 +70,7 @@ pub use conditional_assignment::{
     ConditionalAssignment, EnforcedStyle as ConditionalAssignmentStyle,
 };
 pub use documentation::Documentation;
+pub use double_negation::{DoubleNegation, EnforcedStyle as DoubleNegationStyle};
 pub use empty_else::{EmptyElse, EnforcedStyle as EmptyElseStyle};
 pub use empty_literal::EmptyLiteral;
 pub use format_string_token::{EnforcedStyle as FormatStringTokenStyle, FormatStringToken};
@@ -91,6 +95,7 @@ pub use mutable_constant::{EnforcedStyle as MutableConstantStyle, MutableConstan
 pub use negative_array_index::NegativeArrayIndex;
 pub use next::{Next, EnforcedStyle as NextStyle};
 pub use numeric_literals::NumericLiterals;
+pub use numeric_predicate::{NumericPredicate, EnforcedStyle as NumericPredicateStyle};
 pub use one_line_conditional::OneLineConditional;
 pub use percent_literal_delimiters::PercentLiteralDelimiters;
 pub use raise_args::{EnforcedStyle as RaiseArgsStyle, RaiseArgs};
@@ -115,6 +120,7 @@ pub use string_methods::StringMethods;
 pub use symbol_proc::SymbolProc;
 pub use ternary_parentheses::{EnforcedStyle as TernaryParenthesesStyle, TernaryParentheses};
 pub use trailing_underscore_variable::TrailingUnderscoreVariable;
+pub use word_array::{WordArray, EnforcedStyle as WordArrayStyle};
 pub use trailing_comma_in_arguments::{
     EnforcedStyleForMultiline as TrailingCommaInArgumentsStyle, TrailingCommaInArguments,
 };

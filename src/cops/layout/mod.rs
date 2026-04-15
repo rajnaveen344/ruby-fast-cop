@@ -1,5 +1,8 @@
 mod begin_end_alignment;
+mod block_alignment;
+mod case_indentation;
 mod def_end_alignment;
+mod else_alignment;
 mod empty_line_after_guard_clause;
 mod empty_line_between_defs;
 mod empty_lines_around_access_modifier;
@@ -30,7 +33,10 @@ mod trailing_empty_lines;
 mod trailing_whitespace;
 
 pub use begin_end_alignment::{BeginEndAlignment, BeginEndAlignmentStyle};
+pub use block_alignment::{BlockAlignment, BlockAlignmentStyle};
+pub use case_indentation::CaseIndentation;
 pub use def_end_alignment::{DefEndAlignment, DefEndAlignmentStyle};
+pub use else_alignment::ElseAlignment;
 pub use empty_line_after_guard_clause::EmptyLineAfterGuardClause;
 pub use empty_line_between_defs::EmptyLineBetweenDefs;
 pub use empty_lines_around_access_modifier::{

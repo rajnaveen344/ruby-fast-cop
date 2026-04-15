@@ -189,6 +189,18 @@ pub fn check_and_correct_source(
     (current_source, offenses, total_applied)
 }
 
+/// Normalize Ruby regex syntax to Rust `regex` crate syntax.
+/// - Ruby `\p{Word}` → Rust `\w`
+/// - Strip Ruby `(?-mix:...)` wrapper
+fn normalize_ruby_regex(pat: &str) -> String {
+    let mut s = pat.to_string();
+    if let Some(inner) = s.strip_prefix("(?-mix:").and_then(|x| x.strip_suffix(")")) {
+        s = inner.to_string();
+    }
+    s = s.replace(r"\p{Word}", r"\w");
+    s
+}
+
 /// Build cops based on configuration
 pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
     let mut result: Vec<Box<dyn cops::Cop>> = Vec::new();
@@ -275,6 +287,17 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
             .map(|seq| seq.iter().filter_map(|v| v.as_str().map(|s| s.to_string())).collect())
             .unwrap_or_default();
         result.push(Box::new(cops::lint::SafeNavigationChain::with_allowed_methods(allowed)));
+    }
+
+    // Lint/SafeNavigationConsistency
+    if config.is_cop_enabled("Lint/SafeNavigationConsistency") {
+        let cop_config = config.get_cop_config("Lint/SafeNavigationConsistency");
+        let allowed = cop_config
+            .and_then(|c| c.raw.get("AllowedMethods"))
+            .and_then(|v| v.as_sequence())
+            .map(|seq| seq.iter().filter_map(|v| v.as_str().map(|s| s.to_string())).collect())
+            .unwrap_or_else(|| vec!["present?".into(), "blank?".into(), "try".into(), "presence".into()]);
+        result.push(Box::new(cops::lint::SafeNavigationConsistency::with_config(allowed)));
     }
 
     // Lint/UnreachableCode
@@ -885,6 +908,27 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         result.push(Box::new(cops::layout::TrailingEmptyLines::new(style)));
     }
 
+    // Layout/BlockAlignment
+    if config.is_cop_enabled("Layout/BlockAlignment") {
+        if let Some(cop) = build_single_cop("Layout/BlockAlignment", config) {
+            result.push(cop);
+        }
+    }
+
+    // Layout/CaseIndentation
+    if config.is_cop_enabled("Layout/CaseIndentation") {
+        if let Some(cop) = build_single_cop("Layout/CaseIndentation", config) {
+            result.push(cop);
+        }
+    }
+
+    // Layout/ElseAlignment
+    if config.is_cop_enabled("Layout/ElseAlignment") {
+        if let Some(cop) = build_single_cop("Layout/ElseAlignment", config) {
+            result.push(cop);
+        }
+    }
+
     // Layout/BeginEndAlignment
     if config.is_cop_enabled("Layout/BeginEndAlignment") {
         let style = config.get_cop_config("Layout/BeginEndAlignment")
@@ -1164,6 +1208,56 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         result.push(Box::new(cops::style::FrozenStringLiteralComment::new(
             style,
         )));
+    }
+
+    // Style/NumericPredicate
+    if config.is_cop_enabled("Style/NumericPredicate") {
+        let cop_config = config.get_cop_config("Style/NumericPredicate");
+        let style = match cop_config.and_then(|c| c.raw.get("EnforcedStyle")).and_then(|v| v.as_str()) {
+            Some("comparison") => cops::style::NumericPredicateStyle::Comparison,
+            _ => cops::style::NumericPredicateStyle::Predicate,
+        };
+        let allowed_methods = cop_config
+            .and_then(|c| c.raw.get("AllowedMethods"))
+            .and_then(|v| v.as_sequence())
+            .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+            .unwrap_or_default();
+        let allowed_patterns = cop_config
+            .and_then(|c| c.raw.get("AllowedPatterns"))
+            .and_then(|v| v.as_sequence())
+            .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+            .unwrap_or_default();
+        result.push(Box::new(cops::style::NumericPredicate::with_config(style, allowed_methods, allowed_patterns)));
+    }
+
+    // Style/DoubleNegation
+    if config.is_cop_enabled("Style/DoubleNegation") {
+        let cop_config = config.get_cop_config("Style/DoubleNegation");
+        let style = match cop_config.and_then(|c| c.raw.get("EnforcedStyle")).and_then(|v| v.as_str()) {
+            Some("forbidden") => cops::style::DoubleNegationStyle::Forbidden,
+            _ => cops::style::DoubleNegationStyle::AllowedInReturns,
+        };
+        result.push(Box::new(cops::style::DoubleNegation::new(style)));
+    }
+
+    // Style/WordArray
+    if config.is_cop_enabled("Style/WordArray") {
+        let cop_config = config.get_cop_config("Style/WordArray");
+        let style = match cop_config.and_then(|c| c.raw.get("EnforcedStyle")).and_then(|v| v.as_str()) {
+            Some("brackets") => cops::style::WordArrayStyle::Brackets,
+            _ => cops::style::WordArrayStyle::Percent,
+        };
+        let min_size = cop_config
+            .and_then(|c| c.raw.get("MinSize"))
+            .and_then(|v| v.as_u64())
+            .unwrap_or(2) as usize;
+        let word_regex = cop_config
+            .and_then(|c| c.raw.get("WordRegex"))
+            .and_then(|v| v.as_str())
+            .map(String::from)
+            .unwrap_or_else(|| r"\A(?:\w|\w-\w|\n|\t)+\z".into());
+        let word_regex = normalize_ruby_regex(&word_regex);
+        result.push(Box::new(cops::style::WordArray::with_config(style, min_size, word_regex)));
     }
 
     // Style/Semicolon
@@ -1658,6 +1752,16 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
                 .map(|seq| seq.iter().filter_map(|v| v.as_str().map(|s| s.to_string())).collect())
                 .unwrap_or_default();
             Some(Box::new(cops::lint::SafeNavigationChain::with_allowed_methods(allowed)))
+        }
+
+        "Lint/SafeNavigationConsistency" => {
+            let cop_config = config.get_cop_config("Lint/SafeNavigationConsistency");
+            let allowed = cop_config
+                .and_then(|c| c.raw.get("AllowedMethods"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| seq.iter().filter_map(|v| v.as_str().map(|s| s.to_string())).collect())
+                .unwrap_or_else(|| vec!["present?".into(), "blank?".into(), "try".into(), "presence".into()]);
+            Some(Box::new(cops::lint::SafeNavigationConsistency::with_config(allowed)))
         }
 
         "Lint/SelfAssignment" => {
@@ -2900,6 +3004,55 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
             Some(Box::new(cops::layout::EndAlignment::new(align_style)))
         }
 
+        "Layout/BlockAlignment" => {
+            let style = config.get_cop_config("Layout/BlockAlignment")
+                .and_then(|c| c.raw.get("EnforcedStyleAlignWith"))
+                .and_then(|v| v.as_str())
+                .unwrap_or("either");
+            let align_style = match style {
+                "start_of_block" => cops::layout::BlockAlignmentStyle::StartOfBlock,
+                "start_of_line" => cops::layout::BlockAlignmentStyle::StartOfLine,
+                _ => cops::layout::BlockAlignmentStyle::Either,
+            };
+            Some(Box::new(cops::layout::BlockAlignment::new(align_style)))
+        }
+
+        "Layout/CaseIndentation" => {
+            let cop_config = config.get_cop_config("Layout/CaseIndentation");
+            let style = cop_config
+                .and_then(|c| c.raw.get("EnforcedStyle"))
+                .and_then(|v| v.as_str())
+                .unwrap_or("case")
+                .to_string();
+            let indent_one_step = cop_config
+                .and_then(|c| c.raw.get("IndentOneStep"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
+            // cop's own IndentationWidth override — may be empty string or integer
+            let indent_width = cop_config
+                .and_then(|c| c.raw.get("IndentationWidth"))
+                .and_then(|v| v.as_i64())
+                .map(|v| v as usize);
+            let layout_iw = config
+                .get_cop_config("Layout/IndentationWidth")
+                .and_then(|c| c.raw.get("Width"))
+                .and_then(|v| v.as_i64())
+                .map(|v| v as usize)
+                .unwrap_or(2);
+            Some(Box::new(cops::layout::CaseIndentation::with_config(
+                style, indent_one_step, indent_width, layout_iw,
+            )))
+        }
+
+        "Layout/ElseAlignment" => {
+            let end_style = config.get_cop_config("Layout/EndAlignment")
+                .and_then(|c| c.raw.get("EnforcedStyleAlignWith"))
+                .and_then(|v| v.as_str())
+                .unwrap_or("keyword")
+                .to_string();
+            Some(Box::new(cops::layout::ElseAlignment::with_end_align_style(end_style)))
+        }
+
         "Layout/RescueEnsureAlignment" => {
             let begin_end_style = config.get_cop_config("Layout/BeginEndAlignment")
                 .and_then(|c| {
@@ -3142,6 +3295,53 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
                 .and_then(|v| v.as_bool())
                 .unwrap_or(false);
             Some(Box::new(cops::style::Semicolon::new(allow)))
+        }
+
+        "Style/DoubleNegation" => {
+            let cop_config = config.get_cop_config("Style/DoubleNegation");
+            let style = match cop_config.and_then(|c| c.raw.get("EnforcedStyle")).and_then(|v| v.as_str()) {
+                Some("forbidden") => cops::style::DoubleNegationStyle::Forbidden,
+                _ => cops::style::DoubleNegationStyle::AllowedInReturns,
+            };
+            Some(Box::new(cops::style::DoubleNegation::new(style)))
+        }
+
+        "Style/NumericPredicate" => {
+            let cop_config = config.get_cop_config("Style/NumericPredicate");
+            let style = match cop_config.and_then(|c| c.raw.get("EnforcedStyle")).and_then(|v| v.as_str()) {
+                Some("comparison") => cops::style::NumericPredicateStyle::Comparison,
+                _ => cops::style::NumericPredicateStyle::Predicate,
+            };
+            let allowed_methods = cop_config
+                .and_then(|c| c.raw.get("AllowedMethods"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+                .unwrap_or_default();
+            let allowed_patterns = cop_config
+                .and_then(|c| c.raw.get("AllowedPatterns"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+                .unwrap_or_default();
+            Some(Box::new(cops::style::NumericPredicate::with_config(style, allowed_methods, allowed_patterns)))
+        }
+
+        "Style/WordArray" => {
+            let cop_config = config.get_cop_config("Style/WordArray");
+            let style = match cop_config.and_then(|c| c.raw.get("EnforcedStyle")).and_then(|v| v.as_str()) {
+                Some("brackets") => cops::style::WordArrayStyle::Brackets,
+                _ => cops::style::WordArrayStyle::Percent,
+            };
+            let min_size = cop_config
+                .and_then(|c| c.raw.get("MinSize"))
+                .and_then(|v| v.as_u64())
+                .unwrap_or(2) as usize;
+            let word_regex = cop_config
+                .and_then(|c| c.raw.get("WordRegex"))
+                .and_then(|v| v.as_str())
+                .map(String::from)
+                .unwrap_or_else(|| r"\A(?:\w|\w-\w|\n|\t)+\z".into());
+            let word_regex = normalize_ruby_regex(&word_regex);
+            Some(Box::new(cops::style::WordArray::with_config(style, min_size, word_regex)))
         }
 
         "Style/StringLiterals" => {
