@@ -1,6 +1,7 @@
 mod assignment_in_condition;
 mod debugger;
 mod duplicate_methods;
+mod empty_conditional_body;
 mod format_parameter_mismatch;
 mod literal_as_condition;
 mod literal_in_interpolation;
@@ -22,6 +23,7 @@ mod void;
 pub use assignment_in_condition::AssignmentInCondition;
 pub use debugger::Debugger;
 pub use duplicate_methods::DuplicateMethods;
+pub use empty_conditional_body::EmptyConditionalBody;
 pub use format_parameter_mismatch::FormatParameterMismatch;
 pub use literal_as_condition::LiteralAsCondition;
 pub use literal_in_interpolation::LiteralInInterpolation;

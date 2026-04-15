@@ -3,6 +3,7 @@ mod and_or;
 mod array_intersect;
 mod auto_resource_cleanup;
 mod block_delimiters;
+mod commented_keyword;
 mod conditional_assignment;
 mod documentation;
 mod empty_else;
@@ -13,6 +14,8 @@ mod global_vars;
 mod guard_clause;
 mod hash_each_methods;
 mod hash_syntax;
+mod hash_transform_keys;
+mod hash_transform_values;
 mod identical_conditional_branches;
 mod if_unless_modifier;
 mod inverse_methods;
@@ -29,6 +32,7 @@ mod redundant_condition;
 mod redundant_begin;
 mod redundant_freeze;
 mod redundant_self;
+mod redundant_sort;
 mod redundant_parentheses;
 mod redundant_regexp_character_class;
 mod redundant_regexp_escape;
@@ -58,6 +62,7 @@ pub use and_or::{AndOr, EnforcedStyle as AndOrStyle};
 pub use array_intersect::ArrayIntersect;
 pub use auto_resource_cleanup::AutoResourceCleanup;
 pub use block_delimiters::{BlockDelimiters, EnforcedStyle as BlockDelimitersStyle};
+pub use commented_keyword::CommentedKeyword;
 pub use conditional_assignment::{
     ConditionalAssignment, EnforcedStyle as ConditionalAssignmentStyle,
 };
@@ -75,6 +80,8 @@ pub use hash_syntax::{
     EnforcedShorthandSyntax as HashSyntaxShorthandStyle, EnforcedStyle as HashSyntaxStyle,
     HashSyntax,
 };
+pub use hash_transform_keys::HashTransformKeys;
+pub use hash_transform_values::HashTransformValues;
 pub use identical_conditional_branches::IdenticalConditionalBranches;
 pub use if_unless_modifier::IfUnlessModifier;
 pub use inverse_methods::InverseMethods;
@@ -91,6 +98,7 @@ pub use redundant_condition::RedundantCondition;
 pub use redundant_begin::RedundantBegin;
 pub use redundant_freeze::RedundantFreeze;
 pub use redundant_self::RedundantSelf;
+pub use redundant_sort::RedundantSort;
 pub use redundant_parentheses::RedundantParentheses;
 pub use redundant_regexp_character_class::RedundantRegexpCharacterClass;
 pub use redundant_regexp_escape::RedundantRegexpEscape;

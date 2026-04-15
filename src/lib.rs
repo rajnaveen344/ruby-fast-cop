@@ -212,6 +212,13 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         result.push(Box::new(cops::lint::DuplicateMethods::new()));
     }
 
+    // Lint/EmptyConditionalBody
+    if config.is_cop_enabled("Lint/EmptyConditionalBody") {
+        if let Some(cop) = build_single_cop("Lint/EmptyConditionalBody", config) {
+            result.push(cop);
+        }
+    }
+
     // Lint/LiteralInInterpolation
     if config.is_cop_enabled("Lint/LiteralInInterpolation") {
         result.push(Box::new(cops::lint::LiteralInInterpolation::new()));
@@ -384,6 +391,11 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         if let Some(cop) = build_single_cop("Style/BlockDelimiters", config) {
             result.push(cop);
         }
+    }
+
+    // Style/CommentedKeyword
+    if config.is_cop_enabled("Style/CommentedKeyword") {
+        result.push(Box::new(cops::style::CommentedKeyword::new()));
     }
 
     // Style/EmptyElse
@@ -716,6 +728,21 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         result.push(Box::new(cops::style::RedundantStringEscape::new()));
     }
 
+    // Style/RedundantSort
+    if config.is_cop_enabled("Style/RedundantSort") {
+        result.push(Box::new(cops::style::RedundantSort::new()));
+    }
+
+    // Style/HashTransformKeys
+    if config.is_cop_enabled("Style/HashTransformKeys") {
+        result.push(Box::new(cops::style::HashTransformKeys::new()));
+    }
+
+    // Style/HashTransformValues
+    if config.is_cop_enabled("Style/HashTransformValues") {
+        result.push(Box::new(cops::style::HashTransformValues::new()));
+    }
+
     // Style/RescueStandardError
     if config.is_cop_enabled("Style/RescueStandardError") {
         let style = config
@@ -887,6 +914,13 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
     // Layout/EmptyLineAfterGuardClause
     if config.is_cop_enabled("Layout/EmptyLineAfterGuardClause") {
         result.push(Box::new(cops::layout::EmptyLineAfterGuardClause::new()));
+    }
+
+    // Layout/EmptyLineBetweenDefs
+    if config.is_cop_enabled("Layout/EmptyLineBetweenDefs") {
+        if let Some(cop) = build_single_cop("Layout/EmptyLineBetweenDefs", config) {
+            result.push(cop);
+        }
     }
 
     // Layout/EmptyLinesAroundAccessModifier
@@ -1557,6 +1591,15 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
             Some(Box::new(cops::lint::LiteralAsCondition::new()))
         }
 
+        "Lint/EmptyConditionalBody" => {
+            let cop_config = config.get_cop_config("Lint/EmptyConditionalBody");
+            let allow_comments = cop_config
+                .and_then(|c| c.raw.get("AllowComments"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(true);
+            Some(Box::new(cops::lint::EmptyConditionalBody::new(allow_comments)))
+        }
+
         "Lint/FormatParameterMismatch" => {
             Some(Box::new(cops::lint::FormatParameterMismatch::new()))
         }
@@ -1927,6 +1970,10 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
         }
 
         "Style/AutoResourceCleanup" => Some(Box::new(cops::style::AutoResourceCleanup::new())),
+
+        "Style/CommentedKeyword" => {
+            Some(Box::new(cops::style::CommentedKeyword::new()))
+        }
 
         "Style/BlockDelimiters" => {
             let cop_config = config.get_cop_config("Style/BlockDelimiters");
@@ -2492,6 +2539,12 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
 
         "Style/Sample" => Some(Box::new(cops::style::Sample::new())),
 
+        "Style/RedundantSort" => Some(Box::new(cops::style::RedundantSort::new())),
+
+        "Style/HashTransformKeys" => Some(Box::new(cops::style::HashTransformKeys::new())),
+
+        "Style/HashTransformValues" => Some(Box::new(cops::style::HashTransformValues::new())),
+
         "Style/SelectByRegexp" => Some(Box::new(cops::style::SelectByRegexp::new())),
 
         "Style/SelfAssignment" => Some(Box::new(cops::style::SelfAssignment::new())),
@@ -2626,6 +2679,45 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
                 _ => cops::layout::DefEndAlignmentStyle::StartOfLine,
             };
             Some(Box::new(cops::layout::DefEndAlignment::new(align_style)))
+        }
+
+        "Layout/EmptyLineBetweenDefs" => {
+            let cop_config = config.get_cop_config("Layout/EmptyLineBetweenDefs");
+            let mut cop = cops::layout::EmptyLineBetweenDefs::new();
+            if let Some(c) = cop_config {
+                if let Some(v) = c.raw.get("AllowAdjacentOneLineDefs").and_then(|v| v.as_bool()) {
+                    cop.allow_adjacent_one_line_defs = v;
+                }
+                if let Some(v) = c.raw.get("EmptyLineBetweenMethodDefs").and_then(|v| v.as_bool()) {
+                    cop.empty_line_between_method_defs = v;
+                }
+                if let Some(v) = c.raw.get("EmptyLineBetweenClassDefs").and_then(|v| v.as_bool()) {
+                    cop.empty_line_between_class_defs = v;
+                }
+                if let Some(v) = c.raw.get("EmptyLineBetweenModuleDefs").and_then(|v| v.as_bool()) {
+                    cop.empty_line_between_module_defs = v;
+                }
+                if let Some(v) = c.raw.get("DefLikeMacros").and_then(|v| v.as_sequence()) {
+                    cop.def_like_macros = v.iter()
+                        .filter_map(|x| x.as_str().map(|s| s.to_string()))
+                        .collect();
+                }
+                if let Some(v) = c.raw.get("NumberOfEmptyLines") {
+                    if let Some(n) = v.as_u64() {
+                        cop.number_of_empty_lines_min = n as u32;
+                        cop.number_of_empty_lines_max = n as u32;
+                    } else if let Some(seq) = v.as_sequence() {
+                        let nums: Vec<u32> = seq.iter()
+                            .filter_map(|x| x.as_u64().map(|n| n as u32))
+                            .collect();
+                        if let (Some(&min), Some(&max)) = (nums.first(), nums.last()) {
+                            cop.number_of_empty_lines_min = min;
+                            cop.number_of_empty_lines_max = max;
+                        }
+                    }
+                }
+            }
+            Some(Box::new(cop))
         }
 
         "Layout/EmptyLineAfterGuardClause" => {

@@ -441,6 +441,7 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(lint::AssignmentInCondition::new(false)), // User's config: AllowSafeAssignment: false
         Box::new(lint::Debugger::new()),
         Box::new(lint::DuplicateMethods::new()),
+        Box::new(lint::EmptyConditionalBody::new(true)),
         Box::new(lint::FormatParameterMismatch::new()),
         Box::new(lint::LiteralAsCondition::new()),
         Box::new(lint::LiteralInInterpolation::new()),
@@ -460,6 +461,7 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(lint::Void::new(false)),
         // Layout
         Box::new(layout::EmptyLineAfterGuardClause::new()),
+        Box::new(layout::EmptyLineBetweenDefs::new()),
         Box::new(layout::EmptyLinesAroundAccessModifier::new(layout::EmptyLinesAroundAccessModifierStyle::Around)),
         Box::new(layout::BeginEndAlignment::new(layout::BeginEndAlignmentStyle::StartOfLine)),
         Box::new(layout::DefEndAlignment::new(layout::DefEndAlignmentStyle::StartOfLine)),
@@ -518,6 +520,7 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(style::ArrayIntersect::new()),
         Box::new(style::AutoResourceCleanup::new()),
         Box::new(style::BlockDelimiters::new(style::BlockDelimitersStyle::LineCountBased)),
+        Box::new(style::CommentedKeyword::new()),
         Box::new(style::ConditionalAssignment::new(style::ConditionalAssignmentStyle::AssignInsideCondition)),
         Box::new(style::Documentation::new()),
         Box::new(style::EmptyElse::new(style::EmptyElseStyle::Both, false)),
@@ -527,6 +530,8 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(style::GlobalVars::new()),
         Box::new(style::GuardClause::new()),
         Box::new(style::HashEachMethods::new()),
+        Box::new(style::HashTransformKeys::new()),
+        Box::new(style::HashTransformValues::new()),
         Box::new(style::HashSyntax::new(style::HashSyntaxStyle::Ruby19NoMixedKeys)), // User's config
         Box::new(style::IdenticalConditionalBranches::new()),
         Box::new(style::IfUnlessModifier::new()),
@@ -563,6 +568,7 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(style::TrailingUnderscoreVariable::default()),
         Box::new(style::RedundantFreeze::new()),
         Box::new(style::RedundantSelf::new()),
+        Box::new(style::RedundantSort::new()),
         Box::new(style::YodaCondition::default()),
         Box::new(style::ZeroLengthPredicate::new()),
     ]
