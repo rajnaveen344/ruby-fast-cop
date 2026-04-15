@@ -479,6 +479,9 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(layout::LineLength::new(160)), // User's config: Max: 160 (allow_uri=true by default)
         Box::new(layout::SpaceAfterComma::new()),
         Box::new(layout::SpaceAroundKeyword::new()),
+        Box::new(layout::SpaceAroundBlockParameters::default()),
+        Box::new(layout::SpaceAroundMethodCallOperator::new()),
+        Box::new(layout::SpaceAroundOperators::new()),
         Box::new(layout::MultilineMethodCallIndentation::new(layout::MultilineMethodCallIndentationStyle::Aligned, None)),
         Box::new(layout::MultilineOperationIndentation::new(layout::MultilineOperationIndentationStyle::Aligned, None)),
         Box::new(layout::SpaceInsideArrayLiteralBrackets::new(
@@ -555,6 +558,8 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(style::SymbolProc::new()),
         Box::new(style::TernaryParentheses::new(style::TernaryParenthesesStyle::RequireNoParentheses, true)),
         Box::new(style::TrailingCommaInArguments::new(style::TrailingCommaInArgumentsStyle::NoComma)),
+        Box::new(style::TrailingCommaInArrayLiteral::new(style::TrailingCommaInArrayLiteralStyle::NoComma)),
+        Box::new(style::TrailingCommaInHashLiteral::new(style::TrailingCommaInHashLiteralStyle::NoComma)),
         Box::new(style::TrailingUnderscoreVariable::default()),
         Box::new(style::RedundantFreeze::new()),
         Box::new(style::RedundantSelf::new()),

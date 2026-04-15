@@ -16,6 +16,9 @@ mod multiline_operation_indentation;
 mod rescue_ensure_alignment;
 mod space_after_comma;
 mod space_around_keyword;
+mod space_around_block_parameters;
+mod space_around_method_call_operator;
+mod space_around_operators;
 mod space_inside_array_literal_brackets;
 mod space_inside_array_percent_literal;
 mod space_inside_block_braces;
@@ -68,6 +71,9 @@ pub use multiline_operation_indentation::{
 };
 pub use space_after_comma::SpaceAfterComma;
 pub use space_around_keyword::SpaceAroundKeyword;
+pub use space_around_block_parameters::{SpaceAroundBlockParameters, Style as SpaceAroundBlockParametersStyle};
+pub use space_around_method_call_operator::SpaceAroundMethodCallOperator;
+pub use space_around_operators::SpaceAroundOperators;
 pub use space_inside_array_literal_brackets::{
     EmptyBracketsStyle as SpaceInsideArrayLiteralBracketsEmptyStyle,
     SpaceInsideArrayLiteralBrackets,

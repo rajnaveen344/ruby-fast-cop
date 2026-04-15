@@ -6,4 +6,5 @@ pub mod guard_clause;
 pub mod multiline_element_indentation;
 pub mod source;
 pub mod surrounding_space;
+pub mod trailing_comma;
 pub mod variable_force;

@@ -302,6 +302,7 @@ fn run_test_case(test_case: &TestCase, cop_name: &str) -> TestCaseResult {
             .line
             .cmp(&b.location.line)
             .then(a.location.column.cmp(&b.location.column))
+            .then(a.location.last_column.cmp(&b.location.last_column))
     });
 
     let mut sorted_expected: Vec<_> = test_case.offenses.iter().collect();
@@ -309,6 +310,7 @@ fn run_test_case(test_case: &TestCase, cop_name: &str) -> TestCaseResult {
         a.line
             .cmp(&b.line)
             .then(a.column_start.cmp(&b.column_start))
+            .then(a.column_end.cmp(&b.column_end))
     });
 
     for (actual, expected) in sorted_actual.iter().zip(sorted_expected.iter()) {

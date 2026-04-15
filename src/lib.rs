@@ -801,6 +801,38 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         result.push(Box::new(cops::style::TrailingCommaInArguments::new(style)));
     }
 
+    // Style/TrailingCommaInArrayLiteral
+    if config.is_cop_enabled("Style/TrailingCommaInArrayLiteral") {
+        let cop_config = config.get_cop_config("Style/TrailingCommaInArrayLiteral");
+        let style = cop_config
+            .and_then(|c| c.raw.get("EnforcedStyleForMultiline"))
+            .and_then(|v| v.as_str())
+            .map(|s| match s {
+                "comma" => cops::style::TrailingCommaInArrayLiteralStyle::Comma,
+                "consistent_comma" => cops::style::TrailingCommaInArrayLiteralStyle::ConsistentComma,
+                "diff_comma" => cops::style::TrailingCommaInArrayLiteralStyle::DiffComma,
+                _ => cops::style::TrailingCommaInArrayLiteralStyle::NoComma,
+            })
+            .unwrap_or(cops::style::TrailingCommaInArrayLiteralStyle::NoComma);
+        result.push(Box::new(cops::style::TrailingCommaInArrayLiteral::new(style)));
+    }
+
+    // Style/TrailingCommaInHashLiteral
+    if config.is_cop_enabled("Style/TrailingCommaInHashLiteral") {
+        let cop_config = config.get_cop_config("Style/TrailingCommaInHashLiteral");
+        let style = cop_config
+            .and_then(|c| c.raw.get("EnforcedStyleForMultiline"))
+            .and_then(|v| v.as_str())
+            .map(|s| match s {
+                "comma" => cops::style::TrailingCommaInHashLiteralStyle::Comma,
+                "consistent_comma" => cops::style::TrailingCommaInHashLiteralStyle::ConsistentComma,
+                "diff_comma" => cops::style::TrailingCommaInHashLiteralStyle::DiffComma,
+                _ => cops::style::TrailingCommaInHashLiteralStyle::NoComma,
+            })
+            .unwrap_or(cops::style::TrailingCommaInHashLiteralStyle::NoComma);
+        result.push(Box::new(cops::style::TrailingCommaInHashLiteral::new(style)));
+    }
+
     // Layout/TrailingWhitespace
     if config.is_cop_enabled("Layout/TrailingWhitespace") {
         let cop_config = config.get_cop_config("Layout/TrailingWhitespace");
@@ -975,6 +1007,40 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
     // Layout/SpaceAroundKeyword
     if config.is_cop_enabled("Layout/SpaceAroundKeyword") {
         result.push(Box::new(cops::layout::SpaceAroundKeyword::new()));
+    }
+
+    // Layout/SpaceAroundMethodCallOperator
+    if config.is_cop_enabled("Layout/SpaceAroundMethodCallOperator") {
+        result.push(Box::new(cops::layout::SpaceAroundMethodCallOperator::new()));
+    }
+
+    // Layout/SpaceAroundOperators
+    if config.is_cop_enabled("Layout/SpaceAroundOperators") {
+        let c = config.get_cop_config("Layout/SpaceAroundOperators");
+        let allow_for_alignment = c.and_then(|c| c.raw.get("AllowForAlignment")).and_then(|v| v.as_bool()).unwrap_or(true);
+        let exp = c.and_then(|c| c.raw.get("EnforcedStyleForExponentOperator")).and_then(|v| v.as_str()).map(|s| s == "space").unwrap_or(false);
+        let sl = c.and_then(|c| c.raw.get("EnforcedStyleForRationalLiterals")).and_then(|v| v.as_str()).map(|s| s == "space").unwrap_or(false);
+        let hash_table_style = config
+            .get_cop_config("Layout/HashAlignment")
+            .and_then(|c| c.raw.get("EnforcedHashRocketStyle"))
+            .and_then(|v| v.as_str())
+            .map(|s| s == "table")
+            .unwrap_or(false);
+        result.push(Box::new(cops::layout::SpaceAroundOperators::with_config(allow_for_alignment, exp, sl, hash_table_style)));
+    }
+
+    // Layout/SpaceAroundBlockParameters
+    if config.is_cop_enabled("Layout/SpaceAroundBlockParameters") {
+        let style = config
+            .get_cop_config("Layout/SpaceAroundBlockParameters")
+            .and_then(|c| c.raw.get("EnforcedStyleInsidePipes"))
+            .and_then(|v| v.as_str())
+            .map(|s| match s {
+                "space" => cops::layout::SpaceAroundBlockParametersStyle::Space,
+                _ => cops::layout::SpaceAroundBlockParametersStyle::NoSpace,
+            })
+            .unwrap_or(cops::layout::SpaceAroundBlockParametersStyle::NoSpace);
+        result.push(Box::new(cops::layout::SpaceAroundBlockParameters::new(style)));
     }
 
     // Layout/MultilineMethodCallIndentation
@@ -2485,6 +2551,36 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
             Some(Box::new(cops::style::TrailingCommaInArguments::new(style)))
         }
 
+        "Style/TrailingCommaInArrayLiteral" => {
+            let cop_config = config.get_cop_config("Style/TrailingCommaInArrayLiteral");
+            let style = cop_config
+                .and_then(|c| c.raw.get("EnforcedStyleForMultiline"))
+                .and_then(|v| v.as_str())
+                .map(|s| match s {
+                    "comma" => cops::style::TrailingCommaInArrayLiteralStyle::Comma,
+                    "consistent_comma" => cops::style::TrailingCommaInArrayLiteralStyle::ConsistentComma,
+                    "diff_comma" => cops::style::TrailingCommaInArrayLiteralStyle::DiffComma,
+                    _ => cops::style::TrailingCommaInArrayLiteralStyle::NoComma,
+                })
+                .unwrap_or(cops::style::TrailingCommaInArrayLiteralStyle::NoComma);
+            Some(Box::new(cops::style::TrailingCommaInArrayLiteral::new(style)))
+        }
+
+        "Style/TrailingCommaInHashLiteral" => {
+            let cop_config = config.get_cop_config("Style/TrailingCommaInHashLiteral");
+            let style = cop_config
+                .and_then(|c| c.raw.get("EnforcedStyleForMultiline"))
+                .and_then(|v| v.as_str())
+                .map(|s| match s {
+                    "comma" => cops::style::TrailingCommaInHashLiteralStyle::Comma,
+                    "consistent_comma" => cops::style::TrailingCommaInHashLiteralStyle::ConsistentComma,
+                    "diff_comma" => cops::style::TrailingCommaInHashLiteralStyle::DiffComma,
+                    _ => cops::style::TrailingCommaInHashLiteralStyle::NoComma,
+                })
+                .unwrap_or(cops::style::TrailingCommaInHashLiteralStyle::NoComma);
+            Some(Box::new(cops::style::TrailingCommaInHashLiteral::new(style)))
+        }
+
         "Layout/TrailingWhitespace" => {
             let cop_config = config.get_cop_config("Layout/TrailingWhitespace");
             let allow_in_heredoc = cop_config
@@ -2764,6 +2860,34 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
 
         "Layout/SpaceAroundKeyword" => {
             Some(Box::new(cops::layout::SpaceAroundKeyword::new()))
+        }
+        "Layout/SpaceAroundOperators" => {
+            let c = config.get_cop_config("Layout/SpaceAroundOperators");
+            let allow_for_alignment = c.and_then(|c| c.raw.get("AllowForAlignment")).and_then(|v| v.as_bool()).unwrap_or(true);
+            let exp = c.and_then(|c| c.raw.get("EnforcedStyleForExponentOperator")).and_then(|v| v.as_str()).map(|s| s == "space").unwrap_or(false);
+            let sl = c.and_then(|c| c.raw.get("EnforcedStyleForRationalLiterals")).and_then(|v| v.as_str()).map(|s| s == "space").unwrap_or(false);
+            let hash_table_style = config
+                .get_cop_config("Layout/HashAlignment")
+                .and_then(|c| c.raw.get("EnforcedHashRocketStyle"))
+                .and_then(|v| v.as_str())
+                .map(|s| s == "table")
+                .unwrap_or(false);
+            Some(Box::new(cops::layout::SpaceAroundOperators::with_config(allow_for_alignment, exp, sl, hash_table_style)))
+        }
+        "Layout/SpaceAroundBlockParameters" => {
+            let style = config
+                .get_cop_config("Layout/SpaceAroundBlockParameters")
+                .and_then(|c| c.raw.get("EnforcedStyleInsidePipes"))
+                .and_then(|v| v.as_str())
+                .map(|s| match s {
+                    "space" => cops::layout::SpaceAroundBlockParametersStyle::Space,
+                    _ => cops::layout::SpaceAroundBlockParametersStyle::NoSpace,
+                })
+                .unwrap_or(cops::layout::SpaceAroundBlockParametersStyle::NoSpace);
+            Some(Box::new(cops::layout::SpaceAroundBlockParameters::new(style)))
+        }
+        "Layout/SpaceAroundMethodCallOperator" => {
+            Some(Box::new(cops::layout::SpaceAroundMethodCallOperator::new()))
         }
 
         "Layout/MultilineMethodCallIndentation" => {

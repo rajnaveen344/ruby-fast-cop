@@ -1,14 +1,11 @@
 use crate::cops::{CheckContext, Cop};
+use crate::helpers::trailing_comma::{
+    self, effective_end_offset, find_trailing_comma, trailing_comma_search_start,
+};
 use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::Node;
 
-#[derive(Debug, Clone, Copy, PartialEq)]
-pub enum EnforcedStyleForMultiline {
-    NoComma,
-    Comma,
-    ConsistentComma,
-    DiffComma,
-}
+pub use crate::helpers::trailing_comma::EnforcedStyleForMultiline;
 
 pub struct TrailingCommaInArguments {
     style: EnforcedStyleForMultiline,
@@ -26,7 +23,6 @@ impl TrailingCommaInArguments {
     ) -> Vec<Offense> {
         let source = ctx.source;
 
-        // Need arguments
         let arguments = match node.arguments() {
             Some(args) => args,
             None => return vec![],
@@ -37,20 +33,16 @@ impl TrailingCommaInArguments {
             return vec![];
         }
 
-        // Need opening/closing delimiters (parens or brackets)
         let (open_offset, close_offset) = match self.find_delimiters(node, source) {
             Some(pair) => pair,
             None => return vec![],
         };
 
-        // Check if last arg is a block pass (&block) - skip comma enforcement
         let last_arg = &args[args.len() - 1];
         let last_is_block_pass = matches!(last_arg, Node::BlockArgumentNode { .. });
 
-        // Determine if this is a multiline call
-        let is_multiline = self.is_multiline_args(&args, open_offset, close_offset, ctx);
+        let is_multiline = !ctx.same_line(open_offset, close_offset);
 
-        // Find trailing comma position between last arg and close delimiter.
         let search_start = trailing_comma_search_start(last_arg, source);
         let trailing_comma_pos = find_trailing_comma(source, search_start, close_offset);
 
@@ -83,16 +75,6 @@ impl TrailingCommaInArguments {
             }
         }
         None
-    }
-
-    fn is_multiline_args(
-        &self,
-        _args: &[Node],
-        open_offset: usize,
-        close_offset: usize,
-        ctx: &CheckContext,
-    ) -> bool {
-        !ctx.same_line(open_offset, close_offset)
     }
 
     fn check_single_line(
@@ -199,8 +181,6 @@ impl TrailingCommaInArguments {
         let close_on_same_line = ctx.same_line(last_end, close_offset);
 
         if !consistent {
-            // "comma" style: only require comma when closing bracket is on a
-            // different line than the last argument AND each item is on its own line
             if close_on_same_line {
                 return vec![];
             }
@@ -211,17 +191,12 @@ impl TrailingCommaInArguments {
                 return vec![];
             }
         } else {
-            // "consistent_comma" style: always require comma in multiline, but
-            // not for a single argument that doesn't span in the right way
             if args.len() == 1
                 && !is_multiline_single_arg_needing_comma(last_arg, ctx, close_offset)
             {
                 return vec![];
             }
-
-            // If the last arg is a braced HashNode whose closing `}` is on the
-            // same line as the call's closing bracket, no comma needed
-            if close_on_same_line && is_braced_hash_arg(last_arg) {
+            if close_on_same_line && matches!(last_arg, Node::HashNode { .. }) {
                 return vec![];
             }
         }
@@ -251,7 +226,6 @@ impl TrailingCommaInArguments {
         let close_on_same_line = ctx.same_line(last_end, close_offset);
 
         if close_on_same_line {
-            // Comma should NOT be present
             if let Some(comma_offset) = trailing_comma_pos {
                 let msg = "Avoid comma after the last parameter of a method call, unless that item immediately precedes a newline.";
                 let offense = ctx
@@ -268,7 +242,6 @@ impl TrailingCommaInArguments {
                 vec![]
             }
         } else {
-            // Comma should be present
             if trailing_comma_pos.is_some() {
                 return vec![];
             }
@@ -289,12 +262,16 @@ impl TrailingCommaInArguments {
         source: &str,
     ) -> Vec<Offense> {
         let msg = "Put a comma after the last parameter of a multiline method call.";
-        // For KeywordHashNode, the offense should point at the LAST element,
-        // not the entire keyword hash
-        let (offense_start, offense_end) = offense_range(last_arg, source);
-        let insert_pos = insertion_point_for_comma(last_arg, source);
+        let (offense_start, offense_end) = trailing_comma::offense_range(last_arg, source);
+        let insert_pos = trailing_comma::insertion_point_for_comma(last_arg, source);
         let offense = ctx
-            .offense_with_range(self.name(), msg, Severity::Convention, offense_start, offense_end)
+            .offense_with_range(
+                self.name(),
+                msg,
+                Severity::Convention,
+                offense_start,
+                offense_end,
+            )
             .with_correction(Correction::insert(insert_pos, ","));
         vec![offense]
     }
@@ -331,189 +308,10 @@ impl Cop for TrailingCommaInArguments {
     }
 }
 
-// ─── Helper functions ───────────────────────────────────────────────
+// ─── Arg-specific same-line helpers ────────────────────────────────────
 
-
-/// Get the offset from which to start searching for trailing commas.
-/// For plain heredoc args (no method call), scans from after the heredoc body.
-/// For heredoc method calls like `<<-HEREDOC.method(args)`, scans from after
-/// the method call's closing paren (comma may appear before heredoc body).
-fn trailing_comma_search_start(node: &Node, source: &str) -> usize {
-    match node {
-        Node::InterpolatedStringNode { .. } | Node::StringNode { .. } => {
-            // Plain heredoc: scan from after the heredoc body (closing terminator)
-            effective_end_offset(node, source)
-        }
-        Node::CallNode { .. } => {
-            let call = node.as_call_node().unwrap();
-            if let Some(receiver) = call.receiver() {
-                if contains_heredoc(&receiver, source) {
-                    // Heredoc method call with parens: comma can appear after closing paren
-                    // e.g. <<-HEREDOC.delete("\n"),  -> scan from after )
-                    if let Some(close_loc) = call.closing_loc() {
-                        return close_loc.end_offset();
-                    }
-                    // Heredoc method call without parens (e.g. <<-HELP.chomp):
-                    // any comma after the method name is inside the heredoc body,
-                    // so scan from after the heredoc terminator
-                    return effective_end_offset(node, source);
-                }
-            }
-            call.location().end_offset()
-        }
-        Node::KeywordHashNode { .. } => {
-            let n = node.as_keyword_hash_node().unwrap();
-            let elements: Vec<Node> = n.elements().iter().collect();
-            if let Some(last) = elements.last() {
-                return trailing_comma_search_start(last, source);
-            }
-            node.location().end_offset()
-        }
-        Node::AssocNode { .. } => {
-            let n = node.as_assoc_node().unwrap();
-            trailing_comma_search_start(&n.value(), source)
-        }
-        _ => node.location().end_offset(),
-    }
-}
-
-/// Get the effective end offset of a node, accounting for heredocs.
-/// For heredocs, we need to skip past the heredoc body (which is between
-/// the opening marker and the closing terminator).
-fn effective_end_offset(node: &Node, source: &str) -> usize {
-    match node {
-        Node::InterpolatedStringNode { .. } => {
-            let n = node.as_interpolated_string_node().unwrap();
-            if let Some(open_loc) = n.opening_loc() {
-                let s = open_loc.start_offset();
-                let e = open_loc.end_offset();
-                let open_text = &source[s..e];
-                if open_text.starts_with("<<") {
-                    // Heredoc: use closing_loc end to skip past body
-                    if let Some(close_loc) = n.closing_loc() {
-                        return close_loc.end_offset();
-                    }
-                }
-            }
-            n.location().end_offset()
-        }
-        Node::StringNode { .. } => {
-            let n = node.as_string_node().unwrap();
-            if let Some(open_loc) = n.opening_loc() {
-                let s = open_loc.start_offset();
-                let e = open_loc.end_offset();
-                let open_text = &source[s..e];
-                if open_text.starts_with("<<") {
-                    if let Some(close_loc) = n.closing_loc() {
-                        return close_loc.end_offset();
-                    }
-                }
-            }
-            n.location().end_offset()
-        }
-        Node::CallNode { .. } => {
-            let call = node.as_call_node().unwrap();
-            if let Some(receiver) = call.receiver() {
-                if contains_heredoc(&receiver, source) {
-                    // For heredoc.method calls, the receiver's effective end
-                    // includes the heredoc body
-                    let recv_end = effective_end_offset(&receiver, source);
-                    let call_end = call.location().end_offset();
-                    return std::cmp::max(recv_end, call_end);
-                }
-            }
-            call.location().end_offset()
-        }
-        Node::KeywordHashNode { .. } => {
-            let n = node.as_keyword_hash_node().unwrap();
-            let elements: Vec<Node> = n.elements().iter().collect();
-            if let Some(last) = elements.last() {
-                return effective_end_offset(last, source);
-            }
-            n.location().end_offset()
-        }
-        Node::AssocNode { .. } => {
-            let n = node.as_assoc_node().unwrap();
-            let value_end = effective_end_offset(&n.value(), source);
-            let node_end = n.location().end_offset();
-            std::cmp::max(value_end, node_end)
-        }
-        _ => node.location().end_offset(),
-    }
-}
-
-/// Check if a node contains a heredoc
-fn contains_heredoc(node: &Node, source: &str) -> bool {
-    match node {
-        Node::InterpolatedStringNode { .. } => {
-            let n = node.as_interpolated_string_node().unwrap();
-            if let Some(open_loc) = n.opening_loc() {
-                let s = open_loc.start_offset();
-                let e = open_loc.end_offset();
-                let open_text = &source[s..e];
-                return open_text.starts_with("<<");
-            }
-            false
-        }
-        Node::StringNode { .. } => {
-            let n = node.as_string_node().unwrap();
-            if let Some(open_loc) = n.opening_loc() {
-                let s = open_loc.start_offset();
-                let e = open_loc.end_offset();
-                let open_text = &source[s..e];
-                return open_text.starts_with("<<");
-            }
-            false
-        }
-        Node::CallNode { .. } => {
-            let call = node.as_call_node().unwrap();
-            if let Some(receiver) = call.receiver() {
-                return contains_heredoc(&receiver, source);
-            }
-            false
-        }
-        Node::KeywordHashNode { .. } => {
-            let n = node.as_keyword_hash_node().unwrap();
-            for elem in n.elements().iter() {
-                if contains_heredoc(&elem, source) {
-                    return true;
-                }
-            }
-            false
-        }
-        Node::AssocNode { .. } => {
-            let n = node.as_assoc_node().unwrap();
-            contains_heredoc(&n.value(), source)
-        }
-        _ => false,
-    }
-}
-
-/// Find trailing comma between search_start and close_offset,
-/// skipping whitespace and comments.
-fn find_trailing_comma(source: &str, search_start: usize, close_offset: usize) -> Option<usize> {
-    let bytes = source.as_bytes();
-    let mut i = search_start;
-    while i < close_offset {
-        let ch = bytes[i];
-        match ch {
-            b' ' | b'\t' | b'\r' | b'\n' => i += 1,
-            b'#' => {
-                while i < close_offset && bytes[i] != b'\n' {
-                    i += 1;
-                }
-            }
-            b',' => return Some(i),
-            _ => return None,
-        }
-    }
-    None
-}
-
-/// Check if any two logical items share the same starting line.
 fn has_multiple_items_on_same_line(args: &[Node], ctx: &CheckContext) -> bool {
     let mut all_lines: Vec<usize> = Vec::new();
-
     for arg in args {
         match arg {
             Node::KeywordHashNode { .. } => {
@@ -527,7 +325,6 @@ fn has_multiple_items_on_same_line(args: &[Node], ctx: &CheckContext) -> bool {
             }
         }
     }
-
     for i in 1..all_lines.len() {
         if all_lines[i] == all_lines[i - 1] {
             return true;
@@ -536,8 +333,11 @@ fn has_multiple_items_on_same_line(args: &[Node], ctx: &CheckContext) -> bool {
     false
 }
 
-/// For consistent_comma with a single argument, determine if it needs a comma.
-fn is_multiline_single_arg_needing_comma(arg: &Node, ctx: &CheckContext, close_offset: usize) -> bool {
+fn is_multiline_single_arg_needing_comma(
+    arg: &Node,
+    ctx: &CheckContext,
+    close_offset: usize,
+) -> bool {
     match arg {
         Node::KeywordHashNode { .. } => {
             let kh = arg.as_keyword_hash_node().unwrap();
@@ -552,124 +352,5 @@ fn is_multiline_single_arg_needing_comma(arg: &Node, ctx: &CheckContext, close_o
         }
         Node::HashNode { .. } => false,
         _ => !ctx.same_line(arg.location().end_offset(), close_offset),
-    }
-}
-
-/// Get (start, end) offsets for the offense range when comma is missing.
-/// For KeywordHashNode, points at the last element rather than the whole hash.
-fn offense_range(last_arg: &Node, source: &str) -> (usize, usize) {
-    match last_arg {
-        Node::KeywordHashNode { .. } => {
-            let kh = last_arg.as_keyword_hash_node().unwrap();
-            let elements: Vec<Node> = kh.elements().iter().collect();
-            if let Some(last) = elements.last() {
-                return offense_range(&last, source);
-            }
-            (last_arg.location().start_offset(), last_arg.location().end_offset())
-        }
-        Node::CallNode { .. } => {
-            let call = last_arg.as_call_node().unwrap();
-            if let Some(receiver) = call.receiver() {
-                if contains_heredoc(&receiver, source) {
-                    return (call.location().start_offset(), call.location().end_offset());
-                }
-            }
-            (call.location().start_offset(), call.location().end_offset())
-        }
-        Node::InterpolatedStringNode { .. } => {
-            let n = last_arg.as_interpolated_string_node().unwrap();
-            if let Some(open_loc) = n.opening_loc() {
-                let s = open_loc.start_offset();
-                let e = open_loc.end_offset();
-                let open_text = &source[s..e];
-                if open_text.starts_with("<<") {
-                    return (s, e);
-                }
-            }
-            (n.location().start_offset(), n.location().end_offset())
-        }
-        Node::StringNode { .. } => {
-            let n = last_arg.as_string_node().unwrap();
-            if let Some(open_loc) = n.opening_loc() {
-                let s = open_loc.start_offset();
-                let e = open_loc.end_offset();
-                let open_text = &source[s..e];
-                if open_text.starts_with("<<") {
-                    return (s, e);
-                }
-            }
-            (n.location().start_offset(), n.location().end_offset())
-        }
-        _ => (last_arg.location().start_offset(), last_arg.location().end_offset()),
-    }
-}
-
-/// Check if a node is a braced hash literal (HashNode with `{}`).
-fn is_braced_hash_arg(node: &Node) -> bool {
-    matches!(node, Node::HashNode { .. })
-}
-
-/// Where to insert a comma for a missing-comma offense.
-fn insertion_point_for_comma(last_arg: &Node, source: &str) -> usize {
-    match last_arg {
-        Node::KeywordHashNode { .. } => {
-            let kh = last_arg.as_keyword_hash_node().unwrap();
-            let elements: Vec<Node> = kh.elements().iter().collect();
-            if let Some(last) = elements.last() {
-                return insertion_point_for_comma(&last, source);
-            }
-            last_arg.location().end_offset()
-        }
-        Node::AssocNode { .. } => {
-            let n = last_arg.as_assoc_node().unwrap();
-            insertion_point_for_comma(&n.value(), source)
-        }
-        Node::CallNode { .. } => {
-            let call = last_arg.as_call_node().unwrap();
-            if let Some(receiver) = call.receiver() {
-                if contains_heredoc(&receiver, source) {
-                    // Insert after the method call part (e.g., after ".chomp")
-                    // Find end of method name + args on the opening line
-                    if let Some(close_loc) = call.closing_loc() {
-                        return close_loc.end_offset();
-                    }
-                    if let Some(args) = call.arguments() {
-                        let a: Vec<Node> = args.arguments().iter().collect();
-                        if let Some(last) = a.last() {
-                            return last.location().end_offset();
-                        }
-                    }
-                    if let Some(msg_loc) = call.message_loc() {
-                        return msg_loc.end_offset();
-                    }
-                }
-            }
-            call.location().end_offset()
-        }
-        Node::InterpolatedStringNode { .. } => {
-            let n = last_arg.as_interpolated_string_node().unwrap();
-            if let Some(open_loc) = n.opening_loc() {
-                let s = open_loc.start_offset();
-                let e = open_loc.end_offset();
-                let open_text = &source[s..e];
-                if open_text.starts_with("<<") {
-                    return e;
-                }
-            }
-            n.location().end_offset()
-        }
-        Node::StringNode { .. } => {
-            let n = last_arg.as_string_node().unwrap();
-            if let Some(open_loc) = n.opening_loc() {
-                let s = open_loc.start_offset();
-                let e = open_loc.end_offset();
-                let open_text = &source[s..e];
-                if open_text.starts_with("<<") {
-                    return e;
-                }
-            }
-            n.location().end_offset()
-        }
-        _ => last_arg.location().end_offset(),
     }
 }

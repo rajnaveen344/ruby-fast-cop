@@ -45,6 +45,8 @@ mod string_methods;
 mod symbol_proc;
 mod ternary_parentheses;
 mod trailing_comma_in_arguments;
+mod trailing_comma_in_array_literal;
+mod trailing_comma_in_hash_literal;
 mod trailing_underscore_variable;
 mod yoda_condition;
 mod zero_length_predicate;
@@ -107,6 +109,12 @@ pub use ternary_parentheses::{EnforcedStyle as TernaryParenthesesStyle, TernaryP
 pub use trailing_underscore_variable::TrailingUnderscoreVariable;
 pub use trailing_comma_in_arguments::{
     EnforcedStyleForMultiline as TrailingCommaInArgumentsStyle, TrailingCommaInArguments,
+};
+pub use trailing_comma_in_array_literal::{
+    EnforcedStyleForMultiline as TrailingCommaInArrayLiteralStyle, TrailingCommaInArrayLiteral,
+};
+pub use trailing_comma_in_hash_literal::{
+    EnforcedStyleForMultiline as TrailingCommaInHashLiteralStyle, TrailingCommaInHashLiteral,
 };
 pub use yoda_condition::{EnforcedStyle as YodaConditionStyle, YodaCondition};
 pub use zero_length_predicate::ZeroLengthPredicate;
