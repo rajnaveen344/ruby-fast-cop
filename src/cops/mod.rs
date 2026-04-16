@@ -463,6 +463,7 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(lint::SafeNavigationConsistency::new()),
         Box::new(lint::Void::new(false)),
         Box::new(lint::AmbiguousBlockAssociation::new()),
+        Box::new(lint::AmbiguousRegexpLiteral::new()),
         Box::new(lint::NestedMethodDefinition::new()),
         Box::new(lint::ShadowedException::new()),
         // Layout
@@ -545,10 +546,12 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(style::ConditionalAssignment::new(style::ConditionalAssignmentStyle::AssignInsideCondition)),
         Box::new(style::Documentation::new()),
         Box::new(style::DoubleNegation::default()),
+        Box::new(style::EmptyCaseCondition::new()),
         Box::new(style::EmptyElse::new(style::EmptyElseStyle::Both, false)),
         Box::new(style::EmptyLiteral::new()),
         Box::new(style::EmptyMethod::new()),
         Box::new(style::FloatDivision::new(style::FloatDivisionStyle::SingleCoerce)),
+        Box::new(style::For::new()),
         Box::new(style::FormatStringToken::new(style::FormatStringTokenStyle::Template)), // User's config
         Box::new(style::FrozenStringLiteralComment::new(style::FrozenStringLiteralCommentStyle::Always)),
         Box::new(style::GlobalVars::new()),
@@ -559,6 +562,7 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(style::HashSyntax::new(style::HashSyntaxStyle::Ruby19NoMixedKeys)), // User's config
         Box::new(style::IdenticalConditionalBranches::new()),
         Box::new(style::IfUnlessModifier::new()),
+        Box::new(style::IfWithSemicolon::new()),
         Box::new(style::InverseMethods::new()),
         Box::new(style::Lambda::new()),
         Box::new(style::MethodCallWithoutArgsParentheses::new()),
@@ -577,9 +581,11 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(style::RedundantCondition::new()),
         Box::new(style::RedundantBegin::new()),
         Box::new(style::RedundantException::new()),
+        Box::new(style::RedundantInterpolation::new()),
         Box::new(style::RedundantParentheses::new()),
         Box::new(style::RedundantRegexpCharacterClass::new()),
         Box::new(style::RedundantRegexpEscape::new()),
+        Box::new(style::RegexpLiteral::new()),
         Box::new(style::RedundantReturn::new()),
         Box::new(style::RedundantStringEscape::new()),
         Box::new(style::RescueStandardError::new(style::RescueStandardErrorStyle::Implicit)), // User's config
@@ -590,6 +596,7 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(style::SoleNestedConditional::new()),
         Box::new(style::SpecialGlobalVars::new(style::SpecialGlobalVarsStyle::UseEnglishNames, true)),
         Box::new(style::Semicolon::new(false)),
+        Box::new(style::StringConcatenation::new()),
         Box::new(style::StringLiterals::new(style::StringLiteralsStyle::SingleQuotes)),
         Box::new(style::StringMethods::new()),
         Box::new(style::SymbolArray::default()),

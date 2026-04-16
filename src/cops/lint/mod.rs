@@ -1,4 +1,5 @@
 mod ambiguous_block_association;
+mod ambiguous_regexp_literal;
 mod assignment_in_condition;
 mod debugger;
 mod deprecated_class_methods;
@@ -27,6 +28,7 @@ mod useless_assignment;
 mod void;
 
 pub use ambiguous_block_association::AmbiguousBlockAssociation;
+pub use ambiguous_regexp_literal::AmbiguousRegexpLiteral;
 pub use assignment_in_condition::AssignmentInCondition;
 pub use debugger::Debugger;
 pub use deprecated_class_methods::DeprecatedClassMethods;

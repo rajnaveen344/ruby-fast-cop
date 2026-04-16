@@ -359,6 +359,11 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         }
     }
 
+    // Lint/AmbiguousRegexpLiteral
+    if config.is_cop_enabled("Lint/AmbiguousRegexpLiteral") {
+        result.push(Box::new(cops::lint::AmbiguousRegexpLiteral::new()));
+    }
+
     // Lint/NestedMethodDefinition
     if config.is_cop_enabled("Lint/NestedMethodDefinition") {
         if let Some(cop) = build_single_cop("Lint/NestedMethodDefinition", config) {
@@ -661,6 +666,35 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         )));
     }
 
+    // Style/For
+    if config.is_cop_enabled("Style/For") {
+        if let Some(cop) = build_single_cop("Style/For", config) {
+            result.push(cop);
+        }
+    }
+
+    // Style/StringConcatenation
+    if config.is_cop_enabled("Style/StringConcatenation") {
+        if let Some(cop) = build_single_cop("Style/StringConcatenation", config) {
+            result.push(cop);
+        }
+    }
+
+    // Style/RedundantInterpolation
+    if config.is_cop_enabled("Style/RedundantInterpolation") {
+        result.push(Box::new(cops::style::RedundantInterpolation::new()));
+    }
+
+    // Style/EmptyCaseCondition
+    if config.is_cop_enabled("Style/EmptyCaseCondition") {
+        result.push(Box::new(cops::style::EmptyCaseCondition::new()));
+    }
+
+    // Style/IfWithSemicolon
+    if config.is_cop_enabled("Style/IfWithSemicolon") {
+        result.push(Box::new(cops::style::IfWithSemicolon::new()));
+    }
+
     // Style/WhileUntilModifier
     if config.is_cop_enabled("Style/WhileUntilModifier") {
         let ll_config = config.get_cop_config("Layout/LineLength");
@@ -898,6 +932,13 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
     // Style/RedundantRegexpEscape
     if config.is_cop_enabled("Style/RedundantRegexpEscape") {
         result.push(Box::new(cops::style::RedundantRegexpEscape::new()));
+    }
+
+    // Style/RegexpLiteral
+    if config.is_cop_enabled("Style/RegexpLiteral") {
+        if let Some(cop) = build_single_cop("Style/RegexpLiteral", config) {
+            result.push(cop);
+        }
     }
 
     // Style/RedundantStringEscape
@@ -2116,6 +2157,8 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
             Some(Box::new(cops::lint::AssignmentInCondition::new(allow_safe)))
         }
 
+        "Lint/AmbiguousRegexpLiteral" => Some(Box::new(cops::lint::AmbiguousRegexpLiteral::new())),
+
         "Lint/AmbiguousBlockAssociation" => {
             let cop_config = config.get_cop_config("Lint/AmbiguousBlockAssociation");
             let allowed_methods = cop_config
@@ -2630,6 +2673,42 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
             )))
         }
 
+        "Style/For" => {
+            let cop_config = config.get_cop_config("Style/For");
+            let style = match cop_config
+                .and_then(|c| c.enforced_style.as_ref())
+                .map(|s| s.as_str())
+            {
+                Some("for") => cops::style::ForStyle::For,
+                _ => cops::style::ForStyle::Each,
+            };
+            Some(Box::new(cops::style::For::with_style(style)))
+        }
+
+        "Style/StringConcatenation" => {
+            let cop_config = config.get_cop_config("Style/StringConcatenation");
+            let mode = match cop_config
+                .and_then(|c| c.raw.get("Mode"))
+                .and_then(|v| v.as_str())
+            {
+                Some("conservative") => cops::style::StringConcatenationMode::Conservative,
+                _ => cops::style::StringConcatenationMode::Aggressive,
+            };
+            Some(Box::new(cops::style::StringConcatenation::with_mode(mode)))
+        }
+
+        "Style/RedundantInterpolation" => {
+            Some(Box::new(cops::style::RedundantInterpolation::new()))
+        }
+
+        "Style/EmptyCaseCondition" => {
+            Some(Box::new(cops::style::EmptyCaseCondition::new()))
+        }
+
+        "Style/IfWithSemicolon" => {
+            Some(Box::new(cops::style::IfWithSemicolon::new()))
+        }
+
         "Style/IfUnlessModifier" => {
             let ll_config = config.get_cop_config("Layout/LineLength");
             let ll_enabled = config.is_cop_enabled("Layout/LineLength");
@@ -3095,6 +3174,56 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
 
         "Style/RedundantRegexpEscape" => Some(Box::new(cops::style::RedundantRegexpEscape::new())),
         "Style/RedundantStringEscape" => Some(Box::new(cops::style::RedundantStringEscape::new())),
+
+        "Style/RegexpLiteral" => {
+            let cop_config = config.get_cop_config("Style/RegexpLiteral");
+            let style = cop_config
+                .and_then(|c| c.enforced_style.as_ref())
+                .map(|s| match s.as_str() {
+                    "percent_r" => cops::style::RegexpLiteralStyle::PercentR,
+                    "mixed" => cops::style::RegexpLiteralStyle::Mixed,
+                    _ => cops::style::RegexpLiteralStyle::Slashes,
+                })
+                .unwrap_or(cops::style::RegexpLiteralStyle::Slashes);
+            let allow_inner_slashes = cop_config
+                .and_then(|c| c.raw.get("AllowInnerSlashes"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
+            // Cross-cop: Style/PercentLiteralDelimiters -> PreferredDelimiters[%r]
+            let percent_r_delims = config
+                .get_cop_config("Style/PercentLiteralDelimiters")
+                .and_then(|c| c.raw.get("PreferredDelimiters"))
+                .and_then(|v| v.as_mapping())
+                .and_then(|m| {
+                    m.iter().find_map(|(k, v)| {
+                        if k.as_str() == Some("%r") {
+                            v.as_str().and_then(|s| {
+                                let mut it = s.chars();
+                                let o = it.next()?;
+                                let c = it.next()?;
+                                Some((o, c))
+                            })
+                        } else {
+                            None
+                        }
+                    })
+                })
+                .unwrap_or(('{', '}'));
+            // Cross-cop: Style/MethodCallWithArgsParentheses -> EnforcedStyle
+            let method_call_style = config
+                .get_cop_config("Style/MethodCallWithArgsParentheses")
+                .and_then(|c| c.enforced_style.as_ref())
+                .map(|s| match s.as_str() {
+                    "omit_parentheses" => {
+                        cops::style::RegexpLiteralMethodCallParensStyle::OmitParentheses
+                    }
+                    _ => cops::style::RegexpLiteralMethodCallParensStyle::RequireParentheses,
+                })
+                .unwrap_or(cops::style::RegexpLiteralMethodCallParensStyle::RequireParentheses);
+            Some(Box::new(cops::style::RegexpLiteral::with_config(
+                style, allow_inner_slashes, percent_r_delims, method_call_style,
+            )))
+        }
 
         "Style/Sample" => Some(Box::new(cops::style::Sample::new())),
 
