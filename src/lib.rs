@@ -463,6 +463,25 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         }
     }
 
+    // Style/NegatedIf
+    if config.is_cop_enabled("Style/NegatedIf") {
+        if let Some(cop) = build_single_cop("Style/NegatedIf", config) {
+            result.push(cop);
+        }
+    }
+
+    // Style/NegatedUnless
+    if config.is_cop_enabled("Style/NegatedUnless") {
+        if let Some(cop) = build_single_cop("Style/NegatedUnless", config) {
+            result.push(cop);
+        }
+    }
+
+    // Style/NegatedWhile
+    if config.is_cop_enabled("Style/NegatedWhile") {
+        result.push(Box::new(cops::style::NegatedWhile::new()));
+    }
+
     // Style/AutoResourceCleanup
     if config.is_cop_enabled("Style/AutoResourceCleanup") {
         result.push(Box::new(cops::style::AutoResourceCleanup::new()));
@@ -2472,6 +2491,34 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
                 .unwrap_or(cops::style::AndOrStyle::Conditionals);
             Some(Box::new(cops::style::AndOr::new(style)))
         }
+
+        "Style/NegatedIf" => {
+            let style = config
+                .get_cop_config("Style/NegatedIf")
+                .and_then(|c| c.enforced_style.as_ref())
+                .map(|s| match s.as_str() {
+                    "prefix" => cops::style::NegatedIfStyle::Prefix,
+                    "postfix" => cops::style::NegatedIfStyle::Postfix,
+                    _ => cops::style::NegatedIfStyle::Both,
+                })
+                .unwrap_or(cops::style::NegatedIfStyle::Both);
+            Some(Box::new(cops::style::NegatedIf::with_style(style)))
+        }
+
+        "Style/NegatedUnless" => {
+            let style = config
+                .get_cop_config("Style/NegatedUnless")
+                .and_then(|c| c.enforced_style.as_ref())
+                .map(|s| match s.as_str() {
+                    "prefix" => cops::style::NegatedIfStyle::Prefix,
+                    "postfix" => cops::style::NegatedIfStyle::Postfix,
+                    _ => cops::style::NegatedIfStyle::Both,
+                })
+                .unwrap_or(cops::style::NegatedIfStyle::Both);
+            Some(Box::new(cops::style::NegatedUnless::with_style(style)))
+        }
+
+        "Style/NegatedWhile" => Some(Box::new(cops::style::NegatedWhile::new())),
 
         "Style/ArrayIntersect" => {
             let cop_config = config.get_cop_config("Style/ArrayIntersect");

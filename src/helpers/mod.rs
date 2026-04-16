@@ -9,6 +9,7 @@ pub mod interpolation;
 pub mod method_complexity;
 pub mod multiline_element_indentation;
 pub mod multiline_literal_brace_layout;
+pub mod negative_conditional;
 pub mod node_match;
 pub mod percent_literal;
 pub mod source;
