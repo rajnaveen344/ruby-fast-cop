@@ -618,6 +618,70 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         )));
     }
 
+    // Style/WhileUntilModifier
+    if config.is_cop_enabled("Style/WhileUntilModifier") {
+        let ll_config = config.get_cop_config("Layout/LineLength");
+        let ll_enabled = config.is_cop_enabled("Layout/LineLength");
+        let max_ll = ll_config.and_then(|c| c.max).unwrap_or(80) as usize;
+        result.push(Box::new(cops::style::WhileUntilModifier::with_config(max_ll, ll_enabled)));
+    }
+
+    // Style/EmptyMethod
+    if config.is_cop_enabled("Style/EmptyMethod") {
+        let cop_config = config.get_cop_config("Style/EmptyMethod");
+        let style = match cop_config.and_then(|c| c.enforced_style.as_ref()).map(|s| s.as_str()) {
+            Some("expanded") => cops::style::EmptyMethodStyle::Expanded,
+            _ => cops::style::EmptyMethodStyle::Compact,
+        };
+        result.push(Box::new(cops::style::EmptyMethod::with_style(style)));
+    }
+
+    // Style/MethodCallWithoutArgsParentheses
+    if config.is_cop_enabled("Style/MethodCallWithoutArgsParentheses") {
+        let cop_config = config.get_cop_config("Style/MethodCallWithoutArgsParentheses");
+        let allowed_methods = cop_config
+            .and_then(|c| c.raw.get("AllowedMethods"))
+            .and_then(|v| v.as_sequence())
+            .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+            .unwrap_or_default();
+        let allowed_patterns = cop_config
+            .and_then(|c| c.raw.get("AllowedPatterns"))
+            .and_then(|v| v.as_sequence())
+            .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+            .unwrap_or_default();
+        result.push(Box::new(cops::style::MethodCallWithoutArgsParentheses::with_config(
+            allowed_methods, allowed_patterns,
+        )));
+    }
+
+    // Style/MultipleComparison
+    if config.is_cop_enabled("Style/MultipleComparison") {
+        let cop_config = config.get_cop_config("Style/MultipleComparison");
+        let allow_method = cop_config
+            .and_then(|c| c.raw.get("AllowMethodComparison"))
+            .and_then(|v| v.as_bool())
+            .unwrap_or(true);
+        let threshold = cop_config
+            .and_then(|c| c.raw.get("ComparisonsThreshold"))
+            .and_then(|v| v.as_u64())
+            .unwrap_or(2) as usize;
+        result.push(Box::new(cops::style::MultipleComparison::with_config(allow_method, threshold)));
+    }
+
+    // Style/SymbolArray
+    if config.is_cop_enabled("Style/SymbolArray") {
+        let cop_config = config.get_cop_config("Style/SymbolArray");
+        let style = match cop_config.and_then(|c| c.raw.get("EnforcedStyle")).and_then(|v| v.as_str()) {
+            Some("brackets") => cops::style::SymbolArrayStyle::Brackets,
+            _ => cops::style::SymbolArrayStyle::Percent,
+        };
+        let min_size = cop_config
+            .and_then(|c| c.raw.get("MinSize"))
+            .and_then(|v| v.as_u64())
+            .unwrap_or(2) as usize;
+        result.push(Box::new(cops::style::SymbolArray::with_config(style, min_size)));
+    }
+
     // Style/IdenticalConditionalBranches
     if config.is_cop_enabled("Style/IdenticalConditionalBranches") {
         result.push(Box::new(cops::style::IdenticalConditionalBranches::new()));
@@ -953,6 +1017,27 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
             })
             .unwrap_or(cops::layout::TrailingEmptyLinesStyle::FinalNewline);
         result.push(Box::new(cops::layout::TrailingEmptyLines::new(style)));
+    }
+
+    // Layout/AccessModifierIndentation
+    if config.is_cop_enabled("Layout/AccessModifierIndentation") {
+        if let Some(cop) = build_single_cop("Layout/AccessModifierIndentation", config) {
+            result.push(cop);
+        }
+    }
+
+    // Layout/ClosingParenthesisIndentation
+    if config.is_cop_enabled("Layout/ClosingParenthesisIndentation") {
+        if let Some(cop) = build_single_cop("Layout/ClosingParenthesisIndentation", config) {
+            result.push(cop);
+        }
+    }
+
+    // Layout/IndentationConsistency
+    if config.is_cop_enabled("Layout/IndentationConsistency") {
+        if let Some(cop) = build_single_cop("Layout/IndentationConsistency", config) {
+            result.push(cop);
+        }
     }
 
     // Layout/BlockAlignment
@@ -2434,6 +2519,65 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
             )))
         }
 
+        "Style/WhileUntilModifier" => {
+            let ll_config = config.get_cop_config("Layout/LineLength");
+            let ll_enabled = config.is_cop_enabled("Layout/LineLength");
+            let max_ll = ll_config.and_then(|c| c.max).unwrap_or(80) as usize;
+            Some(Box::new(cops::style::WhileUntilModifier::with_config(max_ll, ll_enabled)))
+        }
+
+        "Style/EmptyMethod" => {
+            let cop_config = config.get_cop_config("Style/EmptyMethod");
+            let style = match cop_config.and_then(|c| c.enforced_style.as_ref()).map(|s| s.as_str()) {
+                Some("expanded") => cops::style::EmptyMethodStyle::Expanded,
+                _ => cops::style::EmptyMethodStyle::Compact,
+            };
+            Some(Box::new(cops::style::EmptyMethod::with_style(style)))
+        }
+
+        "Style/MethodCallWithoutArgsParentheses" => {
+            let cop_config = config.get_cop_config("Style/MethodCallWithoutArgsParentheses");
+            let allowed_methods = cop_config
+                .and_then(|c| c.raw.get("AllowedMethods"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+                .unwrap_or_default();
+            let allowed_patterns = cop_config
+                .and_then(|c| c.raw.get("AllowedPatterns"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+                .unwrap_or_default();
+            Some(Box::new(cops::style::MethodCallWithoutArgsParentheses::with_config(
+                allowed_methods, allowed_patterns,
+            )))
+        }
+
+        "Style/MultipleComparison" => {
+            let cop_config = config.get_cop_config("Style/MultipleComparison");
+            let allow_method = cop_config
+                .and_then(|c| c.raw.get("AllowMethodComparison"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(true);
+            let threshold = cop_config
+                .and_then(|c| c.raw.get("ComparisonsThreshold"))
+                .and_then(|v| v.as_u64())
+                .unwrap_or(2) as usize;
+            Some(Box::new(cops::style::MultipleComparison::with_config(allow_method, threshold)))
+        }
+
+        "Style/SymbolArray" => {
+            let cop_config = config.get_cop_config("Style/SymbolArray");
+            let style = match cop_config.and_then(|c| c.raw.get("EnforcedStyle")).and_then(|v| v.as_str()) {
+                Some("brackets") => cops::style::SymbolArrayStyle::Brackets,
+                _ => cops::style::SymbolArrayStyle::Percent,
+            };
+            let min_size = cop_config
+                .and_then(|c| c.raw.get("MinSize"))
+                .and_then(|v| v.as_u64())
+                .unwrap_or(2) as usize;
+            Some(Box::new(cops::style::SymbolArray::with_config(style, min_size)))
+        }
+
         "Style/InverseMethods" => {
             let cop_config = config.get_cop_config("Style/InverseMethods");
             let inverse_methods = cop_config
@@ -3209,6 +3353,53 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
                 _ => cops::layout::BlockAlignmentStyle::Either,
             };
             Some(Box::new(cops::layout::BlockAlignment::new(align_style)))
+        }
+
+        "Layout/AccessModifierIndentation" => {
+            let cop_config = config.get_cop_config("Layout/AccessModifierIndentation");
+            let style = cop_config
+                .and_then(|c| c.enforced_style.as_ref())
+                .map(|s| match s.as_str() {
+                    "outdent" => cops::layout::AccessModifierIndentationStyle::Outdent,
+                    _ => cops::layout::AccessModifierIndentationStyle::Indent,
+                })
+                .unwrap_or(cops::layout::AccessModifierIndentationStyle::Indent);
+            // Cop's own IndentationWidth override, falling back to Layout/IndentationWidth.Width
+            let indent_width = cop_config
+                .and_then(|c| c.raw.get("IndentationWidth"))
+                .and_then(|v| v.as_i64())
+                .map(|v| v as usize)
+                .or_else(|| {
+                    config
+                        .get_cop_config("Layout/IndentationWidth")
+                        .and_then(|c| c.raw.get("Width"))
+                        .and_then(|v| v.as_i64())
+                        .map(|v| v as usize)
+                })
+                .unwrap_or(2);
+            Some(Box::new(cops::layout::AccessModifierIndentation::new(style, indent_width)))
+        }
+
+        "Layout/ClosingParenthesisIndentation" => {
+            let indent_width = config
+                .get_cop_config("Layout/IndentationWidth")
+                .and_then(|c| c.raw.get("Width"))
+                .and_then(|v| v.as_i64())
+                .map(|v| v as usize)
+                .unwrap_or(2);
+            Some(Box::new(cops::layout::ClosingParenthesisIndentation::new(indent_width)))
+        }
+
+        "Layout/IndentationConsistency" => {
+            let cop_config = config.get_cop_config("Layout/IndentationConsistency");
+            let style = cop_config
+                .and_then(|c| c.enforced_style.as_ref())
+                .map(|s| match s.as_str() {
+                    "indented_internal_methods" => cops::layout::IndentationConsistencyStyle::IndentedInternalMethods,
+                    _ => cops::layout::IndentationConsistencyStyle::Normal,
+                })
+                .unwrap_or(cops::layout::IndentationConsistencyStyle::Normal);
+            Some(Box::new(cops::layout::IndentationConsistency::new(style)))
         }
 
         "Layout/CaseIndentation" => {

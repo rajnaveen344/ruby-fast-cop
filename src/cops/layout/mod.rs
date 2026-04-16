@@ -1,6 +1,8 @@
+mod access_modifier_indentation;
 mod begin_end_alignment;
 mod block_alignment;
 mod case_indentation;
+mod closing_parenthesis_indentation;
 mod def_end_alignment;
 mod else_alignment;
 mod empty_line_after_guard_clause;
@@ -14,6 +16,7 @@ mod first_array_element_indentation;
 mod first_hash_element_indentation;
 mod heredoc_indentation;
 mod hash_alignment;
+mod indentation_consistency;
 mod indentation_width;
 mod leading_comment_space;
 mod line_length;
@@ -37,9 +40,11 @@ mod space_inside_reference_brackets;
 mod trailing_empty_lines;
 mod trailing_whitespace;
 
+pub use access_modifier_indentation::{AccessModifierIndentation, AccessModifierIndentationStyle};
 pub use begin_end_alignment::{BeginEndAlignment, BeginEndAlignmentStyle};
 pub use block_alignment::{BlockAlignment, BlockAlignmentStyle};
 pub use case_indentation::CaseIndentation;
+pub use closing_parenthesis_indentation::ClosingParenthesisIndentation;
 pub use def_end_alignment::{DefEndAlignment, DefEndAlignmentStyle};
 pub use else_alignment::ElseAlignment;
 pub use empty_line_after_guard_clause::EmptyLineAfterGuardClause;
@@ -60,6 +65,7 @@ pub use first_hash_element_indentation::{
     FirstHashElementIndentation, Style as FirstHashElementIndentationStyle,
 };
 pub use heredoc_indentation::HeredocIndentation;
+pub use indentation_consistency::{IndentationConsistency, IndentationConsistencyStyle};
 pub use hash_alignment::{
     AlignmentStyle as HashAlignmentStyle,
     HashAlignment,
