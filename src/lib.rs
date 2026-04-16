@@ -1899,6 +1899,63 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         )));
     }
 
+    // Naming/MethodParameterName
+    if config.is_cop_enabled("Naming/MethodParameterName") {
+        let cop_config = config.get_cop_config("Naming/MethodParameterName");
+        let min_name_length = cop_config
+            .and_then(|c| c.raw.get("MinNameLength"))
+            .and_then(|v| v.as_u64())
+            .map(|n| n as usize)
+            .unwrap_or(3);
+        let allow_nums = cop_config
+            .and_then(|c| c.raw.get("AllowNamesEndingInNumbers"))
+            .and_then(|v| v.as_bool())
+            .unwrap_or(true);
+        let allowed = cop_config
+            .and_then(|c| c.raw.get("AllowedNames"))
+            .and_then(|v| v.as_sequence())
+            .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+            .unwrap_or_else(|| {
+                ["as", "at", "by", "cc", "db", "id", "if", "in", "io", "ip", "of", "on", "os", "pp", "to"]
+                    .iter().map(|s| s.to_string()).collect()
+            });
+        let forbidden = cop_config
+            .and_then(|c| c.raw.get("ForbiddenNames"))
+            .and_then(|v| v.as_sequence())
+            .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+            .unwrap_or_default();
+        result.push(Box::new(cops::naming::MethodParameterName::with_config(
+            min_name_length, allow_nums, allowed, forbidden,
+        )));
+    }
+
+    // Naming/BlockParameterName
+    if config.is_cop_enabled("Naming/BlockParameterName") {
+        let cop_config = config.get_cop_config("Naming/BlockParameterName");
+        let min_name_length = cop_config
+            .and_then(|c| c.raw.get("MinNameLength"))
+            .and_then(|v| v.as_u64())
+            .map(|n| n as usize)
+            .unwrap_or(1);
+        let allow_nums = cop_config
+            .and_then(|c| c.raw.get("AllowNamesEndingInNumbers"))
+            .and_then(|v| v.as_bool())
+            .unwrap_or(true);
+        let allowed = cop_config
+            .and_then(|c| c.raw.get("AllowedNames"))
+            .and_then(|v| v.as_sequence())
+            .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+            .unwrap_or_default();
+        let forbidden = cop_config
+            .and_then(|c| c.raw.get("ForbiddenNames"))
+            .and_then(|v| v.as_sequence())
+            .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+            .unwrap_or_default();
+        result.push(Box::new(cops::naming::BlockParameterName::with_config(
+            min_name_length, allow_nums, allowed, forbidden,
+        )));
+    }
+
     // Naming/PredicateMethod
     if config.is_cop_enabled("Naming/PredicateMethod") {
         let cop_config = config.get_cop_config("Naming/PredicateMethod");
@@ -4531,6 +4588,61 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
                 .unwrap_or_default();
             Some(Box::new(cops::naming::MethodName::with_config(
                 style, allowed_patterns, forbidden_identifiers, forbidden_patterns,
+            )))
+        }
+
+        "Naming/MethodParameterName" => {
+            let cop_config = config.get_cop_config("Naming/MethodParameterName");
+            let min_name_length = cop_config
+                .and_then(|c| c.raw.get("MinNameLength"))
+                .and_then(|v| v.as_u64())
+                .map(|n| n as usize)
+                .unwrap_or(3);
+            let allow_nums = cop_config
+                .and_then(|c| c.raw.get("AllowNamesEndingInNumbers"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(true);
+            let allowed = cop_config
+                .and_then(|c| c.raw.get("AllowedNames"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+                .unwrap_or_else(|| {
+                    ["as", "at", "by", "cc", "db", "id", "if", "in", "io", "ip", "of", "on", "os", "pp", "to"]
+                        .iter().map(|s| s.to_string()).collect()
+                });
+            let forbidden = cop_config
+                .and_then(|c| c.raw.get("ForbiddenNames"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+                .unwrap_or_default();
+            Some(Box::new(cops::naming::MethodParameterName::with_config(
+                min_name_length, allow_nums, allowed, forbidden,
+            )))
+        }
+
+        "Naming/BlockParameterName" => {
+            let cop_config = config.get_cop_config("Naming/BlockParameterName");
+            let min_name_length = cop_config
+                .and_then(|c| c.raw.get("MinNameLength"))
+                .and_then(|v| v.as_u64())
+                .map(|n| n as usize)
+                .unwrap_or(1);
+            let allow_nums = cop_config
+                .and_then(|c| c.raw.get("AllowNamesEndingInNumbers"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(true);
+            let allowed = cop_config
+                .and_then(|c| c.raw.get("AllowedNames"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+                .unwrap_or_default();
+            let forbidden = cop_config
+                .and_then(|c| c.raw.get("ForbiddenNames"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+                .unwrap_or_default();
+            Some(Box::new(cops::naming::BlockParameterName::with_config(
+                min_name_length, allow_nums, allowed, forbidden,
             )))
         }
 

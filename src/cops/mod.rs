@@ -544,6 +544,8 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(naming::FileName::new()),
         Box::new(naming::MemoizedInstanceVariableName::new()),
         Box::new(naming::MethodName::new()),
+        Box::new(naming::MethodParameterName::new()),
+        Box::new(naming::BlockParameterName::new()),
         Box::new(naming::PredicateMethod::new(naming::PredicateMethodMode::Conservative)),
         Box::new(naming::VariableName::new()),
         Box::new(naming::VariableNumber::new()),
