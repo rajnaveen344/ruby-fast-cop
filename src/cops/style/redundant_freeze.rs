@@ -6,6 +6,7 @@
 //! `# frozen_string_literal: true`.
 
 use crate::cops::{CheckContext, Cop};
+use crate::helpers::node_match as m;
 use crate::node_name;
 use crate::offense::{Offense, Severity};
 use ruby_prism::Node;
@@ -80,21 +81,6 @@ impl RedundantFreeze {
         false
     }
 
-    fn is_always_immutable(node: &Node) -> bool {
-        matches!(
-            node,
-            Node::IntegerNode { .. }
-                | Node::FloatNode { .. }
-                | Node::RationalNode { .. }
-                | Node::ImaginaryNode { .. }
-                | Node::SymbolNode { .. }
-                | Node::InterpolatedSymbolNode { .. }
-                | Node::TrueNode { .. }
-                | Node::FalseNode { .. }
-                | Node::NilNode { .. }
-        )
-    }
-
     /// Whether string literals are effectively frozen for this source.
     /// True if magic comment is `true`, OR if StringLiteralsFrozenByDefault
     /// is enabled and no explicit `false` magic comment is present.
@@ -134,7 +120,7 @@ impl RedundantFreeze {
 
     /// Check if a node is an immutable literal (directly or inside parens).
     fn check_immutable(&self, node: &Node, source: &str, ruby_version: f64) -> bool {
-        Self::is_always_immutable(node)
+        m::is_always_immutable_literal(node)
             || self.is_frozen_string(node, source, ruby_version)
             || (ruby_version >= 3.0
                 && matches!(
@@ -150,35 +136,16 @@ impl RedundantFreeze {
         if self.check_immutable(node, source, ruby_version) {
             return true;
         }
-
-        // Strip parentheses and check inner
-        if let Some(paren) = node.as_parentheses_node() {
-            if let Some(body) = paren.body() {
-                if let Some(stmts) = body.as_statements_node() {
-                    let items: Vec<_> = stmts.body().iter().collect();
-                    if items.len() == 1 {
-                        return self.check_immutable(&items[0], source, ruby_version);
-                    }
-                } else {
-                    return self.check_immutable(&body, source, ruby_version);
-                }
-            }
+        if let Some(inner) = m::unwrap_single_parens(node) {
+            return self.check_immutable(&inner, source, ruby_version);
         }
-
         false
     }
 
     /// Check if receiver is an operation producing immutable result.
     /// count/length/size always return integers (with or without block).
     fn is_immutable_operation(node: &Node) -> bool {
-        if let Some(call) = node.as_call_node() {
-            let method = node_name!(call);
-            // count/length/size (possibly with a block attached)
-            if matches!(method.as_ref(), "count" | "length" | "size") {
-                return true;
-            }
-        }
-        false
+        m::is_call_named_any(node, &["count", "length", "size"])
     }
 
     /// Check if parenthesized expression produces immutable result.
