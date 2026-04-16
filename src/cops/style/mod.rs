@@ -73,6 +73,7 @@ mod trailing_comma_in_array_literal;
 mod trailing_comma_in_hash_literal;
 mod trailing_underscore_variable;
 mod trivial_accessors;
+mod variable_interpolation;
 mod while_until_modifier;
 mod word_array;
 mod yoda_condition;
@@ -162,6 +163,7 @@ pub use symbol_proc::SymbolProc;
 pub use ternary_parentheses::{EnforcedStyle as TernaryParenthesesStyle, TernaryParentheses};
 pub use trailing_underscore_variable::TrailingUnderscoreVariable;
 pub use trivial_accessors::TrivialAccessors;
+pub use variable_interpolation::VariableInterpolation;
 pub use while_until_modifier::WhileUntilModifier;
 pub use word_array::{WordArray, EnforcedStyle as WordArrayStyle};
 pub use trailing_comma_in_arguments::{

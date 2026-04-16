@@ -37,6 +37,7 @@ mod space_inside_block_braces;
 mod space_inside_hash_literal_braces;
 mod space_inside_percent_literal_delimiters;
 mod space_inside_reference_brackets;
+mod space_inside_string_interpolation;
 mod trailing_empty_lines;
 mod trailing_whitespace;
 
@@ -120,6 +121,9 @@ pub use space_inside_reference_brackets::{
     ReferenceEmptyBracketsStyle as SpaceInsideReferenceBracketsEmptyStyle,
     SpaceInsideReferenceBrackets,
     SpaceInsideReferenceBracketsStyle,
+};
+pub use space_inside_string_interpolation::{
+    EnforcedStyle as SpaceInsideStringInterpolationStyle, SpaceInsideStringInterpolation,
 };
 pub use trailing_empty_lines::{EnforcedStyle as TrailingEmptyLinesStyle, TrailingEmptyLines};
 pub use trailing_whitespace::TrailingWhitespace;

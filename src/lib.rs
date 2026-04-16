@@ -241,6 +241,11 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         }
     }
 
+    // Lint/EmptyInterpolation
+    if config.is_cop_enabled("Lint/EmptyInterpolation") {
+        result.push(Box::new(cops::lint::EmptyInterpolation::new()));
+    }
+
     // Lint/LiteralInInterpolation
     if config.is_cop_enabled("Lint/LiteralInInterpolation") {
         result.push(Box::new(cops::lint::LiteralInInterpolation::new()));
@@ -266,6 +271,11 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         if let Some(cop) = build_single_cop("Lint/RedundantSafeNavigation", config) {
             result.push(cop);
         }
+    }
+
+    // Lint/RedundantStringCoercion
+    if config.is_cop_enabled("Lint/RedundantStringCoercion") {
+        result.push(Box::new(cops::lint::RedundantStringCoercion::new()));
     }
 
     // Lint/RedundantTypeConversion
@@ -878,6 +888,11 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         }
     }
 
+    // Style/VariableInterpolation
+    if config.is_cop_enabled("Style/VariableInterpolation") {
+        result.push(Box::new(cops::style::VariableInterpolation::new()));
+    }
+
     // Style/CaseLikeIf
     if config.is_cop_enabled("Style/CaseLikeIf") {
         if let Some(cop) = build_single_cop("Style/CaseLikeIf", config) {
@@ -1452,6 +1467,13 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         }
     }
 
+    // Layout/SpaceInsideStringInterpolation
+    if config.is_cop_enabled("Layout/SpaceInsideStringInterpolation") {
+        if let Some(cop) = build_single_cop("Layout/SpaceInsideStringInterpolation", config) {
+            result.push(cop);
+        }
+    }
+
     // Style/FrozenStringLiteralComment
     if config.is_cop_enabled("Style/FrozenStringLiteralComment") {
         let cop_config = config.get_cop_config("Style/FrozenStringLiteralComment");
@@ -1974,6 +1996,10 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
             Some(Box::new(cops::lint::FormatParameterMismatch::new()))
         }
 
+        "Lint/EmptyInterpolation" => {
+            Some(Box::new(cops::lint::EmptyInterpolation::new()))
+        }
+
         "Lint/LiteralInInterpolation" => {
             Some(Box::new(cops::lint::LiteralInInterpolation::new()))
         }
@@ -2010,6 +2036,10 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
                 .and_then(|v| v.as_bool())
                 .unwrap_or(true);
             Some(Box::new(cops::lint::RedundantSplatExpansion::new(allow_percent)))
+        }
+
+        "Lint/RedundantStringCoercion" => {
+            Some(Box::new(cops::lint::RedundantStringCoercion::new()))
         }
 
         "Lint/RedundantTypeConversion" => {
@@ -3953,6 +3983,22 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
             Some(Box::new(cops::layout::SpaceInsideReferenceBrackets::new(
                 style, empty_style,
             )))
+        }
+
+        "Layout/SpaceInsideStringInterpolation" => {
+            let cop_config = config.get_cop_config("Layout/SpaceInsideStringInterpolation");
+            let style = cop_config
+                .and_then(|c| c.enforced_style.as_ref())
+                .map(|s| match s.as_str() {
+                    "space" => cops::layout::SpaceInsideStringInterpolationStyle::Space,
+                    _ => cops::layout::SpaceInsideStringInterpolationStyle::NoSpace,
+                })
+                .unwrap_or(cops::layout::SpaceInsideStringInterpolationStyle::NoSpace);
+            Some(Box::new(cops::layout::SpaceInsideStringInterpolation::new(style)))
+        }
+
+        "Style/VariableInterpolation" => {
+            Some(Box::new(cops::style::VariableInterpolation::new()))
         }
 
         "Style/FrozenStringLiteralComment" => {
