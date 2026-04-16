@@ -15,6 +15,7 @@ mod empty_lines_around_exception_handling_keywords;
 mod empty_lines_around_method_body;
 mod empty_lines_around_module_body;
 mod end_alignment;
+mod extra_spacing;
 mod first_argument_indentation;
 mod first_array_element_indentation;
 mod first_hash_element_indentation;
@@ -35,6 +36,7 @@ mod space_around_keyword;
 mod space_around_block_parameters;
 mod space_around_method_call_operator;
 mod space_around_operators;
+mod space_before_first_arg;
 mod space_inside_array_literal_brackets;
 mod space_inside_array_percent_literal;
 mod space_inside_block_braces;
@@ -65,6 +67,7 @@ pub use empty_lines_around_exception_handling_keywords::EmptyLinesAroundExceptio
 pub use empty_lines_around_method_body::EmptyLinesAroundMethodBody;
 pub use empty_lines_around_module_body::{EmptyLinesAroundModuleBody, EmptyLinesAroundModuleBodyStyle};
 pub use end_alignment::{EndAlignment, EndAlignmentStyle};
+pub use extra_spacing::ExtraSpacing;
 pub use rescue_ensure_alignment::RescueEnsureAlignment;
 pub use first_argument_indentation::{FirstArgumentIndentation, FirstArgumentIndentationStyle};
 pub use first_array_element_indentation::{
@@ -108,6 +111,7 @@ pub use space_around_keyword::SpaceAroundKeyword;
 pub use space_around_block_parameters::{SpaceAroundBlockParameters, Style as SpaceAroundBlockParametersStyle};
 pub use space_around_method_call_operator::SpaceAroundMethodCallOperator;
 pub use space_around_operators::SpaceAroundOperators;
+pub use space_before_first_arg::SpaceBeforeFirstArg;
 pub use space_inside_array_literal_brackets::{
     EmptyBracketsStyle as SpaceInsideArrayLiteralBracketsEmptyStyle,
     SpaceInsideArrayLiteralBrackets,
