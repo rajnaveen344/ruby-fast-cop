@@ -16,4 +16,5 @@ pub mod preceding_following_alignment;
 pub mod source;
 pub mod surrounding_space;
 pub mod trailing_comma;
+pub mod uncommunicative_name;
 pub mod variable_force;
