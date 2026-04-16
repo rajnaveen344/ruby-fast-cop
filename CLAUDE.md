@@ -2,6 +2,20 @@
 
 Instructions for Claude when working on this project.
 
+## Communication Mode
+
+**Default: `/caveman ultra`** — every response in this project runs in caveman ultra intensity. Drop articles, filler, hedging. Abbreviate (DB/auth/config/req/res/fn/impl). Arrows for causality (X → Y). Fragments OK. One word when one word enough.
+
+Exceptions (auto-clarity — drop caveman temporarily, resume after):
+- Security warnings
+- Destructive/irreversible op confirmations
+- Multi-step sequences where fragment order risks misread
+- User asks to clarify or repeats question
+
+**Never cavemanize:** code, commit messages, PR descriptions, TOML fixtures, error strings. These stay normal.
+
+**Off switch:** user says "stop caveman" or "normal mode". Subagents get explicit `/caveman full` instruction in their prompt (per feedback_subagent_caveman memory).
+
 ## Project Overview
 
 ruby-fast-cop is a high-performance Ruby linter written in Rust, designed as a drop-in replacement for RuboCop. The goal is 50-100x faster linting by rewriting cops in Rust, similar to how Ruff replaced Python linters.

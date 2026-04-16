@@ -1,28 +1,28 @@
 # All Cops State (606 total)
 
 Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department and default status.
-97 of 606 implemented. See [README.md](README.md) for the implementation roadmap.
+158 of 606 implemented. See [README.md](README.md) for the implementation roadmap.
 
 ## Summary
 
 | Department | Enabled | Pending | Disabled | Implemented |      Tests |
 | ---------- | ------: | ------: | -------: | ----------: | ---------: |
-| Style      |     175 |      91 |       32 |          49 |     14,567 |
-| Lint       |     100 |      50 |        4 |          20 |      5,961 |
-| Layout     |      81 |       5 |       14 |          19 |      4,654 |
-| Metrics    |       9 |       1 |        0 |           3 |        272 |
+| Style      |     175 |      91 |       32 |          79 |     14,567 |
+| Lint       |     100 |      50 |        4 |          28 |      5,961 |
+| Layout     |      81 |       5 |       14 |          40 |      4,654 |
+| Metrics    |       9 |       1 |        0 |           5 |        272 |
 | Naming     |      16 |       2 |        1 |           6 |      2,217 |
 | Gemspec    |       4 |       5 |        1 |           0 |        193 |
 | Bundler    |       5 |       0 |        2 |           0 |        101 |
 | Security   |       5 |       2 |        0 |           0 |        102 |
 | Migration  |       1 |       0 |        0 |           0 |          8 |
-| **Total**  | **396** | **156** |   **54** |      **97** | **28,075** |
+| **Total**  | **396** | **156** |   **54** |      **158** | **28,075** |
 
 - **Enabled**: Runs by default on every codebase (highest priority to implement)
 - **Pending**: Runs only with `NewCops: enable` in config
 - **Disabled**: Runs only when explicitly enabled in config
 
-## Style (49/298 implemented, 14,567 tests)
+## Style (79/298 implemented, 14,567 tests)
 
 ### Enabled by Default (175 cops, 9,202 tests)
 
@@ -42,7 +42,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Style/BlockComments                    |     5 | -           |
 | Style/BlockDelimiters                  |   173 | Implemented |
 | Style/CaseEquality                     |    25 | -           |
-| Style/CaseLikeIf                       |    38 | -           |
+| Style/CaseLikeIf                       |    38 | Implemented |
 | Style/CharacterLiteral                 |     5 | -           |
 | Style/ClassAndModuleChildren           |    40 | -           |
 | Style/ClassCheck                       |     4 | -           |
@@ -53,22 +53,22 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Style/ColonMethodDefinition            |     3 | -           |
 | Style/CombinableLoops                  |    20 | -           |
 | Style/CommandLiteral                   |    35 | -           |
-| Style/CommentAnnotation                |    31 | -           |
-| Style/CommentedKeyword                 |    47 | -           |
+| Style/CommentAnnotation                |    31 | Implemented |
+| Style/CommentedKeyword                 |    47 | Implemented |
 | Style/ConditionalAssignment            |  1199 | Implemented |
 | Style/DefWithParentheses               |     9 | -           |
 | Style/Dir                              |     4 | -           |
 | Style/Documentation                    |    55 | Implemented |
 | Style/DoubleCopDisableDirective        |     3 | -           |
-| Style/DoubleNegation                   |    47 | -           |
+| Style/DoubleNegation                   |    47 | Implemented |
 | Style/EachForSimpleLoop                |    20 | -           |
 | Style/EachWithObject                   |    16 | -           |
 | Style/EmptyBlockParameter              |     9 | -           |
-| Style/EmptyCaseCondition               |    29 | -           |
+| Style/EmptyCaseCondition               |    29 | Implemented |
 | Style/EmptyElse                        |   124 | Implemented |
 | Style/EmptyLambdaParameter             |     3 | -           |
 | Style/EmptyLiteral                     |    49 | Implemented |
-| Style/EmptyMethod                      |    32 | -           |
+| Style/EmptyMethod                      |    32 | Implemented |
 | Style/Encoding                         |    13 | -           |
 | Style/EndBlock                         |     2 | -           |
 | Style/EvalWithLocation                 |    27 | -           |
@@ -76,32 +76,32 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Style/ExpandPathArguments              |    16 | -           |
 | Style/ExplicitBlockArgument            |    21 | -           |
 | Style/ExponentialNotation              |    27 | -           |
-| Style/FloatDivision                    |    31 | -           |
-| Style/For                              |    32 | -           |
+| Style/FloatDivision                    |    31 | Implemented |
+| Style/For                              |    32 | Implemented |
 | Style/FormatString                     |    46 | -           |
 | Style/FormatStringToken                |   366 | Implemented |
 | Style/FrozenStringLiteralComment       |   107 | Implemented |
 | Style/GlobalStdStream                  |     6 | -           |
 | Style/GlobalVars                       |    74 | Implemented |
-| Style/GuardClause                      |    91 | -           |
+| Style/GuardClause                      |    91 | Implemented |
 | Style/HashAsLastArrayItem              |    19 | -           |
 | Style/HashEachMethods                  |    62 | Implemented |
 | Style/HashLikeCase                     |     8 | -           |
 | Style/HashSyntax                       |   189 | Implemented |
-| Style/HashTransformKeys                |    40 | -           |
-| Style/HashTransformValues              |    40 | -           |
+| Style/HashTransformKeys                |    40 | Implemented |
+| Style/HashTransformValues              |    40 | Implemented |
 | Style/IdenticalConditionalBranches     |    48 | Implemented |
 | Style/IfInsideElse                     |    21 | -           |
 | Style/IfUnlessModifier                 |   126 | Implemented |
 | Style/IfUnlessModifierOfIfUnless       |     7 | -           |
-| Style/IfWithSemicolon                  |    28 | -           |
+| Style/IfWithSemicolon                  |    28 | Implemented |
 | Style/InfiniteLoop                     |    28 | -           |
 | Style/InverseMethods                   |   110 | Implemented |
 | Style/KeywordParametersOrder           |    10 | -           |
-| Style/Lambda                           |    38 | -           |
+| Style/Lambda                           |    38 | Implemented |
 | Style/LambdaCall                       |    19 | -           |
 | Style/LineEndConcatenation             |    19 | -           |
-| Style/MethodCallWithoutArgsParentheses |    34 | -           |
+| Style/MethodCallWithoutArgsParentheses |    34 | Implemented |
 | Style/MethodDefParentheses             |    49 | Implemented |
 | Style/MinMax                           |    12 | -           |
 | Style/MissingRespondToMissing          |     8 | -           |
@@ -114,7 +114,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Style/MultilineMemoization             |    17 | -           |
 | Style/MultilineTernaryOperator         |    17 | -           |
 | Style/MultilineWhenThen                |    13 | -           |
-| Style/MultipleComparison               |    34 | -           |
+| Style/MultipleComparison               |    34 | Implemented |
 | Style/MutableConstant                  |   354 | Implemented |
 | Style/NegatedIf                        |    15 | -           |
 | Style/NegatedUnless                    |    14 | -           |
@@ -128,13 +128,13 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Style/Not                              |     9 | -           |
 | Style/NumericLiteralPrefix             |    10 | -           |
 | Style/NumericLiterals                  |    28 | Implemented |
-| Style/NumericPredicate                 |    43 | -           |
+| Style/NumericPredicate                 |    43 | Implemented |
 | Style/OneLineConditional               |   108 | Implemented |
 | Style/OptionalArguments                |    12 | -           |
 | Style/OptionalBooleanParameter         |     8 | -           |
 | Style/OrAssignment                     |    25 | -           |
 | Style/ParallelAssignment               |    86 | -           |
-| Style/ParenthesesAroundCondition       |    30 | -           |
+| Style/ParenthesesAroundCondition       |    30 | Implemented |
 | Style/PercentLiteralDelimiters         |    65 | Implemented |
 | Style/PercentQLiterals                 |    21 | -           |
 | Style/PerlBackrefs                     |    14 | -           |
@@ -147,21 +147,21 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Style/RedundantCapitalW                |    13 | -           |
 | Style/RedundantCondition               |   102 | Implemented |
 | Style/RedundantConditional             |    11 | -           |
-| Style/RedundantException               |    30 | -           |
+| Style/RedundantException               |    30 | Implemented |
 | Style/RedundantFetchBlock              |    15 | -           |
 | Style/RedundantFileExtensionInRequire  |     4 | -           |
 | Style/RedundantFreeze                  |    62 | Implemented |
-| Style/RedundantInterpolation           |    29 | -           |
+| Style/RedundantInterpolation           |    29 | Implemented |
 | Style/RedundantParentheses             |   331 | Implemented |
 | Style/RedundantPercentQ                |    25 | -           |
 | Style/RedundantRegexpCharacterClass    |    47 | Implemented |
 | Style/RedundantRegexpEscape            |   217 | Implemented |
-| Style/RedundantReturn                  |    39 | -           |
+| Style/RedundantReturn                  |    39 | Implemented |
 | Style/RedundantSelf                    |    62 | Implemented |
 | Style/RedundantSelfAssignment          |    14 | -           |
-| Style/RedundantSort                    |    50 | -           |
+| Style/RedundantSort                    |    50 | Implemented |
 | Style/RedundantSortBy                  |     8 | -           |
-| Style/RegexpLiteral                    |    57 | -           |
+| Style/RegexpLiteral                    |    57 | Implemented |
 | Style/RescueModifier                   |    21 | -           |
 | Style/RescueStandardError              |    37 | Implemented |
 | Style/SafeNavigation                   |   786 | Implemented |
@@ -173,15 +173,15 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Style/SingleLineMethods                |    16 | -           |
 | Style/SlicingWithRange                 |    28 | -           |
 | Style/SoleNestedConditional            |    73 | Implemented |
-| Style/SpecialGlobalVars                |    31 | -           |
+| Style/SpecialGlobalVars                |    31 | Implemented |
 | Style/StabbyLambdaParentheses          |     9 | -           |
 | Style/StderrPuts                       |     5 | -           |
-| Style/StringConcatenation              |    30 | -           |
+| Style/StringConcatenation              |    30 | Implemented |
 | Style/StringLiterals                   |    58 | Implemented |
 | Style/StringLiteralsInInterpolation    |    13 | -           |
 | Style/Strip                            |     6 | -           |
 | Style/StructInheritance                |    12 | -           |
-| Style/SymbolArray                      |    33 | -           |
+| Style/SymbolArray                      |    33 | Implemented |
 | Style/SymbolLiteral                    |     4 | -           |
 | Style/SymbolProc                       |    83 | Implemented |
 | Style/TernaryParentheses               |    98 | Implemented |
@@ -189,18 +189,18 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Style/TrailingBodyOnMethodDefinition   |    12 | -           |
 | Style/TrailingBodyOnModule             |     7 | -           |
 | Style/TrailingCommaInArguments         |   178 | Implemented |
-| Style/TrailingCommaInArrayLiteral      |    48 | -           |
-| Style/TrailingCommaInHashLiteral       |    41 | -           |
+| Style/TrailingCommaInArrayLiteral      |    48 | Implemented |
+| Style/TrailingCommaInHashLiteral       |    41 | Implemented |
 | Style/TrailingMethodEndStatement       |    10 | -           |
 | Style/TrailingUnderscoreVariable       |    58 | Implemented |
-| Style/TrivialAccessors                 |    38 | -           |
+| Style/TrivialAccessors                 |    38 | Implemented |
 | Style/UnlessElse                       |     5 | -           |
 | Style/UnpackFirst                      |    11 | -           |
 | Style/VariableInterpolation            |     9 | -           |
 | Style/WhenThen                         |     4 | -           |
 | Style/WhileUntilDo                     |     6 | -           |
-| Style/WhileUntilModifier               |    34 | -           |
-| Style/WordArray                        |    59 | -           |
+| Style/WhileUntilModifier               |    34 | Implemented |
+| Style/WordArray                        |    59 | Implemented |
 | Style/YodaCondition                    |    73 | Implemented |
 | Style/ZeroLengthPredicate              |    68 | Implemented |
 
@@ -337,15 +337,15 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Style/UnlessLogicalOperators               |    28 | -           |
 | Style/YodaExpression                       |    10 | -           |
 
-## Lint (20/154 implemented, 5,961 tests)
+## Lint (28/154 implemented, 5,961 tests)
 
 ### Enabled by Default (100 cops, 3,859 tests)
 
 | Cop                                      | Tests | Status      |
 | ---------------------------------------- | ----: | ----------- |
-| Lint/AmbiguousBlockAssociation           |    36 | -           |
+| Lint/AmbiguousBlockAssociation           |    36 | Implemented |
 | Lint/AmbiguousOperator                   |    17 | -           |
-| Lint/AmbiguousRegexpLiteral              |    30 | -           |
+| Lint/AmbiguousRegexpLiteral              |    30 | Implemented |
 | Lint/AssignmentInCondition               |    69 | Implemented |
 | Lint/BigDecimalNew                       |     3 | -           |
 | Lint/BinaryOperatorWithIdenticalOperands |    23 | -           |
@@ -353,18 +353,18 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Lint/CircularArgumentReference           |    13 | -           |
 | Lint/ConstantDefinitionInBlock           |    27 | -           |
 | Lint/Debugger                            |    97 | Implemented |
-| Lint/DeprecatedClassMethods              |    31 | -           |
+| Lint/DeprecatedClassMethods              |    31 | Implemented |
 | Lint/DeprecatedOpenSSLConstant           |    24 | -           |
 | Lint/DisjunctiveAssignmentInConstructor  |     7 | -           |
 | Lint/DuplicateCaseCondition              |     9 | -           |
 | Lint/DuplicateElsifCondition             |     5 | -           |
-| Lint/DuplicateHashKey                    |    33 | -           |
+| Lint/DuplicateHashKey                    |    33 | Implemented |
 | Lint/DuplicateMethods                    |   329 | Implemented |
 | Lint/DuplicateRequire                    |    10 | -           |
 | Lint/DuplicateRescueException            |     6 | -           |
 | Lint/EachWithObjectArgument              |     7 | -           |
 | Lint/ElseLayout                          |    12 | -           |
-| Lint/EmptyConditionalBody                |    42 | -           |
+| Lint/EmptyConditionalBody                |    42 | Implemented |
 | Lint/EmptyEnsure                         |     2 | -           |
 | Lint/EmptyExpression                     |    12 | -           |
 | Lint/EmptyFile                           |     2 | -           |
@@ -389,7 +389,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Lint/MissingSuper                        |    22 | -           |
 | Lint/MixedRegexpCaptureTypes             |    12 | -           |
 | Lint/MultipleComparison                  |    20 | -           |
-| Lint/NestedMethodDefinition              |    38 | -           |
+| Lint/NestedMethodDefinition              |    38 | Implemented |
 | Lint/NestedPercentLiteral                |    11 | -           |
 | Lint/NextWithoutAccumulator              |    18 | -           |
 | Lint/NonDeterministicRequireOrder        |    28 | -           |
@@ -415,13 +415,13 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Lint/RescueType                          |    52 | Implemented |
 | Lint/ReturnInVoidContext                 |    18 | -           |
 | Lint/SafeNavigationChain                 |    63 | Implemented |
-| Lint/SafeNavigationConsistency           |    43 | -           |
+| Lint/SafeNavigationConsistency           |    43 | Implemented |
 | Lint/SafeNavigationWithEmpty             |     3 | -           |
 | Lint/ScriptPermission                    |     6 | -           |
 | Lint/SelfAssignment                      |    58 | Implemented |
 | Lint/SendWithMixinArgument               |    14 | -           |
 | Lint/ShadowedArgument                    |    54 | Implemented |
-| Lint/ShadowedException                   |    38 | -           |
+| Lint/ShadowedException                   |    38 | Implemented |
 | Lint/StructNewOverride                   |    10 | -           |
 | Lint/SuppressedException                 |    24 | -           |
 | Lint/Syntax                              |     0 | -           |
@@ -508,61 +508,61 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Lint/NumberConversion            |    36 | -      |
 | Lint/ShadowingOuterLocalVariable |    31 | -      |
 
-## Layout (19/100 implemented, 4,654 tests)
+## Layout (40/100 implemented, 4,654 tests)
 
 ### Enabled by Default (81 cops, 4,067 tests)
 
 | Cop                                              | Tests | Status      |
 | ------------------------------------------------ | ----: | ----------- |
-| Layout/AccessModifierIndentation                 |    43 | -           |
+| Layout/AccessModifierIndentation                 |    43 | Implemented |
 | Layout/ArgumentAlignment                         |    52 | -           |
 | Layout/ArrayAlignment                            |    25 | -           |
 | Layout/AssignmentIndentation                     |    10 | -           |
 | Layout/BeginEndAlignment                         |     7 | Implemented |
-| Layout/BlockAlignment                            |    78 | -           |
+| Layout/BlockAlignment                            |    78 | Implemented |
 | Layout/BlockEndNewline                           |    18 | -           |
-| Layout/CaseIndentation                           |    50 | -           |
+| Layout/CaseIndentation                           |    50 | Implemented |
 | Layout/ClosingHeredocIndentation                 |    11 | -           |
-| Layout/ClosingParenthesisIndentation             |    43 | -           |
+| Layout/ClosingParenthesisIndentation             |    43 | Implemented |
 | Layout/CommentIndentation                        |    28 | -           |
 | Layout/ConditionPosition                         |    14 | -           |
 | Layout/DefEndAlignment                           |    18 | Implemented |
 | Layout/DotPosition                               |    39 | -           |
-| Layout/ElseAlignment                             |    52 | -           |
+| Layout/ElseAlignment                             |    52 | Implemented |
 | Layout/EmptyComment                              |    14 | -           |
-| Layout/EmptyLineAfterGuardClause                 |    47 | -           |
+| Layout/EmptyLineAfterGuardClause                 |    47 | Implemented |
 | Layout/EmptyLineAfterMagicComment                |    21 | -           |
-| Layout/EmptyLineBetweenDefs                      |    45 | -           |
+| Layout/EmptyLineBetweenDefs                      |    45 | Implemented |
 | Layout/EmptyLines                                |     5 | -           |
 | Layout/EmptyLinesAroundAccessModifier            |   176 | Implemented |
 | Layout/EmptyLinesAroundArguments                 |    22 | -           |
 | Layout/EmptyLinesAroundAttributeAccessor         |    20 | -           |
 | Layout/EmptyLinesAroundBeginBody                 |    11 | -           |
 | Layout/EmptyLinesAroundBlockBody                 |    20 | -           |
-| Layout/EmptyLinesAroundClassBody                 |    46 | -           |
+| Layout/EmptyLinesAroundClassBody                 |    46 | Implemented |
 | Layout/EmptyLinesAroundExceptionHandlingKeywords |    24 | -           |
 | Layout/EmptyLinesAroundMethodBody                |    14 | -           |
-| Layout/EmptyLinesAroundModuleBody                |    38 | -           |
+| Layout/EmptyLinesAroundModuleBody                |    38 | Implemented |
 | Layout/EndAlignment                              |   207 | Implemented |
 | Layout/EndOfLine                                 |    17 | -           |
 | Layout/ExtraSpacing                              |    82 | -           |
 | Layout/FirstArgumentIndentation                  |   139 | Implemented |
-| Layout/FirstArrayElementIndentation              |    53 | -           |
-| Layout/FirstHashElementIndentation               |    60 | -           |
+| Layout/FirstArrayElementIndentation              |    53 | Implemented |
+| Layout/FirstHashElementIndentation               |    60 | Implemented |
 | Layout/FirstParameterIndentation                 |    20 | -           |
 | Layout/HashAlignment                             |   131 | Implemented |
 | Layout/HeredocIndentation                        |   105 | Implemented |
-| Layout/IndentationConsistency                    |    53 | -           |
+| Layout/IndentationConsistency                    |    53 | Implemented |
 | Layout/IndentationStyle                          |    25 | -           |
 | Layout/IndentationWidth                          |   177 | Implemented |
 | Layout/InitialIndentation                        |     8 | -           |
 | Layout/LeadingCommentSpace                       |    27 | Implemented |
 | Layout/LeadingEmptyLines                         |     9 | -           |
 | Layout/LineLength                                |   192 | Implemented |
-| Layout/MultilineArrayBraceLayout                 |    35 | -           |
+| Layout/MultilineArrayBraceLayout                 |    35 | Implemented |
 | Layout/MultilineBlockLayout                      |    30 | -           |
-| Layout/MultilineHashBraceLayout                  |    34 | -           |
-| Layout/MultilineMethodCallBraceLayout            |    44 | -           |
+| Layout/MultilineHashBraceLayout                  |    34 | Implemented |
+| Layout/MultilineMethodCallBraceLayout            |    44 | Implemented |
 | Layout/MultilineMethodCallIndentation            |   252 | Implemented |
 | Layout/MultilineMethodDefinitionBraceLayout      |    26 | -           |
 | Layout/MultilineOperationIndentation             |   101 | Implemented |
@@ -573,10 +573,10 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Layout/SpaceAfterMethodName                      |     8 | -           |
 | Layout/SpaceAfterNot                             |     6 | -           |
 | Layout/SpaceAfterSemicolon                       |     9 | -           |
-| Layout/SpaceAroundBlockParameters                |    45 | -           |
+| Layout/SpaceAroundBlockParameters                |    45 | Implemented |
 | Layout/SpaceAroundEqualsInParameterDefault       |    11 | -           |
 | Layout/SpaceAroundKeyword                        |   112 | Implemented |
-| Layout/SpaceAroundMethodCallOperator             |    51 | -           |
+| Layout/SpaceAroundMethodCallOperator             |    51 | Implemented |
 | Layout/SpaceAroundOperators                      |    99 | -           |
 | Layout/SpaceBeforeBlockBraces                    |    18 | -           |
 | Layout/SpaceBeforeComma                          |     6 | -           |
@@ -584,14 +584,14 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Layout/SpaceBeforeFirstArg                       |    12 | -           |
 | Layout/SpaceBeforeSemicolon                      |     9 | -           |
 | Layout/SpaceInLambdaLiteral                      |    15 | -           |
-| Layout/SpaceInsideArrayLiteralBrackets           |    99 | -           |
+| Layout/SpaceInsideArrayLiteralBrackets           |    99 | Implemented |
 | Layout/SpaceInsideArrayPercentLiteral            |   129 | Implemented |
-| Layout/SpaceInsideBlockBraces                    |    43 | -           |
-| Layout/SpaceInsideHashLiteralBraces              |    40 | -           |
+| Layout/SpaceInsideBlockBraces                    |    43 | Implemented |
+| Layout/SpaceInsideHashLiteralBraces              |    40 | Implemented |
 | Layout/SpaceInsideParens                         |    28 | -           |
 | Layout/SpaceInsidePercentLiteralDelimiters       |   262 | Implemented |
 | Layout/SpaceInsideRangeLiteral                   |     7 | -           |
-| Layout/SpaceInsideReferenceBrackets              |    47 | -           |
+| Layout/SpaceInsideReferenceBrackets              |    47 | Implemented |
 | Layout/SpaceInsideStringInterpolation            |    12 | -           |
 | Layout/TrailingEmptyLines                        |    18 | Implemented |
 | Layout/TrailingWhitespace                        |    19 | Implemented |
@@ -625,7 +625,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Layout/RedundantLineBreak                 |   112 | -      |
 | Layout/SingleLineBlockChain               |     9 | -      |
 
-## Metrics (3/10 implemented, 272 tests)
+## Metrics (5/10 implemented, 272 tests)
 
 ### Enabled by Default (9 cops, 259 tests)
 
@@ -635,11 +635,11 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Metrics/BlockLength          |    38 | Implemented |
 | Metrics/BlockNesting         |    26 | -           |
 | Metrics/ClassLength          |    34 | Implemented |
-| Metrics/CyclomaticComplexity |    37 | -           |
+| Metrics/CyclomaticComplexity |    37 | Implemented |
 | Metrics/MethodLength         |    31 | Implemented |
 | Metrics/ModuleLength         |    21 | -           |
 | Metrics/ParameterLists       |    16 | -           |
-| Metrics/PerceivedComplexity  |    31 | -           |
+| Metrics/PerceivedComplexity  |    31 | Implemented |
 
 ### Pending by Default (1 cops, 13 tests)
 
