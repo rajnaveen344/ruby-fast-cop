@@ -1341,6 +1341,26 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         result.push(Box::new(cops::layout::SpaceAroundOperators::with_config(allow_for_alignment, exp, sl, hash_table_style)));
     }
 
+    // Layout/ExtraSpacing
+    if config.is_cop_enabled("Layout/ExtraSpacing") {
+        let c = config.get_cop_config("Layout/ExtraSpacing");
+        let allow_for_alignment = c.and_then(|c| c.raw.get("AllowForAlignment")).and_then(|v| v.as_bool()).unwrap_or(true);
+        let allow_before_trailing_comments = c.and_then(|c| c.raw.get("AllowBeforeTrailingComments")).and_then(|v| v.as_bool()).unwrap_or(false);
+        let force_equal_sign_alignment = c.and_then(|c| c.raw.get("ForceEqualSignAlignment")).and_then(|v| v.as_bool()).unwrap_or(false);
+        result.push(Box::new(cops::layout::ExtraSpacing::with_config(
+            allow_for_alignment,
+            allow_before_trailing_comments,
+            force_equal_sign_alignment,
+        )));
+    }
+
+    // Layout/SpaceBeforeFirstArg
+    if config.is_cop_enabled("Layout/SpaceBeforeFirstArg") {
+        let c = config.get_cop_config("Layout/SpaceBeforeFirstArg");
+        let allow_for_alignment = c.and_then(|c| c.raw.get("AllowForAlignment")).and_then(|v| v.as_bool()).unwrap_or(true);
+        result.push(Box::new(cops::layout::SpaceBeforeFirstArg::with_config(allow_for_alignment)));
+    }
+
     // Layout/SpaceAroundBlockParameters
     if config.is_cop_enabled("Layout/SpaceAroundBlockParameters") {
         let style = config
@@ -3767,6 +3787,22 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
                 .map(|s| s == "table")
                 .unwrap_or(false);
             Some(Box::new(cops::layout::SpaceAroundOperators::with_config(allow_for_alignment, exp, sl, hash_table_style)))
+        }
+        "Layout/ExtraSpacing" => {
+            let c = config.get_cop_config("Layout/ExtraSpacing");
+            let allow_for_alignment = c.and_then(|c| c.raw.get("AllowForAlignment")).and_then(|v| v.as_bool()).unwrap_or(true);
+            let allow_before_trailing_comments = c.and_then(|c| c.raw.get("AllowBeforeTrailingComments")).and_then(|v| v.as_bool()).unwrap_or(false);
+            let force_equal_sign_alignment = c.and_then(|c| c.raw.get("ForceEqualSignAlignment")).and_then(|v| v.as_bool()).unwrap_or(false);
+            Some(Box::new(cops::layout::ExtraSpacing::with_config(
+                allow_for_alignment,
+                allow_before_trailing_comments,
+                force_equal_sign_alignment,
+            )))
+        }
+        "Layout/SpaceBeforeFirstArg" => {
+            let c = config.get_cop_config("Layout/SpaceBeforeFirstArg");
+            let allow_for_alignment = c.and_then(|c| c.raw.get("AllowForAlignment")).and_then(|v| v.as_bool()).unwrap_or(true);
+            Some(Box::new(cops::layout::SpaceBeforeFirstArg::with_config(allow_for_alignment)))
         }
         "Layout/SpaceAroundBlockParameters" => {
             let style = config
