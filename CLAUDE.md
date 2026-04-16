@@ -224,6 +224,29 @@ EnforcedStyle = "exploded"
 4. Reports mismatches in offense count, line, column, or message
 
 
+## Tools
+
+### AST explorer (`cargo run --bin ast`)
+
+A Prism tree dumper for exploring how Ruby source maps to Prism AST nodes. Invaluable when implementing a new cop — use it to confirm node types, receiver/argument layout, and byte offsets before writing match arms.
+
+```bash
+# Tree with source snippets (default)
+cargo run --bin ast -- 'foo.bar&.baz'
+
+# Add byte offsets and 1-based line:col (useful for offense-range work)
+cargo run --bin ast -- --loc 'x.nil? ? nil : x.foo'
+
+# Just structure, no source — easier to eyeball
+cargo run --bin ast -- --no-source 'def foo(x); x + 1; end'
+
+# From a file or stdin
+cargo run --bin ast -- --file path/to.rb
+echo 'foo || bar' | cargo run --bin ast -- --stdin
+```
+
+Output is S-expression style (`(call (call (local_variable_read)))`) matching the shape RuboCop's `def_node_matcher` patterns target. Use this when translating a Ruby pattern like `(send (send $_ :nil?) :!)` into Rust — first confirm Prism names nodes the same way.
+
 ## Implementing a Cop
 
 ### Implementation Philosophy: Match RuboCop's Structure
