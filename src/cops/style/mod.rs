@@ -4,6 +4,7 @@ mod array_intersect;
 mod auto_resource_cleanup;
 mod block_delimiters;
 mod case_like_if;
+mod class_equality_comparison;
 mod comment_annotation;
 mod commented_keyword;
 mod conditional_assignment;
@@ -92,6 +93,7 @@ pub use array_intersect::ArrayIntersect;
 pub use auto_resource_cleanup::AutoResourceCleanup;
 pub use block_delimiters::{BlockDelimiters, EnforcedStyle as BlockDelimitersStyle};
 pub use case_like_if::CaseLikeIf;
+pub use class_equality_comparison::ClassEqualityComparison;
 pub use comment_annotation::CommentAnnotation;
 pub use commented_keyword::CommentedKeyword;
 pub use conditional_assignment::{
