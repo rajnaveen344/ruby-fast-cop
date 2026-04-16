@@ -315,6 +315,13 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         result.push(Box::new(cops::lint::UnreachableCode::new()));
     }
 
+    // Lint/UnreachableLoop
+    if config.is_cop_enabled("Lint/UnreachableLoop") {
+        if let Some(cop) = build_single_cop("Lint/UnreachableLoop", config) {
+            result.push(cop);
+        }
+    }
+
     // Lint/UselessAccessModifier
     if config.is_cop_enabled("Lint/UselessAccessModifier") {
         let cop_config = config.get_cop_config("Lint/UselessAccessModifier");
@@ -881,6 +888,13 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
     // Style/CaseLikeIf
     if config.is_cop_enabled("Style/CaseLikeIf") {
         if let Some(cop) = build_single_cop("Style/CaseLikeIf", config) {
+            result.push(cop);
+        }
+    }
+
+    // Style/ClassEqualityComparison
+    if config.is_cop_enabled("Style/ClassEqualityComparison") {
+        if let Some(cop) = build_single_cop("Style/ClassEqualityComparison", config) {
             result.push(cop);
         }
     }
@@ -2059,6 +2073,12 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
             Some(Box::new(cops::lint::UnreachableCode::new()))
         }
 
+        "Lint/UnreachableLoop" => {
+            let cop_config = config.get_cop_config("Lint/UnreachableLoop");
+            let (_allowed_methods, allowed_patterns) = read_allowed(cop_config);
+            Some(Box::new(cops::lint::UnreachableLoop::with_config(allowed_patterns)))
+        }
+
         "Lint/UnusedBlockArgument" => {
             let cop_config = config.get_cop_config("Lint/UnusedBlockArgument");
             let allow_keyword = cop_config
@@ -3059,6 +3079,15 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
                 .map(|v| v as usize)
                 .unwrap_or(3);
             Some(Box::new(cops::style::CaseLikeIf::with_config(min_branches)))
+        }
+
+        "Style/ClassEqualityComparison" => {
+            let cop_config = config.get_cop_config("Style/ClassEqualityComparison");
+            let (allowed_methods, allowed_patterns) = read_allowed(cop_config);
+            Some(Box::new(cops::style::ClassEqualityComparison::with_config(
+                allowed_methods,
+                allowed_patterns,
+            )))
         }
 
         "Style/SoleNestedConditional" => {
