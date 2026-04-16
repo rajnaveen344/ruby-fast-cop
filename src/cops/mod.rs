@@ -440,6 +440,8 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         // Lint
         Box::new(lint::AssignmentInCondition::new(false)), // User's config: AllowSafeAssignment: false
         Box::new(lint::Debugger::new()),
+        Box::new(lint::DeprecatedClassMethods::new()),
+        Box::new(lint::DuplicateHashKey::new()),
         Box::new(lint::DuplicateMethods::new()),
         Box::new(lint::EmptyConditionalBody::new(true)),
         Box::new(lint::FormatParameterMismatch::new()),
@@ -521,7 +523,9 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         // Metrics
         Box::new(metrics::BlockLength::new(50)), // User's config: Max: 50
         Box::new(metrics::ClassLength::new(100)),
+        Box::new(metrics::CyclomaticComplexity::new(7)),
         Box::new(metrics::MethodLength::new(10)),
+        Box::new(metrics::PerceivedComplexity::new(8)),
         // Naming
         Box::new(naming::FileName::new()),
         Box::new(naming::MemoizedInstanceVariableName::new()),
@@ -536,6 +540,7 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(style::AutoResourceCleanup::new()),
         Box::new(style::BlockDelimiters::new(style::BlockDelimitersStyle::LineCountBased)),
         Box::new(style::CaseLikeIf::new()),
+        Box::new(style::CommentAnnotation::new()),
         Box::new(style::CommentedKeyword::new()),
         Box::new(style::ConditionalAssignment::new(style::ConditionalAssignmentStyle::AssignInsideCondition)),
         Box::new(style::Documentation::new()),
@@ -543,6 +548,7 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(style::EmptyElse::new(style::EmptyElseStyle::Both, false)),
         Box::new(style::EmptyLiteral::new()),
         Box::new(style::EmptyMethod::new()),
+        Box::new(style::FloatDivision::new(style::FloatDivisionStyle::SingleCoerce)),
         Box::new(style::FormatStringToken::new(style::FormatStringTokenStyle::Template)), // User's config
         Box::new(style::FrozenStringLiteralComment::new(style::FrozenStringLiteralCommentStyle::Always)),
         Box::new(style::GlobalVars::new()),
@@ -565,10 +571,12 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(style::NumericLiterals::new(5)),
         Box::new(style::NumericPredicate::new()),
         Box::new(style::OneLineConditional::new()),
+        Box::new(style::ParenthesesAroundCondition::new()),
         Box::new(style::PercentLiteralDelimiters::new()),
         Box::new(style::RaiseArgs::new(style::RaiseArgsStyle::Compact)), // User's config
         Box::new(style::RedundantCondition::new()),
         Box::new(style::RedundantBegin::new()),
+        Box::new(style::RedundantException::new()),
         Box::new(style::RedundantParentheses::new()),
         Box::new(style::RedundantRegexpCharacterClass::new()),
         Box::new(style::RedundantRegexpEscape::new()),
@@ -580,6 +588,7 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(style::SelectByRegexp::new()),
         Box::new(style::SelfAssignment::new()),
         Box::new(style::SoleNestedConditional::new()),
+        Box::new(style::SpecialGlobalVars::new(style::SpecialGlobalVarsStyle::UseEnglishNames, true)),
         Box::new(style::Semicolon::new(false)),
         Box::new(style::StringLiterals::new(style::StringLiteralsStyle::SingleQuotes)),
         Box::new(style::StringMethods::new()),

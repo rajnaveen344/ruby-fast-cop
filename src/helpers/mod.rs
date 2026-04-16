@@ -5,6 +5,7 @@ pub mod empty_lines_around_body;
 pub mod escape;
 pub mod guard_clause;
 pub mod hash_transform_method;
+pub mod method_complexity;
 pub mod multiline_element_indentation;
 pub mod multiline_literal_brace_layout;
 pub mod source;

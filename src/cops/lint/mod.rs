@@ -1,6 +1,8 @@
 mod ambiguous_block_association;
 mod assignment_in_condition;
 mod debugger;
+mod deprecated_class_methods;
+mod duplicate_hash_key;
 mod duplicate_methods;
 mod empty_conditional_body;
 mod format_parameter_mismatch;
@@ -27,6 +29,8 @@ mod void;
 pub use ambiguous_block_association::AmbiguousBlockAssociation;
 pub use assignment_in_condition::AssignmentInCondition;
 pub use debugger::Debugger;
+pub use deprecated_class_methods::DeprecatedClassMethods;
+pub use duplicate_hash_key::DuplicateHashKey;
 pub use duplicate_methods::DuplicateMethods;
 pub use empty_conditional_body::EmptyConditionalBody;
 pub use format_parameter_mismatch::FormatParameterMismatch;

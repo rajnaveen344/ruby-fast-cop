@@ -219,6 +219,16 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         result.push(Box::new(cops::lint::Debugger::new()));
     }
 
+    // Lint/DeprecatedClassMethods
+    if config.is_cop_enabled("Lint/DeprecatedClassMethods") {
+        result.push(Box::new(cops::lint::DeprecatedClassMethods::new()));
+    }
+
+    // Lint/DuplicateHashKey
+    if config.is_cop_enabled("Lint/DuplicateHashKey") {
+        result.push(Box::new(cops::lint::DuplicateHashKey::new()));
+    }
+
     // Lint/DuplicateMethods
     if config.is_cop_enabled("Lint/DuplicateMethods") {
         result.push(Box::new(cops::lint::DuplicateMethods::new()));
@@ -435,9 +445,42 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         }
     }
 
+    // Style/CommentAnnotation
+    if config.is_cop_enabled("Style/CommentAnnotation") {
+        if let Some(cop) = build_single_cop("Style/CommentAnnotation", config) {
+            result.push(cop);
+        }
+    }
+
     // Style/CommentedKeyword
     if config.is_cop_enabled("Style/CommentedKeyword") {
         result.push(Box::new(cops::style::CommentedKeyword::new()));
+    }
+
+    // Style/FloatDivision
+    if config.is_cop_enabled("Style/FloatDivision") {
+        if let Some(cop) = build_single_cop("Style/FloatDivision", config) {
+            result.push(cop);
+        }
+    }
+
+    // Style/ParenthesesAroundCondition
+    if config.is_cop_enabled("Style/ParenthesesAroundCondition") {
+        if let Some(cop) = build_single_cop("Style/ParenthesesAroundCondition", config) {
+            result.push(cop);
+        }
+    }
+
+    // Style/RedundantException
+    if config.is_cop_enabled("Style/RedundantException") {
+        result.push(Box::new(cops::style::RedundantException::new()));
+    }
+
+    // Style/SpecialGlobalVars
+    if config.is_cop_enabled("Style/SpecialGlobalVars") {
+        if let Some(cop) = build_single_cop("Style/SpecialGlobalVars", config) {
+            result.push(cop);
+        }
     }
 
     // Style/EmptyElse
@@ -1577,6 +1620,20 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         )));
     }
 
+    // Metrics/CyclomaticComplexity
+    if config.is_cop_enabled("Metrics/CyclomaticComplexity") {
+        if let Some(cop) = build_single_cop("Metrics/CyclomaticComplexity", config) {
+            result.push(cop);
+        }
+    }
+
+    // Metrics/PerceivedComplexity
+    if config.is_cop_enabled("Metrics/PerceivedComplexity") {
+        if let Some(cop) = build_single_cop("Metrics/PerceivedComplexity", config) {
+            result.push(cop);
+        }
+    }
+
     // Naming/FileName
     if config.is_cop_enabled("Naming/FileName") {
         let cop_config = config.get_cop_config("Naming/FileName");
@@ -1839,6 +1896,10 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
                 methods, requires,
             )))
         }
+
+        "Lint/DeprecatedClassMethods" => Some(Box::new(cops::lint::DeprecatedClassMethods::new())),
+
+        "Lint/DuplicateHashKey" => Some(Box::new(cops::lint::DuplicateHashKey::new())),
 
         "Lint/DuplicateMethods" => {
             let cop_config = config.get_cop_config("Lint/DuplicateMethods");
@@ -2284,8 +2345,82 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
 
         "Style/AutoResourceCleanup" => Some(Box::new(cops::style::AutoResourceCleanup::new())),
 
+        "Style/CommentAnnotation" => {
+            let cop_config = config.get_cop_config("Style/CommentAnnotation");
+            let keywords: Vec<String> = cop_config
+                .and_then(|c| c.raw.get("Keywords"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+                .unwrap_or_else(|| {
+                    ["TODO", "FIXME", "OPTIMIZE", "HACK", "REVIEW"]
+                        .iter()
+                        .map(|s| s.to_string())
+                        .collect()
+                });
+            let require_colon = cop_config
+                .and_then(|c| c.raw.get("RequireColon"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(true);
+            Some(Box::new(cops::style::CommentAnnotation::with_config(
+                keywords,
+                require_colon,
+            )))
+        }
+
         "Style/CommentedKeyword" => {
             Some(Box::new(cops::style::CommentedKeyword::new()))
+        }
+
+        "Style/FloatDivision" => {
+            let cop_config = config.get_cop_config("Style/FloatDivision");
+            let style = cop_config
+                .and_then(|c| c.enforced_style.as_ref())
+                .map(|s| match s.as_str() {
+                    "left_coerce" => cops::style::FloatDivisionStyle::LeftCoerce,
+                    "right_coerce" => cops::style::FloatDivisionStyle::RightCoerce,
+                    "fdiv" => cops::style::FloatDivisionStyle::Fdiv,
+                    _ => cops::style::FloatDivisionStyle::SingleCoerce,
+                })
+                .unwrap_or(cops::style::FloatDivisionStyle::SingleCoerce);
+            Some(Box::new(cops::style::FloatDivision::new(style)))
+        }
+
+        "Style/ParenthesesAroundCondition" => {
+            let cop_config = config.get_cop_config("Style/ParenthesesAroundCondition");
+            let allow_multiline = cop_config
+                .and_then(|c| c.raw.get("AllowInMultilineConditions"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
+            let allow_safe_assignment = cop_config
+                .and_then(|c| c.allow_safe_assignment)
+                .unwrap_or(true);
+            Some(Box::new(cops::style::ParenthesesAroundCondition::with_config(
+                allow_multiline,
+                allow_safe_assignment,
+            )))
+        }
+
+        "Style/RedundantException" => {
+            Some(Box::new(cops::style::RedundantException::new()))
+        }
+
+        "Style/SpecialGlobalVars" => {
+            let cop_config = config.get_cop_config("Style/SpecialGlobalVars");
+            let style = cop_config
+                .and_then(|c| c.enforced_style.as_ref())
+                .map(|s| match s.as_str() {
+                    "use_perl_names" => cops::style::SpecialGlobalVarsStyle::UsePerlNames,
+                    "use_builtin_english_names" => {
+                        cops::style::SpecialGlobalVarsStyle::UseBuiltinEnglishNames
+                    }
+                    _ => cops::style::SpecialGlobalVarsStyle::UseEnglishNames,
+                })
+                .unwrap_or(cops::style::SpecialGlobalVarsStyle::UseEnglishNames);
+            let require_english = cop_config
+                .and_then(|c| c.raw.get("RequireEnglish"))
+                .and_then(|v| v.as_bool())
+                .unwrap_or(true);
+            Some(Box::new(cops::style::SpecialGlobalVars::new(style, require_english)))
         }
 
         "Style/BlockDelimiters" => {
@@ -3898,6 +4033,24 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
             )))
         }
 
+        "Metrics/CyclomaticComplexity" => {
+            let cop_config = config.get_cop_config("Metrics/CyclomaticComplexity");
+            let max = cop_config.and_then(|c| c.max).unwrap_or(7);
+            let (allowed_methods, allowed_patterns) = read_allowed(cop_config);
+            Some(Box::new(cops::metrics::CyclomaticComplexity::with_config(
+                max, allowed_methods, allowed_patterns,
+            )))
+        }
+
+        "Metrics/PerceivedComplexity" => {
+            let cop_config = config.get_cop_config("Metrics/PerceivedComplexity");
+            let max = cop_config.and_then(|c| c.max).unwrap_or(8);
+            let (allowed_methods, allowed_patterns) = read_allowed(cop_config);
+            Some(Box::new(cops::metrics::PerceivedComplexity::with_config(
+                max, allowed_methods, allowed_patterns,
+            )))
+        }
+
         "Naming/FileName" => {
             let cop_config = config.get_cop_config("Naming/FileName");
             let ignore_executable_scripts = cop_config
@@ -4223,6 +4376,23 @@ fn build_indentation_width_cop(config: &Config) -> Box<dyn cops::Cop> {
         access_mod_style,
         allowed_patterns,
     ))
+}
+
+/// Read AllowedMethods/AllowedPatterns (+ legacy Ignored*/Excluded*) from a cop config.
+fn read_allowed(cop_config: Option<&config::CopConfig>) -> (Vec<String>, Vec<String>) {
+    let mut allowed_methods: Vec<String> = Vec::new();
+    for key in &["AllowedMethods", "IgnoredMethods", "ExcludedMethods"] {
+        if let Some(seq) = cop_config.and_then(|c| c.raw.get(*key)).and_then(|v| v.as_sequence()) {
+            for v in seq { if let Some(s) = v.as_str() { allowed_methods.push(s.to_string()); } }
+        }
+    }
+    let mut allowed_patterns: Vec<String> = Vec::new();
+    for key in &["AllowedPatterns", "IgnoredPatterns"] {
+        if let Some(seq) = cop_config.and_then(|c| c.raw.get(*key)).and_then(|v| v.as_sequence()) {
+            for v in seq { if let Some(s) = v.as_str() { allowed_patterns.push(s.to_string()); } }
+        }
+    }
+    (allowed_methods, allowed_patterns)
 }
 
 /// For hash format, values that are empty strings, false, or null are skipped (disabled groups).
