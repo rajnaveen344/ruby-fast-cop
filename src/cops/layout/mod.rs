@@ -37,7 +37,9 @@ mod space_around_block_parameters;
 mod space_around_method_call_operator;
 mod space_around_operators;
 mod space_before_first_arg;
+mod space_around_equals_in_parameter_default;
 mod space_inside_array_literal_brackets;
+mod space_inside_parens;
 mod space_inside_array_percent_literal;
 mod space_inside_block_braces;
 mod space_inside_hash_literal_braces;
@@ -112,6 +114,11 @@ pub use space_around_block_parameters::{SpaceAroundBlockParameters, Style as Spa
 pub use space_around_method_call_operator::SpaceAroundMethodCallOperator;
 pub use space_around_operators::SpaceAroundOperators;
 pub use space_before_first_arg::SpaceBeforeFirstArg;
+pub use space_around_equals_in_parameter_default::{
+    SpaceAroundEqualsInParameterDefault,
+    SpaceAroundEqualsStyle,
+};
+pub use space_inside_parens::{SpaceInsideParens, SpaceInsideParensStyle};
 pub use space_inside_array_literal_brackets::{
     EmptyBracketsStyle as SpaceInsideArrayLiteralBracketsEmptyStyle,
     SpaceInsideArrayLiteralBrackets,

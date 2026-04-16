@@ -449,6 +449,7 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(lint::LiteralAsCondition::new()),
         Box::new(lint::LiteralInInterpolation::new()),
         Box::new(lint::OutOfRangeRegexpRef::new()),
+        Box::new(lint::RedundantCopEnableDirective::new()),
         Box::new(lint::RedundantSafeNavigation::new()),
         Box::new(lint::RedundantSplatExpansion::new(true)),
         Box::new(lint::RedundantStringCoercion::new()),
@@ -526,6 +527,8 @@ pub fn all() -> Vec<Box<dyn Cop>> {
             layout::SpaceInsideHashLiteralBracesStyle::Space,
             layout::SpaceInsideHashLiteralBracesEmptyStyle::NoSpace,
         )),
+        Box::new(layout::SpaceAroundEqualsInParameterDefault::default()),
+        Box::new(layout::SpaceInsideParens::default()),
         Box::new(layout::SpaceInsidePercentLiteralDelimiters::new()),
         Box::new(layout::SpaceInsideReferenceBrackets::new(
             layout::SpaceInsideReferenceBracketsStyle::NoSpace,

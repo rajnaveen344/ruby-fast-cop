@@ -266,6 +266,13 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         result.push(Box::new(cops::lint::RedundantSplatExpansion::new(true)));
     }
 
+    // Lint/RedundantCopEnableDirective
+    if config.is_cop_enabled("Lint/RedundantCopEnableDirective") {
+        if let Some(cop) = build_single_cop("Lint/RedundantCopEnableDirective", config) {
+            result.push(cop);
+        }
+    }
+
     // Lint/RedundantSafeNavigation
     if config.is_cop_enabled("Lint/RedundantSafeNavigation") {
         if let Some(cop) = build_single_cop("Lint/RedundantSafeNavigation", config) {
@@ -1418,6 +1425,13 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         )));
     }
 
+    // Layout/SpaceAroundEqualsInParameterDefault
+    if config.is_cop_enabled("Layout/SpaceAroundEqualsInParameterDefault") {
+        if let Some(cop) = build_single_cop("Layout/SpaceAroundEqualsInParameterDefault", config) {
+            result.push(cop);
+        }
+    }
+
     // Layout/SpaceAroundKeyword
     if config.is_cop_enabled("Layout/SpaceAroundKeyword") {
         result.push(Box::new(cops::layout::SpaceAroundKeyword::new()));
@@ -1558,6 +1572,13 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
     // Layout/SpaceInsideHashLiteralBraces
     if config.is_cop_enabled("Layout/SpaceInsideHashLiteralBraces") {
         if let Some(cop) = build_single_cop("Layout/SpaceInsideHashLiteralBraces", config) {
+            result.push(cop);
+        }
+    }
+
+    // Layout/SpaceInsideParens
+    if config.is_cop_enabled("Layout/SpaceInsideParens") {
+        if let Some(cop) = build_single_cop("Layout/SpaceInsideParens", config) {
             result.push(cop);
         }
     }
@@ -2113,6 +2134,18 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
 
         "Lint/OutOfRangeRegexpRef" => {
             Some(Box::new(cops::lint::OutOfRangeRegexpRef::new()))
+        }
+
+        "Lint/RedundantCopEnableDirective" => {
+            // Collect all cop names disabled in config (`Enabled = false`).
+            let mut disabled: Vec<String> = config
+                .cops
+                .iter()
+                .filter(|(_, c)| c.enabled == Some(false))
+                .map(|(k, _)| k.clone())
+                .collect();
+            disabled.sort();
+            Some(Box::new(cops::lint::RedundantCopEnableDirective::with_disabled_in_config(disabled)))
         }
 
         "Lint/RedundantSafeNavigation" => {
@@ -3982,6 +4015,18 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
             )))
         }
 
+        "Layout/SpaceAroundEqualsInParameterDefault" => {
+            let c = config.get_cop_config("Layout/SpaceAroundEqualsInParameterDefault");
+            let style = c
+                .and_then(|c| c.enforced_style.as_ref())
+                .map(|s| match s.as_str() {
+                    "no_space" => cops::layout::SpaceAroundEqualsStyle::NoSpace,
+                    _ => cops::layout::SpaceAroundEqualsStyle::Space,
+                })
+                .unwrap_or(cops::layout::SpaceAroundEqualsStyle::Space);
+            Some(Box::new(cops::layout::SpaceAroundEqualsInParameterDefault::new(style)))
+        }
+
         "Layout/SpaceAroundKeyword" => {
             Some(Box::new(cops::layout::SpaceAroundKeyword::new()))
         }
@@ -4170,6 +4215,19 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
             Some(Box::new(cops::layout::SpaceInsideHashLiteralBraces::new(
                 style, empty_style,
             )))
+        }
+
+        "Layout/SpaceInsideParens" => {
+            let c = config.get_cop_config("Layout/SpaceInsideParens");
+            let style = c
+                .and_then(|c| c.enforced_style.as_ref())
+                .map(|s| match s.as_str() {
+                    "space" => cops::layout::SpaceInsideParensStyle::Space,
+                    "compact" => cops::layout::SpaceInsideParensStyle::Compact,
+                    _ => cops::layout::SpaceInsideParensStyle::NoSpace,
+                })
+                .unwrap_or(cops::layout::SpaceInsideParensStyle::NoSpace);
+            Some(Box::new(cops::layout::SpaceInsideParens::new(style)))
         }
 
         "Layout/SpaceInsidePercentLiteralDelimiters" => {
