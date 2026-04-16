@@ -1256,6 +1256,33 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         result.push(Box::new(cops::layout::EmptyLinesAroundModuleBody::new(style)));
     }
 
+    // Layout/EmptyLinesAroundBeginBody
+    if config.is_cop_enabled("Layout/EmptyLinesAroundBeginBody") {
+        result.push(Box::new(cops::layout::EmptyLinesAroundBeginBody::new()));
+    }
+
+    // Layout/EmptyLinesAroundBlockBody
+    if config.is_cop_enabled("Layout/EmptyLinesAroundBlockBody") {
+        let cop_config = config.get_cop_config("Layout/EmptyLinesAroundBlockBody");
+        let style = cop_config
+            .and_then(|c| c.enforced_style.as_ref())
+            .map(|s| cops::layout::EmptyLinesAroundBlockBodyStyle::parse(s))
+            .unwrap_or(cops::layout::EmptyLinesAroundBlockBodyStyle::NoEmptyLines);
+        result.push(Box::new(cops::layout::EmptyLinesAroundBlockBody::new(style)));
+    }
+
+    // Layout/EmptyLinesAroundExceptionHandlingKeywords
+    if config.is_cop_enabled("Layout/EmptyLinesAroundExceptionHandlingKeywords") {
+        result.push(Box::new(
+            cops::layout::EmptyLinesAroundExceptionHandlingKeywords::new(),
+        ));
+    }
+
+    // Layout/EmptyLinesAroundMethodBody
+    if config.is_cop_enabled("Layout/EmptyLinesAroundMethodBody") {
+        result.push(Box::new(cops::layout::EmptyLinesAroundMethodBody::new()));
+    }
+
     // Layout/HeredocIndentation
     if config.is_cop_enabled("Layout/HeredocIndentation") {
         let cop_config = config.get_cop_config("Layout/HeredocIndentation");
@@ -3526,6 +3553,27 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
                 .map(|s| cops::layout::EmptyLinesAroundModuleBodyStyle::parse(s))
                 .unwrap_or(cops::layout::EmptyLinesAroundModuleBodyStyle::NoEmptyLines);
             Some(Box::new(cops::layout::EmptyLinesAroundModuleBody::new(style)))
+        }
+
+        "Layout/EmptyLinesAroundBeginBody" => {
+            Some(Box::new(cops::layout::EmptyLinesAroundBeginBody::new()))
+        }
+
+        "Layout/EmptyLinesAroundBlockBody" => {
+            let cop_config = config.get_cop_config("Layout/EmptyLinesAroundBlockBody");
+            let style = cop_config
+                .and_then(|c| c.enforced_style.as_ref())
+                .map(|s| cops::layout::EmptyLinesAroundBlockBodyStyle::parse(s))
+                .unwrap_or(cops::layout::EmptyLinesAroundBlockBodyStyle::NoEmptyLines);
+            Some(Box::new(cops::layout::EmptyLinesAroundBlockBody::new(style)))
+        }
+
+        "Layout/EmptyLinesAroundExceptionHandlingKeywords" => Some(Box::new(
+            cops::layout::EmptyLinesAroundExceptionHandlingKeywords::new(),
+        )),
+
+        "Layout/EmptyLinesAroundMethodBody" => {
+            Some(Box::new(cops::layout::EmptyLinesAroundMethodBody::new()))
         }
 
         "Layout/HeredocIndentation" => {
