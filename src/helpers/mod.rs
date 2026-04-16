@@ -6,6 +6,7 @@ pub mod escape;
 pub mod guard_clause;
 pub mod hash_transform_method;
 pub mod multiline_element_indentation;
+pub mod multiline_literal_brace_layout;
 pub mod source;
 pub mod surrounding_space;
 pub mod trailing_comma;

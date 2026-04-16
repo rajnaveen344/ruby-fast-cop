@@ -460,6 +460,9 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(lint::SafeNavigationChain::new()),
         Box::new(lint::SafeNavigationConsistency::new()),
         Box::new(lint::Void::new(false)),
+        Box::new(lint::AmbiguousBlockAssociation::new()),
+        Box::new(lint::NestedMethodDefinition::new()),
+        Box::new(lint::ShadowedException::new()),
         // Layout
         Box::new(layout::EmptyLineAfterGuardClause::new()),
         Box::new(layout::EmptyLineBetweenDefs::new()),
@@ -490,6 +493,9 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(layout::SpaceAroundBlockParameters::default()),
         Box::new(layout::SpaceAroundMethodCallOperator::new()),
         Box::new(layout::SpaceAroundOperators::new()),
+        Box::new(layout::MultilineArrayBraceLayout::default()),
+        Box::new(layout::MultilineHashBraceLayout::default()),
+        Box::new(layout::MultilineMethodCallBraceLayout::default()),
         Box::new(layout::MultilineMethodCallIndentation::new(layout::MultilineMethodCallIndentationStyle::Aligned, None)),
         Box::new(layout::MultilineOperationIndentation::new(layout::MultilineOperationIndentationStyle::Aligned, None)),
         Box::new(layout::SpaceInsideArrayLiteralBrackets::new(

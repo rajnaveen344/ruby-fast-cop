@@ -17,6 +17,9 @@ mod hash_alignment;
 mod indentation_width;
 mod leading_comment_space;
 mod line_length;
+mod multiline_array_brace_layout;
+mod multiline_hash_brace_layout;
+mod multiline_method_call_brace_layout;
 mod multiline_method_call_indentation;
 mod multiline_operation_indentation;
 mod rescue_ensure_alignment;
@@ -73,6 +76,10 @@ pub use indentation_width::{
 };
 pub use leading_comment_space::LeadingCommentSpace;
 pub use line_length::{AllowHeredoc, LineLength};
+pub use crate::helpers::multiline_literal_brace_layout::BraceLayoutStyle as MultilineBraceLayoutStyle;
+pub use multiline_array_brace_layout::MultilineArrayBraceLayout;
+pub use multiline_hash_brace_layout::MultilineHashBraceLayout;
+pub use multiline_method_call_brace_layout::MultilineMethodCallBraceLayout;
 pub use multiline_method_call_indentation::{
     MultilineMethodCallIndentation,
     Style as MultilineMethodCallIndentationStyle,

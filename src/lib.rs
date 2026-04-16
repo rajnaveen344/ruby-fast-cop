@@ -342,6 +342,25 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         result.push(Box::new(cops::lint::Void::new(false)));
     }
 
+    // Lint/AmbiguousBlockAssociation
+    if config.is_cop_enabled("Lint/AmbiguousBlockAssociation") {
+        if let Some(cop) = build_single_cop("Lint/AmbiguousBlockAssociation", config) {
+            result.push(cop);
+        }
+    }
+
+    // Lint/NestedMethodDefinition
+    if config.is_cop_enabled("Lint/NestedMethodDefinition") {
+        if let Some(cop) = build_single_cop("Lint/NestedMethodDefinition", config) {
+            result.push(cop);
+        }
+    }
+
+    // Lint/ShadowedException
+    if config.is_cop_enabled("Lint/ShadowedException") {
+        result.push(Box::new(cops::lint::ShadowedException::new()));
+    }
+
     // Layout/LineLength
     if config.is_cop_enabled("Layout/LineLength") {
         let max = config
@@ -1167,6 +1186,27 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         result.push(Box::new(cops::layout::SpaceAroundBlockParameters::new(style)));
     }
 
+    // Layout/MultilineArrayBraceLayout
+    if config.is_cop_enabled("Layout/MultilineArrayBraceLayout") {
+        if let Some(cop) = build_single_cop("Layout/MultilineArrayBraceLayout", config) {
+            result.push(cop);
+        }
+    }
+
+    // Layout/MultilineHashBraceLayout
+    if config.is_cop_enabled("Layout/MultilineHashBraceLayout") {
+        if let Some(cop) = build_single_cop("Layout/MultilineHashBraceLayout", config) {
+            result.push(cop);
+        }
+    }
+
+    // Layout/MultilineMethodCallBraceLayout
+    if config.is_cop_enabled("Layout/MultilineMethodCallBraceLayout") {
+        if let Some(cop) = build_single_cop("Layout/MultilineMethodCallBraceLayout", config) {
+            result.push(cop);
+        }
+    }
+
     // Layout/MultilineMethodCallIndentation
     if config.is_cop_enabled("Layout/MultilineMethodCallIndentation") {
         let cop_config = config.get_cop_config("Layout/MultilineMethodCallIndentation");
@@ -1928,6 +1968,44 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
                 .and_then(|c| c.allow_safe_assignment)
                 .unwrap_or(true);
             Some(Box::new(cops::lint::AssignmentInCondition::new(allow_safe)))
+        }
+
+        "Lint/AmbiguousBlockAssociation" => {
+            let cop_config = config.get_cop_config("Lint/AmbiguousBlockAssociation");
+            let allowed_methods = cop_config
+                .and_then(|c| c.raw.get("AllowedMethods"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| seq.iter().filter_map(|v| v.as_str().map(|s| s.to_string())).collect())
+                .unwrap_or_default();
+            let allowed_patterns = cop_config
+                .and_then(|c| c.raw.get("AllowedPatterns"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| seq.iter().filter_map(|v| v.as_str().map(|s| s.to_string())).collect())
+                .unwrap_or_default();
+            Some(Box::new(cops::lint::AmbiguousBlockAssociation::with_config(
+                allowed_methods, allowed_patterns,
+            )))
+        }
+
+        "Lint/NestedMethodDefinition" => {
+            let cop_config = config.get_cop_config("Lint/NestedMethodDefinition");
+            let allowed_methods = cop_config
+                .and_then(|c| c.raw.get("AllowedMethods"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| seq.iter().filter_map(|v| v.as_str().map(|s| s.to_string())).collect())
+                .unwrap_or_default();
+            let allowed_patterns = cop_config
+                .and_then(|c| c.raw.get("AllowedPatterns"))
+                .and_then(|v| v.as_sequence())
+                .map(|seq| seq.iter().filter_map(|v| v.as_str().map(|s| s.to_string())).collect())
+                .unwrap_or_default();
+            Some(Box::new(cops::lint::NestedMethodDefinition::with_config(
+                allowed_methods, allowed_patterns,
+            )))
+        }
+
+        "Lint/ShadowedException" => {
+            Some(Box::new(cops::lint::ShadowedException::new()))
         }
 
         "Layout/LineLength" => {
@@ -3249,6 +3327,33 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
         }
         "Layout/SpaceAroundMethodCallOperator" => {
             Some(Box::new(cops::layout::SpaceAroundMethodCallOperator::new()))
+        }
+
+        "Layout/MultilineArrayBraceLayout" => {
+            let style = config
+                .get_cop_config("Layout/MultilineArrayBraceLayout")
+                .and_then(|c| c.enforced_style.as_ref())
+                .map(|s| cops::layout::MultilineBraceLayoutStyle::from_str(s))
+                .unwrap_or(cops::layout::MultilineBraceLayoutStyle::Symmetrical);
+            Some(Box::new(cops::layout::MultilineArrayBraceLayout::new(style)))
+        }
+
+        "Layout/MultilineHashBraceLayout" => {
+            let style = config
+                .get_cop_config("Layout/MultilineHashBraceLayout")
+                .and_then(|c| c.enforced_style.as_ref())
+                .map(|s| cops::layout::MultilineBraceLayoutStyle::from_str(s))
+                .unwrap_or(cops::layout::MultilineBraceLayoutStyle::Symmetrical);
+            Some(Box::new(cops::layout::MultilineHashBraceLayout::new(style)))
+        }
+
+        "Layout/MultilineMethodCallBraceLayout" => {
+            let style = config
+                .get_cop_config("Layout/MultilineMethodCallBraceLayout")
+                .and_then(|c| c.enforced_style.as_ref())
+                .map(|s| cops::layout::MultilineBraceLayoutStyle::from_str(s))
+                .unwrap_or(cops::layout::MultilineBraceLayoutStyle::Symmetrical);
+            Some(Box::new(cops::layout::MultilineMethodCallBraceLayout::new(style)))
         }
 
         "Layout/MultilineMethodCallIndentation" => {
