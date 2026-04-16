@@ -465,6 +465,9 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(lint::AmbiguousBlockAssociation::new()),
         Box::new(lint::AmbiguousRegexpLiteral::new()),
         Box::new(lint::NestedMethodDefinition::new()),
+        Box::new(lint::NestedPercentLiteral::new()),
+        Box::new(lint::PercentStringArray::new()),
+        Box::new(lint::PercentSymbolArray::new()),
         Box::new(lint::ShadowedException::new()),
         // Layout
         Box::new(layout::AccessModifierIndentation::new(layout::AccessModifierIndentationStyle::Indent, 2)),
@@ -577,7 +580,9 @@ pub fn all() -> Vec<Box<dyn Cop>> {
         Box::new(style::OneLineConditional::new()),
         Box::new(style::ParenthesesAroundCondition::new()),
         Box::new(style::PercentLiteralDelimiters::new()),
+        Box::new(style::PercentQLiterals::new()),
         Box::new(style::RaiseArgs::new(style::RaiseArgsStyle::Compact)), // User's config
+        Box::new(style::RedundantCapitalW::new()),
         Box::new(style::RedundantCondition::new()),
         Box::new(style::RedundantBegin::new()),
         Box::new(style::RedundantException::new()),

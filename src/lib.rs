@@ -371,6 +371,21 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         }
     }
 
+    // Lint/NestedPercentLiteral
+    if config.is_cop_enabled("Lint/NestedPercentLiteral") {
+        result.push(Box::new(cops::lint::NestedPercentLiteral::new()));
+    }
+
+    // Lint/PercentStringArray
+    if config.is_cop_enabled("Lint/PercentStringArray") {
+        result.push(Box::new(cops::lint::PercentStringArray::new()));
+    }
+
+    // Lint/PercentSymbolArray
+    if config.is_cop_enabled("Lint/PercentSymbolArray") {
+        result.push(Box::new(cops::lint::PercentSymbolArray::new()));
+    }
+
     // Lint/ShadowedException
     if config.is_cop_enabled("Lint/ShadowedException") {
         result.push(Box::new(cops::lint::ShadowedException::new()));
@@ -850,6 +865,18 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
                 m
             });
         result.push(Box::new(cops::style::PercentLiteralDelimiters::with_config(preferred)));
+    }
+
+    // Style/PercentQLiterals
+    if config.is_cop_enabled("Style/PercentQLiterals") {
+        if let Some(cop) = build_single_cop("Style/PercentQLiterals", config) {
+            result.push(cop);
+        }
+    }
+
+    // Style/RedundantCapitalW
+    if config.is_cop_enabled("Style/RedundantCapitalW") {
+        result.push(Box::new(cops::style::RedundantCapitalW::new()));
     }
 
     // Style/RedundantBegin
@@ -2197,6 +2224,18 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
             Some(Box::new(cops::lint::ShadowedException::new()))
         }
 
+        "Lint/NestedPercentLiteral" => {
+            Some(Box::new(cops::lint::NestedPercentLiteral::new()))
+        }
+
+        "Lint/PercentStringArray" => {
+            Some(Box::new(cops::lint::PercentStringArray::new()))
+        }
+
+        "Lint/PercentSymbolArray" => {
+            Some(Box::new(cops::lint::PercentSymbolArray::new()))
+        }
+
         "Layout/LineLength" => {
             let cop_config = config.get_cop_config("Layout/LineLength");
             let max = cop_config.and_then(|c| c.max).unwrap_or(120);
@@ -3006,6 +3045,20 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
                 });
             Some(Box::new(cops::style::PercentLiteralDelimiters::with_config(preferred)))
         }
+
+        "Style/PercentQLiterals" => {
+            let cop_config = config.get_cop_config("Style/PercentQLiterals");
+            let style = cop_config
+                .and_then(|c| c.enforced_style.as_ref())
+                .map(|s| match s.as_str() {
+                    "upper_case_q" => cops::style::PercentQLiteralsStyle::UpperCaseQ,
+                    _ => cops::style::PercentQLiteralsStyle::LowerCaseQ,
+                })
+                .unwrap_or(cops::style::PercentQLiteralsStyle::LowerCaseQ);
+            Some(Box::new(cops::style::PercentQLiterals::with_style(style)))
+        }
+
+        "Style/RedundantCapitalW" => Some(Box::new(cops::style::RedundantCapitalW::new())),
 
         "Style/RedundantBegin" => Some(Box::new(cops::style::RedundantBegin::new())),
 
