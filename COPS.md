@@ -1,28 +1,28 @@
 # All Cops State (606 total)
 
 Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department and default status.
-159 of 606 implemented. See [README.md](README.md) for the implementation roadmap.
+168 of 606 implemented. See [README.md](README.md) for the implementation roadmap.
 
 ## Summary
 
 | Department | Enabled | Pending | Disabled | Implemented |      Tests |
 | ---------- | ------: | ------: | -------: | ----------: | ---------: |
-| Style      |     175 |      91 |       32 |          79 |     14,567 |
-| Lint       |     100 |      50 |        4 |          28 |      5,961 |
-| Layout     |      81 |       5 |       14 |          41 |      4,654 |
+| Style      |     175 |      91 |       32 |          82 |     14,567 |
+| Lint       |     100 |      50 |        4 |          33 |      5,961 |
+| Layout     |      81 |       5 |       14 |          42 |      4,654 |
 | Metrics    |       9 |       1 |        0 |           5 |        272 |
 | Naming     |      16 |       2 |        1 |           6 |      2,217 |
 | Gemspec    |       4 |       5 |        1 |           0 |        193 |
 | Bundler    |       5 |       0 |        2 |           0 |        101 |
 | Security   |       5 |       2 |        0 |           0 |        102 |
 | Migration  |       1 |       0 |        0 |           0 |          8 |
-| **Total**  | **396** | **156** |   **54** |      **159** | **28,075** |
+| **Total**  | **396** | **156** |   **54** |      **168** | **28,075** |
 
 - **Enabled**: Runs by default on every codebase (highest priority to implement)
 - **Pending**: Runs only with `NewCops: enable` in config
 - **Disabled**: Runs only when explicitly enabled in config
 
-## Style (79/298 implemented, 14,567 tests)
+## Style (82/298 implemented, 14,567 tests)
 
 ### Enabled by Default (175 cops, 9,202 tests)
 
@@ -136,7 +136,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Style/ParallelAssignment               |    86 | -           |
 | Style/ParenthesesAroundCondition       |    30 | Implemented |
 | Style/PercentLiteralDelimiters         |    65 | Implemented |
-| Style/PercentQLiterals                 |    21 | -           |
+| Style/PercentQLiterals                 |    21 | Implemented |
 | Style/PerlBackrefs                     |    14 | -           |
 | Style/PreferredHashMethods             |     9 | -           |
 | Style/Proc                             |     6 | -           |
@@ -144,7 +144,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Style/RandomWithOffset                 |    29 | -           |
 | Style/RedundantAssignment              |    11 | -           |
 | Style/RedundantBegin                   |    63 | Implemented |
-| Style/RedundantCapitalW                |    13 | -           |
+| Style/RedundantCapitalW                |    13 | Implemented |
 | Style/RedundantCondition               |   102 | Implemented |
 | Style/RedundantConditional             |    11 | -           |
 | Style/RedundantException               |    30 | Implemented |
@@ -196,7 +196,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Style/TrivialAccessors                 |    38 | Implemented |
 | Style/UnlessElse                       |     5 | -           |
 | Style/UnpackFirst                      |    11 | -           |
-| Style/VariableInterpolation            |     9 | -           |
+| Style/VariableInterpolation            |     9 | Implemented |
 | Style/WhenThen                         |     4 | -           |
 | Style/WhileUntilDo                     |     6 | -           |
 | Style/WhileUntilModifier               |    34 | Implemented |
@@ -337,7 +337,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Style/UnlessLogicalOperators               |    28 | -           |
 | Style/YodaExpression                       |    10 | -           |
 
-## Lint (28/154 implemented, 5,961 tests)
+## Lint (33/154 implemented, 5,961 tests)
 
 ### Enabled by Default (100 cops, 3,859 tests)
 
@@ -368,7 +368,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Lint/EmptyEnsure                         |     2 | -           |
 | Lint/EmptyExpression                     |    12 | -           |
 | Lint/EmptyFile                           |     2 | -           |
-| Lint/EmptyInterpolation                  |    12 | -           |
+| Lint/EmptyInterpolation                  |    12 | Implemented |
 | Lint/EmptyWhen                           |    16 | -           |
 | Lint/EnsureReturn                        |     5 | -           |
 | Lint/ErbNewArguments                     |    10 | -           |
@@ -390,15 +390,15 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Lint/MixedRegexpCaptureTypes             |    12 | -           |
 | Lint/MultipleComparison                  |    20 | -           |
 | Lint/NestedMethodDefinition              |    38 | Implemented |
-| Lint/NestedPercentLiteral                |    11 | -           |
+| Lint/NestedPercentLiteral                |    11 | Implemented |
 | Lint/NextWithoutAccumulator              |    18 | -           |
 | Lint/NonDeterministicRequireOrder        |    28 | -           |
 | Lint/NonLocalExitFromIterator            |    14 | -           |
 | Lint/OrderedMagicComments                |    10 | -           |
 | Lint/OutOfRangeRegexpRef                 |   122 | Implemented |
 | Lint/ParenthesesAsGroupedExpression      |    26 | -           |
-| Lint/PercentStringArray                  |    22 | -           |
-| Lint/PercentSymbolArray                  |    12 | -           |
+| Lint/PercentStringArray                  |    22 | Implemented |
+| Lint/PercentSymbolArray                  |    12 | Implemented |
 | Lint/RaiseException                      |    15 | -           |
 | Lint/RandOne                             |    16 | -           |
 | Lint/RedundantCopDisableDirective        |    44 | -           |
@@ -406,7 +406,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Lint/RedundantRequireStatement           |    15 | -           |
 | Lint/RedundantSafeNavigation             |    72 | Implemented |
 | Lint/RedundantSplatExpansion             |    59 | Implemented |
-| Lint/RedundantStringCoercion             |    18 | -           |
+| Lint/RedundantStringCoercion             |    18 | Implemented |
 | Lint/RedundantWithIndex                  |    17 | -           |
 | Lint/RedundantWithObject                 |    14 | -           |
 | Lint/RegexpAsCondition                   |     5 | -           |
@@ -508,7 +508,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Lint/NumberConversion            |    36 | -      |
 | Lint/ShadowingOuterLocalVariable |    31 | -      |
 
-## Layout (41/100 implemented, 4,654 tests)
+## Layout (42/100 implemented, 4,654 tests)
 
 ### Enabled by Default (81 cops, 4,067 tests)
 
@@ -592,7 +592,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Layout/SpaceInsidePercentLiteralDelimiters       |   262 | Implemented |
 | Layout/SpaceInsideRangeLiteral                   |     7 | -           |
 | Layout/SpaceInsideReferenceBrackets              |    47 | Implemented |
-| Layout/SpaceInsideStringInterpolation            |    12 | -           |
+| Layout/SpaceInsideStringInterpolation            |    12 | Implemented |
 | Layout/TrailingEmptyLines                        |    18 | Implemented |
 | Layout/TrailingWhitespace                        |    19 | Implemented |
 
@@ -755,3 +755,537 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Cop                      | Tests | Status |
 | ------------------------ | ----: | ------ |
 | Migration/DepartmentName |     8 | -      |
+
+## Implementation Clusters (Unimplemented, Enabled by Default)
+
+236 cops / 3539 tests, grouped into 57 clusters for future batches.
+
+- **Mixin clusters** share a RuboCop mixin — port `RuboCop::Cop::<Mixin>` once into `src/helpers/`, reuse across all cops in the cluster.
+- **Topic clusters** have no unique shared mixin — grouped by name-family / responsibility, implement individually.
+- Three mixins (`RangeHelp`, `Alignment`, `ConfigurableEnforcedStyle`) are too generic to cluster on — they show up as `_(+ X)_` annotations.
+- Difficulty is rough (from max Ruby LOC in cluster): Easy <50, Med <120, Hard ≥120.
+- Tests & status live in the tables above — this section is just the cop → cluster map.
+
+| # | Cluster | Kind | Cops | Tests | Diff |
+|--:|---------|------|-----:|------:|------|
+| 1 | Other | topic | 21 | 256 | Med |
+| 2 | Method def/params | topic | 15 | 244 | Med |
+| 3 | Block/lambda/proc | topic | 15 | 195 | Med |
+| 4 | Redundant/Useless | topic | 13 | 182 | Med |
+| 5 | Regexp/numeric | topic | 10 | 165 | Med |
+| 6 | Rescue/ensure/exception | topic | 9 | 165 | Med |
+| 7 | Class/module/attr | topic | 12 | 155 | Hard |
+| 8 | Alignment/spacing | topic | 9 | 147 | Med |
+| 9 | Return/ctrl flow | topic | 10 | 116 | Med |
+| 10 | RescueNode | mixin | 3 | 113 | Hard |
+| 11 | Comparison/equality | topic | 7 | 109 | Med |
+| 12 | Require/load/file | topic | 9 | 109 | Med |
+| 13 | PrecedingFollowingAlignment | mixin | 2 | 94 | Med |
+| 14 | AllowedMethods | mixin | 5 | 91 | Med |
+| 15 | Empty constructs | topic | 9 | 90 | Med |
+| 16 | String/interpolation | topic | 3 | 77 | Med |
+| 17 | Hash/array/dig | topic | 6 | 73 | Med |
+| 18 | Multiline expr/body | topic | 4 | 71 | Med |
+| 19 | EmptyLinesAroundBody | mixin | 4 | 69 | Med |
+| 20 | SurroundingSpace | mixin | 3 | 62 | Med |
+| 21 | Cop directive comments | topic | 3 | 58 | Hard |
+| 22 | Heredoc | mixin | 3 | 56 | Med |
+| 23 | Duplicate detection | topic | 5 | 55 | Med |
+| 24 | Deprecated/legacy APIs | topic | 4 | 52 | Med |
+| 25 | AllowedPattern | mixin | 2 | 50 | Med |
+| 26 | Eval/send/URI | topic | 2 | 42 | Hard |
+| 27 | NegativeConditional | mixin | 3 | 39 | Easy |
+| 28 | UncommunicativeName | mixin | 2 | 36 | Easy |
+| 29 | Percent literal | topic | 1 | 36 | Easy |
+| 30 | Naming | topic | 2 | 36 | Easy |
+| 31 | OrderedGemNode | mixin | 2 | 35 | Easy |
+| 32 | CommentsHelp | mixin | 2 | 33 | Med |
+| 33 | Negated/Not | topic | 2 | 30 | Med |
+| 34 | MultilineLiteralBraceLayout | mixin | 1 | 26 | Easy |
+| 35 | TrailingBody | mixin | 3 | 26 | Easy |
+| 36 | VisibilityHelp | mixin | 1 | 26 | Hard |
+| 37 | MethodComplexity | mixin | 1 | 25 | Easy |
+| 38 | FrozenStringLiteral | mixin | 2 | 25 | Med |
+| 39 | GemspecHelp | mixin | 2 | 22 | Med |
+| 40 | CodeLength | mixin | 1 | 21 | Easy |
+| 41 | Gemspec/Bundler | topic | 2 | 21 | Med |
+| 42 | MultilineElementIndentation | mixin | 1 | 20 | Easy |
+| 43 | Nested constructs | topic | 2 | 20 | Med |
+| 44 | StatementModifier | mixin | 2 | 17 | Easy |
+| 45 | Security | topic | 1 | 16 | Easy |
+| 46 | SpaceBeforePunctuation | mixin | 2 | 15 | Easy |
+| 47 | DigHelp | mixin | 1 | 15 | Easy |
+| 48 | StringLiteralsHelp | mixin | 1 | 13 | Easy |
+| 49 | Magic comments/encoding | topic | 1 | 13 | Easy |
+| 50 | EmptyParameter | mixin | 2 | 12 | Easy |
+| 51 | Trailing body/comma | topic | 2 | 12 | Easy |
+| 52 | OnNormalIfUnless | mixin | 1 | 11 | Easy |
+| 53 | CheckAssignment | mixin | 1 | 10 | Easy |
+| 54 | IntegerNode | mixin | 1 | 10 | Med |
+| 55 | SpaceAfterPunctuation | mixin | 1 | 9 | Easy |
+| 56 | MinBranchesCount | mixin | 1 | 8 | Easy |
+| 57 | StringHelp | mixin | 1 | 5 | Easy |
+
+### 1. Other — 21 cops, 256 tests (Med)
+Topic family, no unique shared mixin — implement individually.
+
+- `Style/CommandLiteral` _(+ ConfigurableEnforcedStyle)_
+- `Lint/ParenthesesAsGroupedExpression` _(+ RangeHelp)_
+- `Style/Alias` _(+ ConfigurableEnforcedStyle)_
+- `Style/OrAssignment`
+- `Style/CombinableLoops`
+- `Lint/AmbiguousOperator`
+- `Style/PerlBackrefs`
+- `Style/UnpackFirst`
+- `Lint/BooleanSymbol`
+- `Lint/UriEscapeUnescape`
+- `Style/DefWithParentheses` _(+ RangeHelp)_
+- `Lint/IneffectiveAccessModifier`
+- `Style/MissingRespondToMissing`
+- `Migration/DepartmentName` _(+ RangeHelp)_
+- `Lint/DisjunctiveAssignmentInConstructor`
+- `Style/GlobalStdStream`
+- `Style/Strip` _(+ RangeHelp)_
+- `Style/StderrPuts` _(+ RangeHelp)_
+- `Style/SymbolLiteral`
+- `Lint/ToJSON`
+- `Lint/Syntax`
+
+### 2. Method def/params — 15 cops, 244 tests (Med)
+Topic family, no unique shared mixin — implement individually.
+
+- `Layout/ArgumentAlignment` _(+ Alignment)_
+- `Naming/AccessorMethodName`
+- `Lint/UnderscorePrefixedVariableName`
+- `Layout/ParameterAlignment` _(+ Alignment)_
+- `Lint/ReturnInVoidContext`
+- `Metrics/ParameterLists`
+- `Style/SingleLineMethods` _(+ Alignment)_
+- `Naming/BinaryOperatorParameterName`
+- `Lint/CircularArgumentReference`
+- `Style/OptionalArguments`
+- `Lint/TopLevelReturnWithArgument`
+- `Style/KeywordParametersOrder` _(+ RangeHelp)_
+- `Style/ColonMethodCall`
+- `Layout/SpaceAfterMethodName` _(+ RangeHelp)_
+- `Style/ColonMethodDefinition`
+
+### 3. Block/lambda/proc — 15 cops, 195 tests (Med)
+Topic family, no unique shared mixin — implement individually.
+
+- `Metrics/BlockNesting`
+- `Style/ExplicitBlockArgument` _(+ RangeHelp)_
+- `Style/LambdaCall` _(+ ConfigurableEnforcedStyle)_
+- `Lint/NextWithoutAccumulator`
+- `Layout/SpaceBeforeBlockBraces` _(+ ConfigurableEnforcedStyle, RangeHelp)_
+- `Layout/BlockEndNewline` _(+ Alignment)_
+- `Style/EachWithObject` _(+ RangeHelp)_
+- `Layout/SpaceInLambdaLiteral` _(+ ConfigurableEnforcedStyle, RangeHelp)_
+- `Lint/NonLocalExitFromIterator`
+- `Style/StabbyLambdaParentheses` _(+ ConfigurableEnforcedStyle)_
+- `Lint/EachWithObjectArgument`
+- `Style/Proc`
+- `Style/BlockComments` _(+ RangeHelp)_
+- `Style/EndBlock`
+- `Style/BeginBlock`
+
+### 4. Redundant/Useless — 13 cops, 182 tests (Med)
+Topic family, no unique shared mixin — implement individually.
+
+- `Lint/UselessTimes` _(+ RangeHelp)_
+- `Style/RedundantPercentQ`
+- `Lint/UselessSetterCall`
+- `Lint/RedundantWithIndex` _(+ RangeHelp)_
+- `Lint/UselessMethodDefinition`
+- `Lint/RedundantRequireStatement` _(+ RangeHelp)_
+- `Lint/RedundantWithObject` _(+ RangeHelp)_
+- `Style/RedundantSelfAssignment` _(+ RangeHelp)_
+- `Style/RedundantConditional` _(+ Alignment)_
+- `Style/RedundantAssignment`
+- `Style/RedundantSortBy` _(+ RangeHelp)_
+- `Style/RedundantFileExtensionInRequire` _(+ RangeHelp)_
+- `Lint/UselessElseWithoutRescue`
+
+### 5. Regexp/numeric — 10 cops, 165 tests (Med)
+Topic family, no unique shared mixin — implement individually.
+
+- `Style/RandomWithOffset`
+- `Style/SlicingWithRange`
+- `Style/ExponentialNotation` _(+ ConfigurableEnforcedStyle)_
+- `Style/EvenOdd`
+- `Lint/RandOne`
+- `Lint/InterpolationCheck`
+- `Lint/MixedRegexpCaptureTypes`
+- `Lint/UriRegexp`
+- `Lint/FloatOutOfRange`
+- `Lint/RegexpAsCondition`
+
+### 6. Rescue/ensure/exception — 9 cops, 165 tests (Med)
+Topic family, no unique shared mixin — implement individually.
+
+- `Naming/RescuedExceptionsVariableName`
+- `Style/SignalException` _(+ ConfigurableEnforcedStyle)_
+- `Lint/SuppressedException`
+- `Lint/MissingSuper`
+- `Lint/RaiseException`
+- `Lint/InheritException` _(+ ConfigurableEnforcedStyle)_
+- `Style/StructInheritance` _(+ RangeHelp)_
+- `Lint/RescueException`
+- `Lint/EnsureReturn`
+
+### 7. Class/module/attr — 12 cops, 155 tests (Hard)
+Topic family, no unique shared mixin — implement individually.
+
+- `Style/ClassAndModuleChildren` _(+ Alignment, ConfigurableEnforcedStyle, RangeHelp)_
+- `Style/MixinUsage`
+- `Style/MixinGrouping` _(+ ConfigurableEnforcedStyle)_
+- `Lint/SendWithMixinArgument` _(+ RangeHelp)_
+- `Style/BisectedAttrAccessor` _(+ RangeHelp)_
+- `Style/Attr` _(+ RangeHelp)_
+- `Style/ModuleFunction` _(+ ConfigurableEnforcedStyle)_
+- `Lint/StructNewOverride`
+- `Style/ClassVars`
+- `Style/ClassMethods`
+- `Naming/ClassAndModuleCamelCase`
+- `Style/ClassCheck` _(+ ConfigurableEnforcedStyle)_
+
+### 8. Alignment/spacing — 9 cops, 147 tests (Med)
+Topic family, no unique shared mixin — implement individually.
+
+- `Layout/DotPosition` _(+ ConfigurableEnforcedStyle, RangeHelp)_
+- `Layout/CommentIndentation` _(+ Alignment)_
+- `Layout/IndentationStyle` _(+ Alignment, ConfigurableEnforcedStyle, RangeHelp)_
+- `Layout/EndOfLine` _(+ ConfigurableEnforcedStyle, RangeHelp)_
+- `Layout/SpaceAfterColon`
+- `Layout/InitialIndentation` _(+ RangeHelp)_
+- `Layout/SpaceInsideRangeLiteral`
+- `Layout/SpaceAfterNot` _(+ RangeHelp)_
+- `Layout/SpaceBeforeComment`
+
+### 9. Return/ctrl flow — 10 cops, 116 tests (Med)
+Topic family, no unique shared mixin — implement individually.
+
+- `Style/InfiniteLoop` _(+ Alignment)_
+- `Style/IfInsideElse` _(+ RangeHelp)_
+- `Style/EachForSimpleLoop`
+- `Layout/ConditionPosition` _(+ RangeHelp)_
+- `Lint/ElseLayout` _(+ Alignment, RangeHelp)_
+- `Style/WhileUntilDo`
+- `Style/UnlessElse`
+- `Lint/Loop`
+- `Style/WhenThen`
+- `Lint/FlipFlop`
+
+### 10. `RescueNode` mixin — 3 cops, 113 tests (Hard)
+Port `RuboCop::Cop::RescueNode` once → reuse across all cops in this cluster.
+
+- `Style/ParallelAssignment`
+- `Style/RescueModifier` _(+ Alignment, RangeHelp)_
+- `Lint/DuplicateRescueException`
+
+### 11. Comparison/equality — 7 cops, 109 tests (Med)
+Topic family, no unique shared mixin — implement individually.
+
+- `Style/CaseEquality`
+- `Lint/BinaryOperatorWithIdenticalOperands`
+- `Lint/MultipleComparison`
+- `Lint/FloatComparison`
+- `Lint/IdentityComparison`
+- `Style/NilComparison` _(+ ConfigurableEnforcedStyle)_
+- `Lint/HashCompareByIdentity`
+
+### 12. Require/load/file — 9 cops, 109 tests (Med)
+Topic family, no unique shared mixin — implement individually.
+
+- `Lint/NonDeterministicRequireOrder`
+- `Gemspec/RequiredRubyVersion`
+- `Lint/RequireParentheses` _(+ RangeHelp)_
+- `Style/ExpandPathArguments` _(+ RangeHelp)_
+- `Security/JSONLoad`
+- `Lint/ScriptPermission`
+- `Security/YAMLLoad`
+- `Security/MarshalLoad`
+- `Style/Dir`
+
+### 13. `PrecedingFollowingAlignment` mixin — 2 cops, 94 tests (Med)
+Port `RuboCop::Cop::PrecedingFollowingAlignment` once → reuse across all cops in this cluster.
+
+- `Layout/ExtraSpacing` _(+ RangeHelp)_
+- `Layout/SpaceBeforeFirstArg` _(+ RangeHelp)_
+
+### 14. `AllowedMethods` mixin — 5 cops, 91 tests (Med)
+Port `RuboCop::Cop::AllowedMethods` once → reuse across all cops in this cluster.
+
+- `Lint/ConstantDefinitionInBlock`
+- `Naming/PredicatePrefix`
+- `Layout/EmptyLinesAroundAttributeAccessor` _(+ RangeHelp)_
+- `Style/NestedParenthesizedCalls` _(+ RangeHelp)_
+- `Style/OptionalBooleanParameter`
+
+### 15. Empty constructs — 9 cops, 90 tests (Med)
+Topic family, no unique shared mixin — implement individually.
+
+- `Layout/EmptyLinesAroundArguments` _(+ RangeHelp)_
+- `Layout/EmptyLineAfterMagicComment` _(+ RangeHelp)_
+- `Layout/EmptyComment` _(+ RangeHelp)_
+- `Lint/EmptyExpression`
+- `Layout/LeadingEmptyLines`
+- `Layout/EmptyLines` _(+ RangeHelp)_
+- `Lint/SafeNavigationWithEmpty`
+- `Lint/EmptyEnsure`
+- `Lint/EmptyFile`
+
+### 16. String/interpolation — 3 cops, 77 tests (Med)
+Topic family, no unique shared mixin — implement individually.
+
+- `Style/FormatString` _(+ ConfigurableEnforcedStyle)_
+- `Style/LineEndConcatenation` _(+ RangeHelp)_
+- `Lint/ImplicitStringConcatenation`
+
+### 17. Hash/array/dig — 6 cops, 73 tests (Med)
+Topic family, no unique shared mixin — implement individually.
+
+- `Layout/ArrayAlignment` _(+ Alignment)_
+- `Style/HashAsLastArrayItem` _(+ RangeHelp, ConfigurableEnforcedStyle)_
+- `Style/MinMax`
+- `Style/PreferredHashMethods` _(+ ConfigurableEnforcedStyle)_
+- `Style/ArrayJoin`
+- `Style/ArrayIntersectWithSingleElement`
+
+### 18. Multiline expr/body — 4 cops, 71 tests (Med)
+Topic family, no unique shared mixin — implement individually.
+
+- `Layout/MultilineBlockLayout` _(+ RangeHelp)_
+- `Style/MultilineMemoization` _(+ Alignment, ConfigurableEnforcedStyle)_
+- `Style/MultilineWhenThen` _(+ RangeHelp)_
+- `Style/MultilineBlockChain` _(+ RangeHelp)_
+
+### 19. `EmptyLinesAroundBody` mixin — 4 cops, 69 tests (Med)
+Port `RuboCop::Cop::EmptyLinesAroundBody` once → reuse across all cops in this cluster.
+
+- `Layout/EmptyLinesAroundExceptionHandlingKeywords`
+- `Layout/EmptyLinesAroundBlockBody`
+- `Layout/EmptyLinesAroundMethodBody`
+- `Layout/EmptyLinesAroundBeginBody`
+
+### 20. `SurroundingSpace` mixin — 3 cops, 62 tests (Med)
+Port `RuboCop::Cop::SurroundingSpace` once → reuse across all cops in this cluster.
+
+- `Layout/SpaceInsideParens` _(+ RangeHelp, ConfigurableEnforcedStyle)_
+- `Lint/RedundantCopEnableDirective` _(+ RangeHelp)_
+- `Layout/SpaceAroundEqualsInParameterDefault` _(+ ConfigurableEnforcedStyle, RangeHelp)_
+
+### 21. Cop directive comments — 3 cops, 58 tests (Hard)
+Topic family, no unique shared mixin — implement individually.
+
+- `Lint/RedundantCopDisableDirective` _(+ RangeHelp)_
+- `Lint/MissingCopEnableDirective` _(+ RangeHelp)_
+- `Style/DoubleCopDisableDirective`
+
+### 22. `Heredoc` mixin — 3 cops, 56 tests (Med)
+Port `RuboCop::Cop::Heredoc` once → reuse across all cops in this cluster.
+
+- `Naming/HeredocDelimiterCase` _(+ ConfigurableEnforcedStyle)_
+- `Naming/HeredocDelimiterNaming`
+- `Layout/ClosingHeredocIndentation`
+
+### 23. Duplicate detection — 5 cops, 55 tests (Med)
+Topic family, no unique shared mixin — implement individually.
+
+- `Bundler/DuplicatedGroup` _(+ RangeHelp)_
+- `Lint/DuplicateRequire` _(+ RangeHelp)_
+- `Bundler/DuplicatedGem` _(+ RangeHelp)_
+- `Lint/DuplicateCaseCondition`
+- `Lint/DuplicateElsifCondition`
+
+### 24. Deprecated/legacy APIs — 4 cops, 52 tests (Med)
+Topic family, no unique shared mixin — implement individually.
+
+- `Lint/DeprecatedOpenSSLConstant` _(+ RangeHelp)_
+- `Lint/UnifiedInteger`
+- `Lint/ErbNewArguments` _(+ RangeHelp)_
+- `Lint/BigDecimalNew`
+
+### 25. `AllowedPattern` mixin — 2 cops, 50 tests (Med)
+Port `RuboCop::Cop::AllowedPattern` once → reuse across all cops in this cluster.
+
+- `Lint/UnreachableLoop`
+- `Style/ClassEqualityComparison` _(+ RangeHelp, AllowedMethods)_
+
+### 26. Eval/send/URI — 2 cops, 42 tests (Hard)
+Topic family, no unique shared mixin — implement individually.
+
+- `Style/EvalWithLocation`
+- `Security/Eval`
+
+### 27. `NegativeConditional` mixin — 3 cops, 39 tests (Easy)
+Port `RuboCop::Cop::NegativeConditional` once → reuse across all cops in this cluster.
+
+- `Style/NegatedIf` _(+ ConfigurableEnforcedStyle)_
+- `Style/NegatedUnless` _(+ ConfigurableEnforcedStyle)_
+- `Style/NegatedWhile`
+
+### 28. `UncommunicativeName` mixin — 2 cops, 36 tests (Easy)
+Port `RuboCop::Cop::UncommunicativeName` once → reuse across all cops in this cluster.
+
+- `Naming/MethodParameterName`
+- `Naming/BlockParameterName`
+
+### 29. Percent literal — 1 cops, 36 tests (Easy)
+Topic family, no unique shared mixin — implement individually.
+
+- `Style/BarePercentLiterals` _(+ ConfigurableEnforcedStyle)_
+
+### 30. Naming — 2 cops, 36 tests (Easy)
+Topic family, no unique shared mixin — implement individually.
+
+- `Naming/ConstantName`
+- `Naming/AsciiIdentifiers` _(+ RangeHelp)_
+
+### 31. `OrderedGemNode` mixin — 2 cops, 35 tests (Easy)
+Port `RuboCop::Cop::OrderedGemNode` once → reuse across all cops in this cluster.
+
+- `Gemspec/OrderedDependencies`
+- `Bundler/OrderedGems`
+
+### 32. `CommentsHelp` mixin — 2 cops, 33 tests (Med)
+Port `RuboCop::Cop::CommentsHelp` once → reuse across all cops in this cluster.
+
+- `Style/MultilineTernaryOperator`
+- `Lint/EmptyWhen`
+
+### 33. Negated/Not — 2 cops, 30 tests (Med)
+Topic family, no unique shared mixin — implement individually.
+
+- `Style/NonNilCheck`
+- `Style/Not` _(+ RangeHelp)_
+
+### 34. `MultilineLiteralBraceLayout` mixin — 1 cops, 26 tests (Easy)
+Port `RuboCop::Cop::MultilineLiteralBraceLayout` once → reuse across all cops in this cluster.
+
+- `Layout/MultilineMethodDefinitionBraceLayout`
+
+### 35. `TrailingBody` mixin — 3 cops, 26 tests (Easy)
+Port `RuboCop::Cop::TrailingBody` once → reuse across all cops in this cluster.
+
+- `Style/TrailingBodyOnMethodDefinition` _(+ Alignment)_
+- `Style/TrailingBodyOnModule` _(+ Alignment)_
+- `Style/TrailingBodyOnClass` _(+ Alignment)_
+
+### 36. `VisibilityHelp` mixin — 1 cops, 26 tests (Hard)
+Port `RuboCop::Cop::VisibilityHelp` once → reuse across all cops in this cluster.
+
+- `Style/AccessorGrouping` _(+ ConfigurableEnforcedStyle, RangeHelp)_
+
+### 37. `MethodComplexity` mixin — 1 cops, 25 tests (Easy)
+Port `RuboCop::Cop::MethodComplexity` once → reuse across all cops in this cluster.
+
+- `Metrics/AbcSize`
+
+### 38. `FrozenStringLiteral` mixin — 2 cops, 25 tests (Med)
+Port `RuboCop::Cop::FrozenStringLiteral` once → reuse across all cops in this cluster.
+
+- `Style/RedundantFetchBlock` _(+ RangeHelp)_
+- `Lint/OrderedMagicComments`
+
+### 39. `GemspecHelp` mixin — 2 cops, 22 tests (Med)
+Port `RuboCop::Cop::GemspecHelp` once → reuse across all cops in this cluster.
+
+- `Gemspec/DuplicatedAssignment` _(+ RangeHelp)_
+- `Gemspec/RubyVersionGlobalsUsage`
+
+### 40. `CodeLength` mixin — 1 cops, 21 tests (Easy)
+Port `RuboCop::Cop::CodeLength` once → reuse across all cops in this cluster.
+
+- `Metrics/ModuleLength`
+
+### 41. Gemspec/Bundler — 2 cops, 21 tests (Med)
+Topic family, no unique shared mixin — implement individually.
+
+- `Bundler/GemFilename` _(+ ConfigurableEnforcedStyle)_
+- `Bundler/InsecureProtocolSource`
+
+### 42. `MultilineElementIndentation` mixin — 1 cops, 20 tests (Easy)
+Port `RuboCop::Cop::MultilineElementIndentation` once → reuse across all cops in this cluster.
+
+- `Layout/FirstParameterIndentation` _(+ Alignment, ConfigurableEnforcedStyle)_
+
+### 43. Nested constructs — 2 cops, 20 tests (Med)
+Topic family, no unique shared mixin — implement individually.
+
+- `Style/NestedModifier` _(+ RangeHelp)_
+- `Style/NestedTernaryOperator` _(+ RangeHelp)_
+
+### 44. `StatementModifier` mixin — 2 cops, 17 tests (Easy)
+Port `RuboCop::Cop::StatementModifier` once → reuse across all cops in this cluster.
+
+- `Style/MultilineIfModifier` _(+ Alignment)_
+- `Style/IfUnlessModifierOfIfUnless`
+
+### 45. Security — 1 cops, 16 tests (Easy)
+Topic family, no unique shared mixin — implement individually.
+
+- `Security/Open`
+
+### 46. `SpaceBeforePunctuation` mixin — 2 cops, 15 tests (Easy)
+Port `RuboCop::Cop::SpaceBeforePunctuation` once → reuse across all cops in this cluster.
+
+- `Layout/SpaceBeforeSemicolon`
+- `Layout/SpaceBeforeComma`
+
+### 47. `DigHelp` mixin — 1 cops, 15 tests (Easy)
+Port `RuboCop::Cop::DigHelp` once → reuse across all cops in this cluster.
+
+- `Style/SingleArgumentDig`
+
+### 48. `StringLiteralsHelp` mixin — 1 cops, 13 tests (Easy)
+Port `RuboCop::Cop::StringLiteralsHelp` once → reuse across all cops in this cluster.
+
+- `Style/StringLiteralsInInterpolation` _(+ ConfigurableEnforcedStyle, StringHelp)_
+
+### 49. Magic comments/encoding — 1 cops, 13 tests (Easy)
+Topic family, no unique shared mixin — implement individually.
+
+- `Style/Encoding` _(+ RangeHelp)_
+
+### 50. `EmptyParameter` mixin — 2 cops, 12 tests (Easy)
+Port `RuboCop::Cop::EmptyParameter` once → reuse across all cops in this cluster.
+
+- `Style/EmptyBlockParameter` _(+ RangeHelp)_
+- `Style/EmptyLambdaParameter` _(+ RangeHelp)_
+
+### 51. Trailing body/comma — 2 cops, 12 tests (Easy)
+Topic family, no unique shared mixin — implement individually.
+
+- `Style/TrailingMethodEndStatement`
+- `Lint/TrailingCommaInAttributeDeclaration` _(+ RangeHelp)_
+
+### 52. `OnNormalIfUnless` mixin — 1 cops, 11 tests (Easy)
+Port `RuboCop::Cop::OnNormalIfUnless` once → reuse across all cops in this cluster.
+
+- `Style/MultilineIfThen` _(+ RangeHelp)_
+
+### 53. `CheckAssignment` mixin — 1 cops, 10 tests (Easy)
+Port `RuboCop::Cop::CheckAssignment` once → reuse across all cops in this cluster.
+
+- `Layout/AssignmentIndentation` _(+ Alignment)_
+
+### 54. `IntegerNode` mixin — 1 cops, 10 tests (Med)
+Port `RuboCop::Cop::IntegerNode` once → reuse across all cops in this cluster.
+
+- `Style/NumericLiteralPrefix`
+
+### 55. `SpaceAfterPunctuation` mixin — 1 cops, 9 tests (Easy)
+Port `RuboCop::Cop::SpaceAfterPunctuation` once → reuse across all cops in this cluster.
+
+- `Layout/SpaceAfterSemicolon`
+
+### 56. `MinBranchesCount` mixin — 1 cops, 8 tests (Easy)
+Port `RuboCop::Cop::MinBranchesCount` once → reuse across all cops in this cluster.
+
+- `Style/HashLikeCase`
+
+### 57. `StringHelp` mixin — 1 cops, 5 tests (Easy)
+Port `RuboCop::Cop::StringHelp` once → reuse across all cops in this cluster.
+
+- `Style/CharacterLiteral`

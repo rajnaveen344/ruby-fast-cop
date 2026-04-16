@@ -14,7 +14,7 @@ Exceptions (auto-clarity — drop caveman temporarily, resume after):
 
 **Never cavemanize:** code, commit messages, PR descriptions, TOML fixtures, error strings. These stay normal.
 
-**Off switch:** user says "stop caveman" or "normal mode". Subagents get explicit `/caveman full` instruction in their prompt (per feedback_subagent_caveman memory).
+**Off switch:** user says "stop caveman" or "normal mode". Subagents get explicit `/caveman ultra` instruction in their prompt (per feedback_subagent_caveman memory).
 
 ## Project Overview
 
