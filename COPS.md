@@ -1,7 +1,7 @@
 # All Cops State (606 total)
 
 Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department and default status.
-158 of 606 implemented. See [README.md](README.md) for the implementation roadmap.
+159 of 606 implemented. See [README.md](README.md) for the implementation roadmap.
 
 ## Summary
 
@@ -9,14 +9,14 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | ---------- | ------: | ------: | -------: | ----------: | ---------: |
 | Style      |     175 |      91 |       32 |          79 |     14,567 |
 | Lint       |     100 |      50 |        4 |          28 |      5,961 |
-| Layout     |      81 |       5 |       14 |          40 |      4,654 |
+| Layout     |      81 |       5 |       14 |          41 |      4,654 |
 | Metrics    |       9 |       1 |        0 |           5 |        272 |
 | Naming     |      16 |       2 |        1 |           6 |      2,217 |
 | Gemspec    |       4 |       5 |        1 |           0 |        193 |
 | Bundler    |       5 |       0 |        2 |           0 |        101 |
 | Security   |       5 |       2 |        0 |           0 |        102 |
 | Migration  |       1 |       0 |        0 |           0 |          8 |
-| **Total**  | **396** | **156** |   **54** |      **158** | **28,075** |
+| **Total**  | **396** | **156** |   **54** |      **159** | **28,075** |
 
 - **Enabled**: Runs by default on every codebase (highest priority to implement)
 - **Pending**: Runs only with `NewCops: enable` in config
@@ -508,7 +508,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Lint/NumberConversion            |    36 | -      |
 | Lint/ShadowingOuterLocalVariable |    31 | -      |
 
-## Layout (40/100 implemented, 4,654 tests)
+## Layout (41/100 implemented, 4,654 tests)
 
 ### Enabled by Default (81 cops, 4,067 tests)
 
@@ -577,7 +577,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Layout/SpaceAroundEqualsInParameterDefault       |    11 | -           |
 | Layout/SpaceAroundKeyword                        |   112 | Implemented |
 | Layout/SpaceAroundMethodCallOperator             |    51 | Implemented |
-| Layout/SpaceAroundOperators                      |    99 | -           |
+| Layout/SpaceAroundOperators                      |    99 | Implemented |
 | Layout/SpaceBeforeBlockBraces                    |    18 | -           |
 | Layout/SpaceBeforeComma                          |     6 | -           |
 | Layout/SpaceBeforeComment                        |     5 | -           |

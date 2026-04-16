@@ -20,7 +20,7 @@ Exceptions (auto-clarity — drop caveman temporarily, resume after):
 
 ruby-fast-cop is a high-performance Ruby linter written in Rust, designed as a drop-in replacement for RuboCop. The goal is 50-100x faster linting by rewriting cops in Rust, similar to how Ruff replaced Python linters.
 
-**Current state:** 105 of 606 cops implemented (3 known edge-case test gaps in Cluster 1 multiline alignment), 606 TOML test fixtures with ~28,075 test cases extracted from RuboCop v1.85.0's RSpec suite.
+**Current state:** 159 of 606 cops implemented (all fixtures passing), 606 TOML test fixtures with ~28,075 test cases extracted from RuboCop v1.85.0's RSpec suite.
 
 ### Boilerplate Conventions
 - **`node_name!` macro** (defined in `src/lib.rs`): Use `node_name!(node)` instead of `String::from_utf8_lossy(node.name().as_slice())`. Works with any Prism node that has `.name().as_slice()` — including chained access like `node_name!(n.as_constant_read_node().unwrap())`.

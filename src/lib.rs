@@ -1335,8 +1335,11 @@ pub fn build_cops_from_config(config: &Config) -> Vec<Box<dyn cops::Cop>> {
         let hash_table_style = config
             .get_cop_config("Layout/HashAlignment")
             .and_then(|c| c.raw.get("EnforcedHashRocketStyle"))
-            .and_then(|v| v.as_str())
-            .map(|s| s == "table")
+            .map(|v| match v {
+                serde_yaml::Value::String(s) => s == "table",
+                serde_yaml::Value::Sequence(seq) => seq.iter().any(|x| x.as_str() == Some("table")),
+                _ => false,
+            })
             .unwrap_or(false);
         result.push(Box::new(cops::layout::SpaceAroundOperators::with_config(allow_for_alignment, exp, sl, hash_table_style)));
     }
@@ -3763,8 +3766,11 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
             let hash_table_style = config
                 .get_cop_config("Layout/HashAlignment")
                 .and_then(|c| c.raw.get("EnforcedHashRocketStyle"))
-                .and_then(|v| v.as_str())
-                .map(|s| s == "table")
+                .map(|v| match v {
+                    serde_yaml::Value::String(s) => s == "table",
+                    serde_yaml::Value::Sequence(seq) => seq.iter().any(|x| x.as_str() == Some("table")),
+                    _ => false,
+                })
                 .unwrap_or(false);
             Some(Box::new(cops::layout::SpaceAroundOperators::with_config(allow_for_alignment, exp, sl, hash_table_style)))
         }
