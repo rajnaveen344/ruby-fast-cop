@@ -531,3 +531,20 @@ impl Cop for SpecialGlobalVars {
         v.offenses
     }
 }
+
+crate::register_cop!("Style/SpecialGlobalVars", |cfg| {
+    let cop_config = cfg.get_cop_config("Style/SpecialGlobalVars");
+    let style = cop_config
+        .and_then(|c| c.enforced_style.as_ref())
+        .map(|s| match s.as_str() {
+            "use_perl_names" => EnforcedStyle::UsePerlNames,
+            "use_builtin_english_names" => EnforcedStyle::UseBuiltinEnglishNames,
+            _ => EnforcedStyle::UseEnglishNames,
+        })
+        .unwrap_or(EnforcedStyle::UseEnglishNames);
+    let require_english = cop_config
+        .and_then(|c| c.raw.get("RequireEnglish"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(true);
+    Some(Box::new(SpecialGlobalVars::new(style, require_english)))
+});

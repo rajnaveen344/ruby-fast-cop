@@ -265,3 +265,12 @@ fn is_percent_literal_array(node: &Node, ctx: &CheckContext) -> bool {
         false
     }
 }
+
+crate::register_cop!("Lint/RedundantSplatExpansion", |cfg| {
+    let cop_config = cfg.get_cop_config("Lint/RedundantSplatExpansion");
+    let allow_percent = cop_config
+        .and_then(|c| c.raw.get("AllowPercentLiteralArrayArgument"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(true);
+    Some(Box::new(RedundantSplatExpansion::new(allow_percent)))
+});

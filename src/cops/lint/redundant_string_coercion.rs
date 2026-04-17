@@ -145,3 +145,7 @@ impl Visit<'_> for RedundantStringCoercionVisitor<'_> {
         ruby_prism::visit_call_node(self, node);
     }
 }
+
+crate::register_cop!("Lint/RedundantStringCoercion", |_cfg| {
+    Some(Box::new(RedundantStringCoercion::new()))
+});

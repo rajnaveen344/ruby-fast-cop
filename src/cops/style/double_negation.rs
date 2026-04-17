@@ -355,3 +355,12 @@ fn compute_body_inner(body: &Node, source: &str) -> (u32, u32, bool, u32) {
     let end_line = line_of(last_end, source);
     (start_line, end_line, is_enum, start_line)
 }
+
+crate::register_cop!("Style/DoubleNegation", |cfg| {
+    let cop_config = cfg.get_cop_config("Style/DoubleNegation");
+    let style = match cop_config.and_then(|c| c.raw.get("EnforcedStyle")).and_then(|v| v.as_str()) {
+        Some("forbidden") => EnforcedStyle::Forbidden,
+        _ => EnforcedStyle::AllowedInReturns,
+    };
+    Some(Box::new(DoubleNegation::new(style)))
+});

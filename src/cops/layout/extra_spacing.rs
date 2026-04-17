@@ -911,3 +911,15 @@ fn align_column(ctx: &CheckContext, line_texts: &[&str], line: u32, start: usize
     let last_column = col + len;
     (last_column - spaces + 1) as u32
 }
+
+crate::register_cop!("Layout/ExtraSpacing", |cfg| {
+    let c = cfg.get_cop_config("Layout/ExtraSpacing");
+    let allow_for_alignment = c.and_then(|c| c.raw.get("AllowForAlignment")).and_then(|v| v.as_bool()).unwrap_or(true);
+    let allow_before_trailing_comments = c.and_then(|c| c.raw.get("AllowBeforeTrailingComments")).and_then(|v| v.as_bool()).unwrap_or(false);
+    let force_equal_sign_alignment = c.and_then(|c| c.raw.get("ForceEqualSignAlignment")).and_then(|v| v.as_bool()).unwrap_or(false);
+    Some(Box::new(ExtraSpacing::with_config(
+        allow_for_alignment,
+        allow_before_trailing_comments,
+        force_equal_sign_alignment,
+    )))
+});

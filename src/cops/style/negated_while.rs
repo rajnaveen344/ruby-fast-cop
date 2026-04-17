@@ -91,3 +91,7 @@ impl Cop for NegatedWhile {
         .collect()
     }
 }
+
+crate::register_cop!("Style/NegatedWhile", |_cfg| {
+    Some(Box::new(NegatedWhile::new()))
+});

@@ -625,3 +625,25 @@ impl<'a> Visit<'a> for Visitor<'a> {
         self.in_assignment_rhs = was;
     }
 }
+
+crate::register_cop!("Style/GuardClause", |cfg| {
+    let cop_config = cfg.get_cop_config("Style/GuardClause");
+    let min_body_length = cop_config
+        .and_then(|c| c.raw.get("MinBodyLength"))
+        .and_then(|v| v.as_i64())
+        .unwrap_or(1);
+    let allow_consecutive = cop_config
+        .and_then(|c| c.raw.get("AllowConsecutiveConditionals"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false);
+    let max_line_length = if cfg.is_cop_enabled("Layout/LineLength") {
+        cfg.get_cop_config("Layout/LineLength")
+            .and_then(|c| c.max)
+            .map(|m| m as usize)
+    } else {
+        None
+    };
+    Some(Box::new(GuardClause::with_config(
+        min_body_length, allow_consecutive, max_line_length,
+    )))
+});

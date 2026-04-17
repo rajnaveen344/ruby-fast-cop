@@ -90,3 +90,7 @@ impl Cop for PercentSymbolArray {
         vec![offense]
     }
 }
+
+crate::register_cop!("Lint/PercentSymbolArray", |_cfg| {
+    Some(Box::new(PercentSymbolArray::new()))
+});

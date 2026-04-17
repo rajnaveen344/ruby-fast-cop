@@ -332,3 +332,20 @@ impl<'a> Visit<'_> for Visitor<'a> {
         self.in_interpolation = old;
     }
 }
+
+crate::register_cop!("Layout/FirstArrayElementIndentation", |cfg| {
+    let cop_config = cfg.get_cop_config("Layout/FirstArrayElementIndentation");
+    let style = cop_config
+        .and_then(|c| c.enforced_style.as_ref())
+        .map(|s| match s.as_str() {
+            "consistent" => Style::Consistent,
+            "align_brackets" => Style::AlignBrackets,
+            _ => Style::SpecialInsideParentheses,
+        })
+        .unwrap_or(Style::SpecialInsideParentheses);
+    let width = cop_config
+        .and_then(|c| c.raw.get("IndentationWidth"))
+        .and_then(|v| v.as_i64())
+        .map(|v| v as usize);
+    Some(Box::new(FirstArrayElementIndentation::new(style, width)))
+});

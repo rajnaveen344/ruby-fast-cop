@@ -100,3 +100,12 @@ impl Cop for EmptyLinesAroundClassBody {
         v.offenses
     }
 }
+
+crate::register_cop!("Layout/EmptyLinesAroundClassBody", |cfg| {
+    let cop_config = cfg.get_cop_config("Layout/EmptyLinesAroundClassBody");
+    let style = cop_config
+        .and_then(|c| c.enforced_style.as_ref())
+        .map(|s| Style::parse(s))
+        .unwrap_or(Style::NoEmptyLines);
+    Some(Box::new(EmptyLinesAroundClassBody::new(style)))
+});

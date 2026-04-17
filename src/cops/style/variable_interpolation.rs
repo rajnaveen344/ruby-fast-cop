@@ -72,3 +72,7 @@ impl Visit<'_> for VariableInterpolationVisitor<'_> {
         ruby_prism::visit_interpolated_regular_expression_node(self, node);
     }
 }
+
+crate::register_cop!("Style/VariableInterpolation", |_cfg| {
+    Some(Box::new(VariableInterpolation::new()))
+});

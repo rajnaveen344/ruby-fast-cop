@@ -314,3 +314,23 @@ impl<'a> Visit<'_> for TAVisitor<'a> {
         ruby_prism::visit_def_node(self, node);
     }
 }
+
+crate::register_cop!("Style/TrivialAccessors", |cfg| {
+    let cop_config = cfg.get_cop_config("Style/TrivialAccessors");
+    let default_methods: Vec<String> = vec![
+        "to_ary", "to_a", "to_c", "to_enum", "to_h", "to_hash", "to_i", "to_int", "to_io",
+        "to_open", "to_path", "to_proc", "to_r", "to_regexp", "to_str", "to_s", "to_sym",
+    ].into_iter().map(String::from).collect();
+    let allowed_methods = cop_config
+        .and_then(|c| c.raw.get("AllowedMethods"))
+        .and_then(|v| v.as_sequence())
+        .map(|seq| seq.iter().filter_map(|x| x.as_str().map(String::from)).collect::<Vec<_>>())
+        .unwrap_or(default_methods);
+    let exact = cop_config.and_then(|c| c.raw.get("ExactNameMatch")).and_then(|v| v.as_bool()).unwrap_or(true);
+    let allow_pred = cop_config.and_then(|c| c.raw.get("AllowPredicates")).and_then(|v| v.as_bool()).unwrap_or(true);
+    let allow_dsl = cop_config.and_then(|c| c.raw.get("AllowDSLWriters")).and_then(|v| v.as_bool()).unwrap_or(true);
+    let ignore_class = cop_config.and_then(|c| c.raw.get("IgnoreClassMethods")).and_then(|v| v.as_bool()).unwrap_or(false);
+    Some(Box::new(TrivialAccessors::with_config(
+        allowed_methods, exact, allow_pred, allow_dsl, ignore_class,
+    )))
+});

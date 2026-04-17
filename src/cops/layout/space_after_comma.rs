@@ -134,3 +134,12 @@ impl Cop for SpaceAfterComma {
         offenses
     }
 }
+
+crate::register_cop!("Layout/SpaceAfterComma", |cfg| {
+    let space_inside_braces_is_space = cfg
+        .get_cop_config("Layout/SpaceInsideHashLiteralBraces")
+        .and_then(|c| c.enforced_style.as_ref())
+        .map(|s| s == "space")
+        .unwrap_or(false);
+    Some(Box::new(SpaceAfterComma::with_config(space_inside_braces_is_space)))
+});

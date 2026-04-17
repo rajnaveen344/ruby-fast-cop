@@ -355,3 +355,16 @@ impl SpaceInsideParens {
         }
     }
 }
+
+crate::register_cop!("Layout/SpaceInsideParens", |cfg| {
+    let c = cfg.get_cop_config("Layout/SpaceInsideParens");
+    let style = c
+        .and_then(|c| c.enforced_style.as_ref())
+        .map(|s| match s.as_str() {
+            "space" => SpaceInsideParensStyle::Space,
+            "compact" => SpaceInsideParensStyle::Compact,
+            _ => SpaceInsideParensStyle::NoSpace,
+        })
+        .unwrap_or(SpaceInsideParensStyle::NoSpace);
+    Some(Box::new(SpaceInsideParens::new(style)))
+});

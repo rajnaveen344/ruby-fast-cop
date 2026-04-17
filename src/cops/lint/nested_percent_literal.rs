@@ -69,3 +69,7 @@ impl Cop for NestedPercentLiteral {
         vec![ctx.offense_with_range(self.name(), MSG, self.severity(), start, end)]
     }
 }
+
+crate::register_cop!("Lint/NestedPercentLiteral", |_cfg| {
+    Some(Box::new(NestedPercentLiteral::new()))
+});

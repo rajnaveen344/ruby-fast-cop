@@ -625,3 +625,7 @@ impl Visit<'_> for MatchVarCollector<'_> {
         // Skip — pinned variables are reads, not new bindings
     }
 }
+
+crate::register_cop!("Style/RedundantSelf", |_cfg| {
+    Some(Box::new(RedundantSelf::new()))
+});

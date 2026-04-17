@@ -880,3 +880,27 @@ fn is_cop_directive(comment: &str) -> bool {
     let normalized = comment.replace(' ', "");
     normalized.contains("rubocop:disable") || normalized.contains("rubocop:todo")
 }
+
+crate::register_cop!("Style/IfUnlessModifier", |cfg| {
+    let ll_config = cfg.get_cop_config("Layout/LineLength");
+    let ll_enabled = cfg.is_cop_enabled("Layout/LineLength");
+    let max_ll = ll_config.and_then(|c| c.max).unwrap_or(80) as usize;
+    let allow_uri = ll_config
+        .and_then(|c| c.raw.get("AllowURI"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(true);
+    let allow_cop_directives = ll_config
+        .and_then(|c| c.raw.get("AllowCopDirectives"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(true);
+    let tab_width = cfg.get_cop_config("Layout/IndentationStyle")
+        .and_then(|c| c.raw.get("IndentationWidth"))
+        .and_then(|v| v.as_i64())
+        .or_else(|| cfg.get_cop_config("Layout/IndentationWidth")
+            .and_then(|c| c.raw.get("Width"))
+            .and_then(|v| v.as_i64()))
+        .map(|v| v as usize);
+    Some(Box::new(IfUnlessModifier::with_config(
+        max_ll, ll_enabled, allow_uri, allow_cop_directives, tab_width,
+    )))
+});

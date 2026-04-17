@@ -401,3 +401,31 @@ impl<'a> Visit<'_> for Visitor<'a> {
         self.in_interpolation = old;
     }
 }
+
+crate::register_cop!("Layout/FirstHashElementIndentation", |cfg| {
+    let cop_config = cfg.get_cop_config("Layout/FirstHashElementIndentation");
+    let style = cop_config
+        .and_then(|c| c.enforced_style.as_ref())
+        .map(|s| match s.as_str() {
+            "consistent" => Style::Consistent,
+            "align_braces" => Style::AlignBraces,
+            _ => Style::SpecialInsideParentheses,
+        })
+        .unwrap_or(Style::SpecialInsideParentheses);
+    let width = cop_config
+        .and_then(|c| c.raw.get("IndentationWidth"))
+        .and_then(|v| v.as_i64())
+        .map(|v| v as usize);
+    let ha = cfg.get_cop_config("Layout/HashAlignment");
+    let colon_sep = ha
+        .and_then(|c| c.raw.get("EnforcedColonStyle"))
+        .and_then(|v| v.as_str())
+        .map(|s| s == "separator")
+        .unwrap_or(false);
+    let rocket_sep = ha
+        .and_then(|c| c.raw.get("EnforcedHashRocketStyle"))
+        .and_then(|v| v.as_str())
+        .map(|s| s == "separator")
+        .unwrap_or(false);
+    Some(Box::new(FirstHashElementIndentation::new(style, width, colon_sep, rocket_sep)))
+});

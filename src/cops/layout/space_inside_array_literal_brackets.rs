@@ -381,3 +381,24 @@ impl Cop for SpaceInsideArrayLiteralBrackets {
         self.check_brackets(ctx, node_start, ls, le, rs, re)
     }
 }
+
+crate::register_cop!("Layout/SpaceInsideArrayLiteralBrackets", |cfg| {
+    let cop_config = cfg.get_cop_config("Layout/SpaceInsideArrayLiteralBrackets");
+    let style = cop_config
+        .and_then(|c| c.enforced_style.as_ref())
+        .map(|s| match s.as_str() {
+            "space" => SpaceInsideArrayLiteralBracketsStyle::Space,
+            "compact" => SpaceInsideArrayLiteralBracketsStyle::Compact,
+            _ => SpaceInsideArrayLiteralBracketsStyle::NoSpace,
+        })
+        .unwrap_or(SpaceInsideArrayLiteralBracketsStyle::NoSpace);
+    let empty_style = cop_config
+        .and_then(|c| c.raw.get("EnforcedStyleForEmptyBrackets"))
+        .and_then(|v| v.as_str())
+        .map(|s| match s {
+            "space" => EmptyBracketsStyle::Space,
+            _ => EmptyBracketsStyle::NoSpace,
+        })
+        .unwrap_or(EmptyBracketsStyle::NoSpace);
+    Some(Box::new(SpaceInsideArrayLiteralBrackets::new(style, empty_style)))
+});

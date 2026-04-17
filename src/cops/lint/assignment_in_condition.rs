@@ -254,3 +254,11 @@ impl AssignmentInCondition {
         offense
     }
 }
+
+crate::register_cop!("Lint/AssignmentInCondition", |cfg| {
+    let allow_safe = cfg
+        .get_cop_config("Lint/AssignmentInCondition")
+        .and_then(|c| c.allow_safe_assignment)
+        .unwrap_or(true);
+    Some(Box::new(AssignmentInCondition::new(allow_safe)))
+});

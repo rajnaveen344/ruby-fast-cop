@@ -270,3 +270,24 @@ impl Cop for RaiseArgs {
         vec![]
     }
 }
+
+crate::register_cop!("Style/RaiseArgs", |cfg| {
+    let cop_config = cfg.get_cop_config("Style/RaiseArgs");
+    let style = cop_config
+        .and_then(|c| c.enforced_style.as_ref())
+        .map(|s| match s.as_str() {
+            "compact" => EnforcedStyle::Compact,
+            _ => EnforcedStyle::Explode,
+        })
+        .unwrap_or(EnforcedStyle::Explode);
+    let allowed_compact_types = cop_config
+        .and_then(|c| c.raw.get("AllowedCompactTypes"))
+        .and_then(|v| v.as_sequence())
+        .map(|seq| {
+            seq.iter()
+                .filter_map(|v| v.as_str().map(String::from))
+                .collect()
+        })
+        .unwrap_or_default();
+    Some(Box::new(RaiseArgs::with_allowed_compact_types(style, allowed_compact_types)))
+});

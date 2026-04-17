@@ -282,3 +282,20 @@ fn is_block_empty_without_delimiters(node: &ruby_prism::BlockNode, source: &str)
     if i < bytes.len() && bytes[i] == b'|' { return false; }
     true
 }
+
+crate::register_cop!("Style/MethodCallWithoutArgsParentheses", |cfg| {
+    let cop_config = cfg.get_cop_config("Style/MethodCallWithoutArgsParentheses");
+    let allowed_methods = cop_config
+        .and_then(|c| c.raw.get("AllowedMethods"))
+        .and_then(|v| v.as_sequence())
+        .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+        .unwrap_or_default();
+    let allowed_patterns = cop_config
+        .and_then(|c| c.raw.get("AllowedPatterns"))
+        .and_then(|v| v.as_sequence())
+        .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+        .unwrap_or_default();
+    Some(Box::new(MethodCallWithoutArgsParentheses::with_config(
+        allowed_methods, allowed_patterns,
+    )))
+});

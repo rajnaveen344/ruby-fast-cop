@@ -398,3 +398,12 @@ impl Visit<'_> for SoleNestedConditionalVisitor<'_> {
         ruby_prism::visit_unless_node(self, node);
     }
 }
+
+crate::register_cop!("Style/SoleNestedConditional", |cfg| {
+    let cop_config = cfg.get_cop_config("Style/SoleNestedConditional");
+    let allow_modifier = cop_config
+        .and_then(|c| c.raw.get("AllowModifier"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false);
+    Some(Box::new(SoleNestedConditional::with_config(allow_modifier)))
+});

@@ -71,3 +71,12 @@ fn region_contains_comment(source: &str, start: usize, end: usize) -> bool {
     }
     false
 }
+
+crate::register_cop!("Style/EmptyMethod", |cfg| {
+    let cop_config = cfg.get_cop_config("Style/EmptyMethod");
+    let style = match cop_config.and_then(|c| c.enforced_style.as_ref()).map(|s| s.as_str()) {
+        Some("expanded") => EnforcedStyle::Expanded,
+        _ => EnforcedStyle::Compact,
+    };
+    Some(Box::new(EmptyMethod::with_style(style)))
+});

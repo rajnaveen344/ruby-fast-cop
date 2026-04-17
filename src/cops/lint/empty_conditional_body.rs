@@ -230,3 +230,12 @@ impl Visit<'_> for Visitor<'_> {
         }
     }
 }
+
+crate::register_cop!("Lint/EmptyConditionalBody", |cfg| {
+    let cop_config = cfg.get_cop_config("Lint/EmptyConditionalBody");
+    let allow_comments = cop_config
+        .and_then(|c| c.raw.get("AllowComments"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(true);
+    Some(Box::new(EmptyConditionalBody::new(allow_comments)))
+});

@@ -380,3 +380,7 @@ impl Visit<'_> for RegexpVisitor<'_> {
         }
     }
 }
+
+crate::register_cop!("Style/RedundantRegexpCharacterClass", |_cfg| {
+    Some(Box::new(RedundantRegexpCharacterClass::new()))
+});

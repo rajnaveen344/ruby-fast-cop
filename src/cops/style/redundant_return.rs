@@ -214,3 +214,12 @@ impl<'a> Visit<'_> for RRVisitor<'a> {
         ruby_prism::visit_call_node(self, node);
     }
 }
+
+crate::register_cop!("Style/RedundantReturn", |cfg| {
+    let cop_config = cfg.get_cop_config("Style/RedundantReturn");
+    let allow_multi = cop_config
+        .and_then(|c| c.raw.get("AllowMultipleReturnValues"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false);
+    Some(Box::new(RedundantReturn::with_config(allow_multi)))
+});

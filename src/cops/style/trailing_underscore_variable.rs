@@ -314,3 +314,12 @@ fn scan_back_past_comma_space(source: &str, offset: usize) -> usize {
     }
     i
 }
+
+crate::register_cop!("Style/TrailingUnderscoreVariable", |cfg| {
+    let cop_config = cfg.get_cop_config("Style/TrailingUnderscoreVariable");
+    let allow_named = cop_config
+        .and_then(|c| c.raw.get("AllowNamedUnderscoreVariables"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(true);
+    Some(Box::new(TrailingUnderscoreVariable::new(allow_named)))
+});

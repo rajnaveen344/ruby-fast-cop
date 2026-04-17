@@ -287,3 +287,13 @@ impl<'a> Visit<'_> for Visitor<'a> {
         ruby_prism::visit_parentheses_node(self, node);
     }
 }
+
+crate::register_cop!("Layout/ClosingParenthesisIndentation", |cfg| {
+    let indent_width = cfg
+        .get_cop_config("Layout/IndentationWidth")
+        .and_then(|c| c.raw.get("Width"))
+        .and_then(|v| v.as_i64())
+        .map(|v| v as usize)
+        .unwrap_or(2);
+    Some(Box::new(ClosingParenthesisIndentation::new(indent_width)))
+});

@@ -114,3 +114,22 @@ impl Visit<'_> for ClassLengthVisitor<'_> {
         ruby_prism::visit_call_node(self, node);
     }
 }
+
+crate::register_cop!("Metrics/ClassLength", |cfg| {
+    let cop_config = cfg.get_cop_config("Metrics/ClassLength");
+    let max = cop_config.and_then(|c| c.max).unwrap_or(100);
+    let count_comments = cop_config
+        .and_then(|c| c.raw.get("CountComments"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false);
+    let count_as_one = cop_config
+        .and_then(|c| c.raw.get("CountAsOne"))
+        .and_then(|v| v.as_sequence())
+        .map(|seq| {
+            seq.iter()
+                .filter_map(|v| v.as_str().map(|s| s.to_string()))
+                .collect()
+        })
+        .unwrap_or_default();
+    Some(Box::new(ClassLength::with_config(max, count_comments, count_as_one)))
+});

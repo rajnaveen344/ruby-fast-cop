@@ -1032,3 +1032,62 @@ impl LineLength {
         }
     }
 }
+
+crate::register_cop!("Layout/LineLength", |cfg| {
+    let cop_config = cfg.get_cop_config("Layout/LineLength");
+    let max = cop_config.and_then(|c| c.max).unwrap_or(120);
+    let allow_uri = cop_config
+        .and_then(|c| c.raw.get("AllowURI"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(true);
+    let allow_heredoc = cop_config
+        .and_then(|c| c.raw.get("AllowHeredoc"))
+        .map(|v| {
+            if let Some(b) = v.as_bool() {
+                if b { AllowHeredoc::All } else { AllowHeredoc::Disabled }
+            } else if let Some(seq) = v.as_sequence() {
+                let delimiters: Vec<String> = seq.iter()
+                    .filter_map(|v| v.as_str().map(|s| s.to_string()))
+                    .collect();
+                AllowHeredoc::Specific(delimiters)
+            } else {
+                AllowHeredoc::Disabled
+            }
+        })
+        .unwrap_or(AllowHeredoc::Disabled);
+    let allow_qualified_name = cop_config
+        .and_then(|c| c.raw.get("AllowQualifiedName"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false);
+    let allow_cop_directives = cop_config
+        .and_then(|c| c.raw.get("AllowCopDirectives"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false);
+    let allow_rbs_inline_annotation = cop_config
+        .and_then(|c| c.raw.get("AllowRBSInlineAnnotation"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false);
+    let uri_schemes = cop_config
+        .and_then(|c| c.raw.get("URISchemes"))
+        .and_then(|v| v.as_sequence())
+        .map(|seq| seq.iter().filter_map(|v| v.as_str().map(|s| s.to_string())).collect())
+        .unwrap_or_else(|| vec!["http".to_string(), "https".to_string()]);
+    let allowed_patterns = cop_config
+        .and_then(|c| c.raw.get("AllowedPatterns"))
+        .and_then(|v| v.as_sequence())
+        .map(|seq| seq.iter().filter_map(|v| v.as_str().map(|s| s.to_string())).collect())
+        .unwrap_or_default();
+    let tab_width = cop_config
+        .and_then(|c| c.raw.get("TabWidth"))
+        .and_then(|v| v.as_u64())
+        .map(|v| v as usize)
+        .unwrap_or(2);
+    let split_strings = cop_config
+        .and_then(|c| c.raw.get("SplitStrings"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false);
+    Some(Box::new(LineLength::with_config(
+        max, allow_uri, allow_heredoc, allow_qualified_name, allow_cop_directives,
+        allow_rbs_inline_annotation, uri_schemes, allowed_patterns, tab_width, split_strings,
+    )))
+});

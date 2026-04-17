@@ -362,3 +362,42 @@ impl Visit<'_> for Visitor<'_> {
         ruby_prism::visit_unless_node(self, node);
     }
 }
+
+crate::register_cop!("Layout/EmptyLineBetweenDefs", |cfg| {
+    let cop_config = cfg.get_cop_config("Layout/EmptyLineBetweenDefs");
+    let mut cop = EmptyLineBetweenDefs::new();
+    if let Some(c) = cop_config {
+        if let Some(v) = c.raw.get("AllowAdjacentOneLineDefs").and_then(|v| v.as_bool()) {
+            cop.allow_adjacent_one_line_defs = v;
+        }
+        if let Some(v) = c.raw.get("EmptyLineBetweenMethodDefs").and_then(|v| v.as_bool()) {
+            cop.empty_line_between_method_defs = v;
+        }
+        if let Some(v) = c.raw.get("EmptyLineBetweenClassDefs").and_then(|v| v.as_bool()) {
+            cop.empty_line_between_class_defs = v;
+        }
+        if let Some(v) = c.raw.get("EmptyLineBetweenModuleDefs").and_then(|v| v.as_bool()) {
+            cop.empty_line_between_module_defs = v;
+        }
+        if let Some(v) = c.raw.get("DefLikeMacros").and_then(|v| v.as_sequence()) {
+            cop.def_like_macros = v.iter()
+                .filter_map(|x| x.as_str().map(|s| s.to_string()))
+                .collect();
+        }
+        if let Some(v) = c.raw.get("NumberOfEmptyLines") {
+            if let Some(n) = v.as_u64() {
+                cop.number_of_empty_lines_min = n as u32;
+                cop.number_of_empty_lines_max = n as u32;
+            } else if let Some(seq) = v.as_sequence() {
+                let nums: Vec<u32> = seq.iter()
+                    .filter_map(|x| x.as_u64().map(|n| n as u32))
+                    .collect();
+                if let (Some(&min), Some(&max)) = (nums.first(), nums.last()) {
+                    cop.number_of_empty_lines_min = min;
+                    cop.number_of_empty_lines_max = max;
+                }
+            }
+        }
+    }
+    Some(Box::new(cop))
+});

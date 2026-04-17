@@ -380,3 +380,30 @@ impl Cop for MethodName {
         visitor.offenses
     }
 }
+
+crate::register_cop!("Naming/MethodName", |cfg| {
+    let cop_config = cfg.get_cop_config("Naming/MethodName");
+    let style = cop_config
+        .and_then(|c| c.enforced_style.as_ref())
+        .map(|s| match s.as_str() {
+            "camelCase" => MethodNameStyle::CamelCase,
+            _ => MethodNameStyle::SnakeCase,
+        })
+        .unwrap_or(MethodNameStyle::SnakeCase);
+    let allowed_patterns = cop_config
+        .and_then(|c| c.raw.get("AllowedPatterns"))
+        .and_then(|v| v.as_sequence())
+        .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+        .unwrap_or_default();
+    let forbidden_identifiers = cop_config
+        .and_then(|c| c.raw.get("ForbiddenIdentifiers"))
+        .and_then(|v| v.as_sequence())
+        .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+        .unwrap_or_else(|| vec!["__id__".to_string(), "__send__".to_string()]);
+    let forbidden_patterns = cop_config
+        .and_then(|c| c.raw.get("ForbiddenPatterns"))
+        .and_then(|v| v.as_sequence())
+        .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+        .unwrap_or_default();
+    Some(Box::new(MethodName::with_config(style, allowed_patterns, forbidden_identifiers, forbidden_patterns)))
+});

@@ -262,3 +262,12 @@ impl Cop for Semicolon {
         offenses
     }
 }
+
+crate::register_cop!("Style/Semicolon", |cfg| {
+    let cop_config = cfg.get_cop_config("Style/Semicolon");
+    let allow = cop_config
+        .and_then(|c| c.raw.get("AllowAsExpressionSeparator"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false);
+    Some(Box::new(Semicolon::new(allow)))
+});

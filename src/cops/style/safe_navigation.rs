@@ -1059,3 +1059,44 @@ impl<'a> Visit<'_> for SafeNavVisitor<'a> {
         self.check_and(node);
     }
 }
+
+crate::register_cop!("Style/SafeNavigation", |cfg| {
+    let cop_config = cfg.get_cop_config("Style/SafeNavigation");
+    let allowed_methods = cop_config
+        .and_then(|c| c.raw.get("AllowedMethods"))
+        .and_then(|v| v.as_sequence())
+        .map(|seq| {
+            seq.iter()
+                .filter_map(|v| v.as_str().map(String::from))
+                .collect()
+        })
+        .unwrap_or_else(|| {
+            vec![
+                "present?".to_string(),
+                "blank?".to_string(),
+                "presence".to_string(),
+                "try".to_string(),
+                "try!".to_string(),
+            ]
+        });
+    let convert_nil = cop_config
+        .and_then(|c| c.raw.get("ConvertCodeThatCanStartToReturnNil"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false);
+    let max_chain = cop_config
+        .and_then(|c| c.raw.get("MaxChainLength"))
+        .and_then(|v| v.as_u64())
+        .unwrap_or(2) as usize;
+    let safe_nav_chain_enabled = cop_config
+        .and_then(|c| c.raw.get("SafeNavigationChainEnabled"))
+        .and_then(|v| v.as_bool())
+        .or_else(|| cfg.get_cop_config("Lint/SafeNavigationChain")
+            .and_then(|c| c.enabled))
+        .unwrap_or(true);
+    Some(Box::new(SafeNavigation::with_full_config(
+        allowed_methods,
+        convert_nil,
+        max_chain,
+        safe_nav_chain_enabled,
+    )))
+});

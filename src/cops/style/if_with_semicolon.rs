@@ -201,3 +201,7 @@ impl<'pr> Visit<'pr> for Visitor<'_> {
         self.suppress = was;
     }
 }
+
+crate::register_cop!("Style/IfWithSemicolon", |_cfg| {
+    Some(Box::new(IfWithSemicolon::new()))
+});

@@ -369,3 +369,18 @@ impl Cop for ParenthesesAroundCondition {
             .unwrap_or_default()
     }
 }
+
+crate::register_cop!("Style/ParenthesesAroundCondition", |cfg| {
+    let cop_config = cfg.get_cop_config("Style/ParenthesesAroundCondition");
+    let allow_multiline = cop_config
+        .and_then(|c| c.raw.get("AllowInMultilineConditions"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false);
+    let allow_safe_assignment = cop_config
+        .and_then(|c| c.allow_safe_assignment)
+        .unwrap_or(true);
+    Some(Box::new(ParenthesesAroundCondition::with_config(
+        allow_multiline,
+        allow_safe_assignment,
+    )))
+});

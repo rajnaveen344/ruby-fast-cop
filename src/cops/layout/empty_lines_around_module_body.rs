@@ -77,3 +77,12 @@ impl Cop for EmptyLinesAroundModuleBody {
         v.offenses
     }
 }
+
+crate::register_cop!("Layout/EmptyLinesAroundModuleBody", |cfg| {
+    let cop_config = cfg.get_cop_config("Layout/EmptyLinesAroundModuleBody");
+    let style = cop_config
+        .and_then(|c| c.enforced_style.as_ref())
+        .map(|s| Style::parse(s))
+        .unwrap_or(Style::NoEmptyLines);
+    Some(Box::new(EmptyLinesAroundModuleBody::new(style)))
+});

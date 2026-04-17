@@ -443,3 +443,20 @@ impl Cop for TernaryParentheses {
         vec![offense]
     }
 }
+
+crate::register_cop!("Style/TernaryParentheses", |cfg| {
+    let cop_config = cfg.get_cop_config("Style/TernaryParentheses");
+    let style = cop_config
+        .and_then(|c| c.enforced_style.as_ref())
+        .map(|s| match s.as_str() {
+            "require_parentheses" => EnforcedStyle::RequireParentheses,
+            "require_parentheses_when_complex" => EnforcedStyle::RequireParenthesesWhenComplex,
+            _ => EnforcedStyle::RequireNoParentheses,
+        })
+        .unwrap_or(EnforcedStyle::RequireNoParentheses);
+    let allow_safe = cop_config
+        .and_then(|c| c.raw.get("AllowSafeAssignment"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(true);
+    Some(Box::new(TernaryParentheses::new(style, allow_safe)))
+});

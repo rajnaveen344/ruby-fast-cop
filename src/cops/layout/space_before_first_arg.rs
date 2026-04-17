@@ -172,3 +172,9 @@ impl<'a, 'b> Visitor<'a, 'b> {
         (e - start) as u32
     }
 }
+
+crate::register_cop!("Layout/SpaceBeforeFirstArg", |cfg| {
+    let c = cfg.get_cop_config("Layout/SpaceBeforeFirstArg");
+    let allow_for_alignment = c.and_then(|c| c.raw.get("AllowForAlignment")).and_then(|v| v.as_bool()).unwrap_or(true);
+    Some(Box::new(SpaceBeforeFirstArg::with_config(allow_for_alignment)))
+});

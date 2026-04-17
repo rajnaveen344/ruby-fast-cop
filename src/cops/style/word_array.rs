@@ -317,3 +317,31 @@ fn invalid_percent_array_contents(elements: &[Node], source: &str) -> bool {
 impl WordArray {
     // nothing else
 }
+
+fn normalize_ruby_regex_local(pat: &str) -> String {
+    let mut s = pat.to_string();
+    if let Some(inner) = s.strip_prefix("(?-mix:").and_then(|x| x.strip_suffix(")")) {
+        s = inner.to_string();
+    }
+    s = s.replace(r"\p{Word}", r"\w");
+    s
+}
+
+crate::register_cop!("Style/WordArray", |cfg| {
+    let cop_config = cfg.get_cop_config("Style/WordArray");
+    let style = match cop_config.and_then(|c| c.raw.get("EnforcedStyle")).and_then(|v| v.as_str()) {
+        Some("brackets") => EnforcedStyle::Brackets,
+        _ => EnforcedStyle::Percent,
+    };
+    let min_size = cop_config
+        .and_then(|c| c.raw.get("MinSize"))
+        .and_then(|v| v.as_u64())
+        .unwrap_or(2) as usize;
+    let word_regex = cop_config
+        .and_then(|c| c.raw.get("WordRegex"))
+        .and_then(|v| v.as_str())
+        .map(String::from)
+        .unwrap_or_else(|| r"\A(?:\w|\w-\w|\n|\t)+\z".into());
+    let word_regex = normalize_ruby_regex_local(&word_regex);
+    Some(Box::new(WordArray::with_config(style, min_size, word_regex)))
+});

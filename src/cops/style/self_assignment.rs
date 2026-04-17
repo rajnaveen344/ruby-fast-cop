@@ -232,3 +232,7 @@ impl Visit<'_> for SelfAssignmentVisitor<'_> {
         ruby_prism::visit_class_variable_write_node(self, node);
     }
 }
+
+crate::register_cop!("Style/SelfAssignment", |_cfg| {
+    Some(Box::new(SelfAssignment::new()))
+});

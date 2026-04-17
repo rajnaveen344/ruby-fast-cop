@@ -185,3 +185,15 @@ impl Cop for TrailingEmptyLines {
         }
     }
 }
+
+crate::register_cop!("Layout/TrailingEmptyLines", |cfg| {
+    let cop_config = cfg.get_cop_config("Layout/TrailingEmptyLines");
+    let style = cop_config
+        .and_then(|c| c.enforced_style.as_ref())
+        .map(|s| match s.as_str() {
+            "final_blank_line" => EnforcedStyle::FinalBlankLine,
+            _ => EnforcedStyle::FinalNewline,
+        })
+        .unwrap_or(EnforcedStyle::FinalNewline);
+    Some(Box::new(TrailingEmptyLines::new(style)))
+});

@@ -261,3 +261,36 @@ impl Cop for VariableNumber {
         visitor.offenses
     }
 }
+
+crate::register_cop!("Naming/VariableNumber", |cfg| {
+    let cop_config = cfg.get_cop_config("Naming/VariableNumber");
+    let style = cop_config
+        .and_then(|c| c.enforced_style.as_ref())
+        .map(|s| match s.as_str() {
+            "snake_case" => VariableNumberStyle::SnakeCase,
+            "non_integer" => VariableNumberStyle::NonInteger,
+            _ => VariableNumberStyle::NormalCase,
+        })
+        .unwrap_or(VariableNumberStyle::NormalCase);
+    let check_method_names = cop_config
+        .and_then(|c| c.raw.get("CheckMethodNames"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(true);
+    let check_symbols = cop_config
+        .and_then(|c| c.raw.get("CheckSymbols"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(true);
+    let allowed_identifiers = cop_config
+        .and_then(|c| c.raw.get("AllowedIdentifiers"))
+        .and_then(|v| v.as_sequence())
+        .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+        .unwrap_or_default();
+    let allowed_patterns = cop_config
+        .and_then(|c| c.raw.get("AllowedPatterns"))
+        .and_then(|v| v.as_sequence())
+        .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+        .unwrap_or_default();
+    Some(Box::new(VariableNumber::with_config(
+        style, check_method_names, check_symbols, allowed_identifiers, allowed_patterns,
+    )))
+});

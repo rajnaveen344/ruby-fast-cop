@@ -26,6 +26,31 @@ ruby-fast-cop is a high-performance Ruby linter written in Rust, designed as a d
 - **`node_name!` macro** (defined in `src/lib.rs`): Use `node_name!(node)` instead of `String::from_utf8_lossy(node.name().as_slice())`. Works with any Prism node that has `.name().as_slice()` — including chained access like `node_name!(n.as_constant_read_node().unwrap())`.
 - **No inline unit tests in cop files.** All cop testing is via TOML fixtures in `tests/fixtures/`. Do not add `#[cfg(test)] mod tests` blocks to cop files.
 - **Use `#[derive(Default)]`** for cops where `new()` returns `Self` or all fields have Rust default values (false, empty collections). Only write manual `impl Default` when defaults differ.
+- **Register cops via `register_cop!`** (see "Cop registration" below). Each cop file is self-contained — no edits to `lib.rs`, `cops/mod.rs`, or dept `mod.rs` for new cops.
+
+### Cop registration (auto-collected via `inventory`)
+
+Each cop file ends with a single `register_cop!` call that wires it into the runtime. No central list. No `build_cops_from_config`. No `build_single_cop` match arm. Miss it → cop doesn't build, but the trio below can't happen:
+
+```rust
+// No-config cop
+crate::register_cop!("Lint/Debugger", |_cfg| Some(Box::new(Debugger::new())));
+
+// Cop with YAML config (reads from `&Config`)
+crate::register_cop!("Lint/AssignmentInCondition", |cfg| {
+    let allow = cfg.get_cop_config("Lint/AssignmentInCondition")
+        .and_then(|c| c.allow_safe_assignment)
+        .unwrap_or(true);
+    Some(Box::new(AssignmentInCondition::new(allow)))
+});
+```
+
+The registry (`src/cops/registry.rs`) provides:
+- `build_from_config(&Config) -> Vec<Box<dyn Cop>>` — backs `lib::build_cops_from_config`
+- `build_one(name, &Config) -> Option<Box<dyn Cop>>` — backs `lib::build_single_cop`
+- `all_with_defaults() -> Vec<Box<dyn Cop>>` — backs `cops::all()`
+
+All 159 cops are registered via `register_cop!`. The three public functions above are thin delegators — adding a new cop never requires editing them.
 
 ### Offense range gotchas (`src/offense.rs::Location::from_offsets`)
 When translating RuboCop's `add_offense(range, ...)` calls, remember that fixtures capture RuboCop's `expect_offense` `^` markers — which are **always ≥ 1 column wide** even for zero-width ranges. `Location::from_offsets` widens two cases to match:
@@ -367,11 +392,9 @@ Each agent gets its own git worktree so they can independently edit `mod.rs`, `l
    ```
 4. Create file in `src/cops/{department}/{cop_name}.rs`
 5. Implement `Cop` trait — translate from the Ruby source, don't reinvent
-6. **Register in ALL 3 places** (missing any = cop won't run):
-   a. `src/cops/{dept}/mod.rs` — `mod` + `pub use` declarations
-   b. `src/cops/mod.rs` — `Box::new(...)` in `all()` function
-   c. `src/lib.rs` — BOTH `build_cops_from_config()` AND `build_single_cop()` match
-7. Set `implemented = true` in the TOML fixture
+6. Add `mod` + `pub use` in `src/cops/{dept}/mod.rs`
+7. **Register via `register_cop!` at the bottom of the cop's file** (see "Cop registration" above). This is the only registration step — no `lib.rs` or `cops/mod.rs::all()` edits.
+8. Set `implemented = true` in the TOML fixture
 9. Run `cargo test --test tester` — verify tests pass
 10. If tests fail unexpectedly, compare with original RuboCop spec and fix implementation or TOML
 11. **Always run `/cop-review` after implementation** — this compares the Rust implementation against the original Ruby source, checks size ratio and complexity, and identifies simplification opportunities. Fix any issues it flags before moving on.

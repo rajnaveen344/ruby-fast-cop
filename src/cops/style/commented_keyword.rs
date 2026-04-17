@@ -187,3 +187,7 @@ fn steep_annotation(comment: &str) -> bool {
     };
     rest.is_empty() || rest.starts_with(|c: char| c.is_whitespace())
 }
+
+crate::register_cop!("Style/CommentedKeyword", |_cfg| {
+    Some(Box::new(CommentedKeyword::new()))
+});

@@ -682,3 +682,25 @@ fn make_correction(source: &str, node_start: usize, node_end: usize) -> Correcti
 
     Correction::delete(remove_start, remove_end)
 }
+
+crate::register_cop!("Lint/UselessAccessModifier", |cfg| {
+    let cop_config = cfg.get_cop_config("Lint/UselessAccessModifier");
+    let active_support = cop_config
+        .and_then(|c| c.raw.get("AllCopsActiveSupportExtensionsEnabled"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false);
+    let mut context_creating: Vec<String> = cop_config
+        .and_then(|c| c.raw.get("ContextCreatingMethods"))
+        .and_then(|v| v.as_sequence())
+        .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+        .unwrap_or_default();
+    if active_support && !context_creating.contains(&"included".to_string()) {
+        context_creating.push("included".to_string());
+    }
+    let method_creating = cop_config
+        .and_then(|c| c.raw.get("MethodCreatingMethods"))
+        .and_then(|v| v.as_sequence())
+        .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+        .unwrap_or_default();
+    Some(Box::new(UselessAccessModifier::with_config(context_creating, method_creating)))
+});

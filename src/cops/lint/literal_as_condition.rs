@@ -192,3 +192,7 @@ fn pattern_has_match_var(pattern: &Node) -> bool {
         _ => true,
     }
 }
+
+crate::register_cop!("Lint/LiteralAsCondition", |_cfg| {
+    Some(Box::new(LiteralAsCondition::new()))
+});

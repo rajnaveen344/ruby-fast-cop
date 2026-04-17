@@ -628,3 +628,17 @@ impl Cop for HashEachMethods {
         visitor.offenses
     }
 }
+
+crate::register_cop!("Style/HashEachMethods", |cfg| {
+    let cop_config = cfg.get_cop_config("Style/HashEachMethods");
+    let allowed_receivers: Vec<String> = cop_config
+        .and_then(|c| c.raw.get("AllowedReceivers"))
+        .and_then(|v| v.as_sequence())
+        .map(|seq| {
+            seq.iter()
+                .filter_map(|v| v.as_str().map(String::from))
+                .collect()
+        })
+        .unwrap_or_default();
+    Some(Box::new(HashEachMethods::with_config(allowed_receivers)))
+});

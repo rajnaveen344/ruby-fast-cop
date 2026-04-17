@@ -659,3 +659,48 @@ impl Cop for BlockDelimiters {
         visitor.offenses
     }
 }
+
+crate::register_cop!("Style/BlockDelimiters", |cfg| {
+    let cop_config = cfg.get_cop_config("Style/BlockDelimiters");
+    let style = cop_config
+        .and_then(|c| c.enforced_style.as_ref())
+        .map(|s| match s.as_str() {
+            "semantic" => EnforcedStyle::Semantic,
+            "braces_for_chaining" => EnforcedStyle::BracesForChaining,
+            "always_braces" => EnforcedStyle::AlwaysBraces,
+            _ => EnforcedStyle::LineCountBased,
+        })
+        .unwrap_or(EnforcedStyle::LineCountBased);
+    let allow_braces = cop_config
+        .and_then(|c| c.raw.get("AllowBracesOnProceduralOneLiners"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false);
+    let braces_required = cop_config
+        .and_then(|c| c.raw.get("BracesRequiredMethods"))
+        .and_then(|v| v.as_sequence())
+        .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+        .unwrap_or_default();
+    let functional = cop_config
+        .and_then(|c| c.raw.get("FunctionalMethods"))
+        .and_then(|v| v.as_sequence())
+        .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+        .unwrap_or_default();
+    let procedural = cop_config
+        .and_then(|c| c.raw.get("ProceduralMethods"))
+        .and_then(|v| v.as_sequence())
+        .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+        .unwrap_or_default();
+    let allowed_methods = cop_config
+        .and_then(|c| c.raw.get("AllowedMethods"))
+        .and_then(|v| v.as_sequence())
+        .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+        .unwrap_or_else(|| vec!["lambda".to_string(), "proc".to_string(), "it".to_string()]);
+    let allowed_patterns = cop_config
+        .and_then(|c| c.raw.get("AllowedPatterns"))
+        .and_then(|v| v.as_sequence())
+        .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+        .unwrap_or_default();
+    Some(Box::new(BlockDelimiters::with_config(
+        style, allow_braces, braces_required, functional, procedural, allowed_methods, allowed_patterns,
+    )))
+});

@@ -72,3 +72,15 @@ impl Cop for RescueStandardError {
         visitor.offenses
     }
 }
+
+crate::register_cop!("Style/RescueStandardError", |cfg| {
+    let style = cfg
+        .get_cop_config("Style/RescueStandardError")
+        .and_then(|c| c.enforced_style.as_ref())
+        .map(|s| match s.as_str() {
+            "implicit" => EnforcedStyle::Implicit,
+            _ => EnforcedStyle::Explicit,
+        })
+        .unwrap_or(EnforcedStyle::Explicit);
+    Some(Box::new(RescueStandardError::new(style)))
+});

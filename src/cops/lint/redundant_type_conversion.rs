@@ -298,3 +298,7 @@ fn is_chained_to_typed_method(method: &str, receiver: &ruby_prism::Node) -> bool
     receiver.as_call_node().map_or(false, |call|
         is_typed_method_for(method, &node_name!(call)))
 }
+
+crate::register_cop!("Lint/RedundantTypeConversion", |_cfg| {
+    Some(Box::new(RedundantTypeConversion::new()))
+});

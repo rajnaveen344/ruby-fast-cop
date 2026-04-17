@@ -292,3 +292,10 @@ fn is_cop_directive(comment: &str) -> bool {
     let normalized = comment.replace(' ', "");
     normalized.contains("rubocop:disable") || normalized.contains("rubocop:todo")
 }
+
+crate::register_cop!("Style/WhileUntilModifier", |cfg| {
+    let ll_config = cfg.get_cop_config("Layout/LineLength");
+    let ll_enabled = cfg.is_cop_enabled("Layout/LineLength");
+    let max_ll = ll_config.and_then(|c| c.max).unwrap_or(80) as usize;
+    Some(Box::new(WhileUntilModifier::with_config(max_ll, ll_enabled)))
+});

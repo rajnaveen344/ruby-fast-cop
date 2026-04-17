@@ -282,3 +282,16 @@ impl Visit<'_> for DefineMethodFinder {
         ruby_prism::visit_call_node(self, node);
     }
 }
+
+crate::register_cop!("Lint/UnusedBlockArgument", |cfg| {
+    let cop_config = cfg.get_cop_config("Lint/UnusedBlockArgument");
+    let allow_keyword = cop_config
+        .and_then(|c| c.raw.get("AllowUnusedKeywordArguments"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false);
+    let ignore_empty = cop_config
+        .and_then(|c| c.raw.get("IgnoreEmptyBlocks"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(true);
+    Some(Box::new(UnusedBlockArgument::with_config(allow_keyword, ignore_empty)))
+});

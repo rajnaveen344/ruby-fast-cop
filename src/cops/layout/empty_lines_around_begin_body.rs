@@ -75,3 +75,7 @@ impl Cop for EmptyLinesAroundBeginBody {
         v.offenses
     }
 }
+
+crate::register_cop!("Layout/EmptyLinesAroundBeginBody", |_cfg| {
+    Some(Box::new(EmptyLinesAroundBeginBody::new()))
+});

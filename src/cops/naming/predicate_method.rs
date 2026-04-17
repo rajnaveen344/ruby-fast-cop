@@ -459,3 +459,35 @@ impl Cop for PredicateMethod {
         self.check_method(&method_name, name_loc.start_offset(), name_loc.end_offset(), node.body(), ctx.source, ctx)
     }
 }
+
+crate::register_cop!("Naming/PredicateMethod", |cfg| {
+    let cop_config = cfg.get_cop_config("Naming/PredicateMethod");
+    let mode = cop_config
+        .and_then(|c| c.raw.get("Mode"))
+        .and_then(|v| v.as_str())
+        .map(|s| match s {
+            "aggressive" => Mode::Aggressive,
+            _ => Mode::Conservative,
+        })
+        .unwrap_or(Mode::Conservative);
+    let allow_bang = cop_config
+        .and_then(|c| c.raw.get("AllowBangMethods"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false);
+    let allowed_methods = cop_config
+        .and_then(|c| c.raw.get("AllowedMethods"))
+        .and_then(|v| v.as_sequence())
+        .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+        .unwrap_or_default();
+    let allowed_patterns = cop_config
+        .and_then(|c| c.raw.get("AllowedPatterns"))
+        .and_then(|v| v.as_sequence())
+        .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+        .unwrap_or_default();
+    let wayward_predicates = cop_config
+        .and_then(|c| c.raw.get("WaywardPredicates"))
+        .and_then(|v| v.as_sequence())
+        .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+        .unwrap_or_default();
+    Some(Box::new(PredicateMethod::with_config(mode, allow_bang, allowed_methods, allowed_patterns, wayward_predicates)))
+});

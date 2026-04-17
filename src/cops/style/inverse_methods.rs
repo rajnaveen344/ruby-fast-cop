@@ -404,3 +404,35 @@ impl Cop for InverseMethods {
         visitor.offenses
     }
 }
+
+crate::register_cop!("Style/InverseMethods", |cfg| {
+    let cop_config = cfg.get_cop_config("Style/InverseMethods");
+    let inverse_methods = cop_config
+        .and_then(|c| c.raw.get("InverseMethods"))
+        .and_then(|v| v.as_mapping())
+        .map(|m| {
+            m.iter()
+                .filter_map(|(k, v)| {
+                    Some((k.as_str()?.to_string(), v.as_str()?.to_string()))
+                })
+                .collect::<std::collections::HashMap<_, _>>()
+        });
+    let inverse_blocks = cop_config
+        .and_then(|c| c.raw.get("InverseBlocks"))
+        .and_then(|v| v.as_mapping())
+        .map(|m| {
+            m.iter()
+                .filter_map(|(k, v)| {
+                    Some((k.as_str()?.to_string(), v.as_str()?.to_string()))
+                })
+                .collect::<std::collections::HashMap<_, _>>()
+        });
+    match (inverse_methods, inverse_blocks) {
+        (Some(im), Some(ib)) => Some(Box::new(InverseMethods::with_config(im, ib))),
+        (Some(im), None) => Some(Box::new(InverseMethods::with_config(
+            im,
+            std::collections::HashMap::new(),
+        ))),
+        _ => Some(Box::new(InverseMethods::new())),
+    }
+});

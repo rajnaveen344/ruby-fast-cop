@@ -301,3 +301,7 @@ impl Cop for SelectByRegexp {
         vec![offense]
     }
 }
+
+crate::register_cop!("Style/SelectByRegexp", |_cfg| {
+    Some(Box::new(SelectByRegexp::new()))
+});

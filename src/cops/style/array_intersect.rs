@@ -314,3 +314,15 @@ impl Cop for ArrayIntersect {
         vec![]
     }
 }
+
+crate::register_cop!("Style/ArrayIntersect", |cfg| {
+    let cop_config = cfg.get_cop_config("Style/ArrayIntersect");
+    let active_support = cop_config
+        .and_then(|c| c.raw.get("ActiveSupportExtensionsEnabled"))
+        .and_then(|v| v.as_bool())
+        .or_else(|| cop_config
+            .and_then(|c| c.raw.get("AllCopsActiveSupportExtensionsEnabled"))
+            .and_then(|v| v.as_bool()))
+        .unwrap_or(false);
+    Some(Box::new(ArrayIntersect::with_config(active_support)))
+});

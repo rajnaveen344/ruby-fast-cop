@@ -416,3 +416,7 @@ fn handle_special_regexp_chars(value: &str) -> String {
 
     result
 }
+
+crate::register_cop!("Lint/LiteralInInterpolation", |_cfg| {
+    Some(Box::new(LiteralInInterpolation::new()))
+});

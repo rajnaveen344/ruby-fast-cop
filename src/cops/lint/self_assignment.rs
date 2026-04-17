@@ -440,3 +440,12 @@ fn rhs_matches_lhs(rhs: &Node, lhs: &Node) -> bool {
         _ => false,
     }
 }
+
+crate::register_cop!("Lint/SelfAssignment", |cfg| {
+    let cop_config = cfg.get_cop_config("Lint/SelfAssignment");
+    let allow_rbs = cop_config
+        .and_then(|c| c.raw.get("AllowRBSInlineAnnotation"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false);
+    Some(Box::new(LintSelfAssignment::new(allow_rbs)))
+});

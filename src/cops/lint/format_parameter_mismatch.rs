@@ -491,3 +491,7 @@ fn strip_string_delimiters(source: &str) -> &str {
         source
     }
 }
+
+crate::register_cop!("Lint/FormatParameterMismatch", |_cfg| {
+    Some(Box::new(FormatParameterMismatch::new()))
+});

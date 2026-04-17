@@ -40,3 +40,21 @@ impl Cop for CyclomaticComplexity {
         offenses
     }
 }
+
+crate::register_cop!("Metrics/CyclomaticComplexity", |cfg| {
+    let cop_config = cfg.get_cop_config("Metrics/CyclomaticComplexity");
+    let max = cop_config.and_then(|c| c.max).unwrap_or(7);
+    let mut allowed_methods: Vec<String> = Vec::new();
+    for key in &["AllowedMethods", "IgnoredMethods", "ExcludedMethods"] {
+        if let Some(seq) = cop_config.and_then(|c| c.raw.get(*key)).and_then(|v| v.as_sequence()) {
+            for v in seq { if let Some(s) = v.as_str() { allowed_methods.push(s.to_string()); } }
+        }
+    }
+    let mut allowed_patterns: Vec<String> = Vec::new();
+    for key in &["AllowedPatterns", "IgnoredPatterns"] {
+        if let Some(seq) = cop_config.and_then(|c| c.raw.get(*key)).and_then(|v| v.as_sequence()) {
+            for v in seq { if let Some(s) = v.as_str() { allowed_patterns.push(s.to_string()); } }
+        }
+    }
+    Some(Box::new(CyclomaticComplexity::with_config(max, allowed_methods, allowed_patterns)))
+});

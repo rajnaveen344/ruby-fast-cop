@@ -521,3 +521,36 @@ impl Visit<'_> for SymbolProcVisitor<'_> {
         ruby_prism::visit_forwarding_super_node(self, node);
     }
 }
+
+crate::register_cop!("Style/SymbolProc", |cfg| {
+    let cop_config = cfg.get_cop_config("Style/SymbolProc");
+    let allowed_methods = cop_config
+        .and_then(|c| c.raw.get("AllowedMethods"))
+        .and_then(|v| v.as_sequence())
+        .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+        .unwrap_or_else(|| vec!["define_method".to_string()]);
+    let allowed_patterns = cop_config
+        .and_then(|c| c.raw.get("AllowedPatterns"))
+        .and_then(|v| v.as_sequence())
+        .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+        .unwrap_or_default();
+    let allow_methods_with_arguments = cop_config
+        .and_then(|c| c.raw.get("AllowMethodsWithArguments"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false);
+    let allow_comments = cop_config
+        .and_then(|c| c.raw.get("AllowComments"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false);
+    let active_support = cop_config
+        .and_then(|c| c.raw.get("ActiveSupportExtensionsEnabled"))
+        .and_then(|v| v.as_bool())
+        .or_else(|| cop_config
+            .and_then(|c| c.raw.get("AllCopsActiveSupportExtensionsEnabled"))
+            .and_then(|v| v.as_bool()))
+        .unwrap_or(false);
+    Some(Box::new(SymbolProc::with_config(
+        allowed_methods, allowed_patterns, allow_methods_with_arguments,
+        allow_comments, active_support,
+    )))
+});

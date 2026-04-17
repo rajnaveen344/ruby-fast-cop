@@ -146,3 +146,7 @@ impl<'pr> Visit<'pr> for Visitor<'_> {
         self.parent_skips = saved;
     }
 }
+
+crate::register_cop!("Style/EmptyCaseCondition", |_cfg| {
+    Some(Box::new(EmptyCaseCondition::new()))
+});

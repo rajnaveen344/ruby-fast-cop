@@ -177,3 +177,16 @@ impl Cop for FrozenStringLiteralComment {
         }
     }
 }
+
+crate::register_cop!("Style/FrozenStringLiteralComment", |cfg| {
+    let cop_config = cfg.get_cop_config("Style/FrozenStringLiteralComment");
+    let style = cop_config
+        .and_then(|c| c.enforced_style.as_ref())
+        .map(|s| match s.as_str() {
+            "never" => EnforcedStyle::Never,
+            "always_true" => EnforcedStyle::AlwaysTrue,
+            _ => EnforcedStyle::Always,
+        })
+        .unwrap_or(EnforcedStyle::Always);
+    Some(Box::new(FrozenStringLiteralComment::new(style)))
+});

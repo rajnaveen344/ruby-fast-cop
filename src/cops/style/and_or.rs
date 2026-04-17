@@ -416,3 +416,15 @@ fn wrap_node(node: &Node, edits: &mut Vec<Edit>) {
 fn is_comparison_method(name: &str) -> bool {
     matches!(name, "==" | "!=" | "<" | ">" | "<=" | ">=" | "<=>" | "===" | "=~" | "!~")
 }
+
+crate::register_cop!("Style/AndOr", |cfg| {
+    let cop_config = cfg.get_cop_config("Style/AndOr");
+    let style = cop_config
+        .and_then(|c| c.enforced_style.as_ref())
+        .map(|s| match s.as_str() {
+            "always" => EnforcedStyle::Always,
+            _ => EnforcedStyle::Conditionals,
+        })
+        .unwrap_or(EnforcedStyle::Conditionals);
+    Some(Box::new(AndOr::new(style)))
+});

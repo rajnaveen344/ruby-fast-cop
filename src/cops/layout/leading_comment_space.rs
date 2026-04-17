@@ -240,3 +240,24 @@ impl Cop for LeadingCommentSpace {
         offenses
     }
 }
+
+crate::register_cop!("Layout/LeadingCommentSpace", |cfg| {
+    let cop_config = cfg.get_cop_config("Layout/LeadingCommentSpace");
+    let allow_doxygen = cop_config
+        .and_then(|c| c.raw.get("AllowDoxygenCommentStyle"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false);
+    let allow_gemfile_ruby = cop_config
+        .and_then(|c| c.raw.get("AllowGemfileRubyComment"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false);
+    let allow_rbs = cop_config
+        .and_then(|c| c.raw.get("AllowRBSInlineAnnotation"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false);
+    let allow_steep = cop_config
+        .and_then(|c| c.raw.get("AllowSteepAnnotation"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false);
+    Some(Box::new(LeadingCommentSpace::with_config(allow_doxygen, allow_gemfile_ruby, allow_rbs, allow_steep)))
+});

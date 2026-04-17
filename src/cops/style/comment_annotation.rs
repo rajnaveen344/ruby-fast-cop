@@ -182,3 +182,22 @@ impl Cop for CommentAnnotation {
         offenses
     }
 }
+
+crate::register_cop!("Style/CommentAnnotation", |cfg| {
+    let cop_config = cfg.get_cop_config("Style/CommentAnnotation");
+    let keywords: Vec<String> = cop_config
+        .and_then(|c| c.raw.get("Keywords"))
+        .and_then(|v| v.as_sequence())
+        .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+        .unwrap_or_else(|| {
+            ["TODO", "FIXME", "OPTIMIZE", "HACK", "REVIEW"]
+                .iter()
+                .map(|s| s.to_string())
+                .collect()
+        });
+    let require_colon = cop_config
+        .and_then(|c| c.raw.get("RequireColon"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(true);
+    Some(Box::new(CommentAnnotation::with_config(keywords, require_colon)))
+});

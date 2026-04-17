@@ -258,3 +258,7 @@ impl Visit<'_> for Visitor<'_> {
         }
     }
 }
+
+crate::register_cop!("Style/RedundantRegexpEscape", |_cfg| {
+    Some(Box::new(RedundantRegexpEscape::new()))
+});

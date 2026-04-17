@@ -289,3 +289,43 @@ impl Visit<'_> for NumericVisitor<'_> {
         ruby_prism::visit_float_node(self, node);
     }
 }
+
+crate::register_cop!("Style/NumericLiterals", |cfg| {
+    let cop_config = cfg.get_cop_config("Style/NumericLiterals");
+    let min_digits = cop_config
+        .and_then(|c| c.raw.get("MinDigits"))
+        .and_then(|v| v.as_u64())
+        .unwrap_or(6) as usize;
+    let strict = cop_config
+        .and_then(|c| c.raw.get("Strict"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false);
+    let allowed_numbers = cop_config
+        .and_then(|c| c.raw.get("AllowedNumbers"))
+        .and_then(|v| v.as_sequence())
+        .map(|seq| {
+            seq.iter()
+                .filter_map(|v| {
+                    v.as_i64().or_else(|| {
+                        v.as_str().and_then(|s| s.parse::<i64>().ok())
+                    })
+                })
+                .collect()
+        })
+        .unwrap_or_default();
+    let allowed_patterns = cop_config
+        .and_then(|c| c.raw.get("AllowedPatterns"))
+        .and_then(|v| v.as_sequence())
+        .map(|seq| {
+            seq.iter()
+                .filter_map(|v| v.as_str().map(String::from))
+                .collect()
+        })
+        .unwrap_or_default();
+    Some(Box::new(NumericLiterals::with_config(
+        min_digits,
+        strict,
+        allowed_numbers,
+        allowed_patterns,
+    )))
+});

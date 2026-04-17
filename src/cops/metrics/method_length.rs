@@ -82,3 +82,54 @@ impl Cop for MethodLength {
             self.severity(), start, find_end_of_first_line(ctx.source, start))]
     }
 }
+
+crate::register_cop!("Metrics/MethodLength", |cfg| {
+    let cop_config = cfg.get_cop_config("Metrics/MethodLength");
+    let max = cop_config.and_then(|c| c.max).unwrap_or(10);
+    let count_comments = cop_config
+        .and_then(|c| c.raw.get("CountComments"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false);
+    let count_as_one = cop_config
+        .and_then(|c| c.raw.get("CountAsOne"))
+        .and_then(|v| v.as_sequence())
+        .map(|seq| {
+            seq.iter()
+                .filter_map(|v| v.as_str().map(|s| s.to_string()))
+                .collect()
+        })
+        .unwrap_or_default();
+    let mut allowed_methods: Vec<String> = Vec::new();
+    for key in &["AllowedMethods", "IgnoredMethods", "ExcludedMethods"] {
+        if let Some(seq) = cop_config
+            .and_then(|c| c.raw.get(*key))
+            .and_then(|v| v.as_sequence())
+        {
+            for v in seq {
+                if let Some(s) = v.as_str() {
+                    allowed_methods.push(s.to_string());
+                }
+            }
+        }
+    }
+    let mut allowed_patterns: Vec<String> = Vec::new();
+    for key in &["AllowedPatterns", "IgnoredPatterns"] {
+        if let Some(seq) = cop_config
+            .and_then(|c| c.raw.get(*key))
+            .and_then(|v| v.as_sequence())
+        {
+            for v in seq {
+                if let Some(s) = v.as_str() {
+                    allowed_patterns.push(s.to_string());
+                }
+            }
+        }
+    }
+    Some(Box::new(MethodLength::with_config(
+        max,
+        count_comments,
+        count_as_one,
+        allowed_methods,
+        allowed_patterns,
+    )))
+});

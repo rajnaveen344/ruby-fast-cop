@@ -182,3 +182,27 @@ impl Visit<'_> for CaseVisitor<'_> {
         ruby_prism::visit_case_match_node(self, node);
     }
 }
+
+crate::register_cop!("Layout/CaseIndentation", |cfg| {
+    let cop_config = cfg.get_cop_config("Layout/CaseIndentation");
+    let style = cop_config
+        .and_then(|c| c.raw.get("EnforcedStyle"))
+        .and_then(|v| v.as_str())
+        .unwrap_or("case")
+        .to_string();
+    let indent_one_step = cop_config
+        .and_then(|c| c.raw.get("IndentOneStep"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false);
+    let indent_width = cop_config
+        .and_then(|c| c.raw.get("IndentationWidth"))
+        .and_then(|v| v.as_i64())
+        .map(|v| v as usize);
+    let layout_iw = cfg
+        .get_cop_config("Layout/IndentationWidth")
+        .and_then(|c| c.raw.get("Width"))
+        .and_then(|v| v.as_i64())
+        .map(|v| v as usize)
+        .unwrap_or(2);
+    Some(Box::new(CaseIndentation::with_config(style, indent_one_step, indent_width, layout_iw)))
+});

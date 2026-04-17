@@ -217,3 +217,7 @@ impl Cop for SpaceInsidePercentLiteralDelimiters {
         offenses
     }
 }
+
+crate::register_cop!("Layout/SpaceInsidePercentLiteralDelimiters", |_cfg| {
+    Some(Box::new(SpaceInsidePercentLiteralDelimiters::new()))
+});

@@ -325,3 +325,7 @@ impl ZeroLengthPredicate {
         }
     }
 }
+
+crate::register_cop!("Style/ZeroLengthPredicate", |_cfg| {
+    Some(Box::new(ZeroLengthPredicate::new()))
+});

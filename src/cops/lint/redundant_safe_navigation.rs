@@ -967,3 +967,22 @@ impl Visit<'_> for RedundantSafeNavVisitor<'_> {
         ruby_prism::visit_or_node(self, node);
     }
 }
+
+crate::register_cop!("Lint/RedundantSafeNavigation", |cfg| {
+    let cop_config = cfg.get_cop_config("Lint/RedundantSafeNavigation");
+    let allowed_methods = cop_config
+        .and_then(|c| c.raw.get("AllowedMethods"))
+        .and_then(|v| v.as_sequence())
+        .map(|seq| seq.iter().filter_map(|v| v.as_str().map(|s| s.to_string())).collect())
+        .unwrap_or_else(|| vec!["respond_to?".to_string()]);
+    let infer = cop_config
+        .and_then(|c| c.raw.get("InferNonNilReceiver"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false);
+    let additional = cop_config
+        .and_then(|c| c.raw.get("AdditionalNilMethods"))
+        .and_then(|v| v.as_sequence())
+        .map(|seq| seq.iter().filter_map(|v| v.as_str().map(|s| s.to_string())).collect())
+        .unwrap_or_default();
+    Some(Box::new(RedundantSafeNavigation::with_config(allowed_methods, infer, additional)))
+});

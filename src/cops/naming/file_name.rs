@@ -493,3 +493,49 @@ fn capitalize_first(s: &str) -> String {
         }
     }
 }
+
+crate::register_cop!("Naming/FileName", |cfg| {
+    let cop_config = cfg.get_cop_config("Naming/FileName");
+    let ignore_executable_scripts = cop_config
+        .and_then(|c| c.raw.get("IgnoreExecutableScripts"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(true);
+    let expect_matching_definition = cop_config
+        .and_then(|c| c.raw.get("ExpectMatchingDefinition"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false);
+    let check_definition_path_hierarchy = cop_config
+        .and_then(|c| c.raw.get("CheckDefinitionPathHierarchy"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(true);
+    let check_definition_path_hierarchy_roots = cop_config
+        .and_then(|c| c.raw.get("CheckDefinitionPathHierarchyRoots"))
+        .and_then(|v| v.as_sequence())
+        .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+        .unwrap_or_else(|| vec!["lib".into(), "spec".into(), "test".into(), "src".into()]);
+    let regex = cop_config
+        .and_then(|c| c.raw.get("Regex"))
+        .and_then(|v| v.as_str())
+        .filter(|s| !s.is_empty())
+        .map(String::from);
+    let allowed_acronyms = cop_config
+        .and_then(|c| c.raw.get("AllowedAcronyms"))
+        .and_then(|v| v.as_sequence())
+        .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+        .unwrap_or_default();
+    let include_patterns = cop_config
+        .and_then(|c| c.raw.get("Include"))
+        .and_then(|v| v.as_sequence())
+        .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+        .or_else(|| cfg.all_cops_include())
+        .unwrap_or_default();
+    Some(Box::new(FileName::with_full_config(
+        ignore_executable_scripts,
+        expect_matching_definition,
+        check_definition_path_hierarchy,
+        check_definition_path_hierarchy_roots,
+        regex,
+        allowed_acronyms,
+        include_patterns,
+    )))
+});

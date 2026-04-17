@@ -143,3 +143,16 @@ pub(crate) fn build_correction(
         ],
     }
 }
+
+crate::register_cop!("Style/NegatedIf", |cfg| {
+    let style = cfg
+        .get_cop_config("Style/NegatedIf")
+        .and_then(|c| c.enforced_style.as_ref())
+        .map(|s| match s.as_str() {
+            "prefix" => EnforcedStyle::Prefix,
+            "postfix" => EnforcedStyle::Postfix,
+            _ => EnforcedStyle::Both,
+        })
+        .unwrap_or(EnforcedStyle::Both);
+    Some(Box::new(NegatedIf::with_style(style)))
+});

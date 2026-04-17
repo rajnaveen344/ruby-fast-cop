@@ -257,3 +257,7 @@ impl Cop for Sample {
         vec![offense.with_correction(correction)]
     }
 }
+
+crate::register_cop!("Style/Sample", |_cfg| {
+    Some(Box::new(Sample::new()))
+});

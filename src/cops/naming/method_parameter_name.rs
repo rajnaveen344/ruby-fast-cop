@@ -78,3 +78,30 @@ impl Cop for MethodParameterName {
         )
     }
 }
+
+crate::register_cop!("Naming/MethodParameterName", |cfg| {
+    let cop_config = cfg.get_cop_config("Naming/MethodParameterName");
+    let min_name_length = cop_config
+        .and_then(|c| c.raw.get("MinNameLength"))
+        .and_then(|v| v.as_u64())
+        .map(|n| n as usize)
+        .unwrap_or(3);
+    let allow_nums = cop_config
+        .and_then(|c| c.raw.get("AllowNamesEndingInNumbers"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(true);
+    let allowed = cop_config
+        .and_then(|c| c.raw.get("AllowedNames"))
+        .and_then(|v| v.as_sequence())
+        .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+        .unwrap_or_else(|| {
+            ["as", "at", "by", "cc", "db", "id", "if", "in", "io", "ip", "of", "on", "os", "pp", "to"]
+                .iter().map(|s| s.to_string()).collect()
+        });
+    let forbidden = cop_config
+        .and_then(|c| c.raw.get("ForbiddenNames"))
+        .and_then(|v| v.as_sequence())
+        .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+        .unwrap_or_default();
+    Some(Box::new(MethodParameterName::with_config(min_name_length, allow_nums, allowed, forbidden)))
+});

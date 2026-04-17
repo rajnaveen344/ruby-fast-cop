@@ -389,3 +389,25 @@ impl Visit<'_> for ImplicitRefFinder {
         self.scope_depth -= 1;
     }
 }
+
+crate::register_cop!("Lint/UnusedMethodArgument", |cfg| {
+    let cop_config = cfg.get_cop_config("Lint/UnusedMethodArgument");
+    let allow_keyword = cop_config
+        .and_then(|c| c.raw.get("AllowUnusedKeywordArguments"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false);
+    let ignore_empty = cop_config
+        .and_then(|c| c.raw.get("IgnoreEmptyMethods"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(true);
+    let ignore_not_impl = cop_config
+        .and_then(|c| c.raw.get("IgnoreNotImplementedMethods"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(true);
+    let exceptions = cop_config
+        .and_then(|c| c.raw.get("NotImplementedExceptions"))
+        .and_then(|v| v.as_sequence())
+        .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+        .unwrap_or_else(|| vec!["NotImplementedError".to_string()]);
+    Some(Box::new(UnusedMethodArgument::with_config(allow_keyword, ignore_empty, ignore_not_impl, exceptions)))
+});

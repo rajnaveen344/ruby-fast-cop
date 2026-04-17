@@ -170,3 +170,15 @@ impl Visit<'_> for Visitor<'_> {
         ruby_prism::visit_interpolated_regular_expression_node(self, node);
     }
 }
+
+crate::register_cop!("Layout/SpaceInsideStringInterpolation", |cfg| {
+    let cop_config = cfg.get_cop_config("Layout/SpaceInsideStringInterpolation");
+    let style = cop_config
+        .and_then(|c| c.enforced_style.as_ref())
+        .map(|s| match s.as_str() {
+            "space" => EnforcedStyle::Space,
+            _ => EnforcedStyle::NoSpace,
+        })
+        .unwrap_or(EnforcedStyle::NoSpace);
+    Some(Box::new(SpaceInsideStringInterpolation::new(style)))
+});

@@ -662,3 +662,7 @@ fn extract_condition_variables(node: &Node, ctx: &CheckContext) -> Vec<String> {
     vars
 }
 
+
+crate::register_cop!("Style/IdenticalConditionalBranches", |_cfg| {
+    Some(Box::new(IdenticalConditionalBranches::new()))
+});

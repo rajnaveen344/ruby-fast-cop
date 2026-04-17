@@ -432,3 +432,49 @@ impl<'a> Visit<'_> for Visitor<'a> {
         }
     }
 }
+
+crate::register_cop!("Style/RegexpLiteral", |cfg| {
+    let cop_config = cfg.get_cop_config("Style/RegexpLiteral");
+    let style = cop_config
+        .and_then(|c| c.enforced_style.as_ref())
+        .map(|s| match s.as_str() {
+            "percent_r" => EnforcedStyle::PercentR,
+            "mixed" => EnforcedStyle::Mixed,
+            _ => EnforcedStyle::Slashes,
+        })
+        .unwrap_or(EnforcedStyle::Slashes);
+    let allow_inner_slashes = cop_config
+        .and_then(|c| c.raw.get("AllowInnerSlashes"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false);
+    let percent_r_delims = cfg
+        .get_cop_config("Style/PercentLiteralDelimiters")
+        .and_then(|c| c.raw.get("PreferredDelimiters"))
+        .and_then(|v| v.as_mapping())
+        .and_then(|m| {
+            m.iter().find_map(|(k, v)| {
+                if k.as_str() == Some("%r") {
+                    v.as_str().and_then(|s| {
+                        let mut it = s.chars();
+                        let o = it.next()?;
+                        let c = it.next()?;
+                        Some((o, c))
+                    })
+                } else {
+                    None
+                }
+            })
+        })
+        .unwrap_or(('{', '}'));
+    let method_call_style = cfg
+        .get_cop_config("Style/MethodCallWithArgsParentheses")
+        .and_then(|c| c.enforced_style.as_ref())
+        .map(|s| match s.as_str() {
+            "omit_parentheses" => MethodCallParensStyle::OmitParentheses,
+            _ => MethodCallParensStyle::RequireParentheses,
+        })
+        .unwrap_or(MethodCallParensStyle::RequireParentheses);
+    Some(Box::new(RegexpLiteral::with_config(
+        style, allow_inner_slashes, percent_r_delims, method_call_style,
+    )))
+});

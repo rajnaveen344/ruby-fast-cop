@@ -162,3 +162,7 @@ impl<'a> Visit<'_> for Visitor<'a> {
         ruby_prism::visit_call_node(self, node);
     }
 }
+
+crate::register_cop!("Lint/AmbiguousRegexpLiteral", |_cfg| {
+    Some(Box::new(AmbiguousRegexpLiteral::new()))
+});

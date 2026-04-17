@@ -508,3 +508,7 @@ impl Visit<'_> for KeywordVisitor<'_> {
         ruby_prism::visit_pinned_expression_node(self, node);
     }
 }
+
+crate::register_cop!("Layout/SpaceAroundKeyword", |_cfg| {
+    Some(Box::new(SpaceAroundKeyword::new()))
+});

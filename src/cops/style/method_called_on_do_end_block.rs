@@ -102,3 +102,7 @@ impl Cop for MethodCalledOnDoEndBlock {
         vec![]
     }
 }
+
+crate::register_cop!("Style/MethodCalledOnDoEndBlock", |_cfg| {
+    Some(Box::new(MethodCalledOnDoEndBlock::new()))
+});

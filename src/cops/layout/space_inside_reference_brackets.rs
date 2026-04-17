@@ -160,3 +160,23 @@ impl Cop for SpaceInsideReferenceBrackets {
         offenses
     }
 }
+
+crate::register_cop!("Layout/SpaceInsideReferenceBrackets", |cfg| {
+    let cop_config = cfg.get_cop_config("Layout/SpaceInsideReferenceBrackets");
+    let style = cop_config
+        .and_then(|c| c.enforced_style.as_ref())
+        .map(|s| match s.as_str() {
+            "space" => SpaceInsideReferenceBracketsStyle::Space,
+            _ => SpaceInsideReferenceBracketsStyle::NoSpace,
+        })
+        .unwrap_or(SpaceInsideReferenceBracketsStyle::NoSpace);
+    let empty_style = cop_config
+        .and_then(|c| c.raw.get("EnforcedStyleForEmptyBrackets"))
+        .and_then(|v| v.as_str())
+        .map(|s| match s {
+            "space" => ReferenceEmptyBracketsStyle::Space,
+            _ => ReferenceEmptyBracketsStyle::NoSpace,
+        })
+        .unwrap_or(ReferenceEmptyBracketsStyle::NoSpace);
+    Some(Box::new(SpaceInsideReferenceBrackets::new(style, empty_style)))
+});

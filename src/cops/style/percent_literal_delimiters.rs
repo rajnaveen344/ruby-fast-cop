@@ -409,3 +409,25 @@ impl Cop for PercentLiteralDelimiters {
         visitor.offenses
     }
 }
+
+crate::register_cop!("Style/PercentLiteralDelimiters", |cfg| {
+    let cop_config = cfg.get_cop_config("Style/PercentLiteralDelimiters");
+    let preferred = cop_config
+        .and_then(|c| c.raw.get("PreferredDelimiters"))
+        .and_then(|v| v.as_mapping())
+        .map(|m| {
+            let mut map = std::collections::HashMap::new();
+            for (k, v) in m.iter() {
+                if let (Some(key), Some(val)) = (k.as_str(), v.as_str()) {
+                    map.insert(key.to_string(), val.to_string());
+                }
+            }
+            map
+        })
+        .unwrap_or_else(|| {
+            let mut m = std::collections::HashMap::new();
+            m.insert("default".to_string(), "()".to_string());
+            m
+        });
+    Some(Box::new(PercentLiteralDelimiters::with_config(preferred)))
+});

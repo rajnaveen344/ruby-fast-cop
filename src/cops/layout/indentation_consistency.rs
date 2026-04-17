@@ -286,3 +286,15 @@ impl<'a> Visit<'_> for Visitor<'a> {
         ruby_prism::visit_begin_node(self, node);
     }
 }
+
+crate::register_cop!("Layout/IndentationConsistency", |cfg| {
+    let cop_config = cfg.get_cop_config("Layout/IndentationConsistency");
+    let style = cop_config
+        .and_then(|c| c.enforced_style.as_ref())
+        .map(|s| match s.as_str() {
+            "indented_internal_methods" => IndentationConsistencyStyle::IndentedInternalMethods,
+            _ => IndentationConsistencyStyle::Normal,
+        })
+        .unwrap_or(IndentationConsistencyStyle::Normal);
+    Some(Box::new(IndentationConsistency::new(style)))
+});

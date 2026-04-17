@@ -485,3 +485,16 @@ impl Cop for EmptyLiteral {
         visitor.offenses
     }
 }
+
+crate::register_cop!("Style/EmptyLiteral", |cfg| {
+    let prefer_double = cfg.get_cop_config("Style/EmptyLiteral")
+        .and_then(|c| c.enforced_style.as_ref())
+        .or_else(|| cfg.get_cop_config("Style/StringLiterals")
+            .and_then(|c| c.enforced_style.as_ref()))
+        .map(|s| s == "double_quotes")
+        .unwrap_or(false);
+    let frozen_cop_enabled = cfg.get_cop_config("Style/FrozenStringLiteralComment")
+        .and_then(|c| c.enabled)
+        .unwrap_or(false);
+    Some(Box::new(EmptyLiteral::with_full_config(prefer_double, frozen_cop_enabled)))
+});

@@ -144,3 +144,7 @@ fn classify_receiver(recv: Option<&Node>) -> RecvKind {
         _ => RecvKind::Other,
     }
 }
+
+crate::register_cop!("Lint/DeprecatedClassMethods", |_cfg| {
+    Some(Box::new(DeprecatedClassMethods::new()))
+});

@@ -366,3 +366,7 @@ impl<'a> Visit<'_> for VarNameFinder<'a> {
         }
     }
 }
+
+crate::register_cop!("Lint/UselessAssignment", |_cfg| {
+    Some(Box::new(UselessAssignment::new()))
+});

@@ -112,3 +112,7 @@ impl Cop for SpaceInsideArrayPercentLiteral {
         visitor.offenses
     }
 }
+
+crate::register_cop!("Layout/SpaceInsideArrayPercentLiteral", |_cfg| {
+    Some(Box::new(SpaceInsideArrayPercentLiteral::new()))
+});

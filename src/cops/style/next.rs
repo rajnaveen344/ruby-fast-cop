@@ -362,3 +362,25 @@ impl Visit<'_> for NextVisitor<'_> {
         ruby_prism::visit_for_node(self, node);
     }
 }
+
+crate::register_cop!("Style/Next", |cfg| {
+    let cop_config = cfg.get_cop_config("Style/Next");
+    let style = cop_config
+        .and_then(|c| c.enforced_style.as_ref())
+        .map(|s| match s.as_str() {
+            "always" => EnforcedStyle::Always,
+            _ => EnforcedStyle::SkipModifierIfs,
+        })
+        .unwrap_or(EnforcedStyle::SkipModifierIfs);
+    let min_body_length = cop_config
+        .and_then(|c| c.raw.get("MinBodyLength"))
+        .and_then(|v| v.as_i64())
+        .unwrap_or(1);
+    let allow_consecutive = cop_config
+        .and_then(|c| c.raw.get("AllowConsecutiveConditionals"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false);
+    Some(Box::new(Next::with_config(
+        style, min_body_length, allow_consecutive,
+    )))
+});

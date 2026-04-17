@@ -560,3 +560,7 @@ impl Visit<'_> for RedundantBeginVisitor<'_> {
         ruby_prism::visit_begin_node(self, node);
     }
 }
+
+crate::register_cop!("Style/RedundantBegin", |_cfg| {
+    Some(Box::new(RedundantBegin::new()))
+});

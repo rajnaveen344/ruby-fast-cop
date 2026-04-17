@@ -177,3 +177,15 @@ impl Visit<'_> for DefEndAlignmentVisitor<'_> {
         ruby_prism::visit_call_node(self, node);
     }
 }
+
+crate::register_cop!("Layout/DefEndAlignment", |cfg| {
+    let style = cfg.get_cop_config("Layout/DefEndAlignment")
+        .and_then(|c| c.raw.get("EnforcedStyleAlignWith"))
+        .and_then(|v| v.as_str())
+        .unwrap_or("start_of_line");
+    let align_style = match style {
+        "def" => DefEndAlignmentStyle::Def,
+        _ => DefEndAlignmentStyle::StartOfLine,
+    };
+    Some(Box::new(DefEndAlignment::new(align_style)))
+});

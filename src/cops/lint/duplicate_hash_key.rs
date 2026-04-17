@@ -158,3 +158,7 @@ fn is_recursive_basic_literal(node: &Node) -> bool {
 fn is_constant_ref(node: &Node) -> bool {
     matches!(node, Node::ConstantReadNode { .. } | Node::ConstantPathNode { .. })
 }
+
+crate::register_cop!("Lint/DuplicateHashKey", |_cfg| {
+    Some(Box::new(DuplicateHashKey::new()))
+});

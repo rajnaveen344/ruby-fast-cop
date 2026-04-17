@@ -188,3 +188,16 @@ fn walk_one(
         ranges.push((loc.start_offset(), loc.end_offset()));
     }
 }
+
+crate::register_cop!("Style/MultipleComparison", |cfg| {
+    let cop_config = cfg.get_cop_config("Style/MultipleComparison");
+    let allow_method = cop_config
+        .and_then(|c| c.raw.get("AllowMethodComparison"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(true);
+    let threshold = cop_config
+        .and_then(|c| c.raw.get("ComparisonsThreshold"))
+        .and_then(|v| v.as_u64())
+        .unwrap_or(2) as usize;
+    Some(Box::new(MultipleComparison::with_config(allow_method, threshold)))
+});

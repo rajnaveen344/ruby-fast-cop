@@ -314,3 +314,7 @@ fn parent_of(name: &str) -> Option<&'static str> {
         _ => return None,
     })
 }
+
+crate::register_cop!("Lint/ShadowedException", |_cfg| {
+    Some(Box::new(ShadowedException::new()))
+});

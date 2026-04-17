@@ -180,3 +180,18 @@ impl<'a> Visit<'_> for Visitor<'a> {
         self.scoping_depth -= 1;
     }
 }
+
+crate::register_cop!("Lint/NestedMethodDefinition", |cfg| {
+    let cop_config = cfg.get_cop_config("Lint/NestedMethodDefinition");
+    let allowed_methods = cop_config
+        .and_then(|c| c.raw.get("AllowedMethods"))
+        .and_then(|v| v.as_sequence())
+        .map(|seq| seq.iter().filter_map(|v| v.as_str().map(|s| s.to_string())).collect())
+        .unwrap_or_default();
+    let allowed_patterns = cop_config
+        .and_then(|c| c.raw.get("AllowedPatterns"))
+        .and_then(|v| v.as_sequence())
+        .map(|seq| seq.iter().filter_map(|v| v.as_str().map(|s| s.to_string())).collect())
+        .unwrap_or_default();
+    Some(Box::new(NestedMethodDefinition::with_config(allowed_methods, allowed_patterns)))
+});

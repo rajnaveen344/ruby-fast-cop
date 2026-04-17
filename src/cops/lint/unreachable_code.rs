@@ -134,3 +134,7 @@ impl<'a> Visit<'_> for UnreachableCodeVisitor<'a> {
         ruby_prism::visit_call_node(self, node);
     }
 }
+
+crate::register_cop!("Lint/UnreachableCode", |_cfg| {
+    Some(Box::new(UnreachableCode::new()))
+});

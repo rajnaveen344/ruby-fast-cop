@@ -560,3 +560,15 @@ impl Visit<'_> for DuplicateMethodsVisitor<'_> {
         self.current_rescue_ensure_scope = prev;
     }
 }
+
+crate::register_cop!("Lint/DuplicateMethods", |cfg| {
+    let cop_config = cfg.get_cop_config("Lint/DuplicateMethods");
+    let active_support = cop_config
+        .and_then(|c| c.raw.get("ActiveSupportExtensionsEnabled"))
+        .and_then(|v| v.as_bool())
+        .or_else(|| cop_config
+            .and_then(|c| c.raw.get("AllCopsActiveSupportExtensionsEnabled"))
+            .and_then(|v| v.as_bool()))
+        .unwrap_or(false);
+    Some(Box::new(DuplicateMethods::with_config(active_support)))
+});

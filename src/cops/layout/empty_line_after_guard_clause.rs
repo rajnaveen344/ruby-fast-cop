@@ -644,3 +644,7 @@ impl<'a> Visit<'a> for Visitor<'a> {
         }
     }
 }
+
+crate::register_cop!("Layout/EmptyLineAfterGuardClause", |_cfg| {
+    Some(Box::new(EmptyLineAfterGuardClause::new()))
+});

@@ -318,3 +318,16 @@ impl<'a> Visit<'_> for Visitor<'a> {
         ruby_prism::visit_lambda_node(self, node);
     }
 }
+
+crate::register_cop!("Layout/SpaceAroundBlockParameters", |cfg| {
+    let style = cfg
+        .get_cop_config("Layout/SpaceAroundBlockParameters")
+        .and_then(|c| c.raw.get("EnforcedStyleInsidePipes"))
+        .and_then(|v| v.as_str())
+        .map(|s| match s {
+            "space" => Style::Space,
+            _ => Style::NoSpace,
+        })
+        .unwrap_or(Style::NoSpace);
+    Some(Box::new(SpaceAroundBlockParameters::new(style)))
+});

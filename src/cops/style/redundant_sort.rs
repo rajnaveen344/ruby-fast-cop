@@ -188,3 +188,7 @@ impl Cop for RedundantSort {
         vec![offense]
     }
 }
+
+crate::register_cop!("Style/RedundantSort", |_cfg| {
+    Some(Box::new(RedundantSort::new()))
+});

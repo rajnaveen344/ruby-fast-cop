@@ -405,3 +405,13 @@ fn has_named_capture_pattern(s: &str) -> bool {
     }
     false
 }
+
+crate::register_cop!("Style/CaseLikeIf", |cfg| {
+    let cop_config = cfg.get_cop_config("Style/CaseLikeIf");
+    let min_branches = cop_config
+        .and_then(|c| c.raw.get("MinBranchesCount"))
+        .and_then(|v| v.as_u64())
+        .map(|v| v as usize)
+        .unwrap_or(3);
+    Some(Box::new(CaseLikeIf::with_config(min_branches)))
+});

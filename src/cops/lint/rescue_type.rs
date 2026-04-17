@@ -124,3 +124,7 @@ impl Cop for RescueType {
         visitor.offenses
     }
 }
+
+crate::register_cop!("Lint/RescueType", |_cfg| {
+    Some(Box::new(RescueType::new()))
+});

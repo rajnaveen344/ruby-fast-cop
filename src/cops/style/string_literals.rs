@@ -478,3 +478,28 @@ impl Visit<'_> for StringLiteralsVisitor<'_> {
         }
     }
 }
+
+crate::register_cop!("Style/StringLiterals", |cfg| {
+    let cop_config = cfg.get_cop_config("Style/StringLiterals");
+    let style = cop_config
+        .and_then(|c| c.enforced_style.as_ref())
+        .and_then(|s| match s.as_str() {
+            "single_quotes" => Some(EnforcedStyle::SingleQuotes),
+            "double_quotes" => Some(EnforcedStyle::DoubleQuotes),
+            _ => None,
+        });
+    let style = match style {
+        Some(s) => s,
+        None => {
+            if cop_config.and_then(|c| c.enforced_style.as_ref()).is_some() {
+                return None;
+            }
+            EnforcedStyle::SingleQuotes
+        }
+    };
+    let consistent = cop_config
+        .and_then(|c| c.raw.get("ConsistentQuotesInMultiline"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false);
+    Some(Box::new(StringLiterals::with_config(style, consistent)))
+});

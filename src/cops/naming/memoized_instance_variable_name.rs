@@ -346,3 +346,17 @@ impl Cop for MemoizedInstanceVariableName {
         visitor.offenses
     }
 }
+
+crate::register_cop!("Naming/MemoizedInstanceVariableName", |cfg| {
+    let cop_config = cfg.get_cop_config("Naming/MemoizedInstanceVariableName");
+    let style = cop_config
+        .and_then(|c| c.raw.get("EnforcedStyleForLeadingUnderscores"))
+        .and_then(|v| v.as_str())
+        .map(|s| match s {
+            "required" => LeadingUnderscoreStyle::Required,
+            "optional" => LeadingUnderscoreStyle::Optional,
+            _ => LeadingUnderscoreStyle::Disallowed,
+        })
+        .unwrap_or(LeadingUnderscoreStyle::Disallowed);
+    Some(Box::new(MemoizedInstanceVariableName::with_style(style)))
+});

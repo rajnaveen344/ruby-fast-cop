@@ -495,3 +495,21 @@ fn is_operator_method(name: &str) -> bool {
             | "`"
     )
 }
+
+crate::register_cop!("Layout/FirstArgumentIndentation", |cfg| {
+    let cop_config = cfg.get_cop_config("Layout/FirstArgumentIndentation");
+    let style = cop_config
+        .and_then(|c| c.enforced_style.as_ref())
+        .map(|s| match s.as_str() {
+            "consistent" => FirstArgumentIndentationStyle::Consistent,
+            "consistent_relative_to_receiver" => FirstArgumentIndentationStyle::ConsistentRelativeToReceiver,
+            "special_for_inner_method_call" => FirstArgumentIndentationStyle::SpecialForInnerMethodCall,
+            _ => FirstArgumentIndentationStyle::SpecialForInnerMethodCallInParentheses,
+        })
+        .unwrap_or(FirstArgumentIndentationStyle::SpecialForInnerMethodCallInParentheses);
+    let width = cop_config
+        .and_then(|c| c.raw.get("IndentationWidth"))
+        .and_then(|v| v.as_i64())
+        .map(|v| v as usize);
+    Some(Box::new(FirstArgumentIndentation::new(style, width)))
+});

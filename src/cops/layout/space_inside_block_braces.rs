@@ -392,3 +392,27 @@ impl<'a> Visitor<'a> {
         );
     }
 }
+
+crate::register_cop!("Layout/SpaceInsideBlockBraces", |cfg| {
+    let cop_config = cfg.get_cop_config("Layout/SpaceInsideBlockBraces");
+    let style = cop_config
+        .and_then(|c| c.enforced_style.as_ref())
+        .map(|s| match s.as_str() {
+            "no_space" => SpaceInsideBlockBracesStyle::NoSpace,
+            _ => SpaceInsideBlockBracesStyle::Space,
+        })
+        .unwrap_or(SpaceInsideBlockBracesStyle::Space);
+    let raw_empty = cop_config
+        .and_then(|c| c.raw.get("EnforcedStyleForEmptyBraces"))
+        .and_then(|v| v.as_str());
+    let empty_style = match raw_empty {
+        Some("space") => BlockEmptyBracesStyle::Space,
+        Some("no_space") | None => BlockEmptyBracesStyle::NoSpace,
+        Some(_) => return None,
+    };
+    let space_before_params = cop_config
+        .and_then(|c| c.raw.get("SpaceBeforeBlockParameters"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(true);
+    Some(Box::new(SpaceInsideBlockBraces::new(style, empty_style, space_before_params)))
+});

@@ -80,3 +80,12 @@ impl Cop for EmptyLinesAroundBlockBody {
         v.offenses
     }
 }
+
+crate::register_cop!("Layout/EmptyLinesAroundBlockBody", |cfg| {
+    let cop_config = cfg.get_cop_config("Layout/EmptyLinesAroundBlockBody");
+    let style = cop_config
+        .and_then(|c| c.enforced_style.as_ref())
+        .map(|s| EmptyLinesAroundBlockBodyStyle::parse(s))
+        .unwrap_or(EmptyLinesAroundBlockBodyStyle::NoEmptyLines);
+    Some(Box::new(EmptyLinesAroundBlockBody::new(style)))
+});

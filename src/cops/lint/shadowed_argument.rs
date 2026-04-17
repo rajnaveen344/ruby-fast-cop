@@ -534,3 +534,12 @@ impl Visit<'_> for AssignmentRangeFinder {
         ruby_prism::visit_multi_write_node(self, node);
     }
 }
+
+crate::register_cop!("Lint/ShadowedArgument", |cfg| {
+    let cop_config = cfg.get_cop_config("Lint/ShadowedArgument");
+    let ignore_implicit = cop_config
+        .and_then(|c| c.raw.get("IgnoreImplicitReferences"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false);
+    Some(Box::new(ShadowedArgument::with_config(ignore_implicit)))
+});

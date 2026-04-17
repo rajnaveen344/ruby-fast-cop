@@ -429,3 +429,12 @@ fn block_base_from_call(ctx: &CheckContext, call: &ruby_prism::CallNode) -> Base
         lhs: None,
     }
 }
+
+crate::register_cop!("Layout/ElseAlignment", |cfg| {
+    let end_style = cfg.get_cop_config("Layout/EndAlignment")
+        .and_then(|c| c.raw.get("EnforcedStyleAlignWith"))
+        .and_then(|v| v.as_str())
+        .unwrap_or("keyword")
+        .to_string();
+    Some(Box::new(ElseAlignment::with_end_align_style(end_style)))
+});

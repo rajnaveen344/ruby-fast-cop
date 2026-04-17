@@ -112,3 +112,7 @@ impl Cop for PercentStringArray {
         vec![offense]
     }
 }
+
+crate::register_cop!("Lint/PercentStringArray", |_cfg| {
+    Some(Box::new(PercentStringArray::new()))
+});

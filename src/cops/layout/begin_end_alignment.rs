@@ -112,3 +112,15 @@ impl Visit<'_> for BeginEndAlignmentVisitor<'_> {
         ruby_prism::visit_begin_node(self, node);
     }
 }
+
+crate::register_cop!("Layout/BeginEndAlignment", |cfg| {
+    let style = cfg.get_cop_config("Layout/BeginEndAlignment")
+        .and_then(|c| c.raw.get("EnforcedStyleAlignWith"))
+        .and_then(|v| v.as_str())
+        .unwrap_or("start_of_line");
+    let align_style = match style {
+        "begin" => BeginEndAlignmentStyle::Begin,
+        _ => BeginEndAlignmentStyle::StartOfLine,
+    };
+    Some(Box::new(BeginEndAlignment::new(align_style)))
+});

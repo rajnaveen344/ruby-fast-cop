@@ -231,3 +231,28 @@ impl Cop for HeredocIndentation {
         self.check_heredocs(ctx.source, ctx)
     }
 }
+
+crate::register_cop!("Layout/HeredocIndentation", |cfg| {
+    let cop_config = cfg.get_cop_config("Layout/HeredocIndentation");
+    let active_support = cop_config
+        .and_then(|c| c.raw.get("ActiveSupportExtensionsEnabled"))
+        .and_then(|v| v.as_bool())
+        .or_else(|| cop_config
+            .and_then(|c| c.raw.get("AllCopsActiveSupportExtensionsEnabled"))
+            .and_then(|v| v.as_bool()))
+        .unwrap_or(false);
+    let ll_config = cfg.get_cop_config("Layout/LineLength");
+    let max_line_length = cop_config
+        .and_then(|c| c.raw.get("MaxLineLength"))
+        .and_then(|v| v.as_i64())
+        .or_else(|| ll_config.and_then(|c| c.max).map(|v| v as i64))
+        .map(|v| v as usize);
+    let allow_heredoc = cop_config
+        .and_then(|c| c.raw.get("AllowHeredoc"))
+        .and_then(|v| v.as_bool())
+        .or_else(|| ll_config
+            .and_then(|c| c.raw.get("AllowHeredoc"))
+            .and_then(|v| v.as_bool()))
+        .unwrap_or(true);
+    Some(Box::new(HeredocIndentation::with_config(2, active_support, max_line_length, allow_heredoc)))
+});

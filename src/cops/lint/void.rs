@@ -534,3 +534,12 @@ fn entirely_literal(node: &Node) -> bool {
         _ => false,
     }
 }
+
+crate::register_cop!("Lint/Void", |cfg| {
+    let cop_config = cfg.get_cop_config("Lint/Void");
+    let check_methods = cop_config
+        .and_then(|c| c.raw.get("CheckForMethodsWithNoSideEffects"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false);
+    Some(Box::new(Void::new(check_methods)))
+});

@@ -204,3 +204,14 @@ impl Cop for YodaCondition {
         vec![ctx.offense_with_range(self.name(), &message, self.severity(), start, end)]
     }
 }
+
+crate::register_cop!("Style/YodaCondition", |cfg| {
+    let cop_config = cfg.get_cop_config("Style/YodaCondition");
+    let style = match cop_config.and_then(|c| c.raw.get("EnforcedStyle")).and_then(|v| v.as_str()) {
+        Some("forbid_for_equality_operators_only") => EnforcedStyle::ForbidForEqualityOperatorsOnly,
+        Some("require_for_all_comparison_operators") => EnforcedStyle::RequireForAllComparisonOperators,
+        Some("require_for_equality_operators_only") => EnforcedStyle::RequireForEqualityOperatorsOnly,
+        _ => EnforcedStyle::ForbidForAllComparisonOperators,
+    };
+    Some(Box::new(YodaCondition::new(style)))
+});

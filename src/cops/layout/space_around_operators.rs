@@ -930,3 +930,20 @@ fn is_dot_call(source: &str, node: &ruby_prism::CallNode) -> bool {
     }
     false
 }
+
+crate::register_cop!("Layout/SpaceAroundOperators", |cfg| {
+    let c = cfg.get_cop_config("Layout/SpaceAroundOperators");
+    let allow_for_alignment = c.and_then(|c| c.raw.get("AllowForAlignment")).and_then(|v| v.as_bool()).unwrap_or(true);
+    let exp = c.and_then(|c| c.raw.get("EnforcedStyleForExponentOperator")).and_then(|v| v.as_str()).map(|s| s == "space").unwrap_or(false);
+    let sl = c.and_then(|c| c.raw.get("EnforcedStyleForRationalLiterals")).and_then(|v| v.as_str()).map(|s| s == "space").unwrap_or(false);
+    let hash_table_style = cfg
+        .get_cop_config("Layout/HashAlignment")
+        .and_then(|c| c.raw.get("EnforcedHashRocketStyle"))
+        .map(|v| match v {
+            serde_yaml::Value::String(s) => s == "table",
+            serde_yaml::Value::Sequence(seq) => seq.iter().any(|x| x.as_str() == Some("table")),
+            _ => false,
+        })
+        .unwrap_or(false);
+    Some(Box::new(SpaceAroundOperators::with_config(allow_for_alignment, exp, sl, hash_table_style)))
+});

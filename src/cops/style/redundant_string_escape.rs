@@ -377,3 +377,7 @@ impl Visit<'_> for Visitor<'_> {
     fn visit_regular_expression_node(&mut self, _node: &ruby_prism::RegularExpressionNode) {}
     fn visit_interpolated_regular_expression_node(&mut self, _node: &ruby_prism::InterpolatedRegularExpressionNode) {}
 }
+
+crate::register_cop!("Style/RedundantStringEscape", |_cfg| {
+    Some(Box::new(RedundantStringEscape::new()))
+});

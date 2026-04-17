@@ -233,3 +233,22 @@ impl<'a, 'b> Visit<'_> for Visitor<'a, 'b> {
         ruby_prism::visit_block_node(self, node);
     }
 }
+
+crate::register_cop!("Style/NumericPredicate", |cfg| {
+    let cop_config = cfg.get_cop_config("Style/NumericPredicate");
+    let style = match cop_config.and_then(|c| c.raw.get("EnforcedStyle")).and_then(|v| v.as_str()) {
+        Some("comparison") => EnforcedStyle::Comparison,
+        _ => EnforcedStyle::Predicate,
+    };
+    let allowed_methods = cop_config
+        .and_then(|c| c.raw.get("AllowedMethods"))
+        .and_then(|v| v.as_sequence())
+        .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+        .unwrap_or_default();
+    let allowed_patterns = cop_config
+        .and_then(|c| c.raw.get("AllowedPatterns"))
+        .and_then(|v| v.as_sequence())
+        .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+        .unwrap_or_default();
+    Some(Box::new(NumericPredicate::with_config(style, allowed_methods, allowed_patterns)))
+});

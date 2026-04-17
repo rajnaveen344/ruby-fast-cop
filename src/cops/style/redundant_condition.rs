@@ -610,3 +610,13 @@ impl Visit<'_> for RedundantConditionVisitor<'_> {
         ruby_prism::visit_unless_node(self, node);
     }
 }
+
+crate::register_cop!("Style/RedundantCondition", |cfg| {
+    let cop_config = cfg.get_cop_config("Style/RedundantCondition");
+    let allowed_methods = cop_config
+        .and_then(|c| c.raw.get("AllowedMethods"))
+        .and_then(|v| v.as_sequence())
+        .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+        .unwrap_or_else(|| vec!["infinite?".to_string(), "nonzero?".to_string()]);
+    Some(Box::new(RedundantCondition::with_config(allowed_methods)))
+});

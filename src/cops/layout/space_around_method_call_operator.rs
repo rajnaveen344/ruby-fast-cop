@@ -97,3 +97,7 @@ impl<'a> Visit<'_> for Visitor<'a> {
 fn same_line(source: &str, a: usize, b: usize) -> bool {
     !source.as_bytes()[a.min(b)..a.max(b)].contains(&b'\n')
 }
+
+crate::register_cop!("Layout/SpaceAroundMethodCallOperator", |_cfg| {
+    Some(Box::new(SpaceAroundMethodCallOperator::new()))
+});

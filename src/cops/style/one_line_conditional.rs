@@ -179,3 +179,12 @@ impl Cop for OneLineConditional {
         }
     }
 }
+
+crate::register_cop!("Style/OneLineConditional", |cfg| {
+    let cop_config = cfg.get_cop_config("Style/OneLineConditional");
+    let always_multiline = cop_config
+        .and_then(|c| c.raw.get("AlwaysCorrectToMultiline"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false);
+    Some(Box::new(OneLineConditional::with_config(always_multiline)))
+});

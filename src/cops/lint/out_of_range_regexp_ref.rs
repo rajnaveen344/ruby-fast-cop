@@ -355,3 +355,7 @@ fn count_numbered_captures(pattern: &str) -> u32 {
     }
     count
 }
+
+crate::register_cop!("Lint/OutOfRangeRegexpRef", |_cfg| {
+    Some(Box::new(OutOfRangeRegexpRef::new()))
+});

@@ -371,3 +371,15 @@ impl Cop for MutableConstant {
         visitor.offenses
     }
 }
+
+crate::register_cop!("Style/MutableConstant", |cfg| {
+    let cop_config = cfg.get_cop_config("Style/MutableConstant");
+    let style = cop_config
+        .and_then(|c| c.enforced_style.as_ref())
+        .map(|s| match s.as_str() {
+            "strict" => EnforcedStyle::Strict,
+            _ => EnforcedStyle::Literals,
+        })
+        .unwrap_or(EnforcedStyle::Literals);
+    Some(Box::new(MutableConstant::new(style)))
+});

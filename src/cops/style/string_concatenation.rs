@@ -256,3 +256,15 @@ impl<'pr> Visitor<'_> {
         }
     }
 }
+
+crate::register_cop!("Style/StringConcatenation", |cfg| {
+    let cop_config = cfg.get_cop_config("Style/StringConcatenation");
+    let mode = match cop_config
+        .and_then(|c| c.raw.get("Mode"))
+        .and_then(|v| v.as_str())
+    {
+        Some("conservative") => Mode::Conservative,
+        _ => Mode::Aggressive,
+    };
+    Some(Box::new(StringConcatenation::with_mode(mode)))
+});

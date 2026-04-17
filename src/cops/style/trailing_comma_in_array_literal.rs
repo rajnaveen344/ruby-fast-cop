@@ -53,3 +53,18 @@ impl Cop for TrailingCommaInArrayLiteral {
         )
     }
 }
+
+crate::register_cop!("Style/TrailingCommaInArrayLiteral", |cfg| {
+    let cop_config = cfg.get_cop_config("Style/TrailingCommaInArrayLiteral");
+    let style = cop_config
+        .and_then(|c| c.raw.get("EnforcedStyleForMultiline"))
+        .and_then(|v| v.as_str())
+        .map(|s| match s {
+            "comma" => EnforcedStyleForMultiline::Comma,
+            "consistent_comma" => EnforcedStyleForMultiline::ConsistentComma,
+            "diff_comma" => EnforcedStyleForMultiline::DiffComma,
+            _ => EnforcedStyleForMultiline::NoComma,
+        })
+        .unwrap_or(EnforcedStyleForMultiline::NoComma);
+    Some(Box::new(TrailingCommaInArrayLiteral::new(style)))
+});

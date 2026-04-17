@@ -143,3 +143,7 @@ impl Cop for AutoResourceCleanup {
         visitor.offenses
     }
 }
+
+crate::register_cop!("Style/AutoResourceCleanup", |_cfg| {
+    Some(Box::new(AutoResourceCleanup::new()))
+});

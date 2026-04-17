@@ -590,3 +590,27 @@ impl Visit<'_> for ConditionalAssignmentVisitor<'_> {
         ruby_prism::visit_case_match_node(self, node);
     }
 }
+
+crate::register_cop!("Style/ConditionalAssignment", |cfg| {
+    let cop_config = cfg.get_cop_config("Style/ConditionalAssignment");
+    let style = cop_config
+        .and_then(|c| c.enforced_style.as_ref())
+        .map(|s| match s.as_str() {
+            "assign_to_condition" => EnforcedStyle::AssignToCondition,
+            _ => EnforcedStyle::AssignInsideCondition,
+        })
+        .unwrap_or(EnforcedStyle::AssignInsideCondition);
+    let include_ternary = cop_config
+        .and_then(|c| c.raw.get("IncludeTernaryExpressions"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(true);
+    let single_line_only = cop_config
+        .and_then(|c| c.raw.get("SingleLineConditionsOnly"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(true);
+    Some(Box::new(ConditionalAssignment::with_config(
+        style,
+        include_ternary,
+        single_line_only,
+    )))
+});

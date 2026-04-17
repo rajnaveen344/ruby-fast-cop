@@ -367,3 +367,15 @@ fn previous_line_empty(lines: &[&str], send_line: usize) -> bool {
     true // start of file
 }
 
+
+crate::register_cop!("Layout/EmptyLinesAroundAccessModifier", |cfg| {
+    let cop_config = cfg.get_cop_config("Layout/EmptyLinesAroundAccessModifier");
+    let style = cop_config
+        .and_then(|c| c.enforced_style.as_ref())
+        .map(|s| match s.as_str() {
+            "only_before" => EnforcedStyle::OnlyBefore,
+            _ => EnforcedStyle::Around,
+        })
+        .unwrap_or(EnforcedStyle::Around);
+    Some(Box::new(EmptyLinesAroundAccessModifier::new(style)))
+});

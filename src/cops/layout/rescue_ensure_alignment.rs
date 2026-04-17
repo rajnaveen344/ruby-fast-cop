@@ -540,3 +540,16 @@ fn extract_assignment_target(s: &str) -> String {
         None => String::new(),
     }
 }
+
+crate::register_cop!("Layout/RescueEnsureAlignment", |cfg| {
+    let begin_end_style = cfg.get_cop_config("Layout/BeginEndAlignment")
+        .and_then(|c| {
+            let enabled = c.raw.get("Enabled").and_then(|v| v.as_bool()).unwrap_or(true);
+            if enabled {
+                c.raw.get("EnforcedStyleAlignWith").and_then(|v| v.as_str().map(|s| s.to_string()))
+            } else {
+                None
+            }
+        });
+    Some(Box::new(RescueEnsureAlignment::with_begin_end_style(begin_end_style)))
+});

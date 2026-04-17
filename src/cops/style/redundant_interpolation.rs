@@ -126,3 +126,7 @@ impl<'pr> Visit<'pr> for Visitor<'_> {
         self.parent_is_percent_array = saved;
     }
 }
+
+crate::register_cop!("Style/RedundantInterpolation", |_cfg| {
+    Some(Box::new(RedundantInterpolation::new()))
+});

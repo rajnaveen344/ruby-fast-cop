@@ -128,3 +128,15 @@ fn extract_rest_after_eq(s: &str) -> String {
     }
     s[start..i].to_string()
 }
+
+crate::register_cop!("Layout/SpaceAroundEqualsInParameterDefault", |cfg| {
+    let c = cfg.get_cop_config("Layout/SpaceAroundEqualsInParameterDefault");
+    let style = c
+        .and_then(|c| c.enforced_style.as_ref())
+        .map(|s| match s.as_str() {
+            "no_space" => SpaceAroundEqualsStyle::NoSpace,
+            _ => SpaceAroundEqualsStyle::Space,
+        })
+        .unwrap_or(SpaceAroundEqualsStyle::Space);
+    Some(Box::new(SpaceAroundEqualsInParameterDefault::new(style)))
+});

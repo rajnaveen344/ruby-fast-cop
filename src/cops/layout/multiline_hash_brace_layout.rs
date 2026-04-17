@@ -92,3 +92,12 @@ fn line_of(src: &str, offset: usize) -> usize {
         .filter(|&&b| b == b'\n')
         .count()
 }
+
+crate::register_cop!("Layout/MultilineHashBraceLayout", |cfg| {
+    let style = cfg
+        .get_cop_config("Layout/MultilineHashBraceLayout")
+        .and_then(|c| c.enforced_style.as_ref())
+        .map(|s| helper::BraceLayoutStyle::from_str(s))
+        .unwrap_or(helper::BraceLayoutStyle::Symmetrical);
+    Some(Box::new(MultilineHashBraceLayout::new(style)))
+});

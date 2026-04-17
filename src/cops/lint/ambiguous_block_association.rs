@@ -224,3 +224,18 @@ impl<'a> Visit<'_> for Visitor<'a> {
         ruby_prism::visit_call_node(self, node);
     }
 }
+
+crate::register_cop!("Lint/AmbiguousBlockAssociation", |cfg| {
+    let cop_config = cfg.get_cop_config("Lint/AmbiguousBlockAssociation");
+    let allowed_methods = cop_config
+        .and_then(|c| c.raw.get("AllowedMethods"))
+        .and_then(|v| v.as_sequence())
+        .map(|seq| seq.iter().filter_map(|v| v.as_str().map(|s| s.to_string())).collect())
+        .unwrap_or_default();
+    let allowed_patterns = cop_config
+        .and_then(|c| c.raw.get("AllowedPatterns"))
+        .and_then(|v| v.as_sequence())
+        .map(|seq| seq.iter().filter_map(|v| v.as_str().map(|s| s.to_string())).collect())
+        .unwrap_or_default();
+    Some(Box::new(AmbiguousBlockAssociation::with_config(allowed_methods, allowed_patterns)))
+});

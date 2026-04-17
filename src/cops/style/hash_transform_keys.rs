@@ -228,3 +228,7 @@ impl Cop for HashTransformKeys {
         vec![]
     }
 }
+
+crate::register_cop!("Style/HashTransformKeys", |_cfg| {
+    Some(Box::new(HashTransformKeys::new()))
+});

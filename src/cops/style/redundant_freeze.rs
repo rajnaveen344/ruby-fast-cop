@@ -265,3 +265,12 @@ impl Cop for RedundantFreeze {
         vec![ctx.offense_with_range(self.name(), MSG, self.severity(), start, end)]
     }
 }
+
+crate::register_cop!("Style/RedundantFreeze", |cfg| {
+    let frozen_by_default = cfg
+        .get_cop_config("Style/RedundantFreeze")
+        .and_then(|c| c.raw.get("AllCopsStringLiteralsFrozenByDefault"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false);
+    Some(Box::new(RedundantFreeze::with_config(frozen_by_default)))
+});

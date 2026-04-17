@@ -69,3 +69,7 @@ impl Cop for StringMethods {
         vec![]
     }
 }
+
+crate::register_cop!("Style/StringMethods", |_cfg| {
+    Some(Box::new(StringMethods::new()))
+});

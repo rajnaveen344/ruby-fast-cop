@@ -143,3 +143,7 @@ impl Cop for RedundantException {
         vec![]
     }
 }
+
+crate::register_cop!("Style/RedundantException", |_cfg| {
+    Some(Box::new(RedundantException::new()))
+});

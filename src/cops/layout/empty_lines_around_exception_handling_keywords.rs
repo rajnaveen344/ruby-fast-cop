@@ -241,3 +241,7 @@ impl Cop for EmptyLinesAroundExceptionHandlingKeywords {
         v.offenses
     }
 }
+
+crate::register_cop!("Layout/EmptyLinesAroundExceptionHandlingKeywords", |_cfg| {
+    Some(Box::new(EmptyLinesAroundExceptionHandlingKeywords::new()))
+});

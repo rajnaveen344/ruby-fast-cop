@@ -379,3 +379,14 @@ fn correction_remove_name(dir: &Directive, name: &DirName, ctx: &CheckContext) -
         correction_remove_whole_comment(dir, ctx)
     }
 }
+
+crate::register_cop!("Lint/RedundantCopEnableDirective", |cfg| {
+    let mut disabled: Vec<String> = cfg
+        .cops
+        .iter()
+        .filter(|(_, c)| c.enabled == Some(false))
+        .map(|(k, _)| k.clone())
+        .collect();
+    disabled.sort();
+    Some(Box::new(RedundantCopEnableDirective::with_disabled_in_config(disabled)))
+});

@@ -144,3 +144,7 @@ impl Cop for EmptyLinesAroundMethodBody {
         v.offenses
     }
 }
+
+crate::register_cop!("Layout/EmptyLinesAroundMethodBody", |_cfg| {
+    Some(Box::new(EmptyLinesAroundMethodBody::new()))
+});

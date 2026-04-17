@@ -108,3 +108,7 @@ impl Visit<'_> for EmptyInterpolationVisitor<'_> {
         }
     }
 }
+
+crate::register_cop!("Lint/EmptyInterpolation", |_cfg| {
+    Some(Box::new(EmptyInterpolation::new()))
+});

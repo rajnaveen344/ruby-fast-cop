@@ -72,3 +72,27 @@ impl Cop for BlockParameterName {
         )
     }
 }
+
+crate::register_cop!("Naming/BlockParameterName", |cfg| {
+    let cop_config = cfg.get_cop_config("Naming/BlockParameterName");
+    let min_name_length = cop_config
+        .and_then(|c| c.raw.get("MinNameLength"))
+        .and_then(|v| v.as_u64())
+        .map(|n| n as usize)
+        .unwrap_or(1);
+    let allow_nums = cop_config
+        .and_then(|c| c.raw.get("AllowNamesEndingInNumbers"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(true);
+    let allowed = cop_config
+        .and_then(|c| c.raw.get("AllowedNames"))
+        .and_then(|v| v.as_sequence())
+        .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+        .unwrap_or_default();
+    let forbidden = cop_config
+        .and_then(|c| c.raw.get("ForbiddenNames"))
+        .and_then(|v| v.as_sequence())
+        .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+        .unwrap_or_default();
+    Some(Box::new(BlockParameterName::with_config(min_name_length, allow_nums, allowed, forbidden)))
+});

@@ -191,3 +191,7 @@ impl Cop for HashTransformValues {
         vec![]
     }
 }
+
+crate::register_cop!("Style/HashTransformValues", |_cfg| {
+    Some(Box::new(HashTransformValues::new()))
+});

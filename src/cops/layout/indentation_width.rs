@@ -1424,3 +1424,66 @@ impl Visit<'_> for IndentationWidthVisitor<'_> {
     impl_assignment_visit!(visit_index_operator_write_node, IndexOperatorWriteNode, ruby_prism::visit_index_operator_write_node);
     impl_assignment_visit!(visit_call_operator_write_node, CallOperatorWriteNode, ruby_prism::visit_call_operator_write_node);
 }
+
+crate::register_cop!("Layout/IndentationWidth", |cfg| {
+    let cop_config = cfg.get_cop_config("Layout/IndentationWidth");
+    let width = cop_config
+        .and_then(|c| c.raw.get("Width"))
+        .and_then(|v| v.as_i64())
+        .unwrap_or(2) as usize;
+    let align_with = cop_config
+        .and_then(|c| c.raw.get("EnforcedStyleAlignWith"))
+        .and_then(|v| v.as_str())
+        .unwrap_or("start_of_line");
+    let align_style = match align_with {
+        "relative_to_receiver" => AlignWithStyle::RelativeToReceiver,
+        _ => AlignWithStyle::StartOfLine,
+    };
+    let consistency = cfg.get_cop_config("Layout/IndentationConsistency")
+        .and_then(|c| c.raw.get("EnforcedStyle").and_then(|v| v.as_str().map(|s| s.to_string()))
+            .or_else(|| c.enforced_style.clone()))
+        .map(|s| match s.as_str() {
+            "indented_internal_methods" => ConsistencyStyle::IndentedInternalMethods,
+            _ => ConsistencyStyle::Normal,
+        })
+        .unwrap_or(ConsistencyStyle::Normal);
+    let end_align = cfg.get_cop_config("Layout/EndAlignment")
+        .and_then(|c| c.raw.get("EnforcedStyleAlignWith").and_then(|v| v.as_str().map(|s| s.to_string())))
+        .map(|s| match s.as_str() {
+            "variable" => EndAlignStyle::Variable,
+            "start_of_line" => EndAlignStyle::StartOfLine,
+            _ => EndAlignStyle::Keyword,
+        })
+        .unwrap_or(EndAlignStyle::Keyword);
+    let def_end_align = cfg.get_cop_config("Layout/DefEndAlignment")
+        .and_then(|c| c.raw.get("EnforcedStyleAlignWith").and_then(|v| v.as_str().map(|s| s.to_string())))
+        .map(|s| match s.as_str() {
+            "def" => DefEndAlignStyle::Def,
+            _ => DefEndAlignStyle::StartOfLine,
+        })
+        .unwrap_or(DefEndAlignStyle::StartOfLine);
+    let indent_style = cfg.get_cop_config("Layout/IndentationStyle")
+        .and_then(|c| c.raw.get("EnforcedStyle").and_then(|v| v.as_str().map(|s| s.to_string()))
+            .or_else(|| c.enforced_style.clone()))
+        .map(|s| match s.as_str() {
+            "tabs" => IndentStyle::Tabs,
+            _ => IndentStyle::Spaces,
+        })
+        .unwrap_or(IndentStyle::Spaces);
+    let access_mod_style = cfg.get_cop_config("Layout/AccessModifierIndentation")
+        .and_then(|c| c.raw.get("EnforcedStyle").and_then(|v| v.as_str().map(|s| s.to_string()))
+            .or_else(|| c.enforced_style.clone()))
+        .map(|s| match s.as_str() {
+            "outdent" => AccessModifierStyle::Outdent,
+            _ => AccessModifierStyle::Indent,
+        })
+        .unwrap_or(AccessModifierStyle::Indent);
+    let allowed_patterns = cop_config
+        .and_then(|c| c.raw.get("AllowedPatterns"))
+        .and_then(|v| v.as_sequence())
+        .map(|seq| seq.iter().filter_map(|v| v.as_str().map(|s| s.to_string())).collect())
+        .unwrap_or_default();
+    Some(Box::new(IndentationWidth::with_full_config(
+        width, align_style, consistency, end_align, def_end_align, indent_style, access_mod_style, allowed_patterns,
+    )))
+});

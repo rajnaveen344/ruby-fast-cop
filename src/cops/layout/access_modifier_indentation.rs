@@ -147,3 +147,26 @@ impl<'a> Visit<'_> for Visitor<'a> {
         ruby_prism::visit_block_node(self, node);
     }
 }
+
+crate::register_cop!("Layout/AccessModifierIndentation", |cfg| {
+    let cop_config = cfg.get_cop_config("Layout/AccessModifierIndentation");
+    let style = cop_config
+        .and_then(|c| c.enforced_style.as_ref())
+        .map(|s| match s.as_str() {
+            "outdent" => AccessModifierIndentationStyle::Outdent,
+            _ => AccessModifierIndentationStyle::Indent,
+        })
+        .unwrap_or(AccessModifierIndentationStyle::Indent);
+    let indent_width = cop_config
+        .and_then(|c| c.raw.get("IndentationWidth"))
+        .and_then(|v| v.as_i64())
+        .map(|v| v as usize)
+        .or_else(|| {
+            cfg.get_cop_config("Layout/IndentationWidth")
+                .and_then(|c| c.raw.get("Width"))
+                .and_then(|v| v.as_i64())
+                .map(|v| v as usize)
+        })
+        .unwrap_or(2);
+    Some(Box::new(AccessModifierIndentation::new(style, indent_width)))
+});

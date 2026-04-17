@@ -286,3 +286,7 @@ impl Cop for NegativeArrayIndex {
         self.check_simple_index(node, ctx)
     }
 }
+
+crate::register_cop!("Style/NegativeArrayIndex", |_cfg| {
+    Some(Box::new(NegativeArrayIndex::new()))
+});

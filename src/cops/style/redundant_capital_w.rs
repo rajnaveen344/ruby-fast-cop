@@ -103,3 +103,7 @@ impl Cop for RedundantCapitalW {
         vec![offense]
     }
 }
+
+crate::register_cop!("Style/RedundantCapitalW", |_cfg| {
+    Some(Box::new(RedundantCapitalW::new()))
+});

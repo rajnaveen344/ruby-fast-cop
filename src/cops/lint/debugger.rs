@@ -247,3 +247,45 @@ fn full_const_path(node: &ruby_prism::Node, ctx: &CheckContext) -> String {
         _ => ctx.source.get(node.location().start_offset()..node.location().end_offset()).unwrap_or("").to_string()
     }
 }
+
+// ── Registration ────────────────────────────────────────────────────────────
+
+/// Parse `DebuggerMethods` / `DebuggerRequires` YAML — accepts an array
+/// `["m1", "m2"]` or a hash `{Group: [...], Disabled: null}`.
+fn parse_list(value: &serde_yaml::Value) -> Option<Vec<String>> {
+    if value.is_null() { return None }
+    if let Some(seq) = value.as_sequence() {
+        return Some(seq.iter().filter_map(|v| v.as_str().map(String::from)).collect());
+    }
+    if let Some(map) = value.as_mapping() {
+        let mut result = Vec::new();
+        for (_, val) in map {
+            if val.is_null() { continue }
+            if matches!(val.as_bool(), Some(false)) { continue }
+            if let Some(s) = val.as_str() {
+                if !s.is_empty() { result.push(s.to_string()) }
+                continue;
+            }
+            if let Some(seq) = val.as_sequence() {
+                for item in seq {
+                    if let Some(s) = item.as_str() { result.push(s.to_string()) }
+                }
+            }
+        }
+        return Some(result);
+    }
+    None
+}
+
+crate::register_cop!("Lint/Debugger", |cfg| {
+    let cop_cfg = cfg.get_cop_config("Lint/Debugger");
+    let methods = cop_cfg
+        .and_then(|c| c.raw.get("DebuggerMethods"))
+        .and_then(parse_list)
+        .unwrap_or_else(Debugger::default_methods);
+    let requires = cop_cfg
+        .and_then(|c| c.raw.get("DebuggerRequires"))
+        .and_then(parse_list)
+        .unwrap_or_else(Debugger::default_requires);
+    Some(Box::new(Debugger::with_config(methods, requires)))
+});

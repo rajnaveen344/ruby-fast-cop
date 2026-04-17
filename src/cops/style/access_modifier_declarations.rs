@@ -400,3 +400,32 @@ fn is_symbol_like_arg(kind: &ModifierArgKind) -> bool {
         ModifierArgKind::Symbol | ModifierArgKind::Splat | ModifierArgKind::Other
     )
 }
+
+crate::register_cop!("Style/AccessModifierDeclarations", |cfg| {
+    let cop_config = cfg.get_cop_config("Style/AccessModifierDeclarations");
+    let style = cop_config
+        .and_then(|c| c.enforced_style.as_ref())
+        .map(|s| match s.as_str() {
+            "inline" => EnforcedStyle::Inline,
+            _ => EnforcedStyle::Group,
+        })
+        .unwrap_or(EnforcedStyle::Group);
+    let allow_symbols = cop_config
+        .and_then(|c| c.raw.get("AllowModifiersOnSymbols"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(true);
+    let allow_attrs = cop_config
+        .and_then(|c| c.raw.get("AllowModifiersOnAttrs"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(true);
+    let allow_alias = cop_config
+        .and_then(|c| c.raw.get("AllowModifiersOnAliasMethod"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(true);
+    Some(Box::new(AccessModifierDeclarations::with_config(
+        style,
+        allow_symbols,
+        allow_attrs,
+        allow_alias,
+    )))
+});

@@ -1095,3 +1095,37 @@ impl<'pr> Visit<'pr> for Visitor<'_> {
         self.visit_pinned_expr(node);
     }
 }
+
+fn read_redundant_parens_cross_cop_config(cfg: &crate::config::Config) -> (bool, bool) {
+    let ternary_req = cfg
+        .get_cop_config("Style/TernaryParentheses")
+        .map(|c| {
+            let enabled = c.enabled.unwrap_or(true);
+            let style = c.enforced_style.as_deref().unwrap_or("");
+            enabled
+                && (style == "require_parentheses"
+                    || style == "require_parentheses_when_complex")
+        })
+        .unwrap_or(false);
+    let allow_multiline = cfg
+        .get_cop_config("Style/ParenthesesAroundCondition")
+        .map(|c| {
+            let enabled = c.enabled.unwrap_or(true);
+            let allow = c
+                .raw
+                .get("AllowInMultilineConditions")
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
+            enabled && allow
+        })
+        .unwrap_or(false);
+    (ternary_req, allow_multiline)
+}
+
+crate::register_cop!("Style/RedundantParentheses", |cfg| {
+    let (ternary_req, allow_multiline) = read_redundant_parens_cross_cop_config(cfg);
+    Some(Box::new(RedundantParentheses::with_config(
+        ternary_req,
+        allow_multiline,
+    )))
+});

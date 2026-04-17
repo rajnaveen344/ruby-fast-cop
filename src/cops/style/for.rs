@@ -129,3 +129,15 @@ impl<'a> Visit<'_> for Visitor<'a> {
         ruby_prism::visit_call_node(self, node);
     }
 }
+
+crate::register_cop!("Style/For", |cfg| {
+    let cop_config = cfg.get_cop_config("Style/For");
+    let style = match cop_config
+        .and_then(|c| c.enforced_style.as_ref())
+        .map(|s| s.as_str())
+    {
+        Some("for") => EnforcedStyle::For,
+        _ => EnforcedStyle::Each,
+    };
+    Some(Box::new(For::with_style(style)))
+});

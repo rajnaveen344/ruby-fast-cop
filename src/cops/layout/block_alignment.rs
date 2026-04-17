@@ -567,3 +567,16 @@ impl Visit<'_> for BlockVisitor<'_> {
         self.pop_frame();
     }
 }
+
+crate::register_cop!("Layout/BlockAlignment", |cfg| {
+    let style = cfg.get_cop_config("Layout/BlockAlignment")
+        .and_then(|c| c.raw.get("EnforcedStyleAlignWith"))
+        .and_then(|v| v.as_str())
+        .unwrap_or("either");
+    let align_style = match style {
+        "start_of_block" => BlockAlignmentStyle::StartOfBlock,
+        "start_of_line" => BlockAlignmentStyle::StartOfLine,
+        _ => BlockAlignmentStyle::Either,
+    };
+    Some(Box::new(BlockAlignment::new(align_style)))
+});

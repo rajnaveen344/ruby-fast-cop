@@ -267,3 +267,12 @@ fn heredoc_correction(
         edits: vec![Edit { start_offset: wrap_start, end_offset: abs_end, replacement }],
     })
 }
+
+crate::register_cop!("Layout/TrailingWhitespace", |cfg| {
+    let cop_config = cfg.get_cop_config("Layout/TrailingWhitespace");
+    let allow_in_heredoc = cop_config
+        .and_then(|c| c.raw.get("AllowInHeredoc"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false);
+    Some(Box::new(TrailingWhitespace::with_config(allow_in_heredoc)))
+});

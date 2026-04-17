@@ -632,3 +632,58 @@ impl Visit<'_> for HashAlignmentVisitor<'_> {
         ruby_prism::visit_keyword_hash_node(self, node);
     }
 }
+
+crate::register_cop!("Layout/HashAlignment", |cfg| {
+    let cop_config = cfg.get_cop_config("Layout/HashAlignment");
+
+    let parse_styles = |key: &str, default: &str| -> Vec<AlignmentStyle> {
+        let raw = cop_config.and_then(|c| c.raw.get(key));
+        let strings: Vec<String> = if let Some(val) = raw {
+            if let Some(s) = val.as_str() {
+                vec![s.to_string()]
+            } else if let Some(seq) = val.as_sequence() {
+                seq.iter().filter_map(|v| v.as_str().map(String::from)).collect()
+            } else {
+                vec![default.to_string()]
+            }
+        } else {
+            vec![default.to_string()]
+        };
+        strings.iter().filter_map(|s| match s.as_str() {
+            "key" => Some(AlignmentStyle::Key),
+            "separator" => Some(AlignmentStyle::Separator),
+            "table" => Some(AlignmentStyle::Table),
+            _ => None,
+        }).collect()
+    };
+
+    let rocket_styles = parse_styles("EnforcedHashRocketStyle", "key");
+    let colon_styles = parse_styles("EnforcedColonStyle", "key");
+
+    let last_arg_style = cop_config
+        .and_then(|c| c.raw.get("EnforcedLastArgumentHashStyle"))
+        .and_then(|v| v.as_str())
+        .map(|s| match s {
+            "always_ignore" => LastArgumentHashStyle::AlwaysIgnore,
+            "ignore_implicit" => LastArgumentHashStyle::IgnoreImplicit,
+            "ignore_explicit" => LastArgumentHashStyle::IgnoreExplicit,
+            _ => LastArgumentHashStyle::AlwaysInspect,
+        })
+        .unwrap_or(LastArgumentHashStyle::AlwaysInspect);
+
+    if rocket_styles.is_empty() || colon_styles.is_empty() {
+        return None;
+    }
+
+    let arg_align_config = cfg.get_cop_config("Layout/ArgumentAlignment");
+    let arg_align_fixed = arg_align_config
+        .and_then(|c| c.enforced_style.as_ref())
+        .map(|s| s == "with_fixed_indentation")
+        .unwrap_or(false);
+
+    Some(Box::new(HashAlignment::new(
+        rocket_styles,
+        colon_styles,
+        last_arg_style,
+    ).with_argument_alignment_fixed(arg_align_fixed)))
+});
