@@ -85,52 +85,46 @@ impl Cop for BlockLength {
     }
 }
 
+#[derive(serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct BlockLengthCfg {
+    max: usize,
+    count_comments: bool,
+    #[serde(deserialize_with = "super::seq_or_empty")]
+    count_as_one: Vec<String>,
+    allowed_methods: Vec<String>,
+    ignored_methods: Vec<String>,
+    excluded_methods: Vec<String>,
+    allowed_patterns: Vec<String>,
+    ignored_patterns: Vec<String>,
+}
+
+impl Default for BlockLengthCfg {
+    fn default() -> Self {
+        Self {
+            max: 25,
+            count_comments: false,
+            count_as_one: Vec::new(),
+            allowed_methods: Vec::new(),
+            ignored_methods: Vec::new(),
+            excluded_methods: Vec::new(),
+            allowed_patterns: Vec::new(),
+            ignored_patterns: Vec::new(),
+        }
+    }
+}
+
 crate::register_cop!("Metrics/BlockLength", |cfg| {
-    let cop_config = cfg.get_cop_config("Metrics/BlockLength");
-    let max = cop_config.and_then(|c| c.max).unwrap_or(25);
-    let count_comments = cop_config
-        .and_then(|c| c.raw.get("CountComments"))
-        .and_then(|v| v.as_bool())
-        .unwrap_or(false);
-    let count_as_one = cop_config
-        .and_then(|c| c.raw.get("CountAsOne"))
-        .and_then(|v| v.as_sequence())
-        .map(|seq| {
-            seq.iter()
-                .filter_map(|v| v.as_str().map(|s| s.to_string()))
-                .collect()
-        })
-        .unwrap_or_default();
-    let mut allowed_methods: Vec<String> = Vec::new();
-    for key in &["AllowedMethods", "IgnoredMethods", "ExcludedMethods"] {
-        if let Some(seq) = cop_config
-            .and_then(|c| c.raw.get(*key))
-            .and_then(|v| v.as_sequence())
-        {
-            for v in seq {
-                if let Some(s) = v.as_str() {
-                    allowed_methods.push(s.to_string());
-                }
-            }
-        }
-    }
-    let mut allowed_patterns: Vec<String> = Vec::new();
-    for key in &["AllowedPatterns", "IgnoredPatterns"] {
-        if let Some(seq) = cop_config
-            .and_then(|c| c.raw.get(*key))
-            .and_then(|v| v.as_sequence())
-        {
-            for v in seq {
-                if let Some(s) = v.as_str() {
-                    allowed_patterns.push(s.to_string());
-                }
-            }
-        }
-    }
+    let c: BlockLengthCfg = cfg.typed("Metrics/BlockLength");
+    let mut allowed_methods = c.allowed_methods;
+    allowed_methods.extend(c.ignored_methods);
+    allowed_methods.extend(c.excluded_methods);
+    let mut allowed_patterns = c.allowed_patterns;
+    allowed_patterns.extend(c.ignored_patterns);
     Some(Box::new(BlockLength::with_config(
-        max,
-        count_comments,
-        count_as_one,
+        c.max,
+        c.count_comments,
+        c.count_as_one,
         allowed_methods,
         allowed_patterns,
     )))

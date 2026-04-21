@@ -129,14 +129,20 @@ fn extract_rest_after_eq(s: &str) -> String {
     s[start..i].to_string()
 }
 
+#[derive(serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg {
+    enforced_style: String,
+}
+impl Default for Cfg {
+    fn default() -> Self { Self { enforced_style: "space".into() } }
+}
+
 crate::register_cop!("Layout/SpaceAroundEqualsInParameterDefault", |cfg| {
-    let c = cfg.get_cop_config("Layout/SpaceAroundEqualsInParameterDefault");
-    let style = c
-        .and_then(|c| c.enforced_style.as_ref())
-        .map(|s| match s.as_str() {
-            "no_space" => SpaceAroundEqualsStyle::NoSpace,
-            _ => SpaceAroundEqualsStyle::Space,
-        })
-        .unwrap_or(SpaceAroundEqualsStyle::Space);
+    let c: Cfg = cfg.typed("Layout/SpaceAroundEqualsInParameterDefault");
+    let style = match c.enforced_style.as_str() {
+        "no_space" => SpaceAroundEqualsStyle::NoSpace,
+        _ => SpaceAroundEqualsStyle::Space,
+    };
     Some(Box::new(SpaceAroundEqualsInParameterDefault::new(style)))
 });

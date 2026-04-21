@@ -243,12 +243,21 @@ fn already_appropriate_call(op: &Operand, dot_op: &str) -> bool {
     false
 }
 
+#[derive(serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg {
+    allowed_methods: Vec<String>,
+}
+
+impl Default for Cfg {
+    fn default() -> Self {
+        Self {
+            allowed_methods: vec!["present?".into(), "blank?".into(), "try".into(), "presence".into()],
+        }
+    }
+}
+
 crate::register_cop!("Lint/SafeNavigationConsistency", |cfg| {
-    let cop_config = cfg.get_cop_config("Lint/SafeNavigationConsistency");
-    let allowed = cop_config
-        .and_then(|c| c.raw.get("AllowedMethods"))
-        .and_then(|v| v.as_sequence())
-        .map(|seq| seq.iter().filter_map(|v| v.as_str().map(|s| s.to_string())).collect())
-        .unwrap_or_else(|| vec!["present?".into(), "blank?".into(), "try".into(), "presence".into()]);
-    Some(Box::new(SafeNavigationConsistency::with_config(allowed)))
+    let c: Cfg = cfg.typed("Lint/SafeNavigationConsistency");
+    Some(Box::new(SafeNavigationConsistency::with_config(c.allowed_methods)))
 });

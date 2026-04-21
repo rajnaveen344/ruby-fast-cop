@@ -257,13 +257,14 @@ impl<'pr> Visitor<'_> {
     }
 }
 
+#[derive(Default, serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg { mode: String }
+
 crate::register_cop!("Style/StringConcatenation", |cfg| {
-    let cop_config = cfg.get_cop_config("Style/StringConcatenation");
-    let mode = match cop_config
-        .and_then(|c| c.raw.get("Mode"))
-        .and_then(|v| v.as_str())
-    {
-        Some("conservative") => Mode::Conservative,
+    let c: Cfg = cfg.typed("Style/StringConcatenation");
+    let mode = match c.mode.as_str() {
+        "conservative" => Mode::Conservative,
         _ => Mode::Aggressive,
     };
     Some(Box::new(StringConcatenation::with_mode(mode)))

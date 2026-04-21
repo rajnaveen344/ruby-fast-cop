@@ -444,19 +444,19 @@ impl Cop for TernaryParentheses {
     }
 }
 
+#[derive(serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg { enforced_style: String, allow_safe_assignment: bool }
+impl Default for Cfg {
+    fn default() -> Self { Self { enforced_style: String::new(), allow_safe_assignment: true } }
+}
+
 crate::register_cop!("Style/TernaryParentheses", |cfg| {
-    let cop_config = cfg.get_cop_config("Style/TernaryParentheses");
-    let style = cop_config
-        .and_then(|c| c.enforced_style.as_ref())
-        .map(|s| match s.as_str() {
-            "require_parentheses" => EnforcedStyle::RequireParentheses,
-            "require_parentheses_when_complex" => EnforcedStyle::RequireParenthesesWhenComplex,
-            _ => EnforcedStyle::RequireNoParentheses,
-        })
-        .unwrap_or(EnforcedStyle::RequireNoParentheses);
-    let allow_safe = cop_config
-        .and_then(|c| c.raw.get("AllowSafeAssignment"))
-        .and_then(|v| v.as_bool())
-        .unwrap_or(true);
-    Some(Box::new(TernaryParentheses::new(style, allow_safe)))
+    let c: Cfg = cfg.typed("Style/TernaryParentheses");
+    let style = match c.enforced_style.as_str() {
+        "require_parentheses" => EnforcedStyle::RequireParentheses,
+        "require_parentheses_when_complex" => EnforcedStyle::RequireParenthesesWhenComplex,
+        _ => EnforcedStyle::RequireNoParentheses,
+    };
+    Some(Box::new(TernaryParentheses::new(style, c.allow_safe_assignment)))
 });

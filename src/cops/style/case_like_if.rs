@@ -406,12 +406,14 @@ fn has_named_capture_pattern(s: &str) -> bool {
     false
 }
 
+#[derive(serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg { min_branches_count: usize }
+impl Default for Cfg {
+    fn default() -> Self { Self { min_branches_count: 3 } }
+}
+
 crate::register_cop!("Style/CaseLikeIf", |cfg| {
-    let cop_config = cfg.get_cop_config("Style/CaseLikeIf");
-    let min_branches = cop_config
-        .and_then(|c| c.raw.get("MinBranchesCount"))
-        .and_then(|v| v.as_u64())
-        .map(|v| v as usize)
-        .unwrap_or(3);
-    Some(Box::new(CaseLikeIf::with_config(min_branches)))
+    let c: Cfg = cfg.typed("Style/CaseLikeIf");
+    Some(Box::new(CaseLikeIf::with_config(c.min_branches_count)))
 });

@@ -173,8 +173,16 @@ impl<'a, 'b> Visitor<'a, 'b> {
     }
 }
 
+#[derive(serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg {
+    allow_for_alignment: bool,
+}
+impl Default for Cfg {
+    fn default() -> Self { Self { allow_for_alignment: true } }
+}
+
 crate::register_cop!("Layout/SpaceBeforeFirstArg", |cfg| {
-    let c = cfg.get_cop_config("Layout/SpaceBeforeFirstArg");
-    let allow_for_alignment = c.and_then(|c| c.raw.get("AllowForAlignment")).and_then(|v| v.as_bool()).unwrap_or(true);
-    Some(Box::new(SpaceBeforeFirstArg::with_config(allow_for_alignment)))
+    let c: Cfg = cfg.typed("Layout/SpaceBeforeFirstArg");
+    Some(Box::new(SpaceBeforeFirstArg::with_config(c.allow_for_alignment)))
 });

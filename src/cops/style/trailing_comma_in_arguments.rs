@@ -355,17 +355,17 @@ fn is_multiline_single_arg_needing_comma(
     }
 }
 
+#[derive(Default, serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg { enforced_style_for_multiline: String }
+
 crate::register_cop!("Style/TrailingCommaInArguments", |cfg| {
-    let cop_config = cfg.get_cop_config("Style/TrailingCommaInArguments");
-    let style = cop_config
-        .and_then(|c| c.raw.get("EnforcedStyleForMultiline"))
-        .and_then(|v| v.as_str())
-        .map(|s| match s {
-            "comma" => EnforcedStyleForMultiline::Comma,
-            "consistent_comma" => EnforcedStyleForMultiline::ConsistentComma,
-            "diff_comma" => EnforcedStyleForMultiline::DiffComma,
-            _ => EnforcedStyleForMultiline::NoComma,
-        })
-        .unwrap_or(EnforcedStyleForMultiline::NoComma);
+    let c: Cfg = cfg.typed("Style/TrailingCommaInArguments");
+    let style = match c.enforced_style_for_multiline.as_str() {
+        "comma" => EnforcedStyleForMultiline::Comma,
+        "consistent_comma" => EnforcedStyleForMultiline::ConsistentComma,
+        "diff_comma" => EnforcedStyleForMultiline::DiffComma,
+        _ => EnforcedStyleForMultiline::NoComma,
+    };
     Some(Box::new(TrailingCommaInArguments::new(style)))
 });

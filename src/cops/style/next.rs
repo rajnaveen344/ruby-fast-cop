@@ -363,24 +363,20 @@ impl Visit<'_> for NextVisitor<'_> {
     }
 }
 
+#[derive(serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg { enforced_style: String, min_body_length: i64, allow_consecutive_conditionals: bool }
+impl Default for Cfg {
+    fn default() -> Self {
+        Self { enforced_style: String::new(), min_body_length: 1, allow_consecutive_conditionals: false }
+    }
+}
+
 crate::register_cop!("Style/Next", |cfg| {
-    let cop_config = cfg.get_cop_config("Style/Next");
-    let style = cop_config
-        .and_then(|c| c.enforced_style.as_ref())
-        .map(|s| match s.as_str() {
-            "always" => EnforcedStyle::Always,
-            _ => EnforcedStyle::SkipModifierIfs,
-        })
-        .unwrap_or(EnforcedStyle::SkipModifierIfs);
-    let min_body_length = cop_config
-        .and_then(|c| c.raw.get("MinBodyLength"))
-        .and_then(|v| v.as_i64())
-        .unwrap_or(1);
-    let allow_consecutive = cop_config
-        .and_then(|c| c.raw.get("AllowConsecutiveConditionals"))
-        .and_then(|v| v.as_bool())
-        .unwrap_or(false);
-    Some(Box::new(Next::with_config(
-        style, min_body_length, allow_consecutive,
-    )))
+    let c: Cfg = cfg.typed("Style/Next");
+    let style = match c.enforced_style.as_str() {
+        "always" => EnforcedStyle::Always,
+        _ => EnforcedStyle::SkipModifierIfs,
+    };
+    Some(Box::new(Next::with_config(style, c.min_body_length, c.allow_consecutive_conditionals)))
 });

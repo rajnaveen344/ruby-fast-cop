@@ -211,15 +211,18 @@ fn symbol_without_quote(s: &str) -> bool {
     OPS.contains(&s)
 }
 
+#[derive(serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg { enforced_style: String, min_size: usize }
+impl Default for Cfg {
+    fn default() -> Self { Self { enforced_style: String::new(), min_size: 2 } }
+}
+
 crate::register_cop!("Style/SymbolArray", |cfg| {
-    let cop_config = cfg.get_cop_config("Style/SymbolArray");
-    let style = match cop_config.and_then(|c| c.raw.get("EnforcedStyle")).and_then(|v| v.as_str()) {
-        Some("brackets") => EnforcedStyle::Brackets,
+    let c: Cfg = cfg.typed("Style/SymbolArray");
+    let style = match c.enforced_style.as_str() {
+        "brackets" => EnforcedStyle::Brackets,
         _ => EnforcedStyle::Percent,
     };
-    let min_size = cop_config
-        .and_then(|c| c.raw.get("MinSize"))
-        .and_then(|v| v.as_u64())
-        .unwrap_or(2) as usize;
-    Some(Box::new(SymbolArray::with_config(style, min_size)))
+    Some(Box::new(SymbolArray::with_config(style, c.min_size)))
 });

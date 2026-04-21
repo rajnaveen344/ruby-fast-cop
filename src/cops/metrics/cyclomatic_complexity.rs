@@ -41,20 +41,36 @@ impl Cop for CyclomaticComplexity {
     }
 }
 
+#[derive(serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct CyclomaticCfg {
+    max: usize,
+    allowed_methods: Vec<String>,
+    ignored_methods: Vec<String>,
+    excluded_methods: Vec<String>,
+    allowed_patterns: Vec<String>,
+    ignored_patterns: Vec<String>,
+}
+
+impl Default for CyclomaticCfg {
+    fn default() -> Self {
+        Self {
+            max: 7,
+            allowed_methods: Vec::new(),
+            ignored_methods: Vec::new(),
+            excluded_methods: Vec::new(),
+            allowed_patterns: Vec::new(),
+            ignored_patterns: Vec::new(),
+        }
+    }
+}
+
 crate::register_cop!("Metrics/CyclomaticComplexity", |cfg| {
-    let cop_config = cfg.get_cop_config("Metrics/CyclomaticComplexity");
-    let max = cop_config.and_then(|c| c.max).unwrap_or(7);
-    let mut allowed_methods: Vec<String> = Vec::new();
-    for key in &["AllowedMethods", "IgnoredMethods", "ExcludedMethods"] {
-        if let Some(seq) = cop_config.and_then(|c| c.raw.get(*key)).and_then(|v| v.as_sequence()) {
-            for v in seq { if let Some(s) = v.as_str() { allowed_methods.push(s.to_string()); } }
-        }
-    }
-    let mut allowed_patterns: Vec<String> = Vec::new();
-    for key in &["AllowedPatterns", "IgnoredPatterns"] {
-        if let Some(seq) = cop_config.and_then(|c| c.raw.get(*key)).and_then(|v| v.as_sequence()) {
-            for v in seq { if let Some(s) = v.as_str() { allowed_patterns.push(s.to_string()); } }
-        }
-    }
-    Some(Box::new(CyclomaticComplexity::with_config(max, allowed_methods, allowed_patterns)))
+    let c: CyclomaticCfg = cfg.typed("Metrics/CyclomaticComplexity");
+    let mut allowed_methods = c.allowed_methods;
+    allowed_methods.extend(c.ignored_methods);
+    allowed_methods.extend(c.excluded_methods);
+    let mut allowed_patterns = c.allowed_patterns;
+    allowed_patterns.extend(c.ignored_patterns);
+    Some(Box::new(CyclomaticComplexity::with_config(c.max, allowed_methods, allowed_patterns)))
 });

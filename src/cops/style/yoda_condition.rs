@@ -205,12 +205,16 @@ impl Cop for YodaCondition {
     }
 }
 
+#[derive(Default, serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg { enforced_style: String }
+
 crate::register_cop!("Style/YodaCondition", |cfg| {
-    let cop_config = cfg.get_cop_config("Style/YodaCondition");
-    let style = match cop_config.and_then(|c| c.raw.get("EnforcedStyle")).and_then(|v| v.as_str()) {
-        Some("forbid_for_equality_operators_only") => EnforcedStyle::ForbidForEqualityOperatorsOnly,
-        Some("require_for_all_comparison_operators") => EnforcedStyle::RequireForAllComparisonOperators,
-        Some("require_for_equality_operators_only") => EnforcedStyle::RequireForEqualityOperatorsOnly,
+    let c: Cfg = cfg.typed("Style/YodaCondition");
+    let style = match c.enforced_style.as_str() {
+        "forbid_for_equality_operators_only" => EnforcedStyle::ForbidForEqualityOperatorsOnly,
+        "require_for_all_comparison_operators" => EnforcedStyle::RequireForAllComparisonOperators,
+        "require_for_equality_operators_only" => EnforcedStyle::RequireForEqualityOperatorsOnly,
         _ => EnforcedStyle::ForbidForAllComparisonOperators,
     };
     Some(Box::new(YodaCondition::new(style)))

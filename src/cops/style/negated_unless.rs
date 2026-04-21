@@ -80,15 +80,16 @@ fn style_applies(style: EnforcedStyle, is_modifier: bool) -> bool {
     }
 }
 
+#[derive(Default, serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg { enforced_style: String }
+
 crate::register_cop!("Style/NegatedUnless", |cfg| {
-    let style = cfg
-        .get_cop_config("Style/NegatedUnless")
-        .and_then(|c| c.enforced_style.as_ref())
-        .map(|s| match s.as_str() {
-            "prefix" => EnforcedStyle::Prefix,
-            "postfix" => EnforcedStyle::Postfix,
-            _ => EnforcedStyle::Both,
-        })
-        .unwrap_or(EnforcedStyle::Both);
+    let c: Cfg = cfg.typed("Style/NegatedUnless");
+    let style = match c.enforced_style.as_str() {
+        "prefix" => EnforcedStyle::Prefix,
+        "postfix" => EnforcedStyle::Postfix,
+        _ => EnforcedStyle::Both,
+    };
     Some(Box::new(NegatedUnless::with_style(style)))
 });

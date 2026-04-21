@@ -561,14 +561,19 @@ impl Visit<'_> for DuplicateMethodsVisitor<'_> {
     }
 }
 
+// AllCopsActiveSupportExtensionsEnabled is a fallback alias for ActiveSupportExtensionsEnabled.
+#[derive(serde::Deserialize, Default)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg {
+    active_support_extensions_enabled: Option<bool>,
+    #[serde(rename = "AllCopsActiveSupportExtensionsEnabled")]
+    all_cops_active_support_extensions_enabled: Option<bool>,
+}
+
 crate::register_cop!("Lint/DuplicateMethods", |cfg| {
-    let cop_config = cfg.get_cop_config("Lint/DuplicateMethods");
-    let active_support = cop_config
-        .and_then(|c| c.raw.get("ActiveSupportExtensionsEnabled"))
-        .and_then(|v| v.as_bool())
-        .or_else(|| cop_config
-            .and_then(|c| c.raw.get("AllCopsActiveSupportExtensionsEnabled"))
-            .and_then(|v| v.as_bool()))
+    let c: Cfg = cfg.typed("Lint/DuplicateMethods");
+    let active_support = c.active_support_extensions_enabled
+        .or(c.all_cops_active_support_extensions_enabled)
         .unwrap_or(false);
     Some(Box::new(DuplicateMethods::with_config(active_support)))
 });

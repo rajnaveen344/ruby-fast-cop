@@ -255,10 +255,19 @@ impl AssignmentInCondition {
     }
 }
 
+#[derive(serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg {
+    allow_safe_assignment: bool,
+}
+
+impl Default for Cfg {
+    fn default() -> Self {
+        Self { allow_safe_assignment: true }
+    }
+}
+
 crate::register_cop!("Lint/AssignmentInCondition", |cfg| {
-    let allow_safe = cfg
-        .get_cop_config("Lint/AssignmentInCondition")
-        .and_then(|c| c.allow_safe_assignment)
-        .unwrap_or(true);
-    Some(Box::new(AssignmentInCondition::new(allow_safe)))
+    let c: Cfg = cfg.typed("Lint/AssignmentInCondition");
+    Some(Box::new(AssignmentInCondition::new(c.allow_safe_assignment)))
 });

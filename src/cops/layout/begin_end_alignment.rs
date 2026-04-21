@@ -113,12 +113,18 @@ impl Visit<'_> for BeginEndAlignmentVisitor<'_> {
     }
 }
 
+#[derive(serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg {
+    enforced_style_align_with: String,
+}
+impl Default for Cfg {
+    fn default() -> Self { Self { enforced_style_align_with: "start_of_line".into() } }
+}
+
 crate::register_cop!("Layout/BeginEndAlignment", |cfg| {
-    let style = cfg.get_cop_config("Layout/BeginEndAlignment")
-        .and_then(|c| c.raw.get("EnforcedStyleAlignWith"))
-        .and_then(|v| v.as_str())
-        .unwrap_or("start_of_line");
-    let align_style = match style {
+    let c: Cfg = cfg.typed("Layout/BeginEndAlignment");
+    let align_style = match c.enforced_style_align_with.as_str() {
         "begin" => BeginEndAlignmentStyle::Begin,
         _ => BeginEndAlignmentStyle::StartOfLine,
     };

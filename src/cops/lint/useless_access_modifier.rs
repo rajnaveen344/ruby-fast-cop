@@ -683,24 +683,20 @@ fn make_correction(source: &str, node_start: usize, node_end: usize) -> Correcti
     Correction::delete(remove_start, remove_end)
 }
 
+#[derive(serde::Deserialize, Default)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg {
+    #[serde(rename = "AllCopsActiveSupportExtensionsEnabled")]
+    active_support_extensions_enabled: bool,
+    context_creating_methods: Vec<String>,
+    method_creating_methods: Vec<String>,
+}
+
 crate::register_cop!("Lint/UselessAccessModifier", |cfg| {
-    let cop_config = cfg.get_cop_config("Lint/UselessAccessModifier");
-    let active_support = cop_config
-        .and_then(|c| c.raw.get("AllCopsActiveSupportExtensionsEnabled"))
-        .and_then(|v| v.as_bool())
-        .unwrap_or(false);
-    let mut context_creating: Vec<String> = cop_config
-        .and_then(|c| c.raw.get("ContextCreatingMethods"))
-        .and_then(|v| v.as_sequence())
-        .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
-        .unwrap_or_default();
-    if active_support && !context_creating.contains(&"included".to_string()) {
+    let c: Cfg = cfg.typed("Lint/UselessAccessModifier");
+    let mut context_creating = c.context_creating_methods;
+    if c.active_support_extensions_enabled && !context_creating.contains(&"included".to_string()) {
         context_creating.push("included".to_string());
     }
-    let method_creating = cop_config
-        .and_then(|c| c.raw.get("MethodCreatingMethods"))
-        .and_then(|v| v.as_sequence())
-        .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
-        .unwrap_or_default();
-    Some(Box::new(UselessAccessModifier::with_config(context_creating, method_creating)))
+    Some(Box::new(UselessAccessModifier::with_config(context_creating, c.method_creating_methods)))
 });

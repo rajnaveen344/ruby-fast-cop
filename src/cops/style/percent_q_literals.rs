@@ -108,14 +108,15 @@ impl Cop for PercentQLiterals {
     }
 }
 
+#[derive(Default, serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg { enforced_style: String }
+
 crate::register_cop!("Style/PercentQLiterals", |cfg| {
-    let cop_config = cfg.get_cop_config("Style/PercentQLiterals");
-    let style = cop_config
-        .and_then(|c| c.enforced_style.as_ref())
-        .map(|s| match s.as_str() {
-            "upper_case_q" => EnforcedStyle::UpperCaseQ,
-            _ => EnforcedStyle::LowerCaseQ,
-        })
-        .unwrap_or(EnforcedStyle::LowerCaseQ);
+    let c: Cfg = cfg.typed("Style/PercentQLiterals");
+    let style = match c.enforced_style.as_str() {
+        "upper_case_q" => EnforcedStyle::UpperCaseQ,
+        _ => EnforcedStyle::LowerCaseQ,
+    };
     Some(Box::new(PercentQLiterals::with_style(style)))
 });

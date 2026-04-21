@@ -496,18 +496,20 @@ fn is_operator_method(name: &str) -> bool {
     )
 }
 
+#[derive(serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg { enforced_style: String }
+impl Default for Cfg { fn default() -> Self { Self { enforced_style: "special_for_inner_method_call_in_parentheses".into() } } }
+
 crate::register_cop!("Layout/FirstArgumentIndentation", |cfg| {
-    let cop_config = cfg.get_cop_config("Layout/FirstArgumentIndentation");
-    let style = cop_config
-        .and_then(|c| c.enforced_style.as_ref())
-        .map(|s| match s.as_str() {
-            "consistent" => FirstArgumentIndentationStyle::Consistent,
-            "consistent_relative_to_receiver" => FirstArgumentIndentationStyle::ConsistentRelativeToReceiver,
-            "special_for_inner_method_call" => FirstArgumentIndentationStyle::SpecialForInnerMethodCall,
-            _ => FirstArgumentIndentationStyle::SpecialForInnerMethodCallInParentheses,
-        })
-        .unwrap_or(FirstArgumentIndentationStyle::SpecialForInnerMethodCallInParentheses);
-    let width = cop_config
+    let c: Cfg = cfg.typed("Layout/FirstArgumentIndentation");
+    let style = match c.enforced_style.as_str() {
+        "consistent" => FirstArgumentIndentationStyle::Consistent,
+        "consistent_relative_to_receiver" => FirstArgumentIndentationStyle::ConsistentRelativeToReceiver,
+        "special_for_inner_method_call" => FirstArgumentIndentationStyle::SpecialForInnerMethodCall,
+        _ => FirstArgumentIndentationStyle::SpecialForInnerMethodCallInParentheses,
+    };
+    let width = cfg.get_cop_config("Layout/FirstArgumentIndentation")
         .and_then(|c| c.raw.get("IndentationWidth"))
         .and_then(|v| v.as_i64())
         .map(|v| v as usize);

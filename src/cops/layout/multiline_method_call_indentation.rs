@@ -1153,17 +1153,19 @@ impl<'a> Visit<'_> for MultilineVisitor<'a> {
     }
 }
 
+#[derive(serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg { enforced_style: String }
+impl Default for Cfg { fn default() -> Self { Self { enforced_style: "aligned".into() } } }
+
 crate::register_cop!("Layout/MultilineMethodCallIndentation", |cfg| {
-    let cop_config = cfg.get_cop_config("Layout/MultilineMethodCallIndentation");
-    let style = cop_config
-        .and_then(|c| c.enforced_style.as_ref())
-        .map(|s| match s.as_str() {
-            "indented" => Style::Indented,
-            "indented_relative_to_receiver" => Style::IndentedRelativeToReceiver,
-            _ => Style::Aligned,
-        })
-        .unwrap_or(Style::Aligned);
-    let width = cop_config
+    let c: Cfg = cfg.typed("Layout/MultilineMethodCallIndentation");
+    let style = match c.enforced_style.as_str() {
+        "indented" => Style::Indented,
+        "indented_relative_to_receiver" => Style::IndentedRelativeToReceiver,
+        _ => Style::Aligned,
+    };
+    let width = cfg.get_cop_config("Layout/MultilineMethodCallIndentation")
         .and_then(|c| c.raw.get("IndentationWidth"))
         .and_then(|v| v.as_i64())
         .map(|v| v as usize);

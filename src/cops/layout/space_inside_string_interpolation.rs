@@ -171,14 +171,20 @@ impl Visit<'_> for Visitor<'_> {
     }
 }
 
+#[derive(serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg {
+    enforced_style: String,
+}
+impl Default for Cfg {
+    fn default() -> Self { Self { enforced_style: "no_space".into() } }
+}
+
 crate::register_cop!("Layout/SpaceInsideStringInterpolation", |cfg| {
-    let cop_config = cfg.get_cop_config("Layout/SpaceInsideStringInterpolation");
-    let style = cop_config
-        .and_then(|c| c.enforced_style.as_ref())
-        .map(|s| match s.as_str() {
-            "space" => EnforcedStyle::Space,
-            _ => EnforcedStyle::NoSpace,
-        })
-        .unwrap_or(EnforcedStyle::NoSpace);
+    let c: Cfg = cfg.typed("Layout/SpaceInsideStringInterpolation");
+    let style = match c.enforced_style.as_str() {
+        "space" => EnforcedStyle::Space,
+        _ => EnforcedStyle::NoSpace,
+    };
     Some(Box::new(SpaceInsideStringInterpolation::new(style)))
 });

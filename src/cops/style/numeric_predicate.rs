@@ -234,21 +234,15 @@ impl<'a, 'b> Visit<'_> for Visitor<'a, 'b> {
     }
 }
 
+#[derive(Default, serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg { enforced_style: String, allowed_methods: Vec<String>, allowed_patterns: Vec<String> }
+
 crate::register_cop!("Style/NumericPredicate", |cfg| {
-    let cop_config = cfg.get_cop_config("Style/NumericPredicate");
-    let style = match cop_config.and_then(|c| c.raw.get("EnforcedStyle")).and_then(|v| v.as_str()) {
-        Some("comparison") => EnforcedStyle::Comparison,
+    let c: Cfg = cfg.typed("Style/NumericPredicate");
+    let style = match c.enforced_style.as_str() {
+        "comparison" => EnforcedStyle::Comparison,
         _ => EnforcedStyle::Predicate,
     };
-    let allowed_methods = cop_config
-        .and_then(|c| c.raw.get("AllowedMethods"))
-        .and_then(|v| v.as_sequence())
-        .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
-        .unwrap_or_default();
-    let allowed_patterns = cop_config
-        .and_then(|c| c.raw.get("AllowedPatterns"))
-        .and_then(|v| v.as_sequence())
-        .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
-        .unwrap_or_default();
-    Some(Box::new(NumericPredicate::with_config(style, allowed_methods, allowed_patterns)))
+    Some(Box::new(NumericPredicate::with_config(style, c.allowed_methods, c.allowed_patterns)))
 });

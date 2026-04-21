@@ -123,15 +123,16 @@ impl<'a> Visit<'_> for LambdaVisitor<'a> {
     }
 }
 
+#[derive(Default, serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg { enforced_style: String }
+
 crate::register_cop!("Style/Lambda", |cfg| {
-    let cop_config = cfg.get_cop_config("Style/Lambda");
-    let style = cop_config
-        .and_then(|c| c.enforced_style.as_ref())
-        .map(|s| match s.as_str() {
-            "lambda" => EnforcedStyle::Lambda,
-            "literal" => EnforcedStyle::Literal,
-            _ => EnforcedStyle::LineCountDependent,
-        })
-        .unwrap_or(EnforcedStyle::LineCountDependent);
+    let c: Cfg = cfg.typed("Style/Lambda");
+    let style = match c.enforced_style.as_str() {
+        "lambda" => EnforcedStyle::Lambda,
+        "literal" => EnforcedStyle::Literal,
+        _ => EnforcedStyle::LineCountDependent,
+    };
     Some(Box::new(Lambda::with_style(style)))
 });

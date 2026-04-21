@@ -186,14 +186,20 @@ impl Cop for TrailingEmptyLines {
     }
 }
 
+#[derive(serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg {
+    enforced_style: String,
+}
+impl Default for Cfg {
+    fn default() -> Self { Self { enforced_style: "final_newline".into() } }
+}
+
 crate::register_cop!("Layout/TrailingEmptyLines", |cfg| {
-    let cop_config = cfg.get_cop_config("Layout/TrailingEmptyLines");
-    let style = cop_config
-        .and_then(|c| c.enforced_style.as_ref())
-        .map(|s| match s.as_str() {
-            "final_blank_line" => EnforcedStyle::FinalBlankLine,
-            _ => EnforcedStyle::FinalNewline,
-        })
-        .unwrap_or(EnforcedStyle::FinalNewline);
+    let c: Cfg = cfg.typed("Layout/TrailingEmptyLines");
+    let style = match c.enforced_style.as_str() {
+        "final_blank_line" => EnforcedStyle::FinalBlankLine,
+        _ => EnforcedStyle::FinalNewline,
+    };
     Some(Box::new(TrailingEmptyLines::new(style)))
 });

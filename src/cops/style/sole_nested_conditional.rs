@@ -399,11 +399,11 @@ impl Visit<'_> for SoleNestedConditionalVisitor<'_> {
     }
 }
 
+#[derive(Default, serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg { allow_modifier: bool }
+
 crate::register_cop!("Style/SoleNestedConditional", |cfg| {
-    let cop_config = cfg.get_cop_config("Style/SoleNestedConditional");
-    let allow_modifier = cop_config
-        .and_then(|c| c.raw.get("AllowModifier"))
-        .and_then(|v| v.as_bool())
-        .unwrap_or(false);
-    Some(Box::new(SoleNestedConditional::with_config(allow_modifier)))
+    let c: Cfg = cfg.typed("Style/SoleNestedConditional");
+    Some(Box::new(SoleNestedConditional::with_config(c.allow_modifier)))
 });

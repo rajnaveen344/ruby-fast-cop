@@ -912,14 +912,28 @@ fn align_column(ctx: &CheckContext, line_texts: &[&str], line: u32, start: usize
     (last_column - spaces + 1) as u32
 }
 
+#[derive(serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg {
+    allow_for_alignment: bool,
+    allow_before_trailing_comments: bool,
+    force_equal_sign_alignment: bool,
+}
+impl Default for Cfg {
+    fn default() -> Self {
+        Self {
+            allow_for_alignment: true,
+            allow_before_trailing_comments: false,
+            force_equal_sign_alignment: false,
+        }
+    }
+}
+
 crate::register_cop!("Layout/ExtraSpacing", |cfg| {
-    let c = cfg.get_cop_config("Layout/ExtraSpacing");
-    let allow_for_alignment = c.and_then(|c| c.raw.get("AllowForAlignment")).and_then(|v| v.as_bool()).unwrap_or(true);
-    let allow_before_trailing_comments = c.and_then(|c| c.raw.get("AllowBeforeTrailingComments")).and_then(|v| v.as_bool()).unwrap_or(false);
-    let force_equal_sign_alignment = c.and_then(|c| c.raw.get("ForceEqualSignAlignment")).and_then(|v| v.as_bool()).unwrap_or(false);
+    let c: Cfg = cfg.typed("Layout/ExtraSpacing");
     Some(Box::new(ExtraSpacing::with_config(
-        allow_for_alignment,
-        allow_before_trailing_comments,
-        force_equal_sign_alignment,
+        c.allow_for_alignment,
+        c.allow_before_trailing_comments,
+        c.force_equal_sign_alignment,
     )))
 });

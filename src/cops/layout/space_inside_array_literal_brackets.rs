@@ -382,23 +382,31 @@ impl Cop for SpaceInsideArrayLiteralBrackets {
     }
 }
 
+#[derive(serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg {
+    enforced_style: String,
+    enforced_style_for_empty_brackets: String,
+}
+impl Default for Cfg {
+    fn default() -> Self {
+        Self {
+            enforced_style: "no_space".into(),
+            enforced_style_for_empty_brackets: "no_space".into(),
+        }
+    }
+}
+
 crate::register_cop!("Layout/SpaceInsideArrayLiteralBrackets", |cfg| {
-    let cop_config = cfg.get_cop_config("Layout/SpaceInsideArrayLiteralBrackets");
-    let style = cop_config
-        .and_then(|c| c.enforced_style.as_ref())
-        .map(|s| match s.as_str() {
-            "space" => SpaceInsideArrayLiteralBracketsStyle::Space,
-            "compact" => SpaceInsideArrayLiteralBracketsStyle::Compact,
-            _ => SpaceInsideArrayLiteralBracketsStyle::NoSpace,
-        })
-        .unwrap_or(SpaceInsideArrayLiteralBracketsStyle::NoSpace);
-    let empty_style = cop_config
-        .and_then(|c| c.raw.get("EnforcedStyleForEmptyBrackets"))
-        .and_then(|v| v.as_str())
-        .map(|s| match s {
-            "space" => EmptyBracketsStyle::Space,
-            _ => EmptyBracketsStyle::NoSpace,
-        })
-        .unwrap_or(EmptyBracketsStyle::NoSpace);
+    let c: Cfg = cfg.typed("Layout/SpaceInsideArrayLiteralBrackets");
+    let style = match c.enforced_style.as_str() {
+        "space" => SpaceInsideArrayLiteralBracketsStyle::Space,
+        "compact" => SpaceInsideArrayLiteralBracketsStyle::Compact,
+        _ => SpaceInsideArrayLiteralBracketsStyle::NoSpace,
+    };
+    let empty_style = match c.enforced_style_for_empty_brackets.as_str() {
+        "space" => EmptyBracketsStyle::Space,
+        _ => EmptyBracketsStyle::NoSpace,
+    };
     Some(Box::new(SpaceInsideArrayLiteralBrackets::new(style, empty_style)))
 });

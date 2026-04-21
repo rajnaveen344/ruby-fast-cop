@@ -142,16 +142,11 @@ impl Cop for GlobalVars {
     }
 }
 
+#[derive(Default, serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg { allowed_variables: Vec<String> }
+
 crate::register_cop!("Style/GlobalVars", |cfg| {
-    let cop_config = cfg.get_cop_config("Style/GlobalVars");
-    let allowed: Vec<String> = cop_config
-        .and_then(|c| c.raw.get("AllowedVariables"))
-        .and_then(|v| v.as_sequence())
-        .map(|seq| {
-            seq.iter()
-                .filter_map(|v| v.as_str().map(String::from))
-                .collect()
-        })
-        .unwrap_or_default();
-    Some(Box::new(GlobalVars::with_allowed_variables(allowed)))
+    let c: Cfg = cfg.typed("Style/GlobalVars");
+    Some(Box::new(GlobalVars::with_allowed_variables(c.allowed_variables)))
 });

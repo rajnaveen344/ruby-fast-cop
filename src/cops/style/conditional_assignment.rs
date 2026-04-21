@@ -591,26 +591,22 @@ impl Visit<'_> for ConditionalAssignmentVisitor<'_> {
     }
 }
 
+#[derive(serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg { enforced_style: String, include_ternary_expressions: bool, single_line_conditions_only: bool }
+impl Default for Cfg {
+    fn default() -> Self {
+        Self { enforced_style: String::new(), include_ternary_expressions: true, single_line_conditions_only: true }
+    }
+}
+
 crate::register_cop!("Style/ConditionalAssignment", |cfg| {
-    let cop_config = cfg.get_cop_config("Style/ConditionalAssignment");
-    let style = cop_config
-        .and_then(|c| c.enforced_style.as_ref())
-        .map(|s| match s.as_str() {
-            "assign_to_condition" => EnforcedStyle::AssignToCondition,
-            _ => EnforcedStyle::AssignInsideCondition,
-        })
-        .unwrap_or(EnforcedStyle::AssignInsideCondition);
-    let include_ternary = cop_config
-        .and_then(|c| c.raw.get("IncludeTernaryExpressions"))
-        .and_then(|v| v.as_bool())
-        .unwrap_or(true);
-    let single_line_only = cop_config
-        .and_then(|c| c.raw.get("SingleLineConditionsOnly"))
-        .and_then(|v| v.as_bool())
-        .unwrap_or(true);
+    let c: Cfg = cfg.typed("Style/ConditionalAssignment");
+    let style = match c.enforced_style.as_str() {
+        "assign_to_condition" => EnforcedStyle::AssignToCondition,
+        _ => EnforcedStyle::AssignInsideCondition,
+    };
     Some(Box::new(ConditionalAssignment::with_config(
-        style,
-        include_ternary,
-        single_line_only,
+        style, c.include_ternary_expressions, c.single_line_conditions_only,
     )))
 });

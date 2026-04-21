@@ -425,48 +425,29 @@ impl Visit<'_> for FormatTokenVisitor<'_> {
     }
 }
 
+#[derive(Default, serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg {
+    enforced_style: String,
+    max_unannotated_placeholders_allowed: usize,
+    mode: String,
+    allowed_methods: Vec<String>,
+    allowed_patterns: Vec<String>,
+}
+
 crate::register_cop!("Style/FormatStringToken", |cfg| {
-    let cop_config = cfg.get_cop_config("Style/FormatStringToken");
-    let style = cop_config
-        .and_then(|c| c.enforced_style.as_ref())
-        .map(|s| match s.as_str() {
-            "template" => EnforcedStyle::Template,
-            "unannotated" => EnforcedStyle::Unannotated,
-            _ => EnforcedStyle::Annotated,
-        })
-        .unwrap_or(EnforcedStyle::Annotated);
-    let max_unannotated = cop_config
-        .and_then(|c| c.raw.get("MaxUnannotatedPlaceholdersAllowed"))
-        .and_then(|v| v.as_u64())
-        .unwrap_or(0) as usize;
-    let conservative = cop_config
-        .and_then(|c| c.raw.get("Mode"))
-        .and_then(|v| v.as_str())
-        .map(|s| s == "conservative")
-        .unwrap_or(false);
-    let allowed_methods = cop_config
-        .and_then(|c| c.raw.get("AllowedMethods"))
-        .and_then(|v| v.as_sequence())
-        .map(|seq| {
-            seq.iter()
-                .filter_map(|v| v.as_str().map(String::from))
-                .collect()
-        })
-        .unwrap_or_default();
-    let allowed_patterns = cop_config
-        .and_then(|c| c.raw.get("AllowedPatterns"))
-        .and_then(|v| v.as_sequence())
-        .map(|seq| {
-            seq.iter()
-                .filter_map(|v| v.as_str().map(String::from))
-                .collect()
-        })
-        .unwrap_or_default();
+    let c: Cfg = cfg.typed("Style/FormatStringToken");
+    let style = match c.enforced_style.as_str() {
+        "template" => EnforcedStyle::Template,
+        "unannotated" => EnforcedStyle::Unannotated,
+        _ => EnforcedStyle::Annotated,
+    };
+    let conservative = c.mode == "conservative";
     Some(Box::new(FormatStringToken::with_config(
         style,
-        max_unannotated,
+        c.max_unannotated_placeholders_allowed,
         conservative,
-        allowed_methods,
-        allowed_patterns,
+        c.allowed_methods,
+        c.allowed_patterns,
     )))
 });

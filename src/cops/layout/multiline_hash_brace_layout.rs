@@ -93,11 +93,17 @@ fn line_of(src: &str, offset: usize) -> usize {
         .count()
 }
 
+#[derive(serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg {
+    enforced_style: String,
+}
+impl Default for Cfg {
+    fn default() -> Self { Self { enforced_style: "symmetrical".into() } }
+}
+
 crate::register_cop!("Layout/MultilineHashBraceLayout", |cfg| {
-    let style = cfg
-        .get_cop_config("Layout/MultilineHashBraceLayout")
-        .and_then(|c| c.enforced_style.as_ref())
-        .map(|s| helper::BraceLayoutStyle::from_str(s))
-        .unwrap_or(helper::BraceLayoutStyle::Symmetrical);
+    let c: Cfg = cfg.typed("Layout/MultilineHashBraceLayout");
+    let style = helper::BraceLayoutStyle::from_str(&c.enforced_style);
     Some(Box::new(MultilineHashBraceLayout::new(style)))
 });

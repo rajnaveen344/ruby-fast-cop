@@ -271,16 +271,17 @@ impl FloatDivision {
     }
 }
 
+#[derive(Default, serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg { enforced_style: String }
+
 crate::register_cop!("Style/FloatDivision", |cfg| {
-    let cop_config = cfg.get_cop_config("Style/FloatDivision");
-    let style = cop_config
-        .and_then(|c| c.enforced_style.as_ref())
-        .map(|s| match s.as_str() {
-            "left_coerce" => EnforcedStyle::LeftCoerce,
-            "right_coerce" => EnforcedStyle::RightCoerce,
-            "fdiv" => EnforcedStyle::Fdiv,
-            _ => EnforcedStyle::SingleCoerce,
-        })
-        .unwrap_or(EnforcedStyle::SingleCoerce);
+    let c: Cfg = cfg.typed("Style/FloatDivision");
+    let style = match c.enforced_style.as_str() {
+        "left_coerce" => EnforcedStyle::LeftCoerce,
+        "right_coerce" => EnforcedStyle::RightCoerce,
+        "fdiv" => EnforcedStyle::Fdiv,
+        _ => EnforcedStyle::SingleCoerce,
+    };
     Some(Box::new(FloatDivision::new(style)))
 });

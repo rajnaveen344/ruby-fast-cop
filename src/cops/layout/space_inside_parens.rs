@@ -356,15 +356,21 @@ impl SpaceInsideParens {
     }
 }
 
+#[derive(serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg {
+    enforced_style: String,
+}
+impl Default for Cfg {
+    fn default() -> Self { Self { enforced_style: "no_space".into() } }
+}
+
 crate::register_cop!("Layout/SpaceInsideParens", |cfg| {
-    let c = cfg.get_cop_config("Layout/SpaceInsideParens");
-    let style = c
-        .and_then(|c| c.enforced_style.as_ref())
-        .map(|s| match s.as_str() {
-            "space" => SpaceInsideParensStyle::Space,
-            "compact" => SpaceInsideParensStyle::Compact,
-            _ => SpaceInsideParensStyle::NoSpace,
-        })
-        .unwrap_or(SpaceInsideParensStyle::NoSpace);
+    let c: Cfg = cfg.typed("Layout/SpaceInsideParens");
+    let style = match c.enforced_style.as_str() {
+        "space" => SpaceInsideParensStyle::Space,
+        "compact" => SpaceInsideParensStyle::Compact,
+        _ => SpaceInsideParensStyle::NoSpace,
+    };
     Some(Box::new(SpaceInsideParens::new(style)))
 });

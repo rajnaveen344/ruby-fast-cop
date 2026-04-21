@@ -293,12 +293,13 @@ impl<'a> SafeNavChainVisitor<'a> {
     }
 }
 
+#[derive(serde::Deserialize, Default)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg {
+    allowed_methods: Vec<String>,
+}
+
 crate::register_cop!("Lint/SafeNavigationChain", |cfg| {
-    let cop_config = cfg.get_cop_config("Lint/SafeNavigationChain");
-    let allowed = cop_config
-        .and_then(|c| c.raw.get("AllowedMethods"))
-        .and_then(|v| v.as_sequence())
-        .map(|seq| seq.iter().filter_map(|v| v.as_str().map(|s| s.to_string())).collect())
-        .unwrap_or_default();
-    Some(Box::new(SafeNavigationChain::with_allowed_methods(allowed)))
+    let c: Cfg = cfg.typed("Lint/SafeNavigationChain");
+    Some(Box::new(SafeNavigationChain::with_allowed_methods(c.allowed_methods)))
 });

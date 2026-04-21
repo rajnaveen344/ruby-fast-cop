@@ -287,14 +287,20 @@ impl<'a> Visit<'_> for Visitor<'a> {
     }
 }
 
+#[derive(serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg {
+    enforced_style: String,
+}
+impl Default for Cfg {
+    fn default() -> Self { Self { enforced_style: "normal".into() } }
+}
+
 crate::register_cop!("Layout/IndentationConsistency", |cfg| {
-    let cop_config = cfg.get_cop_config("Layout/IndentationConsistency");
-    let style = cop_config
-        .and_then(|c| c.enforced_style.as_ref())
-        .map(|s| match s.as_str() {
-            "indented_internal_methods" => IndentationConsistencyStyle::IndentedInternalMethods,
-            _ => IndentationConsistencyStyle::Normal,
-        })
-        .unwrap_or(IndentationConsistencyStyle::Normal);
+    let c: Cfg = cfg.typed("Layout/IndentationConsistency");
+    let style = match c.enforced_style.as_str() {
+        "indented_internal_methods" => IndentationConsistencyStyle::IndentedInternalMethods,
+        _ => IndentationConsistencyStyle::Normal,
+    };
     Some(Box::new(IndentationConsistency::new(style)))
 });

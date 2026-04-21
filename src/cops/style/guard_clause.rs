@@ -626,24 +626,21 @@ impl<'a> Visit<'a> for Visitor<'a> {
     }
 }
 
+#[derive(serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg { min_body_length: i64, allow_consecutive_conditionals: bool }
+impl Default for Cfg {
+    fn default() -> Self { Self { min_body_length: 1, allow_consecutive_conditionals: false } }
+}
+
 crate::register_cop!("Style/GuardClause", |cfg| {
-    let cop_config = cfg.get_cop_config("Style/GuardClause");
-    let min_body_length = cop_config
-        .and_then(|c| c.raw.get("MinBodyLength"))
-        .and_then(|v| v.as_i64())
-        .unwrap_or(1);
-    let allow_consecutive = cop_config
-        .and_then(|c| c.raw.get("AllowConsecutiveConditionals"))
-        .and_then(|v| v.as_bool())
-        .unwrap_or(false);
+    let c: Cfg = cfg.typed("Style/GuardClause");
     let max_line_length = if cfg.is_cop_enabled("Layout/LineLength") {
-        cfg.get_cop_config("Layout/LineLength")
-            .and_then(|c| c.max)
-            .map(|m| m as usize)
+        cfg.get_cop_config("Layout/LineLength").and_then(|c| c.max).map(|m| m as usize)
     } else {
         None
     };
     Some(Box::new(GuardClause::with_config(
-        min_body_length, allow_consecutive, max_line_length,
+        c.min_body_length, c.allow_consecutive_conditionals, max_line_length,
     )))
 });

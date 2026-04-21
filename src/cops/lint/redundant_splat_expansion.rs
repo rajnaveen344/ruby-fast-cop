@@ -266,11 +266,19 @@ fn is_percent_literal_array(node: &Node, ctx: &CheckContext) -> bool {
     }
 }
 
+#[derive(serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg {
+    allow_percent_literal_array_argument: bool,
+}
+
+impl Default for Cfg {
+    fn default() -> Self {
+        Self { allow_percent_literal_array_argument: true }
+    }
+}
+
 crate::register_cop!("Lint/RedundantSplatExpansion", |cfg| {
-    let cop_config = cfg.get_cop_config("Lint/RedundantSplatExpansion");
-    let allow_percent = cop_config
-        .and_then(|c| c.raw.get("AllowPercentLiteralArrayArgument"))
-        .and_then(|v| v.as_bool())
-        .unwrap_or(true);
-    Some(Box::new(RedundantSplatExpansion::new(allow_percent)))
+    let c: Cfg = cfg.typed("Lint/RedundantSplatExpansion");
+    Some(Box::new(RedundantSplatExpansion::new(c.allow_percent_literal_array_argument)))
 });

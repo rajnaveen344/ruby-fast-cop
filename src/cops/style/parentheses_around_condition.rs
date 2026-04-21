@@ -370,17 +370,17 @@ impl Cop for ParenthesesAroundCondition {
     }
 }
 
+#[derive(serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg { allow_in_multiline_conditions: bool, allow_safe_assignment: bool }
+impl Default for Cfg {
+    fn default() -> Self { Self { allow_in_multiline_conditions: false, allow_safe_assignment: true } }
+}
+
 crate::register_cop!("Style/ParenthesesAroundCondition", |cfg| {
-    let cop_config = cfg.get_cop_config("Style/ParenthesesAroundCondition");
-    let allow_multiline = cop_config
-        .and_then(|c| c.raw.get("AllowInMultilineConditions"))
-        .and_then(|v| v.as_bool())
-        .unwrap_or(false);
-    let allow_safe_assignment = cop_config
-        .and_then(|c| c.allow_safe_assignment)
-        .unwrap_or(true);
+    let c: Cfg = cfg.typed("Style/ParenthesesAroundCondition");
     Some(Box::new(ParenthesesAroundCondition::with_config(
-        allow_multiline,
-        allow_safe_assignment,
+        c.allow_in_multiline_conditions,
+        c.allow_safe_assignment,
     )))
 });

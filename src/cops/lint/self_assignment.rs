@@ -441,11 +441,14 @@ fn rhs_matches_lhs(rhs: &Node, lhs: &Node) -> bool {
     }
 }
 
+#[derive(serde::Deserialize, Default)]
+#[serde(default)]
+struct Cfg {
+    #[serde(rename = "AllowRBSInlineAnnotation")]
+    allow_rbs_inline_annotation: bool,
+}
+
 crate::register_cop!("Lint/SelfAssignment", |cfg| {
-    let cop_config = cfg.get_cop_config("Lint/SelfAssignment");
-    let allow_rbs = cop_config
-        .and_then(|c| c.raw.get("AllowRBSInlineAnnotation"))
-        .and_then(|v| v.as_bool())
-        .unwrap_or(false);
-    Some(Box::new(LintSelfAssignment::new(allow_rbs)))
+    let c: Cfg = cfg.typed("Lint/SelfAssignment");
+    Some(Box::new(LintSelfAssignment::new(c.allow_rbs_inline_annotation)))
 });

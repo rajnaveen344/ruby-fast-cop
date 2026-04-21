@@ -115,21 +115,27 @@ impl Visit<'_> for ClassLengthVisitor<'_> {
     }
 }
 
+#[derive(serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct ClassLengthCfg {
+    max: usize,
+    count_comments: bool,
+    #[serde(deserialize_with = "super::seq_or_empty")]
+    count_as_one: Vec<String>,
+}
+
+impl Default for ClassLengthCfg {
+    fn default() -> Self {
+        Self {
+            max: 100,
+            count_comments: false,
+            count_as_one: Vec::new(),
+
+        }
+    }
+}
+
 crate::register_cop!("Metrics/ClassLength", |cfg| {
-    let cop_config = cfg.get_cop_config("Metrics/ClassLength");
-    let max = cop_config.and_then(|c| c.max).unwrap_or(100);
-    let count_comments = cop_config
-        .and_then(|c| c.raw.get("CountComments"))
-        .and_then(|v| v.as_bool())
-        .unwrap_or(false);
-    let count_as_one = cop_config
-        .and_then(|c| c.raw.get("CountAsOne"))
-        .and_then(|v| v.as_sequence())
-        .map(|seq| {
-            seq.iter()
-                .filter_map(|v| v.as_str().map(|s| s.to_string()))
-                .collect()
-        })
-        .unwrap_or_default();
-    Some(Box::new(ClassLength::with_config(max, count_comments, count_as_one)))
+    let c: ClassLengthCfg = cfg.typed("Metrics/ClassLength");
+    Some(Box::new(ClassLength::with_config(c.max, c.count_comments, c.count_as_one)))
 });

@@ -101,11 +101,17 @@ impl Cop for EmptyLinesAroundClassBody {
     }
 }
 
+#[derive(serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg {
+    enforced_style: String,
+}
+impl Default for Cfg {
+    fn default() -> Self { Self { enforced_style: "no_empty_lines".into() } }
+}
+
 crate::register_cop!("Layout/EmptyLinesAroundClassBody", |cfg| {
-    let cop_config = cfg.get_cop_config("Layout/EmptyLinesAroundClassBody");
-    let style = cop_config
-        .and_then(|c| c.enforced_style.as_ref())
-        .map(|s| Style::parse(s))
-        .unwrap_or(Style::NoEmptyLines);
+    let c: Cfg = cfg.typed("Layout/EmptyLinesAroundClassBody");
+    let style = Style::parse(&c.enforced_style);
     Some(Box::new(EmptyLinesAroundClassBody::new(style)))
 });

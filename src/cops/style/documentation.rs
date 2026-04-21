@@ -528,16 +528,11 @@ impl Visit<'_> for DocVisitor<'_> {
     }
 }
 
+#[derive(Default, serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg { allowed_constants: Vec<String> }
+
 crate::register_cop!("Style/Documentation", |cfg| {
-    let cop_config = cfg.get_cop_config("Style/Documentation");
-    let allowed: Vec<String> = cop_config
-        .and_then(|c| c.raw.get("AllowedConstants"))
-        .and_then(|v| v.as_sequence())
-        .map(|seq| {
-            seq.iter()
-                .filter_map(|v| v.as_str().map(String::from))
-                .collect()
-        })
-        .unwrap_or_default();
-    Some(Box::new(Documentation::with_allowed_constants(allowed)))
+    let c: Cfg = cfg.typed("Style/Documentation");
+    Some(Box::new(Documentation::with_allowed_constants(c.allowed_constants)))
 });

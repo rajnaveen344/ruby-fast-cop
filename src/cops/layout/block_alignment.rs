@@ -568,12 +568,18 @@ impl Visit<'_> for BlockVisitor<'_> {
     }
 }
 
+#[derive(serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg {
+    enforced_style_align_with: String,
+}
+impl Default for Cfg {
+    fn default() -> Self { Self { enforced_style_align_with: "either".into() } }
+}
+
 crate::register_cop!("Layout/BlockAlignment", |cfg| {
-    let style = cfg.get_cop_config("Layout/BlockAlignment")
-        .and_then(|c| c.raw.get("EnforcedStyleAlignWith"))
-        .and_then(|v| v.as_str())
-        .unwrap_or("either");
-    let align_style = match style {
+    let c: Cfg = cfg.typed("Layout/BlockAlignment");
+    let align_style = match c.enforced_style_align_with.as_str() {
         "start_of_block" => BlockAlignmentStyle::StartOfBlock,
         "start_of_line" => BlockAlignmentStyle::StartOfLine,
         _ => BlockAlignmentStyle::Either,

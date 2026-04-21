@@ -215,11 +215,11 @@ impl<'a> Visit<'_> for RRVisitor<'a> {
     }
 }
 
+#[derive(Default, serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg { allow_multiple_return_values: bool }
+
 crate::register_cop!("Style/RedundantReturn", |cfg| {
-    let cop_config = cfg.get_cop_config("Style/RedundantReturn");
-    let allow_multi = cop_config
-        .and_then(|c| c.raw.get("AllowMultipleReturnValues"))
-        .and_then(|v| v.as_bool())
-        .unwrap_or(false);
-    Some(Box::new(RedundantReturn::with_config(allow_multi)))
+    let c: Cfg = cfg.typed("Style/RedundantReturn");
+    Some(Box::new(RedundantReturn::with_config(c.allow_multiple_return_values)))
 });

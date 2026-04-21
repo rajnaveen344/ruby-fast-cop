@@ -390,24 +390,32 @@ impl Visit<'_> for ImplicitRefFinder {
     }
 }
 
+#[derive(serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg {
+    allow_unused_keyword_arguments: bool,
+    ignore_empty_methods: bool,
+    ignore_not_implemented_methods: bool,
+    not_implemented_exceptions: Vec<String>,
+}
+
+impl Default for Cfg {
+    fn default() -> Self {
+        Self {
+            allow_unused_keyword_arguments: false,
+            ignore_empty_methods: true,
+            ignore_not_implemented_methods: true,
+            not_implemented_exceptions: vec!["NotImplementedError".to_string()],
+        }
+    }
+}
+
 crate::register_cop!("Lint/UnusedMethodArgument", |cfg| {
-    let cop_config = cfg.get_cop_config("Lint/UnusedMethodArgument");
-    let allow_keyword = cop_config
-        .and_then(|c| c.raw.get("AllowUnusedKeywordArguments"))
-        .and_then(|v| v.as_bool())
-        .unwrap_or(false);
-    let ignore_empty = cop_config
-        .and_then(|c| c.raw.get("IgnoreEmptyMethods"))
-        .and_then(|v| v.as_bool())
-        .unwrap_or(true);
-    let ignore_not_impl = cop_config
-        .and_then(|c| c.raw.get("IgnoreNotImplementedMethods"))
-        .and_then(|v| v.as_bool())
-        .unwrap_or(true);
-    let exceptions = cop_config
-        .and_then(|c| c.raw.get("NotImplementedExceptions"))
-        .and_then(|v| v.as_sequence())
-        .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
-        .unwrap_or_else(|| vec!["NotImplementedError".to_string()]);
-    Some(Box::new(UnusedMethodArgument::with_config(allow_keyword, ignore_empty, ignore_not_impl, exceptions)))
+    let c: Cfg = cfg.typed("Lint/UnusedMethodArgument");
+    Some(Box::new(UnusedMethodArgument::with_config(
+        c.allow_unused_keyword_arguments,
+        c.ignore_empty_methods,
+        c.ignore_not_implemented_methods,
+        c.not_implemented_exceptions,
+    )))
 });

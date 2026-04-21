@@ -283,15 +283,20 @@ impl Visit<'_> for DefineMethodFinder {
     }
 }
 
+#[derive(serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg {
+    allow_unused_keyword_arguments: bool,
+    ignore_empty_blocks: bool,
+}
+
+impl Default for Cfg {
+    fn default() -> Self {
+        Self { allow_unused_keyword_arguments: false, ignore_empty_blocks: true }
+    }
+}
+
 crate::register_cop!("Lint/UnusedBlockArgument", |cfg| {
-    let cop_config = cfg.get_cop_config("Lint/UnusedBlockArgument");
-    let allow_keyword = cop_config
-        .and_then(|c| c.raw.get("AllowUnusedKeywordArguments"))
-        .and_then(|v| v.as_bool())
-        .unwrap_or(false);
-    let ignore_empty = cop_config
-        .and_then(|c| c.raw.get("IgnoreEmptyBlocks"))
-        .and_then(|v| v.as_bool())
-        .unwrap_or(true);
-    Some(Box::new(UnusedBlockArgument::with_config(allow_keyword, ignore_empty)))
+    let c: Cfg = cfg.typed("Lint/UnusedBlockArgument");
+    Some(Box::new(UnusedBlockArgument::with_config(c.allow_unused_keyword_arguments, c.ignore_empty_blocks)))
 });

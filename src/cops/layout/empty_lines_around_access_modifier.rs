@@ -368,14 +368,20 @@ fn previous_line_empty(lines: &[&str], send_line: usize) -> bool {
 }
 
 
+#[derive(serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg {
+    enforced_style: String,
+}
+impl Default for Cfg {
+    fn default() -> Self { Self { enforced_style: "around".into() } }
+}
+
 crate::register_cop!("Layout/EmptyLinesAroundAccessModifier", |cfg| {
-    let cop_config = cfg.get_cop_config("Layout/EmptyLinesAroundAccessModifier");
-    let style = cop_config
-        .and_then(|c| c.enforced_style.as_ref())
-        .map(|s| match s.as_str() {
-            "only_before" => EnforcedStyle::OnlyBefore,
-            _ => EnforcedStyle::Around,
-        })
-        .unwrap_or(EnforcedStyle::Around);
+    let c: Cfg = cfg.typed("Layout/EmptyLinesAroundAccessModifier");
+    let style = match c.enforced_style.as_str() {
+        "only_before" => EnforcedStyle::OnlyBefore,
+        _ => EnforcedStyle::Around,
+    };
     Some(Box::new(EmptyLinesAroundAccessModifier::new(style)))
 });

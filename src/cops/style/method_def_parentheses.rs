@@ -272,15 +272,16 @@ fn find_paren_range(node: &ruby_prism::DefNode, ctx: &CheckContext) -> (usize, u
     (paren_start, paren_end)
 }
 
+#[derive(Default, serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg { enforced_style: String }
+
 crate::register_cop!("Style/MethodDefParentheses", |cfg| {
-    let cop_config = cfg.get_cop_config("Style/MethodDefParentheses");
-    let style = cop_config
-        .and_then(|c| c.enforced_style.as_ref())
-        .map(|s| match s.as_str() {
-            "require_no_parentheses" => EnforcedStyle::RequireNoParentheses,
-            "require_no_parentheses_except_multiline" => EnforcedStyle::RequireNoParenthesesExceptMultiline,
-            _ => EnforcedStyle::RequireParentheses,
-        })
-        .unwrap_or(EnforcedStyle::RequireParentheses);
+    let c: Cfg = cfg.typed("Style/MethodDefParentheses");
+    let style = match c.enforced_style.as_str() {
+        "require_no_parentheses" => EnforcedStyle::RequireNoParentheses,
+        "require_no_parentheses_except_multiline" => EnforcedStyle::RequireNoParenthesesExceptMultiline,
+        _ => EnforcedStyle::RequireParentheses,
+    };
     Some(Box::new(MethodDefParentheses::new(style)))
 });

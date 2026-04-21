@@ -73,14 +73,15 @@ impl Cop for RescueStandardError {
     }
 }
 
+#[derive(Default, serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg { enforced_style: String }
+
 crate::register_cop!("Style/RescueStandardError", |cfg| {
-    let style = cfg
-        .get_cop_config("Style/RescueStandardError")
-        .and_then(|c| c.enforced_style.as_ref())
-        .map(|s| match s.as_str() {
-            "implicit" => EnforcedStyle::Implicit,
-            _ => EnforcedStyle::Explicit,
-        })
-        .unwrap_or(EnforcedStyle::Explicit);
+    let c: Cfg = cfg.typed("Style/RescueStandardError");
+    let style = match c.enforced_style.as_str() {
+        "implicit" => EnforcedStyle::Implicit,
+        _ => EnforcedStyle::Explicit,
+    };
     Some(Box::new(RescueStandardError::new(style)))
 });

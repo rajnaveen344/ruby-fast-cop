@@ -266,11 +266,11 @@ impl Cop for RedundantFreeze {
     }
 }
 
+#[derive(Default, serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg { all_cops_string_literals_frozen_by_default: bool }
+
 crate::register_cop!("Style/RedundantFreeze", |cfg| {
-    let frozen_by_default = cfg
-        .get_cop_config("Style/RedundantFreeze")
-        .and_then(|c| c.raw.get("AllCopsStringLiteralsFrozenByDefault"))
-        .and_then(|v| v.as_bool())
-        .unwrap_or(false);
-    Some(Box::new(RedundantFreeze::with_config(frozen_by_default)))
+    let c: Cfg = cfg.typed("Style/RedundantFreeze");
+    Some(Box::new(RedundantFreeze::with_config(c.all_cops_string_literals_frozen_by_default)))
 });

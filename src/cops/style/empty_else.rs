@@ -221,19 +221,16 @@ impl Visit<'_> for EmptyElseVisitor<'_> {
     }
 }
 
+#[derive(Default, serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg { enforced_style: String, allow_comments: bool }
+
 crate::register_cop!("Style/EmptyElse", |cfg| {
-    let cop_config = cfg.get_cop_config("Style/EmptyElse");
-    let style = cop_config
-        .and_then(|c| c.enforced_style.as_ref())
-        .map(|s| match s.as_str() {
-            "empty" => EnforcedStyle::Empty,
-            "nil" => EnforcedStyle::Nil,
-            _ => EnforcedStyle::Both,
-        })
-        .unwrap_or(EnforcedStyle::Both);
-    let allow_comments = cop_config
-        .and_then(|c| c.raw.get("AllowComments"))
-        .and_then(|v| v.as_bool())
-        .unwrap_or(false);
-    Some(Box::new(EmptyElse::new(style, allow_comments)))
+    let c: Cfg = cfg.typed("Style/EmptyElse");
+    let style = match c.enforced_style.as_str() {
+        "empty" => EnforcedStyle::Empty,
+        "nil" => EnforcedStyle::Nil,
+        _ => EnforcedStyle::Both,
+    };
+    Some(Box::new(EmptyElse::new(style, c.allow_comments)))
 });

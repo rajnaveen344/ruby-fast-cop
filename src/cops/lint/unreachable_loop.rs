@@ -406,17 +406,17 @@ impl<'a> Visit<'a> for Visitor<'a> {
     }
 }
 
+// Merges AllowedPatterns and IgnoredPatterns (legacy alias) into one Vec.
+#[derive(serde::Deserialize, Default)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg {
+    allowed_patterns: Vec<String>,
+    ignored_patterns: Vec<String>,
+}
+
 crate::register_cop!("Lint/UnreachableLoop", |cfg| {
-    let cop_config = cfg.get_cop_config("Lint/UnreachableLoop");
-    let mut allowed_patterns: Vec<String> = Vec::new();
-    for key in &["AllowedPatterns", "IgnoredPatterns"] {
-        if let Some(seq) = cop_config.and_then(|c| c.raw.get(*key)).and_then(|v| v.as_sequence()) {
-            for v in seq {
-                if let Some(s) = v.as_str() {
-                    allowed_patterns.push(s.to_string());
-                }
-            }
-        }
-    }
-    Some(Box::new(UnreachableLoop::with_config(allowed_patterns)))
+    let c: Cfg = cfg.typed("Lint/UnreachableLoop");
+    let mut patterns = c.allowed_patterns;
+    patterns.extend(c.ignored_patterns);
+    Some(Box::new(UnreachableLoop::with_config(patterns)))
 });

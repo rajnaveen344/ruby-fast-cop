@@ -231,11 +231,19 @@ impl Visit<'_> for Visitor<'_> {
     }
 }
 
+#[derive(serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg {
+    allow_comments: bool,
+}
+
+impl Default for Cfg {
+    fn default() -> Self {
+        Self { allow_comments: true }
+    }
+}
+
 crate::register_cop!("Lint/EmptyConditionalBody", |cfg| {
-    let cop_config = cfg.get_cop_config("Lint/EmptyConditionalBody");
-    let allow_comments = cop_config
-        .and_then(|c| c.raw.get("AllowComments"))
-        .and_then(|v| v.as_bool())
-        .unwrap_or(true);
-    Some(Box::new(EmptyConditionalBody::new(allow_comments)))
+    let c: Cfg = cfg.typed("Lint/EmptyConditionalBody");
+    Some(Box::new(EmptyConditionalBody::new(c.allow_comments)))
 });

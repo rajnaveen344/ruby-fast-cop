@@ -535,11 +535,13 @@ impl Visit<'_> for AssignmentRangeFinder {
     }
 }
 
+#[derive(serde::Deserialize, Default)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg {
+    ignore_implicit_references: bool,
+}
+
 crate::register_cop!("Lint/ShadowedArgument", |cfg| {
-    let cop_config = cfg.get_cop_config("Lint/ShadowedArgument");
-    let ignore_implicit = cop_config
-        .and_then(|c| c.raw.get("IgnoreImplicitReferences"))
-        .and_then(|v| v.as_bool())
-        .unwrap_or(false);
-    Some(Box::new(ShadowedArgument::with_config(ignore_implicit)))
+    let c: Cfg = cfg.typed("Lint/ShadowedArgument");
+    Some(Box::new(ShadowedArgument::with_config(c.ignore_implicit_references)))
 });

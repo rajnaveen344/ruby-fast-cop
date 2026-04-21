@@ -263,11 +263,11 @@ impl Cop for Semicolon {
     }
 }
 
+#[derive(Default, serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg { allow_as_expression_separator: bool }
+
 crate::register_cop!("Style/Semicolon", |cfg| {
-    let cop_config = cfg.get_cop_config("Style/Semicolon");
-    let allow = cop_config
-        .and_then(|c| c.raw.get("AllowAsExpressionSeparator"))
-        .and_then(|v| v.as_bool())
-        .unwrap_or(false);
-    Some(Box::new(Semicolon::new(allow)))
+    let c: Cfg = cfg.typed("Style/Semicolon");
+    Some(Box::new(Semicolon::new(c.allow_as_expression_separator)))
 });

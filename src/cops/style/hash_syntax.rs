@@ -606,40 +606,43 @@ impl Cop for HashSyntax {
     }
 }
 
+#[derive(serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg {
+    enforced_style: String,
+    enforced_shorthand_syntax: String,
+    use_hash_rockets_with_symbol_values: bool,
+    prefer_hash_rockets_for_non_alnum_ending_symbols: bool,
+}
+impl Default for Cfg {
+    fn default() -> Self {
+        Self {
+            enforced_style: String::new(),
+            enforced_shorthand_syntax: String::new(),
+            use_hash_rockets_with_symbol_values: false,
+            prefer_hash_rockets_for_non_alnum_ending_symbols: true,
+        }
+    }
+}
+
 crate::register_cop!("Style/HashSyntax", |cfg| {
-    let cop_config = cfg.get_cop_config("Style/HashSyntax");
-    let style = cop_config
-        .and_then(|c| c.enforced_style.as_ref())
-        .map(|s| match s.as_str() {
-            "hash_rockets" => EnforcedStyle::HashRockets,
-            "no_mixed_keys" => EnforcedStyle::NoMixedKeys,
-            "ruby19_no_mixed_keys" => EnforcedStyle::Ruby19NoMixedKeys,
-            _ => EnforcedStyle::Ruby19,
-        })
-        .unwrap_or(EnforcedStyle::Ruby19);
-    let shorthand = cop_config
-        .and_then(|c| c.raw.get("EnforcedShorthandSyntax"))
-        .and_then(|v| v.as_str())
-        .map(|s| match s {
-            "always" => EnforcedShorthandSyntax::Always,
-            "never" => EnforcedShorthandSyntax::Never,
-            "consistent" => EnforcedShorthandSyntax::Consistent,
-            "either_consistent" => EnforcedShorthandSyntax::EitherConsistent,
-            _ => EnforcedShorthandSyntax::Either,
-        })
-        .unwrap_or(EnforcedShorthandSyntax::Either);
-    let use_rockets_with_symbols = cop_config
-        .and_then(|c| c.raw.get("UseHashRocketsWithSymbolValues"))
-        .and_then(|v| v.as_bool())
-        .unwrap_or(false);
-    let prefer_rockets_non_alnum = cop_config
-        .and_then(|c| c.raw.get("PreferHashRocketsForNonAlnumEndingSymbols"))
-        .and_then(|v| v.as_bool())
-        .unwrap_or(true);
+    let c: Cfg = cfg.typed("Style/HashSyntax");
+    let style = match c.enforced_style.as_str() {
+        "hash_rockets" => EnforcedStyle::HashRockets,
+        "no_mixed_keys" => EnforcedStyle::NoMixedKeys,
+        "ruby19_no_mixed_keys" => EnforcedStyle::Ruby19NoMixedKeys,
+        _ => EnforcedStyle::Ruby19,
+    };
+    let shorthand = match c.enforced_shorthand_syntax.as_str() {
+        "always" => EnforcedShorthandSyntax::Always,
+        "never" => EnforcedShorthandSyntax::Never,
+        "consistent" => EnforcedShorthandSyntax::Consistent,
+        "either_consistent" => EnforcedShorthandSyntax::EitherConsistent,
+        _ => EnforcedShorthandSyntax::Either,
+    };
     Some(Box::new(HashSyntax::with_config(
-        style,
-        shorthand,
-        use_rockets_with_symbols,
-        prefer_rockets_non_alnum,
+        style, shorthand,
+        c.use_hash_rockets_with_symbol_values,
+        c.prefer_hash_rockets_for_non_alnum_ending_symbols,
     )))
 });

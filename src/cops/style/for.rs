@@ -130,13 +130,14 @@ impl<'a> Visit<'_> for Visitor<'a> {
     }
 }
 
+#[derive(Default, serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg { enforced_style: String }
+
 crate::register_cop!("Style/For", |cfg| {
-    let cop_config = cfg.get_cop_config("Style/For");
-    let style = match cop_config
-        .and_then(|c| c.enforced_style.as_ref())
-        .map(|s| s.as_str())
-    {
-        Some("for") => EnforcedStyle::For,
+    let c: Cfg = cfg.typed("Style/For");
+    let style = match c.enforced_style.as_str() {
+        "for" => EnforcedStyle::For,
         _ => EnforcedStyle::Each,
     };
     Some(Box::new(For::with_style(style)))

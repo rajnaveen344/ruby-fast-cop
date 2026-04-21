@@ -178,15 +178,16 @@ impl Cop for FrozenStringLiteralComment {
     }
 }
 
+#[derive(Default, serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg { enforced_style: String }
+
 crate::register_cop!("Style/FrozenStringLiteralComment", |cfg| {
-    let cop_config = cfg.get_cop_config("Style/FrozenStringLiteralComment");
-    let style = cop_config
-        .and_then(|c| c.enforced_style.as_ref())
-        .map(|s| match s.as_str() {
-            "never" => EnforcedStyle::Never,
-            "always_true" => EnforcedStyle::AlwaysTrue,
-            _ => EnforcedStyle::Always,
-        })
-        .unwrap_or(EnforcedStyle::Always);
+    let c: Cfg = cfg.typed("Style/FrozenStringLiteralComment");
+    let style = match c.enforced_style.as_str() {
+        "never" => EnforcedStyle::Never,
+        "always_true" => EnforcedStyle::AlwaysTrue,
+        _ => EnforcedStyle::Always,
+    };
     Some(Box::new(FrozenStringLiteralComment::new(style)))
 });

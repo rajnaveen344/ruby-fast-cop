@@ -183,21 +183,20 @@ impl Cop for CommentAnnotation {
     }
 }
 
+#[derive(serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg { keywords: Vec<String>, require_colon: bool }
+impl Default for Cfg {
+    fn default() -> Self {
+        Self {
+            keywords: ["TODO", "FIXME", "OPTIMIZE", "HACK", "REVIEW"]
+                .iter().map(|s| s.to_string()).collect(),
+            require_colon: true,
+        }
+    }
+}
+
 crate::register_cop!("Style/CommentAnnotation", |cfg| {
-    let cop_config = cfg.get_cop_config("Style/CommentAnnotation");
-    let keywords: Vec<String> = cop_config
-        .and_then(|c| c.raw.get("Keywords"))
-        .and_then(|v| v.as_sequence())
-        .map(|seq| seq.iter().filter_map(|v| v.as_str().map(String::from)).collect())
-        .unwrap_or_else(|| {
-            ["TODO", "FIXME", "OPTIMIZE", "HACK", "REVIEW"]
-                .iter()
-                .map(|s| s.to_string())
-                .collect()
-        });
-    let require_colon = cop_config
-        .and_then(|c| c.raw.get("RequireColon"))
-        .and_then(|v| v.as_bool())
-        .unwrap_or(true);
-    Some(Box::new(CommentAnnotation::with_config(keywords, require_colon)))
+    let c: Cfg = cfg.typed("Style/CommentAnnotation");
+    Some(Box::new(CommentAnnotation::with_config(c.keywords, c.require_colon)))
 });

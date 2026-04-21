@@ -535,11 +535,13 @@ fn entirely_literal(node: &Node) -> bool {
     }
 }
 
+#[derive(serde::Deserialize, Default)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg {
+    check_for_methods_with_no_side_effects: bool,
+}
+
 crate::register_cop!("Lint/Void", |cfg| {
-    let cop_config = cfg.get_cop_config("Lint/Void");
-    let check_methods = cop_config
-        .and_then(|c| c.raw.get("CheckForMethodsWithNoSideEffects"))
-        .and_then(|v| v.as_bool())
-        .unwrap_or(false);
-    Some(Box::new(Void::new(check_methods)))
+    let c: Cfg = cfg.typed("Lint/Void");
+    Some(Box::new(Void::new(c.check_for_methods_with_no_side_effects)))
 });

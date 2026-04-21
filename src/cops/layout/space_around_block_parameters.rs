@@ -319,15 +319,20 @@ impl<'a> Visit<'_> for Visitor<'a> {
     }
 }
 
+#[derive(serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg {
+    enforced_style_inside_pipes: String,
+}
+impl Default for Cfg {
+    fn default() -> Self { Self { enforced_style_inside_pipes: "no_space".into() } }
+}
+
 crate::register_cop!("Layout/SpaceAroundBlockParameters", |cfg| {
-    let style = cfg
-        .get_cop_config("Layout/SpaceAroundBlockParameters")
-        .and_then(|c| c.raw.get("EnforcedStyleInsidePipes"))
-        .and_then(|v| v.as_str())
-        .map(|s| match s {
-            "space" => Style::Space,
-            _ => Style::NoSpace,
-        })
-        .unwrap_or(Style::NoSpace);
+    let c: Cfg = cfg.typed("Layout/SpaceAroundBlockParameters");
+    let style = match c.enforced_style_inside_pipes.as_str() {
+        "space" => Style::Space,
+        _ => Style::NoSpace,
+    };
     Some(Box::new(SpaceAroundBlockParameters::new(style)))
 });

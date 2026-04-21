@@ -144,15 +144,16 @@ pub(crate) fn build_correction(
     }
 }
 
+#[derive(Default, serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg { enforced_style: String }
+
 crate::register_cop!("Style/NegatedIf", |cfg| {
-    let style = cfg
-        .get_cop_config("Style/NegatedIf")
-        .and_then(|c| c.enforced_style.as_ref())
-        .map(|s| match s.as_str() {
-            "prefix" => EnforcedStyle::Prefix,
-            "postfix" => EnforcedStyle::Postfix,
-            _ => EnforcedStyle::Both,
-        })
-        .unwrap_or(EnforcedStyle::Both);
+    let c: Cfg = cfg.typed("Style/NegatedIf");
+    let style = match c.enforced_style.as_str() {
+        "prefix" => EnforcedStyle::Prefix,
+        "postfix" => EnforcedStyle::Postfix,
+        _ => EnforcedStyle::Both,
+    };
     Some(Box::new(NegatedIf::with_style(style)))
 });

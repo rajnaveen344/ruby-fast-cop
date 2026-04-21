@@ -315,11 +315,14 @@ fn scan_back_past_comma_space(source: &str, offset: usize) -> usize {
     i
 }
 
+#[derive(serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg { allow_named_underscore_variables: bool }
+impl Default for Cfg {
+    fn default() -> Self { Self { allow_named_underscore_variables: true } }
+}
+
 crate::register_cop!("Style/TrailingUnderscoreVariable", |cfg| {
-    let cop_config = cfg.get_cop_config("Style/TrailingUnderscoreVariable");
-    let allow_named = cop_config
-        .and_then(|c| c.raw.get("AllowNamedUnderscoreVariables"))
-        .and_then(|v| v.as_bool())
-        .unwrap_or(true);
-    Some(Box::new(TrailingUnderscoreVariable::new(allow_named)))
+    let c: Cfg = cfg.typed("Style/TrailingUnderscoreVariable");
+    Some(Box::new(TrailingUnderscoreVariable::new(c.allow_named_underscore_variables)))
 });

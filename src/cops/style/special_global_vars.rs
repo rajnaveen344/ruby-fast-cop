@@ -532,19 +532,19 @@ impl Cop for SpecialGlobalVars {
     }
 }
 
+#[derive(serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg { enforced_style: String, require_english: bool }
+impl Default for Cfg {
+    fn default() -> Self { Self { enforced_style: String::new(), require_english: true } }
+}
+
 crate::register_cop!("Style/SpecialGlobalVars", |cfg| {
-    let cop_config = cfg.get_cop_config("Style/SpecialGlobalVars");
-    let style = cop_config
-        .and_then(|c| c.enforced_style.as_ref())
-        .map(|s| match s.as_str() {
-            "use_perl_names" => EnforcedStyle::UsePerlNames,
-            "use_builtin_english_names" => EnforcedStyle::UseBuiltinEnglishNames,
-            _ => EnforcedStyle::UseEnglishNames,
-        })
-        .unwrap_or(EnforcedStyle::UseEnglishNames);
-    let require_english = cop_config
-        .and_then(|c| c.raw.get("RequireEnglish"))
-        .and_then(|v| v.as_bool())
-        .unwrap_or(true);
-    Some(Box::new(SpecialGlobalVars::new(style, require_english)))
+    let c: Cfg = cfg.typed("Style/SpecialGlobalVars");
+    let style = match c.enforced_style.as_str() {
+        "use_perl_names" => EnforcedStyle::UsePerlNames,
+        "use_builtin_english_names" => EnforcedStyle::UseBuiltinEnglishNames,
+        _ => EnforcedStyle::UseEnglishNames,
+    };
+    Some(Box::new(SpecialGlobalVars::new(style, c.require_english)))
 });

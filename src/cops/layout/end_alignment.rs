@@ -310,12 +310,18 @@ impl Visit<'_> for EndAlignmentVisitor<'_> {
     }
 }
 
+#[derive(serde::Deserialize)]
+#[serde(default, rename_all = "PascalCase")]
+struct Cfg {
+    enforced_style_align_with: String,
+}
+impl Default for Cfg {
+    fn default() -> Self { Self { enforced_style_align_with: "keyword".into() } }
+}
+
 crate::register_cop!("Layout/EndAlignment", |cfg| {
-    let style = cfg.get_cop_config("Layout/EndAlignment")
-        .and_then(|c| c.raw.get("EnforcedStyleAlignWith"))
-        .and_then(|v| v.as_str())
-        .unwrap_or("keyword");
-    let align_style = match style {
+    let c: Cfg = cfg.typed("Layout/EndAlignment");
+    let align_style = match c.enforced_style_align_with.as_str() {
         "variable" => EndAlignmentStyle::Variable,
         "start_of_line" => EndAlignmentStyle::StartOfLine,
         _ => EndAlignmentStyle::Keyword,
