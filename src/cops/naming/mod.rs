@@ -1,17 +1,27 @@
+mod accessor_method_name;
 mod block_parameter_name;
+mod constant_name;
 mod file_name;
+mod heredoc_delimiter_case;
 mod memoized_instance_variable_name;
 mod method_name;
 mod method_parameter_name;
 mod predicate_method;
+mod predicate_prefix;
+mod rescued_exceptions_variable_name;
 mod variable_name;
 mod variable_number;
 
+pub use accessor_method_name::AccessorMethodName;
 pub use block_parameter_name::BlockParameterName;
+pub use constant_name::ConstantName;
 pub use file_name::FileName;
+pub use heredoc_delimiter_case::HeredocDelimiterCase;
 pub use memoized_instance_variable_name::{LeadingUnderscoreStyle, MemoizedInstanceVariableName};
 pub use method_name::{MethodName, MethodNameStyle};
 pub use method_parameter_name::MethodParameterName;
 pub use predicate_method::{Mode as PredicateMethodMode, PredicateMethod};
+pub use predicate_prefix::PredicatePrefix;
+pub use rescued_exceptions_variable_name::RescuedExceptionsVariableName;
 pub use variable_name::{VariableName, VariableNameStyle};
 pub use variable_number::{VariableNumber, VariableNumberStyle};
