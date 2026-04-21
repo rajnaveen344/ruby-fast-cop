@@ -453,6 +453,32 @@ impl Config {
         self.cops.get(cop_name)
     }
 
+    /// Deserialize a cop's raw YAML config into a typed struct.
+    ///
+    /// If the cop has no entry in `.rubocop.yml`, or deserialization fails,
+    /// returns `T::default()`. Callers typically define a `#[derive(Deserialize, Default)]`
+    /// struct with `#[serde(default, rename_all = "PascalCase")]` so YAML keys like
+    /// `AllowedMethods` map to struct fields like `allowed_methods`.
+    ///
+    /// # Example
+    /// ```ignore
+    /// #[derive(Default, serde::Deserialize)]
+    /// #[serde(default, rename_all = "PascalCase")]
+    /// struct Cfg {
+    ///     enforced_style: String,
+    ///     max: usize,
+    /// }
+    /// let c: Cfg = config.typed("Style/Foo");
+    /// ```
+    pub fn typed<T: serde::de::DeserializeOwned + Default>(&self, cop_name: &str) -> T {
+        let Some(cc) = self.get_cop_config(cop_name) else {
+            return T::default();
+        };
+        serde_yaml::to_value(&cc.raw)
+            .and_then(serde_yaml::from_value)
+            .unwrap_or_default()
+    }
+
     /// Get AllCops/Include patterns
     pub fn all_cops_include(&self) -> Option<Vec<String>> {
         if self.all_cops.include.is_empty() {
@@ -997,6 +1023,85 @@ Metrics/BlockLength:
         assert_eq!(block_length.max, Some(30));
 
         let _ = fs::remove_dir_all(&temp_dir);
+    }
+
+    #[derive(Default, serde::Deserialize, Debug, PartialEq)]
+    #[serde(default, rename_all = "PascalCase")]
+    struct TypedCfg {
+        enforced_style: String,
+        max: usize,
+    }
+
+    #[derive(Default, serde::Deserialize, Debug, PartialEq)]
+    #[serde(default, rename_all = "PascalCase")]
+    struct DebuggerCfg {
+        debugger_methods: Vec<String>,
+    }
+
+    #[test]
+    fn test_typed_happy_path() {
+        let yaml = r#"
+Style/Foo:
+  EnforcedStyle: exploded
+  Max: 42
+"#;
+        let config = Config::parse_with_inheritance(yaml, Path::new(".")).unwrap();
+        let cfg: TypedCfg = config.typed("Style/Foo");
+        assert_eq!(
+            cfg,
+            TypedCfg {
+                enforced_style: "exploded".to_string(),
+                max: 42,
+            }
+        );
+    }
+
+    #[test]
+    fn test_typed_missing_cop_returns_default() {
+        let config = Config::default();
+        let cfg: TypedCfg = config.typed("Nonexistent/Cop");
+        assert_eq!(cfg, TypedCfg::default());
+    }
+
+    #[test]
+    fn test_typed_partial_keys_fall_back_to_field_defaults() {
+        let yaml = r#"
+Style/Foo:
+  Max: 7
+"#;
+        let config = Config::parse_with_inheritance(yaml, Path::new(".")).unwrap();
+        let cfg: TypedCfg = config.typed("Style/Foo");
+        assert_eq!(cfg.max, 7);
+        assert_eq!(cfg.enforced_style, String::default());
+    }
+
+    #[test]
+    fn test_typed_type_mismatch_falls_back_silently() {
+        let yaml = r#"
+Style/Foo:
+  Max: "not a number"
+  EnforcedStyle: exploded
+"#;
+        let config = Config::parse_with_inheritance(yaml, Path::new(".")).unwrap();
+        // Deserialization of the whole struct fails → full default.
+        let cfg: TypedCfg = config.typed("Style/Foo");
+        assert_eq!(cfg, TypedCfg::default());
+    }
+
+    #[test]
+    fn test_typed_vec_field() {
+        let yaml = r#"
+Lint/Debugger:
+  DebuggerMethods:
+    - pry
+    - byebug
+"#;
+        let config = Config::parse_with_inheritance(yaml, Path::new(".")).unwrap();
+        let cfg: DebuggerCfg = config.typed("Lint/Debugger");
+        assert_eq!(
+            cfg.debugger_methods,
+            vec!["pry".to_string(), "byebug".to_string()]
+        );
     }
 
     #[test]
