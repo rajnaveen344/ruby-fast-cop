@@ -22,6 +22,20 @@ ruby-fast-cop is a high-performance Ruby linter written in Rust, designed as a d
 
 **Current state:** 159 of 606 cops implemented (all fixtures passing), 606 TOML test fixtures with ~28,075 test cases extracted from RuboCop v1.85.0's RSpec suite.
 
+> **Architecture:** See [`ARCHITECTURE.md`](./ARCHITECTURE.md) for the system overview, cop implementation flow, and shared-infrastructure diagrams (mermaid). Update it whenever the runtime shape, registration mechanism, autocorrect pipeline, or testing pipeline changes — this file covers *conventions*, `ARCHITECTURE.md` covers *structure*.
+
+## Planned architectural refactors
+
+Tracked candidates to reduce verbosity vs RuboCop. Ranked by payoff/risk. Revisit when touching adjacent code.
+
+1. **Typed config helper `Config::typed::<T>(cop_name)`** — replaces `.get_cop_config(...).and_then(|c| c.raw.get(...)).and_then(|v| v.as_bool()).unwrap_or(...)` chains across 184 cops with a serde-derived struct per cop. Phase 1 = add the helper (zero churn). Phase 2 = migrate cops opportunistically. Est. ~1000 LOC saved.
+2. **`Emitter` instead of `Vec<Offense>` returns** — zero-alloc on the empty-offense hot path; mechanical sweep.
+3. **`#[cop("Name")]` attribute macro** — collapses the `register_cop!` factory closure. Pairs well with #1.
+4. **Shared semantic model (scopes / CFG / comment index)** — computed once per file; today VariableForce rebuilds per-cop. High payoff, high risk.
+5. **Collapse `Cop` trait 20 methods → 1 `check(&Node, &mut Emitter, &Ctx)`** — Layer 1 revisited post-Layer-2. Mechanical, big trait-surface win.
+6. **Autocorrect conflict resolver** — Ruff-style interval tree instead of "skip overlaps"; unlocks more fixes per pass.
+7. **More `CheckContext` helpers** — port RuboCop `RangeHelp` / `Alignment` methods as the need arises.
+
 ### Boilerplate Conventions
 - **`node_name!` macro** (defined in `src/lib.rs`): Use `node_name!(node)` instead of `String::from_utf8_lossy(node.name().as_slice())`. Works with any Prism node that has `.name().as_slice()` — including chained access like `node_name!(n.as_constant_read_node().unwrap())`.
 - **No inline unit tests in cop files.** All cop testing is via TOML fixtures in `tests/fixtures/`. Do not add `#[cfg(test)] mod tests` blocks to cop files.
@@ -398,7 +412,7 @@ Each agent gets its own git worktree so they can independently edit `mod.rs`, `l
 9. Run `cargo test --test tester` — verify tests pass
 10. If tests fail unexpectedly, compare with original RuboCop spec and fix implementation or TOML
 11. **Always run `/cop-review` after implementation** — this compares the Rust implementation against the original Ruby source, checks size ratio and complexity, and identifies simplification opportunities. Fix any issues it flags before moving on.
-12. Update README.md (implemented cops table), COPS.md (status column + summary counts), and CLAUDE.md (cop count)
+12. Update README.md (implemented cops table), COPS.md (status column + summary counts), and CLAUDE.md (cop count). Update ARCHITECTURE.md only if the runtime/registration/autocorrect/testing shape changed — not for individual cops.
 
 ### Fixing a partial cop
 
