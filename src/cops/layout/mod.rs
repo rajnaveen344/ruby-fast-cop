@@ -6,7 +6,12 @@ mod case_indentation;
 mod comment_indentation;
 mod closing_parenthesis_indentation;
 mod def_end_alignment;
+mod assignment_indentation;
+mod closing_heredoc_indentation;
+mod condition_position;
 mod dot_position;
+mod empty_comment;
+// mod end_of_line; // Skipped: TOML fixtures lose \r bytes (TOML strips CR), making CRLF tests untestable
 mod else_alignment;
 mod empty_line_after_guard_clause;
 mod empty_line_after_magic_comment;
@@ -41,7 +46,12 @@ mod multiline_method_definition_brace_layout;
 mod multiline_method_call_indentation;
 mod multiline_operation_indentation;
 mod rescue_ensure_alignment;
+mod space_after_colon;
 mod space_after_comma;
+mod space_after_semicolon;
+mod space_before_block_braces;
+mod space_before_semicolon;
+mod space_in_lambda_literal;
 mod space_around_keyword;
 mod space_around_block_parameters;
 mod space_around_method_call_operator;
@@ -67,7 +77,12 @@ pub use case_indentation::CaseIndentation;
 pub use comment_indentation::CommentIndentation;
 pub use closing_parenthesis_indentation::ClosingParenthesisIndentation;
 pub use def_end_alignment::{DefEndAlignment, DefEndAlignmentStyle};
+pub use assignment_indentation::AssignmentIndentation;
+pub use closing_heredoc_indentation::ClosingHeredocIndentation;
+pub use condition_position::ConditionPosition;
 pub use dot_position::{DotPosition, DotStyle};
+pub use empty_comment::EmptyComment;
+// pub use end_of_line::{EndOfLine, EolStyle}; // Skipped
 pub use else_alignment::ElseAlignment;
 pub use empty_line_after_guard_clause::EmptyLineAfterGuardClause;
 pub use empty_line_after_magic_comment::EmptyLineAfterMagicComment;
@@ -128,7 +143,12 @@ pub use multiline_operation_indentation::{
     MultilineOperationIndentation,
     Style as MultilineOperationIndentationStyle,
 };
+pub use space_after_colon::SpaceAfterColon;
 pub use space_after_comma::SpaceAfterComma;
+pub use space_after_semicolon::SpaceAfterSemicolon;
+pub use space_before_block_braces::{BlockBraceStyle, SpaceBeforeBlockBraces};
+pub use space_before_semicolon::SpaceBeforeSemicolon;
+pub use space_in_lambda_literal::{LambdaSpaceStyle, SpaceInLambdaLiteral};
 pub use space_around_keyword::SpaceAroundKeyword;
 pub use space_around_block_parameters::{SpaceAroundBlockParameters, Style as SpaceAroundBlockParametersStyle};
 pub use space_around_method_call_operator::SpaceAroundMethodCallOperator;
