@@ -1,4 +1,14 @@
 mod access_modifier_declarations;
+mod accessor_grouping;
+mod class_and_module_children;
+mod combinable_loops;
+mod each_for_simple_loop;
+mod eval_with_location;
+mod explicit_block_argument;
+mod if_inside_else;
+mod line_end_concatenation;
+mod non_nil_check;
+mod rescue_modifier;
 mod alias;
 mod and_or;
 mod array_intersect;
@@ -96,6 +106,16 @@ mod word_array;
 mod yoda_condition;
 mod zero_length_predicate;
 
+pub use accessor_grouping::AccessorGrouping;
+pub use class_and_module_children::ClassAndModuleChildren;
+pub use combinable_loops::CombinableLoops;
+pub use each_for_simple_loop::EachForSimpleLoop;
+pub use eval_with_location::EvalWithLocation;
+pub use explicit_block_argument::ExplicitBlockArgument;
+pub use if_inside_else::IfInsideElse;
+pub use line_end_concatenation::LineEndConcatenation;
+pub use non_nil_check::NonNilCheck;
+pub use rescue_modifier::RescueModifier;
 pub use access_modifier_declarations::{
     AccessModifierDeclarations, EnforcedStyle as AccessModifierDeclarationsStyle,
 };

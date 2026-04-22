@@ -227,6 +227,11 @@ pub fn check_source_with_cop_config_and_version(
     config: &Config,
     target_ruby_version: f64,
 ) -> Vec<Offense> {
+    use std::path::Path;
+    // Respect per-cop Exclude patterns (used by some fixture tests)
+    if config.is_excluded_for_cop(Path::new(filename), cop_name) {
+        return vec![];
+    }
     let cop = build_single_cop(cop_name, config);
     match cop {
         Some(c) => {
