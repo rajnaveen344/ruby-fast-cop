@@ -2,12 +2,16 @@ mod block_length;
 mod class_length;
 mod cyclomatic_complexity;
 mod method_length;
+mod module_length;
+mod parameter_lists;
 mod perceived_complexity;
 
 pub use block_length::BlockLength;
 pub use class_length::ClassLength;
 pub use cyclomatic_complexity::CyclomaticComplexity;
 pub use method_length::MethodLength;
+pub use module_length::ModuleLength;
+pub use parameter_lists::ParameterLists;
 pub use perceived_complexity::PerceivedComplexity;
 
 /// Deserializes a YAML sequence of strings as `Vec<String>`, gracefully returning an empty

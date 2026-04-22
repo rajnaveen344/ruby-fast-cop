@@ -1,8 +1,11 @@
+pub mod bundler;
+pub mod gemspec;
 pub mod layout;
 pub mod lint;
 pub mod metrics;
 pub mod naming;
 pub mod registry;
+pub mod security;
 pub mod style;
 
 use crate::offense::{Location, Offense, Severity};
