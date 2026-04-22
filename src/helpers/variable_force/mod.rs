@@ -96,7 +96,7 @@ impl<'a, H: VariableForceHook> VariableForceDispatcher<'a, H> {
             Node::LocalVariableReadNode { .. } => {
                 let read = node.as_local_variable_read_node().unwrap();
                 let name = name_str(&read.name());
-                self.table.reference_variable(&name);
+                self.table.reference_variable_explicit(&name);
             }
 
             // ── Multiple assignment ──
@@ -836,13 +836,17 @@ impl<'a, H: VariableForceHook> VariableForceDispatcher<'a, H> {
                     None,
                     node.location().start_offset(),
                 );
-                // Set regexp location on the last assignment
+                // Set regexp location on the last assignment and on the variable declaration
                 if let Some(scope) = self.table.current_scope_mut() {
                     if let Some(var) = scope.variables.get_mut(&name) {
                         if let Some(last) = var.assignments.last_mut() {
                             last.regexp_start = rs;
                             last.regexp_end = re;
                         }
+                        // For named captures, declaration_start/end is the regexp range
+                        // (RuboCop uses node.children.first.source_range = the regexp)
+                        var.declaration_start = rs;
+                        var.declaration_end = re;
                     }
                 }
             }
@@ -1690,7 +1694,7 @@ struct FallbackVisitor<'a, 'b, H: VariableForceHook> {
 impl<'a, 'b, H: VariableForceHook> Visit<'_> for FallbackVisitor<'a, 'b, H> {
     fn visit_local_variable_read_node(&mut self, node: &ruby_prism::LocalVariableReadNode) {
         let name = name_str(&node.name());
-        self.dispatcher.table.reference_variable(&name);
+        self.dispatcher.table.reference_variable_explicit(&name);
     }
 
     fn visit_local_variable_write_node(&mut self, node: &ruby_prism::LocalVariableWriteNode) {

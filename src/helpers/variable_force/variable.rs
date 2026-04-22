@@ -21,8 +21,10 @@ pub struct Variable {
     pub declaration_end: usize,
     /// All assignments to this variable
     pub assignments: Vec<Assignment>,
-    /// Whether any explicit reference exists
+    /// Total reference count (including implicit via super/binding)
     pub reference_count: usize,
+    /// Explicit reference count (direct reads like `puts _foo`, not via super/binding)
+    pub explicit_reference_count: usize,
     /// Whether the variable has been captured by a block/lambda
     pub captured_by_block: bool,
 }
@@ -40,6 +42,7 @@ impl Variable {
             declaration_end: 0,
             assignments: Vec::new(),
             reference_count: 0,
+            explicit_reference_count: 0,
             captured_by_block: false,
         }
     }
@@ -62,6 +65,12 @@ impl Variable {
             }
         }
         self.assignments.push(assignment);
+    }
+
+    /// Reference this variable explicitly (direct read).
+    pub fn reference_explicit(&mut self, ref_branch: &Option<Branch>) {
+        self.explicit_reference_count += 1;
+        self.reference(ref_branch);
     }
 
     /// Reference this variable: mark the current assignment(s) as used.

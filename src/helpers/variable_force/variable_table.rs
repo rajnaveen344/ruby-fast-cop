@@ -157,16 +157,27 @@ impl VariableTable {
                 scope_offset,
             );
             assignment.branch = branch;
-            self.scope_stack[idx]
-                .variables
-                .get_mut(name)
-                .unwrap()
-                .assign(assignment);
+            let var = self.scope_stack[idx].variables.get_mut(name).unwrap();
+            // Update declaration location if not yet set (for lvar assignments)
+            if var.declaration_start == 0 && var.declaration_end == 0 && name_end > name_start {
+                var.declaration_start = name_start;
+                var.declaration_end = name_end;
+            }
+            var.assign(assignment);
         }
     }
 
     /// Reference a variable by name.
     pub fn reference_variable(&mut self, name: &str) {
+        self.reference_variable_impl(name, false);
+    }
+
+    /// Reference a variable explicitly (direct read).
+    pub fn reference_variable_explicit(&mut self, name: &str) {
+        self.reference_variable_impl(name, true);
+    }
+
+    fn reference_variable_impl(&mut self, name: &str, explicit: bool) {
         let branch = self.branch_stack.last().cloned();
         let current_scope_offset = self.scope_stack.last().map(|s| s.node_offset);
         let is_block_scope = self.scope_stack.last().map(|s| s.is_block()).unwrap_or(false);
@@ -193,11 +204,12 @@ impl VariableTable {
                     .capture_with_block();
             }
 
-            self.scope_stack[idx]
-                .variables
-                .get_mut(name)
-                .unwrap()
-                .reference(&branch);
+            let var = self.scope_stack[idx].variables.get_mut(name).unwrap();
+            if explicit {
+                var.reference_explicit(&branch);
+            } else {
+                var.reference(&branch);
+            }
         }
     }
 
