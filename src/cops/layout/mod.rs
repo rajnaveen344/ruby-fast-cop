@@ -1,13 +1,19 @@
 mod access_modifier_indentation;
 mod begin_end_alignment;
+mod block_end_newline;
 mod block_alignment;
 mod case_indentation;
+mod comment_indentation;
 mod closing_parenthesis_indentation;
 mod def_end_alignment;
+mod dot_position;
 mod else_alignment;
 mod empty_line_after_guard_clause;
+mod empty_line_after_magic_comment;
 mod empty_line_between_defs;
 mod empty_lines_around_access_modifier;
+mod empty_lines_around_arguments;
+mod empty_lines_around_attribute_accessor;
 mod empty_lines_around_begin_body;
 mod empty_lines_around_block_body;
 mod empty_lines_around_class_body;
@@ -17,17 +23,21 @@ mod empty_lines_around_module_body;
 mod end_alignment;
 mod extra_spacing;
 mod first_argument_indentation;
+mod first_parameter_indentation;
 mod first_array_element_indentation;
 mod first_hash_element_indentation;
 mod heredoc_indentation;
 mod hash_alignment;
 mod indentation_consistency;
+mod indentation_style;
 mod indentation_width;
 mod leading_comment_space;
 mod line_length;
 mod multiline_array_brace_layout;
+mod multiline_block_layout;
 mod multiline_hash_brace_layout;
 mod multiline_method_call_brace_layout;
+mod multiline_method_definition_brace_layout;
 mod multiline_method_call_indentation;
 mod multiline_operation_indentation;
 mod rescue_ensure_alignment;
@@ -51,13 +61,19 @@ mod trailing_whitespace;
 
 pub use access_modifier_indentation::{AccessModifierIndentation, AccessModifierIndentationStyle};
 pub use begin_end_alignment::{BeginEndAlignment, BeginEndAlignmentStyle};
+pub use block_end_newline::BlockEndNewline;
 pub use block_alignment::{BlockAlignment, BlockAlignmentStyle};
 pub use case_indentation::CaseIndentation;
+pub use comment_indentation::CommentIndentation;
 pub use closing_parenthesis_indentation::ClosingParenthesisIndentation;
 pub use def_end_alignment::{DefEndAlignment, DefEndAlignmentStyle};
+pub use dot_position::{DotPosition, DotStyle};
 pub use else_alignment::ElseAlignment;
 pub use empty_line_after_guard_clause::EmptyLineAfterGuardClause;
+pub use empty_line_after_magic_comment::EmptyLineAfterMagicComment;
 pub use empty_line_between_defs::EmptyLineBetweenDefs;
+pub use empty_lines_around_arguments::EmptyLinesAroundArguments;
+pub use empty_lines_around_attribute_accessor::EmptyLinesAroundAttributeAccessor;
 pub use empty_lines_around_access_modifier::{
     EmptyLinesAroundAccessModifier,
     EnforcedStyle as EmptyLinesAroundAccessModifierStyle,
@@ -72,6 +88,7 @@ pub use end_alignment::{EndAlignment, EndAlignmentStyle};
 pub use extra_spacing::ExtraSpacing;
 pub use rescue_ensure_alignment::RescueEnsureAlignment;
 pub use first_argument_indentation::{FirstArgumentIndentation, FirstArgumentIndentationStyle};
+pub use first_parameter_indentation::{FirstParameterIndentation, FirstParamStyle};
 pub use first_array_element_indentation::{
     FirstArrayElementIndentation, Style as FirstArrayElementIndentationStyle,
 };
@@ -80,6 +97,7 @@ pub use first_hash_element_indentation::{
 };
 pub use heredoc_indentation::HeredocIndentation;
 pub use indentation_consistency::{IndentationConsistency, IndentationConsistencyStyle};
+pub use indentation_style::{IndentationStyle, IndentationStyleMode};
 pub use hash_alignment::{
     AlignmentStyle as HashAlignmentStyle,
     HashAlignment,
@@ -98,8 +116,10 @@ pub use leading_comment_space::LeadingCommentSpace;
 pub use line_length::{AllowHeredoc, LineLength};
 pub use crate::helpers::multiline_literal_brace_layout::BraceLayoutStyle as MultilineBraceLayoutStyle;
 pub use multiline_array_brace_layout::MultilineArrayBraceLayout;
+pub use multiline_block_layout::MultilineBlockLayout;
 pub use multiline_hash_brace_layout::MultilineHashBraceLayout;
 pub use multiline_method_call_brace_layout::MultilineMethodCallBraceLayout;
+pub use multiline_method_definition_brace_layout::MultilineMethodDefinitionBraceLayout;
 pub use multiline_method_call_indentation::{
     MultilineMethodCallIndentation,
     Style as MultilineMethodCallIndentationStyle,
