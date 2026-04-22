@@ -20,7 +20,7 @@ Exceptions (auto-clarity — drop caveman temporarily, resume after):
 
 ruby-fast-cop is a high-performance Ruby linter written in Rust, designed as a drop-in replacement for RuboCop. The goal is 50-100x faster linting by rewriting cops in Rust, similar to how Ruff replaced Python linters.
 
-**Current state:** 159 of 606 cops implemented (all fixtures passing), 606 TOML test fixtures with ~28,075 test cases extracted from RuboCop v1.85.0's RSpec suite.
+**Current state:** 202 of 606 cops implemented (all fixtures passing), 606 TOML test fixtures with ~28,075 test cases extracted from RuboCop v1.85.0's RSpec suite.
 
 > **Architecture:** See [`ARCHITECTURE.md`](./ARCHITECTURE.md) for the system overview, cop implementation flow, and shared-infrastructure diagrams (mermaid). Update it whenever the runtime shape, registration mechanism, autocorrect pipeline, or testing pipeline changes — this file covers *conventions*, `ARCHITECTURE.md` covers *structure*.
 
@@ -64,7 +64,7 @@ The registry (`src/cops/registry.rs`) provides:
 - `build_one(name, &Config) -> Option<Box<dyn Cop>>` — backs `lib::build_single_cop`
 - `all_with_defaults() -> Vec<Box<dyn Cop>>` — backs `cops::all()`
 
-All 159 cops are registered via `register_cop!`. The three public functions above are thin delegators — adding a new cop never requires editing them.
+All 202 cops are registered via `register_cop!`. The three public functions above are thin delegators — adding a new cop never requires editing them.
 
 ### Offense range gotchas (`src/offense.rs::Location::from_offsets`)
 When translating RuboCop's `add_offense(range, ...)` calls, remember that fixtures capture RuboCop's `expect_offense` `^` markers — which are **always ≥ 1 column wide** even for zero-width ranges. `Location::from_offsets` widens two cases to match:
