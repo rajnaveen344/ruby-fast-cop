@@ -26,13 +26,22 @@ ruby-fast-cop is a high-performance Ruby linter written in Rust, designed as a d
 
 ## Deferred enabled-by-default cops (5)
 
-Documented blockers. Each needs new infra or has unreachable tests:
+Documented blockers. Each needs new infra or has unreachable tests. Tackle in order 1 → 5 (easiest first, each unblocks the next cleanly):
 
-- **Layout/EndOfLine** — TOML extraction stripped CR/CRLF bytes, fixtures unreachable. Need to re-extract preserving raw bytes.
-- **Lint/RedundantCopDisableDirective** — needs runtime directive-tracking pass (track which `# rubocop:disable X` comments suppressed actual offenses). New infra layer.
-- **Lint/ScriptPermission** — needs `fs::metadata` on file path; fixture messages embed randomized tempfile names. Test infra mismatch.
-- **Metrics/AbcSize** — port AbcSizeCalculator + IteratingBlock + RepeatedAttribute/Csend Discount mixins. Big standalone effort.
-- **Style/ParallelAssignment** — 86 correction-heavy tests with tmp-var generation. Substantial port.
+1. **Layout/EndOfLine** — TOML extraction stripped CR/CRLF bytes, fixtures unreachable.
+   - *Next:* patch `.claude/skills/rubocop-test-importer/scripts/test_data_capture.rb` to preserve raw bytes (no `\r\n`→`\n` normalization). Re-extract cop only: `cd /tmp/rubocop-repo && bundle exec ruby extract_via_rspec.rb --output <fixtures_dir> --cop Layout/EndOfLine`. Then validate existing stub at `src/cops/layout/end_of_line.rs`, flip `implemented = true`. **~2hr.**
+
+2. **Lint/ScriptPermission** — needs `fs::metadata` on file path; fixture messages embed randomized tempfile names.
+   - *Next:* add `file_path: Option<&Path>` to `CheckContext` (src/cops/mod.rs). Runner passes real path; stdin gets `None`. In cop, `fs::metadata(path).permissions().mode() & 0o111 != 0`. Add `__FILE__` placeholder convention to TOML + substitute at runtime in `tests/tester.rs`. **~3hr.**
+
+3. **Metrics/AbcSize** — port AbcSizeCalculator + IteratingBlock + RepeatedAttribute/Csend Discount mixins.
+   - *Next:* create `src/helpers/abc_size.rs` mirroring `lib/rubocop/cop/metrics/utils/abc_size_calculator.rb` + 3 discount mixins. Algorithm: walk method body, count (A)ssignment + (B)ranch + (C)ondition, score = `sqrt(A² + B² + C²)`. Cop itself thin: check vs `Max` config. **~1 day.**
+
+4. **Lint/RedundantCopDisableDirective** — needs runtime directive-tracking pass.
+   - *Next:* (a) parse `# rubocop:disable Cop1, Cop2` comments per-file into range map; (b) after all cops run, for each directive, check if any offense of that cop landed in the range — if none, emit offense at directive. Wire into `runner::check_file` between cop-run and offense-format. Bonus: unlocks `Lint/RedundantCopEnableDirective` + `Lint/MissingCopEnableDirective`. **~2 days.**
+
+5. **Style/ParallelAssignment** — 86 correction-heavy tests with tmp-var generation.
+   - *Next:* port `lib/rubocop/cop/style/parallel_assignment.rb` (~400 LOC) + helper classes `AssignmentCorrector`, `ModifierCorrector`, `RescueCorrector`. Careful tmp-var naming with cycle detection for `a, b = b, a`. Best handled by dedicated opus agent with single-cop scope. **~1-2 days.**
 
 ## Production-readiness gaps
 
