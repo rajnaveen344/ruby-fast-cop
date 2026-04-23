@@ -7,13 +7,8 @@ use crate::cops::{CheckContext, Cop};
 use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::{Node, Visit};
 
+#[derive(Default)]
 pub struct NonDeterministicRequireOrder;
-
-impl Default for NonDeterministicRequireOrder {
-    fn default() -> Self {
-        Self
-    }
-}
 
 impl NonDeterministicRequireOrder {
     pub fn new() -> Self {
@@ -31,15 +26,12 @@ impl Cop for NonDeterministicRequireOrder {
     }
 
     fn check_program(&self, node: &ruby_prism::ProgramNode, ctx: &CheckContext) -> Vec<Offense> {
-        // Ruby 3.0+ sorts automatically — no offense
+        // `maximum_target_ruby_version 2.7` — Ruby 3.0+ sorts automatically
         if ctx.target_ruby_version >= 3.0 {
             return vec![];
         }
 
-        let mut visitor = NdroVisitor {
-            ctx,
-            offenses: Vec::new(),
-        };
+        let mut visitor = NdroVisitor { ctx, offenses: Vec::new() };
         visitor.visit_program_node(node);
         visitor.offenses
     }
@@ -50,54 +42,63 @@ struct NdroVisitor<'a> {
     offenses: Vec<Offense>,
 }
 
-/// Check if a node is the `Dir` constant (or `::Dir`)
+/// True if node is `Dir` constant (bare or cbase `::Dir`)
 fn is_dir_const(node: &Node) -> bool {
-    match node {
-        Node::ConstantReadNode { .. } => {
-            let cr = node.as_constant_read_node().unwrap();
-            String::from_utf8_lossy(cr.name().as_slice()) == "Dir"
-        }
-        Node::ConstantPathNode { .. } => {
-            let cp = node.as_constant_path_node().unwrap();
-            if let Some(name) = cp.name() {
-                String::from_utf8_lossy(name.as_slice()) == "Dir" && cp.parent().is_none()
-            } else {
-                false
+    if let Some(cr) = node.as_constant_read_node() {
+        return cr.name().as_slice() == b"Dir";
+    }
+    if let Some(cp) = node.as_constant_path_node() {
+        // `::Dir` — parent is None, name is Dir
+        if cp.parent().is_none() {
+            if let Some(n) = cp.name() {
+                return n.as_slice() == b"Dir";
             }
         }
-        _ => false,
-    }
-}
-
-/// True if the call is `Dir[...]` or `Dir.glob(...)`
-fn is_dir_source(node: &ruby_prism::CallNode) -> bool {
-    let method = String::from_utf8_lossy(node.name().as_slice()).to_string();
-    if matches!(method.as_str(), "glob" | "[]") {
-        if let Some(recv) = node.receiver() {
-            return is_dir_const(&recv);
-        }
     }
     false
 }
 
-/// True if call is `Dir[...].each` or `Dir.glob(...).each` (without sort)
-fn is_unsorted_dir_each(node: &ruby_prism::CallNode) -> bool {
-    let method = String::from_utf8_lossy(node.name().as_slice()).to_string();
-    if method != "each" {
+/// `Dir.glob(...)` or `::Dir.glob(...)` — send receiver=Dir, method=glob
+fn is_unsorted_dir_block(call: &ruby_prism::CallNode) -> bool {
+    if call.name().as_slice() != b"glob" {
         return false;
     }
-    if let Some(recv) = node.receiver() {
-        if let Some(call) = recv.as_call_node() {
-            // Must not already have `.sort` in between
-            // i.e., receiver of `.each` is directly Dir[...] or Dir.glob(...)
-            return is_dir_source(&call);
-        }
+    match call.receiver() {
+        Some(r) => is_dir_const(&r),
+        None => false,
     }
-    false
 }
 
-/// Check if a block-pass argument is `&method(:require)` or `&method(:require_relative)`.
-fn is_require_block_pass(node: &Node) -> bool {
+/// `Dir[...].each` or `Dir.glob(...).each`
+fn is_unsorted_dir_each(call: &ruby_prism::CallNode) -> bool {
+    if call.name().as_slice() != b"each" {
+        return false;
+    }
+    let recv = match call.receiver() {
+        Some(r) => r,
+        None => return false,
+    };
+    let inner = match recv.as_call_node() {
+        Some(c) => c,
+        None => return false,
+    };
+    let method = inner.name();
+    let m = method.as_slice();
+    if m != b"[]" && m != b"glob" {
+        return false;
+    }
+    match inner.receiver() {
+        Some(r) => is_dir_const(&r),
+        None => false,
+    }
+}
+
+fn is_unsorted_dir_loop(call: &ruby_prism::CallNode) -> bool {
+    is_unsorted_dir_block(call) || is_unsorted_dir_each(call)
+}
+
+/// Check if block-arg node is `&method(:require)` / `&method(:require_relative)`
+fn is_method_require_block_pass(node: &Node) -> bool {
     let bp = match node.as_block_argument_node() {
         Some(b) => b,
         None => return false,
@@ -110,14 +111,15 @@ fn is_require_block_pass(node: &Node) -> bool {
         Some(c) => c,
         None => return false,
     };
-    if String::from_utf8_lossy(call.name().as_slice()) != "method" {
+    if call.name().as_slice() != b"method" || call.receiver().is_some() {
         return false;
     }
     if let Some(args) = call.arguments() {
         for arg in args.arguments().iter() {
             if let Some(sym) = arg.as_symbol_node() {
-                let sym_name = String::from_utf8_lossy(sym.unescaped().as_ref()).to_string();
-                if matches!(sym_name.as_str(), "require" | "require_relative") {
+                let s = sym.unescaped();
+                let b: &[u8] = s.as_ref();
+                if b == b"require" || b == b"require_relative" {
                     return true;
                 }
             }
@@ -126,132 +128,178 @@ fn is_require_block_pass(node: &Node) -> bool {
     false
 }
 
-/// Check if body has a require call using the given variable name (or numbered param _1)
-fn body_has_require(body_node: &Node, var_name: Option<&str>) -> bool {
-    struct RequireFinder {
-        var_name: Option<String>,
-        found: bool,
+/// Find block-pass on a call (if any). Block-pass lives on `call.block()` in Prism.
+fn find_require_block_pass_arg<'a>(call: &'a ruby_prism::CallNode<'a>) -> Option<Node<'a>> {
+    let blk = call.block()?;
+    if is_method_require_block_pass(&blk) {
+        Some(blk)
+    } else {
+        None
     }
-    impl Visit<'_> for RequireFinder {
-        fn visit_call_node(&mut self, node: &ruby_prism::CallNode) {
-            let m = String::from_utf8_lossy(node.name().as_slice()).to_string();
-            if matches!(m.as_str(), "require" | "require_relative") && node.receiver().is_none() {
-                if let Some(ref vname) = self.var_name {
-                    if let Some(args) = node.arguments() {
-                        for arg in args.arguments().iter() {
-                            if let Some(lv) = arg.as_local_variable_read_node() {
-                                if String::from_utf8_lossy(lv.name().as_slice()) == vname.as_str() {
-                                    self.found = true;
-                                    return;
+}
+
+/// Search body for `require <var>` / `require_relative <var>`.
+/// If var_name is None, matches any require/require_relative call.
+struct RequireFinder {
+    var_name: Option<String>,
+    found: bool,
+}
+
+impl Visit<'_> for RequireFinder {
+    fn visit_call_node(&mut self, node: &ruby_prism::CallNode) {
+        if !self.found && node.receiver().is_none() {
+            let m = node.name();
+            let mb = m.as_slice();
+            if mb == b"require" || mb == b"require_relative" {
+                match &self.var_name {
+                    None => {
+                        self.found = true;
+                        return;
+                    }
+                    Some(vname) => {
+                        if let Some(args) = node.arguments() {
+                            for arg in args.arguments().iter() {
+                                if let Some(lv) = arg.as_local_variable_read_node() {
+                                    if lv.name().as_slice() == vname.as_bytes() {
+                                        self.found = true;
+                                        return;
+                                    }
                                 }
                             }
                         }
                     }
-                } else {
-                    self.found = true;
-                    return;
                 }
             }
-            ruby_prism::visit_call_node(self, node);
         }
-
-        fn visit_numbered_reference_read_node(&mut self, node: &ruby_prism::NumberedReferenceReadNode) {
-            // For numblock: `require _1` — _1 is parsed as a local var named `_1`
-            ruby_prism::visit_numbered_reference_read_node(self, node);
-        }
+        ruby_prism::visit_call_node(self, node);
     }
+}
 
+fn body_has_require(body: &Node, var_name: Option<&str>) -> bool {
     let mut f = RequireFinder { var_name: var_name.map(String::from), found: false };
-    match body_node {
-        Node::StatementsNode { .. } => {
-            f.visit_statements_node(&body_node.as_statements_node().unwrap());
-        }
-        Node::BeginNode { .. } => {
-            f.visit_begin_node(&body_node.as_begin_node().unwrap());
-        }
-        _ => {
-            // try visiting as generic
-        }
-    }
+    f.visit(body);
     f.found
 }
 
+/// Extract single loop variable from block parameters.
+/// Returns Some(name) if block has exactly one positional param.
+fn block_single_param_name(block: &ruby_prism::BlockNode) -> Option<String> {
+    let params = block.parameters()?;
+    let bp = params.as_block_parameters_node()?;
+    let inner = bp.parameters()?;
+    let reqs: Vec<_> = inner.requireds().iter().collect();
+    if reqs.len() != 1 {
+        return None;
+    }
+    let req = &reqs[0];
+    let rpn = req.as_required_parameter_node()?;
+    Some(String::from_utf8_lossy(rpn.name().as_slice()).to_string())
+}
+
+/// True if block has NumberedParametersNode (e.g. uses _1)
+fn block_is_numblock(block: &ruby_prism::BlockNode) -> bool {
+    block
+        .parameters()
+        .map(|p| p.as_numbered_parameters_node().is_some())
+        .unwrap_or(false)
+}
+
 impl<'a> NdroVisitor<'a> {
-    fn offense_and_correct_each(&mut self, call_node: &ruby_prism::CallNode) {
-        // `Dir[...].each(...)` — insert `.sort` between receiver and `.each`
+    fn handle_call(&mut self, call: &ruby_prism::CallNode) {
         let src = self.ctx.source;
-        let start = call_node.location().start_offset();
-        let end = call_node.location().end_offset();
-        let call_src = &src[start..end];
 
-        // Find ".each" in the call source
-        // recv ends at receiver end offset
-        let recv = call_node.receiver().unwrap();
-        let recv_rel_end = recv.location().end_offset() - start;
-        let new_call = format!("{}.sort{}", &call_src[..recv_rel_end], &call_src[recv_rel_end..]);
+        // Pattern 1: call has block-pass `&method(:require)`
+        if let Some(bp_node) = find_require_block_pass_arg(call) {
+            if is_unsorted_dir_loop(call) {
+                let call_start = call.location().start_offset();
+                let call_end = call.location().end_offset();
 
-        let offense = self.ctx.offense_with_range(
-            "Lint/NonDeterministicRequireOrder",
-            "Sort files before requiring them.",
-            Severity::Warning,
-            start,
-            end,
-        );
-        self.offenses.push(offense.with_correction(Correction::replace(start, end, &new_call)));
-    }
+                let correction = if call.name().as_slice() == b"glob" {
+                    // Dir.glob(..., &method(:require)) → Dir.glob(...).sort.each(&method(:require))
+                    let bp_src = &src[bp_node.location().start_offset()..bp_node.location().end_offset()];
+                    let args: Vec<Node> = call.arguments().map_or_else(Vec::new, |a| a.arguments().iter().collect());
+                    let prior_end = args.last().map(|a| a.location().end_offset())
+                        .unwrap_or_else(|| call.message_loc().map(|m| m.end_offset()).unwrap_or(call_start));
+                    let close_end = call.closing_loc().map(|l| l.end_offset()).unwrap_or(call_end);
+                    let prefix = &src[call_start..prior_end];
+                    let between = &src[prior_end..close_end];
+                    let replacement = if between.contains('\n') {
+                        format!("{}\n).sort.each({})", prefix, bp_src)
+                    } else {
+                        format!("{}).sort.each({})", prefix, bp_src)
+                    };
+                    Correction::replace(call_start, call_end, &replacement)
+                } else {
+                    // Dir[...].each(&method(:require)) → Dir[...].sort.each(&method(:require))
+                    let recv = call.receiver().unwrap();
+                    let recv_end = recv.location().end_offset();
+                    Correction::replace(recv_end, recv_end, ".sort")
+                };
 
-    fn offense_and_correct_glob_block(
-        &mut self,
-        call_node: &ruby_prism::CallNode,
-        block_start: usize,
-        block_end: usize,
-        block_src: &str,
-    ) {
-        let src = self.ctx.source;
-        let call_start = call_node.location().start_offset();
-        let call_end = call_node.location().end_offset();
-        let call_src = &src[call_start..call_end];
+                let offense = self.ctx.offense_with_range(
+                    "Lint/NonDeterministicRequireOrder",
+                    "Sort files before requiring them.",
+                    Severity::Warning,
+                    call_start,
+                    call_end,
+                );
+                self.offenses.push(offense.with_correction(correction));
+                return;
+            }
+        }
 
-        let new_src = format!("{}.sort.each {}", call_src, block_src);
-        let offense = self.ctx.offense_with_range(
-            "Lint/NonDeterministicRequireOrder",
-            "Sort files before requiring them.",
-            Severity::Warning,
-            call_start,
-            call_end,
-        );
-        self.offenses.push(offense.with_correction(Correction::replace(call_start, block_end, &new_src)));
-    }
+        // Pattern 2: call has block AND is unsorted_dir_loop AND body has require(var)
+        let block = match call.block() {
+            Some(b) => b,
+            None => return,
+        };
+        let block_node = match block.as_block_node() {
+            Some(b) => b,
+            None => return,
+        };
+        if !is_unsorted_dir_loop(call) {
+            return;
+        }
+        let body = match block_node.body() {
+            Some(b) => b,
+            None => return,
+        };
 
-    fn offense_and_correct_glob_block_pass(
-        &mut self,
-        call_node: &ruby_prism::CallNode,
-        bp_src: &str,
-        overall_end: usize,
-    ) {
-        // `Dir.glob(..., &method(:require))` — remove bp from args, append `.sort.each(bp)`
-        let src = self.ctx.source;
-        let call_start = call_node.location().start_offset();
-
-        // Find the last non-bp arg and the bp arg
-        let args: Vec<Node> = call_node.arguments().map_or_else(Vec::new, |a| a.arguments().iter().collect());
-        let bp_idx = args.iter().position(|a| is_require_block_pass(a)).unwrap();
-
-        // Get source up to (not including) the comma before bp, or closing paren
-        let replacement = if bp_idx == 0 {
-            // No other args — e.g., `Dir.glob(path, &method(:require))` where args before bp...
-            // Actually glob always has at least a pattern arg before bp
-            // Just take source up to before comma preceding bp
-            let bp_start = args[bp_idx].location().start_offset();
-            // Walk backwards to find comma
-            let pre_bp = &src[call_start..bp_start];
-            let comma_pos = pre_bp.rfind(',').map(|p| call_start + p).unwrap_or(bp_start);
-            let before_comma = &src[call_start..comma_pos];
-            format!("{}).sort.each({})", before_comma, bp_src)
+        let has_match = if block_is_numblock(&block_node) {
+            body_has_require(&body, Some("_1"))
+        } else if let Some(name) = block_single_param_name(&block_node) {
+            body_has_require(&body, Some(&name))
+        } else if block_node.parameters().is_none() {
+            // No block params: `Dir[...].each do ... require _1 end` — numblock parsing should catch _1,
+            // but if user has no var, just require any require call (treat as bare).
+            // Actually `each do ... require _1 end` parses as numblock too.
+            body_has_require(&body, Some("_1"))
         } else {
-            let last_non_bp_end = args[bp_idx - 1].location().end_offset();
-            let before_bp = &src[call_start..last_non_bp_end];
-            format!("{}).sort.each({})", before_bp, bp_src)
+            return;
+        };
+
+        if !has_match {
+            return;
+        }
+
+        let call_start = call.location().start_offset();
+        let call_end = call.location().end_offset();
+
+        // Correction: replace call with either `<call>.sort.each` (for dir_block=Dir.glob do ...)
+        // or `<receiver>.sort.each` (for dir_each=Dir[...].each do ...)
+        let correction = if is_unsorted_dir_block(call) {
+            let glob_close = call.closing_loc().map(|l| l.end_offset()).unwrap_or(call_end);
+            Correction::replace(glob_close, glob_close, ".sort.each")
+        } else {
+            let recv = call.receiver().unwrap();
+            let recv_end = recv.location().end_offset();
+            Correction::replace(recv_end, recv_end, ".sort")
+        };
+
+        let offense_end = if is_unsorted_dir_block(call) {
+            call.closing_loc().map(|l| l.end_offset()).unwrap_or(call_end)
+        } else {
+            call.message_loc().map(|m| m.end_offset()).unwrap_or(call_end)
         };
 
         let offense = self.ctx.offense_with_range(
@@ -259,61 +307,16 @@ impl<'a> NdroVisitor<'a> {
             "Sort files before requiring them.",
             Severity::Warning,
             call_start,
-            call_node.location().end_offset(),
+            offense_end,
         );
-        self.offenses.push(offense.with_correction(Correction::replace(call_start, overall_end, &replacement)));
+        self.offenses.push(offense.with_correction(correction));
     }
 }
 
 impl<'a> Visit<'_> for NdroVisitor<'a> {
     fn visit_call_node(&mut self, node: &ruby_prism::CallNode) {
-        let method = String::from_utf8_lossy(node.name().as_slice()).to_string();
-
-        // Pattern: `Dir[...].each(&method(:require))` or `Dir.glob(...).each(&method(:require))`
-        if method == "each" && is_unsorted_dir_each(node) {
-            if let Some(args) = node.arguments() {
-                let arg_list: Vec<Node> = args.arguments().iter().collect();
-                if let Some(bp_node) = arg_list.iter().find(|a| is_require_block_pass(a)) {
-                    let bp_src = &self.ctx.source[bp_node.location().start_offset()..bp_node.location().end_offset()];
-                    let bp_src = bp_src.to_string();
-                    self.offense_and_correct_each(node);
-                    ruby_prism::visit_call_node(self, node);
-                    return;
-                }
-            }
-        }
-
-        // Pattern: `Dir.glob(..., &method(:require))` — block-pass as last arg of glob
-        if method == "glob" && is_dir_source(node) {
-            if let Some(args) = node.arguments() {
-                let arg_list: Vec<Node> = args.arguments().iter().collect();
-                if let Some(bp_node) = arg_list.iter().find(|a| is_require_block_pass(a)) {
-                    let bp_start = bp_node.location().start_offset();
-                    let bp_end = bp_node.location().end_offset();
-                    let bp_src = self.ctx.source[bp_start..bp_end].to_string();
-                    let overall_end = node.location().end_offset();
-                    self.offense_and_correct_glob_block_pass(node, &bp_src, overall_end);
-                    ruby_prism::visit_call_node(self, node);
-                    return;
-                }
-            }
-        }
-
+        self.handle_call(node);
         ruby_prism::visit_call_node(self, node);
-    }
-
-    fn visit_block_node(&mut self, node: &ruby_prism::BlockNode) {
-        // Get the call this block is attached to
-        // We detect by examining the call node — visit_call_node already ran on the parent.
-        // Instead, use a different approach: visit_call_node handles BEFORE the block is visited.
-        // But in Prism's Visit trait, visit_call_node visits receiver, name, args, block in order.
-        // So we need to intercept at call level.
-        // Let's handle block patterns here by examining the "call" stored on the node.
-        // Actually in Prism visit order: visit_call_node visits all children including the block.
-        // So we handle blocks by checking if their parent call matches patterns.
-        // We'll use a pending-call approach like constant_definition_in_block.
-        // But that's complex. Instead, let's handle everything in visit_call_node:
-        ruby_prism::visit_block_node(self, node);
     }
 }
 

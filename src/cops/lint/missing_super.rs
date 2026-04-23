@@ -96,7 +96,9 @@ impl<'a> MissingSuperVisitor<'a> {
             fn visit_class_node(&mut self, _: &ruby_prism::ClassNode) {} // skip nested
         }
         let mut f = Finder(false);
-        f.visit_def_node(node);
+        if let Some(body) = node.body() {
+            f.visit(&body);
+        }
         f.0
     }
 
@@ -127,7 +129,7 @@ impl<'a> MissingSuperVisitor<'a> {
             if Self::is_callback(&method_name) && self.inside_any_class() {
                 if !Self::def_contains_super(node) {
                     let start = node.location().start_offset();
-                    let end = node.name_loc().end_offset();
+                    let end = node.location().end_offset();
                     self.offenses.push(self.ctx.offense_with_range(
                         "Lint/MissingSuper",
                         "Call `super` to invoke callback defined in the parent class.",
@@ -142,7 +144,7 @@ impl<'a> MissingSuperVisitor<'a> {
             if method_name == "initialize" {
                 if self.inside_class_with_stateful_parent() && !Self::def_contains_super(node) {
                     let start = node.location().start_offset();
-                    let end = node.name_loc().end_offset();
+                    let end = node.location().end_offset();
                     self.offenses.push(self.ctx.offense_with_range(
                         "Lint/MissingSuper",
                         "Call `super` to initialize state of the parent class.",
@@ -154,7 +156,7 @@ impl<'a> MissingSuperVisitor<'a> {
             } else if Self::is_callback(&method_name) && self.inside_any_class() {
                 if !Self::def_contains_super(node) {
                     let start = node.location().start_offset();
-                    let end = node.name_loc().end_offset();
+                    let end = node.location().end_offset();
                     self.offenses.push(self.ctx.offense_with_range(
                         "Lint/MissingSuper",
                         "Call `super` to invoke callback defined in the parent class.",

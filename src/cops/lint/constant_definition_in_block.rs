@@ -90,7 +90,7 @@ impl<'a> Visit<'_> for ConstDefVisitor<'a> {
         // `FOO = ...` inside a block
         if self.in_block() && !self.is_allowed() {
             let start = node.location().start_offset();
-            let end = node.name_loc().end_offset();
+            let end = node.location().end_offset();
             self.offenses.push(self.ctx.offense_with_range(
                 "Lint/ConstantDefinitionInBlock",
                 "Do not define constants this way within a block.",
