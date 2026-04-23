@@ -42,6 +42,7 @@ mod empty_method;
 mod exponential_notation;
 mod float_division;
 mod r#for;
+mod format_string;
 mod format_string_token;
 mod frozen_string_literal_comment;
 mod global_vars;
@@ -244,6 +245,7 @@ pub use empty_method::{EmptyMethod, EnforcedStyle as EmptyMethodStyle};
 pub use exponential_notation::{EnforcedStyle as ExponentialNotationStyle, ExponentialNotation};
 pub use float_division::{EnforcedStyle as FloatDivisionStyle, FloatDivision};
 pub use r#for::{EnforcedStyle as ForStyle, For};
+pub use format_string::FormatString;
 pub use format_string_token::{EnforcedStyle as FormatStringTokenStyle, FormatStringToken};
 pub use frozen_string_literal_comment::{
     EnforcedStyle as FrozenStringLiteralCommentStyle, FrozenStringLiteralComment,
