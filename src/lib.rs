@@ -278,6 +278,50 @@ pub fn build_single_cop(cop_name: &str, config: &Config) -> Option<Box<dyn cops:
     cops::registry::build_one(cop_name, config)
 }
 
+/// Like `check_source_with_cop_config_version_and_path`, but also runs every
+/// *other* cop first so their offenses can be fed to the target cop via
+/// `CheckContext::peer_offenses`. Used by the `Lint/RedundantCopDisableDirective`
+/// fixture tests, which need peer-cop data to judge whether a disable is redundant.
+///
+/// `extra_peer_offenses` is spliced in on top of the live peer pass — fixtures use
+/// it to inject mocked offenses that originate from `FakeLocation` stubs in RuboCop's
+/// own spec suite.
+#[allow(clippy::too_many_arguments)]
+pub fn check_source_with_peers(
+    source: &str,
+    filename: &str,
+    cop_name: &str,
+    config: &Config,
+    target_ruby_version: f64,
+    file_path: Option<&Path>,
+    extra_peer_offenses: Vec<Offense>,
+) -> Vec<Offense> {
+    if config.is_excluded_for_cop(Path::new(filename), cop_name) {
+        return vec![];
+    }
+    let result = parse(source.as_bytes());
+
+    // Fixture tests mirror RuboCop's spec semantics: `offenses_to_check` is
+    // fully specified by the spec (via `let(:offenses)` / `FakeLocation`). We do
+    // NOT run real peer cops here — just use the injected offenses verbatim.
+    let peer_offenses = extra_peer_offenses;
+
+    // Now build the target cop with the given config and run it with peers available.
+    let target = match build_single_cop(cop_name, config) {
+        Some(c) => c,
+        None => return vec![],
+    };
+    cops::run_cops_with_peers(
+        &[target],
+        &result,
+        source,
+        filename,
+        target_ruby_version,
+        file_path,
+        &peer_offenses,
+    )
+}
+
 /// Find unsupported cops in the configuration
 pub fn find_unsupported_cops(config: &Config) -> Vec<String> {
     let mut unsupported = Vec::new();

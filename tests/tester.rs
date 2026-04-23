@@ -5,7 +5,8 @@
 
 use glob::glob;
 use ruby_fast_cop::{
-    Config, Offense, apply_corrections, check_source_with_cop_config_version_and_path,
+    Config, Location, Offense, Severity, apply_corrections, check_source_with_cop_config_version_and_path,
+    check_source_with_peers,
 };
 use serde::Deserialize;
 use std::path::PathBuf;
@@ -61,6 +62,22 @@ struct TestCase {
     /// The tempfile's basename replaces `__FILE__` placeholders in expected messages.
     #[serde(default)]
     file_mode: Option<u32>,
+    /// Optional list of synthetic peer-cop offenses to inject into the peer-pass.
+    /// Used exclusively by `Lint/RedundantCopDisableDirective` fixtures, which
+    /// mirror RuboCop specs that stub `FakeLocation`-backed offenses to represent
+    /// peer-cop hits that our real peer cops cannot reproduce.
+    #[serde(default)]
+    peer_offenses: Vec<InjectedPeerOffense>,
+}
+
+/// A synthetic peer offense used by the `Lint/RedundantCopDisableDirective` tests
+/// to stand in for offenses that RuboCop's own specs mock via `FakeLocation`.
+#[derive(Debug, Deserialize)]
+struct InjectedPeerOffense {
+    cop_name: String,
+    line: u32,
+    #[serde(default)]
+    column: u32,
 }
 
 /// An expected offense in a test case
@@ -283,15 +300,43 @@ fn run_test_case(test_case: &TestCase, cop_name: &str) -> TestCaseResult {
         test_filename
     };
 
-    // Run the linter with the test-specific config and Ruby version
-    let offenses = check_source_with_cop_config_version_and_path(
-        &source,
-        test_filename,
-        cop_name,
-        &config,
-        ruby_version,
-        tmp_path.as_deref(),
-    );
+    // Run the linter with the test-specific config and Ruby version.
+    // `Lint/RedundantCopDisableDirective` needs peer-cop data to judge whether a
+    // `# rubocop:disable` directive actually silences a real offense, so take the
+    // peer-pass path and merge in any fixture-injected synthetic offenses.
+    let offenses = if cop_name == "Lint/RedundantCopDisableDirective" {
+        let extras: Vec<Offense> = test_case
+            .peer_offenses
+            .iter()
+            .map(|p| {
+                Offense::new(
+                    &p.cop_name,
+                    "",
+                    Severity::Convention,
+                    Location::new(p.line, p.column, p.line, p.column + 1),
+                    test_filename,
+                )
+            })
+            .collect();
+        check_source_with_peers(
+            &source,
+            test_filename,
+            cop_name,
+            &config,
+            ruby_version,
+            tmp_path.as_deref(),
+            extras,
+        )
+    } else {
+        check_source_with_cop_config_version_and_path(
+            &source,
+            test_filename,
+            cop_name,
+            &config,
+            ruby_version,
+            tmp_path.as_deref(),
+        )
+    };
 
     // Check offense count
     if offenses.len() != test_case.offenses.len() {

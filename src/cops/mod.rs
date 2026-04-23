@@ -22,6 +22,12 @@ pub struct CheckContext<'a> {
     /// Real filesystem path, when available. `None` for stdin or in-memory sources.
     /// Used by cops like `Lint/ScriptPermission` that need `fs::metadata`.
     pub file_path: Option<&'a Path>,
+    /// Offenses produced by peer cops in a prior pass.
+    /// Used by `Lint/RedundantCopDisableDirective` to decide whether a
+    /// `# rubocop:disable` directive actually silences a real offense.
+    /// Empty slice by default; populated only by callers running a
+    /// post-pass with full-file offense information.
+    pub peer_offenses: &'a [Offense],
 }
 
 impl<'a> CheckContext<'a> {
@@ -31,6 +37,7 @@ impl<'a> CheckContext<'a> {
             filename,
             target_ruby_version: 2.7, // Matches RuboCop's TargetRuby::DEFAULT_VERSION
             file_path: None,
+            peer_offenses: &[],
         }
     }
 
@@ -40,11 +47,17 @@ impl<'a> CheckContext<'a> {
             filename,
             target_ruby_version,
             file_path: None,
+            peer_offenses: &[],
         }
     }
 
     pub fn with_file_path(mut self, path: Option<&'a Path>) -> Self {
         self.file_path = path;
+        self
+    }
+
+    pub fn with_peer_offenses(mut self, peers: &'a [Offense]) -> Self {
+        self.peer_offenses = peers;
         self
     }
 
@@ -568,8 +581,23 @@ pub fn run_cops_full<'a>(
     target_ruby_version: f64,
     file_path: Option<&'a Path>,
 ) -> Vec<Offense> {
+    run_cops_with_peers(cops, result, source, filename, target_ruby_version, file_path, &[])
+}
+
+/// Run cops with pre-computed peer offenses exposed via `CheckContext::peer_offenses`.
+/// Used by the post-pass that feeds `Lint/RedundantCopDisableDirective`.
+pub fn run_cops_with_peers<'a>(
+    cops: &[Box<dyn Cop>],
+    result: &ParseResult<'_>,
+    source: &'a str,
+    filename: &'a str,
+    target_ruby_version: f64,
+    file_path: Option<&'a Path>,
+    peer_offenses: &'a [Offense],
+) -> Vec<Offense> {
     let ctx = CheckContext::with_ruby_version(source, filename, target_ruby_version)
-        .with_file_path(file_path);
+        .with_file_path(file_path)
+        .with_peer_offenses(peer_offenses);
     let mut runner = CopRunner::new(cops, ctx);
     runner.visit(&result.node());
     runner.offenses
