@@ -36,7 +36,9 @@ mod hash_alignment;
 mod indentation_consistency;
 mod indentation_style;
 mod indentation_width;
+mod initial_indentation;
 mod leading_comment_space;
+mod leading_empty_lines;
 mod line_length;
 mod multiline_array_brace_layout;
 mod multiline_block_layout;
@@ -48,6 +50,8 @@ mod multiline_operation_indentation;
 mod rescue_ensure_alignment;
 mod space_after_colon;
 mod space_after_comma;
+mod space_after_method_name;
+mod space_before_comma;
 mod space_after_semicolon;
 mod space_before_block_braces;
 mod space_before_semicolon;
@@ -63,6 +67,7 @@ mod space_inside_parens;
 mod space_inside_array_percent_literal;
 mod space_inside_block_braces;
 mod space_inside_hash_literal_braces;
+mod space_inside_range_literal;
 mod space_inside_percent_literal_delimiters;
 mod space_inside_reference_brackets;
 mod space_inside_string_interpolation;
@@ -127,7 +132,9 @@ pub use indentation_width::{
     IndentStyle as IndentationWidthIndentStyle,
     IndentationWidth,
 };
+pub use initial_indentation::InitialIndentation;
 pub use leading_comment_space::LeadingCommentSpace;
+pub use leading_empty_lines::LeadingEmptyLines;
 pub use line_length::{AllowHeredoc, LineLength};
 pub use crate::helpers::multiline_literal_brace_layout::BraceLayoutStyle as MultilineBraceLayoutStyle;
 pub use multiline_array_brace_layout::MultilineArrayBraceLayout;
@@ -145,6 +152,8 @@ pub use multiline_operation_indentation::{
 };
 pub use space_after_colon::SpaceAfterColon;
 pub use space_after_comma::SpaceAfterComma;
+pub use space_after_method_name::SpaceAfterMethodName;
+pub use space_before_comma::SpaceBeforeComma;
 pub use space_after_semicolon::SpaceAfterSemicolon;
 pub use space_before_block_braces::{BlockBraceStyle, SpaceBeforeBlockBraces};
 pub use space_before_semicolon::SpaceBeforeSemicolon;
@@ -170,6 +179,7 @@ pub use space_inside_block_braces::{
     SpaceInsideBlockBraces,
     SpaceInsideBlockBracesStyle,
 };
+pub use space_inside_range_literal::SpaceInsideRangeLiteral;
 pub use space_inside_hash_literal_braces::{
     HashEmptyBracesStyle as SpaceInsideHashLiteralBracesEmptyStyle,
     SpaceInsideHashLiteralBraces,

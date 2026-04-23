@@ -1,8 +1,11 @@
 mod accessor_method_name;
+mod ascii_identifiers;
+mod binary_operator_parameter_name;
 mod block_parameter_name;
 mod constant_name;
 mod file_name;
 mod heredoc_delimiter_case;
+mod heredoc_delimiter_naming;
 mod memoized_instance_variable_name;
 mod method_name;
 mod method_parameter_name;
@@ -13,10 +16,13 @@ mod variable_name;
 mod variable_number;
 
 pub use accessor_method_name::AccessorMethodName;
+pub use ascii_identifiers::AsciiIdentifiers;
+pub use binary_operator_parameter_name::BinaryOperatorParameterName;
 pub use block_parameter_name::BlockParameterName;
 pub use constant_name::ConstantName;
 pub use file_name::FileName;
 pub use heredoc_delimiter_case::HeredocDelimiterCase;
+pub use heredoc_delimiter_naming::HeredocDelimiterNaming;
 pub use memoized_instance_variable_name::{LeadingUnderscoreStyle, MemoizedInstanceVariableName};
 pub use method_name::{MethodName, MethodNameStyle};
 pub use method_parameter_name::MethodParameterName;

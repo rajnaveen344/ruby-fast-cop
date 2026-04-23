@@ -1,4 +1,5 @@
 mod block_length;
+mod block_nesting;
 mod class_length;
 mod cyclomatic_complexity;
 mod method_length;
@@ -7,6 +8,7 @@ mod parameter_lists;
 mod perceived_complexity;
 
 pub use block_length::BlockLength;
+pub use block_nesting::BlockNesting;
 pub use class_length::ClassLength;
 pub use cyclomatic_complexity::CyclomaticComplexity;
 pub use method_length::MethodLength;
