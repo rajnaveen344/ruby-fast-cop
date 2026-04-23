@@ -1,5 +1,6 @@
 mod accessor_method_name;
 mod ascii_identifiers;
+mod class_and_module_camel_case;
 mod binary_operator_parameter_name;
 mod block_parameter_name;
 mod constant_name;
@@ -17,6 +18,7 @@ mod variable_number;
 
 pub use accessor_method_name::AccessorMethodName;
 pub use ascii_identifiers::AsciiIdentifiers;
+pub use class_and_module_camel_case::ClassAndModuleCamelCase;
 pub use binary_operator_parameter_name::BinaryOperatorParameterName;
 pub use block_parameter_name::BlockParameterName;
 pub use constant_name::ConstantName;
