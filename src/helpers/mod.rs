@@ -1,3 +1,4 @@
+pub mod abc_size;
 pub mod access_modifier;
 pub mod alignment_check;
 pub mod allowed_methods;

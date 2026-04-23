@@ -1,3 +1,4 @@
+mod abc_size;
 mod block_length;
 mod block_nesting;
 mod class_length;
@@ -7,6 +8,7 @@ mod module_length;
 mod parameter_lists;
 mod perceived_complexity;
 
+pub use abc_size::AbcSize;
 pub use block_length::BlockLength;
 pub use block_nesting::BlockNesting;
 pub use class_length::ClassLength;
