@@ -24,6 +24,23 @@ ruby-fast-cop is a high-performance Ruby linter written in Rust, designed as a d
 
 > **Architecture:** See [`ARCHITECTURE.md`](./ARCHITECTURE.md) for the system overview, cop implementation flow, and shared-infrastructure diagrams (mermaid). Update it whenever the runtime shape, registration mechanism, autocorrect pipeline, or testing pipeline changes — this file covers *conventions*, `ARCHITECTURE.md` covers *structure*.
 
+## Production-readiness gaps
+
+High cop count is not production-ready. Before claiming drop-in RuboCop parity, close these:
+
+1. **Autocorrect coverage** — only ~24 of 395 cops emit `Correction`s. Users rely on `-a`/`-A` heavily. Target: ≥90% of implemented cops.
+2. **CLI surface incomplete** — `--only` / `--except`, `-f json`, `-f emacs`, `--parallel` still unchecked in README roadmap.
+3. **Config edge cases** — `inherit_from`, `inherit_gem`, glob `Include`/`Exclude`, brace-expansion patterns only partially exercised. Needs fuzzing against real `.rubocop.yml` files from Rails, Discourse, Shopify.
+4. **No real-world corpus tests** — 28k test cases are all from RuboCop's own specs. Run against 3+ major OSS Ruby codebases and diff vs RuboCop output (target ±1% parity).
+5. **Hard cops skipped** — Style/FormatString, Style/ParallelAssignment, Metrics/AbcSize, Lint/RedundantCopDisableDirective, Bundler/OrderedGems. Frequently triggered in real code.
+6. **Pending + Disabled cops unimplemented** — 210 cops users regularly opt into. Prioritize after enabled-by-default hits 100%.
+7. **No dogfooding** — project is not self-hosted on a Ruby codebase, no CI lint step on a real Ruby project.
+8. **LSP integration unvalidated** — library API exists (`check_source`, etc.) but no editor/LSP exercises it end-to-end.
+9. **No published benchmarks** — "50-100x faster" is a target, not a measurement. Need reproducible benchmark suite vs RuboCop on identical corpora.
+10. **Not released** — no `cargo publish`, no Homebrew formula, no versioned binaries, no 1.0 tag.
+
+Rough stages: current = **alpha (internal use)** → close 1/2/3 → **beta** → close 4/5/9/10 → **1.0 production**.
+
 ## Planned architectural refactors
 
 Tracked candidates to reduce verbosity vs RuboCop. Ranked by payoff/risk. Revisit when touching adjacent code.
