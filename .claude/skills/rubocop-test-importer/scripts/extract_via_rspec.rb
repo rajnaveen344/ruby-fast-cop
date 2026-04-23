@@ -169,7 +169,12 @@ end
 
 def toml_literal_string(str)
   content = str.to_s.chomp
-  if content.include?("'''")
+  # TOML multi-line literal strings (''') preserve content verbatim, but Rust's
+  # toml crate parses them by tokenizing on physical newlines and drops bare \r
+  # bytes that appear just before \n. Sources that carry meaningful \r (e.g.
+  # Layout/EndOfLine CRLF fixtures) must use double-quoted basic strings with
+  # explicit \r escapes to round-trip cleanly.
+  if content.include?("'''") || content.include?("\r")
     toml_string(content)
   else
     "'''\n#{content}\n'''"
