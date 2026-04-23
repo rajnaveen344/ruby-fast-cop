@@ -20,19 +20,16 @@ Exceptions (auto-clarity — drop caveman temporarily, resume after):
 
 ruby-fast-cop is a high-performance Ruby linter written in Rust, designed as a drop-in replacement for RuboCop. The goal is 50-100x faster linting by rewriting cops in Rust, similar to how Ruff replaced Python linters.
 
-**Current state:** 404 of 606 cops implemented (394/396 enabled-by-default = 99.5%) (all fixtures passing), 606 TOML test fixtures with ~28,075 test cases extracted from RuboCop v1.85.0's RSpec suite.
+**Current state:** 405 of 606 cops implemented (395/396 enabled-by-default = 99.7%) (all fixtures passing), 606 TOML test fixtures with ~28,075 test cases extracted from RuboCop v1.85.0's RSpec suite.
 
 > **Architecture:** See [`ARCHITECTURE.md`](./ARCHITECTURE.md) for the system overview, cop implementation flow, and shared-infrastructure diagrams (mermaid). Update it whenever the runtime shape, registration mechanism, autocorrect pipeline, or testing pipeline changes — this file covers *conventions*, `ARCHITECTURE.md` covers *structure*.
 
-## Deferred enabled-by-default cops (3)
+## Deferred enabled-by-default cops (2)
 
 Documented blockers. Each needs new infra or has unreachable tests. Tackle in order 3 → 5:
 
 3. **Metrics/AbcSize** — port AbcSizeCalculator + IteratingBlock + RepeatedAttribute/Csend Discount mixins.
    - *Next:* create `src/helpers/abc_size.rs` mirroring `lib/rubocop/cop/metrics/utils/abc_size_calculator.rb` + 3 discount mixins. Algorithm: walk method body, count (A)ssignment + (B)ranch + (C)ondition, score = `sqrt(A² + B² + C²)`. Cop itself thin: check vs `Max` config. **~1 day.**
-
-4. **Lint/RedundantCopDisableDirective** — needs runtime directive-tracking pass.
-   - *Next:* (a) parse `# rubocop:disable Cop1, Cop2` comments per-file into range map; (b) after all cops run, for each directive, check if any offense of that cop landed in the range — if none, emit offense at directive. Wire into `runner::check_file` between cop-run and offense-format. Bonus: unlocks `Lint/RedundantCopEnableDirective` + `Lint/MissingCopEnableDirective`. **~2 days.**
 
 5. **Style/ParallelAssignment** — 86 correction-heavy tests with tmp-var generation.
    - *Next:* port `lib/rubocop/cop/style/parallel_assignment.rb` (~400 LOC) + helper classes `AssignmentCorrector`, `ModifierCorrector`, `RescueCorrector`. Careful tmp-var naming with cycle detection for `a, b = b, a`. Best handled by dedicated opus agent with single-cop scope. **~1-2 days.**
@@ -45,7 +42,7 @@ High cop count is not production-ready. Before claiming drop-in RuboCop parity, 
 2. **CLI surface incomplete** — `--only` / `--except`, `-f json`, `-f emacs`, `--parallel` still unchecked in README roadmap.
 3. **Config edge cases** — `inherit_from`, `inherit_gem`, glob `Include`/`Exclude`, brace-expansion patterns only partially exercised. Needs fuzzing against real `.rubocop.yml` files from Rails, Discourse, Shopify.
 4. **No real-world corpus tests** — 28k test cases are all from RuboCop's own specs. Run against 3+ major OSS Ruby codebases and diff vs RuboCop output (target ±1% parity).
-5. **Hard cops skipped** — Style/FormatString, Style/ParallelAssignment, Metrics/AbcSize, Lint/RedundantCopDisableDirective, Bundler/OrderedGems. Frequently triggered in real code.
+5. **Hard cops skipped** — Style/FormatString, Style/ParallelAssignment, Metrics/AbcSize, Bundler/OrderedGems. Frequently triggered in real code.
 6. **Pending + Disabled cops unimplemented** — 210 cops users regularly opt into. Prioritize after enabled-by-default hits 100%.
 7. **No dogfooding** — project is not self-hosted on a Ruby codebase, no CI lint step on a real Ruby project.
 8. **LSP integration unvalidated** — library API exists (`check_source`, etc.) but no editor/LSP exercises it end-to-end.
