@@ -20,16 +20,13 @@ Exceptions (auto-clarity — drop caveman temporarily, resume after):
 
 ruby-fast-cop is a high-performance Ruby linter written in Rust, designed as a drop-in replacement for RuboCop. The goal is 50-100x faster linting by rewriting cops in Rust, similar to how Ruff replaced Python linters.
 
-**Current state:** 403 of 606 cops implemented (393/396 enabled-by-default = 99.2%) (all fixtures passing), 606 TOML test fixtures with ~28,075 test cases extracted from RuboCop v1.85.0's RSpec suite.
+**Current state:** 404 of 606 cops implemented (394/396 enabled-by-default = 99.5%) (all fixtures passing), 606 TOML test fixtures with ~28,075 test cases extracted from RuboCop v1.85.0's RSpec suite.
 
 > **Architecture:** See [`ARCHITECTURE.md`](./ARCHITECTURE.md) for the system overview, cop implementation flow, and shared-infrastructure diagrams (mermaid). Update it whenever the runtime shape, registration mechanism, autocorrect pipeline, or testing pipeline changes — this file covers *conventions*, `ARCHITECTURE.md` covers *structure*.
 
-## Deferred enabled-by-default cops (4)
+## Deferred enabled-by-default cops (3)
 
-Documented blockers. Each needs new infra or has unreachable tests. Tackle in order 1 → 4:
-
-1. **Lint/ScriptPermission** — needs `fs::metadata` on file path; fixture messages embed randomized tempfile names.
-   - *Next:* add `file_path: Option<&Path>` to `CheckContext` (src/cops/mod.rs). Runner passes real path; stdin gets `None`. In cop, `fs::metadata(path).permissions().mode() & 0o111 != 0`. Add `__FILE__` placeholder convention to TOML + substitute at runtime in `tests/tester.rs`. **~3hr.**
+Documented blockers. Each needs new infra or has unreachable tests. Tackle in order 3 → 5:
 
 3. **Metrics/AbcSize** — port AbcSizeCalculator + IteratingBlock + RepeatedAttribute/Csend Discount mixins.
    - *Next:* create `src/helpers/abc_size.rs` mirroring `lib/rubocop/cop/metrics/utils/abc_size_calculator.rb` + 3 discount mixins. Algorithm: walk method body, count (A)ssignment + (B)ranch + (C)ondition, score = `sqrt(A² + B² + C²)`. Cop itself thin: check vs `Max` config. **~1 day.**
