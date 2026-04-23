@@ -15,7 +15,7 @@ mod condition_position;
 mod dot_position;
 mod empty_comment;
 mod empty_lines;
-// mod end_of_line; // Skipped: TOML fixtures lose \r bytes (TOML strips CR), making CRLF tests untestable
+mod end_of_line;
 mod else_alignment;
 mod empty_line_after_guard_clause;
 mod empty_line_after_magic_comment;
@@ -94,7 +94,7 @@ pub use condition_position::ConditionPosition;
 pub use dot_position::{DotPosition, DotStyle};
 pub use empty_comment::EmptyComment;
 pub use empty_lines::EmptyLines;
-// pub use end_of_line::{EndOfLine, EolStyle}; // Skipped
+pub use end_of_line::{EndOfLine, EolStyle};
 pub use else_alignment::ElseAlignment;
 pub use empty_line_after_guard_clause::EmptyLineAfterGuardClause;
 pub use empty_line_after_magic_comment::EmptyLineAfterMagicComment;
