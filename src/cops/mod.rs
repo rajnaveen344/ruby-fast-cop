@@ -266,6 +266,69 @@ pub trait Cop: Send + Sync {
     ) -> Vec<Offense> {
         vec![]
     }
+
+    /// Check a PreExecutionNode (BEGIN { ... })
+    fn check_pre_execution(
+        &self,
+        _node: &ruby_prism::PreExecutionNode,
+        _ctx: &CheckContext,
+    ) -> Vec<Offense> {
+        vec![]
+    }
+
+    /// Check a PostExecutionNode (END { ... })
+    fn check_post_execution(
+        &self,
+        _node: &ruby_prism::PostExecutionNode,
+        _ctx: &CheckContext,
+    ) -> Vec<Offense> {
+        vec![]
+    }
+
+    /// Check a WhenNode (case/when branch)
+    fn check_when(
+        &self,
+        _node: &ruby_prism::WhenNode,
+        _ctx: &CheckContext,
+    ) -> Vec<Offense> {
+        vec![]
+    }
+
+    /// Check a ClassVariableWriteNode (@@var = ...)
+    fn check_class_variable_write(
+        &self,
+        _node: &ruby_prism::ClassVariableWriteNode,
+        _ctx: &CheckContext,
+    ) -> Vec<Offense> {
+        vec![]
+    }
+
+    /// Check a ConstantReadNode (bare constant reference)
+    fn check_constant_read(
+        &self,
+        _node: &ruby_prism::ConstantReadNode,
+        _ctx: &CheckContext,
+    ) -> Vec<Offense> {
+        vec![]
+    }
+
+    /// Check a LambdaNode (-> { ... })
+    fn check_lambda(
+        &self,
+        _node: &ruby_prism::LambdaNode,
+        _ctx: &CheckContext,
+    ) -> Vec<Offense> {
+        vec![]
+    }
+
+    /// Check a ConstantPathNode (e.g. ::Foo or Foo::Bar)
+    fn check_constant_path(
+        &self,
+        _node: &ruby_prism::ConstantPathNode,
+        _ctx: &CheckContext,
+    ) -> Vec<Offense> {
+        vec![]
+    }
 }
 
 /// Visitor that runs all cops against the AST
@@ -412,6 +475,55 @@ impl Visit<'_> for CopRunner<'_> {
             self.offenses.extend(cop.check_hash_pattern(node, &self.ctx));
         }
         ruby_prism::visit_hash_pattern_node(self, node);
+    }
+
+    fn visit_pre_execution_node(&mut self, node: &ruby_prism::PreExecutionNode) {
+        for cop in self.cops {
+            self.offenses.extend(cop.check_pre_execution(node, &self.ctx));
+        }
+        ruby_prism::visit_pre_execution_node(self, node);
+    }
+
+    fn visit_post_execution_node(&mut self, node: &ruby_prism::PostExecutionNode) {
+        for cop in self.cops {
+            self.offenses.extend(cop.check_post_execution(node, &self.ctx));
+        }
+        ruby_prism::visit_post_execution_node(self, node);
+    }
+
+    fn visit_when_node(&mut self, node: &ruby_prism::WhenNode) {
+        for cop in self.cops {
+            self.offenses.extend(cop.check_when(node, &self.ctx));
+        }
+        ruby_prism::visit_when_node(self, node);
+    }
+
+    fn visit_class_variable_write_node(&mut self, node: &ruby_prism::ClassVariableWriteNode) {
+        for cop in self.cops {
+            self.offenses.extend(cop.check_class_variable_write(node, &self.ctx));
+        }
+        ruby_prism::visit_class_variable_write_node(self, node);
+    }
+
+    fn visit_constant_read_node(&mut self, node: &ruby_prism::ConstantReadNode) {
+        for cop in self.cops {
+            self.offenses.extend(cop.check_constant_read(node, &self.ctx));
+        }
+        ruby_prism::visit_constant_read_node(self, node);
+    }
+
+    fn visit_lambda_node(&mut self, node: &ruby_prism::LambdaNode) {
+        for cop in self.cops {
+            self.offenses.extend(cop.check_lambda(node, &self.ctx));
+        }
+        ruby_prism::visit_lambda_node(self, node);
+    }
+
+    fn visit_constant_path_node(&mut self, node: &ruby_prism::ConstantPathNode) {
+        for cop in self.cops {
+            self.offenses.extend(cop.check_constant_path(node, &self.ctx));
+        }
+        ruby_prism::visit_constant_path_node(self, node);
     }
 }
 
