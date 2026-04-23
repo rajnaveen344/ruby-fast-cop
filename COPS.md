@@ -1,28 +1,28 @@
 # All Cops State (606 total)
 
 Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department and default status.
-404 of 606 implemented. See [README.md](README.md) for the implementation roadmap.
+406 of 606 implemented (all 396 enabled-by-default complete). See [README.md](README.md) for the implementation roadmap.
 
 ## Summary
 
 | Department | Enabled | Pending | Disabled | Implemented |      Tests |
 | ---------- | ------: | ------: | -------: | ----------: | ---------: |
-| Style      |     175 |      91 |       32 |         180 |     14,567 |
+| Style      |     175 |      91 |       32 |         181 |     14,567 |
 | Lint       |     100 |      50 |        4 |         103 |      5,949 |
 | Layout     |      81 |       5 |       14 |          81 |      4,646 |
-| Metrics    |       9 |       1 |        0 |           8 |        272 |
+| Metrics    |       9 |       1 |        0 |           9 |        272 |
 | Naming     |      16 |       2 |        1 |          17 |      2,217 |
 | Gemspec    |       4 |       5 |        1 |           4 |        193 |
 | Bundler    |       5 |       0 |        2 |           5 |        101 |
 | Security   |       5 |       2 |        0 |           5 |        102 |
 | Migration  |       1 |       0 |        0 |           1 |          8 |
-| **Total**  | **396** | **156** |   **54** |     **404** | **28,054** |
+| **Total**  | **396** | **156** |   **54** |     **406** | **28,054** |
 
 - **Enabled**: Runs by default on every codebase (highest priority to implement)
 - **Pending**: Runs only with `NewCops: enable` in config
 - **Disabled**: Runs only when explicitly enabled in config
 
-## Style (180/298 implemented, 14,567 tests)
+## Style (181/298 implemented, 14,567 tests)
 
 ### Enabled by Default (175 cops, 9,202 tests)
 
@@ -133,7 +133,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Style/OptionalArguments                |    12 | Implemented |
 | Style/OptionalBooleanParameter         |     8 | Implemented |
 | Style/OrAssignment                     |    25 | Implemented |
-| Style/ParallelAssignment               |    86 | -           |
+| Style/ParallelAssignment               |    86 | Implemented |
 | Style/ParenthesesAroundCondition       |    30 | Implemented |
 | Style/PercentLiteralDelimiters         |    65 | Implemented |
 | Style/PercentQLiterals                 |    21 | Implemented |
@@ -625,13 +625,13 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Layout/RedundantLineBreak                 |   112 | -      |
 | Layout/SingleLineBlockChain               |     9 | -      |
 
-## Metrics (8/10 implemented, 272 tests)
+## Metrics (9/10 implemented, 272 tests)
 
 ### Enabled by Default (9 cops, 259 tests)
 
 | Cop                          | Tests | Status      |
 | ---------------------------- | ----: | ----------- |
-| Metrics/AbcSize              |    25 | -           |
+| Metrics/AbcSize              |    25 | Implemented |
 | Metrics/BlockLength          |    38 | Implemented |
 | Metrics/BlockNesting         |    26 | Implemented |
 | Metrics/ClassLength          |    34 | Implemented |
@@ -760,7 +760,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 
 149 cops / ~5,440 tests across 23 clusters. Pending-by-default cops run only with `NewCops: enable` — implement after enabled-by-default hits 100%. Order = highest test count first within each cluster.
 
-Two enabled-by-default cops are also still pending (currently being implemented): `Metrics/AbcSize`, `Style/ParallelAssignment`.
+All enabled-by-default cops are now implemented; everything below is pending-by-default.
 
 | Cluster              | Cops | Tests | Notes                                                                              |
 | -------------------- | ---: | ----: | ---------------------------------------------------------------------------------- |
