@@ -20,18 +20,15 @@ Exceptions (auto-clarity — drop caveman temporarily, resume after):
 
 ruby-fast-cop is a high-performance Ruby linter written in Rust, designed as a drop-in replacement for RuboCop. The goal is 50-100x faster linting by rewriting cops in Rust, similar to how Ruff replaced Python linters.
 
-**Current state:** 401 of 606 cops implemented (391/396 enabled-by-default = 98.7%) (all fixtures passing), 606 TOML test fixtures with ~28,075 test cases extracted from RuboCop v1.85.0's RSpec suite.
+**Current state:** 403 of 606 cops implemented (393/396 enabled-by-default = 99.2%) (all fixtures passing), 606 TOML test fixtures with ~28,075 test cases extracted from RuboCop v1.85.0's RSpec suite.
 
 > **Architecture:** See [`ARCHITECTURE.md`](./ARCHITECTURE.md) for the system overview, cop implementation flow, and shared-infrastructure diagrams (mermaid). Update it whenever the runtime shape, registration mechanism, autocorrect pipeline, or testing pipeline changes — this file covers *conventions*, `ARCHITECTURE.md` covers *structure*.
 
-## Deferred enabled-by-default cops (5)
+## Deferred enabled-by-default cops (4)
 
-Documented blockers. Each needs new infra or has unreachable tests. Tackle in order 1 → 5 (easiest first, each unblocks the next cleanly):
+Documented blockers. Each needs new infra or has unreachable tests. Tackle in order 1 → 4:
 
-1. **Layout/EndOfLine** — TOML extraction stripped CR/CRLF bytes, fixtures unreachable.
-   - *Next:* patch `.claude/skills/rubocop-test-importer/scripts/test_data_capture.rb` to preserve raw bytes (no `\r\n`→`\n` normalization). Re-extract cop only: `cd /tmp/rubocop-repo && bundle exec ruby extract_via_rspec.rb --output <fixtures_dir> --cop Layout/EndOfLine`. Then validate existing stub at `src/cops/layout/end_of_line.rs`, flip `implemented = true`. **~2hr.**
-
-2. **Lint/ScriptPermission** — needs `fs::metadata` on file path; fixture messages embed randomized tempfile names.
+1. **Lint/ScriptPermission** — needs `fs::metadata` on file path; fixture messages embed randomized tempfile names.
    - *Next:* add `file_path: Option<&Path>` to `CheckContext` (src/cops/mod.rs). Runner passes real path; stdin gets `None`. In cop, `fs::metadata(path).permissions().mode() & 0o111 != 0`. Add `__FILE__` placeholder convention to TOML + substitute at runtime in `tests/tester.rs`. **~3hr.**
 
 3. **Metrics/AbcSize** — port AbcSizeCalculator + IteratingBlock + RepeatedAttribute/Csend Discount mixins.

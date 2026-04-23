@@ -37,6 +37,18 @@ module TestDataCapture
     Thread.current[:inside_expect] = val
   end
 
+  # Flag to suppress captures when expect_offense / expect_no_offenses is
+  # called inside an `expect { ... }.to raise_error(...)` block — a pattern
+  # used by specs to assert the cop DOES find an offense via negation. The
+  # captured source/offenses in that case don't reflect the real expectation.
+  def self.inside_raise_error?
+    Thread.current[:inside_raise_error] || false
+  end
+
+  def self.inside_raise_error=(val)
+    Thread.current[:inside_raise_error] = val
+  end
+
   def self.flush_pending!
     if (capture = self.pending_capture)
       self.captures << capture
@@ -99,6 +111,14 @@ module TestDataCapture
 
   # Override expect_offense to capture test data instead of running assertions
   def expect_offense(source, file = nil, severity: nil, chomp: false, **replacements)
+    if TestDataCapture.inside_raise_error?
+      TestDataCapture.inside_expect = true
+      begin
+        return super
+      ensure
+        TestDataCapture.inside_expect = false
+      end
+    end
     # Flush any pending capture from a previous expect_offense without expect_correction
     TestDataCapture.flush_pending!
     TestDataCapture.inside_expect = true
@@ -159,6 +179,19 @@ module TestDataCapture
 
   # Override expect_no_offenses to capture test data
   def expect_no_offenses(source, file = nil)
+    # Skip capture entirely when called inside `expect { ... }.to raise_error`.
+    # Those specs assert the cop DOES find an offense via failed expectation —
+    # the source/offenses captured here don't reflect the real test intent.
+    # Still set inside_expect so nested _investigate/inspect_source don't capture.
+    if TestDataCapture.inside_raise_error?
+      TestDataCapture.inside_expect = true
+      begin
+        return super
+      ensure
+        TestDataCapture.inside_expect = false
+      end
+    end
+
     TestDataCapture.flush_pending!
     TestDataCapture.inside_expect = true
 
@@ -436,4 +469,30 @@ module TestDataCaptureHook
       end
     end
   end
+end
+
+# Wrap RSpec's RaiseError matcher so expect_offense / expect_no_offenses
+# called inside `expect { ... }.to raise_error(...)` can be suppressed.
+# Some cop specs (e.g. Layout/EndOfLine iso-8859-15) assert that the cop
+# DOES find an offense by wrapping expect_no_offenses in raise_error;
+# capturing those naively produces fixtures with the wrong expectation.
+if defined?(RSpec::Matchers::BuiltIn::RaiseError)
+  module TestDataCaptureRaiseErrorPatch
+    def matches?(given_proc, *args, &block)
+      prev = TestDataCapture.inside_raise_error?
+      TestDataCapture.inside_raise_error = true
+      super
+    ensure
+      TestDataCapture.inside_raise_error = prev
+    end
+
+    def does_not_match?(given_proc, *args, &block)
+      prev = TestDataCapture.inside_raise_error?
+      TestDataCapture.inside_raise_error = true
+      super
+    ensure
+      TestDataCapture.inside_raise_error = prev
+    end
+  end
+  RSpec::Matchers::BuiltIn::RaiseError.prepend(TestDataCaptureRaiseErrorPatch)
 end

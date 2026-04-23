@@ -8,6 +8,12 @@ set -e
 RUBOCOP_DIR="${RUBOCOP_DIR:-/tmp/rubocop-repo}"
 RUBOCOP_VERSION="${RUBOCOP_VERSION:-master}"
 
+# Use Ruby 3.3 (Homebrew keg-only formula) because the default Homebrew `ruby`
+# formula tracks 4.0.x which is incompatible with older bundler resolver and
+# RuboCop's Gemfile (misparses `ruby` directive as a gem).
+RUBY_PREFIX="${RUBY_PREFIX:-/opt/homebrew/opt/ruby@3.3}"
+export PATH="$RUBY_PREFIX/bin:$PATH"
+
 echo "Downloading RuboCop repo to $RUBOCOP_DIR..."
 
 # Clean up existing directory if it exists

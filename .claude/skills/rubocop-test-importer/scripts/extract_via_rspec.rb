@@ -168,7 +168,11 @@ def toml_string(str)
 end
 
 def toml_literal_string(str)
-  content = str.to_s.chomp
+  # Strip exactly one trailing LF (not CRLF). String#chomp and String#chomp("\n")
+  # both strip a trailing CR+LF pair together, which would drop a meaningful
+  # final CR from CRLF fixtures (e.g. Layout/EndOfLine).
+  content = str.to_s
+  content = content[0...-1] if content.end_with?("\n")
   # TOML multi-line literal strings (''') preserve content verbatim, but Rust's
   # toml crate parses them by tokenizing on physical newlines and drops bare \r
   # bytes that appear just before \n. Sources that carry meaningful \r (e.g.

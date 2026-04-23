@@ -59,14 +59,17 @@ impl Cop for EndOfLine {
 
         let source = ctx.source;
         let stop_at = end_marker_line(source).unwrap_or(usize::MAX);
+        let ends_with_nl = source.ends_with('\n');
 
-        // Split on '\n'; each segment is the line content (may end with '\r' for CRLF)
+        // split('\n') segments: if source ends with '\n', the final segment is a
+        // trailing empty placeholder — skip it. Otherwise, the final segment is
+        // real content without a newline terminator and still needs checking.
         let segments: Vec<&str> = source.split('\n').collect();
         let total = segments.len();
+        let real_lines = if ends_with_nl { total - 1 } else { total };
 
         let mut byte_offset: usize = 0;
-        for (i, seg) in segments.iter().enumerate() {
-            // Stop at __END__
+        for (i, seg) in segments.iter().enumerate().take(real_lines) {
             if i >= stop_at {
                 break;
             }
@@ -77,17 +80,10 @@ impl Cop for EndOfLine {
                 byte_offset += 1; // the \n separator
             }
 
-            // If this is the last segment (no trailing newline), skip
-            if i + 1 == total {
-                break;
-            }
-
-            // Content without trailing \r
             let content_len = if seg.ends_with('\r') { seg.len() - 1 } else { seg.len() };
 
             match effective {
                 EolStyle::Lf => {
-                    // Offense if line ends with \r (CRLF)
                     if seg.ends_with('\r') {
                         return vec![Offense::new(
                             self.name(),
@@ -99,8 +95,10 @@ impl Cop for EndOfLine {
                     }
                 }
                 EolStyle::Crlf => {
-                    // Offense if line does NOT end with \r
-                    if !seg.ends_with('\r') {
+                    // Only flag a missing CR on lines that have a following '\n'.
+                    // A final line with no newline terminator at EOF is exempt.
+                    let has_terminator = i + 1 < total || ends_with_nl;
+                    if has_terminator && !seg.ends_with('\r') {
                         return vec![Offense::new(
                             self.name(),
                             "Carriage return character missing.",
