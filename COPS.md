@@ -1,28 +1,28 @@
 # All Cops State (606 total)
 
 Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department and default status.
-395 of 606 implemented. See [README.md](README.md) for the implementation roadmap.
+401 of 606 implemented. See [README.md](README.md) for the implementation roadmap.
 
 ## Summary
 
 | Department | Enabled | Pending | Disabled | Implemented |      Tests |
 | ---------- | ------: | ------: | -------: | ----------: | ---------: |
-| Style      |     175 |      91 |       32 |         179 |     14,567 |
-| Lint       |     100 |      50 |        4 |          97 |      5,961 |
+| Style      |     175 |      91 |       32 |         180 |     14,567 |
+| Lint       |     100 |      50 |        4 |         101 |      5,961 |
 | Layout     |      81 |       5 |       14 |          80 |      4,654 |
 | Metrics    |       9 |       1 |        0 |           8 |        272 |
 | Naming     |      16 |       2 |        1 |          17 |      2,217 |
 | Gemspec    |       4 |       5 |        1 |           4 |        193 |
-| Bundler    |       5 |       0 |        2 |           4 |        101 |
+| Bundler    |       5 |       0 |        2 |           5 |        101 |
 | Security   |       5 |       2 |        0 |           5 |        102 |
 | Migration  |       1 |       0 |        0 |           1 |          8 |
-| **Total**  | **396** | **156** |   **54** |     **395** | **28,075** |
+| **Total**  | **396** | **156** |   **54** |     **401** | **28,075** |
 
 - **Enabled**: Runs by default on every codebase (highest priority to implement)
 - **Pending**: Runs only with `NewCops: enable` in config
 - **Disabled**: Runs only when explicitly enabled in config
 
-## Style (179/298 implemented, 14,567 tests)
+## Style (180/298 implemented, 14,567 tests)
 
 ### Enabled by Default (175 cops, 9,202 tests)
 
@@ -78,7 +78,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Style/ExponentialNotation              |    27 | Implemented |
 | Style/FloatDivision                    |    31 | Implemented |
 | Style/For                              |    32 | Implemented |
-| Style/FormatString                     |    46 | -           |
+| Style/FormatString                     | 46 | Implemented |
 | Style/FormatStringToken                |   366 | Implemented |
 | Style/FrozenStringLiteralComment       |   107 | Implemented |
 | Style/GlobalStdStream                  | 6 | Implemented |
@@ -337,7 +337,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Style/UnlessLogicalOperators               |    28 | -           |
 | Style/YodaExpression                       |    10 | -           |
 
-## Lint (97/154 implemented, 5,961 tests)
+## Lint (101/154 implemented, 5,961 tests)
 
 ### Enabled by Default (100 cops, 3,859 tests)
 
@@ -351,7 +351,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Lint/BinaryOperatorWithIdenticalOperands |    23 | Implemented |
 | Lint/BooleanSymbol                       |    10 | Implemented |
 | Lint/CircularArgumentReference           |    13 | Implemented |
-| Lint/ConstantDefinitionInBlock           |    27 | -           |
+| Lint/ConstantDefinitionInBlock           | 27 | Implemented |
 | Lint/Debugger                            |    97 | Implemented |
 | Lint/DeprecatedClassMethods              |    31 | Implemented |
 | Lint/DeprecatedOpenSSLConstant           |    24 | Implemented |
@@ -386,17 +386,17 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Lint/LiteralInInterpolation              |   378 | Implemented |
 | Lint/Loop                                |     4 | Implemented |
 | Lint/MissingCopEnableDirective           |    11 | Implemented |
-| Lint/MissingSuper                        |    22 | -           |
+| Lint/MissingSuper                        | 22 | Implemented |
 | Lint/MixedRegexpCaptureTypes             |    12 | Implemented |
 | Lint/MultipleComparison                  |    20 | Implemented |
 | Lint/NestedMethodDefinition              |    38 | Implemented |
 | Lint/NestedPercentLiteral                |    11 | Implemented |
 | Lint/NextWithoutAccumulator              |    18 | Implemented |
-| Lint/NonDeterministicRequireOrder        |    28 | -           |
+| Lint/NonDeterministicRequireOrder        | 28 | Implemented |
 | Lint/NonLocalExitFromIterator            |    14 | Implemented |
 | Lint/OrderedMagicComments                |    10 | Implemented |
 | Lint/OutOfRangeRegexpRef                 |   122 | Implemented |
-| Lint/ParenthesesAsGroupedExpression      |    26 | -           |
+| Lint/ParenthesesAsGroupedExpression      | 26 | Implemented |
 | Lint/PercentStringArray                  |    22 | Implemented |
 | Lint/PercentSymbolArray                  |    12 | Implemented |
 | Lint/RaiseException                      |    15 | Implemented |
@@ -710,7 +710,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | ------------------------- | ----: | ------ |
 | Gemspec/DependencyVersion |    77 | -      |
 
-## Bundler (4/7 implemented, 101 tests)
+## Bundler (5/7 implemented, 101 tests)
 
 ### Enabled by Default (5 cops, 69 tests)
 
@@ -720,7 +720,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Bundler/DuplicatedGroup        |    21 | Implemented |
 | Bundler/GemFilename            |    15 | Implemented |
 | Bundler/InsecureProtocolSource |     6 | Implemented |
-| Bundler/OrderedGems            |    17 | -           |
+| Bundler/OrderedGems            | 17 | Implemented |
 
 ### Disabled by Default (2 cops, 32 tests)
 

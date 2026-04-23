@@ -20,9 +20,19 @@ Exceptions (auto-clarity — drop caveman temporarily, resume after):
 
 ruby-fast-cop is a high-performance Ruby linter written in Rust, designed as a drop-in replacement for RuboCop. The goal is 50-100x faster linting by rewriting cops in Rust, similar to how Ruff replaced Python linters.
 
-**Current state:** 395 of 606 cops implemented (all fixtures passing), 606 TOML test fixtures with ~28,075 test cases extracted from RuboCop v1.85.0's RSpec suite.
+**Current state:** 401 of 606 cops implemented (391/396 enabled-by-default = 98.7%) (all fixtures passing), 606 TOML test fixtures with ~28,075 test cases extracted from RuboCop v1.85.0's RSpec suite.
 
 > **Architecture:** See [`ARCHITECTURE.md`](./ARCHITECTURE.md) for the system overview, cop implementation flow, and shared-infrastructure diagrams (mermaid). Update it whenever the runtime shape, registration mechanism, autocorrect pipeline, or testing pipeline changes — this file covers *conventions*, `ARCHITECTURE.md` covers *structure*.
+
+## Deferred enabled-by-default cops (5)
+
+Documented blockers. Each needs new infra or has unreachable tests:
+
+- **Layout/EndOfLine** — TOML extraction stripped CR/CRLF bytes, fixtures unreachable. Need to re-extract preserving raw bytes.
+- **Lint/RedundantCopDisableDirective** — needs runtime directive-tracking pass (track which `# rubocop:disable X` comments suppressed actual offenses). New infra layer.
+- **Lint/ScriptPermission** — needs `fs::metadata` on file path; fixture messages embed randomized tempfile names. Test infra mismatch.
+- **Metrics/AbcSize** — port AbcSizeCalculator + IteratingBlock + RepeatedAttribute/Csend Discount mixins. Big standalone effort.
+- **Style/ParallelAssignment** — 86 correction-heavy tests with tmp-var generation. Substantial port.
 
 ## Production-readiness gaps
 
