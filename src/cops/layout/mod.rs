@@ -1,4 +1,7 @@
 mod access_modifier_indentation;
+mod argument_alignment;
+mod array_alignment;
+mod parameter_alignment;
 mod begin_end_alignment;
 mod block_end_newline;
 mod block_alignment;

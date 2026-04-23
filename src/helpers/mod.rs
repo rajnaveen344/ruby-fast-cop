@@ -1,4 +1,5 @@
 pub mod access_modifier;
+pub mod alignment_check;
 pub mod allowed_methods;
 pub mod code_length;
 pub mod empty_lines_around_body;

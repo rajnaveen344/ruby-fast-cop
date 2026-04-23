@@ -29,52 +29,52 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Cop                                    | Tests | Status      |
 | -------------------------------------- | ----: | ----------- |
 | Style/AccessModifierDeclarations       |   377 | Implemented |
-| Style/AccessorGrouping                 | 26 | Implemented |
+| Style/AccessorGrouping                 |    26 | Implemented |
 | Style/Alias                            |    26 | Implemented |
 | Style/AndOr                            |    76 | Implemented |
 | Style/ArrayIntersect                   |    81 | Implemented |
 | Style/ArrayIntersectWithSingleElement  |     3 | -           |
 | Style/ArrayJoin                        |     5 | -           |
-| Style/Attr                             | 11 | Implemented |
+| Style/Attr                             |    11 | Implemented |
 | Style/BarePercentLiterals              |    36 | Implemented |
 | Style/BeginBlock                       |     1 | -           |
-| Style/BisectedAttrAccessor             | 14 | Implemented |
+| Style/BisectedAttrAccessor             |    14 | Implemented |
 | Style/BlockComments                    |     5 | -           |
 | Style/BlockDelimiters                  |   173 | Implemented |
 | Style/CaseEquality                     |    25 | Implemented |
 | Style/CaseLikeIf                       |    38 | Implemented |
 | Style/CharacterLiteral                 |     5 | -           |
-| Style/ClassAndModuleChildren           | 40 | Implemented |
+| Style/ClassAndModuleChildren           |    40 | Implemented |
 | Style/ClassCheck                       |     4 | -           |
 | Style/ClassEqualityComparison          |    22 | Implemented |
 | Style/ClassMethods                     |     5 | -           |
 | Style/ClassVars                        |     5 | -           |
-| Style/ColonMethodCall                  | 10 | Implemented |
+| Style/ColonMethodCall                  |    10 | Implemented |
 | Style/ColonMethodDefinition            |     3 | -           |
-| Style/CombinableLoops                  | 20 | Implemented |
+| Style/CombinableLoops                  |    20 | Implemented |
 | Style/CommandLiteral                   |    35 | Implemented |
 | Style/CommentAnnotation                |    31 | Implemented |
 | Style/CommentedKeyword                 |    47 | Implemented |
 | Style/ConditionalAssignment            |  1199 | Implemented |
-| Style/DefWithParentheses               | 9 | Implemented |
+| Style/DefWithParentheses               |     9 | Implemented |
 | Style/Dir                              |     4 | -           |
 | Style/Documentation                    |    55 | Implemented |
 | Style/DoubleCopDisableDirective        |     3 | -           |
 | Style/DoubleNegation                   |    47 | Implemented |
-| Style/EachForSimpleLoop                | 20 | Implemented |
-| Style/EachWithObject                   | 16 | Implemented |
-| Style/EmptyBlockParameter              | 9 | Implemented |
+| Style/EachForSimpleLoop                |    20 | Implemented |
+| Style/EachWithObject                   |    16 | Implemented |
+| Style/EmptyBlockParameter              |     9 | Implemented |
 | Style/EmptyCaseCondition               |    29 | Implemented |
 | Style/EmptyElse                        |   124 | Implemented |
 | Style/EmptyLambdaParameter             |     3 | -           |
 | Style/EmptyLiteral                     |    49 | Implemented |
 | Style/EmptyMethod                      |    32 | Implemented |
-| Style/Encoding                         | 13 | Implemented |
+| Style/Encoding                         |    13 | Implemented |
 | Style/EndBlock                         |     2 | -           |
-| Style/EvalWithLocation                 | 27 | Implemented |
-| Style/EvenOdd                          | 18 | Implemented |
-| Style/ExpandPathArguments              | 16 | Implemented |
-| Style/ExplicitBlockArgument            | 21 | Implemented |
+| Style/EvalWithLocation                 |    27 | Implemented |
+| Style/EvenOdd                          |    18 | Implemented |
+| Style/ExpandPathArguments              |    16 | Implemented |
+| Style/ExplicitBlockArgument            |    21 | Implemented |
 | Style/ExponentialNotation              |    27 | Implemented |
 | Style/FloatDivision                    |    31 | Implemented |
 | Style/For                              |    32 | Implemented |
@@ -84,71 +84,71 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Style/GlobalStdStream                  |     6 | -           |
 | Style/GlobalVars                       |    74 | Implemented |
 | Style/GuardClause                      |    91 | Implemented |
-| Style/HashAsLastArrayItem              | 19 | Implemented |
+| Style/HashAsLastArrayItem              |    19 | Implemented |
 | Style/HashEachMethods                  |    62 | Implemented |
-| Style/HashLikeCase                     | 8 | Implemented |
+| Style/HashLikeCase                     |     8 | Implemented |
 | Style/HashSyntax                       |   189 | Implemented |
 | Style/HashTransformKeys                |    40 | Implemented |
 | Style/HashTransformValues              |    40 | Implemented |
 | Style/IdenticalConditionalBranches     |    48 | Implemented |
-| Style/IfInsideElse                     | 21 | Implemented |
+| Style/IfInsideElse                     |    21 | Implemented |
 | Style/IfUnlessModifier                 |   126 | Implemented |
-| Style/IfUnlessModifierOfIfUnless       | 7 | Implemented |
+| Style/IfUnlessModifierOfIfUnless       |     7 | Implemented |
 | Style/IfWithSemicolon                  |    28 | Implemented |
 | Style/InfiniteLoop                     |    28 | Implemented |
 | Style/InverseMethods                   |   110 | Implemented |
-| Style/KeywordParametersOrder           | 10 | Implemented |
+| Style/KeywordParametersOrder           |    10 | Implemented |
 | Style/Lambda                           |    38 | Implemented |
-| Style/LambdaCall                       | 19 | Implemented |
-| Style/LineEndConcatenation             | 19 | Implemented |
+| Style/LambdaCall                       |    19 | Implemented |
+| Style/LineEndConcatenation             |    19 | Implemented |
 | Style/MethodCallWithoutArgsParentheses |    34 | Implemented |
 | Style/MethodDefParentheses             |    49 | Implemented |
-| Style/MinMax                           | 12 | Implemented |
-| Style/MissingRespondToMissing          | 8 | Implemented |
-| Style/MixinGrouping                    | 18 | Implemented |
-| Style/MixinUsage                       | 18 | Implemented |
-| Style/ModuleFunction                   | 11 | Implemented |
-| Style/MultilineBlockChain              | 11 | Implemented |
-| Style/MultilineIfModifier              | 10 | Implemented |
-| Style/MultilineIfThen                  | 11 | Implemented |
-| Style/MultilineMemoization             | 17 | Implemented |
-| Style/MultilineTernaryOperator         | 17 | Implemented |
-| Style/MultilineWhenThen                | 13 | Implemented |
+| Style/MinMax                           |    12 | Implemented |
+| Style/MissingRespondToMissing          |     8 | Implemented |
+| Style/MixinGrouping                    |    18 | Implemented |
+| Style/MixinUsage                       |    18 | Implemented |
+| Style/ModuleFunction                   |    11 | Implemented |
+| Style/MultilineBlockChain              |    11 | Implemented |
+| Style/MultilineIfModifier              |    10 | Implemented |
+| Style/MultilineIfThen                  |    11 | Implemented |
+| Style/MultilineMemoization             |    17 | Implemented |
+| Style/MultilineTernaryOperator         |    17 | Implemented |
+| Style/MultilineWhenThen                |    13 | Implemented |
 | Style/MultipleComparison               |    34 | Implemented |
 | Style/MutableConstant                  |   354 | Implemented |
 | Style/NegatedIf                        |    15 | Implemented |
 | Style/NegatedUnless                    |    14 | Implemented |
 | Style/NegatedWhile                     |    10 | Implemented |
-| Style/NestedModifier                   | 13 | Implemented |
-| Style/NestedParenthesizedCalls         | 12 | Implemented |
-| Style/NestedTernaryOperator            | 7 | Implemented |
+| Style/NestedModifier                   |    13 | Implemented |
+| Style/NestedParenthesizedCalls         |    12 | Implemented |
+| Style/NestedTernaryOperator            |     7 | Implemented |
 | Style/Next                             |    72 | Implemented |
-| Style/NilComparison                    | 8 | Implemented |
-| Style/NonNilCheck                      | 21 | Implemented |
-| Style/Not                              | 9 | Implemented |
-| Style/NumericLiteralPrefix             | 10 | Implemented |
+| Style/NilComparison                    |     8 | Implemented |
+| Style/NonNilCheck                      |    21 | Implemented |
+| Style/Not                              |     9 | Implemented |
+| Style/NumericLiteralPrefix             |    10 | Implemented |
 | Style/NumericLiterals                  |    28 | Implemented |
 | Style/NumericPredicate                 |    43 | Implemented |
 | Style/OneLineConditional               |   108 | Implemented |
-| Style/OptionalArguments                | 12 | Implemented |
-| Style/OptionalBooleanParameter         | 8 | Implemented |
+| Style/OptionalArguments                |    12 | Implemented |
+| Style/OptionalBooleanParameter         |     8 | Implemented |
 | Style/OrAssignment                     |    25 | Implemented |
 | Style/ParallelAssignment               |    86 | -           |
 | Style/ParenthesesAroundCondition       |    30 | Implemented |
 | Style/PercentLiteralDelimiters         |    65 | Implemented |
 | Style/PercentQLiterals                 |    21 | Implemented |
-| Style/PerlBackrefs                     | 14 | Implemented |
-| Style/PreferredHashMethods             | 9 | Implemented |
+| Style/PerlBackrefs                     |    14 | Implemented |
+| Style/PreferredHashMethods             |     9 | Implemented |
 | Style/Proc                             |     6 | -           |
 | Style/RaiseArgs                        |    35 | Implemented |
 | Style/RandomWithOffset                 |    29 | Implemented |
-| Style/RedundantAssignment              | 11 | Implemented |
+| Style/RedundantAssignment              |    11 | Implemented |
 | Style/RedundantBegin                   |    63 | Implemented |
 | Style/RedundantCapitalW                |    13 | Implemented |
 | Style/RedundantCondition               |   102 | Implemented |
-| Style/RedundantConditional             | 11 | Implemented |
+| Style/RedundantConditional             |    11 | Implemented |
 | Style/RedundantException               |    30 | Implemented |
-| Style/RedundantFetchBlock              | 15 | Implemented |
+| Style/RedundantFetchBlock              |    15 | Implemented |
 | Style/RedundantFileExtensionInRequire  |     4 | -           |
 | Style/RedundantFreeze                  |    62 | Implemented |
 | Style/RedundantInterpolation           |    29 | Implemented |
@@ -158,47 +158,47 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Style/RedundantRegexpEscape            |   217 | Implemented |
 | Style/RedundantReturn                  |    39 | Implemented |
 | Style/RedundantSelf                    |    62 | Implemented |
-| Style/RedundantSelfAssignment          | 14 | Implemented |
+| Style/RedundantSelfAssignment          |    14 | Implemented |
 | Style/RedundantSort                    |    50 | Implemented |
-| Style/RedundantSortBy                  | 8 | Implemented |
+| Style/RedundantSortBy                  |     8 | Implemented |
 | Style/RegexpLiteral                    |    57 | Implemented |
-| Style/RescueModifier                   | 21 | Implemented |
+| Style/RescueModifier                   |    21 | Implemented |
 | Style/RescueStandardError              |    37 | Implemented |
 | Style/SafeNavigation                   |   786 | Implemented |
 | Style/Sample                           |    82 | Implemented |
 | Style/SelfAssignment                   |   105 | Implemented |
 | Style/Semicolon                        |    33 | Implemented |
 | Style/SignalException                  |    27 | Implemented |
-| Style/SingleArgumentDig                | 15 | Implemented |
-| Style/SingleLineMethods                | 16 | Implemented |
+| Style/SingleArgumentDig                |    15 | Implemented |
+| Style/SingleLineMethods                |    16 | Implemented |
 | Style/SlicingWithRange                 |    28 | Implemented |
 | Style/SoleNestedConditional            |    73 | Implemented |
 | Style/SpecialGlobalVars                |    31 | Implemented |
-| Style/StabbyLambdaParentheses          | 9 | Implemented |
-| Style/StderrPuts                       | 5 | Implemented |
+| Style/StabbyLambdaParentheses          |     9 | Implemented |
+| Style/StderrPuts                       |     5 | Implemented |
 | Style/StringConcatenation              |    30 | Implemented |
 | Style/StringLiterals                   |    58 | Implemented |
-| Style/StringLiteralsInInterpolation    | 13 | Implemented |
-| Style/Strip                            | 6 | Implemented |
-| Style/StructInheritance                | 12 | Implemented |
+| Style/StringLiteralsInInterpolation    |    13 | Implemented |
+| Style/Strip                            |     6 | Implemented |
+| Style/StructInheritance                |    12 | Implemented |
 | Style/SymbolArray                      |    33 | Implemented |
 | Style/SymbolLiteral                    |     4 | -           |
 | Style/SymbolProc                       |    83 | Implemented |
 | Style/TernaryParentheses               |    98 | Implemented |
-| Style/TrailingBodyOnClass              | 7 | Implemented |
-| Style/TrailingBodyOnMethodDefinition   | 12 | Implemented |
-| Style/TrailingBodyOnModule             | 7 | Implemented |
+| Style/TrailingBodyOnClass              |     7 | Implemented |
+| Style/TrailingBodyOnMethodDefinition   |    12 | Implemented |
+| Style/TrailingBodyOnModule             |     7 | Implemented |
 | Style/TrailingCommaInArguments         |   178 | Implemented |
 | Style/TrailingCommaInArrayLiteral      |    48 | Implemented |
 | Style/TrailingCommaInHashLiteral       |    41 | Implemented |
-| Style/TrailingMethodEndStatement       | 10 | Implemented |
+| Style/TrailingMethodEndStatement       |    10 | Implemented |
 | Style/TrailingUnderscoreVariable       |    58 | Implemented |
 | Style/TrivialAccessors                 |    38 | Implemented |
 | Style/UnlessElse                       |     5 | -           |
-| Style/UnpackFirst                      | 11 | Implemented |
+| Style/UnpackFirst                      |    11 | Implemented |
 | Style/VariableInterpolation            |     9 | Implemented |
 | Style/WhenThen                         |     4 | -           |
-| Style/WhileUntilDo                     | 6 | Implemented |
+| Style/WhileUntilDo                     |     6 | Implemented |
 | Style/WhileUntilModifier               |    34 | Implemented |
 | Style/WordArray                        |    59 | Implemented |
 | Style/YodaCondition                    |    73 | Implemented |
@@ -344,111 +344,111 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Cop                                      | Tests | Status      |
 | ---------------------------------------- | ----: | ----------- |
 | Lint/AmbiguousBlockAssociation           |    36 | Implemented |
-| Lint/AmbiguousOperator                   | 17 | Implemented |
+| Lint/AmbiguousOperator                   |    17 | Implemented |
 | Lint/AmbiguousRegexpLiteral              |    30 | Implemented |
 | Lint/AssignmentInCondition               |    69 | Implemented |
-| Lint/BigDecimalNew                       | 3 | Implemented |
-| Lint/BinaryOperatorWithIdenticalOperands | 23 | Implemented |
-| Lint/BooleanSymbol                       | 10 | Implemented |
-| Lint/CircularArgumentReference           | 13 | Implemented |
+| Lint/BigDecimalNew                       |     3 | Implemented |
+| Lint/BinaryOperatorWithIdenticalOperands |    23 | Implemented |
+| Lint/BooleanSymbol                       |    10 | Implemented |
+| Lint/CircularArgumentReference           |    13 | Implemented |
 | Lint/ConstantDefinitionInBlock           |    27 | -           |
 | Lint/Debugger                            |    97 | Implemented |
 | Lint/DeprecatedClassMethods              |    31 | Implemented |
-| Lint/DeprecatedOpenSSLConstant           | 24 | Implemented |
-| Lint/DisjunctiveAssignmentInConstructor  | 7 | Implemented |
-| Lint/DuplicateCaseCondition              | 9 | Implemented |
-| Lint/DuplicateElsifCondition             | 5 | Implemented |
+| Lint/DeprecatedOpenSSLConstant           |    24 | Implemented |
+| Lint/DisjunctiveAssignmentInConstructor  |     7 | Implemented |
+| Lint/DuplicateCaseCondition              |     9 | Implemented |
+| Lint/DuplicateElsifCondition             |     5 | Implemented |
 | Lint/DuplicateHashKey                    |    33 | Implemented |
 | Lint/DuplicateMethods                    |   329 | Implemented |
-| Lint/DuplicateRequire                    | 10 | Implemented |
-| Lint/DuplicateRescueException            | 6 | Implemented |
-| Lint/EachWithObjectArgument              | 7 | Implemented |
-| Lint/ElseLayout                          | 12 | Implemented |
+| Lint/DuplicateRequire                    |    10 | Implemented |
+| Lint/DuplicateRescueException            |     6 | Implemented |
+| Lint/EachWithObjectArgument              |     7 | Implemented |
+| Lint/ElseLayout                          |    12 | Implemented |
 | Lint/EmptyConditionalBody                |    42 | Implemented |
-| Lint/EmptyEnsure                         | 2 | Implemented |
-| Lint/EmptyExpression                     | 12 | Implemented |
-| Lint/EmptyFile                           | 2 | Implemented |
+| Lint/EmptyEnsure                         |     2 | Implemented |
+| Lint/EmptyExpression                     |    12 | Implemented |
+| Lint/EmptyFile                           |     2 | Implemented |
 | Lint/EmptyInterpolation                  |    12 | Implemented |
-| Lint/EmptyWhen                           | 16 | Implemented |
-| Lint/EnsureReturn                        | 5 | Implemented |
-| Lint/ErbNewArguments                     | 10 | Implemented |
-| Lint/FlipFlop                            | 2 | Implemented |
-| Lint/FloatComparison                     | 17 | Implemented |
-| Lint/FloatOutOfRange                     | 5 | Implemented |
+| Lint/EmptyWhen                           |    16 | Implemented |
+| Lint/EnsureReturn                        |     5 | Implemented |
+| Lint/ErbNewArguments                     |    10 | Implemented |
+| Lint/FlipFlop                            |     2 | Implemented |
+| Lint/FloatComparison                     |    17 | Implemented |
+| Lint/FloatOutOfRange                     |     5 | Implemented |
 | Lint/FormatParameterMismatch             |    75 | Implemented |
-| Lint/HashCompareByIdentity               | 4 | Implemented |
-| Lint/IdentityComparison                  | 12 | Implemented |
-| Lint/ImplicitStringConcatenation         | 12 | Implemented |
-| Lint/IneffectiveAccessModifier           | 8 | Implemented |
-| Lint/InheritException                    | 13 | Implemented |
-| Lint/InterpolationCheck                  | 15 | Implemented |
+| Lint/HashCompareByIdentity               |     4 | Implemented |
+| Lint/IdentityComparison                  |    12 | Implemented |
+| Lint/ImplicitStringConcatenation         |    12 | Implemented |
+| Lint/IneffectiveAccessModifier           |     8 | Implemented |
+| Lint/InheritException                    |    13 | Implemented |
+| Lint/InterpolationCheck                  |    15 | Implemented |
 | Lint/LiteralAsCondition                  |   229 | Implemented |
 | Lint/LiteralInInterpolation              |   378 | Implemented |
-| Lint/Loop                                | 4 | Implemented |
-| Lint/MissingCopEnableDirective           | 11 | Implemented |
+| Lint/Loop                                |     4 | Implemented |
+| Lint/MissingCopEnableDirective           |    11 | Implemented |
 | Lint/MissingSuper                        |    22 | -           |
-| Lint/MixedRegexpCaptureTypes             | 12 | Implemented |
-| Lint/MultipleComparison                  | 20 | Implemented |
+| Lint/MixedRegexpCaptureTypes             |    12 | Implemented |
+| Lint/MultipleComparison                  |    20 | Implemented |
 | Lint/NestedMethodDefinition              |    38 | Implemented |
 | Lint/NestedPercentLiteral                |    11 | Implemented |
-| Lint/NextWithoutAccumulator              | 18 | Implemented |
+| Lint/NextWithoutAccumulator              |    18 | Implemented |
 | Lint/NonDeterministicRequireOrder        |    28 | -           |
-| Lint/NonLocalExitFromIterator            | 14 | Implemented |
-| Lint/OrderedMagicComments                | 10 | Implemented |
+| Lint/NonLocalExitFromIterator            |    14 | Implemented |
+| Lint/OrderedMagicComments                |    10 | Implemented |
 | Lint/OutOfRangeRegexpRef                 |   122 | Implemented |
 | Lint/ParenthesesAsGroupedExpression      |    26 | -           |
 | Lint/PercentStringArray                  |    22 | Implemented |
 | Lint/PercentSymbolArray                  |    12 | Implemented |
-| Lint/RaiseException                      | 15 | Implemented |
-| Lint/RandOne                             | 16 | Implemented |
+| Lint/RaiseException                      |    15 | Implemented |
+| Lint/RandOne                             |    16 | Implemented |
 | Lint/RedundantCopDisableDirective        |    44 | -           |
 | Lint/RedundantCopEnableDirective         |    23 | Implemented |
-| Lint/RedundantRequireStatement           | 15 | Implemented |
+| Lint/RedundantRequireStatement           |    15 | Implemented |
 | Lint/RedundantSafeNavigation             |    72 | Implemented |
 | Lint/RedundantSplatExpansion             |    59 | Implemented |
 | Lint/RedundantStringCoercion             |    18 | Implemented |
-| Lint/RedundantWithIndex                  | 17 | Implemented |
-| Lint/RedundantWithObject                 | 14 | Implemented |
-| Lint/RegexpAsCondition                   | 5 | Implemented |
-| Lint/RequireParentheses                  | 16 | Implemented |
-| Lint/RescueException                     | 11 | Implemented |
+| Lint/RedundantWithIndex                  |    17 | Implemented |
+| Lint/RedundantWithObject                 |    14 | Implemented |
+| Lint/RegexpAsCondition                   |     5 | Implemented |
+| Lint/RequireParentheses                  |    16 | Implemented |
+| Lint/RescueException                     |    11 | Implemented |
 | Lint/RescueType                          |    52 | Implemented |
-| Lint/ReturnInVoidContext                 | 18 | Implemented |
+| Lint/ReturnInVoidContext                 |    18 | Implemented |
 | Lint/SafeNavigationChain                 |    63 | Implemented |
 | Lint/SafeNavigationConsistency           |    43 | Implemented |
-| Lint/SafeNavigationWithEmpty             | 3 | Implemented |
+| Lint/SafeNavigationWithEmpty             |     3 | Implemented |
 | Lint/ScriptPermission                    |     6 | -           |
 | Lint/SelfAssignment                      |    58 | Implemented |
-| Lint/SendWithMixinArgument               | 14 | Implemented |
+| Lint/SendWithMixinArgument               |    14 | Implemented |
 | Lint/ShadowedArgument                    |    54 | Implemented |
 | Lint/ShadowedException                   |    38 | Implemented |
-| Lint/StructNewOverride                   | 10 | Implemented |
-| Lint/SuppressedException                 | 24 | Implemented |
+| Lint/StructNewOverride                   |    10 | Implemented |
+| Lint/SuppressedException                 |    24 | Implemented |
 | Lint/Syntax                              |     0 | -           |
-| Lint/ToJSON                              | 2 | Implemented |
-| Lint/TopLevelReturnWithArgument          | 10 | Implemented |
-| Lint/TrailingCommaInAttributeDeclaration | 2 | Implemented |
-| Lint/UnderscorePrefixedVariableName      | 19 | Implemented |
-| Lint/UnifiedInteger                      | 15 | Implemented |
+| Lint/ToJSON                              |     2 | Implemented |
+| Lint/TopLevelReturnWithArgument          |    10 | Implemented |
+| Lint/TrailingCommaInAttributeDeclaration |     2 | Implemented |
+| Lint/UnderscorePrefixedVariableName      |    19 | Implemented |
+| Lint/UnifiedInteger                      |    15 | Implemented |
 | Lint/UnreachableCode                     |   266 | Implemented |
 | Lint/UnreachableLoop                     |    28 | Implemented |
 | Lint/UnusedBlockArgument                 |    30 | Implemented |
 | Lint/UnusedMethodArgument                |    41 | Implemented |
-| Lint/UriEscapeUnescape                   | 9 | Implemented |
-| Lint/UriRegexp                           | 10 | Implemented |
+| Lint/UriEscapeUnescape                   |     9 | Implemented |
+| Lint/UriRegexp                           |    10 | Implemented |
 | Lint/UselessAccessModifier               |   198 | Implemented |
 | Lint/UselessAssignment                   |   149 | Implemented |
-| Lint/UselessElseWithoutRescue            | 2 | Implemented |
-| Lint/UselessMethodDefinition             | 16 | Implemented |
-| Lint/UselessSetterCall                   | 20 | Implemented |
-| Lint/UselessTimes                        | 25 | Implemented |
+| Lint/UselessElseWithoutRescue            |     2 | Implemented |
+| Lint/UselessMethodDefinition             |    16 | Implemented |
+| Lint/UselessSetterCall                   |    20 | Implemented |
+| Lint/UselessTimes                        |    25 | Implemented |
 | Lint/Void                                |   270 | Implemented |
 
 ### Pending by Default (50 cops, 2,007 tests)
 
 | Cop                                         | Tests | Status      |
 | ------------------------------------------- | ----: | ----------- |
-| Lint/AmbiguousAssignment                    | 40 | Implemented |
+| Lint/AmbiguousAssignment                    |    40 | Implemented |
 | Lint/AmbiguousOperatorPrecedence            |    13 | -           |
 | Lint/AmbiguousRange                         |    54 | -           |
 | Lint/ArrayLiteralInRegexp                   |    32 | -           |
@@ -484,7 +484,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Lint/RequireRelativeSelfPath                |     6 | -           |
 | Lint/SharedMutableDefault                   |     6 | -           |
 | Lint/SuppressedExceptionInNumberConversion  |    26 | -           |
-| Lint/SymbolConversion                       | 39 | Implemented |
+| Lint/SymbolConversion                       |    39 | Implemented |
 | Lint/ToEnumArguments                        |    24 | -           |
 | Lint/TripleQuotes                           |     9 | -           |
 | Lint/UnescapedBracketInRegexp               |    44 | -           |
@@ -517,26 +517,26 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Layout/AccessModifierIndentation                 |    43 | Implemented |
 | Layout/ArgumentAlignment                         |    52 | -           |
 | Layout/ArrayAlignment                            |    25 | -           |
-| Layout/AssignmentIndentation                     | 10 | Implemented |
+| Layout/AssignmentIndentation                     |    10 | Implemented |
 | Layout/BeginEndAlignment                         |     7 | Implemented |
 | Layout/BlockAlignment                            |    78 | Implemented |
-| Layout/BlockEndNewline                           | 18 | Implemented |
+| Layout/BlockEndNewline                           |    18 | Implemented |
 | Layout/CaseIndentation                           |    50 | Implemented |
-| Layout/ClosingHeredocIndentation                 | 11 | Implemented |
+| Layout/ClosingHeredocIndentation                 |    11 | Implemented |
 | Layout/ClosingParenthesisIndentation             |    43 | Implemented |
-| Layout/CommentIndentation                        | 28 | Implemented |
-| Layout/ConditionPosition                         | 14 | Implemented |
+| Layout/CommentIndentation                        |    28 | Implemented |
+| Layout/ConditionPosition                         |    14 | Implemented |
 | Layout/DefEndAlignment                           |    18 | Implemented |
-| Layout/DotPosition                               | 39 | Implemented |
+| Layout/DotPosition                               |    39 | Implemented |
 | Layout/ElseAlignment                             |    52 | Implemented |
-| Layout/EmptyComment                              | 14 | Implemented |
+| Layout/EmptyComment                              |    14 | Implemented |
 | Layout/EmptyLineAfterGuardClause                 |    47 | Implemented |
-| Layout/EmptyLineAfterMagicComment                | 21 | Implemented |
+| Layout/EmptyLineAfterMagicComment                |    21 | Implemented |
 | Layout/EmptyLineBetweenDefs                      |    45 | Implemented |
 | Layout/EmptyLines                                |     5 | -           |
 | Layout/EmptyLinesAroundAccessModifier            |   176 | Implemented |
-| Layout/EmptyLinesAroundArguments                 | 22 | Implemented |
-| Layout/EmptyLinesAroundAttributeAccessor         | 20 | Implemented |
+| Layout/EmptyLinesAroundArguments                 |    22 | Implemented |
+| Layout/EmptyLinesAroundAttributeAccessor         |    20 | Implemented |
 | Layout/EmptyLinesAroundBeginBody                 |    11 | Implemented |
 | Layout/EmptyLinesAroundBlockBody                 |    20 | Implemented |
 | Layout/EmptyLinesAroundClassBody                 |    46 | Implemented |
@@ -549,48 +549,48 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Layout/FirstArgumentIndentation                  |   139 | Implemented |
 | Layout/FirstArrayElementIndentation              |    53 | Implemented |
 | Layout/FirstHashElementIndentation               |    60 | Implemented |
-| Layout/FirstParameterIndentation                 | 20 | Implemented |
+| Layout/FirstParameterIndentation                 |    20 | Implemented |
 | Layout/HashAlignment                             |   131 | Implemented |
 | Layout/HeredocIndentation                        |   105 | Implemented |
 | Layout/IndentationConsistency                    |    53 | Implemented |
-| Layout/IndentationStyle                          | 25 | Implemented |
+| Layout/IndentationStyle                          |    25 | Implemented |
 | Layout/IndentationWidth                          |   177 | Implemented |
-| Layout/InitialIndentation                        | 8 | Implemented |
+| Layout/InitialIndentation                        |     8 | Implemented |
 | Layout/LeadingCommentSpace                       |    27 | Implemented |
-| Layout/LeadingEmptyLines                         | 9 | Implemented |
+| Layout/LeadingEmptyLines                         |     9 | Implemented |
 | Layout/LineLength                                |   192 | Implemented |
 | Layout/MultilineArrayBraceLayout                 |    35 | Implemented |
-| Layout/MultilineBlockLayout                      | 30 | Implemented |
+| Layout/MultilineBlockLayout                      |    30 | Implemented |
 | Layout/MultilineHashBraceLayout                  |    34 | Implemented |
 | Layout/MultilineMethodCallBraceLayout            |    44 | Implemented |
 | Layout/MultilineMethodCallIndentation            |   252 | Implemented |
-| Layout/MultilineMethodDefinitionBraceLayout      | 26 | Implemented |
+| Layout/MultilineMethodDefinitionBraceLayout      |    26 | Implemented |
 | Layout/MultilineOperationIndentation             |   101 | Implemented |
 | Layout/ParameterAlignment                        |    19 | -           |
 | Layout/RescueEnsureAlignment                     |    99 | Implemented |
-| Layout/SpaceAfterColon                           | 12 | Implemented |
+| Layout/SpaceAfterColon                           |    12 | Implemented |
 | Layout/SpaceAfterComma                           |     9 | Implemented |
-| Layout/SpaceAfterMethodName                      | 8 | Implemented |
+| Layout/SpaceAfterMethodName                      |     8 | Implemented |
 | Layout/SpaceAfterNot                             |     6 | -           |
-| Layout/SpaceAfterSemicolon                       | 9 | Implemented |
+| Layout/SpaceAfterSemicolon                       |     9 | Implemented |
 | Layout/SpaceAroundBlockParameters                |    45 | Implemented |
 | Layout/SpaceAroundEqualsInParameterDefault       |    11 | Implemented |
 | Layout/SpaceAroundKeyword                        |   112 | Implemented |
 | Layout/SpaceAroundMethodCallOperator             |    51 | Implemented |
 | Layout/SpaceAroundOperators                      |    99 | Implemented |
-| Layout/SpaceBeforeBlockBraces                    | 18 | Implemented |
-| Layout/SpaceBeforeComma                          | 6 | Implemented |
+| Layout/SpaceBeforeBlockBraces                    |    18 | Implemented |
+| Layout/SpaceBeforeComma                          |     6 | Implemented |
 | Layout/SpaceBeforeComment                        |     5 | -           |
 | Layout/SpaceBeforeFirstArg                       |    12 | Implemented |
-| Layout/SpaceBeforeSemicolon                      | 9 | Implemented |
-| Layout/SpaceInLambdaLiteral                      | 15 | Implemented |
+| Layout/SpaceBeforeSemicolon                      |     9 | Implemented |
+| Layout/SpaceInLambdaLiteral                      |    15 | Implemented |
 | Layout/SpaceInsideArrayLiteralBrackets           |    99 | Implemented |
 | Layout/SpaceInsideArrayPercentLiteral            |   129 | Implemented |
 | Layout/SpaceInsideBlockBraces                    |    43 | Implemented |
 | Layout/SpaceInsideHashLiteralBraces              |    40 | Implemented |
 | Layout/SpaceInsideParens                         |    28 | Implemented |
 | Layout/SpaceInsidePercentLiteralDelimiters       |   262 | Implemented |
-| Layout/SpaceInsideRangeLiteral                   | 7 | Implemented |
+| Layout/SpaceInsideRangeLiteral                   |     7 | Implemented |
 | Layout/SpaceInsideReferenceBrackets              |    47 | Implemented |
 | Layout/SpaceInsideStringInterpolation            |    12 | Implemented |
 | Layout/TrailingEmptyLines                        |    18 | Implemented |
@@ -633,12 +633,12 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | ---------------------------- | ----: | ----------- |
 | Metrics/AbcSize              |    25 | -           |
 | Metrics/BlockLength          |    38 | Implemented |
-| Metrics/BlockNesting         | 26 | Implemented |
+| Metrics/BlockNesting         |    26 | Implemented |
 | Metrics/ClassLength          |    34 | Implemented |
 | Metrics/CyclomaticComplexity |    37 | Implemented |
 | Metrics/MethodLength         |    31 | Implemented |
-| Metrics/ModuleLength         | 21 | Implemented |
-| Metrics/ParameterLists       | 16 | Implemented |
+| Metrics/ModuleLength         |    21 | Implemented |
+| Metrics/ParameterLists       |    16 | Implemented |
 | Metrics/PerceivedComplexity  |    31 | Implemented |
 
 ### Pending by Default (1 cops, 13 tests)
@@ -653,20 +653,20 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 
 | Cop                                  | Tests | Status      |
 | ------------------------------------ | ----: | ----------- |
-| Naming/AccessorMethodName            | 23 | Implemented |
-| Naming/AsciiIdentifiers              | 12 | Implemented |
-| Naming/BinaryOperatorParameterName   | 15 | Implemented |
+| Naming/AccessorMethodName            |    23 | Implemented |
+| Naming/AsciiIdentifiers              |    12 | Implemented |
+| Naming/BinaryOperatorParameterName   |    15 | Implemented |
 | Naming/BlockParameterName            |    13 | Implemented |
 | Naming/ClassAndModuleCamelCase       |     5 | -           |
-| Naming/ConstantName                  | 24 | Implemented |
+| Naming/ConstantName                  |    24 | Implemented |
 | Naming/FileName                      |   120 | Implemented |
-| Naming/HeredocDelimiterCase          | 26 | Implemented |
-| Naming/HeredocDelimiterNaming        | 19 | Implemented |
+| Naming/HeredocDelimiterCase          |    26 | Implemented |
+| Naming/HeredocDelimiterNaming        |    19 | Implemented |
 | Naming/MemoizedInstanceVariableName  |    72 | Implemented |
 | Naming/MethodName                    |   239 | Implemented |
 | Naming/MethodParameterName           |    23 | Implemented |
-| Naming/PredicatePrefix               | 24 | Implemented |
-| Naming/RescuedExceptionsVariableName | 36 | Implemented |
+| Naming/PredicatePrefix               |    24 | Implemented |
+| Naming/RescuedExceptionsVariableName |    36 | Implemented |
 | Naming/VariableName                  |   118 | Implemented |
 | Naming/VariableNumber                |   115 | Implemented |
 
@@ -687,12 +687,12 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 
 ### Enabled by Default (4 cops, 61 tests)
 
-| Cop                             | Tests | Status |
-| ------------------------------- | ----: | ------ |
-| Gemspec/DuplicatedAssignment    | 17 | Implemented |
-| Gemspec/OrderedDependencies     | 18 | Implemented |
-| Gemspec/RequiredRubyVersion     | 21 | Implemented |
-| Gemspec/RubyVersionGlobalsUsage | 5 | Implemented |
+| Cop                             | Tests | Status      |
+| ------------------------------- | ----: | ----------- |
+| Gemspec/DuplicatedAssignment    |    17 | Implemented |
+| Gemspec/OrderedDependencies     |    18 | Implemented |
+| Gemspec/RequiredRubyVersion     |    21 | Implemented |
+| Gemspec/RubyVersionGlobalsUsage |     5 | Implemented |
 
 ### Pending by Default (5 cops, 55 tests)
 
@@ -714,13 +714,13 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 
 ### Enabled by Default (5 cops, 69 tests)
 
-| Cop                            | Tests | Status |
-| ------------------------------ | ----: | ------ |
-| Bundler/DuplicatedGem          | 10 | Implemented |
-| Bundler/DuplicatedGroup        | 21 | Implemented |
-| Bundler/GemFilename            | 15 | Implemented |
-| Bundler/InsecureProtocolSource | 6 | Implemented |
-| Bundler/OrderedGems            |    17 | -      |
+| Cop                            | Tests | Status      |
+| ------------------------------ | ----: | ----------- |
+| Bundler/DuplicatedGem          |    10 | Implemented |
+| Bundler/DuplicatedGroup        |    21 | Implemented |
+| Bundler/GemFilename            |    15 | Implemented |
+| Bundler/InsecureProtocolSource |     6 | Implemented |
+| Bundler/OrderedGems            |    17 | -           |
 
 ### Disabled by Default (2 cops, 32 tests)
 
@@ -733,13 +733,13 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 
 ### Enabled by Default (5 cops, 49 tests)
 
-| Cop                  | Tests | Status |
-| -------------------- | ----: | ------ |
-| Security/Eval        | 15 | Implemented |
-| Security/JSONLoad    | 7 | Implemented |
-| Security/MarshalLoad | 5 | Implemented |
-| Security/Open        | 16 | Implemented |
-| Security/YAMLLoad    | 6 | Implemented |
+| Cop                  | Tests | Status      |
+| -------------------- | ----: | ----------- |
+| Security/Eval        |    15 | Implemented |
+| Security/JSONLoad    |     7 | Implemented |
+| Security/MarshalLoad |     5 | Implemented |
+| Security/Open        |    16 | Implemented |
+| Security/YAMLLoad    |     6 | Implemented |
 
 ### Pending by Default (2 cops, 53 tests)
 
@@ -752,9 +752,9 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 
 ### Enabled by Default (1 cops, 8 tests)
 
-| Cop                      | Tests | Status |
-| ------------------------ | ----: | ------ |
-| Migration/DepartmentName | 8 | Implemented |
+| Cop                      | Tests | Status      |
+| ------------------------ | ----: | ----------- |
+| Migration/DepartmentName |     8 | Implemented |
 
 ## Implementation Clusters (Unimplemented, Enabled by Default)
 
@@ -766,61 +766,62 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 - Difficulty is rough (from max Ruby LOC in cluster): Easy <50, Med <120, Hard ≥120.
 - Tests & status live in the tables above — this section is just the cop → cluster map.
 
-| # | Cluster | Kind | Cops | Tests | Diff |
-|--:|---------|------|-----:|------:|------|
-| 1 | Other | topic | 21 | 256 | Med |
-| 2 | Method def/params | topic | 15 | 244 | Med |
-| 3 | Block/lambda/proc | topic | 15 | 195 | Med |
-| 4 | Redundant/Useless | topic | 13 | 182 | Med |
-| 5 | Regexp/numeric | topic | 10 | 165 | Med |
-| 6 | Rescue/ensure/exception | topic | 9 | 165 | Med |
-| 7 | Class/module/attr | topic | 12 | 155 | Hard |
-| 8 | Alignment/spacing | topic | 9 | 147 | Med |
-| 9 | Return/ctrl flow | topic | 10 | 116 | Med |
-| 10 | RescueNode | mixin | 3 | 113 | Hard |
-| 11 | Comparison/equality | topic | 7 | 109 | Med |
-| 12 | Require/load/file | topic | 9 | 109 | Med |
-| 13 | AllowedMethods | mixin | 5 | 91 | Med |
-| 14 | Empty constructs | topic | 9 | 90 | Med |
-| 15 | String/interpolation | topic | 3 | 77 | Med |
-| 16 | Hash/array/dig | topic | 6 | 73 | Med |
-| 17 | Multiline expr/body | topic | 4 | 71 | Med |
-| 18 | Cop directive comments | topic | 3 | 58 | Hard |
-| 19 | Heredoc | mixin | 3 | 56 | Med |
-| 20 | Duplicate detection | topic | 5 | 55 | Med |
-| 21 | Deprecated/legacy APIs | topic | 4 | 52 | Med |
-| 22 | Eval/send/URI | topic | 2 | 42 | Hard |
-| 23 | Percent literal | topic | 1 | 36 | Easy |
-| 24 | Naming | topic | 2 | 36 | Easy |
-| 25 | OrderedGemNode | mixin | 2 | 35 | Easy |
-| 26 | CommentsHelp | mixin | 2 | 33 | Med |
-| 27 | Negated/Not | topic | 2 | 30 | Med |
-| 28 | MultilineLiteralBraceLayout | mixin | 1 | 26 | Easy |
-| 29 | TrailingBody | mixin | 3 | 26 | Easy |
-| 30 | VisibilityHelp | mixin | 1 | 26 | Hard |
-| 31 | MethodComplexity | mixin | 1 | 25 | Easy |
-| 32 | FrozenStringLiteral | mixin | 2 | 25 | Med |
-| 33 | GemspecHelp | mixin | 2 | 22 | Med |
-| 34 | CodeLength | mixin | 1 | 21 | Easy |
-| 35 | Gemspec/Bundler | topic | 2 | 21 | Med |
-| 36 | MultilineElementIndentation | mixin | 1 | 20 | Easy |
-| 37 | Nested constructs | topic | 2 | 20 | Med |
-| 38 | StatementModifier | mixin | 2 | 17 | Easy |
-| 39 | Security | topic | 1 | 16 | Easy |
-| 40 | SpaceBeforePunctuation | mixin | 2 | 15 | Easy |
-| 41 | DigHelp | mixin | 1 | 15 | Easy |
-| 42 | StringLiteralsHelp | mixin | 1 | 13 | Easy |
-| 43 | Magic comments/encoding | topic | 1 | 13 | Easy |
-| 44 | EmptyParameter | mixin | 2 | 12 | Easy |
-| 45 | Trailing body/comma | topic | 2 | 12 | Easy |
-| 46 | OnNormalIfUnless | mixin | 1 | 11 | Easy |
-| 47 | CheckAssignment | mixin | 1 | 10 | Easy |
-| 48 | IntegerNode | mixin | 1 | 10 | Med |
-| 49 | SpaceAfterPunctuation | mixin | 1 | 9 | Easy |
-| 50 | MinBranchesCount | mixin | 1 | 8 | Easy |
-| 51 | StringHelp | mixin | 1 | 5 | Easy |
+|   # | Cluster                     | Kind  | Cops | Tests | Diff |
+| --: | --------------------------- | ----- | ---: | ----: | ---- |
+|   1 | Other                       | topic |   21 |   256 | Med  |
+|   2 | Method def/params           | topic |   15 |   244 | Med  |
+|   3 | Block/lambda/proc           | topic |   15 |   195 | Med  |
+|   4 | Redundant/Useless           | topic |   13 |   182 | Med  |
+|   5 | Regexp/numeric              | topic |   10 |   165 | Med  |
+|   6 | Rescue/ensure/exception     | topic |    9 |   165 | Med  |
+|   7 | Class/module/attr           | topic |   12 |   155 | Hard |
+|   8 | Alignment/spacing           | topic |    9 |   147 | Med  |
+|   9 | Return/ctrl flow            | topic |   10 |   116 | Med  |
+|  10 | RescueNode                  | mixin |    3 |   113 | Hard |
+|  11 | Comparison/equality         | topic |    7 |   109 | Med  |
+|  12 | Require/load/file           | topic |    9 |   109 | Med  |
+|  13 | AllowedMethods              | mixin |    5 |    91 | Med  |
+|  14 | Empty constructs            | topic |    9 |    90 | Med  |
+|  15 | String/interpolation        | topic |    3 |    77 | Med  |
+|  16 | Hash/array/dig              | topic |    6 |    73 | Med  |
+|  17 | Multiline expr/body         | topic |    4 |    71 | Med  |
+|  18 | Cop directive comments      | topic |    3 |    58 | Hard |
+|  19 | Heredoc                     | mixin |    3 |    56 | Med  |
+|  20 | Duplicate detection         | topic |    5 |    55 | Med  |
+|  21 | Deprecated/legacy APIs      | topic |    4 |    52 | Med  |
+|  22 | Eval/send/URI               | topic |    2 |    42 | Hard |
+|  23 | Percent literal             | topic |    1 |    36 | Easy |
+|  24 | Naming                      | topic |    2 |    36 | Easy |
+|  25 | OrderedGemNode              | mixin |    2 |    35 | Easy |
+|  26 | CommentsHelp                | mixin |    2 |    33 | Med  |
+|  27 | Negated/Not                 | topic |    2 |    30 | Med  |
+|  28 | MultilineLiteralBraceLayout | mixin |    1 |    26 | Easy |
+|  29 | TrailingBody                | mixin |    3 |    26 | Easy |
+|  30 | VisibilityHelp              | mixin |    1 |    26 | Hard |
+|  31 | MethodComplexity            | mixin |    1 |    25 | Easy |
+|  32 | FrozenStringLiteral         | mixin |    2 |    25 | Med  |
+|  33 | GemspecHelp                 | mixin |    2 |    22 | Med  |
+|  34 | CodeLength                  | mixin |    1 |    21 | Easy |
+|  35 | Gemspec/Bundler             | topic |    2 |    21 | Med  |
+|  36 | MultilineElementIndentation | mixin |    1 |    20 | Easy |
+|  37 | Nested constructs           | topic |    2 |    20 | Med  |
+|  38 | StatementModifier           | mixin |    2 |    17 | Easy |
+|  39 | Security                    | topic |    1 |    16 | Easy |
+|  40 | SpaceBeforePunctuation      | mixin |    2 |    15 | Easy |
+|  41 | DigHelp                     | mixin |    1 |    15 | Easy |
+|  42 | StringLiteralsHelp          | mixin |    1 |    13 | Easy |
+|  43 | Magic comments/encoding     | topic |    1 |    13 | Easy |
+|  44 | EmptyParameter              | mixin |    2 |    12 | Easy |
+|  45 | Trailing body/comma         | topic |    2 |    12 | Easy |
+|  46 | OnNormalIfUnless            | mixin |    1 |    11 | Easy |
+|  47 | CheckAssignment             | mixin |    1 |    10 | Easy |
+|  48 | IntegerNode                 | mixin |    1 |    10 | Med  |
+|  49 | SpaceAfterPunctuation       | mixin |    1 |     9 | Easy |
+|  50 | MinBranchesCount            | mixin |    1 |     8 | Easy |
+|  51 | StringHelp                  | mixin |    1 |     5 | Easy |
 
 ### 1. Other — 21 cops, 256 tests (Med)
+
 Topic family, no unique shared mixin — implement individually.
 
 - `Style/CommandLiteral` _(+ ConfigurableEnforcedStyle)_
@@ -846,6 +847,7 @@ Topic family, no unique shared mixin — implement individually.
 - `Lint/Syntax`
 
 ### 2. Method def/params — 15 cops, 244 tests (Med)
+
 Topic family, no unique shared mixin — implement individually.
 
 - `Layout/ArgumentAlignment` _(+ Alignment)_
@@ -865,6 +867,7 @@ Topic family, no unique shared mixin — implement individually.
 - `Style/ColonMethodDefinition`
 
 ### 3. Block/lambda/proc — 15 cops, 195 tests (Med)
+
 Topic family, no unique shared mixin — implement individually.
 
 - `Metrics/BlockNesting`
@@ -884,6 +887,7 @@ Topic family, no unique shared mixin — implement individually.
 - `Style/BeginBlock`
 
 ### 4. Redundant/Useless — 13 cops, 182 tests (Med)
+
 Topic family, no unique shared mixin — implement individually.
 
 - `Lint/UselessTimes` _(+ RangeHelp)_
@@ -901,6 +905,7 @@ Topic family, no unique shared mixin — implement individually.
 - `Lint/UselessElseWithoutRescue`
 
 ### 5. Regexp/numeric — 10 cops, 165 tests (Med)
+
 Topic family, no unique shared mixin — implement individually.
 
 - `Style/RandomWithOffset`
@@ -915,6 +920,7 @@ Topic family, no unique shared mixin — implement individually.
 - `Lint/RegexpAsCondition`
 
 ### 6. Rescue/ensure/exception — 9 cops, 165 tests (Med)
+
 Topic family, no unique shared mixin — implement individually.
 
 - `Naming/RescuedExceptionsVariableName`
@@ -928,6 +934,7 @@ Topic family, no unique shared mixin — implement individually.
 - `Lint/EnsureReturn`
 
 ### 7. Class/module/attr — 12 cops, 155 tests (Hard)
+
 Topic family, no unique shared mixin — implement individually.
 
 - `Style/ClassAndModuleChildren` _(+ Alignment, ConfigurableEnforcedStyle, RangeHelp)_
@@ -944,6 +951,7 @@ Topic family, no unique shared mixin — implement individually.
 - `Style/ClassCheck` _(+ ConfigurableEnforcedStyle)_
 
 ### 8. Alignment/spacing — 9 cops, 147 tests (Med)
+
 Topic family, no unique shared mixin — implement individually.
 
 - `Layout/DotPosition` _(+ ConfigurableEnforcedStyle, RangeHelp)_
@@ -957,6 +965,7 @@ Topic family, no unique shared mixin — implement individually.
 - `Layout/SpaceBeforeComment`
 
 ### 9. Return/ctrl flow — 10 cops, 116 tests (Med)
+
 Topic family, no unique shared mixin — implement individually.
 
 - `Style/InfiniteLoop` _(+ Alignment)_
@@ -971,6 +980,7 @@ Topic family, no unique shared mixin — implement individually.
 - `Lint/FlipFlop`
 
 ### 10. `RescueNode` mixin — 3 cops, 113 tests (Hard)
+
 Port `RuboCop::Cop::RescueNode` once → reuse across all cops in this cluster.
 
 - `Style/ParallelAssignment`
@@ -978,6 +988,7 @@ Port `RuboCop::Cop::RescueNode` once → reuse across all cops in this cluster.
 - `Lint/DuplicateRescueException`
 
 ### 11. Comparison/equality — 7 cops, 109 tests (Med)
+
 Topic family, no unique shared mixin — implement individually.
 
 - `Style/CaseEquality`
@@ -989,6 +1000,7 @@ Topic family, no unique shared mixin — implement individually.
 - `Lint/HashCompareByIdentity`
 
 ### 12. Require/load/file — 9 cops, 109 tests (Med)
+
 Topic family, no unique shared mixin — implement individually.
 
 - `Lint/NonDeterministicRequireOrder`
@@ -1002,6 +1014,7 @@ Topic family, no unique shared mixin — implement individually.
 - `Style/Dir`
 
 ### 13. `AllowedMethods` mixin — 5 cops, 91 tests (Med)
+
 Port `RuboCop::Cop::AllowedMethods` once → reuse across all cops in this cluster.
 
 - `Lint/ConstantDefinitionInBlock`
@@ -1011,6 +1024,7 @@ Port `RuboCop::Cop::AllowedMethods` once → reuse across all cops in this clust
 - `Style/OptionalBooleanParameter`
 
 ### 14. Empty constructs — 9 cops, 90 tests (Med)
+
 Topic family, no unique shared mixin — implement individually.
 
 - `Layout/EmptyLinesAroundArguments` _(+ RangeHelp)_
@@ -1024,6 +1038,7 @@ Topic family, no unique shared mixin — implement individually.
 - `Lint/EmptyFile`
 
 ### 15. String/interpolation — 3 cops, 77 tests (Med)
+
 Topic family, no unique shared mixin — implement individually.
 
 - `Style/FormatString` _(+ ConfigurableEnforcedStyle)_
@@ -1031,6 +1046,7 @@ Topic family, no unique shared mixin — implement individually.
 - `Lint/ImplicitStringConcatenation`
 
 ### 16. Hash/array/dig — 6 cops, 73 tests (Med)
+
 Topic family, no unique shared mixin — implement individually.
 
 - `Layout/ArrayAlignment` _(+ Alignment)_
@@ -1041,6 +1057,7 @@ Topic family, no unique shared mixin — implement individually.
 - `Style/ArrayIntersectWithSingleElement`
 
 ### 17. Multiline expr/body — 4 cops, 71 tests (Med)
+
 Topic family, no unique shared mixin — implement individually.
 
 - `Layout/MultilineBlockLayout` _(+ RangeHelp)_
@@ -1049,6 +1066,7 @@ Topic family, no unique shared mixin — implement individually.
 - `Style/MultilineBlockChain` _(+ RangeHelp)_
 
 ### 18. Cop directive comments — 3 cops, 58 tests (Hard)
+
 Topic family, no unique shared mixin — implement individually.
 
 - `Lint/RedundantCopDisableDirective` _(+ RangeHelp)_
@@ -1056,6 +1074,7 @@ Topic family, no unique shared mixin — implement individually.
 - `Style/DoubleCopDisableDirective`
 
 ### 19. `Heredoc` mixin — 3 cops, 56 tests (Med)
+
 Port `RuboCop::Cop::Heredoc` once → reuse across all cops in this cluster.
 
 - `Naming/HeredocDelimiterCase` _(+ ConfigurableEnforcedStyle)_
@@ -1063,6 +1082,7 @@ Port `RuboCop::Cop::Heredoc` once → reuse across all cops in this cluster.
 - `Layout/ClosingHeredocIndentation`
 
 ### 20. Duplicate detection — 5 cops, 55 tests (Med)
+
 Topic family, no unique shared mixin — implement individually.
 
 - `Bundler/DuplicatedGroup` _(+ RangeHelp)_
@@ -1072,6 +1092,7 @@ Topic family, no unique shared mixin — implement individually.
 - `Lint/DuplicateElsifCondition`
 
 ### 21. Deprecated/legacy APIs — 4 cops, 52 tests (Med)
+
 Topic family, no unique shared mixin — implement individually.
 
 - `Lint/DeprecatedOpenSSLConstant` _(+ RangeHelp)_
@@ -1080,46 +1101,54 @@ Topic family, no unique shared mixin — implement individually.
 - `Lint/BigDecimalNew`
 
 ### 22. Eval/send/URI — 2 cops, 42 tests (Hard)
+
 Topic family, no unique shared mixin — implement individually.
 
 - `Style/EvalWithLocation`
 - `Security/Eval`
 
 ### 23. Percent literal — 1 cops, 36 tests (Easy)
+
 Topic family, no unique shared mixin — implement individually.
 
 - `Style/BarePercentLiterals` _(+ ConfigurableEnforcedStyle)_
 
 ### 24. Naming — 2 cops, 36 tests (Easy)
+
 Topic family, no unique shared mixin — implement individually.
 
 - `Naming/ConstantName`
 - `Naming/AsciiIdentifiers` _(+ RangeHelp)_
 
 ### 25. `OrderedGemNode` mixin — 2 cops, 35 tests (Easy)
+
 Port `RuboCop::Cop::OrderedGemNode` once → reuse across all cops in this cluster.
 
 - `Gemspec/OrderedDependencies`
 - `Bundler/OrderedGems`
 
 ### 26. `CommentsHelp` mixin — 2 cops, 33 tests (Med)
+
 Port `RuboCop::Cop::CommentsHelp` once → reuse across all cops in this cluster.
 
 - `Style/MultilineTernaryOperator`
 - `Lint/EmptyWhen`
 
 ### 27. Negated/Not — 2 cops, 30 tests (Med)
+
 Topic family, no unique shared mixin — implement individually.
 
 - `Style/NonNilCheck`
 - `Style/Not` _(+ RangeHelp)_
 
 ### 28. `MultilineLiteralBraceLayout` mixin — 1 cops, 26 tests (Easy)
+
 Port `RuboCop::Cop::MultilineLiteralBraceLayout` once → reuse across all cops in this cluster.
 
 - `Layout/MultilineMethodDefinitionBraceLayout`
 
 ### 29. `TrailingBody` mixin — 3 cops, 26 tests (Easy)
+
 Port `RuboCop::Cop::TrailingBody` once → reuse across all cops in this cluster.
 
 - `Style/TrailingBodyOnMethodDefinition` _(+ Alignment)_
@@ -1127,119 +1156,141 @@ Port `RuboCop::Cop::TrailingBody` once → reuse across all cops in this cluster
 - `Style/TrailingBodyOnClass` _(+ Alignment)_
 
 ### 30. `VisibilityHelp` mixin — 1 cops, 26 tests (Hard)
+
 Port `RuboCop::Cop::VisibilityHelp` once → reuse across all cops in this cluster.
 
 - `Style/AccessorGrouping` _(+ ConfigurableEnforcedStyle, RangeHelp)_
 
 ### 31. `MethodComplexity` mixin — 1 cops, 25 tests (Easy)
+
 Port `RuboCop::Cop::MethodComplexity` once → reuse across all cops in this cluster.
 
 - `Metrics/AbcSize`
 
 ### 32. `FrozenStringLiteral` mixin — 2 cops, 25 tests (Med)
+
 Port `RuboCop::Cop::FrozenStringLiteral` once → reuse across all cops in this cluster.
 
 - `Style/RedundantFetchBlock` _(+ RangeHelp)_
 - `Lint/OrderedMagicComments`
 
 ### 33. `GemspecHelp` mixin — 2 cops, 22 tests (Med)
+
 Port `RuboCop::Cop::GemspecHelp` once → reuse across all cops in this cluster.
 
 - `Gemspec/DuplicatedAssignment` _(+ RangeHelp)_
 - `Gemspec/RubyVersionGlobalsUsage`
 
 ### 34. `CodeLength` mixin — 1 cops, 21 tests (Easy)
+
 Port `RuboCop::Cop::CodeLength` once → reuse across all cops in this cluster.
 
 - `Metrics/ModuleLength`
 
 ### 35. Gemspec/Bundler — 2 cops, 21 tests (Med)
+
 Topic family, no unique shared mixin — implement individually.
 
 - `Bundler/GemFilename` _(+ ConfigurableEnforcedStyle)_
 - `Bundler/InsecureProtocolSource`
 
 ### 36. `MultilineElementIndentation` mixin — 1 cops, 20 tests (Easy)
+
 Port `RuboCop::Cop::MultilineElementIndentation` once → reuse across all cops in this cluster.
 
 - `Layout/FirstParameterIndentation` _(+ Alignment, ConfigurableEnforcedStyle)_
 
 ### 37. Nested constructs — 2 cops, 20 tests (Med)
+
 Topic family, no unique shared mixin — implement individually.
 
 - `Style/NestedModifier` _(+ RangeHelp)_
 - `Style/NestedTernaryOperator` _(+ RangeHelp)_
 
 ### 38. `StatementModifier` mixin — 2 cops, 17 tests (Easy)
+
 Port `RuboCop::Cop::StatementModifier` once → reuse across all cops in this cluster.
 
 - `Style/MultilineIfModifier` _(+ Alignment)_
 - `Style/IfUnlessModifierOfIfUnless`
 
 ### 39. Security — 1 cops, 16 tests (Easy)
+
 Topic family, no unique shared mixin — implement individually.
 
 - `Security/Open`
 
 ### 40. `SpaceBeforePunctuation` mixin — 2 cops, 15 tests (Easy)
+
 Port `RuboCop::Cop::SpaceBeforePunctuation` once → reuse across all cops in this cluster.
 
 - `Layout/SpaceBeforeSemicolon`
 - `Layout/SpaceBeforeComma`
 
 ### 41. `DigHelp` mixin — 1 cops, 15 tests (Easy)
+
 Port `RuboCop::Cop::DigHelp` once → reuse across all cops in this cluster.
 
 - `Style/SingleArgumentDig`
 
 ### 42. `StringLiteralsHelp` mixin — 1 cops, 13 tests (Easy)
+
 Port `RuboCop::Cop::StringLiteralsHelp` once → reuse across all cops in this cluster.
 
 - `Style/StringLiteralsInInterpolation` _(+ ConfigurableEnforcedStyle, StringHelp)_
 
 ### 43. Magic comments/encoding — 1 cops, 13 tests (Easy)
+
 Topic family, no unique shared mixin — implement individually.
 
 - `Style/Encoding` _(+ RangeHelp)_
 
 ### 44. `EmptyParameter` mixin — 2 cops, 12 tests (Easy)
+
 Port `RuboCop::Cop::EmptyParameter` once → reuse across all cops in this cluster.
 
 - `Style/EmptyBlockParameter` _(+ RangeHelp)_
 - `Style/EmptyLambdaParameter` _(+ RangeHelp)_
 
 ### 45. Trailing body/comma — 2 cops, 12 tests (Easy)
+
 Topic family, no unique shared mixin — implement individually.
 
 - `Style/TrailingMethodEndStatement`
 - `Lint/TrailingCommaInAttributeDeclaration` _(+ RangeHelp)_
 
 ### 46. `OnNormalIfUnless` mixin — 1 cops, 11 tests (Easy)
+
 Port `RuboCop::Cop::OnNormalIfUnless` once → reuse across all cops in this cluster.
 
 - `Style/MultilineIfThen` _(+ RangeHelp)_
 
 ### 47. `CheckAssignment` mixin — 1 cops, 10 tests (Easy)
+
 Port `RuboCop::Cop::CheckAssignment` once → reuse across all cops in this cluster.
 
 - `Layout/AssignmentIndentation` _(+ Alignment)_
 
 ### 48. `IntegerNode` mixin — 1 cops, 10 tests (Med)
+
 Port `RuboCop::Cop::IntegerNode` once → reuse across all cops in this cluster.
 
 - `Style/NumericLiteralPrefix`
 
 ### 49. `SpaceAfterPunctuation` mixin — 1 cops, 9 tests (Easy)
+
 Port `RuboCop::Cop::SpaceAfterPunctuation` once → reuse across all cops in this cluster.
 
 - `Layout/SpaceAfterSemicolon`
 
 ### 50. `MinBranchesCount` mixin — 1 cops, 8 tests (Easy)
+
 Port `RuboCop::Cop::MinBranchesCount` once → reuse across all cops in this cluster.
 
 - `Style/HashLikeCase`
 
 ### 51. `StringHelp` mixin — 1 cops, 5 tests (Easy)
+
 Port `RuboCop::Cop::StringHelp` once → reuse across all cops in this cluster.
 
 - `Style/CharacterLiteral`
