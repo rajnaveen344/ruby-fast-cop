@@ -11,6 +11,7 @@ pub mod style;
 
 use crate::offense::{Location, Offense, Severity};
 use ruby_prism::{ParseResult, Visit};
+use std::path::Path;
 
 /// Context passed to cops during checking
 pub struct CheckContext<'a> {
@@ -18,6 +19,9 @@ pub struct CheckContext<'a> {
     pub filename: &'a str,
     /// Target Ruby version (e.g., 2.5, 3.0, 3.2)
     pub target_ruby_version: f64,
+    /// Real filesystem path, when available. `None` for stdin or in-memory sources.
+    /// Used by cops like `Lint/ScriptPermission` that need `fs::metadata`.
+    pub file_path: Option<&'a Path>,
 }
 
 impl<'a> CheckContext<'a> {
@@ -26,6 +30,7 @@ impl<'a> CheckContext<'a> {
             source,
             filename,
             target_ruby_version: 2.7, // Matches RuboCop's TargetRuby::DEFAULT_VERSION
+            file_path: None,
         }
     }
 
@@ -34,7 +39,13 @@ impl<'a> CheckContext<'a> {
             source,
             filename,
             target_ruby_version,
+            file_path: None,
         }
+    }
+
+    pub fn with_file_path(mut self, path: Option<&'a Path>) -> Self {
+        self.file_path = path;
+        self
     }
 
     /// Check if target Ruby version is at least the given version
@@ -545,7 +556,20 @@ pub fn run_cops_with_version(
     filename: &str,
     target_ruby_version: f64,
 ) -> Vec<Offense> {
-    let ctx = CheckContext::with_ruby_version(source, filename, target_ruby_version);
+    run_cops_full(cops, result, source, filename, target_ruby_version, None)
+}
+
+/// Run all cops against a parse result with a specific Ruby version and optional file path.
+pub fn run_cops_full<'a>(
+    cops: &[Box<dyn Cop>],
+    result: &ParseResult<'_>,
+    source: &'a str,
+    filename: &'a str,
+    target_ruby_version: f64,
+    file_path: Option<&'a Path>,
+) -> Vec<Offense> {
+    let ctx = CheckContext::with_ruby_version(source, filename, target_ruby_version)
+        .with_file_path(file_path);
     let mut runner = CopRunner::new(cops, ctx);
     runner.visit(&result.node());
     runner.offenses

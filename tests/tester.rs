@@ -4,7 +4,9 @@
 //! against the source code, comparing actual offenses with expected offenses.
 
 use glob::glob;
-use ruby_fast_cop::{Config, Offense, apply_corrections, check_source_with_cop_config_and_version};
+use ruby_fast_cop::{
+    Config, Offense, apply_corrections, check_source_with_cop_config_version_and_path,
+};
 use serde::Deserialize;
 use std::path::PathBuf;
 
@@ -54,6 +56,11 @@ struct TestCase {
     /// If true, strip the trailing newline from source (TOML ''' always adds one)
     #[serde(default)]
     strip_trailing_newline: bool,
+    /// Optional Unix file mode (e.g. 0o644, 0o755) — creates a real tempfile at that mode
+    /// so cops that call `fs::metadata` can observe it. Used by `Lint/ScriptPermission`.
+    /// The tempfile's basename replaces `__FILE__` placeholders in expected messages.
+    #[serde(default)]
+    file_mode: Option<u32>,
 }
 
 /// An expected offense in a test case
@@ -121,6 +128,7 @@ fn compare_offense(
     expected: &ExpectedOffense,
     test_name: &str,
     cop_name: &str,
+    file_basename: Option<&str>,
 ) -> Vec<String> {
     let mut errors = Vec::new();
 
@@ -150,6 +158,14 @@ fn compare_offense(
         .message
         .strip_prefix("{} ")
         .unwrap_or(&expected.message);
+    // Substitute __FILE__ placeholder with the tempfile basename when provided.
+    let expected_msg_owned;
+    let expected_msg: &str = if let Some(b) = file_basename {
+        expected_msg_owned = expected_msg.replace("__FILE__", b);
+        &expected_msg_owned
+    } else {
+        expected_msg
+    };
     if !actual.message.contains(expected_msg) {
         errors.push(format!(
             "[{}] {}: Message mismatch - expected to contain '{}', got '{}'",
@@ -239,15 +255,42 @@ fn run_test_case(test_case: &TestCase, cop_name: &str) -> TestCaseResult {
 
     // Use test-specified filename or default to "(string)" (matches RuboCop's default
     // when source is provided as a string without a file path)
-    let test_filename = test_case.filename.as_deref().unwrap_or("(string)");
+    let test_filename_owned: String;
+    let test_filename: &str = test_case.filename.as_deref().unwrap_or("(string)");
+
+    // If file_mode is set, create a real tempfile at that mode so cops reading
+    // filesystem metadata (e.g. Lint/ScriptPermission) work end-to-end.
+    // The tempfile is auto-deleted when `_tmp_guard` drops.
+    let (tmp_path, tmp_basename, _tmp_guard) = if let Some(mode) = test_case.file_mode {
+        let guard = TmpFileGuard::create(&source, mode)
+            .expect("failed to create tempfile for file_mode test");
+        let basename = guard
+            .path
+            .file_name()
+            .unwrap()
+            .to_string_lossy()
+            .into_owned();
+        (Some(guard.path.clone()), Some(basename), Some(guard))
+    } else {
+        (None, None, None)
+    };
+
+    // Override filename to the tempfile path when we made one.
+    let test_filename = if let Some(ref p) = tmp_path {
+        test_filename_owned = p.to_string_lossy().into_owned();
+        test_filename_owned.as_str()
+    } else {
+        test_filename
+    };
 
     // Run the linter with the test-specific config and Ruby version
-    let offenses = check_source_with_cop_config_and_version(
+    let offenses = check_source_with_cop_config_version_and_path(
         &source,
         test_filename,
         cop_name,
         &config,
         ruby_version,
+        tmp_path.as_deref(),
     );
 
     // Check offense count
@@ -314,7 +357,13 @@ fn run_test_case(test_case: &TestCase, cop_name: &str) -> TestCaseResult {
     });
 
     for (actual, expected) in sorted_actual.iter().zip(sorted_expected.iter()) {
-        errors.extend(compare_offense(actual, expected, &test_case.name, cop_name));
+        errors.extend(compare_offense(
+            actual,
+            expected,
+            &test_case.name,
+            cop_name,
+            tmp_basename.as_deref(),
+        ));
     }
 
     // Correction validation: if TOML has `corrected` and offenses have corrections, compare
@@ -395,6 +444,45 @@ fn run_test_file(test_file: &CopTestFile, file_path: &PathBuf) -> TestFileResult
     }
 
     result
+}
+
+/// Small RAII tempfile helper so we avoid pulling in the `tempfile` crate.
+/// Writes `contents` to a uniquely-named file in `std::env::temp_dir()` with `mode` bits,
+/// removes it on drop.
+struct TmpFileGuard {
+    path: PathBuf,
+}
+
+impl TmpFileGuard {
+    fn create(contents: &str, mode: u32) -> std::io::Result<Self> {
+        use std::io::Write;
+        use std::sync::atomic::{AtomicU64, Ordering};
+        static COUNTER: AtomicU64 = AtomicU64::new(0);
+        let n = COUNTER.fetch_add(1, Ordering::Relaxed);
+        let pid = std::process::id();
+        let ts = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map(|d| d.as_nanos())
+            .unwrap_or(0);
+        let path = std::env::temp_dir().join(format!("rfc-sp-{pid}-{ts}-{n}.rb"));
+        let mut f = std::fs::File::create(&path)?;
+        f.write_all(contents.as_bytes())?;
+        drop(f);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            std::fs::set_permissions(&path, std::fs::Permissions::from_mode(mode))?;
+        }
+        #[cfg(not(unix))]
+        let _ = mode;
+        Ok(Self { path })
+    }
+}
+
+impl Drop for TmpFileGuard {
+    fn drop(&mut self) {
+        let _ = std::fs::remove_file(&self.path);
+    }
 }
 
 #[test]

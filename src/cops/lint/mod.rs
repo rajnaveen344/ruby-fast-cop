@@ -201,3 +201,5 @@ pub use useless_assignment::UselessAssignment;
 pub use useless_method_definition::UselessMethodDefinition;
 pub use useless_times::UselessTimes;
 pub use void::Void;
+mod script_permission;
+pub use script_permission::ScriptPermission;

@@ -71,8 +71,14 @@ pub fn check_file_with_config(path: &Path, config: &Config) -> Result<Vec<Offens
 
     let result = parse(source.as_bytes());
     let target_ruby_version = config.all_cops.target_ruby_version.unwrap_or(2.5);
-    let mut offenses =
-        cops::run_cops_with_version(&cops, &result, &source, &filename, target_ruby_version);
+    let mut offenses = cops::run_cops_full(
+        &cops,
+        &result,
+        &source,
+        &filename,
+        target_ruby_version,
+        Some(path),
+    );
 
     // Filter out offenses for cops that have this file excluded
     offenses.retain(|offense| !config.is_excluded_for_cop(path, &offense.cop_name));
@@ -227,7 +233,26 @@ pub fn check_source_with_cop_config_and_version(
     config: &Config,
     target_ruby_version: f64,
 ) -> Vec<Offense> {
-    use std::path::Path;
+    check_source_with_cop_config_version_and_path(
+        source,
+        filename,
+        cop_name,
+        config,
+        target_ruby_version,
+        None,
+    )
+}
+
+/// Check source for a single cop with an optional real file path.
+/// Mainly used by tests for cops that need filesystem metadata (e.g. `Lint/ScriptPermission`).
+pub fn check_source_with_cop_config_version_and_path(
+    source: &str,
+    filename: &str,
+    cop_name: &str,
+    config: &Config,
+    target_ruby_version: f64,
+    file_path: Option<&Path>,
+) -> Vec<Offense> {
     // Respect per-cop Exclude patterns (used by some fixture tests)
     if config.is_excluded_for_cop(Path::new(filename), cop_name) {
         return vec![];
@@ -236,7 +261,14 @@ pub fn check_source_with_cop_config_and_version(
     match cop {
         Some(c) => {
             let result = parse(source.as_bytes());
-            cops::run_cops_with_version(&[c], &result, source, filename, target_ruby_version)
+            cops::run_cops_full(
+                &[c],
+                &result,
+                source,
+                filename,
+                target_ruby_version,
+                file_path,
+            )
         }
         None => vec![],
     }
