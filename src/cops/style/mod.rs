@@ -479,6 +479,8 @@ mod object_then;
 pub use object_then::{ObjectThen, EnforcedStyle as ObjectThenStyle};
 mod nil_lambda;
 pub use nil_lambda::NilLambda;
+mod comparable_between;
+pub use comparable_between::ComparableBetween;
 pub use endless_method::{EndlessMethod, EndlessMethodStyle};
 pub use arguments_forwarding::ArgumentsForwarding;
 pub use numbered_parameters::{NumberedParameters, NumberedParametersStyle};
