@@ -491,6 +491,8 @@ mod comparable_clamp;
 pub use comparable_clamp::ComparableClamp;
 mod tally_method;
 pub use tally_method::TallyMethod;
+mod empty_string_inside_interpolation;
+pub use empty_string_inside_interpolation::{EmptyStringInsideInterpolation, Style as EmptyStringInsideInterpolationStyle};
 pub use endless_method::{EndlessMethod, EndlessMethodStyle};
 pub use arguments_forwarding::ArgumentsForwarding;
 pub use numbered_parameters::{NumberedParameters, NumberedParametersStyle};
