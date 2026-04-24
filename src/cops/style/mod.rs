@@ -467,6 +467,8 @@ mod safe_navigation_chain_length;
 pub use safe_navigation_chain_length::SafeNavigationChainLength;
 mod open_struct_use;
 pub use open_struct_use::OpenStructUse;
+mod concat_array_literals;
+pub use concat_array_literals::ConcatArrayLiterals;
 pub use endless_method::{EndlessMethod, EndlessMethodStyle};
 pub use arguments_forwarding::ArgumentsForwarding;
 pub use numbered_parameters::{NumberedParameters, NumberedParametersStyle};
