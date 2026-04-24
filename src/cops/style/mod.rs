@@ -200,9 +200,11 @@ mod when_then;
 mod env_home;
 mod file_null;
 mod nested_file_dirname;
+mod file_touch;
 
 pub use env_home::EnvHome;
 pub use file_null::FileNull;
+pub use file_touch::FileTouch;
 pub use nested_file_dirname::NestedFileDirname;
 pub use array_intersect_with_single_element::ArrayIntersectWithSingleElement;
 pub use array_join::ArrayJoin;
