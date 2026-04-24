@@ -489,6 +489,8 @@ mod bitwise_predicate;
 pub use bitwise_predicate::BitwisePredicate;
 mod comparable_clamp;
 pub use comparable_clamp::ComparableClamp;
+mod tally_method;
+pub use tally_method::TallyMethod;
 pub use endless_method::{EndlessMethod, EndlessMethodStyle};
 pub use arguments_forwarding::ArgumentsForwarding;
 pub use numbered_parameters::{NumberedParameters, NumberedParametersStyle};
