@@ -203,8 +203,10 @@ mod nested_file_dirname;
 mod file_touch;
 mod yaml_file_read;
 mod empty_heredoc;
+mod file_empty;
 
 pub use empty_heredoc::EmptyHeredoc;
+pub use file_empty::FileEmpty;
 pub use env_home::EnvHome;
 pub use file_null::FileNull;
 pub use file_touch::FileTouch;
