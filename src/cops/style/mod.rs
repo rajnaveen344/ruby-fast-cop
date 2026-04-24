@@ -485,6 +485,8 @@ mod min_max_comparison;
 pub use min_max_comparison::MinMaxComparison;
 mod swap_values;
 pub use swap_values::SwapValues;
+mod bitwise_predicate;
+pub use bitwise_predicate::BitwisePredicate;
 pub use endless_method::{EndlessMethod, EndlessMethodStyle};
 pub use arguments_forwarding::ArgumentsForwarding;
 pub use numbered_parameters::{NumberedParameters, NumberedParametersStyle};
