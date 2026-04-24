@@ -473,6 +473,8 @@ mod exact_regexp_match;
 pub use exact_regexp_match::ExactRegexpMatch;
 mod reverse_find;
 pub use reverse_find::ReverseFind;
+mod dig_chain;
+pub use dig_chain::DigChain;
 pub use endless_method::{EndlessMethod, EndlessMethodStyle};
 pub use arguments_forwarding::ArgumentsForwarding;
 pub use numbered_parameters::{NumberedParameters, NumberedParametersStyle};
