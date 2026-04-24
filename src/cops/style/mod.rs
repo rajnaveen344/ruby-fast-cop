@@ -413,3 +413,18 @@ pub use trailing_comma_in_hash_literal::{
 };
 pub use yoda_condition::{EnforcedStyle as YodaConditionStyle, YodaCondition};
 pub use zero_length_predicate::ZeroLengthPredicate;
+
+mod map_join;
+mod collection_querying;
+mod collection_compact;
+mod select_by_kind;
+mod select_by_range;
+mod map_compact_with_conditional_block;
+mod map_into_array;
+pub use map_join::MapJoin;
+pub use collection_querying::CollectionQuerying;
+pub use collection_compact::CollectionCompact;
+pub use select_by_kind::SelectByKind;
+pub use select_by_range::SelectByRange;
+pub use map_compact_with_conditional_block::MapCompactWithConditionalBlock;
+pub use map_into_array::MapIntoArray;
