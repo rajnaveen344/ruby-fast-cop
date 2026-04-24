@@ -1,10 +1,9 @@
 # All Cops State (606 total)
 
 Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department and default status.
-442 of 606 implemented (all 396 enabled-by-default complete + 36 pending-by-default). See [README.md](README.md) for the implementation roadmap.
+443 of 606 implemented (all 396 enabled-by-default complete + 37 pending-by-default). See [README.md](README.md) for the implementation roadmap.
 
-**Pending-default progress: 36 / 149 (~24%)**. Only remaining deferred:
-- `Style/ArgumentsForwarding` (187 tests) — SendNodeClassifier port + 5 Ruby version variants + 5 config knobs; partial port won't pass parity, needs dedicated session.
+**Pending-default progress: 37 / 149 (~25%)**. All previously deferred cops cleared.
 
 ## Summary
 
@@ -19,7 +18,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Bundler    |       5 |       0 |        2 |           5 |        101 |
 | Security   |       5 |       2 |        0 |           5 |        102 |
 | Migration  |       1 |       0 |        0 |           1 |          8 |
-| **Total**  | **396** | **156** |   **54** |     **442** | **28,054** |
+| **Total**  | **396** | **156** |   **54** |     **443** | **28,054** |
 
 - **Enabled**: Runs by default on every codebase (highest priority to implement)
 - **Pending**: Runs only with `NewCops: enable` in config
@@ -212,7 +211,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Cop                                        | Tests | Status      |
 | ------------------------------------------ | ----: | ----------- |
 | Style/AmbiguousEndlessMethodDefinition     |    31 | -           |
-| Style/ArgumentsForwarding                  |   187 | -           |
+| Style/ArgumentsForwarding                  |   187 | Implemented |
 | Style/BitwisePredicate                     |    18 | -           |
 | Style/CollectionCompact                    |    30 | -           |
 | Style/CollectionQuerying                   |    20 | -           |
@@ -763,33 +762,33 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 
 149 cops / ~5,440 tests across 23 clusters. Pending-by-default cops run only with `NewCops: enable`. Order = highest test count first within each cluster.
 
-**Completed clusters (3):** Redundant/Useless (19/20), Enumerable transform (6/7), Method def/params (9/10). 3 cops deferred — see top of file.
+**Completed clusters (3):** Redundant/Useless (20/20), Enumerable transform (7/7), Method def/params (10/10). All previously deferred cops cleared.
 
-| Cluster              | Cops | Tests | Status | Notes                                                                              |
-| -------------------- | ---: | ----: | :----- | ---------------------------------------------------------------------------------- |
-| Misc                 |   44 |  1304 | todo   | Loose group; subdivide before clustering. Includes UnmodifiedReduceAccumulator etc |
-| Redundant/Useless    |   20 |   843 | **20/20** ✅ | Detect noop call/literal, replace/remove |
-| Enumerable transform |    7 |   435 | **7/7** ✅ | `select`/`reject`/`map` rewrites — share Enumerable matchers w/ existing SelectByRegexp |
-| Method def/params    |   10 |   422 | 9/10 (ArgumentsForwarding deferred) | `it`-block, numbered params, BlockForwarding — forwarding helper |
-| Hash transform       |    9 |   408 | **next** | `Hash#slice`/`#except`, `to_h` chains — share HashTransformMethod-style matchers   |
-| Send/operator        |    2 |   317 | OperatorMethodCall + SendWithLiteralMethodName                                     |
-| Useless ops          |    7 |   217 | Generic dead-code checks — case-by-case                                            |
-| Duplicate detection  |    4 |   194 | `==`-based branch/element/pattern dedup — generic equivalence helper               |
-| Empty constructs     |    6 |   166 | EmptyClass / EmptyBlock / EmptyInPattern — body emptiness checks                   |
-| File ops             |    8 |   147 | `File.read`/`File.write`/`Dir.empty?` shorthand — message-receiver matchers        |
-| Line layout          |    3 |   122 | Line-continuation (`\`) layout — share continuation-comment scanner                |
-| Regexp               |    4 |   106 | Regexp literal scan — port shared regexp tokenizer                                 |
-| Predicate            |    2 |   103 | PredicateWithKind + ReturnNilInPredicateMethodDefinition                           |
-| Constants            |    5 |    95 | Constant reassignment / deprecated lookups                                         |
-| Comparison           |    4 |    73 | `Comparable` rewrites — `clamp`/`between?`                                         |
-| Ambiguous detection  |    2 |    67 | AmbiguousRange + AmbiguousOperatorPrecedence                                       |
-| Env                  |    2 |    50 | `ENV[...]` patterns                                                                |
-| Pattern matching     |    3 |    43 | `in`/`case in` pattern lints                                                       |
-| Lambda/proc          |    2 |    37 | NilLambda + LambdaWithoutLiteralBlock                                              |
-| Security             |    1 |    32 | Security/IoMethods                                                                 |
-| Magic/encoding       |    1 |    25 | Style/MagicCommentFormat                                                           |
-| Lint misc            |    2 |    21 | OpenStructUse + TripleQuotes                                                       |
-| Heredoc              |    1 |     7 | Style/EmptyHeredoc                                                                 |
+| Cluster              | Cops | Tests | Status                                                                      | Notes                                                                                   |
+| -------------------- | ---: | ----: | :-------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| Misc                 |   44 |  1304 | todo                                                                        | Loose group; subdivide before clustering. Includes UnmodifiedReduceAccumulator etc      |
+| Redundant/Useless    |   20 |   843 | **20/20** ✅                                                                | Detect noop call/literal, replace/remove                                                |
+| Enumerable transform |    7 |   435 | **7/7** ✅                                                                  | `select`/`reject`/`map` rewrites — share Enumerable matchers w/ existing SelectByRegexp |
+| Method def/params    |   10 |   422 | **10/10** ✅                                                                | `it`-block, numbered params, BlockForwarding, ArgumentsForwarding — forwarding helper   |
+| Hash transform       |    9 |   408 | **next**                                                                    | `Hash#slice`/`#except`, `to_h` chains — share HashTransformMethod-style matchers        |
+| Send/operator        |    2 |   317 | OperatorMethodCall + SendWithLiteralMethodName                              |
+| Useless ops          |    7 |   217 | Generic dead-code checks — case-by-case                                     |
+| Duplicate detection  |    4 |   194 | `==`-based branch/element/pattern dedup — generic equivalence helper        |
+| Empty constructs     |    6 |   166 | EmptyClass / EmptyBlock / EmptyInPattern — body emptiness checks            |
+| File ops             |    8 |   147 | `File.read`/`File.write`/`Dir.empty?` shorthand — message-receiver matchers |
+| Line layout          |    3 |   122 | Line-continuation (`\`) layout — share continuation-comment scanner         |
+| Regexp               |    4 |   106 | Regexp literal scan — port shared regexp tokenizer                          |
+| Predicate            |    2 |   103 | PredicateWithKind + ReturnNilInPredicateMethodDefinition                    |
+| Constants            |    5 |    95 | Constant reassignment / deprecated lookups                                  |
+| Comparison           |    4 |    73 | `Comparable` rewrites — `clamp`/`between?`                                  |
+| Ambiguous detection  |    2 |    67 | AmbiguousRange + AmbiguousOperatorPrecedence                                |
+| Env                  |    2 |    50 | `ENV[...]` patterns                                                         |
+| Pattern matching     |    3 |    43 | `in`/`case in` pattern lints                                                |
+| Lambda/proc          |    2 |    37 | NilLambda + LambdaWithoutLiteralBlock                                       |
+| Security             |    1 |    32 | Security/IoMethods                                                          |
+| Magic/encoding       |    1 |    25 | Style/MagicCommentFormat                                                    |
+| Lint misc            |    2 |    21 | OpenStructUse + TripleQuotes                                                |
+| Heredoc              |    1 |     7 | Style/EmptyHeredoc                                                          |
 
 Cluster details (cop name + test count):
 
@@ -807,11 +806,9 @@ Implemented: RedundantFormat (290), RedundantLineContinuation (163), RedundantRe
 
 Implemented: SelectByKind (144), SelectByRange (120), MapIntoArray (64), MapCompactWithConditionalBlock (33), CollectionCompact (30), MapJoin (24), CollectionQuerying (20)
 
-### Method def/params — 9/10 ✅
+### Method def/params — 10/10 ✅
 
-Implemented: EndlessMethod (63), BlockForwarding (36), ItBlockParameter (34), AmbiguousEndlessMethodDefinition (31), ItAssignment (23), ItWithoutArgumentsInBlock (19), NumberedParameterAssignment (13), NumberedParametersLimit (12), NumberedParameters (4)
-
-**Deferred:** Style/ArgumentsForwarding (187) — SendNodeClassifier port + 3 Ruby version variants + 3 config knobs.
+Implemented: ArgumentsForwarding (187), EndlessMethod (63), BlockForwarding (36), ItBlockParameter (34), AmbiguousEndlessMethodDefinition (31), ItAssignment (23), ItWithoutArgumentsInBlock (19), NumberedParameterAssignment (13), NumberedParametersLimit (12), NumberedParameters (4)
 
 ### Hash transform — 9 cops, 408 tests
 

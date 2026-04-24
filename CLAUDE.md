@@ -16,24 +16,13 @@ Exceptions — drop caveman temporarily: security warnings, destructive-op confi
 
 ruby-fast-cop = Rust port of RuboCop. Target 50-100x faster (like Ruff:Python).
 
-**State:** 442/606 cops (396/396 enabled-by-default = 100%; 36/149 pending-by-default). ~28,075 test cases from RuboCop v1.85.0 RSpec, all green.
+**State:** 443/606 cops (396/396 enabled-by-default = 100%; 37/149 pending-by-default). ~28,075 test cases from RuboCop v1.85.0 RSpec, all green.
 
 > **Architecture:** see [`ARCHITECTURE.md`](./ARCHITECTURE.md) for runtime shape, registration, autocorrect pipeline, testing pipeline. CLAUDE.md = conventions; ARCHITECTURE.md = structure. Update ARCHITECTURE.md only when runtime/registration/autocorrect/testing shape changes.
 
-## Deferred pending-by-default cops (1)
+## Deferred pending-by-default cops (0)
 
-### Style/ArgumentsForwarding (187 tests)
-
-Two agent attempts OOB. Needs dedicated session — partial ports won't hit parity (prior = 734 failures).
-
-Surface:
-- Full **SendNodeClassifier port** from RuboCop (~580 LOC src + mixins). Classifies args: full-forward / rest / kwargs / block.
-- **5 Ruby variants** — 2.7 `*args`, 3.0 `**kwargs`, 3.1 anon `&`, 3.2 anon `*`/`**`, 3.3+. Every fixture has `ruby_version = ">= X.Y"`; decisions differ per version.
-- **5 config knobs** — `UseAnonymousForwarding`, `RedundantRestArgumentNames`, `RedundantKeywordRestArgumentNames`, `RedundantBlockArgumentNames`, `AllowOnlyRestArgument`.
-- Fixture: `tests/fixtures/style/arguments_forwarding.toml` (187 tests, `implemented = false`).
-- Source: `https://raw.githubusercontent.com/rubocop/rubocop/master/lib/rubocop/cop/style/arguments_forwarding.rb`.
-
-Next attempt: one Opus agent, single cop, port classifier as `src/helpers/forwarding.rs` first (`Naming/BlockForwarding` shares later), then cop. Budget 2-3h.
+All previously deferred cops cleared. `Style/ArgumentsForwarding` ported in `src/cops/style/arguments_forwarding.rs` (187/187 fixture tests green).
 
 ## Production-readiness gaps
 
@@ -43,7 +32,7 @@ High cop count ≠ prod-ready. Gaps before drop-in RuboCop parity:
 2. **CLI incomplete** — `--only`/`--except`, `-f json`/`-f emacs`, `--parallel` unchecked.
 3. **Config edges** — `inherit_from`, `inherit_gem`, glob `Include`/`Exclude`, brace-expand partial. Fuzz against Rails/Discourse/Shopify `.rubocop.yml`.
 4. **No real-world corpus** — 28k tests all from RuboCop specs. Run 3+ OSS codebases, diff vs RuboCop (target ±1% parity).
-5. **Hard cops skipped** — Style/FormatString, Bundler/OrderedGems, Style/ArgumentsForwarding.
+5. **Hard cops skipped** — Style/FormatString, Bundler/OrderedGems.
 6. **Pending + Disabled** — 210 opt-in cops. Priority after enabled-default = 100%.
 7. **No dogfooding** — not self-hosted; no CI lint on real Ruby.
 8. **LSP unvalidated** — library API exists; no editor exercises E2E.
