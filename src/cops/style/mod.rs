@@ -465,6 +465,8 @@ mod string_chars;
 pub use string_chars::StringChars;
 mod safe_navigation_chain_length;
 pub use safe_navigation_chain_length::SafeNavigationChainLength;
+mod open_struct_use;
+pub use open_struct_use::OpenStructUse;
 pub use endless_method::{EndlessMethod, EndlessMethodStyle};
 pub use arguments_forwarding::ArgumentsForwarding;
 pub use numbered_parameters::{NumberedParameters, NumberedParametersStyle};
