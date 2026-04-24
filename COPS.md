@@ -1,18 +1,16 @@
 # All Cops State (606 total)
 
 Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department and default status.
-440 of 606 implemented (all 396 enabled-by-default complete + 34 pending-by-default from Redundant/Useless + Enumerable-transform + Method def/params clusters). See [README.md](README.md) for the implementation roadmap.
+442 of 606 implemented (all 396 enabled-by-default complete + 36 pending-by-default). See [README.md](README.md) for the implementation roadmap.
 
-**Pending-default progress: 34 / 149 (~23%)**. Deferred (too complex for cluster scope):
-- `Style/RedundantFormat` (290 tests) — intricate `format`/`sprintf` → string-literal tmp-var corrections
-- `Style/ArgumentsForwarding` (187 tests) — SendNodeClassifier port + 3 Ruby version variants + 3 config knobs
-- `Style/MapIntoArray` (64 tests) — needs VariableForce cross-statement ref tracking
+**Pending-default progress: 36 / 149 (~24%)**. Only remaining deferred:
+- `Style/ArgumentsForwarding` (187 tests) — SendNodeClassifier port + 5 Ruby version variants + 5 config knobs; partial port won't pass parity, needs dedicated session.
 
 ## Summary
 
 | Department | Enabled | Pending | Disabled | Implemented |      Tests |
 | ---------- | ------: | ------: | -------: | ----------: | ---------: |
-| Style      |     175 |      91 |       32 |         210 |     14,567 |
+| Style      |     175 |      91 |       32 |         212 |     14,567 |
 | Lint       |     100 |      50 |        4 |         107 |      5,949 |
 | Layout     |      81 |       5 |       14 |          81 |      4,646 |
 | Metrics    |       9 |       1 |        0 |           9 |        272 |
@@ -21,7 +19,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Bundler    |       5 |       0 |        2 |           5 |        101 |
 | Security   |       5 |       2 |        0 |           5 |        102 |
 | Migration  |       1 |       0 |        0 |           1 |          8 |
-| **Total**  | **396** | **156** |   **54** |     **440** | **28,054** |
+| **Total**  | **396** | **156** |   **54** |     **442** | **28,054** |
 
 - **Enabled**: Runs by default on every codebase (highest priority to implement)
 - **Pending**: Runs only with `NewCops: enable` in config
@@ -770,9 +768,9 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Cluster              | Cops | Tests | Status | Notes                                                                              |
 | -------------------- | ---: | ----: | :----- | ---------------------------------------------------------------------------------- |
 | Misc                 |   44 |  1304 | todo   | Loose group; subdivide before clustering. Includes UnmodifiedReduceAccumulator etc |
-| Redundant/Useless    |   20 |   843 | 19/20 ✅ (RedundantFormat deferred) | Detect noop call/literal, replace/remove |
-| Enumerable transform |    7 |   435 | 6/7 ✅ (MapIntoArray deferred) | `select`/`reject`/`map` rewrites — share Enumerable matchers w/ existing SelectByRegexp |
-| Method def/params    |   10 |   422 | 9/10 ✅ (ArgumentsForwarding deferred) | `it`-block, numbered params, BlockForwarding — forwarding helper |
+| Redundant/Useless    |   20 |   843 | **20/20** ✅ | Detect noop call/literal, replace/remove |
+| Enumerable transform |    7 |   435 | **7/7** ✅ | `select`/`reject`/`map` rewrites — share Enumerable matchers w/ existing SelectByRegexp |
+| Method def/params    |   10 |   422 | 9/10 (ArgumentsForwarding deferred) | `it`-block, numbered params, BlockForwarding — forwarding helper |
 | Hash transform       |    9 |   408 | **next** | `Hash#slice`/`#except`, `to_h` chains — share HashTransformMethod-style matchers   |
 | Send/operator        |    2 |   317 | OperatorMethodCall + SendWithLiteralMethodName                                     |
 | Useless ops          |    7 |   217 | Generic dead-code checks — case-by-case                                            |
@@ -801,17 +799,13 @@ Loose grab-bag — subdivide on next pass.
 
 - Lint/UnmodifiedReduceAccumulator (168), Style/ModuleMemberExistenceCheck (101), Style/QuotedSymbols (97), Style/IfWithBooleanLiteralBranches (94), Style/SuperArguments (92), Lint/NoReturnInBeginEndBlocks (70), Lint/NonAtomicFileOperation (43), Style/CombinableDefined (39), Style/PartitionInsteadOfDoubleSelect (37), Lint/LiteralAssignmentInCondition (34), Style/TallyMethod (32), Style/NegatedIfElseCondition (32), Lint/MixedCaseRange (31), Layout/SpaceBeforeBrackets (28), Lint/SuppressedExceptionInNumberConversion (26), Lint/ToEnumArguments (24), Style/DataInheritance (24), Style/DigChain (23), Style/ObjectThen (23), Lint/UnexpectedBlockArity (22), Style/OneClassPerFile (21), Lint/IncompatibleIoSelectWithFiberScheduler (19), Style/DocumentDynamicEvalDefinition (18), Gemspec/DeprecatedAttributeAssignment (18), Lint/CopDirectiveSyntax (16), Style/ReverseFind (14), Style/ConcatArrayLiterals (14), Metrics/CollectionLiteralLength (13), Style/SingleLineDoEndBlock (13), Gemspec/DevelopmentDependencies (13), Gemspec/RequireMFA (12), Style/SwapValues (11), Lint/RequireRangeParentheses (9), Style/KeywordArgumentsMerging (9), Lint/DataDefineOverride (8), Style/StringChars (8), Style/SafeNavigationChainLength (8), Lint/RefinementImportMethods (7), Gemspec/AttributeAssignment (7), Lint/RequireRelativeSelfPath (6), Lint/SharedMutableDefault (6), Style/NestedFileDirname (5), Gemspec/AddRuntimeDependency (5), Style/SuperWithArgsParentheses (4)
 
-### Redundant/Useless — 19/20 ✅
+### Redundant/Useless — 20/20 ✅
 
-Implemented: RedundantLineContinuation (163), RedundantRegexpArgument (50), RedundantFilterChain (39), RedundantMinMaxBy (33), RedundantEach (33), RedundantDoubleSplatHashBraces (29), RedundantRegexpQuantifiers (26), RedundantInitialize (23), RedundantSelfAssignmentBranch (22), RedundantHeredocDelimiterQuotes (17), RedundantInterpolationUnfreeze (17), RedundantStructKeywordInit (17), RedundantDirGlobSort (16), RedundantArgument (15), RedundantArrayConstructor (13), RedundantCurrentDirectoryInPath (12), RedundantRegexpConstructor (10), RedundantArrayFlatten (10), RedundantConstantBase (8)
+Implemented: RedundantFormat (290), RedundantLineContinuation (163), RedundantRegexpArgument (50), RedundantFilterChain (39), RedundantMinMaxBy (33), RedundantEach (33), RedundantDoubleSplatHashBraces (29), RedundantRegexpQuantifiers (26), RedundantInitialize (23), RedundantSelfAssignmentBranch (22), RedundantHeredocDelimiterQuotes (17), RedundantInterpolationUnfreeze (17), RedundantStructKeywordInit (17), RedundantDirGlobSort (16), RedundantArgument (15), RedundantArrayConstructor (13), RedundantCurrentDirectoryInPath (12), RedundantRegexpConstructor (10), RedundantArrayFlatten (10), RedundantConstantBase (8)
 
-**Deferred:** Style/RedundantFormat (290) — intricate format/sprintf → string-literal corrections.
+### Enumerable transform — 7/7 ✅
 
-### Enumerable transform — 6/7 ✅
-
-Implemented: SelectByKind (144), SelectByRange (120), MapCompactWithConditionalBlock (33), CollectionCompact (30), MapJoin (24), CollectionQuerying (20)
-
-**Deferred:** Style/MapIntoArray (64) — needs VariableForce cross-statement ref tracking.
+Implemented: SelectByKind (144), SelectByRange (120), MapIntoArray (64), MapCompactWithConditionalBlock (33), CollectionCompact (30), MapJoin (24), CollectionQuerying (20)
 
 ### Method def/params — 9/10 ✅
 
