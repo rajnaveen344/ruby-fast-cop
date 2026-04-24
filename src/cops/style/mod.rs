@@ -197,7 +197,9 @@ mod redundant_file_extension_in_require;
 mod symbol_literal;
 mod unless_else;
 mod when_then;
+mod env_home;
 
+pub use env_home::EnvHome;
 pub use array_intersect_with_single_element::ArrayIntersectWithSingleElement;
 pub use array_join::ArrayJoin;
 pub use begin_block::BeginBlock;
