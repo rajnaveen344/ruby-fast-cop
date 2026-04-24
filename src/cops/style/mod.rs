@@ -198,8 +198,10 @@ mod symbol_literal;
 mod unless_else;
 mod when_then;
 mod env_home;
+mod file_null;
 
 pub use env_home::EnvHome;
+pub use file_null::FileNull;
 pub use array_intersect_with_single_element::ArrayIntersectWithSingleElement;
 pub use array_join::ArrayJoin;
 pub use begin_block::BeginBlock;
