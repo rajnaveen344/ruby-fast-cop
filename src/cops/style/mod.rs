@@ -114,6 +114,7 @@ mod redundant_array_flatten;
 mod redundant_assignment;
 mod redundant_each;
 mod redundant_filter_chain;
+mod redundant_format;
 mod redundant_min_max_by;
 mod redundant_heredoc_delimiter_quotes;
 mod redundant_interpolation_unfreeze;
