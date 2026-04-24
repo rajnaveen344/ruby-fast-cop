@@ -1,24 +1,26 @@
 # All Cops State (606 total)
 
 Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department and default status.
-443 of 606 implemented (all 396 enabled-by-default complete + 37 pending-by-default). See [README.md](README.md) for the implementation roadmap.
+458 of 606 implemented (all 396 enabled-by-default complete + 59 pending-by-default + 3 disabled-by-default). See [README.md](README.md) for the implementation roadmap.
 
-**Pending-default progress: 37 / 149 (~25%)**. All previously deferred cops cleared.
+**Pending-default progress: 59 / 156 (~38%)**.
 
 ## Summary
 
-| Department | Enabled | Pending | Disabled | Implemented |      Tests |
-| ---------- | ------: | ------: | -------: | ----------: | ---------: |
-| Style      |     175 |      91 |       32 |         212 |     14,567 |
-| Lint       |     100 |      50 |        4 |         107 |      5,949 |
-| Layout     |      81 |       5 |       14 |          81 |      4,646 |
-| Metrics    |       9 |       1 |        0 |           9 |        272 |
-| Naming     |      16 |       2 |        1 |          18 |      2,217 |
-| Gemspec    |       4 |       5 |        1 |           4 |        193 |
-| Bundler    |       5 |       0 |        2 |           5 |        101 |
-| Security   |       5 |       2 |        0 |           5 |        102 |
-| Migration  |       1 |       0 |        0 |           1 |          8 |
-| **Total**  | **396** | **156** |   **54** |     **443** | **28,054** |
+Each cell shows `implemented / total` for that category.
+
+| Department |     Enabled |    Pending | Disabled |            Tests |
+| ---------- | ----------: | ---------: | -------: | ---------------: |
+| Style      |     175/175 |      47/91 |     3/32 |  12,051 / 14,566 |
+| Lint       |     100/100 |       9/50 |      0/4 |    4,675 / 5,949 |
+| Layout     |       81/81 |        0/5 |     0/14 |    4,059 / 4,646 |
+| Metrics    |         9/9 |        0/1 |      0/0 |        259 / 272 |
+| Naming     |       16/16 |        2/2 |      0/1 |    2,181 / 2,216 |
+| Gemspec    |         4/4 |        0/5 |      0/1 |         61 / 193 |
+| Bundler    |         5/5 |        0/0 |      0/2 |         69 / 101 |
+| Security   |         5/5 |        1/2 |      0/0 |         81 / 102 |
+| Migration  |         1/1 |        0/0 |      0/0 |            8 / 8 |
+| **Total**  | **396/396** | **59/156** | **3/54** | **23,444/28,053** |
 
 - **Enabled**: Runs by default on every codebase (highest priority to implement)
 - **Pending**: Runs only with `NewCops: enable` in config
