@@ -26,7 +26,22 @@ ruby-fast-cop is a high-performance Ruby linter written in Rust, designed as a d
 
 ## Deferred enabled-by-default cops (0)
 
-All 396 enabled-by-default cops are now implemented. Next surface: 113 pending-by-default cops remaining (36 of 149 done: Redundant/Useless + Enumerable-transform + Method def/params clusters, plus RedundantFormat + MapIntoArray from deferred backfill). Style/ArgumentsForwarding (187 tests) still deferred — needs dedicated session for SendNodeClassifier port.
+All 396 enabled-by-default cops are now implemented. Next surface: 113 pending-by-default cops remaining (36 of 149 done: Redundant/Useless + Enumerable-transform + Method def/params clusters, plus RedundantFormat + MapIntoArray from deferred backfill).
+
+## Deferred pending-by-default cops (1)
+
+### Style/ArgumentsForwarding (187 tests)
+
+Two agent attempts ran out of budget on this cop. Needs a dedicated session — partial ports won't pass parity (prior attempt hit 734 failures / ~half tests).
+
+Surface area:
+- **Full SendNodeClassifier port** from RuboCop (`lib/rubocop/cop/style/arguments_forwarding.rb` + classifier mixins). Classifies send/call args into full-forward / rest-forward / kwargs-forward / block-forward.
+- **5 Ruby version variants** — 2.7 (`*args`), 3.0 (`**kwargs`), 3.1 (anon `&`), 3.2 (anon `*` and `**`), 3.3+. Every test fixture sets `ruby_version = ">= X.Y"` and the cop's decisions differ per version.
+- **5 config knobs** — `UseAnonymousForwarding`, `RedundantRestArgumentNames`, `RedundantKeywordRestArgumentNames`, `RedundantBlockArgumentNames`, `AllowOnlyRestArgument`.
+- Fixture: `tests/fixtures/style/arguments_forwarding.toml` (187 tests, `implemented = false`).
+- RuboCop source (fetch on next attempt): `https://raw.githubusercontent.com/rubocop/rubocop/master/lib/rubocop/cop/style/arguments_forwarding.rb` (~580 LOC).
+
+Recommended next approach: one Opus agent, single-cop focus, port classifier as `src/helpers/forwarding.rs` first (`Naming/BlockForwarding` can later share it), then the cop. Budget ~2-3 hours of agent time.
 
 ## Production-readiness gaps
 
