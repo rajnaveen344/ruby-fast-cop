@@ -20,13 +20,13 @@ Exceptions (auto-clarity — drop caveman temporarily, resume after):
 
 ruby-fast-cop is a high-performance Ruby linter written in Rust, designed as a drop-in replacement for RuboCop. The goal is 50-100x faster linting by rewriting cops in Rust, similar to how Ruff replaced Python linters.
 
-**Current state:** 406 of 606 cops implemented (396/396 enabled-by-default = 100%) (all fixtures passing), 606 TOML test fixtures with ~28,075 test cases extracted from RuboCop v1.85.0's RSpec suite.
+**Current state:** 425 of 606 cops implemented (396/396 enabled-by-default = 100%; 19 pending-by-default done) (all fixtures passing), 606 TOML test fixtures with ~28,075 test cases extracted from RuboCop v1.85.0's RSpec suite.
 
 > **Architecture:** See [`ARCHITECTURE.md`](./ARCHITECTURE.md) for the system overview, cop implementation flow, and shared-infrastructure diagrams (mermaid). Update it whenever the runtime shape, registration mechanism, autocorrect pipeline, or testing pipeline changes — this file covers *conventions*, `ARCHITECTURE.md` covers *structure*.
 
 ## Deferred enabled-by-default cops (0)
 
-All 396 enabled-by-default cops are now implemented. Next surface: 149 pending-by-default cops (see `COPS.md` "Implementation Clusters (Pending by Default)" for the cluster plan).
+All 396 enabled-by-default cops are now implemented. Next surface: 130 pending-by-default cops remaining (19 of 149 already done via Redundant/Useless cluster — see `COPS.md` "Implementation Clusters (Pending by Default)" for the remaining plan).
 
 ## Production-readiness gaps
 

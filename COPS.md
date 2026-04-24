@@ -1,14 +1,14 @@
 # All Cops State (606 total)
 
 Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department and default status.
-406 of 606 implemented (all 396 enabled-by-default complete). See [README.md](README.md) for the implementation roadmap.
+425 of 606 implemented (all 396 enabled-by-default complete + 19 pending-by-default from Redundant/Useless cluster). See [README.md](README.md) for the implementation roadmap.
 
 ## Summary
 
 | Department | Enabled | Pending | Disabled | Implemented |      Tests |
 | ---------- | ------: | ------: | -------: | ----------: | ---------: |
-| Style      |     175 |      91 |       32 |         181 |     14,567 |
-| Lint       |     100 |      50 |        4 |         103 |      5,949 |
+| Style      |     175 |      91 |       32 |         198 |     14,567 |
+| Lint       |     100 |      50 |        4 |         105 |      5,949 |
 | Layout     |      81 |       5 |       14 |          81 |      4,646 |
 | Metrics    |       9 |       1 |        0 |           9 |        272 |
 | Naming     |      16 |       2 |        1 |          17 |      2,217 |
@@ -16,7 +16,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 | Bundler    |       5 |       0 |        2 |           5 |        101 |
 | Security   |       5 |       2 |        0 |           5 |        102 |
 | Migration  |       1 |       0 |        0 |           1 |          8 |
-| **Total**  | **396** | **156** |   **54** |     **406** | **28,054** |
+| **Total**  | **396** | **156** |   **54** |     **425** | **28,054** |
 
 - **Enabled**: Runs by default on every codebase (highest priority to implement)
 - **Pending**: Runs only with `NewCops: enable` in config
