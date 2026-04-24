@@ -205,10 +205,12 @@ mod yaml_file_read;
 mod empty_heredoc;
 mod file_empty;
 mod dir_empty;
+mod file_open;
 mod file_read;
 mod file_write;
 
 pub use dir_empty::DirEmpty;
+pub use file_open::FileOpen;
 pub use file_read::FileRead;
 pub use file_write::FileWrite;
 pub use empty_heredoc::EmptyHeredoc;
