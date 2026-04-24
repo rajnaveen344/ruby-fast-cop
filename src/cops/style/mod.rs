@@ -481,6 +481,8 @@ mod nil_lambda;
 pub use nil_lambda::NilLambda;
 mod comparable_between;
 pub use comparable_between::ComparableBetween;
+mod min_max_comparison;
+pub use min_max_comparison::MinMaxComparison;
 pub use endless_method::{EndlessMethod, EndlessMethodStyle};
 pub use arguments_forwarding::ArgumentsForwarding;
 pub use numbered_parameters::{NumberedParameters, NumberedParametersStyle};
