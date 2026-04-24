@@ -205,8 +205,10 @@ mod yaml_file_read;
 mod empty_heredoc;
 mod file_empty;
 mod dir_empty;
+mod file_read;
 
 pub use dir_empty::DirEmpty;
+pub use file_read::FileRead;
 pub use empty_heredoc::EmptyHeredoc;
 pub use file_empty::FileEmpty;
 pub use env_home::EnvHome;
