@@ -428,3 +428,16 @@ pub use select_by_kind::SelectByKind;
 pub use select_by_range::SelectByRange;
 pub use map_compact_with_conditional_block::MapCompactWithConditionalBlock;
 pub use map_into_array::MapIntoArray;
+
+mod endless_method;
+mod numbered_parameters;
+mod numbered_parameters_limit;
+mod it_assignment;
+mod it_block_parameter;
+mod ambiguous_endless_method_definition;
+pub use endless_method::{EndlessMethod, EndlessMethodStyle};
+pub use numbered_parameters::{NumberedParameters, NumberedParametersStyle};
+pub use numbered_parameters_limit::NumberedParametersLimit;
+pub use it_assignment::ItAssignment;
+pub use it_block_parameter::{ItBlockParameter, ItBlockParameterStyle};
+pub use ambiguous_endless_method_definition::AmbiguousEndlessMethodDefinition;

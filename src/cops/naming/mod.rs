@@ -33,3 +33,6 @@ pub use predicate_prefix::PredicatePrefix;
 pub use rescued_exceptions_variable_name::RescuedExceptionsVariableName;
 pub use variable_name::{VariableName, VariableNameStyle};
 pub use variable_number::{VariableNumber, VariableNumberStyle};
+
+mod block_forwarding;
+pub use block_forwarding::{BlockForwarding, BlockForwardingStyle};

@@ -209,3 +209,8 @@ pub use useless_times::UselessTimes;
 pub use void::Void;
 mod script_permission;
 pub use script_permission::ScriptPermission;
+
+mod numbered_parameter_assignment;
+mod it_without_arguments_in_block;
+pub use numbered_parameter_assignment::NumberedParameterAssignment;
+pub use it_without_arguments_in_block::ItWithoutArgumentsInBlock;
