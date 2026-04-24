@@ -475,6 +475,8 @@ mod reverse_find;
 pub use reverse_find::ReverseFind;
 mod dig_chain;
 pub use dig_chain::DigChain;
+mod object_then;
+pub use object_then::{ObjectThen, EnforcedStyle as ObjectThenStyle};
 pub use endless_method::{EndlessMethod, EndlessMethodStyle};
 pub use arguments_forwarding::ArgumentsForwarding;
 pub use numbered_parameters::{NumberedParameters, NumberedParametersStyle};
