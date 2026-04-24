@@ -471,6 +471,8 @@ mod concat_array_literals;
 pub use concat_array_literals::ConcatArrayLiterals;
 mod exact_regexp_match;
 pub use exact_regexp_match::ExactRegexpMatch;
+mod reverse_find;
+pub use reverse_find::ReverseFind;
 pub use endless_method::{EndlessMethod, EndlessMethodStyle};
 pub use arguments_forwarding::ArgumentsForwarding;
 pub use numbered_parameters::{NumberedParameters, NumberedParametersStyle};
