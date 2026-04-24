@@ -9,17 +9,17 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 
 Each cell shows `implemented / total` for that category.
 
-| Department |     Enabled |    Pending | Disabled |            Tests |
-| ---------- | ----------: | ---------: | -------: | ---------------: |
-| Style      |     175/175 |      47/91 |     3/32 |  12,051 / 14,566 |
-| Lint       |     100/100 |       9/50 |      0/4 |    4,675 / 5,949 |
-| Layout     |       81/81 |        0/5 |     0/14 |    4,059 / 4,646 |
-| Metrics    |         9/9 |        0/1 |      0/0 |        259 / 272 |
-| Naming     |       16/16 |        2/2 |      0/1 |    2,181 / 2,216 |
-| Gemspec    |         4/4 |        0/5 |      0/1 |         61 / 193 |
-| Bundler    |         5/5 |        0/0 |      0/2 |         69 / 101 |
-| Security   |         5/5 |        1/2 |      0/0 |         81 / 102 |
-| Migration  |         1/1 |        0/0 |      0/0 |            8 / 8 |
+| Department |     Enabled |    Pending | Disabled |             Tests |
+| ---------- | ----------: | ---------: | -------: | ----------------: |
+| Style      |     175/175 |      47/91 |     3/32 |   12,051 / 14,566 |
+| Lint       |     100/100 |       9/50 |      0/4 |     4,675 / 5,949 |
+| Layout     |       81/81 |        0/5 |     0/14 |     4,059 / 4,646 |
+| Metrics    |         9/9 |        0/1 |      0/0 |         259 / 272 |
+| Naming     |       16/16 |        2/2 |      0/1 |     2,181 / 2,216 |
+| Gemspec    |         4/4 |        0/5 |      0/1 |          61 / 193 |
+| Bundler    |         5/5 |        0/0 |      0/2 |          69 / 101 |
+| Security   |         5/5 |        1/2 |      0/0 |          81 / 102 |
+| Migration  |         1/1 |        0/0 |      0/0 |             8 / 8 |
 | **Total**  | **396/396** | **59/156** | **3/54** | **23,444/28,053** |
 
 - **Enabled**: Runs by default on every codebase (highest priority to implement)

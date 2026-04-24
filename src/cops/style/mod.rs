@@ -463,6 +463,8 @@ mod super_with_args_parentheses;
 pub use super_with_args_parentheses::SuperWithArgsParentheses;
 mod string_chars;
 pub use string_chars::StringChars;
+mod safe_navigation_chain_length;
+pub use safe_navigation_chain_length::SafeNavigationChainLength;
 pub use endless_method::{EndlessMethod, EndlessMethodStyle};
 pub use arguments_forwarding::ArgumentsForwarding;
 pub use numbered_parameters::{NumberedParameters, NumberedParametersStyle};
