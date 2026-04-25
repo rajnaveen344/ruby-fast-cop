@@ -1,7 +1,7 @@
 # All Cops State (606 total)
 
 Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department and default status.
-554 of 606 implemented (all 396 enabled-by-default complete + 155 pending-by-default + 3 disabled-by-default). See [README.md](README.md) for the implementation roadmap.
+563 of 606 implemented (all 396 enabled-by-default complete + 155 pending-by-default + 12 disabled-by-default). See [README.md](README.md) for the implementation roadmap.
 
 **Pending-default progress: 155 / 156 (~99%)**.
 
@@ -11,7 +11,7 @@ Each cell shows `implemented / total` for that category.
 
 | Department |     Enabled |     Pending | Disabled |             Tests |
 | ---------- | ----------: | ----------: | -------: | ----------------: |
-| Style      |     175/175 |       90/91 |     3/32 |   13,825 / 14,566 |
+| Style      |     175/175 |       90/91 |    12/32 |   13,894 / 14,566 |
 | Lint       |     100/100 |       50/50 |      0/4 |     5,866 / 5,949 |
 | Layout     |       81/81 |         5/5 |     0/14 |     4,268 / 4,646 |
 | Metrics    |         9/9 |         1/1 |      0/0 |         272 / 272 |
@@ -20,13 +20,13 @@ Each cell shows `implemented / total` for that category.
 | Bundler    |         5/5 |         0/0 |      0/2 |          69 / 101 |
 | Security   |         5/5 |         2/2 |      0/0 |         102 / 102 |
 | Migration  |         1/1 |         0/0 |      0/0 |             8 / 8 |
-| **Total**  | **396/396** | **155/156** | **3/54** | **26,719/28,053** |
+| **Total**  | **396/396** | **155/156** | **12/54** | **26,788/28,053** |
 
 - **Enabled**: Runs by default on every codebase (highest priority to implement)
 - **Pending**: Runs only with `NewCops: enable` in config
 - **Disabled**: Runs only when explicitly enabled in config
 
-## Style (181/298 implemented, 14,567 tests)
+## Style (190/298 implemented, 14,567 tests)
 
 ### Enabled by Default (175 cops, 9,202 tests)
 
@@ -238,7 +238,7 @@ Each cell shows `implemented / total` for that category.
 | Style/FileRead                             |    30 | Implemented |
 | Style/FileTouch                            |     4 | Implemented |
 | Style/FileWrite                            |    32 | Implemented |
-| Style/HashConversion                       |    22 | Implemented           |
+| Style/HashConversion                       |    22 | Implemented |
 | Style/HashExcept                           |   114 | Implemented |
 | Style/HashFetchChain                       |    35 | Implemented |
 | Style/HashSlice                            |   116 | Implemented |
@@ -266,10 +266,10 @@ Each cell shows `implemented / total` for that category.
 | Style/OneClassPerFile                      |    21 | Implemented |
 | Style/OpenStructUse                        |    12 | Implemented |
 | Style/OperatorMethodCall                   |   202 | -           |
-| Style/PartitionInsteadOfDoubleSelect       |    37 | Implemented           |
+| Style/PartitionInsteadOfDoubleSelect       |    37 | Implemented |
 | Style/PredicateWithKind                    |    64 | Implemented |
 | Style/QuotedSymbols                        |    97 | Implemented |
-| Style/ReduceToHash                         |    20 | Implemented           |
+| Style/ReduceToHash                         |    20 | Implemented |
 | Style/RedundantArgument                    |    15 | Implemented |
 | Style/RedundantArrayConstructor            |    13 | Implemented |
 | Style/RedundantArrayFlatten                |    10 | Implemented |
@@ -308,9 +308,9 @@ Each cell shows `implemented / total` for that category.
 
 | Cop                                        | Tests | Status      |
 | ------------------------------------------ | ----: | ----------- |
-| Style/ArrayCoercion                        |     5 | -           |
+| Style/ArrayCoercion                        |     5 | Implemented |
 | Style/ArrayFirstLast                       |    16 | -           |
-| Style/AsciiComments                        |     5 | -           |
+| Style/AsciiComments                        |     5 | Implemented |
 | Style/AutoResourceCleanup                  |     7 | Implemented |
 | Style/ClassMethodsDefinitions              |    16 | -           |
 | Style/CollectionMethods                    |    68 | -           |
@@ -320,26 +320,26 @@ Each cell shows `implemented / total` for that category.
 | Style/DisableCopsWithinSourceCodeDirective |     7 | -           |
 | Style/DocumentationMethod                  |    77 | -           |
 | Style/HashLookupMethod                     |    15 | -           |
-| Style/ImplicitRuntimeError                 |     8 | -           |
-| Style/InlineComment                        |     3 | -           |
+| Style/ImplicitRuntimeError                 |     8 | Implemented |
+| Style/InlineComment                        |     3 | Implemented |
 | Style/InvertibleUnlessCondition            |    15 | -           |
-| Style/IpAddresses                          |    14 | -           |
+| Style/IpAddresses                          |    14 | Implemented |
 | Style/MethodCallWithArgsParentheses        |   174 | -           |
 | Style/MethodCalledOnDoEndBlock             |    10 | Implemented |
 | Style/MissingElse                          |    84 | -           |
 | Style/MultilineMethodSignature             |    19 | -           |
-| Style/OptionHash                           |     9 | -           |
+| Style/OptionHash                           |     9 | Implemented |
 | Style/RequireOrder                         |    24 | -           |
-| Style/ReturnNil                            |     5 | -           |
+| Style/ReturnNil                            |     5 | Implemented |
 | Style/Send                                 |    13 | -           |
 | Style/SingleLineBlockParams                |    12 | -           |
 | Style/StaticClass                          |    11 | -           |
-| Style/StringHashKeys                       |    10 | -           |
+| Style/StringHashKeys                       |    10 | Implemented |
 | Style/StringMethods                        |     2 | Implemented |
 | Style/TopLevelMethodDefinition             |    14 | -           |
 | Style/TrailingCommaInBlockArgs             |    20 | -           |
 | Style/UnlessLogicalOperators               |    28 | -           |
-| Style/YodaExpression                       |    10 | -           |
+| Style/YodaExpression                       |    10 | Implemented |
 
 ## Lint (101/154 implemented, 5,961 tests)
 
@@ -453,12 +453,12 @@ Each cell shows `implemented / total` for that category.
 | Cop                                         | Tests | Status      |
 | ------------------------------------------- | ----: | ----------- |
 | Lint/AmbiguousAssignment                    |    40 | Implemented |
-| Lint/AmbiguousOperatorPrecedence            |    13 | Implemented           |
+| Lint/AmbiguousOperatorPrecedence            |    13 | Implemented |
 | Lint/AmbiguousRange                         |    54 | Implemented |
 | Lint/ArrayLiteralInRegexp                   |    32 | Implemented |
 | Lint/ConstantOverwrittenInRescue            |     8 | Implemented |
 | Lint/ConstantReassignment                   |    41 | -           |
-| Lint/CopDirectiveSyntax                     |    16 | Implemented           |
+| Lint/CopDirectiveSyntax                     |    16 | Implemented |
 | Lint/DataDefineOverride                     |     8 | Implemented |
 | Lint/DeprecatedConstants                    |    20 | Implemented |
 | Lint/DuplicateBranch                        |   131 | Implemented |
@@ -489,10 +489,10 @@ Each cell shows `implemented / total` for that category.
 | Lint/SharedMutableDefault                   |     6 | Implemented |
 | Lint/SuppressedExceptionInNumberConversion  |    26 | -           |
 | Lint/SymbolConversion                       |    39 | Implemented |
-| Lint/ToEnumArguments                        |    24 | Implemented           |
+| Lint/ToEnumArguments                        |    24 | Implemented |
 | Lint/TripleQuotes                           |     9 | Implemented |
 | Lint/UnescapedBracketInRegexp               |    44 | Implemented |
-| Lint/UnexpectedBlockArity                   |    22 | Implemented           |
+| Lint/UnexpectedBlockArity                   |    22 | Implemented |
 | Lint/UnmodifiedReduceAccumulator            |   168 | -           |
 | Lint/UnreachablePatternBranch               |    23 | Implemented |
 | Lint/UselessConstantScoping                 |    11 | Implemented |
@@ -649,7 +649,7 @@ Each cell shows `implemented / total` for that category.
 
 | Cop                             | Tests | Status |
 | ------------------------------- | ----: | ------ |
-| Metrics/CollectionLiteralLength |    13 | Implemented      |
+| Metrics/CollectionLiteralLength |    13 | Implemented |
 
 ## Naming (17/19 implemented, 2,217 tests)
 
@@ -749,7 +749,7 @@ Each cell shows `implemented / total` for that category.
 
 | Cop                   | Tests | Status      |
 | --------------------- | ----: | ----------- |
-| Security/CompoundHash |    21 | Implemented           |
+| Security/CompoundHash |    21 | Implemented |
 | Security/IoMethods    |    32 | Implemented |
 
 ## Migration (1/1 implemented, 8 tests)
