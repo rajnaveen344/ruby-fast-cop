@@ -1,9 +1,9 @@
 # All Cops State (606 total)
 
 Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department and default status.
-503 of 606 implemented (all 396 enabled-by-default complete + 104 pending-by-default + 3 disabled-by-default). See [README.md](README.md) for the implementation roadmap.
+505 of 606 implemented (all 396 enabled-by-default complete + 106 pending-by-default + 3 disabled-by-default). See [README.md](README.md) for the implementation roadmap.
 
-**Pending-default progress: 104 / 156 (~67%)**.
+**Pending-default progress: 106 / 156 (~68%)**.
 
 ## Summary
 
@@ -11,8 +11,8 @@ Each cell shows `implemented / total` for that category.
 
 | Department |     Enabled |     Pending | Disabled |             Tests |
 | ---------- | ----------: | ----------: | -------: | ----------------: |
-| Style      |     175/175 |       65/91 |     3/32 |   12,358 / 14,566 |
-| Lint       |     100/100 |       31/50 |      0/4 |     4,922 / 5,949 |
+| Style      |     175/175 |       67/91 |     3/32 |   12,380 / 14,566 |
+| Lint       |     100/100 |       31/50 |      0/4 |     4,934 / 5,949 |
 | Layout     |       81/81 |         0/5 |     0/14 |     4,059 / 4,646 |
 | Metrics    |         9/9 |         0/1 |      0/0 |         259 / 272 |
 | Naming     |       16/16 |         2/2 |      0/1 |     2,181 / 2,216 |
@@ -20,7 +20,7 @@ Each cell shows `implemented / total` for that category.
 | Bundler    |         5/5 |         0/0 |      0/2 |          69 / 101 |
 | Security   |         5/5 |         1/2 |      0/0 |          81 / 102 |
 | Migration  |         1/1 |         0/0 |      0/0 |             8 / 8 |
-| **Total**  | **396/396** | **104/156** | **3/54** | **24,053/28,053** |
+| **Total**  | **396/396** | **106/156** | **3/54** | **24,087/28,053** |
 
 - **Enabled**: Runs by default on every codebase (highest priority to implement)
 - **Pending**: Runs only with `NewCops: enable` in config
@@ -246,7 +246,7 @@ Each cell shows `implemented / total` for that category.
 | Style/InPatternThen                        |     7 | Implemented           |
 | Style/ItAssignment                         |    23 | Implemented           |
 | Style/ItBlockParameter                     |    34 | Implemented           |
-| Style/KeywordArgumentsMerging              |     9 | -           |
+| Style/KeywordArgumentsMerging              |     9 | Implemented |
 | Style/MagicCommentFormat                   |    25 | -           |
 | Style/MapCompactWithConditionalBlock       |    33 | Implemented           |
 | Style/MapIntoArray                         |    64 | Implemented           |
@@ -296,7 +296,7 @@ Each cell shows `implemented / total` for that category.
 | Style/SelectByRange                        |   120 | Implemented           |
 | Style/SelectByRegexp                       |   320 | Implemented |
 | Style/SendWithLiteralMethodName            |   115 | -           |
-| Style/SingleLineDoEndBlock                 |    13 | -           |
+| Style/SingleLineDoEndBlock                 |    13 | Implemented |
 | Style/StringChars                          |     8 | Implemented           |
 | Style/SuperArguments                       |    92 | -           |
 | Style/SuperWithArgsParentheses             |     4 | Implemented           |

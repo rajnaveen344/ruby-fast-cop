@@ -16,7 +16,7 @@ Exceptions — drop caveman temporarily: security warnings, destructive-op confi
 
 ruby-fast-cop = Rust port of RuboCop. Target 50-100x faster (like Ruff:Python).
 
-**State:** 443/606 cops (396/396 enabled-by-default = 100%; 37/149 pending-by-default). ~28,075 test cases from RuboCop v1.85.0 RSpec, all green.
+**State:** 505/606 cops (396/396 enabled-by-default = 100%; 106/156 pending-by-default; 3/54 disabled-by-default). ~28,053 test cases from RuboCop v1.85.0 RSpec, all green.
 
 > **Architecture:** see [`ARCHITECTURE.md`](./ARCHITECTURE.md) for runtime shape, registration, autocorrect pipeline, testing pipeline. CLAUDE.md = conventions; ARCHITECTURE.md = structure. Update ARCHITECTURE.md only when runtime/registration/autocorrect/testing shape changes.
 
@@ -201,7 +201,13 @@ Output = S-expression like `(call (call (local_variable_read)))`. Translate Rubo
 6. Set `implemented = true` in TOML.
 7. `cargo test --test tester`. If fails, compare with spec, fix impl (not test).
 8. Run `/cop-review` — compares vs Ruby source, flags complexity. Fix before moving on.
-9. Update README.md (impl table), COPS.md (status + counts), CLAUDE.md (cop count). ARCHITECTURE.md only if runtime shape changed.
+9. **MANDATORY same-commit doc sync** — never skip, never defer:
+   - **COPS.md row**: flip the cop's `Status` column from `-` → `Implemented` (grep for the cop name to find the row).
+   - **COPS.md summary table**: increment dept's pending/disabled counter, add cop's test count to dept tests-impl, update Total row, update line 4 prose `N of 606 implemented` and line 6 `Pending-default progress`.
+   - **CLAUDE.md state line** (line 19): bump `XXX/606 cops` and `NN/156 pending-by-default`.
+   - **README.md**: impl table.
+   - ARCHITECTURE.md only if runtime shape changed.
+   - **Verify before committing**: re-grep COPS.md for the cop name — must show `Implemented`. Sum dept rows must equal Total row.
 
 Example cop:
 ```rust
