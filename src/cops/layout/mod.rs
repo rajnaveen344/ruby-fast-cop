@@ -20,6 +20,7 @@ mod else_alignment;
 mod empty_line_after_guard_clause;
 mod empty_line_after_magic_comment;
 mod empty_line_between_defs;
+mod empty_lines_after_module_inclusion;
 mod empty_lines_around_access_modifier;
 mod empty_lines_around_arguments;
 mod empty_lines_around_attribute_accessor;
@@ -42,6 +43,9 @@ mod indentation_style;
 mod indentation_width;
 mod initial_indentation;
 mod leading_comment_space;
+mod line_continuation_leading_space;
+mod line_end_string_concatenation_indentation;
+mod line_continuation_spacing;
 mod leading_empty_lines;
 mod line_length;
 mod multiline_array_brace_layout;
@@ -59,6 +63,7 @@ mod space_after_method_name;
 mod space_before_comma;
 mod space_after_semicolon;
 mod space_before_block_braces;
+mod space_before_brackets;
 mod space_before_comment;
 mod space_before_semicolon;
 mod space_in_lambda_literal;
@@ -101,6 +106,7 @@ pub use empty_line_after_magic_comment::EmptyLineAfterMagicComment;
 pub use empty_line_between_defs::EmptyLineBetweenDefs;
 pub use empty_lines_around_arguments::EmptyLinesAroundArguments;
 pub use empty_lines_around_attribute_accessor::EmptyLinesAroundAttributeAccessor;
+pub use empty_lines_after_module_inclusion::EmptyLinesAfterModuleInclusion;
 pub use empty_lines_around_access_modifier::{
     EmptyLinesAroundAccessModifier,
     EnforcedStyle as EmptyLinesAroundAccessModifierStyle,
@@ -141,6 +147,11 @@ pub use indentation_width::{
 };
 pub use initial_indentation::InitialIndentation;
 pub use leading_comment_space::LeadingCommentSpace;
+pub use line_continuation_leading_space::{LineContinuationLeadingSpace, LineContinuationLeadingSpaceStyle};
+pub use line_end_string_concatenation_indentation::{
+    LineEndStringConcatenationIndentation, LineEndStringConcatenationIndentationStyle,
+};
+pub use line_continuation_spacing::{LineContinuationSpacing, LineContinuationSpacingStyle};
 pub use leading_empty_lines::LeadingEmptyLines;
 pub use line_length::{AllowHeredoc, LineLength};
 pub use crate::helpers::multiline_literal_brace_layout::BraceLayoutStyle as MultilineBraceLayoutStyle;
@@ -164,6 +175,7 @@ pub use space_after_method_name::SpaceAfterMethodName;
 pub use space_before_comma::SpaceBeforeComma;
 pub use space_after_semicolon::SpaceAfterSemicolon;
 pub use space_before_block_braces::{BlockBraceStyle, SpaceBeforeBlockBraces};
+pub use space_before_brackets::SpaceBeforeBrackets;
 pub use space_before_comment::SpaceBeforeComment;
 pub use space_before_semicolon::SpaceBeforeSemicolon;
 pub use space_in_lambda_literal::{LambdaSpaceStyle, SpaceInLambdaLiteral};

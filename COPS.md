@@ -1,9 +1,9 @@
 # All Cops State (606 total)
 
 Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department and default status.
-525 of 606 implemented (all 396 enabled-by-default complete + 126 pending-by-default + 3 disabled-by-default). See [README.md](README.md) for the implementation roadmap.
+535 of 606 implemented (all 396 enabled-by-default complete + 136 pending-by-default + 3 disabled-by-default). See [README.md](README.md) for the implementation roadmap.
 
-**Pending-default progress: 126 / 156 (~81%)**.
+**Pending-default progress: 136 / 156 (~87%)**.
 
 ## Summary
 
@@ -11,16 +11,16 @@ Each cell shows `implemented / total` for that category.
 
 | Department |     Enabled |     Pending | Disabled |             Tests |
 | ---------- | ----------: | ----------: | -------: | ----------------: |
-| Style      |     175/175 |       77/91 |     3/32 |   12,982 / 14,566 |
+| Style      |     175/175 |       82/91 |     3/32 |   13,193 / 14,566 |
 | Lint       |     100/100 |       41/50 |      0/4 |     5,452 / 5,949 |
-| Layout     |       81/81 |         0/5 |     0/14 |     4,059 / 4,646 |
+| Layout     |       81/81 |         5/5 |     0/14 |     4,268 / 4,646 |
 | Metrics    |         9/9 |         0/1 |      0/0 |         259 / 272 |
 | Naming     |       16/16 |         2/2 |      0/1 |     2,181 / 2,216 |
 | Gemspec    |         4/4 |         5/5 |      0/1 |         116 / 193 |
 | Bundler    |         5/5 |         0/0 |      0/2 |          69 / 101 |
 | Security   |         5/5 |         1/2 |      0/0 |          81 / 102 |
 | Migration  |         1/1 |         0/0 |      0/0 |             8 / 8 |
-| **Total**  | **396/396** | **126/156** | **3/54** | **25,207/28,053** |
+| **Total**  | **396/396** | **136/156** | **3/54** | **25,627/28,053** |
 
 - **Enabled**: Runs by default on every codebase (highest priority to implement)
 - **Pending**: Runs only with `NewCops: enable` in config
@@ -221,11 +221,11 @@ Each cell shows `implemented / total` for that category.
 | Style/ComparableBetween                    |    15 | Implemented           |
 | Style/ComparableClamp                      |    23 | Implemented           |
 | Style/ConcatArrayLiterals                  |    14 | Implemented           |
-| Style/DataInheritance                      |    24 | -           |
+| Style/DataInheritance                      |    24 | Implemented           |
 | Style/DigChain                             |    23 | Implemented           |
 | Style/DirEmpty                             |    16 | Implemented           |
 | Style/DocumentDynamicEvalDefinition        |    18 | -           |
-| Style/EmptyClassDefinition                 |    44 | -           |
+| Style/EmptyClassDefinition                 |    44 | Implemented           |
 | Style/EmptyHeredoc                         |     7 | Implemented           |
 | Style/EmptyStringInsideInterpolation       |    24 | Implemented           |
 | Style/EndlessMethod                        |    63 | Implemented           |
@@ -247,7 +247,7 @@ Each cell shows `implemented / total` for that category.
 | Style/ItAssignment                         |    23 | Implemented           |
 | Style/ItBlockParameter                     |    34 | Implemented           |
 | Style/KeywordArgumentsMerging              |     9 | Implemented |
-| Style/MagicCommentFormat                   |    25 | -           |
+| Style/MagicCommentFormat                   |    25 | Implemented           |
 | Style/MapCompactWithConditionalBlock       |    33 | Implemented           |
 | Style/MapIntoArray                         |    64 | Implemented           |
 | Style/MapJoin                              |    24 | Implemented           |
@@ -263,12 +263,12 @@ Each cell shows `implemented / total` for that category.
 | Style/NumberedParameters                   |     4 | Implemented           |
 | Style/NumberedParametersLimit              |    12 | Implemented           |
 | Style/ObjectThen                           |    23 | Implemented           |
-| Style/OneClassPerFile                      |    21 | -           |
+| Style/OneClassPerFile                      |    21 | Implemented           |
 | Style/OpenStructUse                        |    12 | Implemented           |
 | Style/OperatorMethodCall                   |   202 | -           |
 | Style/PartitionInsteadOfDoubleSelect       |    37 | -           |
 | Style/PredicateWithKind                    |    64 | Implemented           |
-| Style/QuotedSymbols                        |    97 | -           |
+| Style/QuotedSymbols                        |    97 | Implemented           |
 | Style/ReduceToHash                         |    20 | -           |
 | Style/RedundantArgument                    |    15 | Implemented           |
 | Style/RedundantArrayConstructor            |    13 | Implemented           |
@@ -604,11 +604,11 @@ Each cell shows `implemented / total` for that category.
 
 | Cop                                          | Tests | Status |
 | -------------------------------------------- | ----: | ------ |
-| Layout/EmptyLinesAfterModuleInclusion        |    59 | -      |
-| Layout/LineContinuationLeadingSpace          |    32 | -      |
-| Layout/LineContinuationSpacing               |    31 | -      |
-| Layout/LineEndStringConcatenationIndentation |    59 | -      |
-| Layout/SpaceBeforeBrackets                   |    28 | -      |
+| Layout/EmptyLinesAfterModuleInclusion        |    59 | Implemented      |
+| Layout/LineContinuationLeadingSpace          |    32 | Implemented      |
+| Layout/LineContinuationSpacing               |    31 | Implemented      |
+| Layout/LineEndStringConcatenationIndentation |    59 | Implemented      |
+| Layout/SpaceBeforeBrackets                   |    28 | Implemented      |
 
 ### Disabled by Default (14 cops, 378 tests)
 
