@@ -6,6 +6,7 @@ pub mod code_length;
 pub mod empty_lines_around_body;
 pub mod escape;
 pub mod guard_clause;
+pub mod hash_subset;
 pub mod hash_transform_method;
 pub mod interpolation;
 pub mod method_complexity;

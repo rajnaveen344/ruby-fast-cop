@@ -1,9 +1,9 @@
 # All Cops State (606 total)
 
 Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department and default status.
-505 of 606 implemented (all 396 enabled-by-default complete + 106 pending-by-default + 3 disabled-by-default). See [README.md](README.md) for the implementation roadmap.
+515 of 606 implemented (all 396 enabled-by-default complete + 116 pending-by-default + 3 disabled-by-default). See [README.md](README.md) for the implementation roadmap.
 
-**Pending-default progress: 106 / 156 (~68%)**.
+**Pending-default progress: 116 / 156 (~74%)**.
 
 ## Summary
 
@@ -11,8 +11,8 @@ Each cell shows `implemented / total` for that category.
 
 | Department |     Enabled |     Pending | Disabled |             Tests |
 | ---------- | ----------: | ----------: | -------: | ----------------: |
-| Style      |     175/175 |       67/91 |     3/32 |   12,380 / 14,566 |
-| Lint       |     100/100 |       31/50 |      0/4 |     4,934 / 5,949 |
+| Style      |     175/175 |       72/91 |     3/32 |   12,715 / 14,566 |
+| Lint       |     100/100 |       36/50 |      0/4 |     5,111 / 5,949 |
 | Layout     |       81/81 |         0/5 |     0/14 |     4,059 / 4,646 |
 | Metrics    |         9/9 |         0/1 |      0/0 |         259 / 272 |
 | Naming     |       16/16 |         2/2 |      0/1 |     2,181 / 2,216 |
@@ -20,7 +20,7 @@ Each cell shows `implemented / total` for that category.
 | Bundler    |         5/5 |         0/0 |      0/2 |          69 / 101 |
 | Security   |         5/5 |         1/2 |      0/0 |          81 / 102 |
 | Migration  |         1/1 |         0/0 |      0/0 |             8 / 8 |
-| **Total**  | **396/396** | **106/156** | **3/54** | **24,087/28,053** |
+| **Total**  | **396/396** | **116/156** | **3/54** | **24,599/28,053** |
 
 - **Enabled**: Runs by default on every codebase (highest priority to implement)
 - **Pending**: Runs only with `NewCops: enable` in config
@@ -239,9 +239,9 @@ Each cell shows `implemented / total` for that category.
 | Style/FileTouch                            |     4 | Implemented           |
 | Style/FileWrite                            |    32 | Implemented           |
 | Style/HashConversion                       |    22 | -           |
-| Style/HashExcept                           |   114 | -           |
-| Style/HashFetchChain                       |    35 | -           |
-| Style/HashSlice                            |   116 | -           |
+| Style/HashExcept                           |   114 | Implemented           |
+| Style/HashFetchChain                       |    35 | Implemented           |
+| Style/HashSlice                            |   116 | Implemented           |
 | Style/IfWithBooleanLiteralBranches         |    94 | -           |
 | Style/InPatternThen                        |     7 | Implemented           |
 | Style/ItAssignment                         |    23 | Implemented           |
@@ -251,8 +251,8 @@ Each cell shows `implemented / total` for that category.
 | Style/MapCompactWithConditionalBlock       |    33 | Implemented           |
 | Style/MapIntoArray                         |    64 | Implemented           |
 | Style/MapJoin                              |    24 | Implemented           |
-| Style/MapToHash                            |    38 | -           |
-| Style/MapToSet                             |    32 | -           |
+| Style/MapToHash                            |    38 | Implemented           |
+| Style/MapToSet                             |    32 | Implemented           |
 | Style/MinMaxComparison                     |    17 | Implemented           |
 | Style/ModuleMemberExistenceCheck           |   101 | -           |
 | Style/MultilineInPatternThen               |    13 | Implemented           |
@@ -454,8 +454,8 @@ Each cell shows `implemented / total` for that category.
 | ------------------------------------------- | ----: | ----------- |
 | Lint/AmbiguousAssignment                    |    40 | Implemented |
 | Lint/AmbiguousOperatorPrecedence            |    13 | -           |
-| Lint/AmbiguousRange                         |    54 | -           |
-| Lint/ArrayLiteralInRegexp                   |    32 | -           |
+| Lint/AmbiguousRange                         |    54 | Implemented           |
+| Lint/ArrayLiteralInRegexp                   |    32 | Implemented           |
 | Lint/ConstantOverwrittenInRescue            |     8 | Implemented           |
 | Lint/ConstantReassignment                   |    41 | -           |
 | Lint/CopDirectiveSyntax                     |    16 | -           |
@@ -464,7 +464,7 @@ Each cell shows `implemented / total` for that category.
 | Lint/DuplicateBranch                        |   131 | -           |
 | Lint/DuplicateMagicComment                  |     8 | Implemented           |
 | Lint/DuplicateMatchPattern                  |    19 | Implemented           |
-| Lint/DuplicateRegexpCharacterClassElement   |    16 | -           |
+| Lint/DuplicateRegexpCharacterClassElement   |    16 | Implemented           |
 | Lint/DuplicateSetElement                    |    36 | -           |
 | Lint/EmptyBlock                             |    17 | Implemented           |
 | Lint/EmptyClass                             |     9 | Implemented           |
@@ -474,7 +474,7 @@ Each cell shows `implemented / total` for that category.
 | Lint/ItWithoutArgumentsInBlock              |    19 | Implemented           |
 | Lint/LambdaWithoutLiteralBlock              |     6 | Implemented           |
 | Lint/LiteralAssignmentInCondition           |    34 | -           |
-| Lint/MixedCaseRange                         |    31 | -           |
+| Lint/MixedCaseRange                         |    31 | Implemented           |
 | Lint/NoReturnInBeginEndBlocks               |    70 | -           |
 | Lint/NonAtomicFileOperation                 |    43 | Implemented           |
 | Lint/NumberedParameterAssignment            |    13 | Implemented           |
@@ -491,7 +491,7 @@ Each cell shows `implemented / total` for that category.
 | Lint/SymbolConversion                       |    39 | Implemented |
 | Lint/ToEnumArguments                        |    24 | -           |
 | Lint/TripleQuotes                           |     9 | Implemented           |
-| Lint/UnescapedBracketInRegexp               |    44 | -           |
+| Lint/UnescapedBracketInRegexp               |    44 | Implemented           |
 | Lint/UnexpectedBlockArity                   |    22 | -           |
 | Lint/UnmodifiedReduceAccumulator            |   168 | -           |
 | Lint/UnreachablePatternBranch               |    23 | Implemented           |

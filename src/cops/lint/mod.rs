@@ -262,3 +262,14 @@ mod numbered_parameter_assignment;
 mod it_without_arguments_in_block;
 pub use numbered_parameter_assignment::NumberedParameterAssignment;
 pub use it_without_arguments_in_block::ItWithoutArgumentsInBlock;
+
+mod ambiguous_range;
+mod array_literal_in_regexp;
+mod duplicate_regexp_character_class_element;
+mod mixed_case_range;
+mod unescaped_bracket_in_regexp;
+pub use ambiguous_range::AmbiguousRange;
+pub use array_literal_in_regexp::ArrayLiteralInRegexp;
+pub use duplicate_regexp_character_class_element::DuplicateRegexpCharacterClassElement;
+pub use mixed_case_range::MixedCaseRange;
+pub use unescaped_bracket_in_regexp::UnescapedBracketInRegexp;
