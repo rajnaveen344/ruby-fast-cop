@@ -1,6 +1,7 @@
 mod big_decimal_new;
 mod disjunctive_assignment_in_constructor;
 mod duplicate_case_condition;
+mod duplicate_magic_comment;
 mod duplicate_elsif_condition;
 mod duplicate_match_pattern;
 mod duplicate_require;
@@ -119,6 +120,7 @@ mod void;
 pub use big_decimal_new::BigDecimalNew;
 pub use disjunctive_assignment_in_constructor::DisjunctiveAssignmentInConstructor;
 pub use duplicate_case_condition::DuplicateCaseCondition;
+pub use duplicate_magic_comment::DuplicateMagicComment;
 pub use duplicate_elsif_condition::DuplicateElsifCondition;
 pub use duplicate_match_pattern::DuplicateMatchPattern;
 pub use duplicate_require::DuplicateRequire;
