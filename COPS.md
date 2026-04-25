@@ -1,9 +1,9 @@
 # All Cops State (606 total)
 
 Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department and default status.
-551 of 606 implemented (all 396 enabled-by-default complete + 152 pending-by-default + 3 disabled-by-default). See [README.md](README.md) for the implementation roadmap.
+554 of 606 implemented (all 396 enabled-by-default complete + 155 pending-by-default + 3 disabled-by-default). See [README.md](README.md) for the implementation roadmap.
 
-**Pending-default progress: 152 / 156 (~97%)**.
+**Pending-default progress: 155 / 156 (~99%)**.
 
 ## Summary
 
@@ -11,8 +11,8 @@ Each cell shows `implemented / total` for that category.
 
 | Department |     Enabled |     Pending | Disabled |             Tests |
 | ---------- | ----------: | ----------: | -------: | ----------------: |
-| Style      |     175/175 |       88/91 |     3/32 |   13,766 / 14,566 |
-| Lint       |     100/100 |       49/50 |      0/4 |     5,842 / 5,949 |
+| Style      |     175/175 |       90/91 |     3/32 |   13,825 / 14,566 |
+| Lint       |     100/100 |       50/50 |      0/4 |     5,866 / 5,949 |
 | Layout     |       81/81 |         5/5 |     0/14 |     4,268 / 4,646 |
 | Metrics    |         9/9 |         1/1 |      0/0 |         272 / 272 |
 | Naming     |       16/16 |         2/2 |      0/1 |     2,181 / 2,216 |
@@ -20,7 +20,7 @@ Each cell shows `implemented / total` for that category.
 | Bundler    |         5/5 |         0/0 |      0/2 |          69 / 101 |
 | Security   |         5/5 |         2/2 |      0/0 |         102 / 102 |
 | Migration  |         1/1 |         0/0 |      0/0 |             8 / 8 |
-| **Total**  | **396/396** | **152/156** | **3/54** | **26,636/28,053** |
+| **Total**  | **396/396** | **155/156** | **3/54** | **26,719/28,053** |
 
 - **Enabled**: Runs by default on every codebase (highest priority to implement)
 - **Pending**: Runs only with `NewCops: enable` in config
@@ -238,7 +238,7 @@ Each cell shows `implemented / total` for that category.
 | Style/FileRead                             |    30 | Implemented |
 | Style/FileTouch                            |     4 | Implemented |
 | Style/FileWrite                            |    32 | Implemented |
-| Style/HashConversion                       |    22 | -           |
+| Style/HashConversion                       |    22 | Implemented           |
 | Style/HashExcept                           |   114 | Implemented |
 | Style/HashFetchChain                       |    35 | Implemented |
 | Style/HashSlice                            |   116 | Implemented |
@@ -266,7 +266,7 @@ Each cell shows `implemented / total` for that category.
 | Style/OneClassPerFile                      |    21 | Implemented |
 | Style/OpenStructUse                        |    12 | Implemented |
 | Style/OperatorMethodCall                   |   202 | -           |
-| Style/PartitionInsteadOfDoubleSelect       |    37 | -           |
+| Style/PartitionInsteadOfDoubleSelect       |    37 | Implemented           |
 | Style/PredicateWithKind                    |    64 | Implemented |
 | Style/QuotedSymbols                        |    97 | Implemented |
 | Style/ReduceToHash                         |    20 | Implemented           |
@@ -489,7 +489,7 @@ Each cell shows `implemented / total` for that category.
 | Lint/SharedMutableDefault                   |     6 | Implemented |
 | Lint/SuppressedExceptionInNumberConversion  |    26 | -           |
 | Lint/SymbolConversion                       |    39 | Implemented |
-| Lint/ToEnumArguments                        |    24 | -           |
+| Lint/ToEnumArguments                        |    24 | Implemented           |
 | Lint/TripleQuotes                           |     9 | Implemented |
 | Lint/UnescapedBracketInRegexp               |    44 | Implemented |
 | Lint/UnexpectedBlockArity                   |    22 | Implemented           |

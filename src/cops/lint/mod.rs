@@ -291,6 +291,8 @@ mod array_literal_in_regexp;
 mod duplicate_regexp_character_class_element;
 mod mixed_case_range;
 mod unescaped_bracket_in_regexp;
+mod to_enum_arguments;
+pub use to_enum_arguments::ToEnumArguments;
 pub use ambiguous_operator_precedence::AmbiguousOperatorPrecedence;
 pub use cop_directive_syntax::CopDirectiveSyntax;
 pub use unexpected_block_arity::UnexpectedBlockArity;

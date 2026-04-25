@@ -1,4 +1,8 @@
 mod attr;
+mod hash_conversion;
+pub use hash_conversion::HashConversion;
+mod partition_instead_of_double_select;
+pub use partition_instead_of_double_select::PartitionInsteadOfDoubleSelect;
 mod access_modifier_declarations;
 mod accessor_grouping;
 mod class_and_module_children;
