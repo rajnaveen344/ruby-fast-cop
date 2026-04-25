@@ -1,9 +1,9 @@
 # All Cops State (606 total)
 
 Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department and default status.
-515 of 606 implemented (all 396 enabled-by-default complete + 116 pending-by-default + 3 disabled-by-default). See [README.md](README.md) for the implementation roadmap.
+525 of 606 implemented (all 396 enabled-by-default complete + 126 pending-by-default + 3 disabled-by-default). See [README.md](README.md) for the implementation roadmap.
 
-**Pending-default progress: 116 / 156 (~74%)**.
+**Pending-default progress: 126 / 156 (~81%)**.
 
 ## Summary
 
@@ -11,8 +11,8 @@ Each cell shows `implemented / total` for that category.
 
 | Department |     Enabled |     Pending | Disabled |             Tests |
 | ---------- | ----------: | ----------: | -------: | ----------------: |
-| Style      |     175/175 |       72/91 |     3/32 |   12,715 / 14,566 |
-| Lint       |     100/100 |       36/50 |      0/4 |     5,111 / 5,949 |
+| Style      |     175/175 |       77/91 |     3/32 |   12,982 / 14,566 |
+| Lint       |     100/100 |       41/50 |      0/4 |     5,452 / 5,949 |
 | Layout     |       81/81 |         0/5 |     0/14 |     4,059 / 4,646 |
 | Metrics    |         9/9 |         0/1 |      0/0 |         259 / 272 |
 | Naming     |       16/16 |         2/2 |      0/1 |     2,181 / 2,216 |
@@ -20,7 +20,7 @@ Each cell shows `implemented / total` for that category.
 | Bundler    |         5/5 |         0/0 |      0/2 |          69 / 101 |
 | Security   |         5/5 |         1/2 |      0/0 |          81 / 102 |
 | Migration  |         1/1 |         0/0 |      0/0 |             8 / 8 |
-| **Total**  | **396/396** | **116/156** | **3/54** | **24,599/28,053** |
+| **Total**  | **396/396** | **126/156** | **3/54** | **25,207/28,053** |
 
 - **Enabled**: Runs by default on every codebase (highest priority to implement)
 - **Pending**: Runs only with `NewCops: enable` in config
@@ -217,7 +217,7 @@ Each cell shows `implemented / total` for that category.
 | Style/BitwisePredicate                     |    18 | Implemented           |
 | Style/CollectionCompact                    |    30 | Implemented           |
 | Style/CollectionQuerying                   |    20 | Implemented           |
-| Style/CombinableDefined                    |    39 | -           |
+| Style/CombinableDefined                    |    39 | Implemented           |
 | Style/ComparableBetween                    |    15 | Implemented           |
 | Style/ComparableClamp                      |    23 | Implemented           |
 | Style/ConcatArrayLiterals                  |    14 | Implemented           |
@@ -242,7 +242,7 @@ Each cell shows `implemented / total` for that category.
 | Style/HashExcept                           |   114 | Implemented           |
 | Style/HashFetchChain                       |    35 | Implemented           |
 | Style/HashSlice                            |   116 | Implemented           |
-| Style/IfWithBooleanLiteralBranches         |    94 | -           |
+| Style/IfWithBooleanLiteralBranches         |    94 | Implemented           |
 | Style/InPatternThen                        |     7 | Implemented           |
 | Style/ItAssignment                         |    23 | Implemented           |
 | Style/ItBlockParameter                     |    34 | Implemented           |
@@ -256,7 +256,7 @@ Each cell shows `implemented / total` for that category.
 | Style/MinMaxComparison                     |    17 | Implemented           |
 | Style/ModuleMemberExistenceCheck           |   101 | -           |
 | Style/MultilineInPatternThen               |    13 | Implemented           |
-| Style/NegatedIfElseCondition               |    32 | -           |
+| Style/NegatedIfElseCondition               |    32 | Implemented           |
 | Style/NegativeArrayIndex                   |   423 | Implemented |
 | Style/NestedFileDirname                    |     5 | Implemented           |
 | Style/NilLambda                            |    31 | Implemented           |
@@ -267,7 +267,7 @@ Each cell shows `implemented / total` for that category.
 | Style/OpenStructUse                        |    12 | Implemented           |
 | Style/OperatorMethodCall                   |   202 | -           |
 | Style/PartitionInsteadOfDoubleSelect       |    37 | -           |
-| Style/PredicateWithKind                    |    64 | -           |
+| Style/PredicateWithKind                    |    64 | Implemented           |
 | Style/QuotedSymbols                        |    97 | -           |
 | Style/ReduceToHash                         |    20 | -           |
 | Style/RedundantArgument                    |    15 | Implemented           |
@@ -289,7 +289,7 @@ Each cell shows `implemented / total` for that category.
 | Style/RedundantSelfAssignmentBranch        |    22 | Implemented           |
 | Style/RedundantStringEscape                |   328 | Implemented |
 | Style/RedundantStructKeywordInit           |    17 | Implemented           |
-| Style/ReturnNilInPredicateMethodDefinition |    39 | -           |
+| Style/ReturnNilInPredicateMethodDefinition |    39 | Implemented           |
 | Style/ReverseFind                          |    14 | Implemented           |
 | Style/SafeNavigationChainLength            |     8 | Implemented           |
 | Style/SelectByKind                         |   144 | Implemented           |
@@ -461,11 +461,11 @@ Each cell shows `implemented / total` for that category.
 | Lint/CopDirectiveSyntax                     |    16 | -           |
 | Lint/DataDefineOverride                     |     8 | Implemented           |
 | Lint/DeprecatedConstants                    |    20 | Implemented           |
-| Lint/DuplicateBranch                        |   131 | -           |
+| Lint/DuplicateBranch                        |   131 | Implemented           |
 | Lint/DuplicateMagicComment                  |     8 | Implemented           |
 | Lint/DuplicateMatchPattern                  |    19 | Implemented           |
 | Lint/DuplicateRegexpCharacterClassElement   |    16 | Implemented           |
-| Lint/DuplicateSetElement                    |    36 | -           |
+| Lint/DuplicateSetElement                    |    36 | Implemented           |
 | Lint/EmptyBlock                             |    17 | Implemented           |
 | Lint/EmptyClass                             |     9 | Implemented           |
 | Lint/EmptyInPattern                         |    13 | Implemented           |
@@ -496,12 +496,12 @@ Each cell shows `implemented / total` for that category.
 | Lint/UnmodifiedReduceAccumulator            |   168 | -           |
 | Lint/UnreachablePatternBranch               |    23 | Implemented           |
 | Lint/UselessConstantScoping                 |    11 | Implemented           |
-| Lint/UselessDefaultValueArgument            |    24 | -           |
+| Lint/UselessDefaultValueArgument            |    24 | Implemented           |
 | Lint/UselessDefined                         |     7 | Implemented           |
 | Lint/UselessNumericOperation                |    13 | Implemented           |
-| Lint/UselessOr                              |   127 | -           |
+| Lint/UselessOr                              |   127 | Implemented           |
 | Lint/UselessRescue                          |    12 | Implemented           |
-| Lint/UselessRuby2Keywords                   |    23 | -           |
+| Lint/UselessRuby2Keywords                   |    23 | Implemented           |
 
 ### Disabled by Default (4 cops, 95 tests)
 

@@ -1,4 +1,9 @@
 mod big_decimal_new;
+mod duplicate_branch;
+mod duplicate_set_element;
+mod useless_or;
+mod useless_default_value_argument;
+mod useless_ruby2_keywords;
 mod disjunctive_assignment_in_constructor;
 mod duplicate_case_condition;
 mod duplicate_magic_comment;
@@ -128,6 +133,11 @@ mod useless_times;
 mod void;
 
 pub use big_decimal_new::BigDecimalNew;
+pub use duplicate_branch::DuplicateBranch;
+pub use duplicate_set_element::DuplicateSetElement;
+pub use useless_or::UselessOr;
+pub use useless_default_value_argument::UselessDefaultValueArgument;
+pub use useless_ruby2_keywords::UselessRuby2Keywords;
 pub use disjunctive_assignment_in_constructor::DisjunctiveAssignmentInConstructor;
 pub use duplicate_case_condition::DuplicateCaseCondition;
 pub use duplicate_magic_comment::DuplicateMagicComment;
