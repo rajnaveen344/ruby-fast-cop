@@ -504,3 +504,5 @@ pub use numbered_parameters_limit::NumberedParametersLimit;
 pub use it_assignment::ItAssignment;
 pub use it_block_parameter::{ItBlockParameter, ItBlockParameterStyle};
 pub use ambiguous_endless_method_definition::AmbiguousEndlessMethodDefinition;
+mod keyword_arguments_merging;
+pub use keyword_arguments_merging::KeywordArgumentsMerging;
