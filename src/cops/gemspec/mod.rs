@@ -4,6 +4,7 @@ mod deprecated_attribute_assignment;
 mod development_dependencies;
 mod duplicated_assignment;
 mod ordered_dependencies;
+mod require_mfa;
 mod required_ruby_version;
 mod ruby_version_globals_usage;
 
@@ -13,5 +14,6 @@ pub use deprecated_attribute_assignment::DeprecatedAttributeAssignment;
 pub use development_dependencies::DevelopmentDependencies;
 pub use duplicated_assignment::DuplicatedAssignment;
 pub use ordered_dependencies::OrderedDependencies;
+pub use require_mfa::RequireMFA;
 pub use required_ruby_version::RequiredRubyVersion;
 pub use ruby_version_globals_usage::RubyVersionGlobalsUsage;
