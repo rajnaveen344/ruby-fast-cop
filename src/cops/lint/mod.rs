@@ -36,6 +36,7 @@ mod hash_new_with_keyword_arguments_as_default;
 mod useless_constant_scoping;
 mod useless_rescue;
 mod useless_numeric_operation;
+mod numeric_operation_with_constant_result;
 mod debugger;
 mod deprecated_class_methods;
 mod deprecated_open_ssl_constant;
@@ -163,6 +164,7 @@ pub use hash_new_with_keyword_arguments_as_default::HashNewWithKeywordArgumentsA
 pub use useless_constant_scoping::UselessConstantScoping;
 pub use useless_rescue::UselessRescue;
 pub use useless_numeric_operation::UselessNumericOperation;
+pub use numeric_operation_with_constant_result::NumericOperationWithConstantResult;
 pub use debugger::Debugger;
 pub use deprecated_class_methods::DeprecatedClassMethods;
 pub use deprecated_open_ssl_constant::DeprecatedOpenSSLConstant;
