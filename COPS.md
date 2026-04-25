@@ -1,9 +1,9 @@
 # All Cops State (606 total)
 
 Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department and default status.
-563 of 606 implemented (all 396 enabled-by-default complete + 155 pending-by-default + 12 disabled-by-default). See [README.md](README.md) for the implementation roadmap.
+571 of 606 implemented (all 396 enabled-by-default complete + 155 pending-by-default + 20 disabled-by-default). See [README.md](README.md) for the implementation roadmap.
 
-**Pending-default progress: 155 / 156 (~99%)**.
+**Pending-default progress: 155 / 156 (~99%)**. **Disabled-default progress: 20 / 54 (~37%)**.
 
 ## Summary
 
@@ -13,14 +13,14 @@ Each cell shows `implemented / total` for that category.
 | ---------- | ----------: | ----------: | -------: | ----------------: |
 | Style      |     175/175 |       90/91 |    12/32 |   13,894 / 14,566 |
 | Lint       |     100/100 |       50/50 |      0/4 |     5,866 / 5,949 |
-| Layout     |       81/81 |         5/5 |     0/14 |     4,268 / 4,646 |
+| Layout     |       81/81 |         5/5 |     8/14 |     4,366 / 4,646 |
 | Metrics    |         9/9 |         1/1 |      0/0 |         272 / 272 |
 | Naming     |       16/16 |         2/2 |      0/1 |     2,181 / 2,216 |
 | Gemspec    |         4/4 |         5/5 |      0/1 |         116 / 193 |
 | Bundler    |         5/5 |         0/0 |      0/2 |          69 / 101 |
 | Security   |         5/5 |         2/2 |      0/0 |         102 / 102 |
 | Migration  |         1/1 |         0/0 |      0/0 |             8 / 8 |
-| **Total**  | **396/396** | **155/156** | **12/54** | **26,788/28,053** |
+| **Total**  | **396/396** | **155/156** | **20/54** | **26,886/28,053** |
 
 - **Enabled**: Runs by default on every codebase (highest priority to implement)
 - **Pending**: Runs only with `NewCops: enable` in config
@@ -512,7 +512,7 @@ Each cell shows `implemented / total` for that category.
 | Lint/NumberConversion            |    36 | -      |
 | Lint/ShadowingOuterLocalVariable |    31 | -      |
 
-## Layout (80/100 implemented, 4,654 tests)
+## Layout (88/100 implemented, 4,654 tests)
 
 ### Enabled by Default (81 cops, 4,067 tests)
 
@@ -616,16 +616,16 @@ Each cell shows `implemented / total` for that category.
 | ----------------------------------------- | ----: | ------ |
 | Layout/ClassStructure                     |    21 | -      |
 | Layout/EmptyLineAfterMultilineCondition   |    22 | -      |
-| Layout/FirstArrayElementLineBreak         |    14 | -      |
-| Layout/FirstHashElementLineBreak          |    11 | -      |
-| Layout/FirstMethodArgumentLineBreak       |    14 | -      |
-| Layout/FirstMethodParameterLineBreak      |    11 | -      |
+| Layout/FirstArrayElementLineBreak         |    14 | Implemented      |
+| Layout/FirstHashElementLineBreak          |    11 | Implemented      |
+| Layout/FirstMethodArgumentLineBreak       |    14 | Implemented      |
+| Layout/FirstMethodParameterLineBreak      |    11 | Implemented      |
 | Layout/HeredocArgumentClosingParenthesis  |    82 | -      |
-| Layout/MultilineArrayLineBreaks           |     6 | -      |
+| Layout/MultilineArrayLineBreaks           |     6 | Implemented      |
 | Layout/MultilineAssignmentLayout          |    34 | -      |
-| Layout/MultilineHashKeyLineBreaks         |    10 | -      |
-| Layout/MultilineMethodArgumentLineBreaks  |    18 | -      |
-| Layout/MultilineMethodParameterLineBreaks |    14 | -      |
+| Layout/MultilineHashKeyLineBreaks         |    10 | Implemented      |
+| Layout/MultilineMethodArgumentLineBreaks  |    18 | Implemented      |
+| Layout/MultilineMethodParameterLineBreaks |    14 | Implemented      |
 | Layout/RedundantLineBreak                 |   112 | -      |
 | Layout/SingleLineBlockChain               |     9 | -      |
 

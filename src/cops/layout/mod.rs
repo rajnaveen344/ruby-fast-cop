@@ -49,12 +49,20 @@ mod line_continuation_spacing;
 mod leading_empty_lines;
 mod line_length;
 mod multiline_array_brace_layout;
+mod multiline_array_line_breaks;
 mod multiline_block_layout;
 mod multiline_hash_brace_layout;
+mod multiline_hash_key_line_breaks;
 mod multiline_method_call_brace_layout;
 mod multiline_method_definition_brace_layout;
 mod multiline_method_call_indentation;
+mod multiline_method_argument_line_breaks;
+mod multiline_method_parameter_line_breaks;
 mod multiline_operation_indentation;
+mod first_array_element_line_break;
+mod first_hash_element_line_break;
+mod first_method_argument_line_break;
+mod first_method_parameter_line_break;
 mod rescue_ensure_alignment;
 mod space_after_colon;
 mod space_after_comma;
@@ -168,6 +176,14 @@ pub use multiline_operation_indentation::{
     MultilineOperationIndentation,
     Style as MultilineOperationIndentationStyle,
 };
+pub use multiline_array_line_breaks::MultilineArrayLineBreaks;
+pub use multiline_hash_key_line_breaks::MultilineHashKeyLineBreaks;
+pub use multiline_method_argument_line_breaks::MultilineMethodArgumentLineBreaks;
+pub use multiline_method_parameter_line_breaks::MultilineMethodParameterLineBreaks;
+pub use first_array_element_line_break::FirstArrayElementLineBreak;
+pub use first_hash_element_line_break::FirstHashElementLineBreak;
+pub use first_method_argument_line_break::FirstMethodArgumentLineBreak;
+pub use first_method_parameter_line_break::FirstMethodParameterLineBreak;
 pub use space_after_colon::SpaceAfterColon;
 pub use space_after_comma::SpaceAfterComma;
 pub use space_after_not::SpaceAfterNot;

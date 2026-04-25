@@ -11,6 +11,7 @@ pub mod hash_transform_method;
 pub mod interpolation;
 pub mod method_complexity;
 pub mod multiline_element_indentation;
+pub mod multiline_element_line_breaks;
 pub mod multiline_literal_brace_layout;
 pub mod negative_conditional;
 pub mod node_match;
