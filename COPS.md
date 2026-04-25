@@ -1,26 +1,26 @@
 # All Cops State (606 total)
 
 Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department and default status.
-458 of 606 implemented (all 396 enabled-by-default complete + 59 pending-by-default + 3 disabled-by-default). See [README.md](README.md) for the implementation roadmap.
+503 of 606 implemented (all 396 enabled-by-default complete + 104 pending-by-default + 3 disabled-by-default). See [README.md](README.md) for the implementation roadmap.
 
-**Pending-default progress: 59 / 156 (~38%)**.
+**Pending-default progress: 104 / 156 (~67%)**.
 
 ## Summary
 
 Each cell shows `implemented / total` for that category.
 
-| Department |     Enabled |    Pending | Disabled |             Tests |
-| ---------- | ----------: | ---------: | -------: | ----------------: |
-| Style      |     175/175 |      47/91 |     3/32 |   12,051 / 14,566 |
-| Lint       |     100/100 |       9/50 |      0/4 |     4,675 / 5,949 |
-| Layout     |       81/81 |        0/5 |     0/14 |     4,059 / 4,646 |
-| Metrics    |         9/9 |        0/1 |      0/0 |         259 / 272 |
-| Naming     |       16/16 |        2/2 |      0/1 |     2,181 / 2,216 |
-| Gemspec    |         4/4 |        0/5 |      0/1 |          61 / 193 |
-| Bundler    |         5/5 |        0/0 |      0/2 |          69 / 101 |
-| Security   |         5/5 |        1/2 |      0/0 |          81 / 102 |
-| Migration  |         1/1 |        0/0 |      0/0 |             8 / 8 |
-| **Total**  | **396/396** | **59/156** | **3/54** | **23,444/28,053** |
+| Department |     Enabled |     Pending | Disabled |             Tests |
+| ---------- | ----------: | ----------: | -------: | ----------------: |
+| Style      |     175/175 |       65/91 |     3/32 |   12,358 / 14,566 |
+| Lint       |     100/100 |       31/50 |      0/4 |     4,922 / 5,949 |
+| Layout     |       81/81 |         0/5 |     0/14 |     4,059 / 4,646 |
+| Metrics    |         9/9 |         0/1 |      0/0 |         259 / 272 |
+| Naming     |       16/16 |         2/2 |      0/1 |     2,181 / 2,216 |
+| Gemspec    |         4/4 |         5/5 |      0/1 |         116 / 193 |
+| Bundler    |         5/5 |         0/0 |      0/2 |          69 / 101 |
+| Security   |         5/5 |         1/2 |      0/0 |          81 / 102 |
+| Migration  |         1/1 |         0/0 |      0/0 |             8 / 8 |
+| **Total**  | **396/396** | **104/156** | **3/54** | **24,053/28,053** |
 
 - **Enabled**: Runs by default on every codebase (highest priority to implement)
 - **Pending**: Runs only with `NewCops: enable` in config
@@ -212,97 +212,97 @@ Each cell shows `implemented / total` for that category.
 
 | Cop                                        | Tests | Status      |
 | ------------------------------------------ | ----: | ----------- |
-| Style/AmbiguousEndlessMethodDefinition     |    31 | -           |
+| Style/AmbiguousEndlessMethodDefinition     |    31 | Implemented           |
 | Style/ArgumentsForwarding                  |   187 | Implemented |
-| Style/BitwisePredicate                     |    18 | -           |
-| Style/CollectionCompact                    |    30 | -           |
-| Style/CollectionQuerying                   |    20 | -           |
+| Style/BitwisePredicate                     |    18 | Implemented           |
+| Style/CollectionCompact                    |    30 | Implemented           |
+| Style/CollectionQuerying                   |    20 | Implemented           |
 | Style/CombinableDefined                    |    39 | -           |
-| Style/ComparableBetween                    |    15 | -           |
-| Style/ComparableClamp                      |    23 | -           |
-| Style/ConcatArrayLiterals                  |    14 | -           |
+| Style/ComparableBetween                    |    15 | Implemented           |
+| Style/ComparableClamp                      |    23 | Implemented           |
+| Style/ConcatArrayLiterals                  |    14 | Implemented           |
 | Style/DataInheritance                      |    24 | -           |
-| Style/DigChain                             |    23 | -           |
-| Style/DirEmpty                             |    16 | -           |
+| Style/DigChain                             |    23 | Implemented           |
+| Style/DirEmpty                             |    16 | Implemented           |
 | Style/DocumentDynamicEvalDefinition        |    18 | -           |
 | Style/EmptyClassDefinition                 |    44 | -           |
-| Style/EmptyHeredoc                         |     7 | -           |
-| Style/EmptyStringInsideInterpolation       |    24 | -           |
-| Style/EndlessMethod                        |    63 | -           |
-| Style/EnvHome                              |     7 | -           |
-| Style/ExactRegexpMatch                     |    14 | -           |
+| Style/EmptyHeredoc                         |     7 | Implemented           |
+| Style/EmptyStringInsideInterpolation       |    24 | Implemented           |
+| Style/EndlessMethod                        |    63 | Implemented           |
+| Style/EnvHome                              |     7 | Implemented           |
+| Style/ExactRegexpMatch                     |    14 | Implemented           |
 | Style/FetchEnvVar                          |    43 | -           |
-| Style/FileEmpty                            |    27 | -           |
-| Style/FileNull                             |    13 | -           |
-| Style/FileOpen                             |    14 | -           |
-| Style/FileRead                             |    30 | -           |
-| Style/FileTouch                            |     4 | -           |
-| Style/FileWrite                            |    32 | -           |
+| Style/FileEmpty                            |    27 | Implemented           |
+| Style/FileNull                             |    13 | Implemented           |
+| Style/FileOpen                             |    14 | Implemented           |
+| Style/FileRead                             |    30 | Implemented           |
+| Style/FileTouch                            |     4 | Implemented           |
+| Style/FileWrite                            |    32 | Implemented           |
 | Style/HashConversion                       |    22 | -           |
 | Style/HashExcept                           |   114 | -           |
 | Style/HashFetchChain                       |    35 | -           |
 | Style/HashSlice                            |   116 | -           |
 | Style/IfWithBooleanLiteralBranches         |    94 | -           |
-| Style/InPatternThen                        |     7 | -           |
-| Style/ItAssignment                         |    23 | -           |
-| Style/ItBlockParameter                     |    34 | -           |
+| Style/InPatternThen                        |     7 | Implemented           |
+| Style/ItAssignment                         |    23 | Implemented           |
+| Style/ItBlockParameter                     |    34 | Implemented           |
 | Style/KeywordArgumentsMerging              |     9 | -           |
 | Style/MagicCommentFormat                   |    25 | -           |
-| Style/MapCompactWithConditionalBlock       |    33 | -           |
-| Style/MapIntoArray                         |    64 | -           |
-| Style/MapJoin                              |    24 | -           |
+| Style/MapCompactWithConditionalBlock       |    33 | Implemented           |
+| Style/MapIntoArray                         |    64 | Implemented           |
+| Style/MapJoin                              |    24 | Implemented           |
 | Style/MapToHash                            |    38 | -           |
 | Style/MapToSet                             |    32 | -           |
-| Style/MinMaxComparison                     |    17 | -           |
+| Style/MinMaxComparison                     |    17 | Implemented           |
 | Style/ModuleMemberExistenceCheck           |   101 | -           |
-| Style/MultilineInPatternThen               |    13 | -           |
+| Style/MultilineInPatternThen               |    13 | Implemented           |
 | Style/NegatedIfElseCondition               |    32 | -           |
 | Style/NegativeArrayIndex                   |   423 | Implemented |
-| Style/NestedFileDirname                    |     5 | -           |
-| Style/NilLambda                            |    31 | -           |
-| Style/NumberedParameters                   |     4 | -           |
-| Style/NumberedParametersLimit              |    12 | -           |
-| Style/ObjectThen                           |    23 | -           |
+| Style/NestedFileDirname                    |     5 | Implemented           |
+| Style/NilLambda                            |    31 | Implemented           |
+| Style/NumberedParameters                   |     4 | Implemented           |
+| Style/NumberedParametersLimit              |    12 | Implemented           |
+| Style/ObjectThen                           |    23 | Implemented           |
 | Style/OneClassPerFile                      |    21 | -           |
-| Style/OpenStructUse                        |    12 | -           |
+| Style/OpenStructUse                        |    12 | Implemented           |
 | Style/OperatorMethodCall                   |   202 | -           |
 | Style/PartitionInsteadOfDoubleSelect       |    37 | -           |
 | Style/PredicateWithKind                    |    64 | -           |
 | Style/QuotedSymbols                        |    97 | -           |
 | Style/ReduceToHash                         |    20 | -           |
-| Style/RedundantArgument                    |    15 | -           |
-| Style/RedundantArrayConstructor            |    13 | -           |
-| Style/RedundantArrayFlatten                |    10 | -           |
-| Style/RedundantConstantBase                |     8 | -           |
-| Style/RedundantCurrentDirectoryInPath      |    12 | -           |
-| Style/RedundantDoubleSplatHashBraces       |    29 | -           |
-| Style/RedundantEach                        |    33 | -           |
-| Style/RedundantFilterChain                 |    39 | -           |
-| Style/RedundantFormat                      |   290 | -           |
-| Style/RedundantHeredocDelimiterQuotes      |    17 | -           |
-| Style/RedundantInitialize                  |    23 | -           |
-| Style/RedundantInterpolationUnfreeze       |    17 | -           |
-| Style/RedundantLineContinuation            |   163 | -           |
-| Style/RedundantMinMaxBy                    |    33 | -           |
-| Style/RedundantRegexpArgument              |    50 | -           |
-| Style/RedundantRegexpConstructor           |    10 | -           |
-| Style/RedundantSelfAssignmentBranch        |    22 | -           |
+| Style/RedundantArgument                    |    15 | Implemented           |
+| Style/RedundantArrayConstructor            |    13 | Implemented           |
+| Style/RedundantArrayFlatten                |    10 | Implemented           |
+| Style/RedundantConstantBase                |     8 | Implemented           |
+| Style/RedundantCurrentDirectoryInPath      |    12 | Implemented           |
+| Style/RedundantDoubleSplatHashBraces       |    29 | Implemented           |
+| Style/RedundantEach                        |    33 | Implemented           |
+| Style/RedundantFilterChain                 |    39 | Implemented           |
+| Style/RedundantFormat                      |   290 | Implemented           |
+| Style/RedundantHeredocDelimiterQuotes      |    17 | Implemented           |
+| Style/RedundantInitialize                  |    23 | Implemented           |
+| Style/RedundantInterpolationUnfreeze       |    17 | Implemented           |
+| Style/RedundantLineContinuation            |   163 | Implemented           |
+| Style/RedundantMinMaxBy                    |    33 | Implemented           |
+| Style/RedundantRegexpArgument              |    50 | Implemented           |
+| Style/RedundantRegexpConstructor           |    10 | Implemented           |
+| Style/RedundantSelfAssignmentBranch        |    22 | Implemented           |
 | Style/RedundantStringEscape                |   328 | Implemented |
-| Style/RedundantStructKeywordInit           |    17 | -           |
+| Style/RedundantStructKeywordInit           |    17 | Implemented           |
 | Style/ReturnNilInPredicateMethodDefinition |    39 | -           |
-| Style/ReverseFind                          |    14 | -           |
-| Style/SafeNavigationChainLength            |     8 | -           |
-| Style/SelectByKind                         |   144 | -           |
-| Style/SelectByRange                        |   120 | -           |
+| Style/ReverseFind                          |    14 | Implemented           |
+| Style/SafeNavigationChainLength            |     8 | Implemented           |
+| Style/SelectByKind                         |   144 | Implemented           |
+| Style/SelectByRange                        |   120 | Implemented           |
 | Style/SelectByRegexp                       |   320 | Implemented |
 | Style/SendWithLiteralMethodName            |   115 | -           |
 | Style/SingleLineDoEndBlock                 |    13 | -           |
-| Style/StringChars                          |     8 | -           |
+| Style/StringChars                          |     8 | Implemented           |
 | Style/SuperArguments                       |    92 | -           |
-| Style/SuperWithArgsParentheses             |     4 | -           |
-| Style/SwapValues                           |    11 | -           |
-| Style/TallyMethod                          |    32 | -           |
-| Style/YAMLFileRead                         |    11 | -           |
+| Style/SuperWithArgsParentheses             |     4 | Implemented           |
+| Style/SwapValues                           |    11 | Implemented           |
+| Style/TallyMethod                          |    32 | Implemented           |
+| Style/YAMLFileRead                         |    11 | Implemented           |
 
 ### Disabled by Default (32 cops, 741 tests)
 
@@ -460,28 +460,28 @@ Each cell shows `implemented / total` for that category.
 | Lint/ConstantReassignment                   |    41 | -           |
 | Lint/CopDirectiveSyntax                     |    16 | -           |
 | Lint/DataDefineOverride                     |     8 | Implemented           |
-| Lint/DeprecatedConstants                    |    20 | -           |
+| Lint/DeprecatedConstants                    |    20 | Implemented           |
 | Lint/DuplicateBranch                        |   131 | -           |
 | Lint/DuplicateMagicComment                  |     8 | Implemented           |
-| Lint/DuplicateMatchPattern                  |    19 | -           |
+| Lint/DuplicateMatchPattern                  |    19 | Implemented           |
 | Lint/DuplicateRegexpCharacterClassElement   |    16 | -           |
 | Lint/DuplicateSetElement                    |    36 | -           |
 | Lint/EmptyBlock                             |    17 | Implemented           |
 | Lint/EmptyClass                             |     9 | Implemented           |
-| Lint/EmptyInPattern                         |    13 | -           |
+| Lint/EmptyInPattern                         |    13 | Implemented           |
 | Lint/HashNewWithKeywordArgumentsAsDefault   |    10 | Implemented           |
-| Lint/IncompatibleIoSelectWithFiberScheduler |    19 | -           |
-| Lint/ItWithoutArgumentsInBlock              |    19 | -           |
+| Lint/IncompatibleIoSelectWithFiberScheduler |    19 | Implemented           |
+| Lint/ItWithoutArgumentsInBlock              |    19 | Implemented           |
 | Lint/LambdaWithoutLiteralBlock              |     6 | Implemented           |
 | Lint/LiteralAssignmentInCondition           |    34 | -           |
 | Lint/MixedCaseRange                         |    31 | -           |
 | Lint/NoReturnInBeginEndBlocks               |    70 | -           |
-| Lint/NonAtomicFileOperation                 |    43 | -           |
-| Lint/NumberedParameterAssignment            |    13 | -           |
+| Lint/NonAtomicFileOperation                 |    43 | Implemented           |
+| Lint/NumberedParameterAssignment            |    13 | Implemented           |
 | Lint/NumericOperationWithConstantResult     |    16 | Implemented           |
 | Lint/OrAssignmentToConstant                 |    10 | Implemented           |
-| Lint/RedundantDirGlobSort                   |    16 | -           |
-| Lint/RedundantRegexpQuantifiers             |    26 | -           |
+| Lint/RedundantDirGlobSort                   |    16 | Implemented           |
+| Lint/RedundantRegexpQuantifiers             |    26 | Implemented           |
 | Lint/RedundantTypeConversion                |   613 | Implemented |
 | Lint/RefinementImportMethods                |     7 | Implemented           |
 | Lint/RequireRangeParentheses                |     9 | Implemented           |
@@ -494,7 +494,7 @@ Each cell shows `implemented / total` for that category.
 | Lint/UnescapedBracketInRegexp               |    44 | -           |
 | Lint/UnexpectedBlockArity                   |    22 | -           |
 | Lint/UnmodifiedReduceAccumulator            |   168 | -           |
-| Lint/UnreachablePatternBranch               |    23 | -           |
+| Lint/UnreachablePatternBranch               |    23 | Implemented           |
 | Lint/UselessConstantScoping                 |    11 | Implemented           |
 | Lint/UselessDefaultValueArgument            |    24 | -           |
 | Lint/UselessDefined                         |     7 | Implemented           |
@@ -678,7 +678,7 @@ Each cell shows `implemented / total` for that category.
 
 | Cop                    | Tests | Status      |
 | ---------------------- | ----: | ----------- |
-| Naming/BlockForwarding |    36 | -           |
+| Naming/BlockForwarding |    36 | Implemented           |
 | Naming/PredicateMethod |  1262 | Implemented |
 
 ### Disabled by Default (1 cops, 35 tests)
@@ -702,10 +702,10 @@ Each cell shows `implemented / total` for that category.
 
 | Cop                                   | Tests | Status |
 | ------------------------------------- | ----: | ------ |
-| Gemspec/AddRuntimeDependency          |     5 | -      |
-| Gemspec/AttributeAssignment           |     7 | -      |
+| Gemspec/AddRuntimeDependency          |     5 | Implemented      |
+| Gemspec/AttributeAssignment           |     7 | Implemented      |
 | Gemspec/DeprecatedAttributeAssignment |    18 | Implemented      |
-| Gemspec/DevelopmentDependencies       |    13 | -      |
+| Gemspec/DevelopmentDependencies       |    13 | Implemented      |
 | Gemspec/RequireMFA                    |    12 | Implemented      |
 
 ### Disabled by Default (1 cops, 77 tests)
@@ -750,7 +750,7 @@ Each cell shows `implemented / total` for that category.
 | Cop                   | Tests | Status |
 | --------------------- | ----: | ------ |
 | Security/CompoundHash |    21 | -      |
-| Security/IoMethods    |    32 | -      |
+| Security/IoMethods    |    32 | Implemented      |
 
 ## Migration (1/1 implemented, 8 tests)
 
