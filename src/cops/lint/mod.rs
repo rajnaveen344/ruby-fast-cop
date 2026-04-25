@@ -31,6 +31,7 @@ mod binary_operator_with_identical_operands;
 mod constant_definition_in_block;
 mod constant_overwritten_in_rescue;
 mod data_define_override;
+mod or_assignment_to_constant;
 mod debugger;
 mod deprecated_class_methods;
 mod deprecated_open_ssl_constant;
@@ -153,6 +154,7 @@ pub use binary_operator_with_identical_operands::BinaryOperatorWithIdenticalOper
 pub use constant_definition_in_block::ConstantDefinitionInBlock;
 pub use constant_overwritten_in_rescue::ConstantOverwrittenInRescue;
 pub use data_define_override::DataDefineOverride;
+pub use or_assignment_to_constant::OrAssignmentToConstant;
 pub use debugger::Debugger;
 pub use deprecated_class_methods::DeprecatedClassMethods;
 pub use deprecated_open_ssl_constant::DeprecatedOpenSSLConstant;
