@@ -548,3 +548,5 @@ mod fetch_env_var;
 pub use fetch_env_var::FetchEnvVar;
 mod super_arguments;
 pub use super_arguments::SuperArguments;
+mod reduce_to_hash;
+pub use reduce_to_hash::ReduceToHash;

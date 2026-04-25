@@ -7,7 +7,9 @@ mod method_length;
 mod module_length;
 mod parameter_lists;
 mod perceived_complexity;
+mod collection_literal_length;
 
+pub use collection_literal_length::CollectionLiteralLength;
 pub use abc_size::AbcSize;
 pub use block_length::BlockLength;
 pub use block_nesting::BlockNesting;

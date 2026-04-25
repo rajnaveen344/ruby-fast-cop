@@ -283,11 +283,17 @@ pub use suppressed_exception_in_number_conversion::SuppressedExceptionInNumberCo
 mod unmodified_reduce_accumulator;
 pub use unmodified_reduce_accumulator::UnmodifiedReduceAccumulator;
 
+mod ambiguous_operator_precedence;
+mod cop_directive_syntax;
+mod unexpected_block_arity;
 mod ambiguous_range;
 mod array_literal_in_regexp;
 mod duplicate_regexp_character_class_element;
 mod mixed_case_range;
 mod unescaped_bracket_in_regexp;
+pub use ambiguous_operator_precedence::AmbiguousOperatorPrecedence;
+pub use cop_directive_syntax::CopDirectiveSyntax;
+pub use unexpected_block_arity::UnexpectedBlockArity;
 pub use ambiguous_range::AmbiguousRange;
 pub use array_literal_in_regexp::ArrayLiteralInRegexp;
 pub use duplicate_regexp_character_class_element::DuplicateRegexpCharacterClassElement;

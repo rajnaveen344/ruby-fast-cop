@@ -16,7 +16,7 @@ Exceptions — drop caveman temporarily: security warnings, destructive-op confi
 
 ruby-fast-cop = Rust port of RuboCop. Target 50-100x faster (like Ruff:Python).
 
-**State:** 545/606 cops (396/396 enabled-by-default = 100%; 146/156 pending-by-default; 3/54 disabled-by-default). ~28,053 test cases from RuboCop v1.85.0 RSpec, all green.
+**State:** 551/606 cops (396/396 enabled-by-default = 100%; 152/156 pending-by-default; 3/54 disabled-by-default). ~28,053 test cases from RuboCop v1.85.0 RSpec, all green.
 
 > **Architecture:** see [`ARCHITECTURE.md`](./ARCHITECTURE.md) for runtime shape, registration, autocorrect pipeline, testing pipeline. CLAUDE.md = conventions; ARCHITECTURE.md = structure. Update ARCHITECTURE.md only when runtime/registration/autocorrect/testing shape changes.
 
