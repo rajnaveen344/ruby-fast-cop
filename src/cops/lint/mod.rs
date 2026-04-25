@@ -272,6 +272,16 @@ mod numbered_parameter_assignment;
 mod it_without_arguments_in_block;
 pub use numbered_parameter_assignment::NumberedParameterAssignment;
 pub use it_without_arguments_in_block::ItWithoutArgumentsInBlock;
+mod no_return_in_begin_end_blocks;
+pub use no_return_in_begin_end_blocks::NoReturnInBeginEndBlocks;
+mod literal_assignment_in_condition;
+pub use literal_assignment_in_condition::LiteralAssignmentInCondition;
+mod constant_reassignment;
+pub use constant_reassignment::ConstantReassignment;
+mod suppressed_exception_in_number_conversion;
+pub use suppressed_exception_in_number_conversion::SuppressedExceptionInNumberConversion;
+mod unmodified_reduce_accumulator;
+pub use unmodified_reduce_accumulator::UnmodifiedReduceAccumulator;
 
 mod ambiguous_range;
 mod array_literal_in_regexp;

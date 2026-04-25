@@ -1,9 +1,9 @@
 # All Cops State (606 total)
 
 Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department and default status.
-535 of 606 implemented (all 396 enabled-by-default complete + 136 pending-by-default + 3 disabled-by-default). See [README.md](README.md) for the implementation roadmap.
+545 of 606 implemented (all 396 enabled-by-default complete + 146 pending-by-default + 3 disabled-by-default). See [README.md](README.md) for the implementation roadmap.
 
-**Pending-default progress: 136 / 156 (~87%)**.
+**Pending-default progress: 146 / 156 (~94%)**.
 
 ## Summary
 
@@ -11,8 +11,8 @@ Each cell shows `implemented / total` for that category.
 
 | Department |     Enabled |     Pending | Disabled |             Tests |
 | ---------- | ----------: | ----------: | -------: | ----------------: |
-| Style      |     175/175 |       82/91 |     3/32 |   13,193 / 14,566 |
-| Lint       |     100/100 |       41/50 |      0/4 |     5,452 / 5,949 |
+| Style      |     175/175 |       87/91 |     3/32 |   13,746 / 14,566 |
+| Lint       |     100/100 |       46/50 |      0/4 |     5,791 / 5,949 |
 | Layout     |       81/81 |         5/5 |     0/14 |     4,268 / 4,646 |
 | Metrics    |         9/9 |         0/1 |      0/0 |         259 / 272 |
 | Naming     |       16/16 |         2/2 |      0/1 |     2,181 / 2,216 |
@@ -20,7 +20,7 @@ Each cell shows `implemented / total` for that category.
 | Bundler    |         5/5 |         0/0 |      0/2 |          69 / 101 |
 | Security   |         5/5 |         1/2 |      0/0 |          81 / 102 |
 | Migration  |         1/1 |         0/0 |      0/0 |             8 / 8 |
-| **Total**  | **396/396** | **136/156** | **3/54** | **25,627/28,053** |
+| **Total**  | **396/396** | **146/156** | **3/54** | **26,519/28,053** |
 
 - **Enabled**: Runs by default on every codebase (highest priority to implement)
 - **Pending**: Runs only with `NewCops: enable` in config
