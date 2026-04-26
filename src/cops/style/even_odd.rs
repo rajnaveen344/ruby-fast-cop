@@ -3,7 +3,7 @@
 //! Checks for places where Integer#even? or Integer#odd? can be used.
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::{CallNode, Node};
 
 #[derive(Default)]
@@ -133,8 +133,10 @@ impl Cop for EvenOdd {
             let msg = format!("Replace with `Integer#{}?`.", method);
             let start = node.location().start_offset();
             let end = node.location().end_offset();
-            let _ = base_source; // used in correction (not impl)
-            vec![ctx.offense_with_range(self.name(), &msg, self.severity(), start, end)]
+            let replacement = format!("{}.{}?", base_source, method);
+            vec![ctx
+                .offense_with_range(self.name(), &msg, self.severity(), start, end)
+                .with_correction(Correction::replace(start, end, replacement))]
         } else {
             vec![]
         }

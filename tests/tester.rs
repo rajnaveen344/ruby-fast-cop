@@ -417,15 +417,22 @@ fn run_test_case(test_case: &TestCase, cop_name: &str) -> TestCaseResult {
         ));
     }
 
-    // Correction validation: if TOML has `corrected` and offenses have corrections, compare
+    // Correction validation: if TOML has `corrected`, cop MUST emit a correction
+    // that produces the expected corrected source. No silent skips.
     let mut correction_validated = false;
     if let Some(ref corrected_toml) = test_case.corrected {
+        let mut expected_corrected = decode_source(corrected_toml, test_case.base_indent);
+        if test_case.strip_trailing_newline && expected_corrected.ends_with('\n') {
+            expected_corrected.pop();
+        }
         let has_corrections = offenses.iter().any(|o| o.correction.is_some());
-        if has_corrections {
-            let mut expected_corrected = decode_source(corrected_toml, test_case.base_indent);
-            if test_case.strip_trailing_newline && expected_corrected.ends_with('\n') {
-                expected_corrected.pop();
-            }
+        if !has_corrections {
+            errors.push(format!(
+                "[{}] {}: TOML expects correction but cop emitted no Correction",
+                cop_name, test_case.name
+            ));
+            errors.push(format!("  Expected corrected:\n{}", indent_block(&expected_corrected)));
+        } else {
             let actual_corrected = apply_corrections(&source, &offenses);
             if actual_corrected != expected_corrected {
                 errors.push(format!(
@@ -438,8 +445,6 @@ fn run_test_case(test_case: &TestCase, cop_name: &str) -> TestCaseResult {
                 correction_validated = true;
             }
         }
-        // If TOML has `corrected` but offenses have no corrections, skip silently
-        // (cop hasn't implemented corrections yet)
     }
 
     TestCaseResult { errors, correction_validated }

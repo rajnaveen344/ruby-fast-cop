@@ -3,7 +3,7 @@
 //! Checks for non-nil checks, which are usually redundant.
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Edit, Offense, Severity};
 use ruby_prism::Visit;
 
 const MSG_REPLACEMENT: &str = "Prefer `%pref%` over `%cur%`.";
@@ -104,25 +104,26 @@ impl<'a> NonNilCheckVisitor<'a> {
             return;
         }
 
-        let msg = if self.cop.include_semantic_changes {
-            MSG_REDUNDANCY.to_string()
-        } else {
-            // Build "Prefer `!x.nil?` over `x != nil`."
-            let recv_src = match node.receiver() {
-                Some(r) => self.ctx.source[r.location().start_offset()..r.location().end_offset()].to_string(),
-                None => return,
-            };
-            let cur = &self.ctx.source[start..end];
-            format!("Prefer `!{}.nil?` over `{}`.", recv_src, cur)
+        let recv_src = match node.receiver() {
+            Some(r) => self.ctx.source[r.location().start_offset()..r.location().end_offset()].to_string(),
+            None => return,
         };
 
-        self.offenses.push(self.ctx.offense_with_range(
-            "Style/NonNilCheck",
-            &msg,
-            Severity::Convention,
-            start,
-            end,
-        ));
+        let (msg, replacement) = if self.cop.include_semantic_changes {
+            (MSG_REDUNDANCY.to_string(), recv_src.clone())
+        } else {
+            let cur = &self.ctx.source[start..end];
+            (
+                format!("Prefer `!{}.nil?` over `{}`.", recv_src, cur),
+                format!("!{}.nil?", recv_src),
+            )
+        };
+
+        self.offenses.push(
+            self.ctx
+                .offense_with_range("Style/NonNilCheck", &msg, Severity::Convention, start, end)
+                .with_correction(Correction::replace(start, end, replacement)),
+        );
     }
 
     /// Check if `!x.nil?` (include_semantic_changes must be true)
@@ -154,20 +155,25 @@ impl<'a> NonNilCheckVisitor<'a> {
             return;
         }
 
-        self.offenses.push(self.ctx.offense_with_range(
-            "Style/NonNilCheck",
-            MSG_REDUNDANCY,
-            Severity::Convention,
-            start,
-            end,
-        ));
+        // `!x.nil?` → `x` (or `self` if no receiver)
+        let replacement = match recv_call.receiver() {
+            Some(r) => self.ctx.source[r.location().start_offset()..r.location().end_offset()].to_string(),
+            None => "self".to_string(),
+        };
+
+        self.offenses.push(
+            self.ctx
+                .offense_with_range("Style/NonNilCheck", MSG_REDUNDANCY, Severity::Convention, start, end)
+                .with_correction(Correction::replace(start, end, replacement)),
+        );
     }
 
     /// Check `unless x.nil?` (UnlessNode) → report on the `nil?` call node
-    fn check_unless_nil_node(&mut self, cond: &ruby_prism::Node) {
+    fn check_unless_nil_node(&mut self, unless: &ruby_prism::UnlessNode) {
         if !self.cop.include_semantic_changes {
             return;
         }
+        let cond = unless.predicate();
         let cond_call = match cond.as_call_node() {
             Some(c) => c,
             None => return,
@@ -183,13 +189,28 @@ impl<'a> NonNilCheckVisitor<'a> {
             return;
         }
 
-        self.offenses.push(self.ctx.offense_with_range(
-            "Style/NonNilCheck",
-            MSG_REDUNDANCY,
-            Severity::Convention,
-            start,
-            end,
-        ));
+        // `unless x.nil?` → `if x`. Two edits:
+        //   1. Replace `unless` keyword with `if`
+        //   2. Replace `x.nil?` predicate with `x` (or `self` if no receiver)
+        let kw_loc = unless.keyword_loc();
+        let kw_start = kw_loc.start_offset();
+        let kw_end = kw_loc.end_offset();
+        let cond_replacement = match cond_call.receiver() {
+            Some(r) => self.ctx.source[r.location().start_offset()..r.location().end_offset()].to_string(),
+            None => "self".to_string(),
+        };
+        let correction = Correction {
+            edits: vec![
+                Edit { start_offset: kw_start, end_offset: kw_end, replacement: "if".to_string() },
+                Edit { start_offset: start, end_offset: end, replacement: cond_replacement },
+            ],
+        };
+
+        self.offenses.push(
+            self.ctx
+                .offense_with_range("Style/NonNilCheck", MSG_REDUNDANCY, Severity::Convention, start, end)
+                .with_correction(correction),
+        );
     }
 }
 
@@ -247,7 +268,7 @@ impl<'a> Visit<'_> for NonNilCheckVisitor<'a> {
     }
 
     fn visit_unless_node(&mut self, node: &ruby_prism::UnlessNode) {
-        self.check_unless_nil_node(&node.predicate());
+        self.check_unless_nil_node(node);
         ruby_prism::visit_unless_node(self, node);
     }
 }

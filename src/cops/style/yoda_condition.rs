@@ -2,7 +2,7 @@
 
 use crate::cops::{CheckContext, Cop};
 use crate::node_name;
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Edit, Offense, Severity};
 use ruby_prism::Node;
 
 const COMPARISON_OPERATORS: &[&str] = &["==", "!=", "<", ">", "<=", ">="];
@@ -201,7 +201,39 @@ impl Cop for YodaCondition {
         let node_source = &ctx.source[start..end];
         let message = format!("Reverse the order of the operands `{}`.", node_source);
 
-        vec![ctx.offense_with_range(self.name(), &message, self.severity(), start, end)]
+        // Swap operands. For ordering operators the operator flips direction:
+        // `42 < x` => `x > 42`. Equality (`==`, `!=`) keeps the operator.
+        let flipped_op: Option<&str> = match method.as_ref() {
+            "<" => Some(">"),
+            ">" => Some("<"),
+            "<=" => Some(">="),
+            ">=" => Some("<="),
+            _ => None,
+        };
+        let lhs_loc = lhs.location();
+        let rhs_loc = rhs.location();
+        let lhs_start = lhs_loc.start_offset();
+        let lhs_end = lhs_loc.end_offset();
+        let rhs_start = rhs_loc.start_offset();
+        let rhs_end = rhs_loc.end_offset();
+        let lhs_src = ctx.source[lhs_start..lhs_end].to_string();
+        let rhs_src = ctx.source[rhs_start..rhs_end].to_string();
+        let mut edits = vec![
+            Edit { start_offset: lhs_start, end_offset: lhs_end, replacement: rhs_src },
+            Edit { start_offset: rhs_start, end_offset: rhs_end, replacement: lhs_src },
+        ];
+        if let Some(new_op) = flipped_op {
+            if let Some(op_loc) = node.message_loc() {
+                let op_start = op_loc.start_offset();
+                let op_end = op_loc.end_offset();
+                edits.push(Edit { start_offset: op_start, end_offset: op_end, replacement: new_op.to_string() });
+            }
+        }
+        let correction = Correction { edits };
+
+        vec![ctx
+            .offense_with_range(self.name(), &message, self.severity(), start, end)
+            .with_correction(correction)]
     }
 }
 

@@ -4,7 +4,7 @@
 
 use crate::cops::{CheckContext, Cop};
 use crate::node_name;
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::{CallNode, Node};
 
 #[derive(Default)]
@@ -49,7 +49,7 @@ impl Not {
     }
 
     /// Check if receiver requires parentheses when negated with `!`
-    fn requires_parens(recv: &Node) -> bool {
+    fn requires_parens(recv: &Node, source: &str) -> bool {
         // operator keywords: and/or/not
         if recv.as_and_node().is_some() || recv.as_or_node().is_some() {
             return true;
@@ -57,7 +57,6 @@ impl Not {
         // binary send operations
         if let Some(call) = recv.as_call_node() {
             let m = node_name!(call);
-            // binary operations that have lower precedence
             if matches!(m.as_ref(),
                 "+" | "-" | "*" | "/" | "%" | "**" | ">>" | "<<" | "&" | "|" | "^"
                 | "==" | "===" | "!=" | "<=" | ">=" | "<" | ">"
@@ -67,10 +66,11 @@ impl Not {
                 return true;
             }
         }
-        // ternary if
-        if let Some(if_node) = recv.as_if_node() {
-            // ternary has a predicate/then/else on same line
-            if if_node.then_keyword_loc().is_none() && if_node.end_keyword_loc().is_none() {
+        // ternary `cond ? a : b` — IfNode whose source doesn't start with `if`/`unless`
+        if recv.as_if_node().is_some() {
+            let s = recv.location().start_offset();
+            let src_at = &source[s..];
+            if !src_at.starts_with("if") && !src_at.starts_with("unless") {
                 return true;
             }
         }
@@ -95,9 +95,43 @@ impl Cop for Not {
         // Offense is on the `not` selector: start to start+3
         let start = node.location().start_offset();
         let end = start + 3; // "not"
+        let node_end = node.location().end_offset();
+        let recv = node.receiver().unwrap();
+        let recv_start = recv.location().start_offset();
+        let recv_end = recv.location().end_offset();
+
+        // Comparison-flip rewrite: `not x < y` → `x >= y`
+        let flip = recv.as_call_node().and_then(|c| {
+            let m = node_name!(c);
+            let opp = Self::opposite_method(m.as_ref())?;
+            let r_recv = c.receiver()?;
+            let args = c.arguments()?;
+            let args_v: Vec<_> = args.arguments().iter().collect();
+            if args_v.len() != 1 { return None; }
+            let lhs_loc = r_recv.location();
+            let rhs_loc = args_v[0].location();
+            let lhs_src = &ctx.source[lhs_loc.start_offset()..lhs_loc.end_offset()];
+            let rhs_src = &ctx.source[rhs_loc.start_offset()..rhs_loc.end_offset()];
+            Some(format!("{} {} {}", lhs_src, opp, rhs_src))
+        });
+
+        let correction = if let Some(flipped) = flip {
+            Correction::replace(start, node_end, flipped)
+        } else if Self::requires_parens(&recv, ctx.source) {
+            let recv_src = &ctx.source[recv_start..recv_end];
+            Correction::replace(start, node_end, format!("!({})", recv_src))
+        } else if ctx.source.as_bytes().get(start + 3) == Some(&b'(') {
+            // `not(arg)` — keep parens, just swap keyword
+            Correction::replace(start, start + 3, "!")
+        } else {
+            // simple: replace `not` + any whitespace before receiver with `!`
+            Correction::replace(start, recv_start, "!")
+        };
 
         let msg = "Use `!` instead of `not`.";
-        vec![ctx.offense_with_range(self.name(), msg, self.severity(), start, end)]
+        vec![ctx
+            .offense_with_range(self.name(), msg, self.severity(), start, end)
+            .with_correction(correction)]
     }
 }
 

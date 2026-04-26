@@ -4,7 +4,7 @@
 //! Ported from: https://github.com/rubocop/rubocop/blob/master/lib/rubocop/cop/style/inverse_methods.rb
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Edit, Offense, Severity};
 use ruby_prism::{Node, Visit};
 use std::collections::HashMap;
 
@@ -260,16 +260,138 @@ impl<'a> InverseMethodsVisitor<'a> {
             return;
         }
 
-        let inverse = &self.cop.inverse_methods[&method_name];
+        let inverse = self.cop.inverse_methods[&method_name].clone();
         let message = format!("Use `{}` instead of inverting `{}`.", inverse, method_name);
 
-        self.offenses.push(self.ctx.offense_with_range(
+        // Build correction
+        let had_parens = matches!(receiver, Node::ParenthesesNode { .. });
+        let method_call_start = method_call.location().start_offset();
+        let method_call_end = method_call.location().end_offset();
+
+        const EQUALITY_METHODS: &[&str] = &["==", "!=", "=~", "!~", "<=", ">=", "<", ">"];
+        let is_equality = EQUALITY_METHODS.contains(&method_name.as_str());
+
+        let correction = if let Some(sel) = method_call.message_loc() {
+            let sel_start = sel.start_offset();
+            let sel_end = sel.end_offset();
+            let mut edits = Vec::new();
+            // 1. Remove from not_start to method_call_start (e.g. "!" or "!(" or "not (")
+            if not_start < method_call_start {
+                edits.push(Edit {
+                    start_offset: not_start,
+                    end_offset: method_call_start,
+                    replacement: String::new(),
+                });
+            }
+            // 2. Replace method name with inverse
+            edits.push(Edit {
+                start_offset: sel_start,
+                end_offset: sel_end,
+                replacement: inverse.clone(),
+            });
+            // 3. Remove end paren if equality method or was wrapped in parens
+            if (is_equality || had_parens) && method_call_end < not_end {
+                edits.push(Edit {
+                    start_offset: method_call_end,
+                    end_offset: not_end,
+                    replacement: String::new(),
+                });
+            }
+            Some(Correction { edits })
+        } else {
+            None
+        };
+
+        let offense = self.ctx.offense_with_range(
             self.cop.name(),
             &message,
             self.cop.severity(),
             not_start,
             not_end,
-        ));
+        );
+        self.offenses.push(if let Some(c) = correction {
+            offense.with_correction(c)
+        } else {
+            offense
+        });
+    }
+
+    /// Build correction for inverse-block offense.
+    /// Edit 1: rename method selector (select→reject etc.)
+    /// Edit 2+: fix last expression in block body
+    fn build_block_correction(
+        call_node: &ruby_prism::CallNode,
+        last_expr: &Node,
+        inverse: &str,
+        source: &str,
+    ) -> Option<Correction> {
+        // Edit 1: rename method
+        let sel = call_node.message_loc()?;
+        let mut edits = vec![Edit {
+            start_offset: sel.start_offset(),
+            end_offset: sel.end_offset(),
+            replacement: inverse.to_string(),
+        }];
+
+        // Edit 2+: fix last_expr
+        // Helper to get inner call from an expression (possibly wrapped in parens)
+        fn get_inner_call<'a>(node: &'a Node<'a>) -> Option<ruby_prism::CallNode<'a>> {
+            if let Some(call) = node.as_call_node() {
+                return Some(call);
+            }
+            if let Some(paren) = node.as_parentheses_node() {
+                if let Some(body) = paren.body() {
+                    if let Some(stmts) = body.as_statements_node() {
+                        let items: Vec<_> = stmts.body().iter().collect();
+                        if items.len() == 1 {
+                            return items[0].as_call_node();
+                        }
+                    }
+                }
+            }
+            None
+        }
+
+        if let Some(call) = get_inner_call(last_expr) {
+            let m = node_name!(call);
+            if m == "!=" || m == "!~" {
+                // Replace `!=` → `==` or `!~` → `=~`
+                if let Some(sel2) = call.message_loc() {
+                    let original = source.get(sel2.start_offset()..sel2.end_offset()).unwrap_or("");
+                    let replacement = if original.starts_with("!=") {
+                        original.replacen("!=", "==", 1)
+                    } else {
+                        original.replacen("!~", "=~", 1)
+                    };
+                    edits.push(Edit {
+                        start_offset: sel2.start_offset(),
+                        end_offset: sel2.end_offset(),
+                        replacement,
+                    });
+                }
+            } else if m == "!" {
+                // Either prefix `!expr` or postfix `expr.!`
+                if let Some(op_loc) = call.call_operator_loc() {
+                    // postfix: `expr.!` or `expr&.!` — remove from dot to call end
+                    edits.push(Edit {
+                        start_offset: op_loc.start_offset(),
+                        end_offset: call.location().end_offset(),
+                        replacement: String::new(),
+                    });
+                } else {
+                    // prefix: `!expr` — remove the `!` (from call start to receiver start)
+                    let recv_start = call.receiver().map(|r| r.location().start_offset())
+                        .unwrap_or(call.location().end_offset());
+                    edits.push(Edit {
+                        start_offset: call.location().start_offset(),
+                        end_offset: recv_start,
+                        replacement: String::new(),
+                    });
+                }
+            }
+        }
+
+        Some(Correction { edits })
     }
 
     /// Check calls with blocks for inverse block pattern
@@ -329,7 +451,7 @@ impl<'a> InverseMethodsVisitor<'a> {
             }
         }
 
-        let inverse = &self.cop.inverse_blocks[&method_name];
+        let inverse = self.cop.inverse_blocks[&method_name].clone();
         let message = format!("Use `{}` instead of inverting `{}`.", inverse, method_name);
 
         let offense_start = if let Some(recv) = call_node.receiver() {
@@ -350,13 +472,21 @@ impl<'a> InverseMethodsVisitor<'a> {
             block_node.location().end_offset()
         };
 
-        self.offenses.push(self.ctx.offense_with_range(
+        // Build correction: rename method + fix last_expr
+        let correction = Self::build_block_correction(call_node, &last_expr, &inverse, source);
+
+        let offense = self.ctx.offense_with_range(
             self.cop.name(),
             &message,
             self.cop.severity(),
             offense_start,
             offense_end,
-        ));
+        );
+        self.offenses.push(if let Some(c) = correction {
+            offense.with_correction(c)
+        } else {
+            offense
+        });
 
         // Add the last expression as an ignored range to suppress inner inverse method offenses
         // (mirrors RuboCop's `ignore_node(block)` in on_block)

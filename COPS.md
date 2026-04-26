@@ -5,22 +5,24 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 
 **Pending-default progress: 156 / 156 (100%)**. **Disabled-default progress: 54 / 54 (100%)**.
 
+**Autocorrect progress: 7,376 / 11,217 (65%)** — 3,841 expected corrections across 166 cops still unwired. See [`.correction_worklist.txt`](.correction_worklist.txt) for per-cop counts.
+
 ## Summary
 
-Each cell shows `implemented / total` for that category.
+Cop-count cells show `implemented / total`. Autocorrect column shows `wired / expected (%)`, where "expected" = TOML fixture cases with a `corrected` block and "wired" = cop currently emits a `Correction` that produces matching corrected source.
 
-| Department |     Enabled |     Pending | Disabled |             Tests |
-| ---------- | ----------: | ----------: | -------: | ----------------: |
-| Style      |     175/175 |       91/91 |    32/32 |   14,566 / 14,566 |
-| Lint       |     100/100 |       50/50 |      4/4 |     5,961 / 5,961 |
-| Layout     |       81/81 |         5/5 |    14/14 |     4,646 / 4,646 |
-| Metrics    |         9/9 |         1/1 |      0/0 |         272 / 272 |
-| Naming     |       16/16 |         2/2 |      1/1 |     2,216 / 2,216 |
-| Gemspec    |         4/4 |         5/5 |      1/1 |         193 / 193 |
-| Bundler    |         5/5 |         0/0 |      2/2 |         101 / 101 |
-| Security   |         5/5 |         2/2 |      0/0 |         102 / 102 |
-| Migration  |         1/1 |         0/0 |      0/0 |             8 / 8 |
-| **Total**  | **396/396** | **156/156** | **54/54** | **28,065/28,065** |
+| Department |     Enabled |     Pending | Disabled |             Tests |        Autocorrect |
+| ---------- | ----------: | ----------: | -------: | ----------------: | -----------------: |
+| Style      |     175/175 |       91/91 |    32/32 |   14,566 / 14,566 |   4,680 / 7,318 (63%) |
+| Lint       |     100/100 |       50/50 |      4/4 |     5,961 / 5,961 |   1,485 / 1,908 (77%) |
+| Layout     |       81/81 |         5/5 |    14/14 |     4,646 / 4,646 |   1,125 / 1,851 (60%) |
+| Metrics    |         9/9 |         1/1 |      0/0 |         272 / 272 |               n/a (0 expected) |
+| Naming     |       16/16 |         2/2 |      1/1 |     2,216 / 2,216 |        41 / 86 (47%) |
+| Gemspec    |         4/4 |         5/5 |      1/1 |         193 / 193 |        24 / 24 (100%) |
+| Bundler    |         5/5 |         0/0 |      2/2 |         101 / 101 |          8 / 12 (66%) |
+| Security   |         5/5 |         2/2 |      0/0 |         102 / 102 |         12 / 17 (70%) |
+| Migration  |         1/1 |         0/0 |      0/0 |             8 / 8 |           1 / 1 (100%) |
+| **Total**  | **396/396** | **156/156** | **54/54** | **28,065/28,065** | **7,376 / 11,217 (65%)** |
 
 - **Enabled**: Runs by default on every codebase (highest priority to implement)
 - **Pending**: Runs only with `NewCops: enable` in config

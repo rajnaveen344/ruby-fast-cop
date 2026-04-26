@@ -3,7 +3,7 @@
 //! Checks for conditionals that return true/false and can be simplified.
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::{Node, Visit};
 
 const COP_NAME: &str = "Style/RedundantConditional";
@@ -129,17 +129,32 @@ impl<'a> RedundantConditionalVisitor<'a> {
             (node.location().start_offset(), cond.location().end_offset())
         };
 
+        let node_start = node.location().start_offset();
+        let node_end = node.location().end_offset();
+
         // cond ? true : false → cond
         if if_is_true && else_is_false {
-            let msg = format!("This conditional expression can just be replaced by `{cond_src}`.");
-            self.offenses.push(self.ctx.offense_with_range(COP_NAME, &msg, Severity::Convention, start, end));
+            let replacement = cond_src.to_string();
+            let msg = format!("This conditional expression can just be replaced by `{replacement}`.");
+            let corr = Correction::replace(node_start, node_end, replacement);
+            self.offenses.push(
+                self.ctx
+                    .offense_with_range(COP_NAME, &msg, Severity::Convention, start, end)
+                    .with_correction(corr),
+            );
             return;
         }
 
         // cond ? false : true → !(cond)
         if if_is_false && else_is_true {
-            let msg = format!("This conditional expression can just be replaced by `!({cond_src})`.");
-            self.offenses.push(self.ctx.offense_with_range(COP_NAME, &msg, Severity::Convention, start, end));
+            let replacement = format!("!({cond_src})");
+            let msg = format!("This conditional expression can just be replaced by `{replacement}`.");
+            let corr = Correction::replace(node_start, node_end, replacement);
+            self.offenses.push(
+                self.ctx
+                    .offense_with_range(COP_NAME, &msg, Severity::Convention, start, end)
+                    .with_correction(corr),
+            );
         }
     }
 
@@ -174,15 +189,31 @@ impl<'a> RedundantConditionalVisitor<'a> {
 
         let start = elsif.location().start_offset();
         let cond_end = cond.location().end_offset();
+        let node_end = elsif.location().end_offset();
 
         if if_is_true && else_is_false {
-            let replacement = format!("\nelse\n  {cond_src}");
-            let msg = format!("This conditional expression can just be replaced by `{replacement}`.");
-            self.offenses.push(self.ctx.offense_with_range(COP_NAME, &msg, Severity::Convention, start, cond_end));
+            let inner = format!("else\n  {cond_src}");
+            let msg_replacement = format!("\nelse\n  {cond_src}");
+            let msg = format!("This conditional expression can just be replaced by `{msg_replacement}`.");
+            // Replace entire elsif..end with else\n  expr\nend
+            let full_replacement = format!("{inner}\nend");
+            let corr = Correction::replace(start, node_end, full_replacement);
+            self.offenses.push(
+                self.ctx
+                    .offense_with_range(COP_NAME, &msg, Severity::Convention, start, cond_end)
+                    .with_correction(corr),
+            );
         } else if if_is_false && else_is_true {
-            let replacement = format!("\nelse\n  !({cond_src})");
-            let msg = format!("This conditional expression can just be replaced by `{replacement}`.");
-            self.offenses.push(self.ctx.offense_with_range(COP_NAME, &msg, Severity::Convention, start, cond_end));
+            let inner = format!("else\n  !({cond_src})");
+            let msg_replacement = format!("\nelse\n  !({cond_src})");
+            let msg = format!("This conditional expression can just be replaced by `{msg_replacement}`.");
+            let full_replacement = format!("{inner}\nend");
+            let corr = Correction::replace(start, node_end, full_replacement);
+            self.offenses.push(
+                self.ctx
+                    .offense_with_range(COP_NAME, &msg, Severity::Convention, start, cond_end)
+                    .with_correction(corr),
+            );
         }
     }
 
@@ -211,16 +242,29 @@ impl<'a> RedundantConditionalVisitor<'a> {
 
         let start = node.location().start_offset();
         let cond_end = cond.location().end_offset();
+        let node_end = node.location().end_offset();
 
         // unless cond; true; else; false → !(cond)
         if if_is_true && else_is_false {
-            let msg = format!("This conditional expression can just be replaced by `!({cond_src})`.");
-            self.offenses.push(self.ctx.offense_with_range(COP_NAME, &msg, Severity::Convention, start, cond_end));
+            let replacement = format!("!({cond_src})");
+            let msg = format!("This conditional expression can just be replaced by `{replacement}`.");
+            let corr = Correction::replace(start, node_end, replacement);
+            self.offenses.push(
+                self.ctx
+                    .offense_with_range(COP_NAME, &msg, Severity::Convention, start, cond_end)
+                    .with_correction(corr),
+            );
         }
         // unless cond; false; else; true → cond
         else if if_is_false && else_is_true {
-            let msg = format!("This conditional expression can just be replaced by `{cond_src}`.");
-            self.offenses.push(self.ctx.offense_with_range(COP_NAME, &msg, Severity::Convention, start, cond_end));
+            let replacement = cond_src.to_string();
+            let msg = format!("This conditional expression can just be replaced by `{replacement}`.");
+            let corr = Correction::replace(start, node_end, replacement);
+            self.offenses.push(
+                self.ctx
+                    .offense_with_range(COP_NAME, &msg, Severity::Convention, start, cond_end)
+                    .with_correction(corr),
+            );
         }
     }
 }

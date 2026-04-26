@@ -5,7 +5,7 @@
 
 use crate::cops::{CheckContext, Cop};
 use crate::node_name;
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::{Node, Visit};
 use std::collections::HashSet;
 
@@ -57,21 +57,24 @@ impl<'a> Visitor<'a> {
     fn root_or_node(&mut self, node: &ruby_prism::OrNode) {
         if !is_nested_comparison(self.ctx, node, self.allow_method_comparison) { return; }
 
-        // Walk or-tree collecting (variable_src, comparison_range). If we see simple_double_comparison
-        // (lvar == lvar) abort. If we see >1 distinct variable, abort.
         let mut vars: HashSet<String> = HashSet::new();
         let mut ranges: Vec<(usize, usize)> = Vec::new();
+        let mut values: Vec<String> = Vec::new();
         let mut abort = false;
-        walk(self.ctx, node, &mut vars, &mut ranges, self.allow_method_comparison, &mut abort);
+        walk(self.ctx, node, &mut vars, &mut ranges, &mut values, self.allow_method_comparison, &mut abort);
         if abort { return; }
         if vars.len() != 1 { return; }
         if ranges.len() < self.comparisons_threshold { return; }
 
         let start = ranges.first().unwrap().0;
         let end = ranges.last().unwrap().1;
-        self.offenses.push(self.ctx.offense_with_range(
-            COP_NAME, MSG, Severity::Convention, start, end,
-        ));
+        let var_src = vars.iter().next().unwrap();
+        let replacement = format!("[{}].include?({})", values.join(", "), var_src);
+        self.offenses.push(
+            self.ctx
+                .offense_with_range(COP_NAME, MSG, Severity::Convention, start, end)
+                .with_correction(Correction::replace(start, end, replacement)),
+        );
     }
 }
 
@@ -100,13 +103,13 @@ fn is_comparison(ctx: &CheckContext, node: &Node, allow_method_comparison: bool)
     simple_comparison_src(ctx, node, allow_method_comparison).is_some()
 }
 
-/// Return `(var_src, value_is_call)` for a `==` comparison between a variable (lvar/call)
-/// and any rhs — or None if no valid simple_comparison match.
+/// Return `(var_src, value_src, value_is_call)` for a `==` comparison between a variable
+/// (lvar/call) and any rhs — or None if no valid simple_comparison match.
 fn simple_comparison_src(
     ctx: &CheckContext,
     node: &Node,
     allow_method_comparison: bool,
-) -> Option<(String, bool)> {
+) -> Option<(String, String, bool)> {
     let call = node.as_call_node()?;
     if node_name!(call) != "==" { return None; }
     let recv = call.receiver()?;
@@ -116,12 +119,11 @@ fn simple_comparison_src(
 
     // simple_comparison_lhs: (send ${lvar call} :== $_)
     if is_lvar(&recv) || (is_call(&recv) && allow_method_comparison) {
-        // var = recv, obj = arg
-        return Some((src_of(ctx, &recv), is_call(arg)));
+        return Some((src_of(ctx, &recv), src_of(ctx, arg), is_call(arg)));
     }
     // simple_comparison_rhs: (send $_ :== ${lvar call})
     if is_lvar(arg) || (is_call(arg) && allow_method_comparison) {
-        return Some((src_of(ctx, arg), is_call(&recv)));
+        return Some((src_of(ctx, arg), src_of(ctx, &recv), is_call(&recv)));
     }
     None
 }
@@ -150,12 +152,13 @@ fn walk(
     node: &ruby_prism::OrNode,
     vars: &mut HashSet<String>,
     ranges: &mut Vec<(usize, usize)>,
+    values: &mut Vec<String>,
     allow_method_comparison: bool,
     abort: &mut bool,
 ) {
     if *abort { return; }
-    walk_one(ctx, &node.left(), vars, ranges, allow_method_comparison, abort);
-    walk_one(ctx, &node.right(), vars, ranges, allow_method_comparison, abort);
+    walk_one(ctx, &node.left(), vars, ranges, values, allow_method_comparison, abort);
+    walk_one(ctx, &node.right(), vars, ranges, values, allow_method_comparison, abort);
 }
 
 fn walk_one(
@@ -163,29 +166,29 @@ fn walk_one(
     node: &Node,
     vars: &mut HashSet<String>,
     ranges: &mut Vec<(usize, usize)>,
+    values: &mut Vec<String>,
     allow_method_comparison: bool,
     abort: &mut bool,
 ) {
     if *abort { return; }
     if let Some(or) = node.as_or_node() {
-        walk(ctx, &or, vars, ranges, allow_method_comparison, abort);
+        walk(ctx, &or, vars, ranges, values, allow_method_comparison, abort);
         return;
     }
     if is_simple_double_comparison(node) {
         *abort = true;
         return;
     }
-    if let Some((var_src, obj_is_call)) = simple_comparison_src(ctx, node, allow_method_comparison) {
-        // RuboCop: `return if allow_method_comparison? && obj.call_type?`
+    if let Some((var_src, val_src, obj_is_call)) = simple_comparison_src(ctx, node, allow_method_comparison) {
         if allow_method_comparison && obj_is_call { return; }
         vars.insert(var_src);
         if vars.len() > 1 {
-            // Don't abort — in RuboCop, this resets (stops adding values). Mirror: stop collecting.
             *abort = true;
             return;
         }
         let loc = node.location();
         ranges.push((loc.start_offset(), loc.end_offset()));
+        values.push(val_src);
     }
 }
 
