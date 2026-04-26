@@ -1,9 +1,9 @@
 # All Cops State (606 total)
 
 Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department and default status.
-590 of 606 implemented (all 396 enabled-by-default complete + 155 pending-by-default + 39 disabled-by-default). See [README.md](README.md) for the implementation roadmap.
+596 of 606 implemented (all 396 enabled-by-default complete + 155 pending-by-default + 45 disabled-by-default). See [README.md](README.md) for the implementation roadmap.
 
-**Pending-default progress: 155 / 156 (~99%)**. **Disabled-default progress: 39 / 54 (~72%)**.
+**Pending-default progress: 155 / 156 (~99%)**. **Disabled-default progress: 45 / 54 (~83%)**.
 
 ## Summary
 
@@ -11,16 +11,16 @@ Each cell shows `implemented / total` for that category.
 
 | Department |     Enabled |     Pending | Disabled |             Tests |
 | ---------- | ----------: | ----------: | -------: | ----------------: |
-| Style      |     175/175 |       90/91 |    22/32 |   14,040 / 14,566 |
+| Style      |     175/175 |       90/91 |    27/32 |   14,174 / 14,566 |
 | Lint       |     100/100 |       50/50 |      4/4 |     5,961 / 5,961 |
-| Layout     |       81/81 |         5/5 |    10/14 |     4,397 / 4,646 |
+| Layout     |       81/81 |         5/5 |    11/14 |     4,431 / 4,646 |
 | Metrics    |         9/9 |         1/1 |      0/0 |         272 / 272 |
 | Naming     |       16/16 |         2/2 |      0/1 |     2,181 / 2,216 |
 | Gemspec    |         4/4 |         5/5 |      1/1 |         193 / 193 |
 | Bundler    |         5/5 |         0/0 |      2/2 |         101 / 101 |
 | Security   |         5/5 |         2/2 |      0/0 |         102 / 102 |
 | Migration  |         1/1 |         0/0 |      0/0 |             8 / 8 |
-| **Total**  | **396/396** | **155/156** | **39/54** | **27,267/28,065** |
+| **Total**  | **396/396** | **155/156** | **45/54** | **27,435/28,065** |
 
 - **Enabled**: Runs by default on every codebase (highest priority to implement)
 - **Pending**: Runs only with `NewCops: enable` in config
@@ -224,7 +224,7 @@ Each cell shows `implemented / total` for that category.
 | Style/DataInheritance                      |    24 | Implemented |
 | Style/DigChain                             |    23 | Implemented |
 | Style/DirEmpty                             |    16 | Implemented |
-| Style/DocumentDynamicEvalDefinition        |    18 | -           |
+| Style/DocumentDynamicEvalDefinition        |    18 | Implemented           |
 | Style/EmptyClassDefinition                 |    44 | Implemented |
 | Style/EmptyHeredoc                         |     7 | Implemented |
 | Style/EmptyStringInsideInterpolation       |    24 | Implemented |
@@ -315,10 +315,10 @@ Each cell shows `implemented / total` for that category.
 | Style/ClassMethodsDefinitions              |    16 | Implemented           |
 | Style/CollectionMethods                    |    68 | -           |
 | Style/ConstantVisibility                   |    15 | Implemented           |
-| Style/Copyright                            |    13 | -           |
+| Style/Copyright                            |    13 | Implemented           |
 | Style/DateTime                             |    12 | Implemented           |
-| Style/DisableCopsWithinSourceCodeDirective |     7 | -           |
-| Style/DocumentationMethod                  |    77 | -           |
+| Style/DisableCopsWithinSourceCodeDirective |     7 | Implemented           |
+| Style/DocumentationMethod                  |    77 | Implemented           |
 | Style/HashLookupMethod                     |    15 | Implemented           |
 | Style/ImplicitRuntimeError                 |     8 | Implemented |
 | Style/InlineComment                        |     3 | Implemented |
@@ -327,7 +327,7 @@ Each cell shows `implemented / total` for that category.
 | Style/MethodCallWithArgsParentheses        |   174 | -           |
 | Style/MethodCalledOnDoEndBlock             |    10 | Implemented |
 | Style/MissingElse                          |    84 | -           |
-| Style/MultilineMethodSignature             |    19 | -           |
+| Style/MultilineMethodSignature             |    19 | Implemented |
 | Style/OptionHash                           |     9 | Implemented |
 | Style/RequireOrder                         |    24 | -           |
 | Style/ReturnNil                            |     5 | Implemented |
@@ -622,7 +622,7 @@ Each cell shows `implemented / total` for that category.
 | Layout/FirstMethodParameterLineBreak      |    11 | Implemented      |
 | Layout/HeredocArgumentClosingParenthesis  |    82 | -      |
 | Layout/MultilineArrayLineBreaks           |     6 | Implemented      |
-| Layout/MultilineAssignmentLayout          |    34 | -      |
+| Layout/MultilineAssignmentLayout          |    34 | Implemented |
 | Layout/MultilineHashKeyLineBreaks         |    10 | Implemented      |
 | Layout/MultilineMethodArgumentLineBreaks  |    18 | Implemented      |
 | Layout/MultilineMethodParameterLineBreaks |    14 | Implemented      |

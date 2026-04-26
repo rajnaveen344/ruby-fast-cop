@@ -183,7 +183,13 @@ fn compare_offense(
     } else {
         expected_msg
     };
-    if !actual.message.contains(expected_msg) {
+    // `[...]` in expected = continuation marker → match prefix only.
+    let matched = if let Some(prefix) = expected_msg.strip_suffix("[...]") {
+        actual.message.starts_with(prefix.trim_end())
+    } else {
+        actual.message.contains(expected_msg)
+    };
+    if !matched {
         errors.push(format!(
             "[{}] {}: Message mismatch - expected to contain '{}', got '{}'",
             cop_name, test_name, expected_msg, actual.message
