@@ -24,7 +24,7 @@ ruby-fast-cop = Rust port of RuboCop. Target 50-100x faster (like Ruff:Python).
 
 All 606 cops implemented. **Active workstream = wiring `Correction` emission** so `cargo test --test tester` passes the strict-mode `corrected` block check for every fixture that has one.
 
-**Status:** 7,633 / 11,217 (68%) corrections wired. 3,584 expected corrections across 159 cops still unwired. Per-cop counts in `.correction_worklist.txt`. Per-dept totals in `COPS.md` summary.
+**Status:** 7,710 / 11,217 (69%) corrections wired. 3,507 expected corrections across 157 cops still unwired. Per-cop counts in `.correction_worklist.txt`. Per-dept totals in `COPS.md` summary.
 
 Tester is hard-flipped: any TOML `corrected` block with no matching `Correction` from the cop = test failure. No silent skips. See `tests/tester.rs` ~L420 for the gate.
 
@@ -32,6 +32,7 @@ Wiring proceeds **cluster-by-cluster**. A cluster = cops that share a correction
 
 - **Cluster 1** (commit `6422490`) — 7 cops, +175 corrections. Yoda swap + simple replace.
 - **Cluster 2** (commit `2b69077`) — 9 cops, +257 corrections. Redundancy removers (RedundantBegin, RedundantFreeze, RedundantInterpolation, RedundantReturn, RedundantSort, RedundantSortBy, Lint/RedundantSafeNavigation, Lint/RedundantSplatExpansion, Lint/SafeNavigationChain).
+- **Cluster 4a** (this commit) — 2 cops, +77 corrections. Space-inside-brackets (Layout/SpaceInsideArrayLiteralBrackets, Layout/SpaceInsideReferenceBrackets). Insert/delete a single space; multi-line compact 2D-array newline cases handled by walking past whitespace.
 
 **Known deferred edge cases** (not blocking cluster commits):
 
@@ -66,7 +67,7 @@ Top unwired cops by failing-correction count (from `cargo test --test tester` st
 
 High cop count ≠ prod-ready. Gaps before drop-in RuboCop parity:
 
-1. **Autocorrect coverage** — 7,633 / 11,217 corrections wired (68%). 159 cops still partial/unwired. Target ≥90%. **(active workstream)**
+1. **Autocorrect coverage** — 7,710 / 11,217 corrections wired (69%). 157 cops still partial/unwired. Target ≥90%. **(active workstream)**
 2. **CLI incomplete** — `--only`/`--except`, `-f json`/`-f emacs`, `--parallel` unchecked.
 3. **Config edges** — `inherit_from`, `inherit_gem`, glob `Include`/`Exclude`, brace-expand partial. Fuzz against Rails/Discourse/Shopify `.rubocop.yml`.
 4. **No real-world corpus** — 28k tests all from RuboCop specs. Run 3+ OSS codebases, diff vs RuboCop (target ±1% parity).

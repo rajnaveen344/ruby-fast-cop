@@ -5,24 +5,24 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 
 **Pending-default progress: 156 / 156 (100%)**. **Disabled-default progress: 54 / 54 (100%)**.
 
-**Autocorrect progress: 7,633 / 11,217 (68%)** — 3,584 expected corrections across 159 cops still unwired. See [`.correction_worklist.txt`](.correction_worklist.txt) for per-cop counts.
+**Autocorrect progress: 7,710 / 11,217 (69%)** — 3,507 expected corrections across 157 cops still unwired. See [`.correction_worklist.txt`](.correction_worklist.txt) for per-cop counts.
 
 ## Summary
 
 Cop-count cells show `implemented / total`. Autocorrect column shows `wired / expected (%)`, where "expected" = TOML fixture cases with a `corrected` block and "wired" = cop currently emits a `Correction` that produces matching corrected source.
 
-| Department |     Enabled |     Pending | Disabled |             Tests |        Autocorrect |
-| ---------- | ----------: | ----------: | -------: | ----------------: | -----------------: |
-| Style      |     175/175 |       91/91 |    32/32 |   14,566 / 14,566 |   4,820 / 7,318 (66%) |
-| Lint       |     100/100 |       50/50 |      4/4 |     5,961 / 5,961 |   1,602 / 1,908 (84%) |
-| Layout     |       81/81 |         5/5 |    14/14 |     4,646 / 4,646 |   1,125 / 1,851 (60%) |
-| Metrics    |         9/9 |         1/1 |      0/0 |         272 / 272 |               n/a (0 expected) |
-| Naming     |       16/16 |         2/2 |      1/1 |     2,216 / 2,216 |        41 / 86 (47%) |
-| Gemspec    |         4/4 |         5/5 |      1/1 |         193 / 193 |        24 / 24 (100%) |
-| Bundler    |         5/5 |         0/0 |      2/2 |         101 / 101 |          8 / 12 (66%) |
-| Security   |         5/5 |         2/2 |      0/0 |         102 / 102 |         12 / 17 (70%) |
-| Migration  |         1/1 |         0/0 |      0/0 |             8 / 8 |           1 / 1 (100%) |
-| **Total**  | **396/396** | **156/156** | **54/54** | **28,065/28,065** | **7,633 / 11,217 (68%)** |
+| Department |     Enabled |     Pending |  Disabled |             Tests |              Autocorrect |
+| ---------- | ----------: | ----------: | --------: | ----------------: | -----------------------: |
+| Style      |     175/175 |       91/91 |     32/32 |   14,566 / 14,566 |      4,820 / 7,318 (66%) |
+| Lint       |     100/100 |       50/50 |       4/4 |     5,961 / 5,961 |      1,602 / 1,908 (84%) |
+| Layout     |       81/81 |         5/5 |     14/14 |     4,646 / 4,646 |      1,202 / 1,851 (65%) |
+| Metrics    |         9/9 |         1/1 |       0/0 |         272 / 272 |         n/a (0 expected) |
+| Naming     |       16/16 |         2/2 |       1/1 |     2,216 / 2,216 |            41 / 86 (47%) |
+| Gemspec    |         4/4 |         5/5 |       1/1 |         193 / 193 |           24 / 24 (100%) |
+| Bundler    |         5/5 |         0/0 |       2/2 |         101 / 101 |             8 / 12 (66%) |
+| Security   |         5/5 |         2/2 |       0/0 |         102 / 102 |            12 / 17 (70%) |
+| Migration  |         1/1 |         0/0 |       0/0 |             8 / 8 |             1 / 1 (100%) |
+| **Total**  | **396/396** | **156/156** | **54/54** | **28,065/28,065** | **7,710 / 11,217 (69%)** |
 
 - **Enabled**: Runs by default on every codebase (highest priority to implement)
 - **Pending**: Runs only with `NewCops: enable` in config
@@ -226,14 +226,14 @@ Cop-count cells show `implemented / total`. Autocorrect column shows `wired / ex
 | Style/DataInheritance                      |    24 | Implemented |
 | Style/DigChain                             |    23 | Implemented |
 | Style/DirEmpty                             |    16 | Implemented |
-| Style/DocumentDynamicEvalDefinition        |    18 | Implemented           |
+| Style/DocumentDynamicEvalDefinition        |    18 | Implemented |
 | Style/EmptyClassDefinition                 |    44 | Implemented |
 | Style/EmptyHeredoc                         |     7 | Implemented |
 | Style/EmptyStringInsideInterpolation       |    24 | Implemented |
 | Style/EndlessMethod                        |    63 | Implemented |
 | Style/EnvHome                              |     7 | Implemented |
 | Style/ExactRegexpMatch                     |    14 | Implemented |
-| Style/FetchEnvVar                          |    43 | Implemented           |
+| Style/FetchEnvVar                          |    43 | Implemented |
 | Style/FileEmpty                            |    27 | Implemented |
 | Style/FileNull                             |    13 | Implemented |
 | Style/FileOpen                             |    14 | Implemented |
@@ -256,7 +256,7 @@ Cop-count cells show `implemented / total`. Autocorrect column shows `wired / ex
 | Style/MapToHash                            |    38 | Implemented |
 | Style/MapToSet                             |    32 | Implemented |
 | Style/MinMaxComparison                     |    17 | Implemented |
-| Style/ModuleMemberExistenceCheck           |   101 | Implemented           |
+| Style/ModuleMemberExistenceCheck           |   101 | Implemented |
 | Style/MultilineInPatternThen               |    13 | Implemented |
 | Style/NegatedIfElseCondition               |    32 | Implemented |
 | Style/NegativeArrayIndex                   |   423 | Implemented |
@@ -267,7 +267,7 @@ Cop-count cells show `implemented / total`. Autocorrect column shows `wired / ex
 | Style/ObjectThen                           |    23 | Implemented |
 | Style/OneClassPerFile                      |    21 | Implemented |
 | Style/OpenStructUse                        |    12 | Implemented |
-| Style/OperatorMethodCall                   |   202 | Implemented           |
+| Style/OperatorMethodCall                   |   202 | Implemented |
 | Style/PartitionInsteadOfDoubleSelect       |    37 | Implemented |
 | Style/PredicateWithKind                    |    64 | Implemented |
 | Style/QuotedSymbols                        |    97 | Implemented |
@@ -297,10 +297,10 @@ Cop-count cells show `implemented / total`. Autocorrect column shows `wired / ex
 | Style/SelectByKind                         |   144 | Implemented |
 | Style/SelectByRange                        |   120 | Implemented |
 | Style/SelectByRegexp                       |   320 | Implemented |
-| Style/SendWithLiteralMethodName            |   115 | Implemented           |
+| Style/SendWithLiteralMethodName            |   115 | Implemented |
 | Style/SingleLineDoEndBlock                 |    13 | Implemented |
 | Style/StringChars                          |     8 | Implemented |
-| Style/SuperArguments                       |    92 | Implemented           |
+| Style/SuperArguments                       |    92 | Implemented |
 | Style/SuperWithArgsParentheses             |     4 | Implemented |
 | Style/SwapValues                           |    11 | Implemented |
 | Style/TallyMethod                          |    32 | Implemented |
@@ -311,36 +311,36 @@ Cop-count cells show `implemented / total`. Autocorrect column shows `wired / ex
 | Cop                                        | Tests | Status      |
 | ------------------------------------------ | ----: | ----------- |
 | Style/ArrayCoercion                        |     5 | Implemented |
-| Style/ArrayFirstLast                       |    16 | Implemented           |
+| Style/ArrayFirstLast                       |    16 | Implemented |
 | Style/AsciiComments                        |     5 | Implemented |
 | Style/AutoResourceCleanup                  |     7 | Implemented |
-| Style/ClassMethodsDefinitions              |    16 | Implemented           |
-| Style/CollectionMethods                    |    68 | Implemented           |
-| Style/ConstantVisibility                   |    15 | Implemented           |
-| Style/Copyright                            |    13 | Implemented           |
-| Style/DateTime                             |    12 | Implemented           |
-| Style/DisableCopsWithinSourceCodeDirective |     7 | Implemented           |
-| Style/DocumentationMethod                  |    77 | Implemented           |
-| Style/HashLookupMethod                     |    15 | Implemented           |
+| Style/ClassMethodsDefinitions              |    16 | Implemented |
+| Style/CollectionMethods                    |    68 | Implemented |
+| Style/ConstantVisibility                   |    15 | Implemented |
+| Style/Copyright                            |    13 | Implemented |
+| Style/DateTime                             |    12 | Implemented |
+| Style/DisableCopsWithinSourceCodeDirective |     7 | Implemented |
+| Style/DocumentationMethod                  |    77 | Implemented |
+| Style/HashLookupMethod                     |    15 | Implemented |
 | Style/ImplicitRuntimeError                 |     8 | Implemented |
 | Style/InlineComment                        |     3 | Implemented |
-| Style/InvertibleUnlessCondition            |    15 | Implemented           |
+| Style/InvertibleUnlessCondition            |    15 | Implemented |
 | Style/IpAddresses                          |    14 | Implemented |
 | Style/MethodCallWithArgsParentheses        |   174 | Implemented |
 | Style/MethodCalledOnDoEndBlock             |    10 | Implemented |
-| Style/MissingElse                          |    84 | Implemented           |
+| Style/MissingElse                          |    84 | Implemented |
 | Style/MultilineMethodSignature             |    19 | Implemented |
 | Style/OptionHash                           |     9 | Implemented |
-| Style/RequireOrder                         |    24 | Implemented           |
+| Style/RequireOrder                         |    24 | Implemented |
 | Style/ReturnNil                            |     5 | Implemented |
-| Style/Send                                 |    13 | Implemented           |
-| Style/SingleLineBlockParams                |    12 | Implemented           |
-| Style/StaticClass                          |    11 | Implemented           |
+| Style/Send                                 |    13 | Implemented |
+| Style/SingleLineBlockParams                |    12 | Implemented |
+| Style/StaticClass                          |    11 | Implemented |
 | Style/StringHashKeys                       |    10 | Implemented |
 | Style/StringMethods                        |     2 | Implemented |
-| Style/TopLevelMethodDefinition             |    14 | Implemented           |
-| Style/TrailingCommaInBlockArgs             |    20 | Implemented           |
-| Style/UnlessLogicalOperators               |    28 | Implemented           |
+| Style/TopLevelMethodDefinition             |    14 | Implemented |
+| Style/TrailingCommaInBlockArgs             |    20 | Implemented |
+| Style/UnlessLogicalOperators               |    28 | Implemented |
 | Style/YodaExpression                       |    10 | Implemented |
 
 ## Lint (154/154 implemented, 5,961 tests)
@@ -459,7 +459,7 @@ Cop-count cells show `implemented / total`. Autocorrect column shows `wired / ex
 | Lint/AmbiguousRange                         |    54 | Implemented |
 | Lint/ArrayLiteralInRegexp                   |    32 | Implemented |
 | Lint/ConstantOverwrittenInRescue            |     8 | Implemented |
-| Lint/ConstantReassignment                   |    41 | Implemented           |
+| Lint/ConstantReassignment                   |    41 | Implemented |
 | Lint/CopDirectiveSyntax                     |    16 | Implemented |
 | Lint/DataDefineOverride                     |     8 | Implemented |
 | Lint/DeprecatedConstants                    |    20 | Implemented |
@@ -475,9 +475,9 @@ Cop-count cells show `implemented / total`. Autocorrect column shows `wired / ex
 | Lint/IncompatibleIoSelectWithFiberScheduler |    19 | Implemented |
 | Lint/ItWithoutArgumentsInBlock              |    19 | Implemented |
 | Lint/LambdaWithoutLiteralBlock              |     6 | Implemented |
-| Lint/LiteralAssignmentInCondition           |    34 | Implemented           |
+| Lint/LiteralAssignmentInCondition           |    34 | Implemented |
 | Lint/MixedCaseRange                         |    31 | Implemented |
-| Lint/NoReturnInBeginEndBlocks               |    70 | Implemented           |
+| Lint/NoReturnInBeginEndBlocks               |    70 | Implemented |
 | Lint/NonAtomicFileOperation                 |    43 | Implemented |
 | Lint/NumberedParameterAssignment            |    13 | Implemented |
 | Lint/NumericOperationWithConstantResult     |    16 | Implemented |
@@ -489,13 +489,13 @@ Cop-count cells show `implemented / total`. Autocorrect column shows `wired / ex
 | Lint/RequireRangeParentheses                |     9 | Implemented |
 | Lint/RequireRelativeSelfPath                |     6 | Implemented |
 | Lint/SharedMutableDefault                   |     6 | Implemented |
-| Lint/SuppressedExceptionInNumberConversion  |    26 | Implemented           |
+| Lint/SuppressedExceptionInNumberConversion  |    26 | Implemented |
 | Lint/SymbolConversion                       |    39 | Implemented |
 | Lint/ToEnumArguments                        |    24 | Implemented |
 | Lint/TripleQuotes                           |     9 | Implemented |
 | Lint/UnescapedBracketInRegexp               |    44 | Implemented |
 | Lint/UnexpectedBlockArity                   |    22 | Implemented |
-| Lint/UnmodifiedReduceAccumulator            |   168 | Implemented           |
+| Lint/UnmodifiedReduceAccumulator            |   168 | Implemented |
 | Lint/UnreachablePatternBranch               |    23 | Implemented |
 | Lint/UselessConstantScoping                 |    11 | Implemented |
 | Lint/UselessDefaultValueArgument            |    24 | Implemented |
@@ -614,22 +614,22 @@ Cop-count cells show `implemented / total`. Autocorrect column shows `wired / ex
 
 ### Disabled by Default (14 cops, 378 tests)
 
-| Cop                                       | Tests | Status |
-| ----------------------------------------- | ----: | ------ |
-| Layout/ClassStructure                     |    21 | Implemented      |
-| Layout/EmptyLineAfterMultilineCondition   |    22 | Implemented      |
-| Layout/FirstArrayElementLineBreak         |    14 | Implemented      |
-| Layout/FirstHashElementLineBreak          |    11 | Implemented      |
-| Layout/FirstMethodArgumentLineBreak       |    14 | Implemented      |
-| Layout/FirstMethodParameterLineBreak      |    11 | Implemented      |
-| Layout/HeredocArgumentClosingParenthesis  |    82 | Implemented      |
-| Layout/MultilineArrayLineBreaks           |     6 | Implemented      |
+| Cop                                       | Tests | Status      |
+| ----------------------------------------- | ----: | ----------- |
+| Layout/ClassStructure                     |    21 | Implemented |
+| Layout/EmptyLineAfterMultilineCondition   |    22 | Implemented |
+| Layout/FirstArrayElementLineBreak         |    14 | Implemented |
+| Layout/FirstHashElementLineBreak          |    11 | Implemented |
+| Layout/FirstMethodArgumentLineBreak       |    14 | Implemented |
+| Layout/FirstMethodParameterLineBreak      |    11 | Implemented |
+| Layout/HeredocArgumentClosingParenthesis  |    82 | Implemented |
+| Layout/MultilineArrayLineBreaks           |     6 | Implemented |
 | Layout/MultilineAssignmentLayout          |    34 | Implemented |
-| Layout/MultilineHashKeyLineBreaks         |    10 | Implemented      |
-| Layout/MultilineMethodArgumentLineBreaks  |    18 | Implemented      |
-| Layout/MultilineMethodParameterLineBreaks |    14 | Implemented      |
-| Layout/RedundantLineBreak                 |   112 | Implemented      |
-| Layout/SingleLineBlockChain               |     9 | Implemented      |
+| Layout/MultilineHashKeyLineBreaks         |    10 | Implemented |
+| Layout/MultilineMethodArgumentLineBreaks  |    18 | Implemented |
+| Layout/MultilineMethodParameterLineBreaks |    14 | Implemented |
+| Layout/RedundantLineBreak                 |   112 | Implemented |
+| Layout/SingleLineBlockChain               |     9 | Implemented |
 
 ## Metrics (9/10 implemented, 272 tests)
 
@@ -649,8 +649,8 @@ Cop-count cells show `implemented / total`. Autocorrect column shows `wired / ex
 
 ### Pending by Default (1 cops, 13 tests)
 
-| Cop                             | Tests | Status |
-| ------------------------------- | ----: | ------ |
+| Cop                             | Tests | Status      |
+| ------------------------------- | ----: | ----------- |
 | Metrics/CollectionLiteralLength |    13 | Implemented |
 
 ## Naming (17/19 implemented, 2,217 tests)
@@ -685,9 +685,9 @@ Cop-count cells show `implemented / total`. Autocorrect column shows `wired / ex
 
 ### Disabled by Default (1 cops, 35 tests)
 
-| Cop                      | Tests | Status |
-| ------------------------ | ----: | ------ |
-| Naming/InclusiveLanguage |    35 | Implemented      |
+| Cop                      | Tests | Status      |
+| ------------------------ | ----: | ----------- |
+| Naming/InclusiveLanguage |    35 | Implemented |
 
 ## Gemspec (4/10 implemented, 193 tests)
 
@@ -712,9 +712,9 @@ Cop-count cells show `implemented / total`. Autocorrect column shows `wired / ex
 
 ### Disabled by Default (1 cops, 77 tests)
 
-| Cop                       | Tests | Status |
-| ------------------------- | ----: | ------ |
-| Gemspec/DependencyVersion |    77 | Implemented      |
+| Cop                       | Tests | Status      |
+| ------------------------- | ----: | ----------- |
+| Gemspec/DependencyVersion |    77 | Implemented |
 
 ## Bundler (5/7 implemented, 101 tests)
 
@@ -730,10 +730,10 @@ Cop-count cells show `implemented / total`. Autocorrect column shows `wired / ex
 
 ### Disabled by Default (2 cops, 32 tests)
 
-| Cop                | Tests | Status |
-| ------------------ | ----: | ------ |
-| Bundler/GemComment |    26 | Implemented      |
-| Bundler/GemVersion |     6 | Implemented      |
+| Cop                | Tests | Status      |
+| ------------------ | ----: | ----------- |
+| Bundler/GemComment |    26 | Implemented |
+| Bundler/GemVersion |     6 | Implemented |
 
 ## Security (5/7 implemented, 102 tests)
 

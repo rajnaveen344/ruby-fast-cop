@@ -7,7 +7,7 @@
 
 use crate::cops::{CheckContext, Cop};
 use crate::helpers::surrounding_space as ss;
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 
 const COP_NAME: &str = "Layout/SpaceInsideArrayLiteralBrackets";
 const MSG_NO_SPACE: &str = "Do not use space inside array brackets.";
@@ -58,22 +58,18 @@ impl SpaceInsideArrayLiteralBrackets {
             match self.empty_style {
                 EmptyBracketsStyle::NoSpace => {
                     if !ss::no_character_between(left_end, right_start) {
-                        offenses.push(empty_offense(
-                            ctx,
-                            left_start,
-                            right_end,
-                            MSG_EMPTY_NO_SPACE,
-                        ));
+                        offenses.push(
+                            empty_offense(ctx, left_start, right_end, MSG_EMPTY_NO_SPACE)
+                                .with_correction(Correction::replace(left_start, right_end, "[]")),
+                        );
                     }
                 }
                 EmptyBracketsStyle::Space => {
                     if !ss::has_exactly_one_space(source, left_end, right_start) {
-                        offenses.push(empty_offense(
-                            ctx,
-                            left_start,
-                            right_end,
-                            MSG_EMPTY_SPACE_ONE,
-                        ));
+                        offenses.push(
+                            empty_offense(ctx, left_start, right_end, MSG_EMPTY_SPACE_ONE)
+                                .with_correction(Correction::replace(left_start, right_end, "[ ]")),
+                        );
                     }
                 }
             }
@@ -133,7 +129,10 @@ impl SpaceInsideArrayLiteralBrackets {
             if n > 0 {
                 // ensure they're on the same line as `[`
                 if !source.as_bytes()[left_end..left_end + n].contains(&b'\n') {
-                    offenses.push(space_offense(ctx, left_end, left_end + n, MSG_NO_SPACE));
+                    offenses.push(
+                        space_offense(ctx, left_end, left_end + n, MSG_NO_SPACE)
+                            .with_correction(Correction::delete(left_end, left_end + n)),
+                    );
                 }
             }
         }
@@ -142,12 +141,10 @@ impl SpaceInsideArrayLiteralBrackets {
             if n > 0 {
                 // ensure on same line as `]`
                 if !source.as_bytes()[right_start - n..right_start].contains(&b'\n') {
-                    offenses.push(space_offense(
-                        ctx,
-                        right_start - n,
-                        right_start,
-                        MSG_NO_SPACE,
-                    ));
+                    offenses.push(
+                        space_offense(ctx, right_start - n, right_start, MSG_NO_SPACE)
+                            .with_correction(Correction::delete(right_start - n, right_start)),
+                    );
                 }
             }
         }
@@ -169,7 +166,10 @@ impl SpaceInsideArrayLiteralBrackets {
                 // Not followed by newline (start_ok would handle that) and no space.
                 let bytes = source.as_bytes();
                 if left_end < bytes.len() && bytes[left_end] != b'\n' && bytes[left_end] != b'\r' {
-                    offenses.push(space_offense(ctx, left_end - 1, left_end, MSG_SPACE));
+                    offenses.push(
+                        space_offense(ctx, left_end - 1, left_end, MSG_SPACE)
+                            .with_correction(Correction::insert(left_end, " ")),
+                    );
                 }
             }
         }
@@ -178,12 +178,10 @@ impl SpaceInsideArrayLiteralBrackets {
             if n == 0 {
                 let bytes = source.as_bytes();
                 if right_start > 0 && bytes[right_start - 1] != b'\n' && bytes[right_start - 1] != b'\r' {
-                    offenses.push(space_offense(
-                        ctx,
-                        right_start,
-                        right_start + 1,
-                        MSG_SPACE,
-                    ));
+                    offenses.push(
+                        space_offense(ctx, right_start, right_start + 1, MSG_SPACE)
+                            .with_correction(Correction::insert(right_start, " ")),
+                    );
                 }
             }
         }
@@ -214,10 +212,18 @@ impl SpaceInsideArrayLiteralBrackets {
             if ws == Some(true) {
                 let is_newline = matches!(bytes.get(left_end), Some(&b'\n') | Some(&b'\r'));
                 if is_newline {
-                    offenses.push(space_offense(ctx, left_end, left_end, MSG_NO_SPACE));
+                    // Correction: delete from `[` end through all whitespace up to inner `[`.
+                    let del_end = walk_ws_forward(bytes, left_end);
+                    offenses.push(
+                        space_offense(ctx, left_end, left_end, MSG_NO_SPACE)
+                            .with_correction(Correction::delete(left_end, del_end)),
+                    );
                 } else {
                     let n = ss::count_spaces_after(source, left_end);
-                    offenses.push(space_offense(ctx, left_end, left_end + n, MSG_NO_SPACE));
+                    offenses.push(
+                        space_offense(ctx, left_end, left_end + n, MSG_NO_SPACE)
+                            .with_correction(Correction::delete(left_end, left_end + n)),
+                    );
                 }
             }
         } else {
@@ -226,7 +232,10 @@ impl SpaceInsideArrayLiteralBrackets {
                 let n = ss::count_spaces_after(source, left_end);
                 if n == 0 {
                     if left_end < bytes.len() && bytes[left_end] != b'\n' && bytes[left_end] != b'\r' {
-                        offenses.push(space_offense(ctx, left_end - 1, left_end, MSG_SPACE));
+                        offenses.push(
+                            space_offense(ctx, left_end - 1, left_end, MSG_SPACE)
+                                .with_correction(Correction::insert(left_end, " ")),
+                        );
                     }
                 }
             }
@@ -240,10 +249,18 @@ impl SpaceInsideArrayLiteralBrackets {
                 let is_newline = matches!(prev, Some(b'\n') | Some(b'\r'));
                 if is_newline {
                     // Zero-width range at the outer `]` itself.
-                    offenses.push(space_offense(ctx, right_start, right_start, MSG_NO_SPACE));
+                    // Correction: delete from inner `]` end through all whitespace up to outer `]`.
+                    let del_start = walk_ws_backward(bytes, right_start);
+                    offenses.push(
+                        space_offense(ctx, right_start, right_start, MSG_NO_SPACE)
+                            .with_correction(Correction::delete(del_start, right_start)),
+                    );
                 } else {
                     let n = ss::count_spaces_before(source, right_start);
-                    offenses.push(space_offense(ctx, right_start - n, right_start, MSG_NO_SPACE));
+                    offenses.push(
+                        space_offense(ctx, right_start - n, right_start, MSG_NO_SPACE)
+                            .with_correction(Correction::delete(right_start - n, right_start)),
+                    );
                 }
             }
         } else {
@@ -251,12 +268,29 @@ impl SpaceInsideArrayLiteralBrackets {
                 let n = ss::count_spaces_before(source, right_start);
                 if n == 0 {
                     if right_start > 0 && bytes[right_start - 1] != b'\n' && bytes[right_start - 1] != b'\r' {
-                        offenses.push(space_offense(ctx, right_start, right_start + 1, MSG_SPACE));
+                        offenses.push(
+                            space_offense(ctx, right_start, right_start + 1, MSG_SPACE)
+                                .with_correction(Correction::insert(right_start, " ")),
+                        );
                     }
                 }
             }
         }
     }
+}
+
+fn walk_ws_forward(bytes: &[u8], mut i: usize) -> usize {
+    while i < bytes.len() && matches!(bytes[i], b' ' | b'\t' | b'\n' | b'\r') {
+        i += 1;
+    }
+    i
+}
+
+fn walk_ws_backward(bytes: &[u8], mut i: usize) -> usize {
+    while i > 0 && matches!(bytes[i - 1], b' ' | b'\t' | b'\n' | b'\r') {
+        i -= 1;
+    }
+    i
 }
 
 fn is_whitespace_byte(b: Option<u8>) -> Option<bool> {

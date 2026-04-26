@@ -5,7 +5,7 @@
 use crate::cops::{CheckContext, Cop};
 use crate::helpers::surrounding_space as ss;
 use crate::node_name;
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 
 const COP_NAME: &str = "Layout/SpaceInsideReferenceBrackets";
 const MSG_NO_SPACE: &str = "Do not use space inside reference brackets.";
@@ -81,24 +81,30 @@ impl Cop for SpaceInsideReferenceBrackets {
             match self.empty_style {
                 ReferenceEmptyBracketsStyle::NoSpace => {
                     if !ss::no_character_between(le, rs) {
-                        offenses.push(ctx.offense_with_range(
-                            COP_NAME,
-                            MSG_EMPTY_NO_SPACE,
-                            Severity::Convention,
-                            ls,
-                            re,
-                        ));
+                        offenses.push(
+                            ctx.offense_with_range(
+                                COP_NAME,
+                                MSG_EMPTY_NO_SPACE,
+                                Severity::Convention,
+                                ls,
+                                re,
+                            )
+                            .with_correction(Correction::replace(ls, re, "[]")),
+                        );
                     }
                 }
                 ReferenceEmptyBracketsStyle::Space => {
                     if !ss::has_exactly_one_space(source, le, rs) {
-                        offenses.push(ctx.offense_with_range(
-                            COP_NAME,
-                            MSG_EMPTY_SPACE_ONE,
-                            Severity::Convention,
-                            ls,
-                            re,
-                        ));
+                        offenses.push(
+                            ctx.offense_with_range(
+                                COP_NAME,
+                                MSG_EMPTY_SPACE_ONE,
+                                Severity::Convention,
+                                ls,
+                                re,
+                            )
+                            .with_correction(Correction::replace(ls, re, "[ ]")),
+                        );
                     }
                 }
             }
@@ -114,45 +120,57 @@ impl Cop for SpaceInsideReferenceBrackets {
             SpaceInsideReferenceBracketsStyle::NoSpace => {
                 let n = ss::count_spaces_after(source, le);
                 if n > 0 {
-                    offenses.push(ctx.offense_with_range(
-                        COP_NAME,
-                        MSG_NO_SPACE,
-                        Severity::Convention,
-                        le,
-                        le + n,
-                    ));
+                    offenses.push(
+                        ctx.offense_with_range(
+                            COP_NAME,
+                            MSG_NO_SPACE,
+                            Severity::Convention,
+                            le,
+                            le + n,
+                        )
+                        .with_correction(Correction::delete(le, le + n)),
+                    );
                 }
                 let n = ss::count_spaces_before(source, rs);
                 if n > 0 {
-                    offenses.push(ctx.offense_with_range(
-                        COP_NAME,
-                        MSG_NO_SPACE,
-                        Severity::Convention,
-                        rs - n,
-                        rs,
-                    ));
+                    offenses.push(
+                        ctx.offense_with_range(
+                            COP_NAME,
+                            MSG_NO_SPACE,
+                            Severity::Convention,
+                            rs - n,
+                            rs,
+                        )
+                        .with_correction(Correction::delete(rs - n, rs)),
+                    );
                 }
             }
             SpaceInsideReferenceBracketsStyle::Space => {
                 let n = ss::count_spaces_after(source, le);
                 if n == 0 {
-                    offenses.push(ctx.offense_with_range(
-                        COP_NAME,
-                        MSG_SPACE,
-                        Severity::Convention,
-                        le - 1,
-                        le,
-                    ));
+                    offenses.push(
+                        ctx.offense_with_range(
+                            COP_NAME,
+                            MSG_SPACE,
+                            Severity::Convention,
+                            le - 1,
+                            le,
+                        )
+                        .with_correction(Correction::insert(le, " ")),
+                    );
                 }
                 let n = ss::count_spaces_before(source, rs);
                 if n == 0 {
-                    offenses.push(ctx.offense_with_range(
-                        COP_NAME,
-                        MSG_SPACE,
-                        Severity::Convention,
-                        rs,
-                        rs + 1,
-                    ));
+                    offenses.push(
+                        ctx.offense_with_range(
+                            COP_NAME,
+                            MSG_SPACE,
+                            Severity::Convention,
+                            rs,
+                            rs + 1,
+                        )
+                        .with_correction(Correction::insert(rs, " ")),
+                    );
                 }
             }
         }
