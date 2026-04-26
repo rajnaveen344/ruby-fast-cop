@@ -358,7 +358,7 @@ cargo run --bin fixture_stats
 
 ### High Priority
 
-- [ ] **More cops** - 605 of 606 implemented; see [Implementation Roadmap](#implementation-roadmap) for priority list
+- [x] **All cops** - 606 of 606 implemented; see [Implementation Roadmap](#implementation-roadmap) for follow-up work
 - [x] **Auto-correct** - `-a` (safe) and `-A` (all) flags with Ruff-style iterative correction
 - [ ] **Parallel processing** - Use rayon for multi-threaded file processing
 

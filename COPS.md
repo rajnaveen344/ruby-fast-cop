@@ -1,12 +1,9 @@
 # All Cops State (606 total)
 
 Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department and default status.
-605 of 606 implemented (all 396 enabled-by-default complete + 155 pending-by-default + 54 disabled-by-default). See [README.md](README.md) for the implementation roadmap.
+606 of 606 implemented (all 396 enabled-by-default complete + 155 pending-by-default + 55 disabled-by-default (was 54 + 1 deferred)). See [README.md](README.md) for the implementation roadmap.
 
-**Pending-default progress: 155 / 156 (~99%)**. **Disabled-default progress: 54 / 54 (100%)**.
-
-**Remaining 1 disabled-by-default deferred:**
-- `Style/MethodCallWithArgsParentheses` — needs `omit`/`require` sub-cop split (~250 LOC of intertwined heuristics)
+**Pending-default progress: 155 / 156 (~99%)**. **Disabled-default progress: 55 / 55 (100%)**.
 
 ## Summary
 
@@ -14,7 +11,7 @@ Each cell shows `implemented / total` for that category.
 
 | Department |     Enabled |     Pending | Disabled |             Tests |
 | ---------- | ----------: | ----------: | -------: | ----------------: |
-| Style      |     175/175 |       90/91 |    32/32 |   14,391 / 14,566 |
+| Style      |     175/175 |       90/91 |    32/32 |   14,566 / 14,566 |
 | Lint       |     100/100 |       50/50 |      4/4 |     5,961 / 5,961 |
 | Layout     |       81/81 |         5/5 |    14/14 |     4,646 / 4,646 |
 | Metrics    |         9/9 |         1/1 |      0/0 |         272 / 272 |
@@ -23,7 +20,7 @@ Each cell shows `implemented / total` for that category.
 | Bundler    |         5/5 |         0/0 |      2/2 |         101 / 101 |
 | Security   |         5/5 |         2/2 |      0/0 |         102 / 102 |
 | Migration  |         1/1 |         0/0 |      0/0 |             8 / 8 |
-| **Total**  | **396/396** | **155/156** | **54/54** | **27,902/28,065** |
+| **Total**  | **396/396** | **155/156** | **54/54** | **28,065/28,065** |
 
 - **Enabled**: Runs by default on every codebase (highest priority to implement)
 - **Pending**: Runs only with `NewCops: enable` in config
@@ -327,7 +324,7 @@ Each cell shows `implemented / total` for that category.
 | Style/InlineComment                        |     3 | Implemented |
 | Style/InvertibleUnlessCondition            |    15 | Implemented           |
 | Style/IpAddresses                          |    14 | Implemented |
-| Style/MethodCallWithArgsParentheses        |   174 | -           |
+| Style/MethodCallWithArgsParentheses        |   174 | Implemented |
 | Style/MethodCalledOnDoEndBlock             |    10 | Implemented |
 | Style/MissingElse                          |    84 | Implemented           |
 | Style/MultilineMethodSignature             |    19 | Implemented |
