@@ -1,9 +1,9 @@
 # All Cops State (606 total)
 
 Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department and default status.
-596 of 606 implemented (all 396 enabled-by-default complete + 155 pending-by-default + 45 disabled-by-default). See [README.md](README.md) for the implementation roadmap.
+602 of 606 implemented (all 396 enabled-by-default complete + 155 pending-by-default + 51 disabled-by-default). See [README.md](README.md) for the implementation roadmap.
 
-**Pending-default progress: 155 / 156 (~99%)**. **Disabled-default progress: 45 / 54 (~83%)**.
+**Pending-default progress: 155 / 156 (~99%)**. **Disabled-default progress: 51 / 54 (~94%)**.
 
 ## Summary
 
@@ -11,16 +11,16 @@ Each cell shows `implemented / total` for that category.
 
 | Department |     Enabled |     Pending | Disabled |             Tests |
 | ---------- | ----------: | ----------: | -------: | ----------------: |
-| Style      |     175/175 |       90/91 |    27/32 |   14,174 / 14,566 |
+| Style      |     175/175 |       90/91 |    32/32 |   14,391 / 14,566 |
 | Lint       |     100/100 |       50/50 |      4/4 |     5,961 / 5,961 |
-| Layout     |       81/81 |         5/5 |    11/14 |     4,431 / 4,646 |
+| Layout     |       81/81 |         5/5 |    12/14 |     4,452 / 4,646 |
 | Metrics    |         9/9 |         1/1 |      0/0 |         272 / 272 |
 | Naming     |       16/16 |         2/2 |      0/1 |     2,181 / 2,216 |
 | Gemspec    |         4/4 |         5/5 |      1/1 |         193 / 193 |
 | Bundler    |         5/5 |         0/0 |      2/2 |         101 / 101 |
 | Security   |         5/5 |         2/2 |      0/0 |         102 / 102 |
 | Migration  |         1/1 |         0/0 |      0/0 |             8 / 8 |
-| **Total**  | **396/396** | **155/156** | **45/54** | **27,435/28,065** |
+| **Total**  | **396/396** | **155/156** | **51/54** | **27,673/28,065** |
 
 - **Enabled**: Runs by default on every codebase (highest priority to implement)
 - **Pending**: Runs only with `NewCops: enable` in config
@@ -313,7 +313,7 @@ Each cell shows `implemented / total` for that category.
 | Style/AsciiComments                        |     5 | Implemented |
 | Style/AutoResourceCleanup                  |     7 | Implemented |
 | Style/ClassMethodsDefinitions              |    16 | Implemented           |
-| Style/CollectionMethods                    |    68 | -           |
+| Style/CollectionMethods                    |    68 | Implemented           |
 | Style/ConstantVisibility                   |    15 | Implemented           |
 | Style/Copyright                            |    13 | Implemented           |
 | Style/DateTime                             |    12 | Implemented           |
@@ -326,19 +326,19 @@ Each cell shows `implemented / total` for that category.
 | Style/IpAddresses                          |    14 | Implemented |
 | Style/MethodCallWithArgsParentheses        |   174 | -           |
 | Style/MethodCalledOnDoEndBlock             |    10 | Implemented |
-| Style/MissingElse                          |    84 | -           |
+| Style/MissingElse                          |    84 | Implemented           |
 | Style/MultilineMethodSignature             |    19 | Implemented |
 | Style/OptionHash                           |     9 | Implemented |
-| Style/RequireOrder                         |    24 | -           |
+| Style/RequireOrder                         |    24 | Implemented           |
 | Style/ReturnNil                            |     5 | Implemented |
-| Style/Send                                 |    13 | -           |
+| Style/Send                                 |    13 | Implemented           |
 | Style/SingleLineBlockParams                |    12 | Implemented           |
 | Style/StaticClass                          |    11 | Implemented           |
 | Style/StringHashKeys                       |    10 | Implemented |
 | Style/StringMethods                        |     2 | Implemented |
 | Style/TopLevelMethodDefinition             |    14 | Implemented           |
 | Style/TrailingCommaInBlockArgs             |    20 | Implemented           |
-| Style/UnlessLogicalOperators               |    28 | -           |
+| Style/UnlessLogicalOperators               |    28 | Implemented           |
 | Style/YodaExpression                       |    10 | Implemented |
 
 ## Lint (154/154 implemented, 5,961 tests)
@@ -614,7 +614,7 @@ Each cell shows `implemented / total` for that category.
 
 | Cop                                       | Tests | Status |
 | ----------------------------------------- | ----: | ------ |
-| Layout/ClassStructure                     |    21 | -      |
+| Layout/ClassStructure                     |    21 | Implemented      |
 | Layout/EmptyLineAfterMultilineCondition   |    22 | -      |
 | Layout/FirstArrayElementLineBreak         |    14 | Implemented      |
 | Layout/FirstHashElementLineBreak          |    11 | Implemented      |

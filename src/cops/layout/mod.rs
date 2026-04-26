@@ -1,4 +1,6 @@
 mod access_modifier_indentation;
+mod class_structure;
+pub use class_structure::ClassStructure;
 mod argument_alignment;
 mod array_alignment;
 mod parameter_alignment;
