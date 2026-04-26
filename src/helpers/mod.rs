@@ -17,6 +17,7 @@ pub mod negative_conditional;
 pub mod node_match;
 pub mod percent_literal;
 pub mod preceding_following_alignment;
+pub mod single_line_suitability;
 pub mod source;
 pub mod surrounding_space;
 pub mod trailing_comma;

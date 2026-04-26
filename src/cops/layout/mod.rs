@@ -38,6 +38,7 @@ mod first_argument_indentation;
 mod first_parameter_indentation;
 mod first_array_element_indentation;
 mod first_hash_element_indentation;
+mod heredoc_argument_closing_parenthesis;
 mod heredoc_indentation;
 mod hash_alignment;
 mod indentation_consistency;
@@ -66,6 +67,7 @@ mod first_array_element_line_break;
 mod first_hash_element_line_break;
 mod first_method_argument_line_break;
 mod first_method_parameter_line_break;
+mod redundant_line_break;
 mod rescue_ensure_alignment;
 mod single_line_block_chain;
 mod empty_line_after_multiline_condition;
@@ -132,6 +134,7 @@ pub use empty_lines_around_method_body::EmptyLinesAroundMethodBody;
 pub use empty_lines_around_module_body::{EmptyLinesAroundModuleBody, EmptyLinesAroundModuleBodyStyle};
 pub use end_alignment::{EndAlignment, EndAlignmentStyle};
 pub use extra_spacing::ExtraSpacing;
+pub use redundant_line_break::RedundantLineBreak;
 pub use rescue_ensure_alignment::RescueEnsureAlignment;
 pub use single_line_block_chain::SingleLineBlockChain;
 pub use empty_line_after_multiline_condition::EmptyLineAfterMultilineCondition;
@@ -143,6 +146,7 @@ pub use first_array_element_indentation::{
 pub use first_hash_element_indentation::{
     FirstHashElementIndentation, Style as FirstHashElementIndentationStyle,
 };
+pub use heredoc_argument_closing_parenthesis::HeredocArgumentClosingParenthesis;
 pub use heredoc_indentation::HeredocIndentation;
 pub use indentation_consistency::{IndentationConsistency, IndentationConsistencyStyle};
 pub use indentation_style::{IndentationStyle, IndentationStyleMode};
