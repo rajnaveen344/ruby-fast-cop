@@ -1,9 +1,14 @@
 # All Cops State (606 total)
 
 Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department and default status.
-602 of 606 implemented (all 396 enabled-by-default complete + 155 pending-by-default + 51 disabled-by-default). See [README.md](README.md) for the implementation roadmap.
+603 of 606 implemented (all 396 enabled-by-default complete + 155 pending-by-default + 52 disabled-by-default). See [README.md](README.md) for the implementation roadmap.
 
-**Pending-default progress: 155 / 156 (~99%)**. **Disabled-default progress: 51 / 54 (~94%)**.
+**Pending-default progress: 155 / 156 (~99%)**. **Disabled-default progress: 52 / 54 (~96%)**.
+
+**Remaining 3 disabled-by-default deferred:**
+- `Layout/HeredocArgumentClosingParenthesis` — needs Prism parent-map infrastructure
+- `Layout/RedundantLineBreak` — needs `CheckSingleLineSuitability` mixin port
+- `Style/MethodCallWithArgsParentheses` — needs `omit`/`require` sub-cop split (~250 LOC of intertwined heuristics)
 
 ## Summary
 
@@ -15,12 +20,12 @@ Each cell shows `implemented / total` for that category.
 | Lint       |     100/100 |       50/50 |      4/4 |     5,961 / 5,961 |
 | Layout     |       81/81 |         5/5 |    12/14 |     4,452 / 4,646 |
 | Metrics    |         9/9 |         1/1 |      0/0 |         272 / 272 |
-| Naming     |       16/16 |         2/2 |      0/1 |     2,181 / 2,216 |
+| Naming     |       16/16 |         2/2 |      1/1 |     2,216 / 2,216 |
 | Gemspec    |         4/4 |         5/5 |      1/1 |         193 / 193 |
 | Bundler    |         5/5 |         0/0 |      2/2 |         101 / 101 |
 | Security   |         5/5 |         2/2 |      0/0 |         102 / 102 |
 | Migration  |         1/1 |         0/0 |      0/0 |             8 / 8 |
-| **Total**  | **396/396** | **155/156** | **51/54** | **27,673/28,065** |
+| **Total**  | **396/396** | **155/156** | **52/54** | **27,708/28,065** |
 
 - **Enabled**: Runs by default on every codebase (highest priority to implement)
 - **Pending**: Runs only with `NewCops: enable` in config
@@ -685,7 +690,7 @@ Each cell shows `implemented / total` for that category.
 
 | Cop                      | Tests | Status |
 | ------------------------ | ----: | ------ |
-| Naming/InclusiveLanguage |    35 | -      |
+| Naming/InclusiveLanguage |    35 | Implemented      |
 
 ## Gemspec (4/10 implemented, 193 tests)
 

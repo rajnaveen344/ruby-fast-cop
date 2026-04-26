@@ -36,3 +36,5 @@ pub use variable_number::{VariableNumber, VariableNumberStyle};
 
 mod block_forwarding;
 pub use block_forwarding::{BlockForwarding, BlockForwardingStyle};
+mod inclusive_language;
+pub use inclusive_language::InclusiveLanguage;
