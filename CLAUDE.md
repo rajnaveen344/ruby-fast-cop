@@ -20,15 +20,53 @@ ruby-fast-cop = Rust port of RuboCop. Target 50-100x faster (like Ruff:Python).
 
 > **Architecture:** see [`ARCHITECTURE.md`](./ARCHITECTURE.md) for runtime shape, registration, autocorrect pipeline, testing pipeline. CLAUDE.md = conventions; ARCHITECTURE.md = structure. Update ARCHITECTURE.md only when runtime/registration/autocorrect/testing shape changes.
 
-## Deferred pending-by-default cops (0)
+## Current focus: autocorrect coverage
 
-All previously deferred cops cleared. `Style/ArgumentsForwarding` ported in `src/cops/style/arguments_forwarding.rs` (187/187 fixture tests green).
+All 606 cops implemented. **Active workstream = wiring `Correction` emission** so `cargo test --test tester` passes the strict-mode `corrected` block check for every fixture that has one.
+
+**Status:** 7,633 / 11,217 (68%) corrections wired. 3,584 expected corrections across 159 cops still unwired. Per-cop counts in `.correction_worklist.txt`. Per-dept totals in `COPS.md` summary.
+
+Tester is hard-flipped: any TOML `corrected` block with no matching `Correction` from the cop = test failure. No silent skips. See `tests/tester.rs` ~L420 for the gate.
+
+Wiring proceeds **cluster-by-cluster**. A cluster = cops that share a correction shape (e.g. "redundancy removers", "swap LHS/RHS", "delete keyword"). Two clusters landed:
+
+- **Cluster 1** (commit `6422490`) — 7 cops, +175 corrections. Yoda swap + simple replace.
+- **Cluster 2** (commit `2b69077`) — 9 cops, +257 corrections. Redundancy removers (RedundantBegin, RedundantFreeze, RedundantInterpolation, RedundantReturn, RedundantSort, RedundantSortBy, Lint/RedundantSafeNavigation, Lint/RedundantSplatExpansion, Lint/SafeNavigationChain).
+
+**Known deferred edge cases** (not blocking cluster commits):
+
+- `Style/RedundantBegin` — 9 mismatches: assignment-context comment/whitespace preservation.
+- `Lint/SafeNavigationChain` — 8 mismatches: paren-wrap inside binary operands; `[]`/`[]=` index-method rewrites.
+
+### What's next — candidate clusters
+
+Top unwired cops by failing-correction count (from `cargo test --test tester` strict mode):
+
+| Count | Cop                              | Likely cluster shape                                                   |
+| ----: | -------------------------------- | ---------------------------------------------------------------------- |
+|   919 | Style/ConditionalAssignment      | branch-rewrite (lift assignment out of if/case) — own cluster, hardest |
+|   209 | Style/AccessModifierDeclarations | move/group `private`/`protected` declarations                          |
+|   131 | Lint/LiteralAsCondition          | replace literal cond with `true`/`false` body                          |
+|    99 | Style/OneLineConditional         | one-line if → ternary                                                  |
+|    76 | Layout/FirstArgumentIndentation  | re-indent (whitespace-only edits)                                      |
+|    64 | Style/SoleNestedConditional      | merge nested `if` → `&&`/` \|\|`                                       |
+|    63 | Lint/UselessAssignment           | delete dead assignment                                                 |
+|    60 | Layout/HeredocIndentation        | re-indent heredoc body                                                 |
+|    59 | Style/IfUnlessModifier           | wrap/unwrap modifier-if                                                |
+|    56 | Layout/HashAlignment             | re-align hash keys (whitespace-only)                                   |
+
+**Next-cluster candidates** (group by correction shape, not dept):
+
+- **Cluster 3 — modifier-conditional rewrites**: `Style/IfUnlessModifier` (59) + `Style/Next` (49) + `Style/GuardClause` (48) + `Style/OneLineConditional` (99). All convert between block and modifier conditional forms.
+- **Cluster 4 — Layout whitespace re-aligners**: `Layout/FirstArgumentIndentation` (76) + `Layout/HashAlignment` (56) + `Layout/HeredocIndentation` (60) + `Layout/RescueEnsureAlignment` (50) + `Layout/FirstHashElementIndentation` (31) + `Layout/BlockAlignment` (36) + `Layout/SpaceInsideArrayLiteralBrackets` (46) + `Layout/SpaceInsideReferenceBrackets` (31). All edit whitespace runs only.
+- **Cluster 5 — dead-code removers**: `Lint/UselessAssignment` (63) + `Lint/LiteralAsCondition` (131). Delete or simplify based on liveness.
+- **Solo big lifts**: `Style/ConditionalAssignment` (919) and `Style/AccessModifierDeclarations` (209) — too custom for cluster delegation; hand-wire one cop at a time.
 
 ## Production-readiness gaps
 
 High cop count ≠ prod-ready. Gaps before drop-in RuboCop parity:
 
-1. **Autocorrect coverage** — ~24/395 cops emit `Correction`. Target ≥90%.
+1. **Autocorrect coverage** — 7,633 / 11,217 corrections wired (68%). 159 cops still partial/unwired. Target ≥90%. **(active workstream)**
 2. **CLI incomplete** — `--only`/`--except`, `-f json`/`-f emacs`, `--parallel` unchecked.
 3. **Config edges** — `inherit_from`, `inherit_gem`, glob `Include`/`Exclude`, brace-expand partial. Fuzz against Rails/Discourse/Shopify `.rubocop.yml`.
 4. **No real-world corpus** — 28k tests all from RuboCop specs. Run 3+ OSS codebases, diff vs RuboCop (target ±1% parity).
@@ -56,6 +94,7 @@ Candidates to trim verbosity. Revisit when touching adjacent code.
 ## Conventions
 
 ### Boilerplate
+
 - `node_name!(node)` macro (src/lib.rs) instead of `String::from_utf8_lossy(node.name().as_slice())`. Works on any Prism node with `.name().as_slice()`.
 - **No inline unit tests** in cop files. All testing via TOML fixtures. No `#[cfg(test)] mod tests`.
 - **`#[derive(Default)]`** when `new()` returns `Self` / all fields zero-default. Manual `impl Default` only when defaults differ.
@@ -111,13 +150,13 @@ let max_line = if config.is_cop_enabled("Layout/LineLength") {
 - **Prism** (`ruby-prism = "1.9.0"`). Ruby 3.4 default parser, error-tolerant, parses 2.5+. Location is byte-offset only — we compute line/col.
 - Other deps: `thiserror` (errors), `clap` (CLI), `serde` + `serde_yaml` (config), `toml` (fixtures), `rayon` (parallel).
 
-## Cop impl strategy
+## Cop / autocorrect impl strategy
 
-- **Translate from RuboCop source**, don't reinvent. Battle-tested edge cases.
+- **Translate from RuboCop source**, don't reinvent. Battle-tested edge cases — applies to autocorrect logic too: read RuboCop's `def autocorrect(corrector)` and translate `corrector.replace`/`insert_before`/`remove` calls to `Edit { start_offset, end_offset, replacement }`.
 - Fetch: `https://raw.githubusercontent.com/rubocop/rubocop/master/lib/rubocop/cop/{dept}/{name}.rb` + mixins.
 - 100-line Ruby cop → ~150-250 LOC Rust. Not 500+. Match RuboCop structure.
 - Shared mixin (e.g. VariableForce) → mirror file structure in `src/helpers/{mixin}/`. No monoliths.
-- **Never hardcode fixes to pass specific tests.** Understand RuboCop behavior first, implement generally.
+- **Never hardcode fixes to pass specific tests.** Understand RuboCop behavior first, implement generally. If a test wants a specific output, make the _general algorithm_ produce it — don't pattern-match on the test's source.
 
 ## Testing
 
@@ -150,6 +189,7 @@ EnforcedStyle = "exploded"
 ```
 
 ### Running
+
 ```bash
 cargo test --test tester       # all fixtures
 cargo run --bin fixture_stats  # fixture stats
@@ -158,16 +198,19 @@ cargo run --bin fixture_stats  # fixture stats
 ### Extracting from RuboCop
 
 Scripts in `.claude/skills/rubocop-test-importer/scripts/`:
+
 - `download_rubocop_specs.sh` — clones RuboCop → `/tmp/rubocop-repo` + bundle install
 - `test_data_capture.rb` — monkey-patches `RuboCop::RSpec::ExpectOffense` to capture resolved test data
 - `extract_via_rspec.rb` — runs specs, generates TOML
 
 Re-sync all:
+
 ```bash
 /rubocop-test-importer sync
 ```
 
 Single cop / dept:
+
 ```bash
 cd /tmp/rubocop-repo && bundle exec ruby \
   /Users/naveenraj/sources/devtools/ruby-fast-cop/.claude/skills/rubocop-test-importer/scripts/extract_via_rspec.rb \
@@ -191,102 +234,76 @@ Output = S-expression like `(call (call (local_variable_read)))`. Translate Rubo
 
 ## Workflows
 
-### Adding a cop
+### Autocorrect API
 
-1. Fetch RuboCop source (+ mixins, + VariableForce-style shared modules if referenced).
-2. Read `tests/fixtures/{dept}/{cop}.toml`. Spot-check vs RuboCop spec if suspicious: `curl -s "https://raw.githubusercontent.com/rubocop/rubocop/master/spec/rubocop/cop/{dept}/{cop}_spec.rb"`.
-3. Create `src/cops/{dept}/{cop}.rs`. Implement `Cop` trait — translate, don't reinvent.
-4. Add `mod` + `pub use` in `src/cops/{dept}/mod.rs`.
-5. Append `register_cop!` at bottom of cop file. **Only** registration step.
-6. Set `implemented = true` in TOML.
-7. `cargo test --test tester`. If fails, compare with spec, fix impl (not test).
-8. Run `/cop-review` — compares vs Ruby source, flags complexity. Fix before moving on.
-9. **MANDATORY same-commit doc sync** — never skip, never defer:
-   - **COPS.md row**: flip the cop's `Status` column from `-` → `Implemented` (grep for the cop name to find the row).
-   - **COPS.md summary table**: increment dept's pending/disabled counter, add cop's test count to dept tests-impl, update Total row, update line 4 prose `N of 606 implemented` and line 6 `Pending-default progress`.
-   - **CLAUDE.md state line** (line 19): bump `XXX/606 cops` and `NN/156 pending-by-default`.
-   - **README.md**: impl table.
-   - ARCHITECTURE.md only if runtime shape changed.
-   - **Verify before committing**: re-grep COPS.md for the cop name — must show `Implemented`. Sum dept rows must equal Total row.
-
-Example cop:
 ```rust
-use crate::cops::{Cop, CheckContext, Offense, Severity};
-use crate::node_name;
+use crate::offense::{Correction, Edit};
 
-#[derive(Default)]
-pub struct Debugger;
+// Single edit (most common)
+offense.with_correction(Correction::replace(start, end, "new text".into()))
+offense.with_correction(Correction::insert(offset, "text".into()))
+offense.with_correction(Correction::delete(start, end))
 
-impl Debugger {
-    pub fn new() -> Self { Self }
-}
-
-impl Cop for Debugger {
-    fn name(&self) -> &'static str { "Lint/Debugger" }
-
-    fn check_call(&self, node: &ruby_prism::CallNode, ctx: &CheckContext) -> Vec<Offense> {
-        let _method = node_name!(node);
-        vec![]
-    }
-}
-
-crate::register_cop!("Lint/Debugger", |_cfg| Some(Box::new(Debugger::new())));
+// Multi-edit (e.g. rewrite operator + swap operands)
+let correction = Correction { edits: vec![
+    Edit { start_offset: a, end_offset: b, replacement: "x".into() },
+    Edit { start_offset: c, end_offset: d, replacement: "y".into() },
+]};
+offense.with_correction(correction)
 ```
 
-### Implementing many cops — mixin-cluster strategy
+Applier (`src/correction.rs`) sorts edits, walks forward, skips overlaps. No re-parse. Strict tester compares `apply_corrections(source, offenses)` against the TOML `corrected` block.
+
+### Wiring autocorrect for one cop
+
+1. `cargo test --test tester 2>&1 | grep -B1 -A6 "{Cop/Name}.*\(emitted no Correction\|Correction mismatch\)"` — pull every failing case.
+2. Open `tests/fixtures/{dept}/{cop}.toml` — read `source` + `corrected` blocks. The diff = the rewrite to produce.
+3. Cross-reference RuboCop's `def autocorrect(corrector)` in `https://raw.githubusercontent.com/rubocop/rubocop/master/lib/rubocop/cop/{dept}/{name}.rb`. Translate corrector calls → `Edit { start_offset, end_offset, replacement }`.
+4. Add `with_correction(...)` at offense-creation site in the cop. Use `node.location()`, `call_operator_loc()`, `message_loc()`, `keyword_loc()` for byte offsets — most return `Location`, some return `Option<Location>` (see Prism gotchas above).
+5. `cargo test --test tester` — verify zero new mismatches; the cop's "emitted no Correction" / "Correction mismatch" lines should drop to 0 (or to a documented edge-case set).
+6. Update `COPS.md` summary line 8 + dept row + Total row. Numbers come from `cargo test --test tester 2>&1 | grep "Corrections validated"`.
+
+### Cluster-wiring strategy (multiple cops with the same correction shape)
 
 When asked "what's next":
 
-1. **Find candidates**: TOML `implemented = false`, cross-checked vs COPS.md's "Enabled by Default" per-dept `### Enabled by Default` subsections (H3, not H2 — naive regex bleeds into Pending/Disabled).
-
-   ```python
-   python3 << 'PYEOF'
-   import re, glob, os
-   with open('COPS.md') as f: cops_md = f.read()
-   sections = re.findall(r'### Enabled by Default.*?\n(.*?)(?=^##+ |\Z)', cops_md, re.DOTALL | re.MULTILINE)
-   enabled = set()
-   for sec in sections:
-       enabled.update(re.findall(r'\b([A-Z][a-zA-Z]+/[A-Z][a-zA-Z0-9]+)\b', sec))
-   # sanity: ~396 cops across 9 depts for v1.85.0
-   candidates = []
-   for f in glob.glob('tests/fixtures/**/*.toml', recursive=True):
-       c = open(f).read()
-       m = re.search(r'cop = "(.+?)"', c)
-       if not m or m.group(1) not in enabled or 'implemented = true' in c: continue
-       cop = m.group(1)
-       dept = cop.split('/')[0].lower()
-       name = re.sub(r'(?<!^)(?=[A-Z])', '_', cop.split('/')[1]).lower()
-       if os.path.exists(f'src/cops/{dept}/{name}.rs'):
-           print(f'WARN: {cop} has .rs but TOML false'); continue
-       candidates.append((len(re.findall(r'\[\[tests\]\]', c)), cop))
-   candidates.sort(reverse=True)
-   for t, n in candidates[:30]: print(f'{t:>5}  {n}')
-   PYEOF
+1. **Find candidates** — `cargo test --test tester 2>&1 | grep -oE '\[\w+/\w+\] \w+: TOML expects correction but cop emitted no Correction' | sort | uniq -c | sort -rn | head -30`. Top of list = highest-impact cops.
+2. **Group by correction shape** — read each cop's TOML `corrected` blocks. Cops doing the same rewrite (delete keyword, swap operands, unwrap, insert prefix) → one cluster. Mixin sharing is a hint but **not** the criterion — what matters is the correction pattern, not the offense detection.
+3. **Pick a template cop** — usually the simplest member. Wire it by hand. Reference templates already in tree:
+   - `src/cops/style/even_odd.rs` — single `Correction::replace` over offense range.
+   - `src/cops/style/yoda_condition.rs` — multi-edit swap with optional operator flip; demonstrates `Option<Location>` handling on `message_loc()`.
+   - `src/cops/style/not.rs` — branching correction (flip / paren-wrap / paren-preserve / simple).
+   - `src/cops/style/redundant_freeze.rs` — delete trailing call.
+   - `src/cops/style/redundant_begin.rs` — multi-line unwrap with comment preservation.
+4. **Delegate the tail to a Sonnet subagent** for mechanical members:
    ```
-
-2. **Cluster by shared mixin** — fetch Ruby source, check `include`. Cops sharing a mixin (SurroundingSpace, EndKeywordAlignment, PrecedingFollowingAlignment) → one cluster.
-3. **One subagent per cluster** — builds shared helper first, then cluster cops.
-4. **Reference existing similar cop** when briefing — e.g. `src/cops/style/redundant_freeze.rs` (simple check_call), `src/cops/lint/redundant_safe_navigation.rs` (visitor + scope).
-5. **Assess difficulty** Easy/Medium/Hard — Ruby LOC + mixin LOC + config + AST surface.
-6. **Launch with worktree isolation:**
+   Agent(subagent_type="general-purpose", model="sonnet",
+         isolation="worktree", run_in_background=true, mode="bypassPermissions")
    ```
-   Agent(subagent_type="general-purpose", isolation="worktree", run_in_background=true, mode="bypassPermissions")
-   ```
-7. **Surgical merge** after agent completes:
-   - Copy new `.rs` + TOMLs from worktree
-   - Manually add `mod` + `pub use` in dept `mod.rs`
-   - Verify `register_cop!` in each cop file (add if agent used old-style match arms)
-   - **Do NOT cherry-pick** agent's lib.rs/cops/mod.rs edits — agent may have branched from stale main using the old match-arm registration style. Only the register_cop! macro is canonical.
-   - `cargo test --test tester` must be 100% green
-   - `rm -rf .claude/worktrees/` + `git worktree prune` + delete branches
-8. Commit: `feat({dept}): implement N {cluster} cops (cluster)`.
+   Brief with: template file path, the cluster's TOML diffs, autocorrect API, **strict no-regression rule** (zero mismatches; revert anything causing regressions). Tell agent to run `cargo test --test tester` and report final mismatch count.
+5. **Surgical merge** — agents may branch from stale main:
+   - `git log --oneline {worktree-base}..main -- {cluster-files}` — confirm main hasn't moved on the same files. If clean, `cp` files over.
+   - **Do NOT cherry-pick** agent's `lib.rs`/`cops/mod.rs`/`COPS.md` edits — those reflect stale state. Re-derive doc updates from current `cargo test` output.
+   - `cargo test --test tester` must show fewer total errors and zero new failures.
+   - `git worktree remove -f -f .claude/worktrees/{name}` + `git worktree prune` + `git branch -D {branch}`.
+6. **Document deferred edge cases** in commit body — partial wiring is fine if 80%+ of the cluster's expected corrections land. Track residual mismatches in this CLAUDE.md "Current focus" section.
+7. Commit: `feat(autocorrect): wire cluster N {pattern} corrections (M cops)`.
 
-### Fixing a partial cop
+### Mandatory doc sync on every autocorrect commit
+
+- **`COPS.md` line 8** — `Autocorrect progress: X / 11,217 (Y%)` and unwired-cop count.
+- **`COPS.md` Summary table** — bump dept rows + Total row.
+- Numbers source: `cargo test --test tester 2>&1 | grep "Corrections validated"` for total wired; per-dept failure delta for per-row counts. Total wired = 11,217 − (sum of correction failures across depts).
+- This CLAUDE.md "Current focus" section — bump cluster log + total wired.
+- ARCHITECTURE.md only if applier shape changed.
+
+### Investigating a single failing correction
 
 ```bash
-cargo test --test tester 2>&1 | grep "Failures in.*{cop}"
+cargo test --test tester 2>&1 | grep -B1 -A8 "Failures in.*{cop}.toml"
 ```
-Read failing tests → compare RuboCop spec → fix impl (or update TOML if extractor bug) → re-run.
+
+Read failing test's `corrected` block in TOML → compute byte-offset diff → adjust `Edit` ranges or replacement text → re-run.
 
 ### Re-syncing fixtures (new RuboCop release)
 
