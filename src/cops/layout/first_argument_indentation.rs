@@ -1,5 +1,5 @@
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::Visit;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -136,13 +136,16 @@ impl<'a> Visitor<'a> {
         let first_arg_end = self.end_of_first_line(first_arg_start, first_arg_end_raw);
         let location =
             crate::offense::Location::from_offsets(self.ctx.source, first_arg_start, first_arg_end);
+        // Correction: replace leading whitespace on first arg's line with expected indent
+        let ws_start = self.ctx.line_start(first_arg_start);
+        let correction = Correction::replace(ws_start, first_arg_start, " ".repeat(expected));
         self.offenses.push(Offense::new(
             "Layout/FirstArgumentIndentation",
             message,
             Severity::Convention,
             location,
             self.ctx.filename,
-        ));
+        ).with_correction(correction));
     }
 
     fn special_inner_call_indentation(
@@ -512,6 +515,10 @@ crate::register_cop!("Layout/FirstArgumentIndentation", |cfg| {
     let width = cfg.get_cop_config("Layout/FirstArgumentIndentation")
         .and_then(|c| c.raw.get("IndentationWidth"))
         .and_then(|v| v.as_i64())
-        .map(|v| v as usize);
+        .map(|v| v as usize)
+        .or_else(|| cfg.get_cop_config("Layout/IndentationWidth")
+            .and_then(|c| c.raw.get("Width"))
+            .and_then(|v| v.as_i64())
+            .map(|v| v as usize));
     Some(Box::new(FirstArgumentIndentation::new(style, width)))
 });
