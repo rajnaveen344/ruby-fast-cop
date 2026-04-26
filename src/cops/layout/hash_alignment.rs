@@ -3,7 +3,7 @@
 //! Translated from RuboCop's Layout/HashAlignment cop + HashAlignmentStyles mixin.
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::{Node, Visit};
 use std::collections::HashMap;
 
@@ -120,6 +120,8 @@ struct HashAlignmentVisitor<'a> {
 struct PairInfo {
     node_start: usize,
     node_end: usize,
+    /// Byte offset of key end (for computing separator ws range)
+    key_end_offset: usize,
     key_col: usize,
     /// RuboCop-compatible key length (excludes trailing colon for symbol keys)
     key_len: usize,
@@ -127,7 +129,13 @@ struct PairInfo {
     is_kwsplat: bool,
     operator_col: Option<usize>,
     operator_end_col: Option<usize>,
+    /// Byte offset of operator start (for rocket ws editing)
+    operator_start_offset: Option<usize>,
+    /// Byte offset of operator end (for value ws editing)
+    operator_end_offset: Option<usize>,
     value_col: Option<usize>,
+    /// Byte offset of value start
+    value_start_offset: Option<usize>,
     value_on_new_line: bool,
     value_omission: bool,
     begins_line: bool,
@@ -219,18 +227,22 @@ impl<'a> HashAlignmentVisitor<'a> {
                 let prism_key_len = key_end - key_start;
                 let key_len = if is_rocket { prism_key_len } else { prism_key_len.saturating_sub(1) };
 
-                let (operator_col, operator_end_col) = if let Some(op_loc) = assoc.operator_loc() {
-                    (
-                        Some(self.ctx.col_of(op_loc.start_offset())),
-                        Some(self.ctx.col_of(op_loc.end_offset())),
-                    )
-                } else {
-                    // Colon style: colon is at key_end - 1
-                    let colon_col = self.ctx.col_of(key_end - 1);
-                    (Some(colon_col), Some(colon_col + 1))
-                };
+                let (operator_col, operator_end_col, operator_start_offset, operator_end_offset) =
+                    if let Some(op_loc) = assoc.operator_loc() {
+                        (
+                            Some(self.ctx.col_of(op_loc.start_offset())),
+                            Some(self.ctx.col_of(op_loc.end_offset())),
+                            Some(op_loc.start_offset()),
+                            Some(op_loc.end_offset()),
+                        )
+                    } else {
+                        // Colon style: colon is at key_end - 1
+                        let colon_col = self.ctx.col_of(key_end - 1);
+                        (Some(colon_col), Some(colon_col + 1), None, None)
+                    };
 
                 let value_col = if value_omission { None } else { Some(self.ctx.col_of(value_start)) };
+                let value_start_offset = if value_omission { None } else { Some(value_start) };
                 let value_on_new_line = !value_omission
                     && self.ctx.line_of(key_start) != self.ctx.line_of(value_start);
 
@@ -240,8 +252,11 @@ impl<'a> HashAlignmentVisitor<'a> {
                     .min(node_end);
 
                 infos.push(PairInfo {
-                    node_start: key_start, node_end, key_col, key_len, is_rocket,
-                    is_kwsplat: false, operator_col, operator_end_col, value_col,
+                    node_start: key_start, node_end, key_end_offset: key_end,
+                    key_col, key_len, is_rocket,
+                    is_kwsplat: false, operator_col, operator_end_col,
+                    operator_start_offset, operator_end_offset,
+                    value_col, value_start_offset,
                     value_on_new_line, value_omission,
                     begins_line: self.ctx.begins_its_line(key_start),
                     first_line_end,
@@ -250,10 +265,12 @@ impl<'a> HashAlignmentVisitor<'a> {
                 let start = splat.location().start_offset();
                 let end = splat.location().end_offset();
                 infos.push(PairInfo {
-                    node_start: start, node_end: end,
+                    node_start: start, node_end: end, key_end_offset: end,
                     key_col: self.ctx.col_of(start), key_len: 0,
                     is_rocket: false, is_kwsplat: true,
-                    operator_col: None, operator_end_col: None, value_col: None,
+                    operator_col: None, operator_end_col: None,
+                    operator_start_offset: None, operator_end_offset: None,
+                    value_col: None, value_start_offset: None,
                     value_on_new_line: false, value_omission: false,
                     begins_line: self.ctx.begins_its_line(start),
                     first_line_end: end,
@@ -262,10 +279,12 @@ impl<'a> HashAlignmentVisitor<'a> {
                 let start = elem.location().start_offset();
                 let end = elem.location().end_offset();
                 infos.push(PairInfo {
-                    node_start: start, node_end: end,
+                    node_start: start, node_end: end, key_end_offset: end,
                     key_col: self.ctx.col_of(start), key_len: 0,
                     is_rocket: false, is_kwsplat: true,
-                    operator_col: None, operator_end_col: None, value_col: None,
+                    operator_col: None, operator_end_col: None,
+                    operator_start_offset: None, operator_end_offset: None,
+                    value_col: None, value_start_offset: None,
                     value_on_new_line: false, value_omission: false,
                     begins_line: self.ctx.begins_its_line(start),
                     first_line_end: end,
@@ -313,7 +332,7 @@ impl<'a> HashAlignmentVisitor<'a> {
             let delta = self.first_pair_deltas(first_pair, style, max_key_width, max_delimiter_width);
             if !all_zero(&delta) {
                 offenses_by.entry(style).or_default().push(
-                    self.make_offense(message_for(style), first_pair),
+                    self.make_offense_with_deltas(message_for(style), first_pair, first_pair, style, 0, max_key_width, max_delimiter_width),
                 );
             }
         }
@@ -327,7 +346,9 @@ impl<'a> HashAlignmentVisitor<'a> {
                 if pair.begins_line {
                     let delta = first_pair.key_col as i64 - pair.key_col as i64;
                     if delta != 0 {
-                        kwsplat_offenses.push(self.make_offense(MSG_KWSPLAT, pair));
+                        kwsplat_offenses.push(
+                            self.make_offense_corrected(MSG_KWSPLAT, pair, first_pair.key_col),
+                        );
                     }
                 }
                 continue;
@@ -335,8 +356,9 @@ impl<'a> HashAlignmentVisitor<'a> {
             for &style in styles_for(pair) {
                 let delta = self.pair_deltas(first_pair, pair, style, max_key_width, max_delimiter_width);
                 if !all_zero(&delta) {
+                    let key_delta = delta.key;
                     offenses_by.entry(style).or_default().push(
-                        self.make_offense(message_for(style), pair),
+                        self.make_offense_with_deltas(message_for(style), pair, first_pair, style, key_delta, max_key_width, max_delimiter_width),
                     );
                 }
             }
@@ -381,6 +403,146 @@ impl<'a> HashAlignmentVisitor<'a> {
             "Layout/HashAlignment", msg, Severity::Convention,
             pair.node_start, pair.first_line_end,
         )
+    }
+
+    /// Build correction edits for a pair.
+    /// `first_pair` = the reference pair for alignment.
+    /// `style` = the chosen alignment style.
+    /// Edits in descending offset order.
+    fn build_pair_correction(
+        &self,
+        pair: &PairInfo,
+        first_pair: &PairInfo,
+        style: AlignmentStyle,
+        key_delta: i64,
+        max_key_width: usize,
+        max_delimiter_width: usize,
+    ) -> Option<Correction> {
+        let mut edits: Vec<crate::offense::Edit> = Vec::new();
+
+        // 1. Key indent edit
+        if key_delta != 0 && pair.begins_line {
+            let line_start = self.ctx.line_start(pair.node_start);
+            let new_col = (pair.key_col as i64 + key_delta).max(0) as usize;
+            edits.push(crate::offense::Edit {
+                start_offset: line_start,
+                end_offset: pair.node_start,
+                replacement: " ".repeat(new_col),
+            });
+        }
+
+        // 2. Separator gap edit (rocket pairs only)
+        if pair.is_rocket {
+            if let Some(op_start) = pair.operator_start_offset {
+                let key_end = pair.key_end_offset;
+                let current_gap = (op_start - key_end) as i64;
+                // After key moves, new_key_end_col = key_col + key_delta + key_len
+                let new_key_end_col = pair.key_col as i64 + key_delta + pair.key_len as i64;
+                let new_op_col = match style {
+                    AlignmentStyle::Key => {
+                        // 1 space between key and `=>`
+                        new_key_end_col + 1
+                    }
+                    AlignmentStyle::Table => {
+                        // separator at first_key_col + max_key_width + 1
+                        first_pair.key_col as i64 + max_key_width as i64 + 1
+                    }
+                    AlignmentStyle::Separator => {
+                        // separator aligns to first pair's separator column
+                        first_pair.operator_col.unwrap_or(0) as i64
+                    }
+                };
+                let new_gap = (new_op_col - new_key_end_col).max(1);
+                if new_gap != current_gap {
+                    edits.push(crate::offense::Edit {
+                        start_offset: key_end,
+                        end_offset: op_start,
+                        replacement: " ".repeat(new_gap as usize),
+                    });
+                }
+            }
+        }
+
+        // 3. Value gap edit (same-line values only)
+        if !pair.value_on_new_line && !pair.value_omission {
+            let (after_op_off, after_op_col_fn): (Option<usize>, Box<dyn Fn() -> i64>) =
+                if pair.is_rocket {
+                    // new after_op col = new_op_start_col + op_len(2)
+                    let new_key_end_col = pair.key_col as i64 + key_delta + pair.key_len as i64;
+                    let new_op_start = match style {
+                        AlignmentStyle::Key => new_key_end_col + 1,
+                        AlignmentStyle::Table => {
+                            // Same formula as step 2: op at first_key_col + max_key_width + 1
+                            first_pair.key_col as i64 + max_key_width as i64 + 1
+                        }
+                        AlignmentStyle::Separator => first_pair.operator_col.unwrap_or(0) as i64,
+                    };
+                    let new_after_op = new_op_start + 2; // `=>` is 2 chars
+                    (pair.operator_end_offset, Box::new(move || new_after_op))
+                } else {
+                    // Colon pair: after_op = key_end (colon is part of key)
+                    // new after_op col = key_col + key_delta + prism_key_len_including_colon
+                    // key_end_offset is after the colon. key_len = prism_key_len - 1 (colon excluded).
+                    // So prism_key_len_including_colon = key_len + 1.
+                    let new_after_op = pair.key_col as i64 + key_delta + pair.key_len as i64 + 1;
+                    (Some(pair.key_end_offset), Box::new(move || new_after_op))
+                };
+
+            if let (Some(after_op), Some(val_start)) = (after_op_off, pair.value_start_offset) {
+                if after_op <= val_start {
+                    let current_gap = (val_start - after_op) as i64;
+                    let new_after_op = after_op_col_fn();
+                    let new_val_col = match style {
+                        AlignmentStyle::Key => {
+                            // 1 space after separator
+                            new_after_op + 1
+                        }
+                        AlignmentStyle::Table => {
+                            // value at first_key_col + max_key_width + max_delimiter_width
+                            first_pair.key_col as i64 + max_key_width as i64 + max_delimiter_width as i64
+                        }
+                        AlignmentStyle::Separator => {
+                            // value aligns to first pair's value column
+                            first_pair.value_col.unwrap_or(0) as i64
+                        }
+                    };
+                    let new_gap = (new_val_col - new_after_op).max(1);
+                    if new_gap != current_gap {
+                        edits.push(crate::offense::Edit {
+                            start_offset: after_op,
+                            end_offset: val_start,
+                            replacement: " ".repeat(new_gap as usize),
+                        });
+                    }
+                }
+            }
+        }
+
+        if edits.is_empty() { return None; }
+        edits.sort_by(|a, b| b.start_offset.cmp(&a.start_offset));
+        Some(Correction { edits })
+    }
+
+    /// Make offense with correction using precomputed deltas.
+    fn make_offense_with_deltas(
+        &self, msg: &str, pair: &PairInfo, first_pair: &PairInfo,
+        style: AlignmentStyle, key_delta: i64,
+        max_key_width: usize, max_delimiter_width: usize,
+    ) -> Offense {
+        let offense = self.make_offense(msg, pair);
+        match self.build_pair_correction(pair, first_pair, style, key_delta, max_key_width, max_delimiter_width) {
+            Some(c) => offense.with_correction(c),
+            None => offense,
+        }
+    }
+
+    /// Make offense with correction for kwsplat (key indent only).
+    fn make_offense_corrected(&self, msg: &str, pair: &PairInfo, expected_col: usize) -> Offense {
+        let offense = self.make_offense(msg, pair);
+        if !pair.begins_line { return offense; }
+        let line_start = self.ctx.line_start(pair.node_start);
+        let correction = Correction::replace(line_start, pair.node_start, " ".repeat(expected_col));
+        offense.with_correction(correction)
     }
 
     // ── Delta computation ──

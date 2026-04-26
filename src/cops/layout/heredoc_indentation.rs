@@ -5,7 +5,7 @@
 //! Ported from: https://github.com/rubocop/rubocop/blob/master/lib/rubocop/cop/layout/heredoc_indentation.rb
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Edit, Offense, Severity};
 use regex::Regex;
 
 pub struct HeredocIndentation {
@@ -201,13 +201,96 @@ impl HeredocIndentation {
 
             let msg = self.message(indent_type);
             let offense_end = Self::first_content_line_end(source, body_start, body_end);
-            offenses.push(ctx.offense_with_range(
+
+            // Closing delimiter: starts at body_end
+            let closing_line_start = body_end;
+            let closing_line_ws = source[closing_line_start..]
+                .bytes()
+                .take_while(|&b| b == b' ')
+                .count();
+
+            // Build re-indent edits for body lines (delta-based, preserves relative indentation)
+            let body_re_indent_edits = |expected: usize| -> Vec<Edit> {
+                let delta = expected as i64 - body_indent_level as i64;
+                if delta == 0 {
+                    return Vec::new();
+                }
+                let mut edits: Vec<Edit> = Vec::new();
+                let mut pos = body_start;
+                let body_text = &source[body_start..body_end];
+                for line in body_text.split_inclusive('\n') {
+                    let line_start = pos;
+                    let line_len = line.len();
+                    let actual_ws = line.bytes().take_while(|&b| b == b' ').count();
+                    let content = &line[actual_ws..];
+                    let content_trimmed = content.trim_end_matches('\n').trim_end_matches('\r');
+                    if !content_trimmed.is_empty() {
+                        let new_ws = (actual_ws as i64 + delta).max(0) as usize;
+                        if new_ws != actual_ws {
+                            edits.push(Edit {
+                                start_offset: line_start,
+                                end_offset: line_start + actual_ws,
+                                replacement: " ".repeat(new_ws),
+                            });
+                        }
+                    }
+                    pos += line_len;
+                }
+                edits
+            };
+
+            // Closing delimiter indent edit (<<~ requires closing to be at base_indent)
+            let closing_indent_edit = |target_col: usize| -> Option<Edit> {
+                if closing_line_ws != target_col {
+                    Some(Edit {
+                        start_offset: closing_line_start,
+                        end_offset: closing_line_start + closing_line_ws,
+                        replacement: " ".repeat(target_col),
+                    })
+                } else {
+                    None
+                }
+            };
+
+            let correction = if indent_type == Some('~') {
+                let expected = base_indent + self.indentation_width;
+                let mut edits = body_re_indent_edits(expected);
+                if let Some(e) = closing_indent_edit(base_indent) {
+                    edits.push(e);
+                }
+                if edits.is_empty() { None } else { Some(Correction { edits }) }
+            } else {
+                // Non-squiggly: convert opening marker to <<~ and re-indent body + closing.
+                // Edit 1: replace <<- or << with <<~
+                let marker_end = if indent_type == Some('-') {
+                    opening_start + 3 // <<-
+                } else {
+                    opening_start + 2 // <<
+                };
+                let expected = base_indent + self.indentation_width;
+                let mut edits = vec![Edit {
+                    start_offset: opening_start,
+                    end_offset: marker_end,
+                    replacement: "<<~".to_string(),
+                }];
+                edits.extend(body_re_indent_edits(expected));
+                if let Some(e) = closing_indent_edit(base_indent) {
+                    edits.push(e);
+                }
+                Some(Correction { edits })
+            };
+
+            let mut offense = ctx.offense_with_range(
                 self.name(),
                 &msg,
                 Severity::Convention,
                 body_start,
                 offense_end,
-            ));
+            );
+            if let Some(c) = correction {
+                offense = offense.with_correction(c);
+            }
+            offenses.push(offense);
         }
 
         offenses

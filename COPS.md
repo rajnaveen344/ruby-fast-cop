@@ -5,7 +5,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 
 **Pending-default progress: 156 / 156 (100%)**. **Disabled-default progress: 54 / 54 (100%)**.
 
-**Autocorrect progress: 7,710 / 11,217 (69%)** — 3,507 expected corrections across 157 cops still unwired. See [`.correction_worklist.txt`](.correction_worklist.txt) for per-cop counts.
+**Autocorrect progress: 7,998 / 11,217 (71%)** — 3,219 expected corrections across ~155 cops still unwired. See [`.correction_worklist.txt`](.correction_worklist.txt) for per-cop counts.
 
 ## Summary
 
@@ -15,14 +15,14 @@ Cop-count cells show `implemented / total`. Autocorrect column shows `wired / ex
 | ---------- | ----------: | ----------: | --------: | ----------------: | -----------------------: |
 | Style      |     175/175 |       91/91 |     32/32 |   14,566 / 14,566 |      4,820 / 7,318 (66%) |
 | Lint       |     100/100 |       50/50 |       4/4 |     5,961 / 5,961 |      1,602 / 1,908 (84%) |
-| Layout     |       81/81 |         5/5 |     14/14 |     4,646 / 4,646 |      1,202 / 1,851 (65%) |
+| Layout     |       81/81 |         5/5 |     14/14 |     4,646 / 4,646 |      1,490 / 1,851 (80%) |
 | Metrics    |         9/9 |         1/1 |       0/0 |         272 / 272 |         n/a (0 expected) |
 | Naming     |       16/16 |         2/2 |       1/1 |     2,216 / 2,216 |            41 / 86 (47%) |
 | Gemspec    |         4/4 |         5/5 |       1/1 |         193 / 193 |           24 / 24 (100%) |
 | Bundler    |         5/5 |         0/0 |       2/2 |         101 / 101 |             8 / 12 (66%) |
 | Security   |         5/5 |         2/2 |       0/0 |         102 / 102 |            12 / 17 (70%) |
 | Migration  |         1/1 |         0/0 |       0/0 |             8 / 8 |             1 / 1 (100%) |
-| **Total**  | **396/396** | **156/156** | **54/54** | **28,065/28,065** | **7,710 / 11,217 (69%)** |
+| **Total**  | **396/396** | **156/156** | **54/54** | **28,065/28,065** | **7,998 / 11,217 (71%)** |
 
 - **Enabled**: Runs by default on every codebase (highest priority to implement)
 - **Pending**: Runs only with `NewCops: enable` in config

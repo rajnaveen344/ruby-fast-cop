@@ -1,7 +1,7 @@
 //! Layout/BlockAlignment — alignment of `end` / `}` of do/end + brace blocks.
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::Visit;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -259,6 +259,20 @@ impl<'a> BlockVisitor<'a> {
             }
         };
 
+        // Correction: replace leading whitespace of `end`/`}` line with target column.
+        // For Either style: prefer do_col when start_col != do_col (mirrors RuboCop's
+        // AlignmentCorrector which aligns to start_of_line = do_col in those cases).
+        // For Either style when same_target: use start_col (= do_col).
+        let target_col = match self.style {
+            BlockAlignmentStyle::StartOfBlock => do_col,
+            BlockAlignmentStyle::StartOfLine => start_col,
+            BlockAlignmentStyle::Either => {
+                if same_target { start_col } else { do_col }
+            }
+        };
+        let line_start = self.ctx.line_start(end_off);
+        let correction = Correction::replace(line_start, end_off, " ".repeat(target_col));
+
         let location = crate::offense::Location::from_offsets(self.ctx.source, end_off, end_end);
         self.offenses.push(Offense::new(
             "Layout/BlockAlignment",
@@ -266,7 +280,7 @@ impl<'a> BlockVisitor<'a> {
             Severity::Convention,
             location,
             self.ctx.filename,
-        ));
+        ).with_correction(correction));
     }
 }
 

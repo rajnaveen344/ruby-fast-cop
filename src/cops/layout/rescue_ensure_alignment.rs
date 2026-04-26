@@ -1,5 +1,5 @@
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::Visit;
 
 /// Tracks the alignment context for rescue/ensure keywords.
@@ -95,13 +95,16 @@ impl<'a> RescueEnsureVisitor<'a> {
 
         let location =
             crate::offense::Location::from_offsets(self.ctx.source, kw_offset, kw_end_offset);
+        // Correction: replace leading whitespace on keyword's line with correct indent
+        let line_start = self.ctx.line_start(kw_offset);
+        let correction = Correction::replace(line_start, kw_offset, " ".repeat(align.col));
         self.offenses.push(Offense::new(
             "Layout/RescueEnsureAlignment",
             message,
             Severity::Convention,
             location,
             self.ctx.filename,
-        ));
+        ).with_correction(correction));
     }
 
     /// Build AlignInfo for a begin (kwbegin) node.
