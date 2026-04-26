@@ -8,7 +8,7 @@
 use crate::cops::{CheckContext, Cop};
 use crate::helpers::node_match as m;
 use crate::node_name;
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::Node;
 
 const MSG: &str = "Do not freeze immutable objects, as freezing them has no effect.";
@@ -262,7 +262,11 @@ impl Cop for RedundantFreeze {
 
         let start = receiver.location().start_offset();
         let end = node.location().end_offset();
-        vec![ctx.offense_with_range(self.name(), MSG, self.severity(), start, end)]
+        // Correction: delete `.freeze` (from end of receiver to end of call)
+        let recv_end = receiver.location().end_offset();
+        let correction = Correction::delete(recv_end, end);
+        vec![ctx.offense_with_range(self.name(), MSG, self.severity(), start, end)
+            .with_correction(correction)]
     }
 }
 

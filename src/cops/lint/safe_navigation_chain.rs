@@ -5,7 +5,7 @@
 
 use crate::cops::{CheckContext, Cop};
 use crate::node_name;
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::Node;
 use std::collections::HashSet;
 
@@ -132,6 +132,7 @@ impl Cop for SafeNavigationChain {
             cop: self,
             ctx,
             offenses: Vec::new(),
+            pending_outer_dots: Vec::new(),
         };
         use ruby_prism::Visit;
         visitor.visit_program_node(node);
@@ -143,6 +144,10 @@ struct SafeNavChainVisitor<'a> {
     cop: &'a SafeNavigationChain,
     ctx: &'a CheckContext<'a>,
     offenses: Vec<Offense>,
+    /// Dot offsets of outer plain-dot calls that chain after the innermost safe-nav call.
+    /// When we flag the innermost plain-dot call, we attach ALL of these as additional
+    /// correction edits so the single-pass correction converts the entire chain.
+    pending_outer_dots: Vec<usize>,
 }
 
 impl<'a> SafeNavChainVisitor<'a> {
@@ -150,24 +155,31 @@ impl<'a> SafeNavChainVisitor<'a> {
     fn check_send(&mut self, node: &ruby_prism::CallNode) {
         // This node must be a regular `.` call (not `&.`) or an operator call without dot
         if SafeNavigationChain::is_safe_nav(node, self.ctx.source) {
+            // Safe-nav call: reset pending chain (a new chain may start here)
+            self.pending_outer_dots.clear();
             return;
         }
 
         // Must have a receiver to be a chain
         let receiver = match node.receiver() {
             Some(r) => r,
-            None => return,
+            None => {
+                self.pending_outer_dots.clear();
+                return;
+            }
         };
 
         let method = node_name!(node);
 
         // Skip +@ and -@ (unary operators)
         if PLUS_MINUS_METHODS.contains(&method.as_ref()) {
+            self.pending_outer_dots.clear();
             return;
         }
 
         // Skip nil methods and allowed methods
         if self.cop.is_nil_method(&method) {
+            self.pending_outer_dots.clear();
             return;
         }
 
@@ -183,7 +195,25 @@ impl<'a> SafeNavChainVisitor<'a> {
             _ => self.check_block_receiver_has_safe_nav(&receiver),
         };
 
+        // Check if receiver chain (transitively) contains a safe-nav call.
+        // If so, this node is a continuation of a chain and its dot should also get `&`.
+        let recv_chain_has_safe_nav = if !recv_has_safe_nav {
+            SafeNavigationChain::node_has_safe_nav(&receiver, self.ctx.source)
+        } else {
+            false
+        };
+
+        if recv_chain_has_safe_nav {
+            // This node is an outer chain member (e.g., `.baz` in `x&.foo.bar.baz`).
+            // Accumulate its dot offset so the inner offense can include it in the correction.
+            if let Some(dot_loc) = node.call_operator_loc() {
+                self.pending_outer_dots.push(dot_loc.start_offset());
+            }
+            return;
+        }
+
         if !recv_has_safe_nav {
+            self.pending_outer_dots.clear();
             return;
         }
 
@@ -197,10 +227,48 @@ impl<'a> SafeNavChainVisitor<'a> {
         };
         let end = node.location().end_offset();
 
-        self.offenses.push(
-            self.ctx
-                .offense_with_range(self.cop.name(), MSG, self.cop.severity(), start, end),
-        );
+        // Build correction: insert `&` before this dot AND all accumulated outer dots
+        let mut correction_edits = vec![];
+        // Insert `&` before this dot
+        if let Some(dot_loc) = node.call_operator_loc() {
+            correction_edits.push(crate::offense::Edit {
+                start_offset: dot_loc.start_offset(),
+                end_offset: dot_loc.start_offset(),
+                replacement: "&".to_string(),
+            });
+        } else {
+            // Operator method (no dot): insert `&. ` after receiver to produce `recv&. op rhs`
+            let recv_end = receiver.location().end_offset();
+            correction_edits.push(crate::offense::Edit {
+                start_offset: recv_end,
+                end_offset: recv_end,
+                replacement: "&.".to_string(),
+            });
+        }
+        // Insert `&` before all outer chain dots (accumulated from outer calls visited first)
+        for &dot_start in &self.pending_outer_dots {
+            correction_edits.push(crate::offense::Edit {
+                start_offset: dot_start,
+                end_offset: dot_start,
+                replacement: "&".to_string(),
+            });
+        }
+        // Clear pending after use
+        self.pending_outer_dots.clear();
+
+        let correction = if correction_edits.is_empty() {
+            None
+        } else {
+            Some(Correction { edits: correction_edits })
+        };
+
+        let offense = self.ctx.offense_with_range(self.cop.name(), MSG, self.cop.severity(), start, end);
+        let offense = if let Some(c) = correction {
+            offense.with_correction(c)
+        } else {
+            offense
+        };
+        self.offenses.push(offense);
     }
 
     /// Check if a block-type receiver has safe navigation in its call.

@@ -4,7 +4,7 @@
 
 use crate::cops::{CheckContext, Cop};
 use crate::node_name;
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::{Node, Visit};
 
 const COP_NAME: &str = "Style/RedundantReturn";
@@ -166,7 +166,8 @@ impl<'a> RRVisitor<'a> {
     }
 
     fn check_return_node(&mut self, node: &ruby_prism::ReturnNode) {
-        let arg_count = node.arguments().map_or(0, |a| a.arguments().iter().count());
+        let args = node.arguments();
+        let arg_count = args.as_ref().map_or(0, |a| a.arguments().iter().count());
 
         if self.cop.allow_multiple_return_values && arg_count > 1 {
             return;
@@ -179,9 +180,84 @@ impl<'a> RRVisitor<'a> {
         };
 
         let kw = node.keyword_loc();
-        self.offenses.push(self.ctx.offense_with_range(
-            COP_NAME, &msg, Severity::Convention, kw.start_offset(), kw.end_offset(),
-        ));
+        let correction = self.build_correction(node, arg_count);
+        self.offenses.push(
+            self.ctx.offense_with_range(
+                COP_NAME, &msg, Severity::Convention, kw.start_offset(), kw.end_offset(),
+            ).with_correction(correction)
+        );
+    }
+
+    fn build_correction(&self, node: &ruby_prism::ReturnNode, arg_count: usize) -> Correction {
+        use ruby_prism::Node;
+        let kw = node.keyword_loc();
+
+        // Check for `return()` - empty parens treated as no-arg
+        let effective_arg_count = if arg_count == 1 {
+            if let Some(args) = node.arguments() {
+                let arg_nodes: Vec<_> = args.arguments().iter().collect();
+                if let Some(first) = arg_nodes.first() {
+                    if let Node::ParenthesesNode { .. } = first {
+                        let paren = first.as_parentheses_node().unwrap();
+                        if paren.body().is_none() { 0 } else { arg_count }
+                    } else {
+                        arg_count
+                    }
+                } else {
+                    arg_count
+                }
+            } else {
+                arg_count
+            }
+        } else {
+            arg_count
+        };
+
+        if effective_arg_count == 0 {
+            // `return` or `return()` with no args → `nil`
+            return Correction::replace(node.location().start_offset(), node.location().end_offset(), "nil");
+        }
+
+        let args = node.arguments().unwrap();
+        let arg_nodes: Vec<_> = args.arguments().iter().collect();
+
+        if arg_count > 1 {
+            let first = arg_nodes.first().unwrap();
+            let last = arg_nodes.last().unwrap();
+            let inner_src = &self.ctx.source[first.location().start_offset()..last.location().end_offset()];
+            // Check if all args are hash pairs (implicit hash) → wrap in {}
+            let all_assoc = arg_nodes.iter().all(|a| matches!(a, Node::AssocNode { .. }));
+            let replacement = if all_assoc {
+                format!("{{{}}}", inner_src)
+            } else {
+                format!("[{}]", inner_src)
+            };
+            return Correction::replace(node.location().start_offset(), node.location().end_offset(), replacement);
+        }
+
+        // Single arg: delete `return ` keyword + space after it
+        let kw_end = kw.end_offset();
+        let src_bytes = self.ctx.source.as_bytes();
+        let mut space_end = kw_end;
+        while space_end < src_bytes.len() && src_bytes[space_end] == b' ' {
+            space_end += 1;
+        }
+        // Check for splat: `return *something` → `something` (delete `return *`)
+        let first_arg = &arg_nodes[0];
+        if let Node::SplatNode { .. } = first_arg {
+            let splat = first_arg.as_splat_node().unwrap();
+            if let Some(inner) = splat.expression() {
+                let inner_src = &self.ctx.source[inner.location().start_offset()..inner.location().end_offset()];
+                return Correction::replace(node.location().start_offset(), node.location().end_offset(), inner_src);
+            }
+        }
+        // Check for implicit hash without braces: `return :a => 1, :b => 2` → `{:a => 1, :b => 2}`
+        if let Node::KeywordHashNode { .. } = first_arg {
+            let hash_src = &self.ctx.source[first_arg.location().start_offset()..first_arg.location().end_offset()];
+            let replacement = format!("{{{}}}", hash_src);
+            return Correction::replace(node.location().start_offset(), node.location().end_offset(), replacement);
+        }
+        Correction::delete(kw.start_offset(), space_end)
     }
 }
 

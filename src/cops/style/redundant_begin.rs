@@ -7,7 +7,7 @@
 //! Ported from: https://github.com/rubocop/rubocop/blob/master/lib/rubocop/cop/style/redundant_begin.rb
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Edit, Offense, Severity};
 use ruby_prism::{Node, Visit};
 
 const COP_NAME: &str = "Style/RedundantBegin";
@@ -61,6 +61,239 @@ impl<'a> RedundantBeginVisitor<'a> {
         ));
     }
 
+    fn register_offense_with_node(&mut self, begin_node: &ruby_prism::BeginNode, is_assignment: bool, is_endless_def: bool) {
+        let kw_loc = match begin_node.begin_keyword_loc() {
+            Some(l) => l,
+            None => return,
+        };
+        let begin_keyword_start = kw_loc.start_offset();
+        let begin_keyword_end = kw_loc.end_offset();
+
+        let correction = self.build_correction(begin_node, is_assignment, is_endless_def);
+
+        let offense = self.ctx.offense_with_range(
+            COP_NAME,
+            MSG,
+            Severity::Convention,
+            begin_keyword_start,
+            begin_keyword_end,
+        );
+        let offense = if let Some(c) = correction {
+            offense.with_correction(c)
+        } else {
+            offense
+        };
+        self.offenses.push(offense);
+    }
+
+    /// Build correction for a redundant begin block.
+    fn build_correction(&self, begin_node: &ruby_prism::BeginNode, is_assignment: bool, is_endless_def: bool) -> Option<Correction> {
+        let kw_loc = begin_node.begin_keyword_loc()?;
+        let end_kw_loc = begin_node.end_keyword_loc()?;
+
+        let source = self.ctx.source;
+
+        // Endless def: skip (requires `range_with_surrounding_space` which we don't port)
+        if is_endless_def {
+            return None;
+        }
+
+        // Check for modifier condition after `end` keyword:
+        // e.g. `begin ... end unless condition` or `begin foo end unless condition`
+        let after_end = &source[end_kw_loc.end_offset()..];
+        let trimmed_after_end = after_end.trim_start_matches(|c: char| c == ' ' || c == '\t');
+        let modifier_condition = if trimmed_after_end.starts_with("unless ")
+            || trimmed_after_end.starts_with("if ")
+            || trimmed_after_end.starts_with("while ")
+            || trimmed_after_end.starts_with("until ")
+        {
+            // Find the full condition text (to end of this "line" = end of begin node)
+            let cond_start = end_kw_loc.end_offset() + (after_end.len() - trimmed_after_end.len());
+            let cond_end = begin_node.location().end_offset();
+            // The condition starts with spaces then keyword, e.g. ` unless condition`
+            let spaces_count = after_end.len() - trimmed_after_end.len();
+            Some((cond_start - spaces_count, cond_end)) // start from after end_kw with spaces
+        } else {
+            None
+        };
+
+        if is_assignment {
+            return self.build_assignment_correction(begin_node, &kw_loc, &end_kw_loc, modifier_condition);
+        }
+
+        // Simple non-assignment: delete begin keyword, delete end keyword
+        // Also handle modifier condition if present
+        self.build_simple_correction(&kw_loc, &end_kw_loc, begin_node, modifier_condition)
+    }
+
+    /// Simple correction: delete `begin` keyword + delete `end` keyword.
+    /// Handles modifier conditions.
+    fn build_simple_correction(
+        &self,
+        kw_loc: &ruby_prism::Location,
+        end_kw_loc: &ruby_prism::Location,
+        begin_node: &ruby_prism::BeginNode,
+        modifier_condition: Option<(usize, usize)>,
+    ) -> Option<Correction> {
+        let source = self.ctx.source;
+
+        if let Some((cond_text_start, cond_end)) = modifier_condition {
+            // Modifier form: `begin\n  foo\nend unless condition`
+            // → delete begin keyword, insert ` unless condition` after first stmt, delete `\nend unless condition`
+            let first_child = self.first_statement(begin_node)?;
+            let first_child_end = first_child.location().end_offset();
+
+            // Condition text (e.g. ` unless condition`)
+            let cond_text = &source[cond_text_start..cond_end];
+
+            // Check if single-line (`begin foo end unless`) vs multiline
+            let begin_kw_end = kw_loc.end_offset();
+            let is_single_line = !source[begin_kw_end..first_child.location().start_offset()].contains('\n');
+
+            if is_single_line {
+                // Single-line: delete begin_kw; delete `end ` (end_kw + trailing space)
+                // `begin foo end unless condition` → ` foo  unless condition`
+                let end_kw_end_with_space = {
+                    let mut e = end_kw_loc.end_offset();
+                    let bytes = source.as_bytes();
+                    while e < source.len() && bytes[e] == b' ' { e += 1; }
+                    e
+                };
+                Some(Correction {
+                    edits: vec![
+                        Edit { start_offset: kw_loc.start_offset(), end_offset: kw_loc.end_offset(), replacement: String::new() },
+                        Edit { start_offset: end_kw_loc.start_offset(), end_offset: end_kw_end_with_space, replacement: String::new() },
+                    ],
+                })
+            } else {
+                // Multiline: delete begin_kw; replace `\nend modifier_cond` with ` modifier_cond` after first stmt
+                // `\nend unless condition` starts at first_child_end (the newline before `end`)
+                Some(Correction {
+                    edits: vec![
+                        Edit { start_offset: kw_loc.start_offset(), end_offset: kw_loc.end_offset(), replacement: String::new() },
+                        Edit { start_offset: first_child_end, end_offset: cond_end, replacement: format!("{}", cond_text) },
+                    ],
+                })
+            }
+        } else {
+            // Standard: delete begin keyword, delete end keyword
+            Some(Correction {
+                edits: vec![
+                    Edit { start_offset: kw_loc.start_offset(), end_offset: kw_loc.end_offset(), replacement: String::new() },
+                    Edit { start_offset: end_kw_loc.start_offset(), end_offset: end_kw_loc.end_offset(), replacement: String::new() },
+                ],
+            })
+        }
+    }
+
+    /// Assignment correction: `var ||= begin\n  expr\nend` → `var ||= expr`
+    fn build_assignment_correction(
+        &self,
+        begin_node: &ruby_prism::BeginNode,
+        kw_loc: &ruby_prism::Location,
+        end_kw_loc: &ruby_prism::Location,
+        modifier_condition: Option<(usize, usize)>,
+    ) -> Option<Correction> {
+        let source = self.ctx.source;
+        let first_child = self.first_statement(begin_node)?;
+
+        let first_child_src = &source[first_child.location().start_offset()..first_child.location().end_offset()];
+
+        // Check if first_child is modifier-if (IfNode with no if_keyword_loc or with modifier form)
+        let is_modifier_if = match &first_child {
+            Node::IfNode { .. } => {
+                let ifn = first_child.as_if_node().unwrap();
+                // Modifier-if has no end_keyword_loc
+                ifn.end_keyword_loc().is_none() && ifn.if_keyword_loc().is_some()
+            }
+            Node::UnlessNode { .. } => {
+                let unn = first_child.as_unless_node().unwrap();
+                unn.end_keyword_loc().is_none()
+            }
+            _ => false,
+        };
+
+        // Skip nested assignment-in-assignment case to avoid multi-pass mismatch
+        // Detect: first child is an assignment whose RHS is a begin node
+        if self.first_child_is_assignment_begin(&first_child) {
+            return None;
+        }
+
+        let replacement = if is_modifier_if {
+            format!("({})", first_child_src)
+        } else {
+            first_child_src.to_string()
+        };
+
+        // Check for comments between begin keyword and first child
+        let between_begin_and_child = &source[kw_loc.end_offset()..first_child.location().start_offset()];
+        let comments_to_restore = extract_comments_for_restore(between_begin_and_child);
+
+        let parent_start = line_start_offset(source, kw_loc.start_offset());
+
+        let mut edits = vec![
+            // Replace begin keyword with first_child source
+            Edit { start_offset: kw_loc.start_offset(), end_offset: kw_loc.end_offset(), replacement },
+            // Delete from begin.end to first_child.end (removes whitespace + newlines + first_child bytes)
+            Edit { start_offset: kw_loc.end_offset(), end_offset: first_child.location().end_offset(), replacement: String::new() },
+            // Delete end keyword
+            Edit { start_offset: end_kw_loc.start_offset(), end_offset: end_kw_loc.end_offset(), replacement: String::new() },
+        ];
+
+        // Restore comments to before parent line
+        if !comments_to_restore.is_empty() {
+            edits.push(Edit { start_offset: parent_start, end_offset: parent_start, replacement: comments_to_restore });
+        }
+
+        let _ = modifier_condition; // assignment + modifier: not handled (skip for safety)
+
+        Some(Correction { edits })
+    }
+
+    /// Find first statement node in begin_node's body.
+    fn first_statement<'b>(&self, begin_node: &'b ruby_prism::BeginNode) -> Option<Node<'b>> {
+        // For begin with rescue/ensure, first_child in RuboCop = statements().body[0] or rescue/ensure
+        // For our correction, get first statement from statements()
+        if let Some(stmts) = begin_node.statements() {
+            stmts.body().iter().next()
+        } else if let Some(rescue) = begin_node.rescue_clause() {
+            // First child is the rescue node itself
+            Some(rescue.as_node())
+        } else {
+            None
+        }
+    }
+
+    /// Check if node is an assignment (||=, &&=, =) whose value is a begin block.
+    fn first_child_is_assignment_begin(&self, node: &Node) -> bool {
+        let value = match node {
+            Node::LocalVariableOrWriteNode { .. } => {
+                node.as_local_variable_or_write_node().map(|n| n.value())
+            }
+            Node::InstanceVariableOrWriteNode { .. } => {
+                node.as_instance_variable_or_write_node().map(|n| n.value())
+            }
+            Node::ClassVariableOrWriteNode { .. } => {
+                node.as_class_variable_or_write_node().map(|n| n.value())
+            }
+            Node::GlobalVariableOrWriteNode { .. } => {
+                node.as_global_variable_or_write_node().map(|n| n.value())
+            }
+            Node::LocalVariableWriteNode { .. } => {
+                node.as_local_variable_write_node().map(|n| n.value())
+            }
+            Node::InstanceVariableWriteNode { .. } => {
+                node.as_instance_variable_write_node().map(|n| n.value())
+            }
+            _ => None,
+        };
+        if let Some(val) = value {
+            matches!(val, Node::BeginNode { .. })
+        } else {
+            false
+        }
+    }
+
     /// Check def/defs: if body is a begin block (with rescue/ensure),
     /// the begin is redundant because def itself can handle rescue/ensure.
     fn check_def(&mut self, node: &ruby_prism::DefNode) {
@@ -77,8 +310,8 @@ impl<'a> RedundantBeginVisitor<'a> {
         // Direct BeginNode body (most common for def with begin...rescue...end)
         if let Node::BeginNode { .. } = &body {
             let begin_node = body.as_begin_node().unwrap();
-            if let Some(kw_loc) = begin_node.begin_keyword_loc() {
-                self.register_offense(kw_loc.start_offset(), kw_loc.end_offset());
+            if begin_node.begin_keyword_loc().is_some() {
+                self.register_offense_with_node(&begin_node, false, false);
                 return;
             }
         }
@@ -90,8 +323,8 @@ impl<'a> RedundantBeginVisitor<'a> {
             if items.len() == 1 {
                 if let Node::BeginNode { .. } = &items[0] {
                     let begin_node = items[0].as_begin_node().unwrap();
-                    if let Some(kw_loc) = begin_node.begin_keyword_loc() {
-                        self.register_offense(kw_loc.start_offset(), kw_loc.end_offset());
+                    if begin_node.begin_keyword_loc().is_some() {
+                        self.register_offense_with_node(&begin_node, false, false);
                     }
                 }
             }
@@ -169,8 +402,8 @@ impl<'a> RedundantBeginVisitor<'a> {
             if begin_node.rescue_clause().is_some() || begin_node.ensure_clause().is_some() {
                 return;
             }
-            if let Some(kw_loc) = begin_node.begin_keyword_loc() {
-                self.register_offense(kw_loc.start_offset(), kw_loc.end_offset());
+            if begin_node.begin_keyword_loc().is_some() {
+                self.register_offense_with_node(&begin_node, false, false);
             }
         }
     }
@@ -236,8 +469,8 @@ impl<'a> RedundantBeginVisitor<'a> {
             if begin_node.rescue_clause().is_some() || begin_node.ensure_clause().is_some() {
                 return;
             }
-            if let Some(kw_loc) = begin_node.begin_keyword_loc() {
-                self.register_offense(kw_loc.start_offset(), kw_loc.end_offset());
+            if begin_node.begin_keyword_loc().is_some() {
+                self.register_offense_with_node(&begin_node, false, false);
             }
         }
     }
@@ -262,8 +495,8 @@ impl<'a> RedundantBeginVisitor<'a> {
             if begin_node.rescue_clause().is_some() || begin_node.ensure_clause().is_some() {
                 return;
             }
-            if let Some(kw_loc) = begin_node.begin_keyword_loc() {
-                self.register_offense(kw_loc.start_offset(), kw_loc.end_offset());
+            if begin_node.begin_keyword_loc().is_some() {
+                self.register_offense_with_node(&begin_node, false, false);
             }
         }
     }
@@ -289,8 +522,8 @@ impl<'a> RedundantBeginVisitor<'a> {
         // Direct BeginNode
         if let Node::BeginNode { .. } = &body {
             let begin_node = body.as_begin_node().unwrap();
-            if let Some(kw_loc) = begin_node.begin_keyword_loc() {
-                self.register_offense(kw_loc.start_offset(), kw_loc.end_offset());
+            if begin_node.begin_keyword_loc().is_some() {
+                self.register_offense_with_node(&begin_node, false, false);
                 return;
             }
         }
@@ -302,8 +535,8 @@ impl<'a> RedundantBeginVisitor<'a> {
             if items.len() == 1 {
                 if let Node::BeginNode { .. } = &items[0] {
                     let begin_node = items[0].as_begin_node().unwrap();
-                    if let Some(kw_loc) = begin_node.begin_keyword_loc() {
-                        self.register_offense(kw_loc.start_offset(), kw_loc.end_offset());
+                    if begin_node.begin_keyword_loc().is_some() {
+                        self.register_offense_with_node(&begin_node, false, false);
                     }
                 }
             }
@@ -360,7 +593,14 @@ impl<'a> RedundantBeginVisitor<'a> {
             }
         }
 
-        self.register_offense(kw_loc.start_offset(), kw_loc.end_offset());
+        // Determine if in assignment context
+        let before = &self.ctx.source[..kw_loc.start_offset()];
+        let trimmed_before = before.trim_end();
+        let is_assignment = trimmed_before.ends_with("||=")
+            || trimmed_before.ends_with("&&=")
+            || (trimmed_before.ends_with('=') && !trimmed_before.ends_with("=="));
+
+        self.register_offense_with_node(node, is_assignment, false);
     }
 
     /// Check if a node or its descendants contain a non-allowable begin
@@ -502,6 +742,26 @@ impl<'a> RedundantBeginVisitor<'a> {
 
         false
     }
+}
+
+/// Extract comments from the text between `begin` keyword and first child.
+/// Returns text to insert before the parent statement (for assignment context comment restoration).
+fn extract_comments_for_restore(between: &str) -> String {
+    let mut result = String::new();
+    for line in between.split('\n') {
+        // Check if this line (trimmed) is a comment or starts with whitespace + #
+        let trimmed = line.trim_start_matches(|c: char| c == ' ' || c == '\t');
+        if trimmed.starts_with('#') {
+            result.push_str(line);
+            result.push('\n');
+        }
+    }
+    result
+}
+
+/// Find byte offset of start of line containing `offset`.
+fn line_start_offset(source: &str, offset: usize) -> usize {
+    source[..offset].rfind('\n').map(|p| p + 1).unwrap_or(0)
 }
 
 fn get_last_word(s: &str) -> &str {

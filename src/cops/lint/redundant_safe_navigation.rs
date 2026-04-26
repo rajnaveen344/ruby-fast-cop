@@ -7,7 +7,7 @@
 //! Ported from: https://github.com/rubocop/rubocop/blob/master/lib/rubocop/cop/lint/redundant_safe_navigation.rb
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::{Node, Visit};
 use std::collections::HashSet;
 
@@ -554,6 +554,9 @@ impl<'a> RedundantSafeNavVisitor<'a> {
 
         let dot_loc = node.call_operator_loc().unwrap();
 
+        // Correction: replace `&.` with `.`
+        let dot_correction = Correction::replace(dot_loc.start_offset(), dot_loc.end_offset(), ".");
+
         // Check InferNonNilReceiver first
         if self.infer_non_nil_receiver {
             if let Some(receiver) = node.receiver() {
@@ -564,7 +567,7 @@ impl<'a> RedundantSafeNavVisitor<'a> {
                         Severity::Warning,
                         dot_loc.start_offset(),
                         dot_loc.end_offset(),
-                    ));
+                    ).with_correction(dot_correction.clone()));
                     return;
                 }
             }
@@ -579,7 +582,7 @@ impl<'a> RedundantSafeNavVisitor<'a> {
                     Severity::Warning,
                     dot_loc.start_offset(),
                     dot_loc.end_offset(),
-                ));
+                ).with_correction(dot_correction.clone()));
                 return;
             }
 
@@ -591,7 +594,7 @@ impl<'a> RedundantSafeNavVisitor<'a> {
                     Severity::Warning,
                     dot_loc.start_offset(),
                     dot_loc.end_offset(),
-                ));
+                ).with_correction(dot_correction.clone()));
                 return;
             }
 
@@ -608,7 +611,7 @@ impl<'a> RedundantSafeNavVisitor<'a> {
                     Severity::Warning,
                     dot_loc.start_offset(),
                     dot_loc.end_offset(),
-                ));
+                ).with_correction(dot_correction));
             }
         }
     }
@@ -626,29 +629,32 @@ impl<'a> RedundantSafeNavVisitor<'a> {
                 if self.matches_default(&rhs, default_type) {
                     let dot_loc = send_node.call_operator_loc().unwrap();
                     let end_offset = node.location().end_offset();
+                    // Correction: replace `&.` with `.` + delete ` || default`
+                    let lhs_end = lhs.location().end_offset();
+                    let correction = Correction {
+                        edits: vec![
+                            crate::offense::Edit {
+                                start_offset: dot_loc.start_offset(),
+                                end_offset: dot_loc.end_offset(),
+                                replacement: ".".to_string(),
+                            },
+                            crate::offense::Edit {
+                                start_offset: lhs_end,
+                                end_offset: end_offset,
+                                replacement: String::new(),
+                            },
+                        ],
+                    };
                     self.offenses.push(self.ctx.offense_with_range(
                         COP_NAME,
                         MSG_LITERAL,
                         Severity::Warning,
                         dot_loc.start_offset(),
                         end_offset,
-                    ));
+                    ).with_correction(correction));
                     return;
                 }
             }
-        }
-
-        // Check block pattern: foo&.to_h { |k, v| ... } || {}
-        if let Node::BlockNode { .. } = &lhs {
-            let block = lhs.as_block_node().unwrap();
-            // block's parent call is accessed by looking at the block itself
-            // In Prism, BlockNode doesn't have a .call() - the call is the receiver
-            // Actually, blocks wrap CallNodes. We need to check block differently.
-            // The block structure in Prism: a BlockNode is a child of a CallNode
-            // But here lhs IS the block node. Let me check the Prism API...
-            // Actually in `x&.to_h { ... } || {}`, the LHS of || is a CallNode with block.
-            // Let me reconsider: the LHS might be a CallNode (which has block).
-            let _ = block;
         }
 
         // Check CallNode with block: foo&.to_h { |k, v| ... } || {}
@@ -660,13 +666,29 @@ impl<'a> RedundantSafeNavVisitor<'a> {
                     if self.matches_default(&rhs, default_type) {
                         let dot_loc = call.call_operator_loc().unwrap();
                         let end_offset = node.location().end_offset();
+                        // Correction: replace `&.` with `.` + delete ` || default`
+                        let lhs_end = lhs.location().end_offset();
+                        let correction = Correction {
+                            edits: vec![
+                                crate::offense::Edit {
+                                    start_offset: dot_loc.start_offset(),
+                                    end_offset: dot_loc.end_offset(),
+                                    replacement: ".".to_string(),
+                                },
+                                crate::offense::Edit {
+                                    start_offset: lhs_end,
+                                    end_offset: end_offset,
+                                    replacement: String::new(),
+                                },
+                            ],
+                        };
                         self.offenses.push(self.ctx.offense_with_range(
                             COP_NAME,
                             MSG_LITERAL,
                             Severity::Warning,
                             dot_loc.start_offset(),
                             end_offset,
-                        ));
+                        ).with_correction(correction));
                     }
                 }
             }

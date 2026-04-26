@@ -4,7 +4,7 @@
 
 use crate::cops::{CheckContext, Cop};
 use crate::node_name;
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Edit, Offense, Severity};
 use ruby_prism::{CallNode, Node};
 
 #[derive(Default)]
@@ -116,6 +116,45 @@ impl RedundantSort {
         }
     }
 
+    /// Detect logical operator after `outer_end` in source.
+    /// Returns Some((op_start, op_str, rhs_start, rhs_end)) or None.
+    /// Only matches ` || `, ` && `, ` or `, ` and ` (with surrounding spaces).
+    fn detect_logical_op(source: &str, outer_end: usize) -> Option<(usize, &'static str, usize, usize)> {
+        let src = source.as_bytes();
+        let len = source.len();
+        if outer_end >= len {
+            return None;
+        }
+        // Skip horizontal whitespace (spaces/tabs but not newline)
+        let mut i = outer_end;
+        while i < len && (src[i] == b' ' || src[i] == b'\t') {
+            i += 1;
+        }
+        // Match operator
+        let (op_start, op_str, after_op) = if src[i..].starts_with(b"||") {
+            (i, "||", i + 2)
+        } else if src[i..].starts_with(b"&&") {
+            (i, "&&", i + 2)
+        } else if src[i..].starts_with(b"or") && (i + 2 >= len || !src[i+2].is_ascii_alphanumeric() && src[i+2] != b'_') {
+            (i, "or", i + 2)
+        } else if src[i..].starts_with(b"and") && (i + 3 >= len || !src[i+3].is_ascii_alphanumeric() && src[i+3] != b'_') {
+            (i, "and", i + 3)
+        } else {
+            return None;
+        };
+        // Skip whitespace after operator
+        let mut rhs_start = after_op;
+        while rhs_start < len && (src[rhs_start] == b' ' || src[rhs_start] == b'\t') {
+            rhs_start += 1;
+        }
+        // RHS extends to end of line (or end of input)
+        let rhs_end = source[rhs_start..].find('\n').map(|n| rhs_start + n).unwrap_or(len);
+        if rhs_start >= rhs_end {
+            return None;
+        }
+        Some((op_start, op_str, rhs_start, rhs_end))
+    }
+
     fn suggestion(sorter: &str, accessor: &str, arg: Option<i64>) -> String {
         let base = match accessor {
             "first" => "min",
@@ -183,8 +222,69 @@ impl Cop for RedundantSort {
             suggestion, sorter, accessor_source
         );
 
+        // Correction: replace sort/sort_by selector + delete accessor call
+        // e.g. `arr.sort.first` → `arr.min`
+        // Multi-edit: (1) replace sort_sel with suggestion, (2) delete accessor (from its dot to end)
+        // For accessor deletion, use accessor_start = dot position (not end of sort_call)
+        let accessor_start = if let Some(dot_loc) = node.call_operator_loc() {
+            dot_loc.start_offset()
+        } else if let Some(msg_loc) = node.message_loc() {
+            msg_loc.start_offset()
+        } else {
+            sort_call.location().end_offset()
+        };
+
+        // Check for logical operator after the accessor: `.first || []` → ` ||\n    []`
+        // RuboCop's `replace_with_logical_operator` pattern.
+        let sort_call_end = sort_call.location().end_offset();
+        let correction = if let Some((op_start, op_str, rhs_start, rhs_end)) =
+            Self::detect_logical_op(ctx.source, node.location().end_offset())
+        {
+            // Determine indent: find the column of the sort_by receiver's first non-space char.
+            // Use sort_sel line start to find column.
+            let line_start = ctx.source[..sort_sel.start_offset()]
+                .rfind('\n')
+                .map(|p| p + 1)
+                .unwrap_or(0);
+            let base_indent = sort_sel.start_offset() - line_start - 1; // -1 for the dot
+            let indent = " ".repeat(base_indent + 2);
+            let rhs_src = &ctx.source[rhs_start..rhs_end];
+            // Replace accessor+operator+rhs with ` op\n{indent}rhs`
+            let tail_replacement = format!(" {}\n{}{}", op_str, indent, rhs_src);
+            Correction {
+                edits: vec![
+                    Edit {
+                        start_offset: sort_sel.start_offset(),
+                        end_offset: sort_sel.end_offset(),
+                        replacement: suggestion.clone(),
+                    },
+                    Edit {
+                        start_offset: sort_call_end,
+                        end_offset: rhs_end,
+                        replacement: tail_replacement,
+                    },
+                ],
+            }
+        } else {
+            Correction {
+                edits: vec![
+                    Edit {
+                        start_offset: sort_sel.start_offset(),
+                        end_offset: sort_sel.end_offset(),
+                        replacement: suggestion.clone(),
+                    },
+                    Edit {
+                        start_offset: accessor_start,
+                        end_offset: node.location().end_offset(),
+                        replacement: String::new(),
+                    },
+                ],
+            }
+        };
+
         let offense =
-            ctx.offense_with_range(self.name(), &message, self.severity(), start_offset, end_offset);
+            ctx.offense_with_range(self.name(), &message, self.severity(), start_offset, end_offset)
+                .with_correction(correction);
         vec![offense]
     }
 }

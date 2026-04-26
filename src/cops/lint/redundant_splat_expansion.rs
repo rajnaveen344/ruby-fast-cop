@@ -1,7 +1,7 @@
 //! Lint/RedundantSplatExpansion - Checks for unneeded usages of splat expansion.
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::{Node, Visit};
 
 const MSG: &str = "Replace splat expansion with comma separated values.";
@@ -55,7 +55,7 @@ struct SplatVisitor<'a> {
 }
 
 impl<'a> SplatVisitor<'a> {
-    fn check_splat(&mut self, node: &ruby_prism::SplatNode, parent_kind: ParentKind, parent_array_size: usize) {
+    fn check_splat(&mut self, node: &ruby_prism::SplatNode, parent_kind: ParentKind, parent_array_size: usize, parent_array_loc: Option<(usize, usize)>) {
         let expression = match node.expression() {
             Some(e) => e,
             None => return,
@@ -95,9 +95,41 @@ impl<'a> SplatVisitor<'a> {
             }
         }
 
+        // Handle Array.new special case:
+        // `[*Array.new(foo)]` → `Array.new(foo)` (replace parent array span)
+        if is_array_new_expr(&expression) {
+            let expr_src = &self.ctx.source[expression.location().start_offset()..expression.location().end_offset()];
+            let (corr_start, corr_end) = if parent_kind == ParentKind::BracketedArray {
+                // Replace parent array: `[*Array.new(foo)]` → `Array.new(foo)`
+                parent_array_loc.unwrap_or((node.location().start_offset(), node.location().end_offset()))
+            } else {
+                // In call args: `send(*Array.new(foo))` → `send(Array.new(foo))`
+                // Just replace the splat node
+                (node.location().start_offset(), node.location().end_offset())
+            };
+            let correction = Correction::replace(corr_start, corr_end, expr_src);
+            let loc = node.location();
+            self.offenses.push(self.ctx.offense_with_range(
+                self.cop.name(),
+                MSG,
+                self.cop.severity(),
+                loc.start_offset(),
+                loc.end_offset(),
+            ).with_correction(correction));
+            return;
+        }
+
         let is_array_splat = matches!(&expression, Node::ArrayNode { .. });
         let is_method_arg = parent_kind == ParentKind::Call;
         let is_part_of_array = parent_kind == ParentKind::BracketedArray;
+        let is_when = parent_kind == ParentKind::When;
+        let is_rescue = parent_kind == ParentKind::Rescue;
+        // redundant_brackets? = when/call/bracketed_array/rescue context
+        let redundant_brackets = is_when || is_method_arg || is_part_of_array || is_rescue;
+        // wrap_in_brackets? = unbracket array context (assignment/unbracket array)
+        let wrap_in_brackets = !redundant_brackets && !is_part_of_array;
+
+        let loc = node.location();
 
         if is_array_splat && (is_method_arg || is_part_of_array) {
             // Check AllowPercentLiteralArrayArgument
@@ -106,23 +138,68 @@ impl<'a> SplatVisitor<'a> {
                     return;
                 }
             }
-            let loc = node.location();
+            // Correction: expand array elements inline (remove_brackets)
+            let replacement = remove_brackets_str(&expression, self.ctx.source);
+            let correction = Correction::replace(loc.start_offset(), loc.end_offset(), replacement);
             self.offenses.push(self.ctx.offense_with_range(
                 self.cop.name(),
                 ARRAY_PARAM_MSG,
                 self.cop.severity(),
                 loc.start_offset(),
                 loc.end_offset(),
-            ));
-        } else {
-            let loc = node.location();
+            ).with_correction(correction));
+        } else if is_array_splat && is_when {
+            // When/rescue: expand array elements
+            let replacement = remove_brackets_str(&expression, self.ctx.source);
+            let correction = Correction::replace(loc.start_offset(), loc.end_offset(), replacement);
             self.offenses.push(self.ctx.offense_with_range(
                 self.cop.name(),
                 MSG,
                 self.cop.severity(),
                 loc.start_offset(),
                 loc.end_offset(),
-            ));
+            ).with_correction(correction));
+        } else if is_array_splat && is_rescue {
+            // Rescue: expand array elements
+            let replacement = remove_brackets_str(&expression, self.ctx.source);
+            let correction = Correction::replace(loc.start_offset(), loc.end_offset(), replacement);
+            self.offenses.push(self.ctx.offense_with_range(
+                self.cop.name(),
+                MSG,
+                self.cop.severity(),
+                loc.start_offset(),
+                loc.end_offset(),
+            ).with_correction(correction));
+        } else if is_array_splat {
+            // Assignment context: delete `*` only (keep the `[...]`)
+            // splat operator is one byte `*`
+            let star_end = loc.start_offset() + 1;
+            let correction = Correction::delete(loc.start_offset(), star_end);
+            self.offenses.push(self.ctx.offense_with_range(
+                self.cop.name(),
+                MSG,
+                self.cop.severity(),
+                loc.start_offset(),
+                loc.end_offset(),
+            ).with_correction(correction));
+        } else {
+            // Non-array splat (`*'a'`, `*1`, etc.)
+            let expr_src = &self.ctx.source[expression.location().start_offset()..expression.location().end_offset()];
+            // wrap_in_brackets? in RuboCop = parent is an unbracketed array (i.e., assignment context)
+            let should_wrap = parent_kind == ParentKind::Assignment || parent_kind == ParentKind::UnbracketedArray;
+            let replacement = if should_wrap {
+                format!("[{}]", expr_src)
+            } else {
+                expr_src.to_string()
+            };
+            let correction = Correction::replace(loc.start_offset(), loc.end_offset(), replacement);
+            self.offenses.push(self.ctx.offense_with_range(
+                self.cop.name(),
+                MSG,
+                self.cop.severity(),
+                loc.start_offset(),
+                loc.end_offset(),
+            ).with_correction(correction));
         }
     }
 
@@ -135,9 +212,10 @@ impl<'a> SplatVisitor<'a> {
             ParentKind::UnbracketedArray
         };
         let size = elements.len();
+        let array_loc = Some((node.location().start_offset(), node.location().end_offset()));
         for elem in &elements {
             if let Some(splat) = elem.as_splat_node() {
-                self.check_splat(&splat, parent_kind, size);
+                self.check_splat(&splat, parent_kind, size, array_loc);
             }
         }
     }
@@ -146,7 +224,7 @@ impl<'a> SplatVisitor<'a> {
         if let Some(args) = node.arguments() {
             for arg in args.arguments().iter() {
                 if let Some(splat) = arg.as_splat_node() {
-                    self.check_splat(&splat, ParentKind::Call, 0);
+                    self.check_splat(&splat, ParentKind::Call, 0, None);
                 }
             }
         }
@@ -154,7 +232,7 @@ impl<'a> SplatVisitor<'a> {
 
     fn check_splat_in_assignment(&mut self, value: &Node) {
         if let Some(splat) = value.as_splat_node() {
-            self.check_splat(&splat, ParentKind::Assignment, 0);
+            self.check_splat(&splat, ParentKind::Assignment, 0, None);
         }
     }
 }
@@ -173,7 +251,7 @@ impl Visit<'_> for SplatVisitor<'_> {
     fn visit_when_node(&mut self, node: &ruby_prism::WhenNode) {
         for cond in node.conditions().iter() {
             if let Some(splat) = cond.as_splat_node() {
-                self.check_splat(&splat, ParentKind::When, 0);
+                self.check_splat(&splat, ParentKind::When, 0, None);
             }
         }
         ruby_prism::visit_when_node(self, node);
@@ -182,7 +260,7 @@ impl Visit<'_> for SplatVisitor<'_> {
     fn visit_rescue_node(&mut self, node: &ruby_prism::RescueNode) {
         for exc in node.exceptions().iter() {
             if let Some(splat) = exc.as_splat_node() {
-                self.check_splat(&splat, ParentKind::Rescue, 0);
+                self.check_splat(&splat, ParentKind::Rescue, 0, None);
             }
         }
         ruby_prism::visit_rescue_node(self, node);
@@ -211,6 +289,62 @@ impl Visit<'_> for SplatVisitor<'_> {
     fn visit_constant_write_node(&mut self, node: &ruby_prism::ConstantWriteNode) {
         self.check_splat_in_assignment(&node.value());
         ruby_prism::visit_constant_write_node(self, node);
+    }
+}
+
+/// Convert array contents to comma-separated representation for removal of splat brackets.
+/// Mirrors RuboCop's `remove_brackets` method.
+fn remove_brackets_str(array_node: &Node, source: &str) -> String {
+    let arr = match array_node.as_array_node() {
+        Some(a) => a,
+        None => return source[array_node.location().start_offset()..array_node.location().end_offset()].to_string(),
+    };
+
+    // Get the opening bracket source to detect %w/%W/%i/%I
+    let opening = arr.opening_loc().map(|loc| {
+        source[loc.start_offset()..loc.end_offset()].to_string()
+    }).unwrap_or_default();
+
+    let elements: Vec<_> = arr.elements().iter().collect();
+
+    if opening.starts_with("%w") || opening.starts_with("%W") {
+        // %w or %W: elements are plain words, convert to string literals
+        let use_double = opening.starts_with("%W");
+        let mut parts = Vec::new();
+        for elem in &elements {
+            let elem_src = source[elem.location().start_offset()..elem.location().end_offset()].to_string();
+            if use_double {
+                parts.push(format!("\"{}\"", elem_src));
+            } else {
+                parts.push(format!("'{}'", elem_src));
+            }
+        }
+        parts.join(", ")
+    } else if opening.starts_with("%i") {
+        // %i: plain symbols → :word
+        let mut parts = Vec::new();
+        for elem in &elements {
+            let elem_src = source[elem.location().start_offset()..elem.location().end_offset()].to_string();
+            parts.push(format!(":{}", elem_src));
+        }
+        parts.join(", ")
+    } else if opening.starts_with("%I") {
+        // %I: interpolated symbols → :"word"
+        let mut parts = Vec::new();
+        for elem in &elements {
+            let elem_src = source[elem.location().start_offset()..elem.location().end_offset()].to_string();
+            let formatted = format!(":\"{}\"", elem_src);
+            parts.push(formatted);
+        }
+        parts.join(", ")
+    } else {
+        // Regular array [a, b, c] → a, b, c
+        let mut parts = Vec::new();
+        for elem in &elements {
+            let elem_src = source[elem.location().start_offset()..elem.location().end_offset()].to_string();
+            parts.push(elem_src);
+        }
+        parts.join(", ")
     }
 }
 

@@ -4,7 +4,7 @@
 
 use crate::cops::{CheckContext, Cop};
 use crate::node_name;
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::{BlockNode, CallNode};
 
 #[derive(Default)]
@@ -116,7 +116,12 @@ impl Cop for RedundantSortBy {
         let start = node.message_loc().unwrap_or_else(|| node.location()).start_offset();
         let end = block.location().end_offset();
 
-        vec![ctx.offense_with_range(self.name(), &msg, self.severity(), start, end)]
+        // Correction: replace `sort_by { ... }` with `sort`
+        // Delete from start of sort_by message_loc to end of block, replace with "sort"
+        let correction = Correction::replace(start, end, "sort");
+
+        vec![ctx.offense_with_range(self.name(), &msg, self.severity(), start, end)
+            .with_correction(correction)]
     }
 }
 
