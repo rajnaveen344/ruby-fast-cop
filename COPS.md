@@ -1,9 +1,9 @@
 # All Cops State (606 total)
 
 Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department and default status.
-579 of 606 implemented (all 396 enabled-by-default complete + 155 pending-by-default + 28 disabled-by-default). See [README.md](README.md) for the implementation roadmap.
+585 of 606 implemented (all 396 enabled-by-default complete + 155 pending-by-default + 34 disabled-by-default). See [README.md](README.md) for the implementation roadmap.
 
-**Pending-default progress: 155 / 156 (~99%)**. **Disabled-default progress: 28 / 54 (~52%)**.
+**Pending-default progress: 155 / 156 (~99%)**. **Disabled-default progress: 34 / 54 (~63%)**.
 
 ## Summary
 
@@ -12,15 +12,15 @@ Each cell shows `implemented / total` for that category.
 | Department |     Enabled |     Pending | Disabled |             Tests |
 | ---------- | ----------: | ----------: | -------: | ----------------: |
 | Style      |     175/175 |       90/91 |    20/32 |   14,008 / 14,566 |
-| Lint       |     100/100 |       50/50 |      0/4 |     5,866 / 5,949 |
-| Layout     |       81/81 |         5/5 |     8/14 |     4,366 / 4,646 |
+| Lint       |     100/100 |       50/50 |      4/4 |     5,961 / 5,961 |
+| Layout     |       81/81 |         5/5 |    10/14 |     4,397 / 4,646 |
 | Metrics    |         9/9 |         1/1 |      0/0 |         272 / 272 |
 | Naming     |       16/16 |         2/2 |      0/1 |     2,181 / 2,216 |
 | Gemspec    |         4/4 |         5/5 |      0/1 |         116 / 193 |
 | Bundler    |         5/5 |         0/0 |      0/2 |          69 / 101 |
 | Security   |         5/5 |         2/2 |      0/0 |         102 / 102 |
 | Migration  |         1/1 |         0/0 |      0/0 |             8 / 8 |
-| **Total**  | **396/396** | **155/156** | **28/54** | **27,000/28,053** |
+| **Total**  | **396/396** | **155/156** | **34/54** | **27,126/28,065** |
 
 - **Enabled**: Runs by default on every codebase (highest priority to implement)
 - **Pending**: Runs only with `NewCops: enable` in config
@@ -341,7 +341,7 @@ Each cell shows `implemented / total` for that category.
 | Style/UnlessLogicalOperators               |    28 | -           |
 | Style/YodaExpression                       |    10 | Implemented |
 
-## Lint (101/154 implemented, 5,961 tests)
+## Lint (154/154 implemented, 5,961 tests)
 
 ### Enabled by Default (100 cops, 3,859 tests)
 
@@ -512,7 +512,7 @@ Each cell shows `implemented / total` for that category.
 | Lint/NumberConversion            |    36 | -      |
 | Lint/ShadowingOuterLocalVariable |    31 | -      |
 
-## Layout (88/100 implemented, 4,654 tests)
+## Layout (96/100 implemented, 4,654 tests)
 
 ### Enabled by Default (81 cops, 4,067 tests)
 

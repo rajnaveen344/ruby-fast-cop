@@ -1,4 +1,8 @@
 mod big_decimal_new;
+mod constant_resolution;
+mod heredoc_method_call_position;
+mod number_conversion;
+mod shadowing_outer_local_variable;
 mod duplicate_branch;
 mod duplicate_set_element;
 mod useless_or;
@@ -133,6 +137,10 @@ mod useless_times;
 mod void;
 
 pub use big_decimal_new::BigDecimalNew;
+pub use constant_resolution::ConstantResolution;
+pub use heredoc_method_call_position::HeredocMethodCallPosition;
+pub use number_conversion::NumberConversion;
+pub use shadowing_outer_local_variable::ShadowingOuterLocalVariable;
 pub use duplicate_branch::DuplicateBranch;
 pub use duplicate_set_element::DuplicateSetElement;
 pub use useless_or::UselessOr;

@@ -64,6 +64,8 @@ mod first_hash_element_line_break;
 mod first_method_argument_line_break;
 mod first_method_parameter_line_break;
 mod rescue_ensure_alignment;
+mod single_line_block_chain;
+mod empty_line_after_multiline_condition;
 mod space_after_colon;
 mod space_after_comma;
 mod space_after_not;
@@ -128,6 +130,8 @@ pub use empty_lines_around_module_body::{EmptyLinesAroundModuleBody, EmptyLinesA
 pub use end_alignment::{EndAlignment, EndAlignmentStyle};
 pub use extra_spacing::ExtraSpacing;
 pub use rescue_ensure_alignment::RescueEnsureAlignment;
+pub use single_line_block_chain::SingleLineBlockChain;
+pub use empty_line_after_multiline_condition::EmptyLineAfterMultilineCondition;
 pub use first_argument_indentation::{FirstArgumentIndentation, FirstArgumentIndentationStyle};
 pub use first_parameter_indentation::{FirstParameterIndentation, FirstParamStyle};
 pub use first_array_element_indentation::{
