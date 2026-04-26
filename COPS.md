@@ -1,9 +1,9 @@
 # All Cops State (606 total)
 
 Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department and default status.
-585 of 606 implemented (all 396 enabled-by-default complete + 155 pending-by-default + 34 disabled-by-default). See [README.md](README.md) for the implementation roadmap.
+590 of 606 implemented (all 396 enabled-by-default complete + 155 pending-by-default + 39 disabled-by-default). See [README.md](README.md) for the implementation roadmap.
 
-**Pending-default progress: 155 / 156 (~99%)**. **Disabled-default progress: 34 / 54 (~63%)**.
+**Pending-default progress: 155 / 156 (~99%)**. **Disabled-default progress: 39 / 54 (~72%)**.
 
 ## Summary
 
@@ -11,16 +11,16 @@ Each cell shows `implemented / total` for that category.
 
 | Department |     Enabled |     Pending | Disabled |             Tests |
 | ---------- | ----------: | ----------: | -------: | ----------------: |
-| Style      |     175/175 |       90/91 |    20/32 |   14,008 / 14,566 |
+| Style      |     175/175 |       90/91 |    22/32 |   14,040 / 14,566 |
 | Lint       |     100/100 |       50/50 |      4/4 |     5,961 / 5,961 |
 | Layout     |       81/81 |         5/5 |    10/14 |     4,397 / 4,646 |
 | Metrics    |         9/9 |         1/1 |      0/0 |         272 / 272 |
 | Naming     |       16/16 |         2/2 |      0/1 |     2,181 / 2,216 |
-| Gemspec    |         4/4 |         5/5 |      0/1 |         116 / 193 |
-| Bundler    |         5/5 |         0/0 |      0/2 |          69 / 101 |
+| Gemspec    |         4/4 |         5/5 |      1/1 |         193 / 193 |
+| Bundler    |         5/5 |         0/0 |      2/2 |         101 / 101 |
 | Security   |         5/5 |         2/2 |      0/0 |         102 / 102 |
 | Migration  |         1/1 |         0/0 |      0/0 |             8 / 8 |
-| **Total**  | **396/396** | **155/156** | **34/54** | **27,126/28,065** |
+| **Total**  | **396/396** | **155/156** | **39/54** | **27,267/28,065** |
 
 - **Enabled**: Runs by default on every codebase (highest priority to implement)
 - **Pending**: Runs only with `NewCops: enable` in config
@@ -332,12 +332,12 @@ Each cell shows `implemented / total` for that category.
 | Style/RequireOrder                         |    24 | -           |
 | Style/ReturnNil                            |     5 | Implemented |
 | Style/Send                                 |    13 | -           |
-| Style/SingleLineBlockParams                |    12 | -           |
+| Style/SingleLineBlockParams                |    12 | Implemented           |
 | Style/StaticClass                          |    11 | Implemented           |
 | Style/StringHashKeys                       |    10 | Implemented |
 | Style/StringMethods                        |     2 | Implemented |
 | Style/TopLevelMethodDefinition             |    14 | Implemented           |
-| Style/TrailingCommaInBlockArgs             |    20 | -           |
+| Style/TrailingCommaInBlockArgs             |    20 | Implemented           |
 | Style/UnlessLogicalOperators               |    28 | -           |
 | Style/YodaExpression                       |    10 | Implemented |
 
@@ -712,7 +712,7 @@ Each cell shows `implemented / total` for that category.
 
 | Cop                       | Tests | Status |
 | ------------------------- | ----: | ------ |
-| Gemspec/DependencyVersion |    77 | -      |
+| Gemspec/DependencyVersion |    77 | Implemented      |
 
 ## Bundler (5/7 implemented, 101 tests)
 
@@ -730,8 +730,8 @@ Each cell shows `implemented / total` for that category.
 
 | Cop                | Tests | Status |
 | ------------------ | ----: | ------ |
-| Bundler/GemComment |    26 | -      |
-| Bundler/GemVersion |     6 | -      |
+| Bundler/GemComment |    26 | Implemented      |
+| Bundler/GemVersion |     6 | Implemented      |
 
 ## Security (5/7 implemented, 102 tests)
 

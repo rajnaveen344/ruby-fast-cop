@@ -588,3 +588,7 @@ mod class_methods_definitions;
 pub use class_methods_definitions::ClassMethodsDefinitions;
 mod invertible_unless_condition;
 pub use invertible_unless_condition::InvertibleUnlessCondition;
+mod single_line_block_params;
+pub use single_line_block_params::SingleLineBlockParams;
+mod trailing_comma_in_block_args;
+pub use trailing_comma_in_block_args::TrailingCommaInBlockArgs;
