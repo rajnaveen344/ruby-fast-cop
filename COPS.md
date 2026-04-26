@@ -1,9 +1,9 @@
 # All Cops State (606 total)
 
 Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department and default status.
-571 of 606 implemented (all 396 enabled-by-default complete + 155 pending-by-default + 20 disabled-by-default). See [README.md](README.md) for the implementation roadmap.
+579 of 606 implemented (all 396 enabled-by-default complete + 155 pending-by-default + 28 disabled-by-default). See [README.md](README.md) for the implementation roadmap.
 
-**Pending-default progress: 155 / 156 (~99%)**. **Disabled-default progress: 20 / 54 (~37%)**.
+**Pending-default progress: 155 / 156 (~99%)**. **Disabled-default progress: 28 / 54 (~52%)**.
 
 ## Summary
 
@@ -11,7 +11,7 @@ Each cell shows `implemented / total` for that category.
 
 | Department |     Enabled |     Pending | Disabled |             Tests |
 | ---------- | ----------: | ----------: | -------: | ----------------: |
-| Style      |     175/175 |       90/91 |    12/32 |   13,894 / 14,566 |
+| Style      |     175/175 |       90/91 |    20/32 |   14,008 / 14,566 |
 | Lint       |     100/100 |       50/50 |      0/4 |     5,866 / 5,949 |
 | Layout     |       81/81 |         5/5 |     8/14 |     4,366 / 4,646 |
 | Metrics    |         9/9 |         1/1 |      0/0 |         272 / 272 |
@@ -20,13 +20,13 @@ Each cell shows `implemented / total` for that category.
 | Bundler    |         5/5 |         0/0 |      0/2 |          69 / 101 |
 | Security   |         5/5 |         2/2 |      0/0 |         102 / 102 |
 | Migration  |         1/1 |         0/0 |      0/0 |             8 / 8 |
-| **Total**  | **396/396** | **155/156** | **20/54** | **26,886/28,053** |
+| **Total**  | **396/396** | **155/156** | **28/54** | **27,000/28,053** |
 
 - **Enabled**: Runs by default on every codebase (highest priority to implement)
 - **Pending**: Runs only with `NewCops: enable` in config
 - **Disabled**: Runs only when explicitly enabled in config
 
-## Style (190/298 implemented, 14,567 tests)
+## Style (198/298 implemented, 14,567 tests)
 
 ### Enabled by Default (175 cops, 9,202 tests)
 
@@ -309,20 +309,20 @@ Each cell shows `implemented / total` for that category.
 | Cop                                        | Tests | Status      |
 | ------------------------------------------ | ----: | ----------- |
 | Style/ArrayCoercion                        |     5 | Implemented |
-| Style/ArrayFirstLast                       |    16 | -           |
+| Style/ArrayFirstLast                       |    16 | Implemented           |
 | Style/AsciiComments                        |     5 | Implemented |
 | Style/AutoResourceCleanup                  |     7 | Implemented |
-| Style/ClassMethodsDefinitions              |    16 | -           |
+| Style/ClassMethodsDefinitions              |    16 | Implemented           |
 | Style/CollectionMethods                    |    68 | -           |
-| Style/ConstantVisibility                   |    15 | -           |
+| Style/ConstantVisibility                   |    15 | Implemented           |
 | Style/Copyright                            |    13 | -           |
-| Style/DateTime                             |    12 | -           |
+| Style/DateTime                             |    12 | Implemented           |
 | Style/DisableCopsWithinSourceCodeDirective |     7 | -           |
 | Style/DocumentationMethod                  |    77 | -           |
-| Style/HashLookupMethod                     |    15 | -           |
+| Style/HashLookupMethod                     |    15 | Implemented           |
 | Style/ImplicitRuntimeError                 |     8 | Implemented |
 | Style/InlineComment                        |     3 | Implemented |
-| Style/InvertibleUnlessCondition            |    15 | -           |
+| Style/InvertibleUnlessCondition            |    15 | Implemented           |
 | Style/IpAddresses                          |    14 | Implemented |
 | Style/MethodCallWithArgsParentheses        |   174 | -           |
 | Style/MethodCalledOnDoEndBlock             |    10 | Implemented |
@@ -333,10 +333,10 @@ Each cell shows `implemented / total` for that category.
 | Style/ReturnNil                            |     5 | Implemented |
 | Style/Send                                 |    13 | -           |
 | Style/SingleLineBlockParams                |    12 | -           |
-| Style/StaticClass                          |    11 | -           |
+| Style/StaticClass                          |    11 | Implemented           |
 | Style/StringHashKeys                       |    10 | Implemented |
 | Style/StringMethods                        |     2 | Implemented |
-| Style/TopLevelMethodDefinition             |    14 | -           |
+| Style/TopLevelMethodDefinition             |    14 | Implemented           |
 | Style/TrailingCommaInBlockArgs             |    20 | -           |
 | Style/UnlessLogicalOperators               |    28 | -           |
 | Style/YodaExpression                       |    10 | Implemented |
