@@ -24,7 +24,7 @@ ruby-fast-cop = Rust port of RuboCop. Target 50-100x faster (like Ruff:Python).
 
 All 606 cops implemented. **Active workstream = wiring `Correction` emission** so `cargo test --test tester` passes the strict-mode `corrected` block check for every fixture that has one.
 
-**Status:** 8,047 / 11,217 (72%) corrections wired. 3,170 expected corrections across ~154 cops still unwired. Per-cop counts in `.correction_worklist.txt`. Per-dept totals in `COPS.md` summary.
+**Status:** 8,142 / 11,217 (73%) corrections wired. 3,075 expected corrections across ~153 cops still unwired. Per-cop counts in `.correction_worklist.txt`. Per-dept totals in `COPS.md` summary.
 
 Tester is hard-flipped: any TOML `corrected` block with no matching `Correction` from the cop = test failure. No silent skips. See `tests/tester.rs` ~L420 for the gate.
 
@@ -35,6 +35,7 @@ Wiring proceeds **cluster-by-cluster**. A cluster = cops that share a correction
 - **Cluster 4a** (this commit) — 2 cops, +77 corrections. Space-inside-brackets (Layout/SpaceInsideArrayLiteralBrackets, Layout/SpaceInsideReferenceBrackets). Insert/delete a single space; multi-line compact 2D-array newline cases handled by walking past whitespace.
 - **Cluster 4b** (this commit) — 5 cops, +288 Layout corrections. Re-indenter cops: RescueEnsureAlignment (50→0), BlockAlignment (36→1), HeredocIndentation (60→24), FirstHashElementIndentation (31→2), HashAlignment (56→5). Also fixed heredoc_indentation.toml: 32 `corrected` blocks had base_indent pre-baked; stripped to match decode_source convention.
 - **Solo: UselessAssignment** (this commit) — +49 Lint corrections. Simple-kind dead assignments deleted (`x = 1` → ``). Deferred kinds (14 residuals): MultipleAssignment, OperatorAssignment, OrAssignment, AndAssignment, RegexpNamedCapture, for-loop variable, rescued exception variable, block-local.
+- **Solo: LiteralAsCondition** (this commit) — +95 Lint corrections. Wired: block-form & modifier if/unless (replace whole node with appropriate branch source), ternary, while truthy → `true` / falsey → drop, until falsey → `false` / truthy → drop, postloop while/until (use begin-block inner statements as body), and/or with literal lhs → replace whole node with rhs (skip return/break/next rhs). Deferred (36 residuals): elsif chain rewrites (`if x; ...elsif literal; ...end` → `if x; ...else; ...end`), `if literal && literal_rhs` (multi-pass conflict between outer-if and and-node corrections).
 
 **Known deferred edge cases** (not blocking cluster commits):
 
