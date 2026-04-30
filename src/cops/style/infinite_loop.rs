@@ -224,29 +224,33 @@ impl<'a> InfiniteLoopVisitor<'a> {
         let is_modifier = body_start < start;
 
         if is_modifier {
-            // Modifier `body while true` — check semantics too
             if let Some(siblings) = sibling_stmts {
                 if self.would_change_semantics_in(&node.as_node(), siblings) {
                     return;
                 }
             }
-            let offense = self.ctx.offense_with_range(
+            let correction = build_modifier_correction(self.ctx.source, &node.as_node(), &node.statements(), start, end);
+            let mut offense = self.ctx.offense_with_range(
                 "Style/InfiniteLoop", MSG, Severity::Convention, start, end,
             );
+            if let Some(c) = correction { offense = offense.with_correction(c); }
             self.offenses.push(offense);
             return;
         }
 
-        // Block form: check semantics if we have sibling context
         if let Some(siblings) = sibling_stmts {
             if self.would_change_semantics_in(&node.as_node(), siblings) {
                 return;
             }
         }
 
-        let offense = self.ctx.offense_with_range(
+        let correction = build_block_correction(
+            self.ctx.source, start, &cond, node.do_keyword_loc().as_ref(),
+        );
+        let mut offense = self.ctx.offense_with_range(
             "Style/InfiniteLoop", MSG, Severity::Convention, start, end,
         );
+        if let Some(c) = correction { offense = offense.with_correction(c); }
         self.offenses.push(offense);
     }
 
@@ -265,15 +269,16 @@ impl<'a> InfiniteLoopVisitor<'a> {
         let is_modifier = body_start < start;
 
         if is_modifier {
-            // Modifier `body until false` — check semantics too
             if let Some(siblings) = sibling_stmts {
                 if self.would_change_semantics_in(&node.as_node(), siblings) {
                     return;
                 }
             }
-            let offense = self.ctx.offense_with_range(
+            let correction = build_modifier_correction(self.ctx.source, &node.as_node(), &node.statements(), start, end);
+            let mut offense = self.ctx.offense_with_range(
                 "Style/InfiniteLoop", MSG, Severity::Convention, start, end,
             );
+            if let Some(c) = correction { offense = offense.with_correction(c); }
             self.offenses.push(offense);
             return;
         }
@@ -284,11 +289,77 @@ impl<'a> InfiniteLoopVisitor<'a> {
             }
         }
 
-        let offense = self.ctx.offense_with_range(
+        let correction = build_block_correction(
+            self.ctx.source, start, &cond, node.do_keyword_loc().as_ref(),
+        );
+        let mut offense = self.ctx.offense_with_range(
             "Style/InfiniteLoop", MSG, Severity::Convention, start, end,
         );
+        if let Some(c) = correction { offense = offense.with_correction(c); }
         self.offenses.push(offense);
     }
+}
+
+/// Replace `while COND [do]` (or `until COND [do]`) with `loop do`.
+fn build_block_correction(
+    source: &str,
+    keyword_start: usize,
+    cond: &Node,
+    do_kw: Option<&ruby_prism::Location>,
+) -> Option<Correction> {
+    let cond_end = cond.location().end_offset();
+    let end = match do_kw {
+        Some(d) => d.end_offset(),
+        None => cond_end,
+    };
+    let _ = source;
+    Some(Correction::replace(keyword_start, end, "loop do"))
+}
+
+/// `body WHILE/UNTIL literal` → `loop { body }` for single-line single-stmt;
+/// `begin..end WHILE/UNTIL literal` (postloop) → `loop do <stmts> end`;
+/// multiline body → `loop do <body> end` (preserve indent).
+fn build_modifier_correction(
+    source: &str,
+    node: &Node,
+    stmts: &Option<ruby_prism::StatementsNode>,
+    _kw_start: usize,
+    _kw_end: usize,
+) -> Option<Correction> {
+    let body = stmts.as_ref()?;
+    let body_items: Vec<Node> = body.body().iter().collect();
+    let body_loc = body.location();
+    let bs = body_loc.start_offset();
+    let node_end = node.location().end_offset();
+
+    // Postloop `begin..end while/until literal` → block form
+    if body_items.len() == 1 {
+        if let Some(bg) = body_items[0].as_begin_node() {
+            // Get inner statements, end of begin keyword, end of `end` keyword
+            let begin_kw = bg.begin_keyword_loc()?;
+            let end_kw = bg.end_keyword_loc()?;
+            // Replace `begin...end while X` with `loop do...end`
+            // Use begin_kw range → end_kw end as bounds (everything from begin to end keyword).
+            let r_start = begin_kw.start_offset();
+            let r_end = end_kw.end_offset();
+            // Copy source between begin and end (the body), plus `loop do` prefix and `end` suffix.
+            let body_src = &source[begin_kw.end_offset()..end_kw.start_offset()];
+            let new = format!("loop do{}end", body_src);
+            return Some(Correction {
+                edits: vec![
+                    crate::offense::Edit { start_offset: r_start, end_offset: r_end, replacement: new },
+                    // Then delete from end_kw.end → node_end (the ` while X` part)
+                    crate::offense::Edit { start_offset: end_kw.end_offset(), end_offset: node_end, replacement: "".to_string() },
+                ],
+            });
+        }
+    }
+
+    let body_src = &source[bs..body_loc.end_offset()];
+    if body_src.contains('\n') {
+        return None; // skip multiline modifier (rare)
+    }
+    Some(Correction::replace(bs, node_end, &format!("loop {{ {} }}", body_src.trim())))
 }
 
 impl<'a> InfiniteLoopVisitor<'a> {
