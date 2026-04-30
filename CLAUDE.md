@@ -24,7 +24,7 @@ ruby-fast-cop = Rust port of RuboCop. Target 50-100x faster (like Ruff:Python).
 
 All 606 cops implemented. **Active workstream = wiring `Correction` emission** so `cargo test --test tester` passes the strict-mode `corrected` block check for every fixture that has one.
 
-**Status:** 7,998 / 11,217 (71%) corrections wired. 3,219 expected corrections across ~155 cops still unwired. Per-cop counts in `.correction_worklist.txt`. Per-dept totals in `COPS.md` summary.
+**Status:** 8,047 / 11,217 (72%) corrections wired. 3,170 expected corrections across ~154 cops still unwired. Per-cop counts in `.correction_worklist.txt`. Per-dept totals in `COPS.md` summary.
 
 Tester is hard-flipped: any TOML `corrected` block with no matching `Correction` from the cop = test failure. No silent skips. See `tests/tester.rs` ~L420 for the gate.
 
@@ -34,6 +34,7 @@ Wiring proceeds **cluster-by-cluster**. A cluster = cops that share a correction
 - **Cluster 2** (commit `2b69077`) — 9 cops, +257 corrections. Redundancy removers (RedundantBegin, RedundantFreeze, RedundantInterpolation, RedundantReturn, RedundantSort, RedundantSortBy, Lint/RedundantSafeNavigation, Lint/RedundantSplatExpansion, Lint/SafeNavigationChain).
 - **Cluster 4a** (this commit) — 2 cops, +77 corrections. Space-inside-brackets (Layout/SpaceInsideArrayLiteralBrackets, Layout/SpaceInsideReferenceBrackets). Insert/delete a single space; multi-line compact 2D-array newline cases handled by walking past whitespace.
 - **Cluster 4b** (this commit) — 5 cops, +288 Layout corrections. Re-indenter cops: RescueEnsureAlignment (50→0), BlockAlignment (36→1), HeredocIndentation (60→24), FirstHashElementIndentation (31→2), HashAlignment (56→5). Also fixed heredoc_indentation.toml: 32 `corrected` blocks had base_indent pre-baked; stripped to match decode_source convention.
+- **Solo: UselessAssignment** (this commit) — +49 Lint corrections. Simple-kind dead assignments deleted (`x = 1` → ``). Deferred kinds (14 residuals): MultipleAssignment, OperatorAssignment, OrAssignment, AndAssignment, RegexpNamedCapture, for-loop variable, rescued exception variable, block-local.
 
 **Known deferred edge cases** (not blocking cluster commits):
 

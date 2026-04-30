@@ -3,7 +3,7 @@ use crate::helpers::variable_force::{
     AssignmentKind, Scope, VariableForceDispatcher, VariableForceHook,
 };
 use crate::helpers::variable_force::suggestion::{find_suggestion, find_suggestion_from_methods};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::Visit;
 
 pub struct UselessAssignment;
@@ -149,13 +149,28 @@ impl<'a> VariableForceHook for UselessAssignmentHook<'a> {
                     (assignment.name_start, assignment.name_end)
                 };
 
-                self.offenses.push(self.ctx.offense_with_range(
+                let mut offense = self.ctx.offense_with_range(
                     "Lint/UselessAssignment",
                     &message,
                     Severity::Warning,
                     start,
                     end,
-                ));
+                );
+
+                // Wire correction for simple `name = expr` assignments only:
+                // delete the `name = ` prefix, leaving the RHS expression.
+                // Other kinds (op-assign, multi-assign, regex named capture)
+                // are deferred — they need separate logic.
+                if assignment.kind == AssignmentKind::Simple {
+                    if let Some(value_start) =
+                        find_simple_assignment_value_start(source, assignment.name_end)
+                    {
+                        offense = offense
+                            .with_correction(Correction::delete(assignment.name_start, value_start));
+                    }
+                }
+
+                self.offenses.push(offense);
 
                 // If this is a chained outer assignment, ignore inner ones
                 // (RuboCop's ignore_node + chained_assignment? logic)
@@ -365,6 +380,31 @@ impl<'a> Visit<'_> for VarNameFinder<'a> {
             self.found = true;
         }
     }
+}
+
+/// For a simple `name = expr` assignment, given the end offset of `name`,
+/// scan forward past whitespace, then `=`, then whitespace, and return the
+/// byte offset where the value expression begins. Returns None if the bytes
+/// after `name_end` don't match the simple-assignment shape (e.g. op-assign
+/// `name +=`, or no `=` found).
+fn find_simple_assignment_value_start(source: &str, name_end: usize) -> Option<usize> {
+    let bytes = source.as_bytes();
+    let mut i = name_end;
+    while i < bytes.len() && (bytes[i] == b' ' || bytes[i] == b'\t') {
+        i += 1;
+    }
+    if i >= bytes.len() || bytes[i] != b'=' {
+        return None;
+    }
+    // Reject op-assigns (`==`, `+=` already filtered by AssignmentKind, but be safe).
+    if i + 1 < bytes.len() && bytes[i + 1] == b'=' {
+        return None;
+    }
+    i += 1;
+    while i < bytes.len() && (bytes[i] == b' ' || bytes[i] == b'\t') {
+        i += 1;
+    }
+    Some(i)
 }
 
 crate::register_cop!("Lint/UselessAssignment", |_cfg| {
