@@ -4,7 +4,7 @@
 //! Mixin: https://github.com/rubocop/rubocop/blob/master/lib/rubocop/cop/mixin/percent_array.rb
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::{Node, Visit};
 
 const COP_NAME: &str = "Style/WordArray";
@@ -153,7 +153,11 @@ impl WordArray {
         // (we approximate: skip detection; not tested heavily)
 
         let loc = node.location();
-        vec![ctx.offense(COP_NAME, PERCENT_MSG, Severity::Convention, &loc)]
+        let mut off = ctx.offense(COP_NAME, PERCENT_MSG, Severity::Convention, &loc);
+        if let Some(c) = build_percent_correction(ctx.source, node, elements) {
+            off = off.with_correction(c);
+        }
+        vec![off]
     }
 
     fn check_percent_array(
@@ -294,6 +298,51 @@ fn element_to_string_literal(node: &Node, source: &str) -> String {
     } else {
         format!("'{}'", content)
     }
+}
+
+/// Build `[...]` → `%w(...)` / `%W(...)` correction. Returns None for non-StringNode elements
+/// (e.g. interpolated, dynamic content) to defer correction.
+fn build_percent_correction(
+    source: &str,
+    node: &ruby_prism::ArrayNode,
+    elements: &[Node],
+) -> Option<Correction> {
+    let mut parts: Vec<String> = Vec::with_capacity(elements.len());
+    let mut needs_w_capital = false;
+
+    for e in elements {
+        if !matches!(e, Node::StringNode { .. }) { return None; }
+        let content = string_content(e, source)?;
+        if content.contains(' ') || content.contains('(') || content.contains(')') {
+            return None;
+        }
+        let mut rendered = String::with_capacity(content.len());
+        for ch in content.chars() {
+            match ch {
+                '\n' => { rendered.push_str("\\n"); needs_w_capital = true; }
+                '\t' => { rendered.push_str("\\t"); needs_w_capital = true; }
+                '\r' => { rendered.push_str("\\r"); needs_w_capital = true; }
+                '\\' => { rendered.push_str("\\\\"); needs_w_capital = true; }
+                _    => rendered.push(ch),
+            }
+        }
+        parts.push(rendered);
+    }
+
+    let prefix = if needs_w_capital { "%W" } else { "%w" };
+
+    let arr_start = node.location().start_offset();
+    let arr_end = node.location().end_offset();
+    let arr_src = &source[arr_start..arr_end];
+
+    let body = if !needs_w_capital && arr_src.contains('\n') {
+        format!("\n{}\n", parts.join("\n"))
+    } else {
+        parts.join(" ")
+    };
+
+    let replacement = format!("{}({})", prefix, body);
+    Some(Correction::replace(arr_start, arr_end, &replacement))
 }
 
 fn invalid_percent_array_context(node: &ruby_prism::ArrayNode, source: &str) -> bool {
