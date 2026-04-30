@@ -4,7 +4,7 @@
 
 use crate::cops::{CheckContext, Cop};
 use crate::helpers::allowed_methods::is_method_allowed;
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Edit, Offense, Severity};
 use ruby_prism::{Node, Visit};
 
 const COP_NAME: &str = "Style/SymbolProc";
@@ -338,9 +338,12 @@ impl<'a> SymbolProcVisitor<'a> {
             "Pass `&:{}` as an argument to `{}` instead of a block.",
             body_method, call_method
         );
-        self.offenses.push(self.ctx.offense_with_range(
+        let correction = build_call_correction(self.ctx.source, call, block, &body_method);
+        let mut offense = self.ctx.offense_with_range(
             COP_NAME, &message, Severity::Convention, block_start, block_end,
-        ));
+        );
+        if let Some(c) = correction { offense = offense.with_correction(c); }
+        self.offenses.push(offense);
     }
 
     fn check_super_with_block(&mut self, super_node: &Node, block: &ruby_prism::BlockNode) {
@@ -519,6 +522,67 @@ impl Visit<'_> for SymbolProcVisitor<'_> {
             self.check_super_with_block(&node.as_node(), block);
         }
         ruby_prism::visit_forwarding_super_node(self, node);
+    }
+}
+
+/// Translate RuboCop's `autocorrect_without_args` / `autocorrect_with_args`.
+/// `coll.map { |x| x.foo }`           → `coll.map(&:foo)`
+/// `coll.map(   ) { |x| x.foo }`      → `coll.map(&:foo)`
+/// `coll.map(arg) { |x| x.foo }`      → `coll.map(arg, &:foo)`
+/// `mail(\n  k: v,\n) { |x| x.foo }`  → `mail(\n  k: v, &:foo\n)`
+fn build_call_correction(
+    source: &str,
+    call: &ruby_prism::CallNode,
+    block: &ruby_prism::BlockNode,
+    body_method: &str,
+) -> Option<Correction> {
+    let block_start = block.opening_loc().start_offset();
+    let block_end = block.closing_loc().end_offset();
+    let bytes = source.as_bytes();
+
+    // Strip surrounding spaces/tabs to the LEFT of begin_pos.
+    let strip_left = |start: usize| -> usize {
+        let mut s = start;
+        while s > 0 && (bytes[s - 1] == b' ' || bytes[s - 1] == b'\t') { s -= 1; }
+        s
+    };
+
+    let args_node_opt = call.arguments();
+    let has_args = args_node_opt
+        .as_ref()
+        .map(|a| a.arguments().iter().count() > 0)
+        .unwrap_or(false);
+
+    if has_args {
+        let args_node = args_node_opt.unwrap();
+        let last = args_node.arguments().iter().last()?;
+        let last_end = last.location().end_offset();
+        // Extend right past optional trailing comma (allow whitespace before comma).
+        let mut i = last_end;
+        while i < bytes.len() && (bytes[i] == b' ' || bytes[i] == b'\t') { i += 1; }
+        let has_trailing_comma = i < bytes.len() && bytes[i] == b',';
+        let insert_pos = if has_trailing_comma { i + 1 } else { last_end };
+        let replacement = if has_trailing_comma {
+            format!(" &:{}", body_method)
+        } else {
+            format!(", &:{}", body_method)
+        };
+        let left = strip_left(block_start);
+        Some(Correction { edits: vec![
+            Edit { start_offset: insert_pos, end_offset: insert_pos, replacement },
+            Edit { start_offset: left, end_offset: block_end, replacement: String::new() },
+        ]})
+    } else {
+        // No args. If call has empty parens `(  )`, swallow them too.
+        let begin_pos = if let Some(open) = call.opening_loc() {
+            // call.opening_loc covers `(` of empty parens.
+            open.start_offset()
+        } else {
+            block_start
+        };
+        let left = strip_left(begin_pos);
+        let replacement = format!("(&:{})", body_method);
+        Some(Correction::replace(left, block_end, &replacement))
     }
 }
 

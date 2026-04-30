@@ -24,7 +24,7 @@ ruby-fast-cop = Rust port of RuboCop. Target 50-100x faster (like Ruff:Python).
 
 All 606 cops implemented. **Active workstream = wiring `Correction` emission** so `cargo test --test tester` passes the strict-mode `corrected` block check for every fixture that has one.
 
-**Status:** 8,294 / 11,217 (74%) corrections wired. 2,923 expected corrections across ~148 cops still unwired. Per-cop counts in `.correction_worklist.txt`. Per-dept totals in `COPS.md` summary.
+**Status:** 8,327 / 11,217 (74%) corrections wired. 2,890 expected corrections across ~148 cops still unwired. Per-cop counts in `.correction_worklist.txt`. Per-dept totals in `COPS.md` summary.
 
 Tester is hard-flipped: any TOML `corrected` block with no matching `Correction` from the cop = test failure. No silent skips. See `tests/tester.rs` ~L420 for the gate.
 
@@ -40,6 +40,7 @@ Wiring proceeds **cluster-by-cluster**. A cluster = cops that share a correction
 - **Solo: Style/InfiniteLoop** (this commit) — +23 Style corrections. Block form `while/until LITERAL [do] body end` → `loop do body end` (replace keyword..cond/do header). Single-line modifier → `loop { body }`. Postloop `begin..end while/until LITERAL` → `loop do <inner> end` (uses begin/end keyword locations to splice the inner body). Deferred (2 residuals): multiline modifier with comment-preserving re-indent.
 - **Solo: MemoizedInstanceVariableName** (last commit) — +26 Naming corrections. Replace ivar name range with `@<suggested>`. Both `||=` (single offense) and `defined?` patterns (3 offenses for return/defined/write).
 - **Solo: Style/For** (this commit) — +25 Style corrections. For→Each (`for IDX in COLL [do]` → `COLL.each do |IDX|`) handles range/operator-method/and-or paren-wrap, safe-nav `&.each`, multi-target index. Each→For (`COLL.each do |IDX|` → `for IDX in COLL do`) handles explicit block params and missing-param `_` placeholder; skips numbered/it params (NumberedParametersNode location is not a usable param range in Prism).
+- **Solo: Style/SymbolProc** (this commit) — +33 Style corrections. Translates RuboCop `autocorrect_with_args` / `autocorrect_without_args`. Three shapes: (a) no args, no parens — replace ` { |x| x.foo }` with `(&:foo)`; (b) empty parens `(   )` — swallow `(...)` + block, replace with `(&:foo)`; (c) call has args — insert `, &:foo` after last arg (or ` &:foo` if trailing comma) and delete block. Deferred (5 residuals): lambda-literal `->` → `lambda(&:foo)`, super blocks.
 - **Solo: LiteralAsCondition** (last commit) — +95 Lint corrections. Wired: block-form & modifier if/unless (replace whole node with appropriate branch source), ternary, while truthy → `true` / falsey → drop, until falsey → `false` / truthy → drop, postloop while/until (use begin-block inner statements as body), and/or with literal lhs → replace whole node with rhs (skip return/break/next rhs). Deferred (36 residuals): elsif chain rewrites (`if x; ...elsif literal; ...end` → `if x; ...else; ...end`), `if literal && literal_rhs` (multi-pass conflict between outer-if and and-node corrections).
 
 **Known deferred edge cases** (not blocking cluster commits):
