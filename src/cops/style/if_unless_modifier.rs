@@ -5,7 +5,7 @@
 
 use crate::cops::{CheckContext, Cop};
 use crate::helpers::source;
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Edit, Offense, Severity};
 use ruby_prism::{Node, Visit};
 
 const COP_NAME: &str = "Style/IfUnlessModifier";
@@ -143,9 +143,17 @@ impl<'a> Visitor<'a> {
             ) && !matches!(predicate, Node::MatchWriteNode { .. })
             {
                 let msg = MSG_USE_MODIFIER.replace("%KEYWORD%", keyword);
-                self.offenses.push(self.ctx.offense_with_range(
+                let correction = self.block_to_modifier_correction(
+                    keyword, keyword_start, predicate, &body_items, &end_keyword_loc,
+                    node_start, node_end,
+                );
+                let mut offense = self.ctx.offense_with_range(
                     COP_NAME, &msg, Severity::Convention, keyword_start, keyword_end,
-                ));
+                );
+                if let Some(c) = correction {
+                    offense = offense.with_correction(c);
+                }
+                self.offenses.push(offense);
                 return;
             }
         }
@@ -154,11 +162,209 @@ impl<'a> Visitor<'a> {
         if is_modifier && !body_items.is_empty() {
             if self.too_long_due_to_modifier(node_start, node_end) {
                 let msg = MSG_USE_NORMAL.replace("%KEYWORD%", keyword);
-                self.offenses.push(self.ctx.offense_with_range(
+                let correction = self.modifier_to_normal_correction(
+                    keyword, keyword_start, predicate, &body_items, node_start, node_end,
+                );
+                let mut offense = self.ctx.offense_with_range(
                     COP_NAME, &msg, Severity::Convention, keyword_start, keyword_end,
-                ));
+                );
+                if let Some(c) = correction {
+                    offense = offense.with_correction(c);
+                }
+                self.offenses.push(offense);
             }
         }
+    }
+
+    // ── Correction builders ──
+
+    /// Block→modifier: `if cond\n  body\nend` → `body if cond`
+    fn block_to_modifier_correction(
+        &self,
+        keyword: &str,
+        keyword_start: usize,
+        predicate: &Node,
+        body_items: &[Node],
+        end_keyword_loc: &Option<ruby_prism::Location>,
+        node_start: usize,
+        node_end: usize,
+    ) -> Option<Correction> {
+        if body_items.is_empty() {
+            return None;
+        }
+        let body = &body_items[0];
+        let body_src_raw = &self.ctx.source[body.location().start_offset()..body.location().end_offset()];
+        let body_src = self.if_body_source(body_src_raw, body);
+        let cond_src = &self.ctx.source[predicate.location().start_offset()..predicate.location().end_offset()];
+
+        let expression = format!("{} {} {}", body_src, keyword, cond_src);
+
+        // Only add parens if the node is NOT already wrapped in `(...)` at node boundaries.
+        // `(if a\n  b\nend)` — outer `(` at node_start-1 means the parens are structural,
+        // replacement should NOT add extra parens (they'll be preserved from source).
+        let needs_parens = self.needs_parenthesization_for_correction(keyword_start, node_start, node_end);
+        let expression = if needs_parens {
+            format!("({})", expression)
+        } else {
+            expression
+        };
+
+        // Append first-line comment if present
+        let first_line_comment = self.first_line_comment_text(keyword_start);
+        let replacement = match &first_line_comment {
+            Some(c) => format!("{} {}", expression, c),
+            None => expression,
+        };
+
+        // Replace only the node range. Text outside node range (e.g. `)` after `end`)
+        // is preserved automatically by the correction applier.
+        Some(Correction::replace(node_start, node_end, replacement))
+    }
+
+    /// Modifier→normal: `body if cond` → `if cond\n  body\nend`
+    fn modifier_to_normal_correction(
+        &self,
+        keyword: &str,
+        keyword_start: usize,
+        predicate: &Node,
+        body_items: &[Node],
+        node_start: usize,
+        node_end: usize,
+    ) -> Option<Correction> {
+        if body_items.is_empty() {
+            return None;
+        }
+        let body = &body_items[0];
+        let body_src = &self.ctx.source[body.location().start_offset()..body.location().end_offset()];
+        let cond_src = &self.ctx.source[predicate.location().start_offset()..predicate.location().end_offset()];
+
+        // Indentation = leading whitespace of the line (NOT keyword column)
+        let line_text = self.ctx.line_text(node_start);
+        let indent_len = line_text.len() - line_text.trim_start().len();
+        let indent = &line_text[..indent_len];
+
+        // Check for trailing comment on same line
+        let comment_info = self.trailing_comment_on_line(line_text, node_start, node_end);
+
+        if let Some((comment_ws_start, comment_end, comment_text)) = comment_info {
+            // Is line too long only because of comment?
+            let line_start = self.line_start_offset(node_start);
+            let col_node_end = node_end - line_start;
+            let line_without_comment = if col_node_end <= line_text.len() {
+                &line_text[..col_node_end]
+            } else {
+                line_text
+            };
+            let len_without_comment = self.effective_line_length(line_without_comment);
+            if len_without_comment <= self.max_line_length {
+                // Too long only due to comment → move comment above, keep modifier form
+                let new_modifier = format!("{} {} {}", body_src, keyword, cond_src);
+                let replacement = format!("{}\n{}{}", comment_text.trim_start(), indent, new_modifier);
+                let edits = vec![
+                    Edit {
+                        start_offset: node_start,
+                        end_offset: node_end,
+                        replacement,
+                    },
+                    Edit {
+                        start_offset: comment_ws_start,
+                        end_offset: comment_end,
+                        replacement: String::new(),
+                    },
+                ];
+                return Some(Correction { edits });
+            }
+            // Still too long without comment → convert to normal form (comment stays after end)
+            let replacement = format!(
+                "{} {}\n{}  {}\n{}end",
+                keyword, cond_src, indent, body_src, indent
+            );
+            return Some(Correction::replace(node_start, node_end, replacement));
+        }
+
+        // Check for heredoc in body (defer — complex re-indentation needed)
+        if self.body_has_heredoc(body) {
+            return None;
+        }
+
+        let replacement = format!(
+            "{} {}\n{}  {}\n{}end",
+            keyword, cond_src, indent, body_src, indent
+        );
+        Some(Correction::replace(node_start, node_end, replacement))
+    }
+
+    /// Whether to add parens to the modifier form expression for the correction.
+    /// Does NOT add parens when the node is already wrapped by outer `(...)`.
+    fn needs_parenthesization_for_correction(
+        &self,
+        keyword_start: usize,
+        node_start: usize,
+        node_end: usize,
+    ) -> bool {
+        let bytes = self.ctx.source.as_bytes();
+
+        // If `(` immediately precedes node_start and `)` immediately follows node_end,
+        // the node is already parenthesized → no extra parens needed.
+        if node_start > 0 && bytes[node_start - 1] == b'(' {
+            if node_end < bytes.len() && bytes[node_end] == b')' {
+                return false;
+            }
+        }
+
+        // Otherwise use the backwards scan heuristic
+        self.needs_parenthesization(keyword_start)
+    }
+
+    /// Find trailing comment on the same line as the modifier node.
+    /// Returns (comment_ws_start, comment_end, comment_text) as absolute byte offsets.
+    fn trailing_comment_on_line(
+        &self,
+        line_text: &str,
+        node_start: usize,
+        node_end: usize,
+    ) -> Option<(usize, usize, String)> {
+        let line_start = self.line_start_offset(node_start);
+        if let Some(hash_pos) = source::find_comment_start(line_text) {
+            let comment_abs_start = line_start + hash_pos;
+            // Only count comment if it's at or after the node end
+            if comment_abs_start >= node_end {
+                let comment_ws_start = {
+                    let before = &line_text[..hash_pos];
+                    let trimmed_len = before.trim_end().len();
+                    line_start + trimmed_len
+                };
+                let comment_end = line_start + line_text.trim_end_matches('\n').trim_end_matches('\r').len();
+                let comment_text = line_text[hash_pos..].trim_end().to_string();
+                return Some((comment_ws_start, comment_end, comment_text));
+            }
+        }
+        None
+    }
+
+    fn line_start_offset(&self, offset: usize) -> usize {
+        let line_num = self.ctx.line_of(offset);
+        source::line_byte_offset(self.ctx.source, line_num)
+    }
+
+    fn body_has_heredoc(&self, body: &Node) -> bool {
+        // Detect heredoc by checking if body source starts with `<<`
+        let src = &self.ctx.source[body.location().start_offset()..body.location().end_offset()];
+        if src.starts_with("<<") {
+            return true;
+        }
+        // Also check inside call args
+        if let Some(call) = body.as_call_node() {
+            if let Some(args) = call.arguments() {
+                for arg in args.arguments().iter() {
+                    let arg_src = &self.ctx.source[arg.location().start_offset()..arg.location().end_offset()];
+                    if arg_src.starts_with("<<") {
+                        return true;
+                    }
+                }
+            }
+        }
+        false
     }
 
     // ── should_use_modifier ──
@@ -367,12 +573,13 @@ impl<'a> Visitor<'a> {
             let elements: Vec<_> = hash.elements().iter().collect();
             if let Some(last) = elements.last() {
                 if let Some(assoc) = last.as_assoc_node() {
-                    let key_start = assoc.key().location().start_offset();
-                    let key_end = assoc.key().location().end_offset();
-                    let val_start = assoc.value().location().start_offset();
-                    let val_end = assoc.value().location().end_offset();
-                    let key_src = &self.ctx.source[key_start..key_end];
-                    let val_src = &self.ctx.source[val_start..val_end];
+                    // Value omission in Ruby 3.1+ is represented as ImplicitNode
+                    if matches!(assoc.value(), Node::ImplicitNode { .. }) {
+                        return true;
+                    }
+                    // Fallback: check key ends with `:` and val source == key name
+                    let key_src = &self.ctx.source[assoc.key().location().start_offset()..assoc.key().location().end_offset()];
+                    let val_src = &self.ctx.source[assoc.value().location().start_offset()..assoc.value().location().end_offset()];
                     if key_src.ends_with(':') {
                         let key_name = key_src.trim_end_matches(':');
                         if val_src == key_name {
@@ -579,10 +786,7 @@ impl<'a> Visitor<'a> {
     }
 
     /// Check if a region of source contains comments on any line within it.
-    /// This mirrors RuboCop's `processed_source.contains_comment?(body.source_range)`.
-    /// We check each line that the body spans for `#` comments.
     fn region_contains_comment(&self, start: usize, end: usize) -> bool {
-        // Get the line range
         let start_line = self.ctx.line_of(start);
         let end_line = self.ctx.line_of(end);
         for line_num in start_line..=end_line {
@@ -637,13 +841,8 @@ impl<'a> Visitor<'a> {
             _ => return false,
         };
 
-        // Check for a preceding `var_name = ...` assignment (left sibling)
-        // Look for `var_name = ` in source before the if node, respecting scope.
-        // We use a simple heuristic: scan for `\nvar_name = ` or `^var_name = `
         let before_if = &self.ctx.source[..if_node_start];
 
-        // Look for the variable being assigned (simple assignment form)
-        // The pattern is: `var_name = ` at the start of a line or after newline
         for line in before_if.lines() {
             let trimmed = line.trim();
             if trimmed.starts_with(&var_name) {
@@ -659,7 +858,6 @@ impl<'a> Visitor<'a> {
     }
 
     /// Check if `end` is followed by something that makes it non-eligible
-    /// (binary operators, method calls, subscripts)
     fn is_chained_or_binary_after(&self, node_end: usize) -> bool {
         let bytes = self.ctx.source.as_bytes();
         let mut i = node_end;
@@ -699,14 +897,10 @@ impl<'a> Visitor<'a> {
                     || trimmed.starts_with("(if ") || trimmed.starts_with("(unless ")
                     || trimmed.starts_with("y:") || trimmed.starts_with("x:")
                 {
-                    // Check if it's truly another if/unless in a collection context
-                    // More broadly: any non-empty content after `end,` / `end)` suggests
-                    // sibling elements
                     let after_trimmed = after_end.trim();
                     if after_trimmed.starts_with(',') || after_trimmed.starts_with(")")
                         || after_trimmed.starts_with("]") || after_trimmed.starts_with("}")
                     {
-                        // Look for if/unless after the separator
                         let rest = after_trimmed.trim_start_matches(|c: char| {
                             c == ',' || c == ' ' || c == '\t'
                         });
@@ -715,7 +909,6 @@ impl<'a> Visitor<'a> {
                         {
                             return true;
                         }
-                        // Check for hash key: `y: if c`
                         if rest.contains(": if ") || rest.contains(": unless ")
                             || rest.contains(": (if ") || rest.contains(": (unless ")
                         {
@@ -725,20 +918,16 @@ impl<'a> Visitor<'a> {
                 }
             }
 
-            // More general: check if after `end` there's `, KEY: if/unless`
             if end_col + 3 < end_line.len() {
                 let after_end = &end_line[end_col + 3..];
                 let trimmed = after_end.trim();
-                // Pattern: `, key: if/unless` or `), (if/unless`
                 if let Some(comma_pos) = trimmed.find(',') {
                     let after_comma = trimmed[comma_pos + 1..].trim();
-                    // Hash pair: `key: if ...`
                     if after_comma.contains(": if ") || after_comma.contains(": unless ")
                         || after_comma.contains(": (if ") || after_comma.contains(": (unless ")
                     {
                         return true;
                     }
-                    // Direct if/unless
                     if after_comma.starts_with("if ") || after_comma.starts_with("unless ")
                         || after_comma.starts_with("(if ") || after_comma.starts_with("(unless ")
                     {

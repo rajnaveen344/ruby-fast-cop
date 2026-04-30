@@ -3,8 +3,8 @@
 //! Flags modifier if/unless applied to another conditional (if/unless/ternary).
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
-use ruby_prism::{IfNode, UnlessNode, Node, Visit};
+use crate::offense::{Correction, Offense, Severity};
+use ruby_prism::{IfNode, Node, UnlessNode, Visit};
 
 #[derive(Default)]
 pub struct IfUnlessModifierOfIfUnless;
@@ -40,19 +40,16 @@ struct ModifierOfIfUnlessVisitor<'a> {
 }
 
 fn is_modifier_if(node: &IfNode) -> bool {
-    // Modifier `if`: the if keyword comes AFTER the statements (body)
     if let Some(kw) = node.if_keyword_loc() {
         if kw.as_slice() != b"if" {
             return false;
         }
-        // For modifier form, body/statements appear before the keyword
         if let Some(stmts) = node.statements() {
             let parts: Vec<_> = stmts.body().iter().collect();
             if let Some(first) = parts.first() {
                 return first.location().start_offset() < kw.start_offset();
             }
         }
-        // No statements before keyword = not modifier
         false
     } else {
         false
@@ -60,7 +57,6 @@ fn is_modifier_if(node: &IfNode) -> bool {
 }
 
 fn is_modifier_unless(node: &UnlessNode) -> bool {
-    // Modifier `unless`: body statements appear before the keyword
     let kw = node.keyword_loc();
     if let Some(stmts) = node.statements() {
         let parts: Vec<_> = stmts.body().iter().collect();
@@ -75,7 +71,109 @@ fn is_body_conditional(node: &Node) -> bool {
     matches!(node, Node::IfNode { .. } | Node::UnlessNode { .. })
 }
 
+fn source_slice(source: &str, start: usize, end: usize) -> String {
+    source.get(start..end).unwrap_or("").to_string()
+}
+
+/// Recursively normalize a body node: if it's a modifier if/unless, expand to block form.
+fn normalize_node_source(body: &Node, source: &str) -> String {
+    match body {
+        Node::IfNode { .. } => {
+            let node = body.as_if_node().unwrap();
+            if is_modifier_if(&node) {
+                if let Some(stmts) = node.statements() {
+                    let parts: Vec<_> = stmts.body().iter().collect();
+                    if parts.len() == 1 {
+                        let inner_body = &parts[0];
+                        let cond = node.predicate();
+                        let cond_src = source_slice(
+                            source,
+                            cond.location().start_offset(),
+                            cond.location().end_offset(),
+                        );
+                        let body_norm = normalize_node_source(inner_body, source);
+                        return format!("if {}\n{}\nend", cond_src, body_norm);
+                    }
+                }
+            }
+            source_slice(
+                source,
+                body.location().start_offset(),
+                body.location().end_offset(),
+            )
+        }
+        Node::UnlessNode { .. } => {
+            let node = body.as_unless_node().unwrap();
+            if is_modifier_unless(&node) {
+                if let Some(stmts) = node.statements() {
+                    let parts: Vec<_> = stmts.body().iter().collect();
+                    if parts.len() == 1 {
+                        let inner_body = &parts[0];
+                        let cond = node.predicate();
+                        let cond_src = source_slice(
+                            source,
+                            cond.location().start_offset(),
+                            cond.location().end_offset(),
+                        );
+                        let body_norm = normalize_node_source(inner_body, source);
+                        return format!("unless {}\n{}\nend", cond_src, body_norm);
+                    }
+                }
+            }
+            source_slice(
+                source,
+                body.location().start_offset(),
+                body.location().end_offset(),
+            )
+        }
+        _ => source_slice(
+            source,
+            body.location().start_offset(),
+            body.location().end_offset(),
+        ),
+    }
+}
+
 impl<'a> ModifierOfIfUnlessVisitor<'a> {
+    fn build_correction_for_if(
+        &self,
+        node: &IfNode,
+        keyword: &str,
+        body: &Node,
+    ) -> Option<Correction> {
+        let source = self.ctx.source;
+        let cond = node.predicate();
+        let cond_src = source_slice(
+            source,
+            cond.location().start_offset(),
+            cond.location().end_offset(),
+        );
+        let body_normalized = normalize_node_source(body, source);
+        let replacement = format!("{} {}\n{}\nend", keyword, cond_src, body_normalized);
+        let node_start = node.location().start_offset();
+        let node_end = node.location().end_offset();
+        Some(Correction::replace(node_start, node_end, replacement))
+    }
+
+    fn build_correction_for_unless(
+        &self,
+        node: &UnlessNode,
+        body: &Node,
+    ) -> Option<Correction> {
+        let source = self.ctx.source;
+        let cond = node.predicate();
+        let cond_src = source_slice(
+            source,
+            cond.location().start_offset(),
+            cond.location().end_offset(),
+        );
+        let body_normalized = normalize_node_source(body, source);
+        let replacement = format!("unless {}\n{}\nend", cond_src, body_normalized);
+        let node_start = node.location().start_offset();
+        let node_end = node.location().end_offset();
+        Some(Correction::replace(node_start, node_end, replacement))
+    }
+
     fn check_if_modifier(&mut self, node: &IfNode, keyword: &str) {
         let stmts = match node.statements() {
             Some(s) => s,
@@ -93,13 +191,23 @@ impl<'a> ModifierOfIfUnlessVisitor<'a> {
 
         let msg = format!("Avoid modifier `{}` after another conditional.", keyword);
         let kw_loc = node.if_keyword_loc().unwrap();
-        self.offenses.push(self.ctx.offense_with_range(
-            "Style/IfUnlessModifierOfIfUnless",
-            &msg,
-            Severity::Convention,
-            kw_loc.start_offset(),
-            kw_loc.end_offset(),
-        ));
+        let correction = self.build_correction_for_if(node, keyword, body);
+
+        let offense = self
+            .ctx
+            .offense_with_range(
+                "Style/IfUnlessModifierOfIfUnless",
+                &msg,
+                Severity::Convention,
+                kw_loc.start_offset(),
+                kw_loc.end_offset(),
+            );
+        let offense = if let Some(c) = correction {
+            offense.with_correction(c)
+        } else {
+            offense
+        };
+        self.offenses.push(offense);
     }
 
     fn check_unless_modifier(&mut self, node: &UnlessNode) {
@@ -119,13 +227,23 @@ impl<'a> ModifierOfIfUnlessVisitor<'a> {
 
         let msg = "Avoid modifier `unless` after another conditional.";
         let kw_loc = node.keyword_loc();
-        self.offenses.push(self.ctx.offense_with_range(
-            "Style/IfUnlessModifierOfIfUnless",
-            msg,
-            Severity::Convention,
-            kw_loc.start_offset(),
-            kw_loc.end_offset(),
-        ));
+        let correction = self.build_correction_for_unless(node, body);
+
+        let offense = self
+            .ctx
+            .offense_with_range(
+                "Style/IfUnlessModifierOfIfUnless",
+                msg,
+                Severity::Convention,
+                kw_loc.start_offset(),
+                kw_loc.end_offset(),
+            );
+        let offense = if let Some(c) = correction {
+            offense.with_correction(c)
+        } else {
+            offense
+        };
+        self.offenses.push(offense);
     }
 }
 
