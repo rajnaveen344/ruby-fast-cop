@@ -5,7 +5,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 
 **Pending-default progress: 156 / 156 (100%)**. **Disabled-default progress: 54 / 54 (100%)**.
 
-**Autocorrect progress: 8,196 / 11,217 (73%)** — 3,021 expected corrections across ~152 cops still unwired. See [`.correction_worklist.txt`](.correction_worklist.txt) for per-cop counts.
+**Autocorrect progress: 8,247 / 11,217 (74%)** — 2,970 expected corrections across ~150 cops still unwired. See [`.correction_worklist.txt`](.correction_worklist.txt) for per-cop counts.
 
 ## Summary
 
@@ -13,16 +13,16 @@ Cop-count cells show `implemented / total`. Autocorrect column shows `wired / ex
 
 | Department |     Enabled |     Pending |  Disabled |             Tests |              Autocorrect |
 | ---------- | ----------: | ----------: | --------: | ----------------: | -----------------------: |
-| Style      |     175/175 |       91/91 |     32/32 |   14,566 / 14,566 |      4,874 / 7,318 (67%) |
+| Style      |     175/175 |       91/91 |     32/32 |   14,566 / 14,566 |      4,899 / 7,318 (67%) |
 | Lint       |     100/100 |       50/50 |       4/4 |     5,961 / 5,961 |      1,746 / 1,908 (92%) |
 | Layout     |       81/81 |         5/5 |     14/14 |     4,646 / 4,646 |      1,490 / 1,851 (80%) |
 | Metrics    |         9/9 |         1/1 |       0/0 |         272 / 272 |         n/a (0 expected) |
-| Naming     |       16/16 |         2/2 |       1/1 |     2,216 / 2,216 |            41 / 86 (47%) |
+| Naming     |       16/16 |         2/2 |       1/1 |     2,216 / 2,216 |            67 / 86 (78%) |
 | Gemspec    |         4/4 |         5/5 |       1/1 |         193 / 193 |           24 / 24 (100%) |
 | Bundler    |         5/5 |         0/0 |       2/2 |         101 / 101 |             8 / 12 (66%) |
 | Security   |         5/5 |         2/2 |       0/0 |         102 / 102 |            12 / 17 (70%) |
 | Migration  |         1/1 |         0/0 |       0/0 |             8 / 8 |             1 / 1 (100%) |
-| **Total**  | **396/396** | **156/156** | **54/54** | **28,065/28,065** | **8,196 / 11,217 (73%)** |
+| **Total**  | **396/396** | **156/156** | **54/54** | **28,065/28,065** | **8,247 / 11,217 (74%)** |
 
 - **Enabled**: Runs by default on every codebase (highest priority to implement)
 - **Pending**: Runs only with `NewCops: enable` in config

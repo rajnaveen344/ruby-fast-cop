@@ -4,7 +4,7 @@
 //! Supports both `@ivar ||= ...` and `return @ivar if defined?(@ivar); @ivar = ...` patterns.
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::{Node, Visit};
 
 const INITIALIZE_METHODS: &[&str] = &["initialize", "initialize_clone", "initialize_copy", "initialize_dup"];
@@ -163,13 +163,14 @@ impl<'a> MemoizedVisitor<'a> {
         let msg = make_message(self.style, &ivar_name, &method_name, &suggested);
 
         let name_loc = node.name_loc();
+        let replacement = format!("@{}", suggested);
         self.offenses.push(self.ctx.offense_with_range(
             "Naming/MemoizedInstanceVariableName",
             &msg,
             Severity::Convention,
             name_loc.start_offset(),
             name_loc.end_offset(),
-        ));
+        ).with_correction(Correction::replace(name_loc.start_offset(), name_loc.end_offset(), &replacement)));
     }
 
     /// Check `return @ivar if defined?(@ivar); @ivar = value` pattern in method body
@@ -196,6 +197,7 @@ impl<'a> MemoizedVisitor<'a> {
                                 let suggested = suggested_var(self.style, method_name);
                                 let msg = make_message(self.style, &ivar_name, method_name, &suggested);
 
+                                let replacement = format!("@{}", suggested);
                                 // Report 3 offenses: return @ivar, defined?(@ivar), @ivar =
                                 self.offenses.push(self.ctx.offense_with_range(
                                     "Naming/MemoizedInstanceVariableName",
@@ -203,14 +205,14 @@ impl<'a> MemoizedVisitor<'a> {
                                     Severity::Convention,
                                     return_ivar_loc.0,
                                     return_ivar_loc.1,
-                                ));
+                                ).with_correction(Correction::replace(return_ivar_loc.0, return_ivar_loc.1, &replacement)));
                                 self.offenses.push(self.ctx.offense_with_range(
                                     "Naming/MemoizedInstanceVariableName",
                                     &msg,
                                     Severity::Convention,
                                     defined_ivar_loc.0,
                                     defined_ivar_loc.1,
-                                ));
+                                ).with_correction(Correction::replace(defined_ivar_loc.0, defined_ivar_loc.1, &replacement)));
 
                                 let write_name_loc = ivar_write.name_loc();
                                 self.offenses.push(self.ctx.offense_with_range(
@@ -219,7 +221,7 @@ impl<'a> MemoizedVisitor<'a> {
                                     Severity::Convention,
                                     write_name_loc.start_offset(),
                                     write_name_loc.end_offset(),
-                                ));
+                                ).with_correction(Correction::replace(write_name_loc.start_offset(), write_name_loc.end_offset(), &replacement)));
 
                                 return;
                             }
