@@ -3,7 +3,7 @@
 //! Checks if the quotes used for quoted symbols match the configured defaults.
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::Visit;
 
 const COP_NAME: &str = "Style/QuotedSymbols";
@@ -76,7 +76,6 @@ impl<'a> Visit<'_> for Visitor<'a> {
             };
 
         let _ = is_hash_colon;
-        let _ = body_start;
 
         // Multi-line symbols: RuboCop accepts these regardless of style
         if body_src.contains('\n') {
@@ -126,13 +125,20 @@ impl<'a> Visit<'_> for Visitor<'a> {
         // For standalone: full source. For hash-colon: source minus trailing `:`.
         let off_start = start;
         let off_end = body_end;
-        self.offenses.push(self.ctx.offense_with_range(
+        let target_double = matches!(self.cop.style, EffectiveStyle::DoubleQuotes);
+        let inner = &body_src[1..body_src.len() - 1];
+        let new_inner = reescape_quotes(inner, target_double);
+        let new_quote = if target_double { '"' } else { '\'' };
+        let replacement = format!("{}{}{}", new_quote, new_inner, new_quote);
+        let mut offense = self.ctx.offense_with_range(
             COP_NAME,
             msg,
             Severity::Convention,
             off_start,
             off_end,
-        ));
+        );
+        offense = offense.with_correction(Correction::replace(body_start, body_end, replacement));
+        self.offenses.push(offense);
     }
 }
 
@@ -237,6 +243,45 @@ fn invalid_double_quotes_pattern(s: &str) -> bool {
         i += 1;
     }
     false
+}
+
+/// Re-escape inner content when swapping quote style.
+/// `target_double=true` means going to double-quotes (was single): unescape `\'` → `'`.
+/// `target_double=false` means going to single-quotes (was double): unescape `\"` → `"`.
+/// Leave other escape sequences (`\\`, `\n`, etc.) intact.
+fn reescape_quotes(inner: &str, target_double: bool) -> String {
+    let bytes = inner.as_bytes();
+    let mut out = String::with_capacity(inner.len());
+    let mut i = 0;
+    while i < bytes.len() {
+        let b = bytes[i];
+        if b == b'\\' && i + 1 < bytes.len() {
+            let n = bytes[i + 1];
+            if n == b'\\' {
+                out.push('\\');
+                out.push('\\');
+                i += 2;
+                continue;
+            }
+            if target_double && n == b'\'' {
+                out.push('\'');
+                i += 2;
+                continue;
+            }
+            if !target_double && n == b'"' {
+                out.push('"');
+                i += 2;
+                continue;
+            }
+            out.push('\\');
+            out.push(n as char);
+            i += 2;
+            continue;
+        }
+        out.push(b as char);
+        i += 1;
+    }
+    out
 }
 
 crate::register_cop!("Style/QuotedSymbols", |cfg| {
