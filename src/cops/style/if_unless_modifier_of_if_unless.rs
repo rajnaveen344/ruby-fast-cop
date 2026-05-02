@@ -28,6 +28,7 @@ impl Cop for IfUnlessModifierOfIfUnless {
         let mut visitor = ModifierOfIfUnlessVisitor {
             ctx,
             offenses: Vec::new(),
+            correction_covered: Vec::new(),
         };
         visitor.visit(&node.as_node());
         visitor.offenses
@@ -37,6 +38,9 @@ impl Cop for IfUnlessModifierOfIfUnless {
 struct ModifierOfIfUnlessVisitor<'a> {
     ctx: &'a CheckContext<'a>,
     offenses: Vec<Offense>,
+    /// Ranges already covered by an outer recursive correction.
+    /// Inner nodes in these ranges should not emit their own correction.
+    correction_covered: Vec<(usize, usize)>,
 }
 
 fn is_modifier_if(node: &IfNode) -> bool {
@@ -135,8 +139,14 @@ fn normalize_node_source(body: &Node, source: &str) -> String {
 }
 
 impl<'a> ModifierOfIfUnlessVisitor<'a> {
+    fn is_covered(&self, start: usize, end: usize) -> bool {
+        self.correction_covered
+            .iter()
+            .any(|&(cs, ce)| start >= cs && end <= ce)
+    }
+
     fn build_correction_for_if(
-        &self,
+        &mut self,
         node: &IfNode,
         keyword: &str,
         body: &Node,
@@ -152,11 +162,13 @@ impl<'a> ModifierOfIfUnlessVisitor<'a> {
         let replacement = format!("{} {}\n{}\nend", keyword, cond_src, body_normalized);
         let node_start = node.location().start_offset();
         let node_end = node.location().end_offset();
+        // Mark this range as covered so inner nodes skip their corrections
+        self.correction_covered.push((node_start, node_end));
         Some(Correction::replace(node_start, node_end, replacement))
     }
 
     fn build_correction_for_unless(
-        &self,
+        &mut self,
         node: &UnlessNode,
         body: &Node,
     ) -> Option<Correction> {
@@ -171,6 +183,7 @@ impl<'a> ModifierOfIfUnlessVisitor<'a> {
         let replacement = format!("unless {}\n{}\nend", cond_src, body_normalized);
         let node_start = node.location().start_offset();
         let node_end = node.location().end_offset();
+        self.correction_covered.push((node_start, node_end));
         Some(Correction::replace(node_start, node_end, replacement))
     }
 
@@ -191,7 +204,15 @@ impl<'a> ModifierOfIfUnlessVisitor<'a> {
 
         let msg = format!("Avoid modifier `{}` after another conditional.", keyword);
         let kw_loc = node.if_keyword_loc().unwrap();
-        let correction = self.build_correction_for_if(node, keyword, body);
+        let node_start = node.location().start_offset();
+        let node_end = node.location().end_offset();
+
+        // Only emit correction if this node is not already covered by an outer correction
+        let correction = if !self.is_covered(node_start, node_end) {
+            self.build_correction_for_if(node, keyword, body)
+        } else {
+            None
+        };
 
         let offense = self
             .ctx
@@ -227,7 +248,14 @@ impl<'a> ModifierOfIfUnlessVisitor<'a> {
 
         let msg = "Avoid modifier `unless` after another conditional.";
         let kw_loc = node.keyword_loc();
-        let correction = self.build_correction_for_unless(node, body);
+        let node_start = node.location().start_offset();
+        let node_end = node.location().end_offset();
+
+        let correction = if !self.is_covered(node_start, node_end) {
+            self.build_correction_for_unless(node, body)
+        } else {
+            None
+        };
 
         let offense = self
             .ctx

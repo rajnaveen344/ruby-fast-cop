@@ -3,7 +3,7 @@
 //! Ported from: https://github.com/rubocop/rubocop/blob/master/lib/rubocop/cop/style/redundant_condition.rb
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Edit, Offense, Severity};
 use ruby_prism::{Node, Visit};
 
 const COP_NAME: &str = "Style/RedundantCondition";
@@ -46,10 +46,23 @@ impl Cop for RedundantCondition {
         node: &ruby_prism::ProgramNode,
         ctx: &CheckContext,
     ) -> Vec<Offense> {
+        // Collect comment ranges for "no autocorrect when has comment" check
+        let comment_ranges: Vec<(usize, usize)> = {
+            let result = ruby_prism::parse(ctx.source.as_bytes());
+            result
+                .comments()
+                .map(|c| {
+                    let loc = c.location();
+                    (loc.start_offset(), loc.end_offset())
+                })
+                .collect()
+        };
         let mut visitor = RedundantConditionVisitor {
             ctx,
             allowed_methods: &self.allowed_methods,
+            comment_ranges,
             offenses: Vec::new(),
+            in_call_arg: false,
         };
         visitor.visit(&node.as_node());
         visitor.offenses
@@ -59,7 +72,10 @@ impl Cop for RedundantCondition {
 struct RedundantConditionVisitor<'a> {
     ctx: &'a CheckContext<'a>,
     allowed_methods: &'a [String],
+    comment_ranges: Vec<(usize, usize)>,
     offenses: Vec<Offense>,
+    /// Whether the current if-node is a direct argument inside a call (parent is send)
+    in_call_arg: bool,
 }
 
 impl<'a> RedundantConditionVisitor<'a> {
@@ -69,21 +85,15 @@ impl<'a> RedundantConditionVisitor<'a> {
     }
 
     fn is_ternary(&self, node: &ruby_prism::IfNode) -> bool {
-        // In Prism, ternary `b ? b : c` has if_keyword_loc pointing to `?`
-        // Modifier if `bar if bar` has if_keyword_loc pointing to `if`
-        // Regular if `if b; ... end` has if_keyword_loc pointing to `if`
-        // Check: keyword is not "if" and not "elsif"
         if let Some(kw_loc) = node.if_keyword_loc() {
             let kw = self.ctx.src(kw_loc.start_offset(), kw_loc.end_offset());
             kw != "if" && kw != "elsif"
         } else {
-            // No if_keyword_loc - this IS a ternary in Prism
             true
         }
     }
 
     fn is_modifier_if(&self, node: &ruby_prism::IfNode) -> bool {
-        // Modifier if: has "if" keyword but no "end" keyword
         node.end_keyword_loc().is_none() && !self.is_ternary(node)
     }
 
@@ -92,12 +102,25 @@ impl<'a> RedundantConditionVisitor<'a> {
         self.ctx.source[start..].starts_with("elsif")
     }
 
-    fn check_if_node(&mut self, node: &ruby_prism::IfNode) {
-        // Skip modifier form
+    fn range_has_comment(&self, start: usize, end: usize) -> bool {
+        self.comment_ranges.iter().any(|(s, _)| *s >= start && *s < end)
+    }
+
+    fn node_has_comment(&self, node: &Node) -> bool {
+        let loc = node.location();
+        self.range_has_comment(loc.start_offset(), loc.end_offset())
+    }
+
+    /// Any descendant of the if-node contains a comment → skip autocorrect
+    fn if_node_has_descendant_comment(&self, node: &ruby_prism::IfNode) -> bool {
+        let loc = node.location();
+        self.range_has_comment(loc.start_offset(), loc.end_offset())
+    }
+
+    fn check_if_node(&mut self, node: &ruby_prism::IfNode, parent_is_call: bool) {
         if self.is_modifier_if(node) {
             return;
         }
-        // Skip elsif
         if self.is_elsif(node) {
             return;
         }
@@ -106,43 +129,579 @@ impl<'a> RedundantConditionVisitor<'a> {
         }
 
         let is_ternary = self.is_ternary(node);
-
         let message = if !is_ternary && node.subsequent().is_none() {
             REDUNDANT_CONDITION
         } else {
             MSG
         };
 
-        // Offense range
         let (start, end) = if is_ternary {
             if self.branches_have_method_if(node) {
-                // Full ternary range
                 (node.location().start_offset(), node.location().end_offset())
             } else {
-                // Range from ? to :  (question mark to colon end)
                 self.ternary_question_colon_range(node)
             }
         } else {
             (node.location().start_offset(), node.predicate().location().end_offset())
         };
 
-        self.offenses.push(self.ctx.offense_with_range(
+        let has_comment = self.if_node_has_descendant_comment(node);
+
+        let correction = if has_comment {
+            None
+        } else {
+            Some(self.compute_if_correction(node, is_ternary, parent_is_call))
+        };
+
+        let offense = self.ctx.offense_with_range(
             COP_NAME, message, Severity::Convention, start, end,
-        ));
+        );
+        let offense = if let Some(c) = correction {
+            offense.with_correction(c)
+        } else {
+            offense
+        };
+        self.offenses.push(offense);
+    }
+
+    fn compute_if_correction(
+        &self,
+        node: &ruby_prism::IfNode,
+        is_ternary: bool,
+        parent_is_call: bool,
+    ) -> Correction {
+        let node_start = node.location().start_offset();
+        let node_end = node.location().end_offset();
+
+        // Case 1: ternary, branches_have_method → replace full node with merged call
+        if is_ternary && self.branches_have_method_if(node) {
+            let replacement = self.make_ternary_form_branches_have_method(node);
+            return Correction::replace(node_start, node_end, replacement);
+        }
+
+        // Case 2: ternary simple → replace "? b :" with "||"
+        if is_ternary {
+            return self.correct_ternary(node);
+        }
+
+        // Case 3: no else branch (redundant_condition) → replace whole node with condition source
+        if node.subsequent().is_none() {
+            let cond_src = self.src(&node.predicate());
+            return Correction::replace(node_start, node_end, cond_src.to_string());
+        }
+
+        // Case 4: branches_have_assignment (must come before branches_have_method
+        // since assignment methods like `bar=` match both)
+        if self.branches_have_assignment_if(node) {
+            return self.correct_branches_have_assignment(node, parent_is_call);
+        }
+
+        // Case 5: branches_have_arithmetic_op
+        if self.branches_have_arithmetic_op(node) {
+            return self.correct_arithmetic_op(node, parent_is_call);
+        }
+
+        // Case 6: branches_have_method → special handling
+        if self.branches_have_method_if(node) {
+            return self.correct_branches_have_method(node, parent_is_call);
+        }
+
+        // Case 7: if_branch is `true` and cond is predicate with unparenthesized args
+        // e.g. `if foo? arg; true; else; bar; end` → `foo?(arg) || bar`
+        if self.is_true_branch_predicate_needs_parens(node) {
+            if let Some(c) = self.compute_true_branch_correction(node, false, parent_is_call) {
+                return c;
+            }
+        }
+
+        // Case 8: simple cond==if_branch, else exists → "cond || else_src"
+        self.correct_simple(node, parent_is_call)
+    }
+
+    fn correct_ternary(&self, node: &ruby_prism::IfNode) -> Correction {
+        // Replace "? <if_branch> :" with "||"
+        let (q_pos, c_pos) = self.ternary_question_colon_range(node);
+
+        let mut edits = vec![
+            Edit {
+                start_offset: q_pos,
+                end_offset: c_pos,
+                replacement: "||".to_string(),
+            }
+        ];
+
+        // If else branch is range type → wrap in parens
+        if self.is_else_branch_range_node(node) {
+            if let Some((else_start, else_end)) = self.get_else_branch_offsets(node) {
+                let else_src = self.ctx.src(else_start, else_end);
+                edits.push(Edit {
+                    start_offset: else_start,
+                    end_offset: else_end,
+                    replacement: format!("({})", else_src),
+                });
+            }
+        }
+
+        Correction { edits }
+    }
+
+    fn correct_simple(&self, node: &ruby_prism::IfNode, parent_is_call: bool) -> Correction {
+        let node_start = node.location().start_offset();
+        let node_end = node.location().end_offset();
+        let cond_src = self.src(&node.predicate());
+
+        let else_src = self.get_else_src_for_simple(node);
+
+        let ternary_form = format!("{} || {}", cond_src, else_src);
+        let replacement = if parent_is_call {
+            format!("({})", ternary_form)
+        } else {
+            ternary_form
+        };
+
+        Correction::replace(node_start, node_end, replacement)
+    }
+
+    fn get_else_src_for_simple(&self, node: &ruby_prism::IfNode) -> String {
+        let sub = match node.subsequent() {
+            Some(s) => s,
+            None => return String::new(),
+        };
+        let else_node = match sub.as_else_node() {
+            Some(en) => en,
+            None => return String::new(),
+        };
+        let stmts = match else_node.statements() {
+            Some(s) => s,
+            None => return String::new(),
+        };
+        let body: Vec<_> = stmts.body().iter().collect();
+        if body.len() != 1 { return String::new(); }
+        self.else_source_simple(&body[0])
+    }
+
+    fn correct_branches_have_method(&self, node: &ruby_prism::IfNode, parent_is_call: bool) -> Correction {
+        let node_start = node.location().start_offset();
+        let node_end = node.location().end_offset();
+
+        let if_stmts = node.statements().unwrap();
+        let if_body: Vec<_> = if_stmts.body().iter().collect();
+        let if_branch = &if_body[0];
+        let if_call = if_branch.as_call_node().unwrap();
+
+        let sub = node.subsequent().unwrap();
+        let else_n = sub.as_else_node().unwrap();
+        let else_stmts = else_n.statements().unwrap();
+        let else_body: Vec<_> = else_stmts.body().iter().collect();
+        let else_branch = &else_body[0];
+
+        let else_call = else_branch.as_call_node().unwrap();
+        let else_args = else_call.arguments().unwrap();
+        let else_arg_list: Vec<_> = else_args.arguments().iter().collect();
+        let else_arg = &else_arg_list[0];
+
+        let else_arg_src = self.else_source_if_has_method(else_arg);
+
+        let if_branch_start = if_branch.location().start_offset();
+
+        // Build replacement starting from if_branch (not from node_start/if keyword)
+        let replacement = if let Some(open_loc) = if_call.opening_loc() {
+            // parenthesized call: bar(foo) / X.find(x)
+            let if_args = if_call.arguments().unwrap();
+            let if_arg_list: Vec<_> = if_args.arguments().iter().collect();
+            let if_arg = &if_arg_list[0];
+            let if_arg_src = self.src(if_arg);
+            let open_offset = open_loc.start_offset();
+            // prefix = everything from if_branch start up to '('
+            let prefix = self.ctx.src(if_branch_start, open_offset);
+            format!("{}({} || {})", prefix, if_arg_src, else_arg_src)
+        } else {
+            // unparenthesized: bar foo / bar 1..2
+            let if_args = if_call.arguments().unwrap();
+            let if_arg_list: Vec<_> = if_args.arguments().iter().collect();
+            let if_arg = &if_arg_list[0];
+            let if_arg_src = self.src(if_arg);
+
+            let method_end = if_call.message_loc()
+                .map(|l| l.end_offset())
+                .unwrap_or(if_call.location().start_offset());
+
+            // prefix = from if_branch start to end of method name
+            let prefix = self.ctx.src(if_branch_start, method_end);
+            let inner = format!("{} || {}", if_arg_src, else_arg_src);
+            format!("{} {}", prefix, inner)
+        };
+
+        let replacement = if parent_is_call {
+            format!("({})", replacement)
+        } else {
+            replacement
+        };
+
+        Correction::replace(node_start, node_end, replacement)
+    }
+
+    fn else_source_if_has_method(&self, else_arg: &Node) -> String {
+        if self.require_parentheses(else_arg) {
+            format!("({})", self.src(else_arg))
+        } else if self.require_braces(else_arg) {
+            format!("{{ {} }}", self.src(else_arg))
+        } else {
+            self.src(else_arg).to_string()
+        }
+    }
+
+    fn correct_branches_have_assignment(&self, node: &ruby_prism::IfNode, parent_is_call: bool) -> Correction {
+        let node_start = node.location().start_offset();
+        let node_end = node.location().end_offset();
+
+        let if_stmts = node.statements().unwrap();
+        let if_body: Vec<_> = if_stmts.body().iter().collect();
+        let if_branch = &if_body[0];
+
+        let sub = node.subsequent().unwrap();
+        let else_n = sub.as_else_node().unwrap();
+        let else_stmts = else_n.statements().unwrap();
+        let else_body: Vec<_> = else_stmts.body().iter().collect();
+        let else_branch = &else_body[0];
+
+        // if_branch_src = whole assignment like "@value = foo"
+        let if_branch_src = self.src(if_branch);
+
+        // Get the rhs of the else assignment and format it
+        let else_val_src = self.else_assignment_value_src(else_branch);
+
+        // Replacement = "<if_branch_src> || <else_val_src>"
+        // e.g. "@value = foo || 'bar'"
+        let replacement = format!("{} || {}", if_branch_src, else_val_src);
+        let replacement = if parent_is_call {
+            format!("({})", replacement)
+        } else {
+            replacement
+        };
+
+        Correction::replace(node_start, node_end, replacement)
+    }
+
+    fn else_assignment_value_src(&self, else_branch: &Node) -> String {
+        // Extract rhs of assignment and apply require_parens/braces logic
+        match else_branch {
+            Node::LocalVariableWriteNode { .. } => {
+                let v = else_branch.as_local_variable_write_node().unwrap().value();
+                self.format_else_value(&v)
+            }
+            Node::InstanceVariableWriteNode { .. } => {
+                let v = else_branch.as_instance_variable_write_node().unwrap().value();
+                self.format_else_value(&v)
+            }
+            Node::ClassVariableWriteNode { .. } => {
+                let v = else_branch.as_class_variable_write_node().unwrap().value();
+                self.format_else_value(&v)
+            }
+            Node::GlobalVariableWriteNode { .. } => {
+                let v = else_branch.as_global_variable_write_node().unwrap().value();
+                self.format_else_value(&v)
+            }
+            Node::ConstantWriteNode { .. } => {
+                let v = else_branch.as_constant_write_node().unwrap().value();
+                self.format_else_value(&v)
+            }
+            Node::CallNode { .. } => {
+                let c = else_branch.as_call_node().unwrap();
+                let name = String::from_utf8_lossy(c.name().as_slice()).to_string();
+                if name.ends_with('=') && name != "==" && name != "!=" && name != "[]=" {
+                    if let Some(args) = c.arguments() {
+                        let arg_list: Vec<_> = args.arguments().iter().collect();
+                        if let Some(arg) = arg_list.first() {
+                            return self.format_else_value(arg);
+                        }
+                    }
+                }
+                self.src(else_branch).to_string()
+            }
+            _ => self.src(else_branch).to_string(),
+        }
+    }
+
+    fn format_else_value(&self, node: &Node) -> String {
+        if self.require_parentheses(node) {
+            format!("({})", self.src(node))
+        } else if self.require_braces(node) {
+            format!("{{ {} }}", self.src(node))
+        } else {
+            self.src(node).to_string()
+        }
+    }
+
+
+    fn correct_arithmetic_op(&self, node: &ruby_prism::IfNode, parent_is_call: bool) -> Correction {
+        let node_start = node.location().start_offset();
+        let node_end = node.location().end_offset();
+
+        let if_stmts = node.statements().unwrap();
+        let if_body: Vec<_> = if_stmts.body().iter().collect();
+        let if_branch = &if_body[0];
+        let if_call = if_branch.as_call_node().unwrap();
+
+        let sub = node.subsequent().unwrap();
+        let else_node = sub.as_else_node().unwrap();
+        let else_stmts = else_node.statements().unwrap();
+        let else_body: Vec<_> = else_stmts.body().iter().collect();
+        let else_branch = &else_body[0];
+        let else_call = else_branch.as_call_node().unwrap();
+
+        let cond_src = self.src(&node.predicate());
+
+        // Get receiver and operator from if_branch
+        let receiver_src = if let Some(recv) = if_call.receiver() {
+            self.src(&recv).to_string()
+        } else {
+            String::new()
+        };
+        let method_name = String::from_utf8_lossy(if_call.name().as_slice()).to_string();
+
+        // Get if arg (the condition itself)
+        let if_args = if_call.arguments().unwrap();
+        let if_arg_list: Vec<_> = if_args.arguments().iter().collect();
+
+        // Get else arg
+        let else_args = else_call.arguments().unwrap();
+        let else_arg_list: Vec<_> = else_args.arguments().iter().collect();
+        let else_arg = &else_arg_list[0];
+        let else_arg_src = self.src(else_arg);
+
+        // RuboCop: arithmetic_op: `receiver op (if_arg || else_arg)`
+        // e.g. @value - (foo || 'bar')
+        // receiver_src is the if_branch receiver (e.g. "@value")
+        let replacement = format!("{} {} ({} || {})", receiver_src, method_name, cond_src, else_arg_src);
+        let replacement = if parent_is_call {
+            format!("({})", replacement)
+        } else {
+            replacement
+        };
+
+        // Replace the whole if...end with just the merged expression
+        Correction::replace(node_start, node_end, replacement)
+    }
+
+    fn make_ternary_form_branches_have_method(&self, node: &ruby_prism::IfNode) -> String {
+        // For ternary: foo ? bar(foo) : bar(quux) → bar(foo || quux)
+        let if_stmts = node.statements().unwrap();
+        let if_body: Vec<_> = if_stmts.body().iter().collect();
+        let if_branch = &if_body[0];
+        let if_call = if_branch.as_call_node().unwrap();
+
+        let sub = node.subsequent().unwrap();
+        let else_n = sub.as_else_node().unwrap();
+        let else_stmts = else_n.statements().unwrap();
+        let else_body: Vec<_> = else_stmts.body().iter().collect();
+        let else_branch = &else_body[0];
+        let else_call = else_branch.as_call_node().unwrap();
+
+        let else_args = else_call.arguments().unwrap();
+        let else_arg_list: Vec<_> = else_args.arguments().iter().collect();
+        let else_arg = &else_arg_list[0];
+        let else_arg_src = self.else_source_if_has_method(else_arg);
+
+        let if_branch_start = if_branch.location().start_offset();
+
+        if let Some(open_loc) = if_call.opening_loc() {
+            let if_args = if_call.arguments().unwrap();
+            let if_arg_list: Vec<_> = if_args.arguments().iter().collect();
+            let if_arg = &if_arg_list[0];
+            let if_arg_src = self.src(if_arg);
+            let open_offset = open_loc.start_offset();
+            // prefix = from if_branch start up to '(' (includes receiver.method portion)
+            let prefix = self.ctx.src(if_branch_start, open_offset);
+            format!("{}({} || {})", prefix, if_arg_src, else_arg_src)
+        } else {
+            // Shouldn't reach here for branches_have_method ternary (all have parens)
+            self.src(if_branch).to_string()
+        }
+    }
+
+    fn else_source_simple(&self, else_node: &Node) -> String {
+        // without_argument_parentheses_method?
+        if self.without_argument_parentheses_method(else_node) {
+            let call = else_node.as_call_node().unwrap();
+            let method_name = String::from_utf8_lossy(call.name().as_slice()).to_string();
+            let args = call.arguments().unwrap();
+            let arg_list: Vec<_> = args.arguments().iter().collect();
+            let args_src: Vec<&str> = arg_list.iter().map(|a| self.src(a)).collect();
+            return format!("{}({})", method_name, args_src.join(", "));
+        }
+
+        if self.require_parentheses(else_node) {
+            return format!("({})", self.src(else_node));
+        }
+
+        self.src(else_node).to_string()
+    }
+
+    fn require_parentheses(&self, node: &Node) -> bool {
+        // modifier if/unless, range, rescue_modifier, semantic and/or
+        match node {
+            Node::IfNode { .. } => {
+                // modifier form
+                let ifn = node.as_if_node().unwrap();
+                self.is_modifier_if(&ifn) || !ifn.end_keyword_loc().is_some()
+            }
+            Node::UnlessNode { .. } => {
+                let un = node.as_unless_node().unwrap();
+                un.end_keyword_loc().is_none()
+            }
+            Node::WhileNode { .. } => {
+                let wn = node.as_while_node().unwrap();
+                // modifier while has no begin/end keywords in the traditional sense
+                // actually check: modifier while = while_keyword on right of body
+                // In Prism: modifier while has keyword_loc after the body
+                let kw_start = wn.keyword_loc().start_offset();
+                let body_start = if let Some(body) = wn.statements() {
+                    body.location().start_offset()
+                } else { kw_start };
+                kw_start > body_start
+            }
+            Node::UntilNode { .. } => {
+                let un = node.as_until_node().unwrap();
+                let kw_start = un.keyword_loc().start_offset();
+                let body_start = if let Some(body) = un.statements() {
+                    body.location().start_offset()
+                } else { kw_start };
+                kw_start > body_start
+            }
+            Node::RangeNode { .. } => true,
+            Node::RescueModifierNode { .. } => true,
+            Node::AndNode { .. } => {
+                // check if "and" keyword form (semantic)
+                let an = node.as_and_node().unwrap();
+                let op = self.ctx.src(an.operator_loc().start_offset(), an.operator_loc().end_offset());
+                op == "and"
+            }
+            Node::OrNode { .. } => {
+                let on = node.as_or_node().unwrap();
+                let op = self.ctx.src(on.operator_loc().start_offset(), on.operator_loc().end_offset());
+                op == "or"
+            }
+            _ => false,
+        }
+    }
+
+    fn require_braces(&self, node: &Node) -> bool {
+        // A bare keyword hash (no braces) needs braces when used as || RHS
+        // In Prism: `KeywordHashNode` = hash without braces (unbraced keyword args)
+        if node.as_keyword_hash_node().is_some() {
+            return true;
+        }
+        false
+    }
+
+    fn without_argument_parentheses_method(&self, node: &Node) -> bool {
+        let call = match node.as_call_node() {
+            Some(c) => c,
+            None => return false,
+        };
+        // Has arguments, not parenthesized, not operator method, not assignment method
+        if call.arguments().is_none() {
+            return false;
+        }
+        if call.opening_loc().is_some() {
+            return false;
+        }
+        let name = String::from_utf8_lossy(call.name().as_slice()).to_string();
+        // operator method: name is an operator symbol
+        let is_operator = self.is_operator_method_name(&name);
+        if is_operator {
+            return false;
+        }
+        if name.ends_with('=') {
+            return false;
+        }
+        // Must have no receiver (bare method call)
+        // Actually RuboCop also allows with receiver — let's check args count > 0
+        let args = call.arguments().unwrap();
+        let arg_list: Vec<_> = args.arguments().iter().collect();
+        !arg_list.is_empty()
+    }
+
+    fn is_operator_method_name(&self, name: &str) -> bool {
+        matches!(name, "+" | "-" | "*" | "/" | "%" | "**" | "<<" | ">>" |
+            "==" | "!=" | "<" | ">" | "<=" | ">=" | "<=>" |
+            "&" | "|" | "^" | "~" | "[]" | "[]=" | "=~" | "!~")
+    }
+
+    fn branches_have_arithmetic_op(&self, node: &ruby_prism::IfNode) -> bool {
+        let condition = node.predicate();
+        let if_stmts = match node.statements() {
+            Some(s) => s,
+            None => return false,
+        };
+        let if_body: Vec<_> = if_stmts.body().iter().collect();
+        if if_body.len() != 1 { return false; }
+
+        let sub = match node.subsequent() {
+            Some(s) => s,
+            None => return false,
+        };
+        let else_node = match sub.as_else_node() {
+            Some(en) => en,
+            None => return false,
+        };
+        let else_stmts = match else_node.statements() {
+            Some(s) => s,
+            None => return false,
+        };
+        let else_body: Vec<_> = else_stmts.body().iter().collect();
+        if else_body.len() != 1 { return false; }
+
+        let if_branch = &if_body[0];
+        let else_branch = &else_body[0];
+
+        let if_call = match if_branch.as_call_node() {
+            Some(c) => c,
+            None => return false,
+        };
+        let else_call = match else_branch.as_call_node() {
+            Some(c) => c,
+            None => return false,
+        };
+
+        // arithmetic = operator method
+        let if_name = String::from_utf8_lossy(if_call.name().as_slice()).to_string();
+        if !self.is_operator_method_name(&if_name) || if_name == "[]" || if_name == "[]=" {
+            return false;
+        }
+
+        let else_name = String::from_utf8_lossy(else_call.name().as_slice()).to_string();
+        if if_name != else_name { return false; }
+
+        // Same receiver
+        match (if_call.receiver(), else_call.receiver()) {
+            (Some(ir), Some(er)) => {
+                if self.src(&ir) != self.src(&er) { return false; }
+            }
+            (None, None) => {}
+            _ => return false,
+        }
+
+        // If branch's arg is the condition
+        let if_args = match if_call.arguments() {
+            Some(a) => a,
+            None => return false,
+        };
+        let if_arg_list: Vec<_> = if_args.arguments().iter().collect();
+        if if_arg_list.len() != 1 { return false; }
+        let cond_src = self.src(&condition);
+        let if_arg_src = self.src(&if_arg_list[0]);
+        cond_src == if_arg_src
     }
 
     fn ternary_question_colon_range(&self, node: &ruby_prism::IfNode) -> (usize, usize) {
-        // Find ? and : in the ternary expression
         let cond_end = node.predicate().location().end_offset();
         let node_end = node.location().end_offset();
         let src = self.ctx.src(cond_end, node_end);
 
-        // Find ? after condition
         let q_pos = src.find('?').map(|p| cond_end + p);
-        // Find : after ?
         let c_pos = if let Some(qp) = q_pos {
-            let after_q = self.ctx.src(qp + 1, node_end);
-            // Find the colon - skip over the if_branch
             if let Some(stmts) = node.statements() {
                 let body: Vec<_> = stmts.body().iter().collect();
                 if let Some(last) = body.last() {
@@ -150,9 +709,11 @@ impl<'a> RedundantConditionVisitor<'a> {
                     let after_branch = self.ctx.src(branch_end, node_end);
                     after_branch.find(':').map(|p| branch_end + p + 1)
                 } else {
+                    let after_q = self.ctx.src(qp + 1, node_end);
                     after_q.find(':').map(|p| qp + 1 + p + 1)
                 }
             } else {
+                let after_q = self.ctx.src(qp + 1, node_end);
                 after_q.find(':').map(|p| qp + 1 + p + 1)
             }
         } else {
@@ -165,6 +726,37 @@ impl<'a> RedundantConditionVisitor<'a> {
         }
     }
 
+    fn get_else_branch_offsets(&self, node: &ruby_prism::IfNode) -> Option<(usize, usize)> {
+        let sub = node.subsequent()?;
+        let else_node = sub.as_else_node()?;
+        let stmts = else_node.statements()?;
+        let body: Vec<_> = stmts.body().iter().collect();
+        if body.len() == 1 {
+            let loc = body[0].location();
+            Some((loc.start_offset(), loc.end_offset()))
+        } else {
+            None
+        }
+    }
+
+    fn is_else_branch_range_node(&self, node: &ruby_prism::IfNode) -> bool {
+        let sub = match node.subsequent() {
+            Some(s) => s,
+            None => return false,
+        };
+        let else_node = match sub.as_else_node() {
+            Some(en) => en,
+            None => return false,
+        };
+        let stmts = match else_node.statements() {
+            Some(s) => s,
+            None => return false,
+        };
+        let body: Vec<_> = stmts.body().iter().collect();
+        if body.len() != 1 { return false; }
+        matches!(&body[0], Node::RangeNode { .. })
+    }
+
     fn check_unless_node(&mut self, node: &ruby_prism::UnlessNode) {
         if node.end_keyword_loc().is_none() {
             return;
@@ -174,16 +766,54 @@ impl<'a> RedundantConditionVisitor<'a> {
         }
         let start = node.location().start_offset();
         let end = node.predicate().location().end_offset();
-        self.offenses.push(self.ctx.offense_with_range(
+
+        let has_comment = self.range_has_comment(node.location().start_offset(), node.location().end_offset());
+        let correction = if has_comment {
+            None
+        } else {
+            Some(self.compute_unless_correction(node))
+        };
+
+        let offense = self.ctx.offense_with_range(
             COP_NAME, MSG, Severity::Convention, start, end,
-        ));
+        );
+        let offense = if let Some(c) = correction {
+            offense.with_correction(c)
+        } else {
+            offense
+        };
+        self.offenses.push(offense);
+    }
+
+    fn compute_unless_correction(&self, node: &ruby_prism::UnlessNode) -> Correction {
+        let node_start = node.location().start_offset();
+        let node_end = node.location().end_offset();
+
+        let cond_src = self.src(&node.predicate());
+
+        // unless b; body; else; b; end → b || body
+        // The "body" is the unless statements (the true branch of unless = if-not)
+        let body_src = if let Some(stmts) = node.statements() {
+            let body: Vec<_> = stmts.body().iter().collect();
+            if body.len() == 1 {
+                let bs = self.src(&body[0]);
+                // Check if needs parens (is it multi-line / complex?)
+                bs.to_string()
+            } else {
+                String::new()
+            }
+        } else {
+            String::new()
+        };
+
+        let replacement = format!("{} || {}", cond_src, body_src);
+        Correction::replace(node_start, node_end, replacement)
     }
 
     fn offense_if(&self, node: &ruby_prism::IfNode) -> bool {
         let condition = node.predicate();
         let is_ternary = self.is_ternary(node);
 
-        // Must have if_branch statements
         let if_stmts = match node.statements() {
             Some(s) => s,
             None => return false,
@@ -194,18 +824,14 @@ impl<'a> RedundantConditionVisitor<'a> {
         }
         let if_branch = &if_body[0];
 
-        // Check subsequent
         if let Some(ref sub) = node.subsequent() {
-            // elsif -> skip
             if matches!(sub, Node::IfNode { .. }) {
                 return false;
             }
         }
 
-        // Get else branch info
         let else_branch_single = self.get_else_single_node_info(node.subsequent());
 
-        // Check for if_type / []= in else branch
         if let Some((ref _src, ref else_node_type, ref _else_src)) = else_branch_single {
             if *else_node_type == ElseNodeType::IfType {
                 return false;
@@ -218,10 +844,7 @@ impl<'a> RedundantConditionVisitor<'a> {
         let cond_src = self.src(&condition);
         let if_src = self.src(if_branch);
 
-        // Direct match: condition == if_branch
         if cond_src == if_src {
-            // For non-ternary: else branch must be a single expression
-            // (RuboCop: begin nodes with multiple statements are NOT flagged)
             if !is_ternary {
                 if let Some(ref sub) = node.subsequent() {
                     if !self.else_has_single_expression(sub) {
@@ -232,17 +855,18 @@ impl<'a> RedundantConditionVisitor<'a> {
             return true;
         }
 
-        // if a.nil? then true else a end / a.nil? ? true : a
         if self.if_branch_is_true_type_and_else_is_not(&condition, if_branch, node.subsequent()) {
             return true;
         }
 
-        // Branches have assignment
         if !is_ternary && self.branches_have_assignment_if(node) {
             return true;
         }
 
-        // Branches have method (works for both ternary and non-ternary)
+        if !is_ternary && self.branches_have_arithmetic_op(node) {
+            return true;
+        }
+
         if self.branches_have_method_if(node) {
             return true;
         }
@@ -589,9 +1213,102 @@ impl<'a> RedundantConditionVisitor<'a> {
 
         Some((self.src(&body[0]).to_string(), node_type, self.src(&body[0]).to_string()))
     }
+
+    fn compute_true_branch_correction(
+        &self,
+        node: &ruby_prism::IfNode,
+        is_ternary: bool,
+        parent_is_call: bool,
+    ) -> Option<Correction> {
+        // if a.zero?; true; else; a; end → a.zero? || a
+        // if foo? arg; true; else; bar; end → foo?(arg) || bar
+        let condition = node.predicate();
+        let call = condition.as_call_node()?;
+
+        let node_start = node.location().start_offset();
+        let node_end = node.location().end_offset();
+
+        // Get else branch
+        let else_src = if is_ternary {
+            // Get else node from ternary
+            let sub = node.subsequent()?;
+            let else_node = sub.as_else_node()?;
+            let stmts = else_node.statements()?;
+            let body: Vec<_> = stmts.body().iter().collect();
+            if body.len() != 1 { return None; }
+            self.src(&body[0]).to_string()
+        } else {
+            let sub = node.subsequent()?;
+            let else_node = sub.as_else_node()?;
+            let stmts = else_node.statements()?;
+            let body: Vec<_> = stmts.body().iter().collect();
+            if body.len() != 1 { return None; }
+            self.src(&body[0]).to_string()
+        };
+
+        // Build condition source (with parens if needed)
+        let cond_with_parens = if call.arguments().is_some() && call.opening_loc().is_none() {
+            // without_arg_parens predicate → wrap args
+            self.wrap_predicate_args(call)
+        } else {
+            self.src(&condition).to_string()
+        };
+
+        let ternary_form = format!("{} || {}", cond_with_parens, else_src);
+        let replacement = if parent_is_call {
+            format!("({})", ternary_form)
+        } else {
+            ternary_form
+        };
+
+        Some(Correction::replace(node_start, node_end, replacement))
+    }
+
+    fn is_true_branch_predicate_needs_parens(&self, node: &ruby_prism::IfNode) -> bool {
+        // Returns true if: if_branch is TrueNode AND condition is a predicate call without parens AND has args
+        let if_stmts = match node.statements() {
+            Some(s) => s,
+            None => return false,
+        };
+        let if_body: Vec<_> = if_stmts.body().iter().collect();
+        if if_body.len() != 1 { return false; }
+        if !matches!(&if_body[0], Node::TrueNode { .. }) { return false; }
+        let call = match node.predicate().as_call_node() {
+            Some(c) => c,
+            None => return false,
+        };
+        // Has args but no opening paren
+        call.arguments().is_some() && call.opening_loc().is_none()
+    }
+
+    fn wrap_predicate_args(&self, call: ruby_prism::CallNode) -> String {
+        // foo? arg → foo?(arg)
+        let name = String::from_utf8_lossy(call.name().as_slice()).to_string();
+        let method_end = call.message_loc()
+            .map(|l| l.end_offset())
+            .unwrap_or_else(|| call.location().end_offset());
+        let prefix = if let Some(recv) = call.receiver() {
+            let recv_src = self.src(&recv);
+            let call_op = if let Some(op) = call.call_operator_loc() {
+                self.ctx.src(op.start_offset(), op.end_offset())
+            } else {
+                "."
+            };
+            format!("{}{}{}", recv_src, call_op, name)
+        } else {
+            name.clone()
+        };
+        // Get args source
+        let args_src = if let Some(args) = call.arguments() {
+            let arg_list: Vec<_> = args.arguments().iter().collect();
+            arg_list.iter().map(|a| self.src(a)).collect::<Vec<_>>().join(", ")
+        } else {
+            String::new()
+        };
+        format!("{}({})", prefix, args_src)
+    }
 }
 
-// Need to define ElseNodeType outside the impl block
 #[derive(PartialEq)]
 enum ElseNodeType {
     Normal,
@@ -601,13 +1318,43 @@ enum ElseNodeType {
 
 impl Visit<'_> for RedundantConditionVisitor<'_> {
     fn visit_if_node(&mut self, node: &ruby_prism::IfNode) {
-        self.check_if_node(node);
+        let parent_is_call = self.in_call_arg;
+        // Reset for children
+        self.in_call_arg = false;
+        self.check_if_node(node, parent_is_call);
         ruby_prism::visit_if_node(self, node);
+        self.in_call_arg = parent_is_call;
     }
 
     fn visit_unless_node(&mut self, node: &ruby_prism::UnlessNode) {
         self.check_unless_node(node);
         ruby_prism::visit_unless_node(self, node);
+    }
+
+    fn visit_call_node(&mut self, node: &ruby_prism::CallNode) {
+        // Check if arguments contain if-nodes — mark them as "parent is call"
+        let saved = self.in_call_arg;
+        if let Some(args) = node.arguments() {
+            for arg in args.arguments().iter() {
+                if matches!(arg, Node::IfNode { .. }) {
+                    self.in_call_arg = true;
+                    self.visit(&arg);
+                    self.in_call_arg = saved;
+                } else {
+                    self.in_call_arg = false;
+                    self.visit(&arg);
+                }
+            }
+        }
+        // Visit receiver and other parts without marking
+        self.in_call_arg = false;
+        if let Some(recv) = node.receiver() {
+            self.visit(&recv);
+        }
+        if let Some(block) = node.block() {
+            self.visit(&block);
+        }
+        self.in_call_arg = saved;
     }
 }
 

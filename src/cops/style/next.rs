@@ -3,7 +3,7 @@
 //! Ported from: https://github.com/rubocop/rubocop/blob/master/lib/rubocop/cop/style/next.rb
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Edit, Offense, Severity};
 use ruby_prism::{Node, Visit};
 
 const COP_NAME: &str = "Style/Next";
@@ -114,9 +114,14 @@ impl<'a> NextVisitor<'a> {
             }
         }
 
-        self.offenses.push(self.ctx.offense_with_range(
+        let correction = self.build_correction_for_body(&body);
+        let mut offense = self.ctx.offense_with_range(
             COP_NAME, MSG, Severity::Convention, off_start, off_cond_end,
-        ));
+        );
+        if let Some(corr) = correction {
+            offense = offense.with_correction(corr);
+        }
+        self.offenses.push(offense);
     }
 
     fn ends_with_condition(&self, body: &Node) -> bool {
@@ -325,6 +330,348 @@ impl<'a> NextVisitor<'a> {
 
     fn is_enumerator_method(name: &str) -> bool {
         ENUMERATOR_METHODS.contains(&name)
+    }
+
+    /// Find the offense node within body and build correction.
+    fn build_correction_for_body(&self, body: &Node) -> Option<Correction> {
+        if let Some(stmts) = body.as_statements_node() {
+            let children: Vec<_> = stmts.body().iter().collect();
+            if let Some(last) = children.last() {
+                if self.simple_if_without_break(last) {
+                    return self.build_correction(last);
+                }
+            }
+        }
+        if self.simple_if_without_break(body) {
+            return self.build_correction(body);
+        }
+        None
+    }
+
+    /// Build correction for an if/unless node.
+    fn build_correction(&self, node: &Node) -> Option<Correction> {
+        let src = self.ctx.source;
+        let src_bytes = src.as_bytes();
+
+        match node {
+            Node::IfNode { .. } => {
+                let n = node.as_if_node().unwrap();
+                let is_modifier = n.end_keyword_loc().is_none();
+                let inv_kw = "unless";
+                let cond = n.predicate();
+                let cond_src = &src[cond.location().start_offset()..cond.location().end_offset()];
+
+                if is_modifier {
+                    // Modifier form: `body if cond` → `next unless cond\n<indent>body`
+                    let body_node = n.statements()?;
+                    let body_children: Vec<_> = body_node.body().iter().collect();
+                    let body_src = &src[body_children.first()?.location().start_offset()
+                        ..body_children.last()?.location().end_offset()];
+                    let node_start = node.location().start_offset();
+                    let node_end = node.location().end_offset();
+                    let indent = self.ctx.col_of(node_start);
+                    let replacement =
+                        format!("next {} {}\n{}{}", inv_kw, cond_src, " ".repeat(indent), body_src);
+                    Some(Correction {
+                        edits: vec![Edit {
+                            start_offset: node_start,
+                            end_offset: node_end,
+                            replacement,
+                        }],
+                    })
+                } else {
+                    // Block form: `if cond [then]\n  body\nend`
+                    let node_start = node.location().start_offset();
+                    // cond_end: after `then` keyword if present, else after predicate
+                    let cond_end = if let Some(then_loc) = n.then_keyword_loc() {
+                        then_loc.end_offset()
+                    } else {
+                        cond.location().end_offset()
+                    };
+                    let next_stmt = format!("next {} {}", inv_kw, cond_src);
+                    // Replace node_start..cond_end with "next unless COND"
+                    // (source already has \n after predicate; no trailing \n needed)
+                    let mut edits = vec![Edit {
+                        start_offset: node_start,
+                        end_offset: cond_end,
+                        replacement: next_stmt,
+                    }];
+                    // Remove end keyword + its line indent (and possibly preceding newline)
+                    if let Some(end_loc) = n.end_keyword_loc() {
+                        let end_end = end_loc.end_offset();
+                        let end_start = end_loc.start_offset();
+                        // line start = offset of first char on end's line
+                        let end_line_start = self.ctx.line_start(end_start);
+                        // Check if end is followed by whitespace-only (to include preceding \n)
+                        let after_end = &src[end_end..];
+                        let followed_by_ws_only = after_end.chars().next().map_or(true, |c| c == '\n' || c == '\r')
+                            || after_end.starts_with('\n')
+                            || after_end.trim_start_matches(|c: char| c == ' ' || c == '\t').starts_with('\n')
+                            || after_end.trim_start_matches(|c: char| c == ' ' || c == '\t').is_empty();
+                        let remove_start = if followed_by_ws_only && end_line_start > 0 {
+                            end_line_start - 1 // include preceding \n
+                        } else {
+                            end_line_start
+                        };
+                        edits.push(Edit {
+                            start_offset: remove_start,
+                            end_offset: end_end,
+                            replacement: String::new(),
+                        });
+                    }
+                    // Re-indent body lines
+                    let reindent_edits = self.build_reindent_edits(node, src, src_bytes, cond_end);
+                    edits.extend(reindent_edits);
+                    Some(Correction { edits })
+                }
+            }
+            Node::UnlessNode { .. } => {
+                let n = node.as_unless_node().unwrap();
+                let is_modifier = n.end_keyword_loc().is_none();
+                let inv_kw = "if";
+                let cond = n.predicate();
+                let cond_src = &src[cond.location().start_offset()..cond.location().end_offset()];
+
+                if is_modifier {
+                    let body_node = n.statements()?;
+                    let body_children: Vec<_> = body_node.body().iter().collect();
+                    let body_src = &src[body_children.first()?.location().start_offset()
+                        ..body_children.last()?.location().end_offset()];
+                    let node_start = node.location().start_offset();
+                    let node_end = node.location().end_offset();
+                    let indent = self.ctx.col_of(node_start);
+                    let replacement =
+                        format!("next {} {}\n{}{}", inv_kw, cond_src, " ".repeat(indent), body_src);
+                    Some(Correction {
+                        edits: vec![Edit {
+                            start_offset: node_start,
+                            end_offset: node_end,
+                            replacement,
+                        }],
+                    })
+                } else {
+                    let node_start = node.location().start_offset();
+                    let then_end = n.then_keyword_loc().map(|l| l.end_offset());
+                    let cond_end = then_end.unwrap_or_else(|| cond.location().end_offset());
+                    let next_stmt = format!("next {} {}", inv_kw, cond_src);
+                    let mut edits = vec![Edit {
+                        start_offset: node_start,
+                        end_offset: cond_end,
+                        replacement: next_stmt,
+                    }];
+                    if let Some(end_loc) = n.end_keyword_loc() {
+                        let end_end = end_loc.end_offset();
+                        let end_start = end_loc.start_offset();
+                        let end_line_start = self.ctx.line_start(end_start);
+                        let after_end = &src[end_end..];
+                        let followed_by_ws_only = after_end.starts_with('\n')
+                            || after_end.trim_start_matches(|c: char| c == ' ' || c == '\t').starts_with('\n')
+                            || after_end.trim_start_matches(|c: char| c == ' ' || c == '\t').is_empty();
+                        let remove_start = if followed_by_ws_only && end_line_start > 0 {
+                            end_line_start - 1
+                        } else {
+                            end_line_start
+                        };
+                        edits.push(Edit {
+                            start_offset: remove_start,
+                            end_offset: end_end,
+                            replacement: String::new(),
+                        });
+                    }
+                    let reindent_edits = self.build_reindent_edits_unless(node, src, src_bytes, cond_end);
+                    edits.extend(reindent_edits);
+                    Some(Correction { edits })
+                }
+            }
+            _ => None,
+        }
+    }
+
+    /// Build re-indent edits for IfNode body lines.
+    fn build_reindent_edits(&self, node: &Node, src: &str, _src_bytes: &[u8], _cond_end: usize) -> Vec<Edit> {
+        let n = match node.as_if_node() {
+            Some(n) => n,
+            None => return vec![],
+        };
+        let end_loc = match n.end_keyword_loc() {
+            Some(l) => l,
+            None => return vec![],
+        };
+        let cond = n.predicate();
+        let target_indent = self.ctx.indentation_of(cond.location().start_offset());
+        // Body lines = lines from after the `if COND` header line up to before the `end` line
+        let header_end = cond.location().end_offset();
+        // include any `then` keyword
+        let header_end = if let Some(then_loc) = n.then_keyword_loc() {
+            then_loc.end_offset()
+        } else {
+            header_end
+        };
+        let body_first_line_start = self.next_line_start(src, header_end);
+        let end_line_start = self.ctx.line_start(end_loc.start_offset());
+        let heredoc_ranges = self.collect_heredoc_ranges_in_source(src, body_first_line_start, end_line_start);
+        self.reindent_lines_with_heredoc(src, body_first_line_start, end_line_start, target_indent, &heredoc_ranges)
+    }
+
+    /// Build re-indent edits for UnlessNode body lines.
+    fn build_reindent_edits_unless(&self, node: &Node, src: &str, _src_bytes: &[u8], _cond_end: usize) -> Vec<Edit> {
+        let n = match node.as_unless_node() {
+            Some(n) => n,
+            None => return vec![],
+        };
+        let end_loc = match n.end_keyword_loc() {
+            Some(l) => l,
+            None => return vec![],
+        };
+        let cond = n.predicate();
+        let target_indent = self.ctx.indentation_of(cond.location().start_offset());
+        let header_end = cond.location().end_offset();
+        let header_end = if let Some(then_loc) = n.then_keyword_loc() {
+            then_loc.end_offset()
+        } else {
+            header_end
+        };
+        let body_first_line_start = self.next_line_start(src, header_end);
+        let end_line_start = self.ctx.line_start(end_loc.start_offset());
+        let heredoc_ranges = self.collect_heredoc_ranges_in_source(src, body_first_line_start, end_line_start);
+        self.reindent_lines_with_heredoc(src, body_first_line_start, end_line_start, target_indent, &heredoc_ranges)
+    }
+
+    /// Byte offset of the start of the line after the line containing `offset`.
+    fn next_line_start(&self, src: &str, offset: usize) -> usize {
+        src[offset..].find('\n').map_or(src.len(), |p| offset + p + 1)
+    }
+
+    /// Collect byte ranges of heredoc body+closing lines in source between from_offset and to_offset.
+    /// Scans source text for heredoc markers `<<[-~]?IDENT` and tracks their body line ranges.
+    fn collect_heredoc_ranges_in_source(&self, src: &str, from_offset: usize, to_offset: usize) -> Vec<(usize, usize)> {
+        let mut ranges = Vec::new();
+        let region = &src[from_offset..to_offset.min(src.len())];
+        let src_bytes = src.as_bytes();
+        let mut pos = from_offset;
+        // Scan each line in the region for heredoc markers
+        while pos < to_offset {
+            let line_end = src[pos..].find('\n').map_or(src.len(), |p| pos + p);
+            let line = &src[pos..line_end];
+            // Look for `<<` heredoc markers on this line
+            let mut scan = pos;
+            while scan + 2 <= line_end {
+                if src_bytes[scan] == b'<' && src_bytes[scan + 1] == b'<' {
+                    // Check for heredoc: <<[-~]?IDENT or <<[-~]?"IDENT" etc.
+                    let mut marker_pos = scan + 2;
+                    if marker_pos < line_end && (src_bytes[marker_pos] == b'-' || src_bytes[marker_pos] == b'~') {
+                        marker_pos += 1;
+                    }
+                    // Skip optional quote
+                    let quote_char = if marker_pos < line_end && (src_bytes[marker_pos] == b'\'' || src_bytes[marker_pos] == b'"' || src_bytes[marker_pos] == b'`') {
+                        let q = src_bytes[marker_pos];
+                        marker_pos += 1;
+                        Some(q)
+                    } else {
+                        None
+                    };
+                    // Read identifier
+                    let ident_start = marker_pos;
+                    while marker_pos < line_end && (src_bytes[marker_pos].is_ascii_alphanumeric() || src_bytes[marker_pos] == b'_') {
+                        marker_pos += 1;
+                    }
+                    if marker_pos > ident_start {
+                        let identifier = &src[ident_start..marker_pos];
+                        // Closing marker: look for a line that is exactly `identifier` (possibly with indent)
+                        let body_start = line_end + 1; // line after the heredoc marker
+                        let mut search_pos = body_start;
+                        let close_pat = identifier;
+                        while search_pos < src.len() {
+                            let close_line_end = src[search_pos..].find('\n').map_or(src.len(), |p| search_pos + p);
+                            let close_line = &src[search_pos..close_line_end];
+                            let trimmed = close_line.trim();
+                            if trimmed == close_pat || (quote_char.is_some() && trimmed == close_pat) {
+                                // Found closing marker. Exclude BODY lines from reindent (body_start..close_line_start).
+                                // The closing marker line itself IS reindented (it's normal Ruby code position).
+                                ranges.push((body_start, search_pos));
+                                break;
+                            }
+                            search_pos = close_line_end + 1;
+                        }
+                    }
+                    scan = marker_pos;
+                } else {
+                    scan += 1;
+                }
+            }
+            pos = line_end + 1;
+        }
+        let _ = region;
+        ranges
+    }
+
+    /// Compute re-indent edits for lines in range [from_offset, to_offset).
+    /// Non-blank lines get `delta` leading spaces removed.
+    /// `target_indent` = desired final indentation.
+    fn reindent_lines(&self, src: &str, from_offset: usize, to_offset: usize, target_indent: usize) -> Vec<Edit> {
+        self.reindent_lines_with_heredoc(src, from_offset, to_offset, target_indent, &[])
+    }
+
+    fn reindent_lines_with_heredoc(&self, src: &str, from_offset: usize, to_offset: usize, target_indent: usize, heredoc_ranges: &[(usize, usize)]) -> Vec<Edit> {
+        if from_offset >= to_offset {
+            return vec![];
+        }
+
+        let is_in_heredoc = |offset: usize| -> bool {
+            heredoc_ranges.iter().any(|(s, e)| offset >= *s && offset < *e)
+        };
+
+        // Collect line starts, skipping heredoc body lines
+        let mut line_starts: Vec<usize> = Vec::new();
+        let mut pos = from_offset;
+        while pos < to_offset {
+            if !is_in_heredoc(pos) {
+                line_starts.push(pos);
+            }
+            let line_end = src[pos..].find('\n').map_or(src.len(), |p| pos + p);
+            pos = line_end + 1;
+        }
+
+        // Compute minimum indent of non-blank lines (excludes heredoc lines)
+        let min_indent = line_starts
+            .iter()
+            .filter_map(|&ls| {
+                let end = src[ls..].find('\n').map_or(src.len(), |p| ls + p);
+                let line = &src[ls..end];
+                if line.trim().is_empty() {
+                    None
+                } else {
+                    Some(line.chars().take_while(|c| *c == ' ').count())
+                }
+            })
+            .min()
+            .unwrap_or(target_indent + 2);
+
+        let delta = if min_indent > target_indent {
+            min_indent - target_indent
+        } else {
+            return vec![];
+        };
+
+        // For each non-blank, non-heredoc line, remove `delta` leading spaces
+        let mut edits = Vec::new();
+        for &ls in &line_starts {
+            let end = src[ls..].find('\n').map_or(src.len(), |p| ls + p);
+            let line = &src[ls..end];
+            if line.trim().is_empty() {
+                continue;
+            }
+            let actual_spaces = line.chars().take_while(|c| *c == ' ').count();
+            let remove = delta.min(actual_spaces);
+            if remove > 0 {
+                edits.push(Edit {
+                    start_offset: ls,
+                    end_offset: ls + remove,
+                    replacement: String::new(),
+                });
+            }
+        }
+        edits
     }
 }
 
