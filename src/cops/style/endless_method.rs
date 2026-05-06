@@ -4,7 +4,7 @@
 //! Ruby 3.0+ only.
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::{DefNode, Node, Visit};
 
 const MSG: &str = "Avoid endless method definitions.";
@@ -177,11 +177,108 @@ fn would_exceed_line_length(ctx: &CheckContext, node: &DefNode, max: Option<usiz
     start_col + line.chars().count() > max
 }
 
-fn push(offenses: &mut Vec<Offense>, ctx: &CheckContext, node: &DefNode, msg: &str) {
+fn push_with_correction(offenses: &mut Vec<Offense>, ctx: &CheckContext, node: &DefNode, msg: &str, correction: Option<Correction>) {
     let (start, end) = offense_range(node);
-    offenses.push(ctx.offense_with_range(
-        "Style/EndlessMethod", msg, Severity::Convention, start, end,
-    ));
+    let offense = ctx.offense_with_range("Style/EndlessMethod", msg, Severity::Convention, start, end);
+    let offense = if let Some(c) = correction { offense.with_correction(c) } else { offense };
+    offenses.push(offense);
+}
+
+/// Build `def SIGNATURE\n  BODY\nend` from an endless method node.
+fn correction_endless_to_regular(node: &DefNode, ctx: &CheckContext) -> Correction {
+    let source = ctx.source;
+    let def_start = node.location().start_offset();
+    let def_end = node.location().end_offset();
+
+    // The `=` location: node.equal_loc() gives us the `=` position.
+    let eq_loc = node.equal_loc().unwrap();
+    // Body starts after `= `
+    let body_start = {
+        let after_eq = eq_loc.end_offset();
+        // skip whitespace
+        let trimmed = source[after_eq..].trim_start_matches(' ');
+        after_eq + (source[after_eq..].len() - trimmed.len())
+    };
+
+    // Signature: from def_start to before `=` (trim trailing space and empty parens)
+    let sig_src = &source[def_start..eq_loc.start_offset()];
+    let sig = sig_src.trim_end();
+
+    // Remove empty `()` from signature
+    let sig = if sig.ends_with("()") {
+        sig[..sig.len()-2].trim_end()
+    } else {
+        sig
+    };
+
+    // Body source: from body_start to def_end
+    let body_src = &source[body_start..def_end];
+
+    // Compute indentation: 2 spaces relative to def's column
+    let line_start = source[..def_start].rfind('\n').map(|p| p + 1).unwrap_or(0);
+    let def_col = def_start - line_start;
+    let body_indent = " ".repeat(def_col + 2);
+    let end_indent = " ".repeat(def_col);
+
+    let replacement = format!("{}\n{}{}\n{}end", sig, body_indent, body_src, end_indent);
+    Correction::replace(def_start, def_end, replacement)
+}
+
+/// Build `def SIGNATURE = BODY` from a regular multi-statement-candidate method.
+fn correction_regular_to_endless(node: &DefNode, ctx: &CheckContext) -> Correction {
+    let source = ctx.source;
+    let def_start = node.location().start_offset();
+    let def_end = node.location().end_offset();
+
+    // Find the body: single statement inside.
+    let body = node.body().unwrap();
+    let (body_start, body_end) = if let Some(stmts) = body.as_statements_node() {
+        let stmt = stmts.body().iter().next().unwrap();
+        let l = stmt.location();
+        (l.start_offset(), l.end_offset())
+    } else {
+        let l = body.location();
+        (l.start_offset(), l.end_offset())
+    };
+
+    // Signature: from def_start to end of first line
+    // Find end of the `def NAME(params)` line (the newline after params)
+    let first_line_end = source[def_start..].find('\n').map(|p| def_start + p).unwrap_or(def_end);
+
+    // sig = first line, trim trailing whitespace
+    let sig_src = source[def_start..first_line_end].trim_end();
+
+    // Body first line (what becomes the `= X` part)
+    let body_first_line_end = source[body_start..].find('\n').map(|p| body_start + p).unwrap_or(body_end);
+    let body_first_line = source[body_start..body_first_line_end].trim();
+
+    // Any remaining lines after the first body line (for multiline body expressions)
+    let after_first_body = if body_first_line_end < body_end {
+        &source[body_first_line_end..body_end]
+    } else {
+        ""
+    };
+
+    // The part after body_end until def_end (could contain `\nend`)
+    let after_body = &source[body_end..def_end];
+    // Find `end` keyword location — skip the `\nend` part
+    let trimmed_after = after_body.trim_end_matches(|c: char| c.is_whitespace());
+    let end_keyword = if trimmed_after == "end" {
+        // `\nend` or `  end`
+        ""
+    } else {
+        trimmed_after
+    };
+    let _ = end_keyword;
+
+    // Build replacement: `def sig = body_first_line` + any continuation lines
+    let replacement = if after_first_body.is_empty() {
+        format!("{} = {}", sig_src, body_first_line)
+    } else {
+        format!("{} = {}{}", sig_src, body_first_line, after_first_body)
+    };
+
+    Correction::replace(def_start, def_end, replacement)
 }
 
 impl Cop for EndlessMethod {
@@ -198,29 +295,34 @@ impl Cop for EndlessMethod {
             EndlessMethodStyle::AllowAlways => {}
             EndlessMethodStyle::AllowSingleLine => {
                 if is_endless(node) && !is_single_line(ctx, node) {
-                    push(&mut offenses, ctx, node, MSG_MULTI_LINE);
+                    let corr = correction_endless_to_regular(node, ctx);
+                    push_with_correction(&mut offenses, ctx, node, MSG_MULTI_LINE, Some(corr));
                 }
             }
             EndlessMethodStyle::Disallow => {
                 if is_endless(node) {
-                    push(&mut offenses, ctx, node, MSG);
+                    let corr = correction_endless_to_regular(node, ctx);
+                    push_with_correction(&mut offenses, ctx, node, MSG, Some(corr));
                 }
             }
             EndlessMethodStyle::RequireSingleLine => {
                 if is_endless(node) && !is_single_line(ctx, node) {
-                    push(&mut offenses, ctx, node, MSG_MULTI_LINE);
+                    let corr = correction_endless_to_regular(node, ctx);
+                    push_with_correction(&mut offenses, ctx, node, MSG_MULTI_LINE, Some(corr));
                 } else if !is_endless(node) && can_be_made_endless(node)
                     && body_single_line(ctx, node)
                     && !would_exceed_line_length(ctx, node, self.max_line_length)
                 {
-                    push(&mut offenses, ctx, node, MSG_REQUIRE_SINGLE);
+                    let corr = correction_regular_to_endless(node, ctx);
+                    push_with_correction(&mut offenses, ctx, node, MSG_REQUIRE_SINGLE, Some(corr));
                 }
             }
             EndlessMethodStyle::RequireAlways => {
                 if !is_endless(node) && can_be_made_endless(node)
                     && !would_exceed_line_length(ctx, node, self.max_line_length)
                 {
-                    push(&mut offenses, ctx, node, MSG_REQUIRE_ALWAYS);
+                    let corr = correction_regular_to_endless(node, ctx);
+                    push_with_correction(&mut offenses, ctx, node, MSG_REQUIRE_ALWAYS, Some(corr));
                 }
             }
         }

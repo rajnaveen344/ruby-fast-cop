@@ -21,11 +21,16 @@ pub enum EnforcedStyle {
 
 pub struct EmptyLinesAroundAccessModifier {
     style: EnforcedStyle,
+    /// Layout/EmptyLinesAroundBlockBody.EnforcedStyle:
+    /// Some(true)  = "empty_lines"  → also insert blank after block-end modifier
+    /// Some(false) = "no_empty_lines" → only fix "before", skip "after" at block end
+    /// None = not configured → skip all corrections at block end (current behavior)
+    block_body_empty_lines: Option<bool>,
 }
 
 impl EmptyLinesAroundAccessModifier {
-    pub fn new(style: EnforcedStyle) -> Self {
-        Self { style }
+    pub fn new(style: EnforcedStyle, block_body_empty_lines: Option<bool>) -> Self {
+        Self { style, block_body_empty_lines }
     }
 }
 
@@ -229,6 +234,8 @@ impl EmptyLinesAroundAccessModifier {
 
         // body_end only checks class/module/sclass, NOT blocks (per RuboCop)
         let is_at_class_end = class_ranges.iter().any(|(_, l)| modifier.last_line == l - 1);
+        let is_at_block_end = block_ranges.iter().any(|(_, l)| modifier.last_line == l - 1);
+
         let next_empty = if is_at_class_end {
             true
         } else if modifier.last_line < lines.len() {
@@ -250,35 +257,54 @@ impl EmptyLinesAroundAccessModifier {
         let loc = Location::from_offsets(source, modifier.start_offset, modifier.end_offset);
         let mut offense = Offense::new(self.name(), &msg, self.severity(), loc, ctx.filename);
 
-        // Whether the modifier is the last statement in a block body.
-        // Correction behavior depends on cross-cop Layout/EmptyLinesAroundBlockBody config
-        // which we can't detect. Skip corrections for block-end cases to avoid conflicts.
-        let is_at_block_end = block_ranges.iter().any(|(_, l)| modifier.last_line == l - 1);
-
-        if !is_at_block_end {
-            let mut edits = Vec::new();
-
-            if !prev_empty && !is_at_scope_start {
-                let line_start = line_byte_offset(source, modifier.first_line);
-                edits.push(crate::offense::Edit {
-                    start_offset: line_start,
-                    end_offset: line_start,
-                    replacement: "\n".to_string(),
-                });
+        // For block-end cases, correction depends on Layout/EmptyLinesAroundBlockBody config:
+        // - None (not configured): skip all block-end corrections
+        // - Some(false) = "no_empty_lines": only fix "before", never "after"
+        // - Some(true)  = "empty_lines":    fix both "before" and "after"
+        if is_at_block_end {
+            match self.block_body_empty_lines {
+                None => {
+                    // No config: skip corrections for block-end cases entirely
+                    offenses.push(offense);
+                    return;
+                }
+                Some(false) => {
+                    // no_empty_lines: only fix "before", skip "after"
+                    if !prev_empty && !is_at_scope_start {
+                        let line_start = line_byte_offset(source, modifier.first_line);
+                        offense = offense.with_correction(Correction::insert(line_start, "\n"));
+                    }
+                    offenses.push(offense);
+                    return;
+                }
+                Some(true) => {
+                    // empty_lines: fix both before and after — fall through to normal logic below
+                }
             }
+        }
 
-            if !next_empty {
-                let line_end = line_end_byte_offset(source, modifier.last_line);
-                edits.push(crate::offense::Edit {
-                    start_offset: line_end,
-                    end_offset: line_end,
-                    replacement: "\n".to_string(),
-                });
-            }
+        let mut edits = Vec::new();
 
-            if !edits.is_empty() {
-                offense = offense.with_correction(Correction { edits });
-            }
+        if !prev_empty && !is_at_scope_start {
+            let line_start = line_byte_offset(source, modifier.first_line);
+            edits.push(crate::offense::Edit {
+                start_offset: line_start,
+                end_offset: line_start,
+                replacement: "\n".to_string(),
+            });
+        }
+
+        if !next_empty {
+            let line_end = line_end_byte_offset(source, modifier.last_line);
+            edits.push(crate::offense::Edit {
+                start_offset: line_end,
+                end_offset: line_end,
+                replacement: "\n".to_string(),
+            });
+        }
+
+        if !edits.is_empty() {
+            offense = offense.with_correction(Correction { edits });
         }
 
         offenses.push(offense);
@@ -383,5 +409,10 @@ crate::register_cop!("Layout/EmptyLinesAroundAccessModifier", |cfg| {
         "only_before" => EnforcedStyle::OnlyBefore,
         _ => EnforcedStyle::Around,
     };
-    Some(Box::new(EmptyLinesAroundAccessModifier::new(style)))
+    // Read Layout/EmptyLinesAroundBlockBody.EnforcedStyle
+    let block_body_empty_lines = cfg.get_cop_config("Layout/EmptyLinesAroundBlockBody")
+        .and_then(|c| c.raw.get("EnforcedStyle"))
+        .and_then(|v| v.as_str())
+        .map(|s| s == "empty_lines");
+    Some(Box::new(EmptyLinesAroundAccessModifier::new(style, block_body_empty_lines)))
 });

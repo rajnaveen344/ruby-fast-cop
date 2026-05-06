@@ -5,7 +5,7 @@
 
 use crate::cops::{CheckContext, Cop};
 use crate::node_name;
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::{Node, Visit};
 
 pub struct EmptyLineBetweenDefs {
@@ -139,13 +139,55 @@ impl<'a> Visitor<'a> {
         let (o_start, o_end) = self.def_location(cur);
         let type_label = self.candidate(cur).unwrap_or("method");
         let msg = self.message(type_label, count);
-        self.offenses.push(self.ctx.offense_with_range(
+
+        let correction = self.build_correction(prev, cur, count);
+        let mut offense = self.ctx.offense_with_range(
             "Layout/EmptyLineBetweenDefs",
             &msg,
             Severity::Convention,
             o_start,
             o_end,
-        ));
+        );
+        if let Some(c) = correction {
+            offense = offense.with_correction(c);
+        }
+        self.offenses.push(offense);
+    }
+
+    fn build_correction(&self, prev: &Node, cur: &Node, count: u32) -> Option<Correction> {
+        let source = self.ctx.source.as_bytes();
+        let prev_end = prev.location().end_offset();
+        let cur_start = cur.location().start_offset();
+
+        // Find the \n immediately after prev_def's end
+        let newline_pos = source[prev_end..].iter().position(|&b| b == b'\n')
+            .map(|p| prev_end + p)?;
+
+        // If the \n is beyond the start of cur (same-line case), use begin_pos - 1
+        let newline_pos = if newline_pos > cur_start.saturating_sub(1) {
+            cur_start.saturating_sub(1)
+        } else {
+            newline_pos
+        };
+
+        let max = self.cop.number_of_empty_lines_max;
+        let min = self.cop.number_of_empty_lines_min;
+
+        let newline_is_real = source.get(newline_pos).copied() == Some(b'\n');
+
+        if count > max {
+            // Remove `count - max` newlines starting at newline_pos
+            let difference = (count - max) as usize;
+            Some(Correction::delete(newline_pos, newline_pos + difference))
+        } else {
+            // Insert `min - count` newlines after newline_pos.
+            // If newline_pos is NOT a real \n (e.g. `;`), we also need one extra \n to
+            // end the current line before adding blank lines.
+            let difference = (min - count) as usize;
+            let insert_at = newline_pos + 1;
+            let extra = if newline_is_real { 0 } else { 1 };
+            Some(Correction::insert(insert_at, &"\n".repeat(difference + extra)))
+        }
     }
 
     fn node_start_line(&self, node: &Node) -> usize {

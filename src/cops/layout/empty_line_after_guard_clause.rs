@@ -4,7 +4,8 @@
 
 use crate::cops::{CheckContext, Cop};
 use crate::helpers::guard_clause::is_guard_clause;
-use crate::offense::{Offense, Severity};
+use crate::helpers::source::line_end_byte_offset;
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::{Node, Visit};
 
 const COP_NAME: &str = "Layout/EmptyLineAfterGuardClause";
@@ -102,14 +103,16 @@ impl<'a> Visitor<'a> {
                 if self.next_line_empty_or_allowed_directive(heredoc_last_line) {
                     return;
                 }
-                // Offense at heredoc_end location
-                self.offenses.push(self.ctx.offense_with_range(
+                // Offense at heredoc_end location; insert \n after that line
+                let insert_at = line_end_byte_offset(self.ctx.source, heredoc_last_line);
+                let offense = self.ctx.offense_with_range(
                     COP_NAME,
                     MSG,
                     Severity::Convention,
                     heredoc_end_loc.0,
                     heredoc_end_loc.1,
-                ));
+                ).with_correction(Correction::insert(insert_at, "\n"));
+                self.offenses.push(offense);
                 return;
             }
         }
@@ -129,13 +132,23 @@ impl<'a> Visitor<'a> {
             // Use end keyword location if present (always for non-modifier)
             (info.end_keyword_start.unwrap(), info.end_keyword_end.unwrap())
         };
-        self.offenses.push(self.ctx.offense_with_range(
+        // Insert \n after the last line of the offense node.
+        // If next line is a rubocop:enable or :nocov: directive, insert after THAT line instead.
+        // (rubocop:disable does NOT redirect — only :enable and :nocov: do, per RuboCop source)
+        let insert_line = if self.next_line_is_enable_or_nocov_directive(last_line + 1) {
+            last_line + 1
+        } else {
+            last_line
+        };
+        let insert_at = line_end_byte_offset(self.ctx.source, insert_line);
+        let offense = self.ctx.offense_with_range(
             COP_NAME,
             MSG,
             Severity::Convention,
             off_start,
             off_end,
-        ));
+        ).with_correction(Correction::insert(insert_at, "\n"));
+        self.offenses.push(offense);
     }
 
     // ── correct_style? helpers ──
@@ -286,6 +299,24 @@ impl<'a> Visitor<'a> {
             return true;
         }
         false
+    }
+
+    /// Only rubocop:enable and :nocov: directives redirect the correction insert point.
+    /// rubocop:disable does NOT (per RuboCop's next_line_allowed_directive_comment? impl).
+    fn next_line_is_enable_or_nocov_directive(&self, line_num: usize) -> bool {
+        let text = match get_line_at(self.ctx.source, line_num) {
+            Some(t) => t,
+            None => return false,
+        };
+        let trimmed = text.trim();
+        if !trimmed.starts_with('#') {
+            return false;
+        }
+        if trimmed.contains("rubocop:enable") {
+            return true;
+        }
+        let body = trimmed.trim_start_matches('#').trim();
+        body == ":nocov:"
     }
 
     // ── last_heredoc_info ──
