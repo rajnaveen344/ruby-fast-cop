@@ -4,7 +4,7 @@
 
 use crate::cops::{CheckContext, Cop};
 use crate::helpers::surrounding_space as ss;
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 
 const COP_NAME: &str = "Layout/SpaceInsideHashLiteralBraces";
 
@@ -99,7 +99,7 @@ impl SpaceInsideHashLiteralBraces {
                         Severity::Convention,
                         left + 1,
                         right,
-                    ));
+                    ).with_correction(Correction::delete(left + 1, right)));
                 }
             }
             HashEmptyBracesStyle::Space => {
@@ -107,13 +107,15 @@ impl SpaceInsideHashLiteralBraces {
                 // RuboCop's incorrect_style_detected uses `range = brace` (just `{`) when
                 // expect_space=true and actual=no_space.
                 if right == left + 1 || is_multiline {
+                    // Replace `{}` → `{ }`: range is just `{` but we need to insert space inside.
+                    // RuboCop does insert_after on the `{` range.
                     offenses.push(ctx.offense_with_range(
                         COP_NAME,
                         "Space inside empty hash literal braces missing.",
                         Severity::Convention,
                         left,
                         left + 1,
-                    ));
+                    ).with_correction(Correction::insert(left + 1, " ".to_string())));
                 }
             }
         }
@@ -169,7 +171,7 @@ impl SpaceInsideHashLiteralBraces {
                 Severity::Convention,
                 left,
                 left + 1,
-            ));
+            ).with_correction(Correction::insert(left + 1, " ".to_string())));
         } else if !expect_space && has_space {
             // Range is the space to the right of `{`
             offenses.push(ctx.offense_with_range(
@@ -178,7 +180,7 @@ impl SpaceInsideHashLiteralBraces {
                 Severity::Convention,
                 left + 1,
                 i,
-            ));
+            ).with_correction(Correction::delete(left + 1, i)));
         }
     }
 
@@ -227,7 +229,7 @@ impl SpaceInsideHashLiteralBraces {
                 Severity::Convention,
                 right,
                 right + 1,
-            ));
+            ).with_correction(Correction::insert(right, " ".to_string())));
         } else if !expect_space && has_space {
             // Range is the space to the left of `}`
             offenses.push(ctx.offense_with_range(
@@ -236,7 +238,7 @@ impl SpaceInsideHashLiteralBraces {
                 Severity::Convention,
                 i,
                 right,
-            ));
+            ).with_correction(Correction::delete(i, right)));
         }
     }
 }

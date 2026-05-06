@@ -7,7 +7,7 @@
 //! the left brace has or doesn't have trailing space depending on configuration.
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::Visit;
 
 const COP_NAME: &str = "Layout/SpaceInsideBlockBraces";
@@ -132,13 +132,21 @@ impl<'a> Visitor<'a> {
     fn check_empty_braces(&mut self, begin: usize, end: usize, adjacent: bool) {
         if adjacent {
             // `{}`: only emit if style is `space`. Range covers the full `{}`.
+            // Correction: replace `{}` with `{ }`.
             if self.cop.empty_style == BlockEmptyBracesStyle::Space {
-                self.push_offense(begin, end, "Space missing inside empty braces.");
+                self.push_offense_corrected(
+                    begin, end, "Space missing inside empty braces.",
+                    Some(Correction::replace(begin, end, "{ }".to_string())),
+                );
             }
         } else {
             // `{ }` / `{  }`: only emit if style is `no_space`. Range is inner whitespace.
+            // Correction: delete the inner whitespace.
             if self.cop.empty_style == BlockEmptyBracesStyle::NoSpace {
-                self.push_offense(begin, end, "Space inside empty braces detected.");
+                self.push_offense_corrected(
+                    begin, end, "Space inside empty braces detected.",
+                    Some(Correction::delete(begin, end)),
+                );
             }
         }
     }
@@ -172,7 +180,11 @@ impl<'a> Visitor<'a> {
             if let Some(pipe_pos) = params_first_byte {
                 if left_brace + 1 == pipe_pos && self.cop.space_before_block_parameters {
                     // Always emits regardless of EnforcedStyle (overrides per docs)
-                    self.push_offense(left_brace, pipe_pos + 1, "Space between { and | missing.");
+                    // Correction: replace `{|` with `{ |`
+                    self.push_offense_corrected(
+                        left_brace, pipe_pos + 1, "Space between { and | missing.",
+                        Some(Correction::insert(left_brace + 1, " ".to_string())),
+                    );
                 }
             }
         } else {
@@ -191,7 +203,11 @@ impl<'a> Visitor<'a> {
             if let Some(pipe_pos) = params_first_byte {
                 // We have spaces between `{` and `|`
                 if !self.cop.space_before_block_parameters {
-                    self.push_offense(left_brace + 1, pipe_pos, "Space between { and | detected.");
+                    // Correction: delete the spaces between `{` and `|`
+                    self.push_offense_corrected(
+                        left_brace + 1, pipe_pos, "Space between { and | detected.",
+                        Some(Correction::delete(left_brace + 1, pipe_pos)),
+                    );
                 }
             }
         } else {
@@ -303,34 +319,57 @@ impl<'a> Visitor<'a> {
     fn space_emit(&mut self, begin: usize, end: usize, msg: &'static str) {
         // Same guard as `space()` but without the `begin-1, end-1` RuboCop
         // off-by-one adjustment that applied in the old single-line path.
+        // Correction: delete the space range.
         if self.cop.style == SpaceInsideBlockBracesStyle::NoSpace {
-            self.push_offense(begin, end, msg);
+            self.push_offense_corrected(begin, end, msg, Some(Correction::delete(begin, end)));
         }
     }
 
     fn no_space(&mut self, begin: usize, end: usize, msg: &'static str) {
+        // Correction: insert a space at `begin` (which is one past the brace).
         if self.cop.style == SpaceInsideBlockBracesStyle::Space {
-            self.push_offense(begin, end, msg);
+            self.push_offense_corrected(begin, end, msg, Some(Correction::insert(begin, " ".to_string())));
         }
     }
 
     fn space(&mut self, begin: usize, end: usize, msg: &'static str) {
+        // Correction: delete the spaces (range after adjusting for off-by-one).
         if self.cop.style == SpaceInsideBlockBracesStyle::NoSpace {
-            self.push_offense(begin.saturating_sub(1), end.saturating_sub(1), msg);
+            let adj_begin = begin.saturating_sub(1);
+            let adj_end = end.saturating_sub(1);
+            self.push_offense_corrected(
+                adj_begin, adj_end, msg,
+                Some(Correction::delete(adj_begin, adj_end)),
+            );
         }
     }
 
     fn push_offense(&mut self, begin: usize, end: usize, msg: &'static str) {
+        self.push_offense_corrected(begin, end, msg, None);
+    }
+
+    fn push_offense_corrected(
+        &mut self,
+        begin: usize,
+        end: usize,
+        msg: &'static str,
+        correction: Option<Correction>,
+    ) {
         if begin > end {
             return;
         }
-        self.offenses.push(self.ctx.offense_with_range(
+        let offense = self.ctx.offense_with_range(
             COP_NAME,
             msg,
             Severity::Convention,
             begin,
             end,
-        ));
+        );
+        self.offenses.push(if let Some(c) = correction {
+            offense.with_correction(c)
+        } else {
+            offense
+        });
     }
 }
 
