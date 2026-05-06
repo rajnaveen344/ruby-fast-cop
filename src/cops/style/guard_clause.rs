@@ -4,7 +4,7 @@
 
 use crate::cops::{CheckContext, Cop};
 use crate::helpers::guard_clause::{is_guard_clause, match_terminator};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Edit, Offense, Severity};
 use crate::node_name;
 use ruby_prism::{Node, Visit};
 
@@ -98,6 +98,26 @@ struct IfInfo<'a> {
     else_statements: Option<ruby_prism::StatementsNode<'a>>,
     node_start: usize,
     node_end: usize,
+    // Correction fields
+    /// End offset of condition expression
+    condition_end: usize,
+    /// `end` keyword location (0,0 for modifier form)
+    end_kw_start: usize,
+    end_kw_end: usize,
+    /// `else` keyword location (ElseNode.else_keyword_loc); 0,0 if no else
+    else_kw_start: usize,
+    else_kw_end: usize,
+    /// `then` keyword location (if present, e.g. `if cond then body end`); 0,0 if absent
+    then_kw_start: usize,
+    then_kw_end: usize,
+    /// Source range for the if-branch body (for removing guard clause branch)
+    if_branch_src_start: usize,
+    if_branch_src_end: usize,
+    /// Source range for the else-branch body (for removing guard clause branch)
+    else_branch_src_start: usize,
+    else_branch_src_end: usize,
+    /// Whether any branch contains a heredoc argument (skip correction if true)
+    has_heredoc: bool,
 }
 
 fn inverse_keyword(kw: &str) -> &'static str {
@@ -180,17 +200,19 @@ impl<'a> Visitor<'a> {
         // Then-branch last statement (used for trivial-body check below)
         let then_last = info.then_statements.as_ref().and_then(|s| last_stmt(s));
 
-        let example = if self.too_long_for_single_line(info.keyword_start, &single_line) {
+        let (example, is_multiline_form) = if self.too_long_for_single_line(info.keyword_start, &single_line) {
             // Trivial body → skip offense entirely (matches RuboCop's trivial? rule).
             if self.is_trivial(info, &then_last) {
                 return;
             }
             // Multi-statement form: `kw cond; return; end`
-            format!("{} {}; return; end", inverse_keyword(&info.keyword), cond_src)
+            (format!("{} {}; return; end", inverse_keyword(&info.keyword), cond_src), true)
         } else {
-            single_line
+            (single_line, false)
         };
-        self.register_offense_keyword(info, &example);
+
+        let correction = self.build_ending_correction(info, &cond_src, is_multiline_form);
+        self.register_offense_keyword(info, &example, correction);
 
         // Recurse on then branch
         if let Some(then_stmts) = &info.then_statements {
@@ -213,20 +235,23 @@ impl<'a> Visitor<'a> {
         let else_last = info.else_statements.as_ref().and_then(|s| last_stmt(s));
 
         // Borrow (don't move) so `then_last` stays usable for the trivial check below.
-        let (guard_source_node, kw) = if then_last.as_ref().map_or(false, |n| is_guard_clause(n, self.ctx.source)) {
-            (then_last.as_ref().unwrap(), info.keyword.clone())
+        let (guard_source_node, kw, guard_in_if) = if then_last.as_ref().map_or(false, |n| is_guard_clause(n, self.ctx.source)) {
+            (then_last.as_ref().unwrap(), info.keyword.clone(), true)
         } else if else_last.as_ref().map_or(false, |n| is_guard_clause(n, self.ctx.source)) {
-            (else_last.as_ref().unwrap(), inverse_keyword(&info.keyword).to_string())
+            (else_last.as_ref().unwrap(), inverse_keyword(&info.keyword).to_string(), false)
         } else {
             return;
         };
+
+        // Detect and_or_guard_clause: guard is inside `&&`/`||` — RuboCop skips autocorrect for else branches.
+        let and_or_guard = matches!(guard_source_node, Node::AndNode { .. } | Node::OrNode { .. });
 
         // Build example: e.g., "return if foo", "raise 'x' unless bar"
         let guard_src = self.src(guard_source_node);
         let cond_src = self.src(&info.condition);
         let single_line = format!("{} {} {}", guard_src, kw, cond_src);
 
-        let example = if self.too_long_for_single_line(info.keyword_start, &single_line) {
+        let (example, is_multiline_form) = if self.too_long_for_single_line(info.keyword_start, &single_line) {
             // Trivial body check: inner guard clause is the only branch expression and
             // the branch isn't nested if/begin — skip offense per trivial? rule.
             if self.is_trivial(info, &then_last) {
@@ -234,29 +259,38 @@ impl<'a> Visitor<'a> {
             }
             // Use the (possibly inverted) `kw` rather than info.keyword: when the
             // guard clause is in the else branch we invert if↔unless.
-            format!(
+            (format!(
                 "{} {}; {}; end",
                 kw, cond_src, guard_src
-            )
+            ), true)
         } else {
-            single_line
+            (single_line, false)
         };
 
-        self.register_offense_keyword(info, &example);
+        // RuboCop: skip autocorrect when and_or guard clause (guard.nil? → node.else? guard skipped)
+        let correction = if and_or_guard {
+            None
+        } else {
+            self.build_on_if_correction(info, &cond_src, &guard_src, &kw, guard_in_if, is_multiline_form)
+        };
+
+        self.register_offense_keyword(info, &example, correction);
     }
 
-    fn register_offense_keyword(&mut self, info: &IfInfo<'a>, example: &str) {
+    fn register_offense_keyword(&mut self, info: &IfInfo<'a>, example: &str, correction: Option<Correction>) {
         let msg = format!(
             "Use a guard clause (`{}`) instead of wrapping the code inside a conditional expression.",
             example
         );
-        self.offenses.push(self.ctx.offense_with_range(
+        let offense = self.ctx.offense_with_range(
             COP_NAME,
             &msg,
             Severity::Convention,
             info.keyword_start,
             info.keyword_end,
-        ));
+        );
+        let offense = if let Some(c) = correction { offense.with_correction(c) } else { offense };
+        self.offenses.push(offense);
     }
 
     // ── accepted_form ──
@@ -393,6 +427,243 @@ impl<'a> Visitor<'a> {
         count == 1
     }
 
+    // ── Correction builders ──
+
+    /// Build correction for `check_ending_if` (no-else trailing if/unless).
+    /// replace keyword..condition with `return {inv_kw} {cond}` (or multiline form),
+    /// then delete `end` keyword.
+    fn build_ending_correction(&self, info: &IfInfo, cond_src: &str, is_multiline_form: bool) -> Option<Correction> {
+        if info.end_kw_start == 0 {
+            return None;
+        }
+        let inv_kw = inverse_keyword(&info.keyword);
+        let replacement = if is_multiline_form {
+            format!("{} {}\n  return\nend", inv_kw, cond_src)
+        } else {
+            format!("return {} {}", inv_kw, cond_src)
+        };
+        let mut edits = vec![
+            // 1. Replace keyword..condition_end
+            Edit { start_offset: info.keyword_start, end_offset: info.condition_end, replacement },
+        ];
+        // 2. Handle `then` keyword (one-liner form): replace with newline
+        if info.then_kw_start != 0 {
+            edits.push(Edit { start_offset: info.then_kw_start, end_offset: info.then_kw_end, replacement: "\n".into() });
+        }
+        // 3. Delete `end` keyword. For heredoc path, RuboCop uses remove_whole_lines.
+        if info.has_heredoc {
+            let (s, e) = self.range_by_whole_lines(info.end_kw_start, info.end_kw_end);
+            edits.push(Edit { start_offset: s, end_offset: e, replacement: String::new() });
+        } else {
+            edits.push(Edit { start_offset: info.end_kw_start, end_offset: info.end_kw_end, replacement: String::new() });
+        }
+        Some(Correction { edits })
+    }
+
+    /// Build correction for `check_on_if` (has-else, guard clause in a branch).
+    /// replace keyword..condition with `{guard_src} {kw} {cond}`,
+    /// delete end-kw, else-kw, and guard branch source.
+    fn build_on_if_correction(&self, info: &IfInfo, cond_src: &str, guard_src: &str, kw: &str, guard_in_if: bool, is_multiline_form: bool) -> Option<Correction> {
+        if info.end_kw_start == 0 {
+            return None;
+        }
+        let replacement = if is_multiline_form {
+            format!("{} {}\n  {}\nend", kw, cond_src, guard_src)
+        } else {
+            format!("{} {} {}", guard_src, kw, cond_src)
+        };
+        let mut edits = vec![
+            // 1. Replace keyword..condition_end
+            Edit { start_offset: info.keyword_start, end_offset: info.condition_end, replacement },
+        ];
+        // 2. Handle `then` keyword
+        if info.then_kw_start != 0 {
+            edits.push(Edit { start_offset: info.then_kw_start, end_offset: info.then_kw_end, replacement: "\n".into() });
+        }
+
+        if info.has_heredoc {
+            // Heredoc path — translate autocorrect_heredoc_argument.
+            // Find heredoc node within guard branch
+            let heredoc_close_end = if let Some(stmts) = if guard_in_if { &info.then_statements } else { &info.else_statements } {
+                self.find_heredoc_close_end_in_stmts(stmts)
+            } else {
+                None
+            };
+            // If we can't find heredoc close, give up on heredoc-aware path
+            let heredoc_close_end = match heredoc_close_end {
+                Some(v) => v,
+                None => return None,
+            };
+
+            // 3. remove_whole_lines(end_kw)
+            let (es, ee) = self.range_by_whole_lines(info.end_kw_start, info.end_kw_end);
+            edits.push(Edit { start_offset: es, end_offset: ee, replacement: String::new() });
+
+            if info.has_else {
+                // leave_branch present?
+                let (lb_start, lb_end) = if guard_in_if {
+                    (info.else_branch_src_start, info.else_branch_src_end)
+                } else {
+                    (info.if_branch_src_start, info.if_branch_src_end)
+                };
+                if lb_start != 0 && lb_end > lb_start {
+                    let leave_src = self.ctx.source[lb_start..lb_end].to_string();
+                    let (lws, lwe) = self.range_by_whole_lines(lb_start, lb_end);
+                    edits.push(Edit { start_offset: lws, end_offset: lwe, replacement: String::new() });
+                    // Prism's closing_loc for a heredoc spans the whole terminator line including
+                    // the trailing newline, so heredoc_close_end is start-of-next-line. Insert
+                    // `{leave_branch.source}\n` there to land the leave-branch on its own line
+                    // immediately after the heredoc terminator.
+                    edits.push(Edit { start_offset: heredoc_close_end, end_offset: heredoc_close_end, replacement: format!("{}\n", leave_src) });
+                }
+                // remove_whole_lines(else_kw)
+                if info.else_kw_start != 0 {
+                    let (ks, ke) = self.range_by_whole_lines(info.else_kw_start, info.else_kw_end);
+                    edits.push(Edit { start_offset: ks, end_offset: ke, replacement: String::new() });
+                }
+                // remove_whole_lines(guard branch source)
+                let (gb_start, gb_end) = if guard_in_if {
+                    (info.if_branch_src_start, info.if_branch_src_end)
+                } else {
+                    (info.else_branch_src_start, info.else_branch_src_end)
+                };
+                if gb_start != 0 && gb_end > gb_start {
+                    let (gs, ge) = self.range_by_whole_lines(gb_start, gb_end);
+                    edits.push(Edit { start_offset: gs, end_offset: ge, replacement: String::new() });
+                }
+            }
+        } else {
+            // 3. Delete `end` keyword
+            edits.push(Edit { start_offset: info.end_kw_start, end_offset: info.end_kw_end, replacement: String::new() });
+            // 4. Delete `else` keyword
+            if info.else_kw_start != 0 {
+                edits.push(Edit { start_offset: info.else_kw_start, end_offset: info.else_kw_end, replacement: String::new() });
+            }
+            // 5. Delete guard branch (the branch containing the guard clause)
+            let (branch_start, branch_end) = if guard_in_if {
+                (info.if_branch_src_start, info.if_branch_src_end)
+            } else {
+                (info.else_branch_src_start, info.else_branch_src_end)
+            };
+            if branch_start != 0 && branch_end > branch_start {
+                edits.push(Edit { start_offset: branch_start, end_offset: branch_end, replacement: String::new() });
+            }
+        }
+        Some(Correction { edits })
+    }
+
+    /// Expand a byte range to whole-line bounds, including trailing newline.
+    /// Mirrors RuboCop's `range_by_whole_lines(range, include_final_newline: true)`.
+    fn range_by_whole_lines(&self, start: usize, end: usize) -> (usize, usize) {
+        let src = self.ctx.source;
+        let line_start = src[..start].rfind('\n').map_or(0, |p| p + 1);
+        // Find end of line containing `end-1`
+        let search_from = end.saturating_sub(1).min(src.len());
+        let nl = src[search_from..].find('\n').map(|p| search_from + p + 1).unwrap_or(src.len());
+        (line_start, nl)
+    }
+
+    /// Recursively find a heredoc node in a branch's statements; return the byte offset
+    /// just AFTER the closing terminator's line (including its trailing newline).
+    /// This mirrors RuboCop's `heredoc_node.loc.heredoc_end`.
+    fn find_heredoc_close_end_in_stmts(&self, stmts: &ruby_prism::StatementsNode<'a>) -> Option<usize> {
+        let source = self.ctx.source;
+        struct H<'s> { source: &'s str, close_end: Option<usize> }
+        impl<'s> H<'s> {
+            fn record(&mut self, opening: Option<(usize, usize)>, closing: Option<(usize, usize)>) {
+                if let (Some((os, oe)), Some((_cs, ce))) = (opening, closing) {
+                    if self.source.get(os..oe).map_or(false, |s| s.starts_with("<<")) {
+                        // RuboCop's heredoc_end location is positioned right after the
+                        // terminator word but BEFORE the trailing newline. Insert "\n..."
+                        // after that position to land at the start of the next line.
+                        if self.close_end.is_none() {
+                            self.close_end = Some(ce);
+                        }
+                    }
+                }
+            }
+        }
+        impl<'v, 's> Visit<'v> for H<'s> {
+            fn visit_string_node(&mut self, n: &ruby_prism::StringNode<'v>) {
+                self.record(
+                    n.opening_loc().map(|l| (l.start_offset(), l.end_offset())),
+                    n.closing_loc().map(|l| (l.start_offset(), l.end_offset())),
+                );
+                if self.close_end.is_some() { return; }
+                ruby_prism::visit_string_node(self, n);
+            }
+            fn visit_interpolated_string_node(&mut self, n: &ruby_prism::InterpolatedStringNode<'v>) {
+                self.record(
+                    n.opening_loc().map(|l| (l.start_offset(), l.end_offset())),
+                    n.closing_loc().map(|l| (l.start_offset(), l.end_offset())),
+                );
+                if self.close_end.is_some() { return; }
+                ruby_prism::visit_interpolated_string_node(self, n);
+            }
+            fn visit_x_string_node(&mut self, n: &ruby_prism::XStringNode<'v>) {
+                let o = n.opening_loc();
+                let c = n.closing_loc();
+                self.record(Some((o.start_offset(), o.end_offset())), Some((c.start_offset(), c.end_offset())));
+                if self.close_end.is_some() { return; }
+                ruby_prism::visit_x_string_node(self, n);
+            }
+            fn visit_interpolated_x_string_node(&mut self, n: &ruby_prism::InterpolatedXStringNode<'v>) {
+                let o = n.opening_loc();
+                let c = n.closing_loc();
+                self.record(Some((o.start_offset(), o.end_offset())), Some((c.start_offset(), c.end_offset())));
+                if self.close_end.is_some() { return; }
+                ruby_prism::visit_interpolated_x_string_node(self, n);
+            }
+        }
+        let mut h = H { source, close_end: None };
+        for node in stmts.body().iter() {
+            h.visit(&node);
+            if h.close_end.is_some() { break; }
+        }
+        h.close_end
+    }
+
+    /// Check if a branch's statements contain a heredoc node (string with `<<` opening).
+    fn branch_has_heredoc_raw(&self, stmts: Option<ruby_prism::StatementsNode<'a>>) -> bool {
+        let stmts = match stmts { Some(s) => s, None => return false };
+        let source = self.ctx.source;
+        struct H<'s> { source: &'s str, found: bool }
+        impl<'v, 's> Visit<'v> for H<'s> {
+            fn visit_string_node(&mut self, n: &ruby_prism::StringNode<'v>) {
+                if let Some(loc) = n.opening_loc() {
+                    if self.source.get(loc.start_offset()..loc.end_offset())
+                        .map_or(false, |s| s.starts_with("<<")) {
+                        self.found = true; return;
+                    }
+                }
+                ruby_prism::visit_string_node(self, n);
+            }
+            fn visit_interpolated_string_node(&mut self, n: &ruby_prism::InterpolatedStringNode<'v>) {
+                if let Some(loc) = n.opening_loc() {
+                    if self.source.get(loc.start_offset()..loc.end_offset())
+                        .map_or(false, |s| s.starts_with("<<")) {
+                        self.found = true; return;
+                    }
+                }
+                ruby_prism::visit_interpolated_string_node(self, n);
+            }
+            fn visit_x_string_node(&mut self, n: &ruby_prism::XStringNode<'v>) {
+                let loc = n.opening_loc();
+                if self.source.get(loc.start_offset()..loc.end_offset())
+                    .map_or(false, |s| s.starts_with("<<")) {
+                    self.found = true; return;
+                }
+                ruby_prism::visit_x_string_node(self, n);
+            }
+        }
+        let mut h = H { source, found: false };
+        for node in stmts.body().iter() {
+            h.visit(&node);
+            if h.found { return true; }
+        }
+        false
+    }
+
     // ── IfInfo builders ──
 
     fn if_node_info(&self, node: &ruby_prism::IfNode<'a>) -> Option<IfInfo<'a>> {
@@ -416,6 +687,13 @@ impl<'a> Visitor<'a> {
                 else_statements: None,
                 node_start: node.location().start_offset(),
                 node_end: node.location().end_offset(),
+                condition_end: 0,
+                end_kw_start: 0, end_kw_end: 0,
+                else_kw_start: 0, else_kw_end: 0,
+                then_kw_start: 0, then_kw_end: 0,
+                if_branch_src_start: 0, if_branch_src_end: 0,
+                else_branch_src_start: 0, else_branch_src_end: 0,
+                has_heredoc: false,
             });
         }
         let kw_loc = kw_loc.unwrap();
@@ -423,15 +701,47 @@ impl<'a> Visitor<'a> {
         let is_elsif = kw_src == "elsif";
 
         // Detect else chain
-        let (has_else, has_elsif_conditional, else_stmts) = match node.subsequent() {
+        let (has_else, has_elsif_conditional, else_stmts, else_kw_start, else_kw_end) = match node.subsequent() {
             Some(Node::ElseNode { .. }) => {
                 let else_node = node.subsequent().unwrap();
                 let en = else_node.as_else_node().unwrap();
-                (true, false, en.statements())
+                let ekw = en.else_keyword_loc();
+                (true, false, en.statements(), ekw.start_offset(), ekw.end_offset())
             }
-            Some(Node::IfNode { .. }) => (true, true, None),
-            _ => (false, false, None),
+            Some(Node::IfNode { .. }) => (true, true, None, 0, 0),
+            _ => (false, false, None, 0, 0),
         };
+
+        // end keyword
+        let (end_kw_start, end_kw_end) = node.end_keyword_loc()
+            .map(|l| (l.start_offset(), l.end_offset()))
+            .unwrap_or((0, 0));
+
+        // then keyword (for `if cond then body end` form)
+        let (then_kw_start, then_kw_end) = node.then_keyword_loc()
+            .map(|l| (l.start_offset(), l.end_offset()))
+            .unwrap_or((0, 0));
+
+        let condition = node.predicate();
+        let condition_end = condition.location().end_offset();
+
+        // Branch ranges
+        let (if_branch_src_start, if_branch_src_end) = node.statements()
+            .map(|s| (s.location().start_offset(), s.location().end_offset()))
+            .unwrap_or((0, 0));
+
+        let (else_branch_src_start, else_branch_src_end) = else_stmts.as_ref()
+            .map(|s| (s.location().start_offset(), s.location().end_offset()))
+            .unwrap_or((0, 0));
+
+        // Heredoc detection: check if any branch body contains a heredoc opening
+        let else_stmts_for_heredoc = if let Some(Node::ElseNode { .. }) = node.subsequent() {
+            node.subsequent().unwrap().as_else_node().unwrap().statements()
+        } else {
+            None
+        };
+        let has_heredoc = self.branch_has_heredoc_raw(node.statements())
+            || self.branch_has_heredoc_raw(else_stmts_for_heredoc);
 
         Some(IfInfo {
             keyword: kw_src.to_string(),
@@ -442,20 +752,50 @@ impl<'a> Visitor<'a> {
             is_ternary: false,
             has_else,
             has_elsif_conditional,
-            condition: node.predicate(),
+            condition,
             then_statements: node.statements(),
             else_statements: else_stmts,
             node_start: node.location().start_offset(),
             node_end: node.location().end_offset(),
+            condition_end,
+            end_kw_start, end_kw_end,
+            else_kw_start, else_kw_end,
+            then_kw_start, then_kw_end,
+            if_branch_src_start, if_branch_src_end,
+            else_branch_src_start, else_branch_src_end,
+            has_heredoc,
         })
     }
 
     fn unless_node_info(&self, node: &ruby_prism::UnlessNode<'a>) -> Option<IfInfo<'a>> {
         let kw_loc = node.keyword_loc();
-        let (has_else, else_stmts) = match node.else_clause() {
-            Some(ec) => (true, ec.statements()),
-            None => (false, None),
+        let (has_else, else_stmts, else_kw_start, else_kw_end) = match node.else_clause() {
+            Some(ec) => {
+                let ekw = ec.else_keyword_loc();
+                (true, ec.statements(), ekw.start_offset(), ekw.end_offset())
+            }
+            None => (false, None, 0, 0),
         };
+
+        let (end_kw_start, end_kw_end) = node.end_keyword_loc()
+            .map(|l| (l.start_offset(), l.end_offset()))
+            .unwrap_or((0, 0));
+
+        let condition = node.predicate();
+        let condition_end = condition.location().end_offset();
+
+        let (if_branch_src_start, if_branch_src_end) = node.statements()
+            .map(|s| (s.location().start_offset(), s.location().end_offset()))
+            .unwrap_or((0, 0));
+
+        let (else_branch_src_start, else_branch_src_end) = else_stmts.as_ref()
+            .map(|s| (s.location().start_offset(), s.location().end_offset()))
+            .unwrap_or((0, 0));
+
+        let has_heredoc = self.branch_has_heredoc_raw(node.statements())
+            || self.branch_has_heredoc_raw(node.else_clause()
+                .and_then(|ec| ec.statements()));
+
         Some(IfInfo {
             keyword: "unless".to_string(),
             keyword_start: kw_loc.start_offset(),
@@ -465,11 +805,18 @@ impl<'a> Visitor<'a> {
             is_ternary: false,
             has_else,
             has_elsif_conditional: false,
-            condition: node.predicate(),
+            condition,
             then_statements: node.statements(),
             else_statements: else_stmts,
             node_start: node.location().start_offset(),
             node_end: node.location().end_offset(),
+            condition_end,
+            end_kw_start, end_kw_end,
+            else_kw_start, else_kw_end,
+            then_kw_start: 0, then_kw_end: 0,
+            if_branch_src_start, if_branch_src_end,
+            else_branch_src_start, else_branch_src_end,
+            has_heredoc,
         })
     }
 

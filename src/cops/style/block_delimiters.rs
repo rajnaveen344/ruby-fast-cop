@@ -4,7 +4,7 @@
 //! Supports EnforcedStyle: line_count_based (default), semantic, braces_for_chaining, always_braces.
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Edit, Offense, Severity};
 use ruby_prism::{Node, Visit};
 use std::collections::HashSet;
 
@@ -249,7 +249,7 @@ impl<'a> BlockVisitor<'a> {
                     "Brace delimiters `{{...}}` required for '{}' method.",
                     method_name
                 );
-                self.add_offense(block, &msg);
+                self.add_offense(call, block, &msg);
             }
             return;
         }
@@ -259,7 +259,7 @@ impl<'a> BlockVisitor<'a> {
         }
 
         let msg = self.message(call, block);
-        self.add_offense(block, &msg);
+        self.add_offense(call, block, &msg);
     }
 
     fn require_do_end(&self, block: &ruby_prism::BlockNode) -> bool {
@@ -563,21 +563,262 @@ impl<'a> BlockVisitor<'a> {
         }
     }
 
-    fn add_offense(&mut self, block: &ruby_prism::BlockNode, message: &str) {
+    fn add_offense(&mut self, call: &ruby_prism::CallNode, block: &ruby_prism::BlockNode, message: &str) {
         let open_loc = block.opening_loc();
         let block_start = block.location().start_offset();
         let block_end = block.closing_loc().end_offset();
 
-        self.offenses.push(self.ctx.offense_with_range(
+        let correction = self.build_correction(call, block);
+
+        let mut offense = self.ctx.offense_with_range(
             "Style/BlockDelimiters",
             message,
             Severity::Convention,
             open_loc.start_offset(),
             open_loc.end_offset(),
-        ));
+        );
+        if let Some(c) = correction {
+            offense = offense.with_correction(c);
+        }
+        self.offenses.push(offense);
 
         // Mark this block range so descendant blocks are skipped
         self.offended_ranges.push((block_start, block_end));
+    }
+
+    fn build_correction(&self, call: &ruby_prism::CallNode, block: &ruby_prism::BlockNode) -> Option<Correction> {
+        let open_start = block.opening_loc().start_offset();
+        let open_end = block.opening_loc().end_offset();
+        let close_start = block.closing_loc().start_offset();
+        let close_end = block.closing_loc().end_offset();
+        let src = self.ctx.source.as_bytes();
+
+        if self.is_braces(open_start) {
+            // { ... } → do ... end
+            Some(self.braces_to_do_end(call, block, open_start, open_end, close_start, close_end, src))
+        } else {
+            // do ... end → { ... }
+            Some(self.do_end_to_braces(block, open_start, open_end, close_start, close_end, src))
+        }
+    }
+
+    /// Replace `{` with `do`, `}` with `end`.
+    /// Add space before `{` if missing, add space after `do` if body starts tight.
+    /// Handle trailing comment on closing line by moving it before the block.
+    fn braces_to_do_end(
+        &self,
+        call: &ruby_prism::CallNode,
+        _block: &ruby_prism::BlockNode,
+        open_start: usize,
+        open_end: usize,
+        close_start: usize,
+        close_end: usize,
+        src: &[u8],
+    ) -> Correction {
+        let mut edits: Vec<Edit> = Vec::new();
+
+        // Check for trailing comment anywhere on closing line (after the `}`)
+        let comment_on_close_line = self.find_comment_on_line_after(src, close_end);
+
+        // --- Opening: replace `{` with `do` ---
+        // Ensure space before `{` if none
+        let need_space_before = open_start > 0 && !is_whitespace(src[open_start - 1]);
+        let open_replacement = if need_space_before { " do" } else { "do" };
+
+        // Check if we need space after `do` (if next char after `{` is not whitespace)
+        let need_space_after_open = open_end < src.len() && !is_whitespace(src[open_end]);
+        let open_full = if need_space_after_open {
+            format!("{} ", open_replacement)
+        } else {
+            open_replacement.to_string()
+        };
+
+        edits.push(Edit {
+            start_offset: open_start,
+            end_offset: open_end,
+            replacement: open_full,
+        });
+
+        // --- Closing: replace `}` with `end` ---
+        if let Some((comment_text, comment_ws_start, comment_end)) = comment_on_close_line {
+            // Move comment to line before outermost call start
+            let call_start = self.outermost_call_start(call);
+            edits.push(Edit {
+                start_offset: call_start,
+                end_offset: call_start,
+                replacement: format!("{}\n", comment_text),
+            });
+            // Remove comment (and preceding whitespace) from close line.
+            // If the comment removal would leave `}\n\n` (the close line has `}` + comment only),
+            // also eat the `\n` after the comment to avoid leaving an extra blank line.
+            let close_line_start = self.ctx.line_start(close_start);
+            let content_between = &src[close_line_start..comment_ws_start];
+            let only_brace_before_comment = content_between
+                .iter()
+                .all(|&b| b == b' ' || b == b'\t' || b == b'}');
+            let removal_end = if only_brace_before_comment && comment_end < src.len() && src[comment_end] == b'\n' {
+                comment_end + 1 // eat the `\n` too
+            } else {
+                comment_end
+            };
+            edits.push(Edit {
+                start_offset: comment_ws_start,
+                end_offset: removal_end,
+                replacement: String::new(),
+            });
+            // Replace `}` with `end`
+            let need_space_before_close = close_start > 0 && !is_whitespace(src[close_start - 1]);
+            let close_replacement = if need_space_before_close { " end" } else { "end" };
+            edits.push(Edit {
+                start_offset: close_start,
+                end_offset: close_end,
+                replacement: close_replacement.to_string(),
+            });
+        } else {
+            // Normal case: ensure space before `}` → `end`
+            let need_space_before_close = close_start > 0 && !is_whitespace(src[close_start - 1]);
+            let close_replacement = if need_space_before_close { " end" } else { "end" };
+            edits.push(Edit {
+                start_offset: close_start,
+                end_offset: close_end,
+                replacement: close_replacement.to_string(),
+            });
+        }
+
+        Correction { edits }
+    }
+
+    /// Find a `# comment` on the same line as `after_offset`, scanning forward.
+    /// Returns (comment_text, ws_before_comment_start, comment_end) if found.
+    /// ws_before_comment_start = start of whitespace preceding `#`.
+    /// comment_end = end of comment text (before `\n`), NOT including newline.
+    fn find_comment_on_line_after(
+        &self,
+        src: &[u8],
+        after_offset: usize,
+    ) -> Option<(String, usize, usize)> {
+        let mut i = after_offset;
+        // Scan forward on same line looking for `#`
+        while i < src.len() && src[i] != b'\n' {
+            if src[i] == b'#' {
+                // Found comment start. Walk back to find ws_start.
+                let mut ws_start = i;
+                while ws_start > after_offset && src[ws_start - 1] == b' ' {
+                    ws_start -= 1;
+                }
+                // Find end of comment text (before `\n`)
+                let mut text_end = i;
+                while text_end < src.len() && src[text_end] != b'\n' {
+                    text_end += 1;
+                }
+                let comment_text = String::from_utf8_lossy(&src[i..text_end]).to_string();
+                return Some((comment_text, ws_start, text_end));
+            }
+            i += 1;
+        }
+        None
+    }
+
+    /// Replace `do` with `{`, `end` with `}`.
+    /// Add space after `{` if body starts tight.
+    /// If body has rescue/ensure: wrap body with `begin\n...\nend`.
+    fn do_end_to_braces(
+        &self,
+        block: &ruby_prism::BlockNode,
+        open_start: usize,
+        open_end: usize,
+        close_start: usize,
+        close_end: usize,
+        src: &[u8],
+    ) -> Correction {
+        let mut edits: Vec<Edit> = Vec::new();
+
+        // Replace `do` with `{`
+        edits.push(Edit {
+            start_offset: open_start,
+            end_offset: open_end,
+            replacement: "{".to_string(),
+        });
+
+        // Ensure space after `{` — check char at open_end
+        // (the char right after `do` in source, now after `{`)
+        let need_space_after = open_end < src.len() && !is_whitespace(src[open_end]);
+        if need_space_after {
+            edits.push(Edit {
+                start_offset: open_end,
+                end_offset: open_end,
+                replacement: " ".to_string(),
+            });
+        }
+
+        // Handle begin_required: wrap body
+        if self.block_needs_begin_wrap(block) {
+            // Find body content start: skip past `do [params]\n` then skip leading whitespace
+            // of first body line → insert `begin\n` there so indent stays on `begin`
+            if let Some(content_start) = self.find_body_content_offset(src, open_end) {
+                // Insert `begin\n` before content start (leading whitespace remains before `begin`)
+                edits.push(Edit {
+                    start_offset: content_start,
+                    end_offset: content_start,
+                    replacement: "begin\n".to_string(),
+                });
+            }
+            // Replace `end` keyword with `end\n}` (wrap-close + delimiter)
+            edits.push(Edit {
+                start_offset: close_start,
+                end_offset: close_end,
+                replacement: "end\n}".to_string(),
+            });
+        } else {
+            // Replace `end` with `}`
+            edits.push(Edit {
+                start_offset: close_start,
+                end_offset: close_end,
+                replacement: "}".to_string(),
+            });
+        }
+
+        Correction { edits }
+    }
+
+    /// Check if block body needs `begin...end` wrapping (has rescue or ensure).
+    fn block_needs_begin_wrap(&self, block: &ruby_prism::BlockNode) -> bool {
+        if let Some(body) = block.body() {
+            return self.node_has_rescue_or_ensure(&body);
+        }
+        false
+    }
+
+    fn node_has_rescue_or_ensure(&self, node: &Node) -> bool {
+        match node {
+            Node::BeginNode { .. } => {
+                let begin = node.as_begin_node().unwrap();
+                begin.rescue_clause().is_some() || begin.ensure_clause().is_some()
+            }
+            _ => false,
+        }
+    }
+
+    /// Find offset of first body content (non-whitespace) after `do [params]\n`.
+    /// Inserts `begin\n` here so the line's existing indent stays before `begin`.
+    fn find_body_content_offset(&self, src: &[u8], after_open: usize) -> Option<usize> {
+        // Skip past the rest of the `do` line (params + any trailing content) until `\n`
+        let mut i = after_open;
+        while i < src.len() && src[i] != b'\n' {
+            i += 1;
+        }
+        if i < src.len() {
+            i += 1; // skip `\n`
+        }
+        // i is now start of first body line; skip its leading whitespace
+        while i < src.len() && (src[i] == b' ' || src[i] == b'\t') {
+            i += 1;
+        }
+        if i < src.len() {
+            Some(i)
+        } else {
+            None
+        }
     }
 }
 
@@ -609,6 +850,10 @@ fn ends_with_keyword(text: &str, keyword: &str) -> bool {
     }
     let prev = text.as_bytes()[prefix_len - 1];
     !prev.is_ascii_alphanumeric() && prev != b'_'
+}
+
+fn is_whitespace(b: u8) -> bool {
+    b == b' ' || b == b'\t' || b == b'\n' || b == b'\r'
 }
 
 fn is_operator_method(name: &str) -> bool {
