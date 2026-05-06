@@ -252,6 +252,97 @@ pub fn match_hash_brackets_map<'a>(outer: &CallNode<'a>) -> Option<(BlockNode<'a
     Some((block, inner_call))
 }
 
+/// Build multiple edits for a hash-transform correction.
+///
+/// Translates RuboCop's 4-step Autocorrection:
+/// 1. strip_prefix_and_suffix: remove "Hash[" prefix + "]" suffix (for Hash[] case)
+/// 2. set_new_method_name: replace old method selector with new_method
+/// 3. set_new_arg_name: replace block params with |new_arg|
+/// 4. set_new_body_expression: replace block body expr with body_src (wrapping bare hash)
+/// Additionally for map.to_h: strip ".to_h" suffix (from block_end to outer_end).
+///
+/// Parameters:
+/// - `source`: full source text
+/// - `outer_start`/`outer_end`: the offense byte range
+/// - `block_call`: the inner call node (map/each_with_object/to_h)
+/// - `block`: the block node attached to block_call
+/// - `new_method`: "transform_values" or "transform_keys"
+/// - `new_arg`: the single param name for the new block
+/// - `body_expr`: the body expression node to use as new body
+/// - `map_to_h_outer`: for map.to_h, Some(outer_call_end) to strip trailing ".to_h"
+///
+/// Returns a list of (start, end, replacement) edits, sorted in order.
+pub fn hash_transform_edits<'a>(
+    source: &str,
+    outer_start: usize,
+    outer_end: usize,
+    block_call: &CallNode<'a>,
+    block: &BlockNode<'a>,
+    new_method: &str,
+    new_arg: &str,
+    body_expr: &Node<'a>,
+    map_to_h_outer_end: Option<usize>,
+    hash_brackets_outer: bool,
+) -> Vec<(usize, usize, String)> {
+    let mut edits: Vec<(usize, usize, String)> = Vec::new();
+
+    // Edit 1a: For Hash[] case — remove "Hash[" prefix
+    if hash_brackets_outer {
+        edits.push((outer_start, outer_start + 5, String::new())); // remove "Hash["
+        edits.push((outer_end - 1, outer_end, String::new())); // remove "]"
+    }
+
+    // Edit 1b: For map.to_h case — remove ".to_h" (from block_end to outer_end)
+    if let Some(to_h_end) = map_to_h_outer_end {
+        let block_end = block.location().end_offset();
+        if block_end < to_h_end {
+            edits.push((block_end, to_h_end, String::new()));
+        }
+    }
+
+    // Edit 2: Replace method selector (and args if call has closing paren — e.g. each_with_object({}))
+    // RuboCop: `range = selector; if send_end = block_node.send_node.loc.end; range = range.begin.join(send_end)`
+    if let Some(sel) = block_call.message_loc() {
+        let sel_end = if let Some(close) = block_call.closing_loc() {
+            close.end_offset()
+        } else {
+            sel.end_offset()
+        };
+        edits.push((sel.start_offset(), sel_end, new_method.to_string()));
+    }
+
+    // Edit 3: Replace block params with |new_arg|
+    if let Some(params) = block.parameters() {
+        edits.push((
+            params.location().start_offset(),
+            params.location().end_offset(),
+            format!("|{}|", new_arg),
+        ));
+    }
+
+    // Edit 4: Replace block body with new body expression
+    // Check if body is a bare hash (needs `{ }` wrapping)
+    // Both HashNode (braced `{k: v}`) and KeywordHashNode (bare `k: v` in method args) possible.
+    let body_src = &source[body_expr.location().start_offset()..body_expr.location().end_offset()];
+    let is_bare_hash = (body_expr.as_hash_node().is_some() || body_expr.as_keyword_hash_node().is_some())
+        && !body_src.trim_start().starts_with('{');
+    let new_body_src = if is_bare_hash {
+        format!("{{ {} }}", body_src)
+    } else {
+        body_src.to_string()
+    };
+
+    if let Some(body_node) = block.body() {
+        let stmts_start = body_node.location().start_offset();
+        let stmts_end = body_node.location().end_offset();
+        edits.push((stmts_start, stmts_end, new_body_src));
+    }
+
+    // Sort by start offset ascending
+    edits.sort_by_key(|(s, _, _)| *s);
+    edits
+}
+
 /// Match `hash.map { |k, v| [...] }.to_h` — outer CallNode with method `:to_h`, no args,
 /// no block, whose receiver is a map/collect call-with-block.
 pub fn match_map_to_h<'a>(outer: &CallNode<'a>) -> Option<(BlockNode<'a>, CallNode<'a>)> {

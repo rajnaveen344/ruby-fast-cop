@@ -5,8 +5,10 @@
 use crate::cops::{CheckContext, Cop};
 use crate::helpers::hash_transform_method as htm;
 use crate::node_name;
-use crate::offense::{Offense, Severity};
-use ruby_prism::{BlockNode, CallNode, Node};
+use crate::offense::{Correction, Edit, Offense, Severity};
+use ruby_prism::{BlockNode, CallNode};
+
+const NEW_METHOD: &str = "transform_values";
 
 #[derive(Default)]
 pub struct HashTransformValues;
@@ -37,24 +39,18 @@ impl HashTransformValues {
         let body_stmt = htm::body_single_stmt(block)?;
         let (key_expr, val_expr) = htm::match_index_assign(&body_stmt, memo)?;
 
-        // KEY must be `lvar key_arg`
         if !htm::is_lvar_ref(&key_expr, key_arg) {
             return None;
         }
-        // VAL must not reference memo
         if htm::subtree_references(&val_expr, memo) {
             return None;
         }
-
-        // noop?
         if htm::is_lvar_ref(&val_expr, val_arg) {
             return None;
         }
-        // transformation_uses_both_args? (val references key)
         if htm::subtree_references(&val_expr, key_arg) {
             return None;
         }
-        // use_transformed_argname?
         if !htm::subtree_references(&val_expr, val_arg) {
             return None;
         }
@@ -62,7 +58,17 @@ impl HashTransformValues {
         let start = recv.location().start_offset();
         let end = block.location().end_offset();
         let msg = "Prefer `transform_values` over `each_with_object`.".to_string();
-        Some(ctx.offense_with_range(self.name(), &msg, self.severity(), start, end))
+
+        // Build correction edits
+        let edits = htm::hash_transform_edits(
+            ctx.source, start, end,
+            block_call, block, NEW_METHOD, val_arg, &val_expr,
+            None, false,
+        );
+        let correction = Correction { edits: edits.into_iter().map(|(s, e, r)| Edit { start_offset: s, end_offset: e, replacement: r }).collect() };
+
+        Some(ctx.offense_with_range(self.name(), &msg, self.severity(), start, end)
+            .with_correction(correction))
     }
 
     fn check_to_h_block(
@@ -93,7 +99,16 @@ impl HashTransformValues {
         let start = recv.location().start_offset();
         let end = block.location().end_offset();
         let msg = "Prefer `transform_values` over `to_h {...}`.".to_string();
-        Some(ctx.offense_with_range(self.name(), &msg, self.severity(), start, end))
+
+        let edits = htm::hash_transform_edits(
+            ctx.source, start, end,
+            block_call, block, NEW_METHOD, &val_arg, &val_expr,
+            None, false,
+        );
+        let correction = Correction { edits: edits.into_iter().map(|(s, e, r)| Edit { start_offset: s, end_offset: e, replacement: r }).collect() };
+
+        Some(ctx.offense_with_range(self.name(), &msg, self.severity(), start, end)
+            .with_correction(correction))
     }
 
     fn check_hash_brackets_map(
@@ -101,7 +116,7 @@ impl HashTransformValues {
         outer: &CallNode,
         ctx: &CheckContext,
     ) -> Option<Offense> {
-        let (block, _inner_call) = htm::match_hash_brackets_map(outer)?;
+        let (block, inner_call) = htm::match_hash_brackets_map(outer)?;
         let (key_arg, val_arg) = htm::extract_simple_two_params(&block)?;
         let (key_expr, val_expr) = htm::match_array_pair(&block)?;
         if !htm::is_lvar_ref(&key_expr, &key_arg) {
@@ -120,7 +135,16 @@ impl HashTransformValues {
         let start = outer.location().start_offset();
         let end = outer.location().end_offset();
         let msg = "Prefer `transform_values` over `Hash[_.map {...}]`.".to_string();
-        Some(ctx.offense_with_range(self.name(), &msg, self.severity(), start, end))
+
+        let edits = htm::hash_transform_edits(
+            ctx.source, start, end,
+            &inner_call, &block, NEW_METHOD, &val_arg, &val_expr,
+            None, true,
+        );
+        let correction = Correction { edits: edits.into_iter().map(|(s, e, r)| Edit { start_offset: s, end_offset: e, replacement: r }).collect() };
+
+        Some(ctx.offense_with_range(self.name(), &msg, self.severity(), start, end)
+            .with_correction(correction))
     }
 
     fn check_map_to_h(&self, outer: &CallNode, ctx: &CheckContext) -> Option<Offense> {
@@ -141,9 +165,22 @@ impl HashTransformValues {
         }
         let inner_recv = inner_call.receiver()?;
         let start = inner_recv.location().start_offset();
-        let end = outer.message_loc().map(|l| l.end_offset()).unwrap_or(outer.location().end_offset());
+        let outer_end = outer.message_loc().map(|l| l.end_offset()).unwrap_or(outer.location().end_offset());
         let msg = "Prefer `transform_values` over `map {...}.to_h`.".to_string();
-        Some(ctx.offense_with_range(self.name(), &msg, self.severity(), start, end))
+
+        // RuboCop: if `to_h` itself has a block, don't strip the `.to_h` trailing chars.
+        // (e.g. `map{...}.to_h {|k,v| ...}` — keep the `.to_h {block}`)
+        let strip_trailing = if outer.block().is_none() { Some(outer_end) } else { None };
+
+        let edits = htm::hash_transform_edits(
+            ctx.source, start, outer_end,
+            &inner_call, &block, NEW_METHOD, &val_arg, &val_expr,
+            strip_trailing, false,
+        );
+        let correction = Correction { edits: edits.into_iter().map(|(s, e, r)| Edit { start_offset: s, end_offset: e, replacement: r }).collect() };
+
+        Some(ctx.offense_with_range(self.name(), &msg, self.severity(), start, outer_end)
+            .with_correction(correction))
     }
 }
 

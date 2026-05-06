@@ -5,8 +5,10 @@
 use crate::cops::{CheckContext, Cop};
 use crate::helpers::hash_transform_method as htm;
 use crate::node_name;
-use crate::offense::{Offense, Severity};
-use ruby_prism::{BlockNode, CallNode, Node};
+use crate::offense::{Correction, Edit, Offense, Severity};
+use ruby_prism::{BlockNode, CallNode};
+
+const NEW_METHOD: &str = "transform_keys";
 
 #[derive(Default)]
 pub struct HashTransformKeys;
@@ -16,7 +18,25 @@ impl HashTransformKeys {
         Self
     }
 
-    /// Check a BlockNode: handles each_with_object (ruby >= 2.5) and to_h {...} (ruby >= 2.6) patterns.
+    fn make_correction<'a>(
+        source: &str,
+        block_call: &CallNode<'a>,
+        block: &BlockNode<'a>,
+        outer_start: usize,
+        outer_end: usize,
+        new_arg: &str,
+        key_expr: &ruby_prism::Node<'a>,
+        map_to_h_outer_end: Option<usize>,
+        hash_brackets_outer: bool,
+    ) -> Correction {
+        let edits = htm::hash_transform_edits(
+            source, outer_start, outer_end,
+            block_call, block, NEW_METHOD, new_arg, key_expr,
+            map_to_h_outer_end, hash_brackets_outer,
+        );
+        Correction { edits: edits.into_iter().map(|(s, e, r)| Edit { start_offset: s, end_offset: e, replacement: r }).collect() }
+    }
+
     fn check_block_node(
         &self,
         block_call: &CallNode,
@@ -49,51 +69,41 @@ impl HashTransformKeys {
         if !htm::is_each_with_object_empty_hash(block_call) {
             return None;
         }
-        // Receiver must look like a hash
         let recv = block_call.receiver()?;
         if !htm::is_hash_receiver_expr(&recv) {
             return None;
         }
-        // Block params: |(k, v), memo|
         let params = htm::extract_ewo_params(block)?;
         let key_arg = &params.first;
         let val_arg = &params.second;
         let memo = &params.memo;
 
-        // Body: single stmt `memo[KEY] = VAL` where VAL is `lvar val_arg`
         let body_stmt = htm::body_single_stmt(block)?;
         let (key_expr, val_expr) = htm::match_index_assign(&body_stmt, memo)?;
 
-        // VAL must be `lvar val_arg`
         if !htm::is_lvar_ref(&val_expr, val_arg) {
             return None;
         }
-        // KEY must not reference memo
         if htm::subtree_references(&key_expr, memo) {
             return None;
         }
-
-        // Checks from Captures
-        // noop?
         if htm::is_lvar_ref(&key_expr, key_arg) {
             return None;
         }
-        // transformation_uses_both_args? (key references value)
         if htm::subtree_references(&key_expr, val_arg) {
             return None;
         }
-        // use_transformed_argname? (key references key_arg)
         if !htm::subtree_references(&key_expr, key_arg) {
             return None;
         }
 
-        // The block outer range: block_call.location() spans recv...block end
-        // Prism's CallNode with a block: node.location spans whole thing including the block.
         let start = recv.location().start_offset();
-        // End = end of block
         let end = block.location().end_offset();
         let msg = "Prefer `transform_keys` over `each_with_object`.".to_string();
-        Some(ctx.offense_with_range(self.name(), &msg, self.severity(), start, end))
+
+        let correction = Self::make_correction(ctx.source, block_call, block, start, end, key_arg, &key_expr, None, false);
+        Some(ctx.offense_with_range(self.name(), &msg, self.severity(), start, end)
+            .with_correction(correction))
     }
 
     fn check_to_h_block(
@@ -102,28 +112,21 @@ impl HashTransformKeys {
         block: &BlockNode,
         ctx: &CheckContext,
     ) -> Option<Offense> {
-        // Receiver must be a hash
         let recv = block_call.receiver()?;
         if !htm::is_hash_receiver_expr(&recv) {
             return None;
         }
-        // Block params: simple |k, v|
         let (key_arg, val_arg) = htm::extract_simple_two_params(block)?;
-        // Body: single [K_EXPR, V_EXPR]
         let (key_expr, val_expr) = htm::match_array_pair(block)?;
-        // V must be lvar val_arg
         if !htm::is_lvar_ref(&val_expr, &val_arg) {
             return None;
         }
-        // noop
         if htm::is_lvar_ref(&key_expr, &key_arg) {
             return None;
         }
-        // transformation_uses_both_args
         if htm::subtree_references(&key_expr, &val_arg) {
             return None;
         }
-        // use_transformed_argname
         if !htm::subtree_references(&key_expr, &key_arg) {
             return None;
         }
@@ -131,7 +134,10 @@ impl HashTransformKeys {
         let start = recv.location().start_offset();
         let end = block.location().end_offset();
         let msg = "Prefer `transform_keys` over `to_h {...}`.".to_string();
-        Some(ctx.offense_with_range(self.name(), &msg, self.severity(), start, end))
+
+        let correction = Self::make_correction(ctx.source, block_call, block, start, end, &key_arg, &key_expr, None, false);
+        Some(ctx.offense_with_range(self.name(), &msg, self.severity(), start, end)
+            .with_correction(correction))
     }
 
     fn check_hash_brackets_map(
@@ -139,8 +145,7 @@ impl HashTransformKeys {
         outer: &CallNode,
         ctx: &CheckContext,
     ) -> Option<Offense> {
-        let (block, _inner_call) = htm::match_hash_brackets_map(outer)?;
-        // Simple |k, v|
+        let (block, inner_call) = htm::match_hash_brackets_map(outer)?;
         let (key_arg, val_arg) = htm::extract_simple_two_params(&block)?;
         let (key_expr, val_expr) = htm::match_array_pair(&block)?;
         if !htm::is_lvar_ref(&val_expr, &val_arg) {
@@ -159,7 +164,10 @@ impl HashTransformKeys {
         let start = outer.location().start_offset();
         let end = outer.location().end_offset();
         let msg = "Prefer `transform_keys` over `Hash[_.map {...}]`.".to_string();
-        Some(ctx.offense_with_range(self.name(), &msg, self.severity(), start, end))
+
+        let correction = Self::make_correction(ctx.source, &inner_call, &block, start, end, &key_arg, &key_expr, None, true);
+        Some(ctx.offense_with_range(self.name(), &msg, self.severity(), start, end)
+            .with_correction(correction))
     }
 
     fn check_map_to_h(&self, outer: &CallNode, ctx: &CheckContext) -> Option<Offense> {
@@ -178,12 +186,17 @@ impl HashTransformKeys {
         if !htm::subtree_references(&key_expr, &key_arg) {
             return None;
         }
-        // Offense spans from inner call receiver start to outer end.
         let inner_recv = inner_call.receiver()?;
         let start = inner_recv.location().start_offset();
-        let end = outer.message_loc().map(|l| l.end_offset()).unwrap_or(outer.location().end_offset());
+        let outer_end = outer.message_loc().map(|l| l.end_offset()).unwrap_or(outer.location().end_offset());
         let msg = "Prefer `transform_keys` over `map {...}.to_h`.".to_string();
-        Some(ctx.offense_with_range(self.name(), &msg, self.severity(), start, end))
+
+        // RuboCop: if `to_h` itself has a block, don't strip the `.to_h` trailing chars.
+        let strip_trailing = if outer.block().is_none() { Some(outer_end) } else { None };
+
+        let correction = Self::make_correction(ctx.source, &inner_call, &block, start, outer_end, &key_arg, &key_expr, strip_trailing, false);
+        Some(ctx.offense_with_range(self.name(), &msg, self.severity(), start, outer_end)
+            .with_correction(correction))
     }
 }
 
@@ -199,9 +212,6 @@ impl Cop for HashTransformKeys {
         let method = node_name!(node);
         let m: &str = method.as_ref();
 
-        // Dispatch: on_send handles `Hash[...]` (method `:[]`) and `map {...}.to_h` (method `:to_h` no block).
-        // on_block is a CallNode with a block (method either each_with_object, to_h {...}, etc.)
-
         if node.block().is_some() {
             let block_node = node.block().unwrap();
             if let Some(block) = block_node.as_block_node() {
@@ -209,8 +219,6 @@ impl Cop for HashTransformKeys {
                     return vec![o];
                 }
             }
-            // Fall through: a `.to_h { ... }` call can also be an outer wrapper
-            // of `map {...}.to_h` (where the attached block belongs to the outer to_h).
         }
 
         if m == "[]" {

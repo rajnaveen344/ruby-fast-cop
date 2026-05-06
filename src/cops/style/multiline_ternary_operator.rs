@@ -3,7 +3,7 @@
 //! Checks for multi-line ternary operator expressions.
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Edit, Offense, Severity};
 use ruby_prism::IfNode;
 
 const MSG_IF: &str = "Avoid multi-line ternary operators, use `if` or `unless` instead.";
@@ -153,8 +153,145 @@ impl Cop for MultilineTernaryOperator {
             node.location().end_offset()
         };
 
-        vec![ctx.offense_with_range(self.name(), msg, self.severity(), start, end)]
+        let correction = build_correction(node, ctx.source, enforce_single);
+
+        let mut off = ctx.offense_with_range(self.name(), msg, self.severity(), start, end);
+        if let Some(c) = correction {
+            off = off.with_correction(c);
+        }
+        vec![off]
     }
+}
+
+/// Build correction for a multiline ternary operator.
+fn build_correction(node: &IfNode, source: &str, enforce_single: bool) -> Option<Correction> {
+    // Get source text for predicate, then-branch, else-branch
+    let pred = node.predicate();
+    let pred_src = source[pred.location().start_offset()..pred.location().end_offset()].trim().to_string();
+
+    // Then branch: node.statements() for ternary
+    let then_src = if let Some(stmts) = node.statements() {
+        source[stmts.location().start_offset()..stmts.location().end_offset()].trim().to_string()
+    } else {
+        return None;
+    };
+
+    // Else branch: node.subsequent() -> ElseNode -> statements
+    let else_src = if let Some(subseq) = node.subsequent() {
+        if let Some(else_node) = subseq.as_else_node() {
+            if let Some(stmts) = else_node.statements() {
+                source[stmts.location().start_offset()..stmts.location().end_offset()].trim().to_string()
+            } else {
+                return None;
+            }
+        } else {
+            // Could be another IfNode (elsif) — get its source
+            source[subseq.location().start_offset()..subseq.location().end_offset()].trim().to_string()
+        }
+    } else {
+        return None;
+    };
+
+    let node_start = node.location().start_offset();
+    let node_end = node.location().end_offset();
+
+    // Collect comments from condition area (between `?` keyword and then-branch start)
+    // and also from any position between pred end and then-branch start
+    let condition_comments = collect_condition_comments(node, source);
+
+    if enforce_single {
+        // Collapse to single line: "cond ? then : else"
+        let replacement = format!("{} ? {} : {}", pred_src, then_src, else_src);
+        let mut edits = vec![Edit { start_offset: node_start, end_offset: node_end, replacement }];
+        // If there were condition comments, insert them before the parent line
+        if !condition_comments.is_empty() {
+            let parent_line_start = find_parent_line_start(node_start, source);
+            let insert = format!("{}\n", condition_comments.join("\n"));
+            edits.push(Edit { start_offset: parent_line_start, end_offset: parent_line_start, replacement: insert });
+        }
+        Some(Correction { edits })
+    } else {
+        // Convert to if/else form
+        let replacement = format!("if {}\n  {}\nelse\n  {}\nend", pred_src, then_src, else_src);
+        let mut edits = vec![Edit { start_offset: node_start, end_offset: node_end, replacement }];
+        // Move condition comments before the parent statement's line
+        if !condition_comments.is_empty() {
+            let parent_line_start = find_parent_line_start(node_start, source);
+            let insert = format!("{}\n", condition_comments.join("\n"));
+            edits.push(Edit { start_offset: parent_line_start, end_offset: parent_line_start, replacement: insert });
+        }
+        Some(Correction { edits })
+    }
+}
+
+/// Find the start of the line that contains `offset`.
+fn find_parent_line_start(node_start: usize, source: &str) -> usize {
+    // node_start is where the ternary begins; find the line start of the parent statement
+    // which is the line that contains the assignment/call before the ternary.
+    // We look back from node_start for the line start.
+    source[..node_start].rfind('\n').map(|p| p + 1).unwrap_or(0)
+}
+
+/// Collect comments that are in the "condition area" — between pred end and then-branch start,
+/// OR between the `:` colon and the else-branch start (for ternaries with comments after `:`)
+/// Returns vec of comment text strings.
+fn collect_condition_comments(node: &IfNode, source: &str) -> Vec<String> {
+    let mut comments = Vec::new();
+
+    let pred_end = node.predicate().location().end_offset();
+    let then_start = if let Some(stmts) = node.statements() {
+        stmts.location().start_offset()
+    } else {
+        return vec![];
+    };
+
+    // Comments between predicate and then-branch
+    if pred_end < then_start {
+        collect_region_comments(source, pred_end, then_start, &mut comments);
+    }
+
+    // Comments between `:` and else-branch
+    if let Some(subseq) = node.subsequent() {
+        if let Some(else_node) = subseq.as_else_node() {
+            let else_node_start = else_node.location().start_offset();
+            let else_stmts_start = if let Some(stmts) = else_node.statements() {
+                stmts.location().start_offset()
+            } else {
+                return comments;
+            };
+            if else_node_start < else_stmts_start {
+                collect_region_comments(source, else_node_start, else_stmts_start, &mut comments);
+            }
+        }
+    }
+
+    comments
+}
+
+fn collect_region_comments(source: &str, from: usize, to: usize, out: &mut Vec<String>) {
+    let region = &source[from..to];
+    for line in region.split('\n') {
+        if let Some(hash_pos) = find_comment_hash(line) {
+            let comment_text = line[hash_pos..].trim().to_string();
+            if !comment_text.is_empty() {
+                out.push(comment_text);
+            }
+        }
+    }
+}
+
+/// Find position of `#` comment start in a line, skipping string literals.
+fn find_comment_hash(line: &str) -> Option<usize> {
+    let trimmed = line.trim_start();
+    if trimmed.starts_with('#') {
+        let indent = line.len() - trimmed.len();
+        return Some(indent);
+    }
+    // Look for ` #` or similar after code
+    if let Some(pos) = line.find(" #") {
+        return Some(pos + 1);
+    }
+    None
 }
 
 crate::register_cop!("Style/MultilineTernaryOperator", |_cfg| {

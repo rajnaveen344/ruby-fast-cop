@@ -4,7 +4,7 @@
 //! https://github.com/rubocop/rubocop/blob/master/lib/rubocop/cop/style/commented_keyword.rb
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Edit, Offense, Severity};
 
 #[derive(Default)]
 pub struct CommentedKeyword;
@@ -69,7 +69,7 @@ impl Cop for CommentedKeyword {
 
             // Message uses first non-whitespace token BEFORE the comment as "keyword"
             // per RuboCop REGEXP = /(?<keyword>\S+).*#/ — that's first word of line.
-            offenses.push(ctx.offense_with_range(
+            let mut off = ctx.offense_with_range(
                 "Style/CommentedKeyword",
                 &format!(
                     "Do not place comments on the same line as the `{}` keyword.",
@@ -78,7 +78,13 @@ impl Cop for CommentedKeyword {
                 Severity::Convention,
                 cstart,
                 cend,
-            ));
+            );
+
+            // Correction: remove comment (with leading space) from the line,
+            // and (unless keyword == "end") insert comment text + newline before this line.
+            let correction = build_correction(ctx.source, cstart, cend, kw, line_start);
+            off = off.with_correction(correction);
+            offenses.push(off);
         }
 
         offenses
@@ -186,6 +192,36 @@ fn steep_annotation(comment: &str) -> bool {
         return false;
     };
     rest.is_empty() || rest.starts_with(|c: char| c.is_whitespace())
+}
+
+/// Build correction: remove comment (+ leading space) from line;
+/// if keyword != "end", insert comment_text + newline before the line.
+fn build_correction(source: &str, cstart: usize, cend: usize, kw: &str, line_start: usize) -> Correction {
+    let comment_text = &source[cstart..cend];
+
+    // Range to remove: include any spaces immediately before the `#` on the same line.
+    // Walk backwards from cstart to eat space/tab (but not newline).
+    let mut remove_start = cstart;
+    while remove_start > 0 {
+        let prev = remove_start - 1;
+        let b = source.as_bytes()[prev];
+        if b == b' ' || b == b'\t' {
+            remove_start = prev;
+        } else {
+            break;
+        }
+    }
+    // Remove from remove_start..cend
+    let mut edits = vec![Edit { start_offset: remove_start, end_offset: cend, replacement: String::new() }];
+
+    if kw != "end" {
+        // Insert the comment text + newline before the line (at line_start).
+        // RuboCop inserts the raw comment text without additional indentation.
+        let insert_text = format!("{}\n", comment_text);
+        edits.push(Edit { start_offset: line_start, end_offset: line_start, replacement: insert_text });
+    }
+
+    Correction { edits }
 }
 
 crate::register_cop!("Style/CommentedKeyword", |_cfg| {

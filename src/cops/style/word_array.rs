@@ -11,12 +11,17 @@ const COP_NAME: &str = "Style/WordArray";
 const PERCENT_MSG: &str = "Use `%w` or `%W` for an array of words.";
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum EnforcedStyle { Percent, Brackets }
+pub enum EnforcedStyle {
+    Percent,
+    Brackets,
+}
 
 pub struct WordArray {
     style: EnforcedStyle,
     min_size: usize,
     word_regex: String,
+    /// Preferred delimiter pair for %w/%W: e.g. "()" or "[]" or "{}" or "<>"
+    preferred_delimiters: String,
 }
 
 impl Default for WordArray {
@@ -25,28 +30,49 @@ impl Default for WordArray {
             style: EnforcedStyle::Percent,
             min_size: 2,
             word_regex: r"\A(?:\w|\w-\w|\n|\t)+\z".to_string(),
+            preferred_delimiters: "()".to_string(),
         }
     }
 }
 
 impl WordArray {
-    pub fn new() -> Self { Self::default() }
+    pub fn new() -> Self {
+        Self::default()
+    }
 
-    pub fn with_config(style: EnforcedStyle, min_size: usize, word_regex: String) -> Self {
-        Self { style, min_size, word_regex }
+    pub fn with_config(
+        style: EnforcedStyle,
+        min_size: usize,
+        word_regex: String,
+        preferred_delimiters: String,
+    ) -> Self {
+        Self {
+            style,
+            min_size,
+            word_regex,
+            preferred_delimiters,
+        }
     }
 }
 
 impl Cop for WordArray {
-    fn name(&self) -> &'static str { COP_NAME }
-    fn severity(&self) -> Severity { Severity::Convention }
+    fn name(&self) -> &'static str {
+        COP_NAME
+    }
+    fn severity(&self) -> Severity {
+        Severity::Convention
+    }
 
     fn check_program(&self, node: &ruby_prism::ProgramNode, ctx: &CheckContext) -> Vec<Offense> {
-        let mut v = Visitor { cop: self, ctx, parent_array_matrix_complex: vec![false], offenses: Vec::new() };
+        let mut v = Visitor {
+            cop: self,
+            ctx,
+            parent_array_matrix_complex: vec![false],
+            offenses: Vec::new(),
+        };
         v.visit_program_node(node);
         v.offenses
     }
-
 }
 
 struct Visitor<'a, 'b> {
@@ -62,10 +88,16 @@ impl<'a, 'b> Visit<'_> for Visitor<'a, 'b> {
         let elements: Vec<Node> = node.elements().iter().collect();
 
         // Compute matrix_of_complex_content for this array (used if its children are arrays)
-        let is_matrix_complex = matrix_of_complex_content(&elements, self.ctx.source, &self.cop.word_regex);
+        let is_matrix_complex =
+            matrix_of_complex_content(&elements, self.ctx.source, &self.cop.word_regex);
 
         // Check this array for offense
-        let offenses = self.cop.check_array_impl(node, &elements, self.ctx, *self.parent_array_matrix_complex.last().unwrap_or(&false));
+        let offenses = self.cop.check_array_impl(
+            node,
+            &elements,
+            self.ctx,
+            *self.parent_array_matrix_complex.last().unwrap_or(&false),
+        );
         self.offenses.extend(offenses);
 
         self.parent_array_matrix_complex.push(is_matrix_complex);
@@ -75,8 +107,15 @@ impl<'a, 'b> Visit<'_> for Visitor<'a, 'b> {
 }
 
 fn matrix_of_complex_content(elements: &[Node], source: &str, regex: &str) -> bool {
-    if elements.is_empty() { return false; }
-    if !elements.iter().all(|e| matches!(e, Node::ArrayNode { .. })) { return false; }
+    if elements.is_empty() {
+        return false;
+    }
+    if !elements
+        .iter()
+        .all(|e| matches!(e, Node::ArrayNode { .. }))
+    {
+        return false;
+    }
     // Any subarray has complex content
     let re = match regex::Regex::new(regex) {
         Ok(r) => r,
@@ -108,7 +147,10 @@ impl WordArray {
             match opening {
                 Some(loc) => {
                     let s = &ctx.source[loc.start_offset()..loc.end_offset()];
-                    s.starts_with("%w") || s.starts_with("%W") || s.starts_with("%i") || s.starts_with("%I")
+                    s.starts_with("%w")
+                        || s.starts_with("%W")
+                        || s.starts_with("%i")
+                        || s.starts_with("%I")
                 }
                 None => false,
             }
@@ -124,12 +166,16 @@ impl WordArray {
             }
         };
 
-        let bracketed_of_str = !is_percent && elements.iter().all(|e| matches!(e,
-            Node::StringNode { .. } | Node::InterpolatedStringNode { .. }
-        )) && !elements.is_empty();
+        let bracketed_of_str = !is_percent
+            && elements
+                .iter()
+                .all(|e| matches!(e, Node::StringNode { .. } | Node::InterpolatedStringNode { .. }))
+            && !elements.is_empty();
 
         if bracketed_of_str {
-            if within_matrix_complex { return vec![]; }
+            if within_matrix_complex {
+                return vec![];
+            }
             return self.check_bracketed_string_array(node, elements, ctx);
         } else if is_percent_string {
             return self.check_percent_array(node, elements, ctx);
@@ -143,18 +189,27 @@ impl WordArray {
         elements: &[Node],
         ctx: &CheckContext,
     ) -> Vec<Offense> {
-        if self.style != EnforcedStyle::Percent { return vec![]; }
-        if elements.len() < self.min_size { return vec![]; }
-        if self.complex_content(elements, ctx.source) { return vec![]; }
-        if self.has_comments_in_array(node, ctx.source) { return vec![]; }
-        if invalid_percent_array_context(node, ctx.source) { return vec![]; }
-
-        // `within_matrix_of_complex_content?`: skip if parent is array of arrays & any sibling array has complex content
-        // (we approximate: skip detection; not tested heavily)
+        if self.style != EnforcedStyle::Percent {
+            return vec![];
+        }
+        if elements.len() < self.min_size {
+            return vec![];
+        }
+        if self.complex_content(elements, ctx.source) {
+            return vec![];
+        }
+        if self.has_comments_in_array(node, ctx.source) {
+            return vec![];
+        }
+        if invalid_percent_array_context(node, ctx.source) {
+            return vec![];
+        }
 
         let loc = node.location();
         let mut off = ctx.offense(COP_NAME, PERCENT_MSG, Severity::Convention, &loc);
-        if let Some(c) = build_percent_correction(ctx.source, node, elements) {
+        if let Some(c) =
+            build_percent_correction(ctx.source, node, elements, &self.preferred_delimiters)
+        {
             off = off.with_correction(c);
         }
         vec![off]
@@ -173,23 +228,30 @@ impl WordArray {
             }
         }
 
-        // Build bracketed replacement for message
-        let mut bracketed = String::from("[");
-        for (i, e) in elements.iter().enumerate() {
-            if i > 0 { bracketed.push_str(", "); }
-            bracketed.push_str(&percent_element_to_literal(e, ctx.source));
-        }
-        bracketed.push(']');
-
-        let has_newline = ctx.source[node.location().start_offset()..node.location().end_offset()].contains('\n');
+        // Build bracketed replacement for message and correction
+        let bracketed_single = build_bracketed_replacement_single_line(elements, ctx.source);
+        let has_newline = ctx.source[node.location().start_offset()..node.location().end_offset()]
+            .contains('\n');
 
         if has_newline {
             let open = node.opening_loc().unwrap();
             let msg = "Use an array literal `[...]` for an array of words.".to_string();
-            vec![ctx.offense_with_range(COP_NAME, &msg, Severity::Convention, open.start_offset(), open.end_offset())]
+            let mut off = ctx.offense_with_range(
+                COP_NAME,
+                &msg,
+                Severity::Convention,
+                open.start_offset(),
+                open.end_offset(),
+            );
+            let correction = build_brackets_correction(ctx.source, node, elements);
+            off = off.with_correction(correction);
+            vec![off]
         } else {
-            let msg = format!("Use `{}` for an array of words.", bracketed);
-            vec![ctx.offense(COP_NAME, &msg, Severity::Convention, &node.location())]
+            let msg = format!("Use `{}` for an array of words.", bracketed_single);
+            let mut off = ctx.offense(COP_NAME, &msg, Severity::Convention, &node.location());
+            let correction = build_brackets_correction(ctx.source, node, elements);
+            off = off.with_correction(correction);
+            vec![off]
         }
     }
 
@@ -212,15 +274,11 @@ impl WordArray {
         let start = node.location().start_offset();
         let end = node.location().end_offset();
         let slice = &source[start..end];
-        // search for a '#' that's not inside a string. Approximate: if slice spans multi lines,
-        // check each line's tail past last string-quote for '#'.
-        // Simpler: count lines and check for '#' starting with whitespace or after string closer in
-        // the original source; if any inner line contains `"..." #` or `'...' #` or bare `# ...`, yes.
-        if !slice.contains('\n') { return false; }
-        for line in slice.lines().skip(1).take_while(|_| true) {
-            // check if line contains `#` after trimming to code section.
+        if !slice.contains('\n') {
+            return false;
+        }
+        for line in slice.lines().skip(1) {
             if let Some(p) = line.find('#') {
-                // ignore escape `\#`
                 let before = &line[..p];
                 let q_count = before.chars().filter(|&c| c == '\'' || c == '"').count();
                 if q_count % 2 == 0 {
@@ -263,113 +321,334 @@ fn string_content(node: &Node, source: &str) -> Option<String> {
     }
 }
 
+/// Get the raw source text of a %w/%W element (the token between delimiters, without quotes).
+fn percent_element_raw_source<'a>(node: &Node, source: &'a str) -> &'a str {
+    &source[node.location().start_offset()..node.location().end_offset()]
+}
+
 /// For elements inside a %w/%W array, convert to a bracketed literal using the raw source text.
 fn percent_element_to_literal(node: &Node, source: &str) -> String {
     if let Node::InterpolatedStringNode { .. } = node {
-        let s = &source[node.location().start_offset()..node.location().end_offset()];
+        let s = percent_element_raw_source(node, source);
         return format!("\"{}\"", s);
     }
-    let s = &source[node.location().start_offset()..node.location().end_offset()];
-    // %w: only backslash-space and backslash-backslash are real escapes; convert them back.
-    // Detect if source contains `\ ` (escaped space) — unescape to real space; then choose single quotes.
-    // If source contains any backslash escape that isn't `\\` or `\ `, keep raw with double quotes.
-    let has_escape_space = s.contains("\\ ");
-    let has_other_backslash = s.chars().zip(s.chars().skip(1))
-        .any(|(a, b)| a == '\\' && b != ' ' && b != '\\');
-    if has_other_backslash || s.contains('\'') || s.contains('\t') || s.contains('\n') {
+    let s = percent_element_raw_source(node, source);
+    // Check if source contains actual escape characters (control chars, real \n, \t)
+    // vs apparent ones (backslash followed by letter in single-quoted string)
+    let has_control = s.chars().any(|c| c.is_control());
+    let has_real_escape = has_control;
+
+    // Check for `\` followed by non-space, non-backslash
+    let has_backslash_escape = {
+        let bytes = s.as_bytes();
+        let mut found = false;
+        let mut i = 0;
+        while i + 1 < bytes.len() {
+            if bytes[i] == b'\\' {
+                let next = bytes[i + 1];
+                if next != b' ' && next != b'\\' {
+                    found = true;
+                    break;
+                }
+                i += 2;
+            } else {
+                i += 1;
+            }
+        }
+        found
+    };
+
+    if has_real_escape {
+        // Encode control chars as unicode escapes
+        let mut out = String::new();
+        for ch in s.chars() {
+            if ch.is_control() {
+                out.push_str(&format!("\\u{:04X}", ch as u32));
+            } else {
+                out.push(ch);
+            }
+        }
+        return format!("\"{}\"", out);
+    }
+
+    if has_backslash_escape || s.contains('\'') {
+        // Use double quotes, keep content as-is (it has backslash escapes already)
         return format!("\"{}\"", s);
     }
+
+    // Unescape `\ ` → ` ` and `\\` → `\`
     let unescaped = s.replace("\\ ", " ").replace("\\\\", "\\");
     format!("'{}'", unescaped)
 }
 
-#[allow(dead_code)]
-fn element_to_string_literal(node: &Node, source: &str) -> String {
-    let content = string_content(node, source).unwrap_or_default();
-    // Decide quote style — use single unless content has ' or needs escaping like \n \t
-    let needs_double = content.contains('\'') || content.contains('\n') || content.contains('\t');
-    if needs_double {
-        let escaped = content
-            .replace('\\', "\\\\")
-            .replace('\n', "\\n")
-            .replace('\t', "\\t")
-            .replace('"', "\\\"");
-        format!("\"{}\"", escaped)
-    } else {
-        format!("'{}'", content)
+/// Build single-line bracketed replacement string like `['a', 'b', 'c']`
+fn build_bracketed_replacement_single_line(elements: &[Node], source: &str) -> String {
+    let mut bracketed = String::from("[");
+    for (i, e) in elements.iter().enumerate() {
+        if i > 0 {
+            bracketed.push_str(", ");
+        }
+        bracketed.push_str(&percent_element_to_literal(e, source));
     }
+    bracketed.push(']');
+    bracketed
 }
 
-/// Build `[...]` → `%w(...)` / `%W(...)` correction. Returns None for non-StringNode elements
-/// (e.g. interpolated, dynamic content) to defer correction.
+/// Build correction: %w/%W array → bracketed array
+fn build_brackets_correction(
+    source: &str,
+    node: &ruby_prism::ArrayNode,
+    elements: &[Node],
+) -> Correction {
+    let arr_start = node.location().start_offset();
+    let arr_end = node.location().end_offset();
+    let arr_src = &source[arr_start..arr_end];
+    let has_newline = arr_src.contains('\n');
+
+    let replacement = if has_newline {
+        // Preserve line structure: map each element to its source line, keep indentation
+        // e.g. %w(\n  foo\n  bar\n) → [\n  'foo',\n  'bar'\n]
+        build_brackets_multiline(source, node, elements)
+    } else {
+        build_bracketed_replacement_single_line(elements, source)
+    };
+
+    Correction::replace(arr_start, arr_end, &replacement)
+}
+
+/// Build multiline bracketed replacement preserving indentation from %w array
+fn build_brackets_multiline(
+    source: &str,
+    node: &ruby_prism::ArrayNode,
+    elements: &[Node],
+) -> String {
+    let arr_start = node.location().start_offset();
+    let arr_src = &source[arr_start..node.location().end_offset()];
+
+    // Find the indentation used in the original %w array
+    // by looking at the first element's line indent
+    let mut result = String::from("[");
+
+    for (i, e) in elements.iter().enumerate() {
+        // Find the line this element starts on
+        let elem_start = e.location().start_offset();
+        let line_start = source[..elem_start].rfind('\n').map(|p| p + 1).unwrap_or(0);
+        let indent: String = source[line_start..elem_start]
+            .chars()
+            .take_while(|c| *c == ' ' || *c == '\t')
+            .collect();
+
+        result.push('\n');
+        result.push_str(&indent);
+        result.push_str(&percent_element_to_literal(e, source));
+        // Add comma for all but last element
+        if i < elements.len() - 1 {
+            result.push(',');
+        }
+    }
+
+    // Closing bracket: find indent of the closing delimiter line
+    let close_line_start = source[..node.location().end_offset()]
+        .rfind('\n')
+        .map(|p| p + 1)
+        .unwrap_or(0);
+    let close_indent: String = source[close_line_start..node.location().end_offset()]
+        .chars()
+        .take_while(|c| *c == ' ' || *c == '\t')
+        .collect();
+
+    result.push('\n');
+    result.push_str(&close_indent);
+    result.push(']');
+
+    let _ = arr_src;
+    result
+}
+
+/// Get delimiter pair from a string like "()" → ('(', ')')
+fn get_delimiters(delimiters: &str) -> (char, char) {
+    let mut chars = delimiters.chars();
+    let open = chars.next().unwrap_or('(');
+    let close = chars.next().unwrap_or(')');
+    (open, close)
+}
+
+/// Render a string content for use inside a %w/%W array.
+/// Handles escaping of delimiter chars and non-ASCII.
+fn render_for_percent(
+    content: &str,
+    open_delim: char,
+    close_delim: char,
+    needs_w_capital: &mut bool,
+) -> String {
+    let mut rendered = String::with_capacity(content.len() + 4);
+    for ch in content.chars() {
+        match ch {
+            '\n' => {
+                rendered.push_str("\\n");
+                *needs_w_capital = true;
+            }
+            '\t' => {
+                rendered.push_str("\\t");
+                *needs_w_capital = true;
+            }
+            '\r' => {
+                rendered.push_str("\\r");
+                *needs_w_capital = true;
+            }
+            '\\' => {
+                rendered.push_str("\\\\");
+                *needs_w_capital = true;
+            }
+            c if c.is_control() => {
+                rendered.push_str(&format!("\\u{:04X}", c as u32));
+                *needs_w_capital = true;
+            }
+            c if !c.is_ascii() => {
+                // Non-ASCII: encode as \uXXXX for ASCII-safe output
+                rendered.push_str(&format!("\\u{:04X}", c as u32));
+                *needs_w_capital = true;
+            }
+            c if c == open_delim || c == close_delim => {
+                // Escape delimiter characters
+                rendered.push('\\');
+                rendered.push(c);
+            }
+            _ => rendered.push(ch),
+        }
+    }
+    rendered
+}
+
+/// Build multiline %w body that preserves source line structure.
+/// Each element keeps its original line grouping.
+fn build_percent_body_line_preserving(
+    source: &str,
+    elements: &[Node],
+    open_delim: char,
+    close_delim: char,
+    needs_w_capital: &mut bool,
+) -> String {
+    if elements.is_empty() {
+        return String::new();
+    }
+
+    // Group elements by source line
+    let mut lines: Vec<Vec<String>> = Vec::new();
+    let mut current_line_num = usize::MAX;
+    let mut current_group: Vec<String> = Vec::new();
+
+    for e in elements {
+        let elem_start = e.location().start_offset();
+        let line_num = count_lines_to(&source[..elem_start]);
+
+        let content = match string_content(e, source) {
+            Some(c) => c,
+            None => continue,
+        };
+
+        let rendered = render_for_percent(&content, open_delim, close_delim, needs_w_capital);
+
+        if line_num != current_line_num && current_line_num != usize::MAX {
+            lines.push(current_group.clone());
+            current_group = Vec::new();
+        }
+        current_line_num = line_num;
+        current_group.push(rendered);
+    }
+    if !current_group.is_empty() {
+        lines.push(current_group);
+    }
+
+    // Join groups with newlines, elements within group with spaces
+    lines
+        .iter()
+        .map(|g| g.join(" "))
+        .collect::<Vec<_>>()
+        .join("\n")
+}
+
+/// Count 1-based line number from source prefix
+fn count_lines_to(prefix: &str) -> usize {
+    prefix.chars().filter(|&c| c == '\n').count() + 1
+}
+
+/// Build `[...]` → `%w(...)` / `%W(...)` correction.
 fn build_percent_correction(
     source: &str,
     node: &ruby_prism::ArrayNode,
     elements: &[Node],
+    preferred_delimiters: &str,
 ) -> Option<Correction> {
-    let mut parts: Vec<String> = Vec::with_capacity(elements.len());
-    let mut needs_w_capital = false;
-
-    for e in elements {
-        if !matches!(e, Node::StringNode { .. }) { return None; }
-        let content = string_content(e, source)?;
-        if content.contains(' ') || content.contains('(') || content.contains(')') {
-            return None;
-        }
-        let mut rendered = String::with_capacity(content.len());
-        for ch in content.chars() {
-            match ch {
-                '\n' => { rendered.push_str("\\n"); needs_w_capital = true; }
-                '\t' => { rendered.push_str("\\t"); needs_w_capital = true; }
-                '\r' => { rendered.push_str("\\r"); needs_w_capital = true; }
-                '\\' => { rendered.push_str("\\\\"); needs_w_capital = true; }
-                _    => rendered.push(ch),
-            }
-        }
-        parts.push(rendered);
-    }
-
-    let prefix = if needs_w_capital { "%W" } else { "%w" };
+    let (open_delim, close_delim) = get_delimiters(preferred_delimiters);
 
     let arr_start = node.location().start_offset();
     let arr_end = node.location().end_offset();
     let arr_src = &source[arr_start..arr_end];
 
-    let body = if !needs_w_capital && arr_src.contains('\n') {
-        format!("\n{}\n", parts.join("\n"))
+    let has_newline = arr_src.contains('\n');
+
+    // Build element representations
+    // First check: are all elements simple StringNodes?
+    let all_simple = elements
+        .iter()
+        .all(|e| matches!(e, Node::StringNode { .. }));
+    if !all_simple {
+        return None;
+    }
+
+    let mut needs_w_capital = false;
+
+    let body = if has_newline {
+        // Preserve line structure
+        build_percent_body_line_preserving(
+            source,
+            elements,
+            open_delim,
+            close_delim,
+            &mut needs_w_capital,
+        )
     } else {
+        let mut parts: Vec<String> = Vec::with_capacity(elements.len());
+        for e in elements {
+            let content = string_content(e, source)?;
+            let rendered = render_for_percent(&content, open_delim, close_delim, &mut needs_w_capital);
+            parts.push(rendered);
+        }
         parts.join(" ")
     };
 
-    let replacement = format!("{}({})", prefix, body);
+    let prefix = if needs_w_capital { "%W" } else { "%w" };
+
+    let replacement = format!("{}{}{}{}", prefix, open_delim, body, close_delim);
     Some(Correction::replace(arr_start, arr_end, &replacement))
 }
 
 fn invalid_percent_array_context(node: &ruby_prism::ArrayNode, source: &str) -> bool {
-    // Check: parent is a send with block literal, this is an arg, no parens. We don't have parent pointers
-    // here; approximate by scanning source for pattern `ident [...] { ... }` where [...] is our array.
-    // Simplified: look at char just after the array's end; if it's whitespace + `{`, and at the start
-    // the line starts with `identifier ` (no `(` before array), treat as ambiguous-block context.
     let _ = (node, source);
     false
 }
 
 fn invalid_percent_array_contents(elements: &[Node], source: &str) -> bool {
     elements.iter().any(|e| {
-        let c = match string_content(e, source) { Some(c) => c, None => return true };
+        let c = match string_content(e, source) {
+            Some(c) => c,
+            None => return true,
+        };
         c.contains(' ') || !std::str::from_utf8(c.as_bytes()).is_ok()
     })
 }
 
-// Helper to get Location from a Location by copy. Prism Location can be cloned since v1.9? If not,
-// fallback: create via offset tuple.
 impl WordArray {
     // nothing else
 }
 
 fn normalize_ruby_regex_local(pat: &str) -> String {
     let mut s = pat.to_string();
-    if let Some(inner) = s.strip_prefix("(?-mix:").and_then(|x| x.strip_suffix(")")) {
+    if let Some(inner) = s
+        .strip_prefix("(?-mix:")
+        .and_then(|x| x.strip_suffix(")"))
+    {
         s = inner.to_string();
     }
     s = s.replace(r"\p{Word}", r"\w");
@@ -378,7 +657,10 @@ fn normalize_ruby_regex_local(pat: &str) -> String {
 
 crate::register_cop!("Style/WordArray", |cfg| {
     let cop_config = cfg.get_cop_config("Style/WordArray");
-    let style = match cop_config.and_then(|c| c.raw.get("EnforcedStyle")).and_then(|v| v.as_str()) {
+    let style = match cop_config
+        .and_then(|c| c.raw.get("EnforcedStyle"))
+        .and_then(|v| v.as_str())
+    {
         Some("brackets") => EnforcedStyle::Brackets,
         _ => EnforcedStyle::Percent,
     };
@@ -392,5 +674,20 @@ crate::register_cop!("Style/WordArray", |cfg| {
         .map(String::from)
         .unwrap_or_else(|| r"\A(?:\w|\w-\w|\n|\t)+\z".into());
     let word_regex = normalize_ruby_regex_local(&word_regex);
-    Some(Box::new(WordArray::with_config(style, min_size, word_regex)))
+
+    // Read preferred delimiters from Style/PercentLiteralDelimiters config
+    let preferred_delimiters = cfg
+        .get_cop_config("Style/PercentLiteralDelimiters")
+        .and_then(|c| c.raw.get("PreferredDelimiters"))
+        .and_then(|v| v.get("default"))
+        .and_then(|v| v.as_str())
+        .unwrap_or("()")
+        .to_string();
+
+    Some(Box::new(WordArray::with_config(
+        style,
+        min_size,
+        word_regex,
+        preferred_delimiters,
+    )))
 });

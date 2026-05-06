@@ -6,7 +6,7 @@ use crate::cops::{CheckContext, Cop};
 use crate::helpers::variable_force::{
     Scope, Variable, VariableForceDispatcher, VariableForceHook,
 };
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::Visit;
 
 pub struct UnusedBlockArgument {
@@ -78,13 +78,14 @@ impl<'a> UnusedBlockArgumentHook<'a> {
             }
             // Flag unused block local variable
             let message = format!("Unused block local variable - `{}`.", variable.name);
+            let correction = Correction::insert(variable.declaration_start, "_");
             self.offenses.push(self.ctx.offense_with_range(
                 "Lint/UnusedBlockArgument",
                 &message,
                 Severity::Warning,
                 variable.declaration_start,
                 variable.declaration_end,
-            ));
+            ).with_correction(correction));
             return;
         }
 
@@ -109,6 +110,7 @@ impl<'a> UnusedBlockArgumentHook<'a> {
         }
 
         let message = self.build_message(variable, scope);
+        let correction = Correction::insert(variable.declaration_start, "_");
 
         self.offenses.push(self.ctx.offense_with_range(
             "Lint/UnusedBlockArgument",
@@ -116,7 +118,7 @@ impl<'a> UnusedBlockArgumentHook<'a> {
             Severity::Warning,
             variable.declaration_start,
             variable.declaration_end,
-        ));
+        ).with_correction(correction));
     }
 
     fn has_implicit_binding_reference(&self, scope: &Scope) -> bool {

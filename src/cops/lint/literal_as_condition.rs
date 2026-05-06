@@ -16,7 +16,12 @@ impl Cop for LiteralAsCondition {
     fn severity(&self) -> Severity { Severity::Warning }
 
     fn check_program(&self, node: &ruby_prism::ProgramNode, ctx: &CheckContext) -> Vec<Offense> {
-        let mut visitor = LiteralConditionVisitor { ctx, offenses: Vec::new(), reported: HashSet::new() };
+        let mut visitor = LiteralConditionVisitor {
+            ctx,
+            offenses: Vec::new(),
+            reported: HashSet::new(),
+            if_level_corrections: std::collections::HashMap::new(),
+        };
         visitor.visit_program_node(node);
         visitor.offenses
     }
@@ -26,6 +31,10 @@ struct LiteralConditionVisitor<'a> {
     ctx: &'a CheckContext<'a>,
     offenses: Vec<Offense>,
     reported: HashSet<usize>,
+    /// For `if LITERAL && RHS` / `if LITERAL || RHS` cases: stores the if-level correction
+    /// keyed by the literal's start offset. Used in visit_and_node / visit_or_node to
+    /// emit the full if-correction instead of the and/or-level one.
+    if_level_corrections: std::collections::HashMap<usize, Correction>,
 }
 
 impl<'a> LiteralConditionVisitor<'a> {
@@ -79,6 +88,26 @@ impl Visit<'_> for LiteralConditionVisitor<'_> {
             let correction = compute_if_correction(node, self.ctx.source, truthy, false);
             self.add_offense_with_correction(&pred, correction);
         } else {
+            // Check if predicate is AndNode/OrNode with literal LHS — if so, precompute
+            // the if-level correction and store it so visit_and_node/visit_or_node can
+            // attach it to the literal offense instead of the and/or-level replacement.
+            if let Node::AndNode { .. } = &pred {
+                let an = pred.as_and_node().unwrap();
+                let left = an.left();
+                let right = an.right();
+                if is_truthy_literal(&left) && is_truthy_literal(&right) {
+                    // Both sides truthy literal → `if LITERAL && LITERAL; body; end` → `body`
+                    // Single-pass: replace whole if with then_src.
+                    let then_src = statements_source(&node.statements(), self.ctx.source).to_string();
+                    let c = Correction::replace(
+                        node.location().start_offset(),
+                        node.location().end_offset(),
+                        &then_src,
+                    );
+                    self.if_level_corrections.insert(left.location().start_offset(), c);
+                }
+                // For `1 && non_literal`: and_or_replacement handles it (replace and-node with rhs).
+            }
             self.check_condition(&pred);
         }
         ruby_prism::visit_if_node(self, node);
@@ -165,7 +194,12 @@ impl Visit<'_> for LiteralConditionVisitor<'_> {
     fn visit_and_node(&mut self, node: &ruby_prism::AndNode) {
         let left = node.left();
         if is_truthy_literal(&left) {
-            let correction = and_or_replacement(&node.right(), node.location().start_offset(), node.location().end_offset(), self.ctx.source);
+            // Check if we have a precomputed if-level correction for this literal.
+            let correction = if let Some(if_corr) = self.if_level_corrections.remove(&left.location().start_offset()) {
+                Some(if_corr)
+            } else {
+                and_or_replacement(&node.right(), node.location().start_offset(), node.location().end_offset(), self.ctx.source)
+            };
             self.add_offense_with_correction(&left, correction);
         } else if is_literal(&left) {
             self.add_offense(&left);
@@ -176,7 +210,12 @@ impl Visit<'_> for LiteralConditionVisitor<'_> {
     fn visit_or_node(&mut self, node: &ruby_prism::OrNode) {
         let left = node.left();
         if is_falsey_literal(&left) {
-            let correction = and_or_replacement(&node.right(), node.location().start_offset(), node.location().end_offset(), self.ctx.source);
+            // Check if we have a precomputed if-level correction for this literal.
+            let correction = if let Some(if_corr) = self.if_level_corrections.remove(&left.location().start_offset()) {
+                Some(if_corr)
+            } else {
+                and_or_replacement(&node.right(), node.location().start_offset(), node.location().end_offset(), self.ctx.source)
+            };
             self.add_offense_with_correction(&left, correction);
         } else if is_literal(&left) {
             self.add_offense(&left);
@@ -285,42 +324,79 @@ fn compute_if_correction(
     truthy: bool,
     _is_unless: bool,
 ) -> Option<Correction> {
-    // Don't autocorrect when this if-node is itself an elsif chain (subsequent IfNode w/ no end_keyword_loc)
-    // Detected by: the parent visit chain — but we have no parent ref. Use end_keyword_loc heuristic:
-    //   - Block-form if has end_keyword_loc
-    //   - Modifier-if has no end_keyword_loc
-    //   - Ternary has no end_keyword_loc
-    //   - Elsif (subsequent of outer if) — Prism gives the elsif IfNode no end_keyword_loc
-    // To avoid mis-correcting elsif as if it were modifier-if, only correct when:
-    //   (a) end_keyword_loc present (block-form), OR
-    //   (b) no end_keyword AND if_keyword_loc starts at same byte as predicate-1 or earlier
-    //       (modifier-if has predicate AFTER if_keyword; ternary has if_keyword at start of cond)
-    //   For safety: correct only block-form, modifier-if, ternary; bail on elsif (handled by parent's correction).
     let if_kw = node.if_keyword_loc();
     let node_start = node.location().start_offset();
     let node_end = node.location().end_offset();
-    // Bail on elsif (RuboCop has special elsif handling we don't replicate yet).
-    if let Some(kw) = &if_kw {
-        let s = &source[kw.start_offset()..kw.end_offset()];
-        if s == "elsif" {
-            return None;
-        }
+
+    // Check if this is an `elsif` node.
+    let is_elsif = if let Some(kw) = &if_kw {
+        &source[kw.start_offset()..kw.end_offset()] == "elsif"
+    } else {
+        false
+    };
+
+    if is_elsif {
+        // This IfNode is an `elsif X; body; [else; else_body;] end`.
+        // Truthy: replace with `else\n  body\nend` (taking the then-branch as always-true).
+        // Falsey: replace with `else\n  else_body\nend` (skipping this branch).
+        let then_src = statements_source(&node.statements(), source).to_string();
+        let replacement = if truthy {
+            // `else\n  body\nend`
+            format!("else\n  {}\nend", then_src)
+        } else {
+            // falsey: take the else branch if any
+            match node.subsequent() {
+                Some(sub) => {
+                    if let Some(en) = sub.as_else_node() {
+                        let else_src = statements_source(&en.statements(), source).to_string();
+                        format!("else\n  {}\nend", else_src)
+                    } else {
+                        // subsequent is another elsif — complex chain, skip
+                        return None;
+                    }
+                }
+                None => {
+                    // No else branch: falsey elsif with no else — just remove the branch.
+                    // The `end` is included in this node's range. Replace with just `end`.
+                    "end".to_string()
+                }
+            }
+        };
+        return Some(Correction::replace(node_start, node_end, &replacement));
     }
-    // Modifier-if: predicate appears after the body, but if_keyword is between body and predicate.
+
+    // Not an elsif: handle regular if/modifier-if/ternary.
     // Determine if_branch / else_branch sources.
     let then_src = statements_source(&node.statements(), source).to_string();
-    let else_src = match node.subsequent() {
-        Some(sub) => match sub.as_else_node() {
-            Some(en) => statements_source(&en.statements(), source).to_string(),
-            None => {
-                // subsequent is elsif IfNode — bail (we'd need to rewrite elsif→if)
-                return None;
+    match node.subsequent() {
+        Some(sub) => {
+            if let Some(en) = sub.as_else_node() {
+                // Has explicit `else` branch.
+                let else_src = statements_source(&en.statements(), source).to_string();
+                let replacement = if truthy { then_src } else { else_src };
+                Some(Correction::replace(node_start, node_end, &replacement))
+            } else {
+                // subsequent is an elsif IfNode — `if LITERAL; body; elsif ...; end`
+                // When truthy: take the then-branch.
+                // When falsey: rewrite subsequent elif back to `if` (node.elsif_conditional? case).
+                if truthy {
+                    Some(Correction::replace(node_start, node_end, &then_src))
+                } else {
+                    // Replace whole outer if with subsequent IfNode, renaming `elsif` → `if`.
+                    let sub_loc = sub.location();
+                    let sub_src = &source[sub_loc.start_offset()..sub_loc.end_offset()];
+                    // sub_src starts with `elsif` — replace with `if`.
+                    let new_src = format!("if{}", &sub_src["elsif".len()..]);
+                    Some(Correction::replace(node_start, node_end, &new_src))
+                }
             }
-        },
-        None => String::new(),
-    };
-    let replacement = if truthy { then_src } else { else_src };
-    Some(Correction::replace(node_start, node_end, &replacement))
+        }
+        None => {
+            // No subsequent: simple if without else.
+            let replacement = if truthy { then_src } else { String::new() };
+            Some(Correction::replace(node_start, node_end, &replacement))
+        }
+    }
 }
 
 fn compute_unless_correction(

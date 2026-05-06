@@ -3,7 +3,7 @@
 //! Ensures eval methods include proper filename and line number values.
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use crate::helpers::source::line_byte_offset;
 use ruby_prism::{Node, Visit};
 
@@ -191,7 +191,7 @@ impl<'a> EvalWithLocationVisitor<'a> {
             (None, _) => {
                 // Missing both file and line (and possibly binding for eval)
                 if is_plain_eval && args.len() < 2 {
-                    // No binding either
+                    // No binding either — no autocorrect (RuboCop skips correction here)
                     let start = node.location().start_offset();
                     let end = node.location().end_offset();
                     self.offenses.push(self.ctx.offense_with_range(
@@ -210,20 +210,30 @@ impl<'a> EvalWithLocationVisitor<'a> {
                     };
                     let start = node.location().start_offset();
                     let end = node.location().end_offset();
-                    self.offenses.push(self.ctx.offense_with_range(
+                    // Correction: insert ", __FILE__, __LINE__ + N" after last arg
+                    let last_arg = args.last().unwrap();
+                    let line_str = self.missing_line(code);
+                    let insert_text = if is_eval_variant {
+                        format!(", __FILE__, {}", line_str)
+                    } else {
+                        format!(", __FILE__, {}", line_str)
+                    };
+                    let correction = self.insert_after_last_arg(node, last_arg, &insert_text);
+                    let off = self.ctx.offense_with_range(
                         "Style/EvalWithLocation",
                         &msg,
                         Severity::Convention,
                         start,
                         end,
-                    ));
+                    ).with_correction(correction);
+                    self.offenses.push(off);
                 }
             }
             (Some(file_node), None) => {
                 // Has file but missing line
-                // Check file first
+                // Check file correctness first (emits its own offense+correction)
                 self.check_file_arg(file_node, &method_name);
-                // Then report missing line
+                // Then report missing line with correction
                 let msg = if is_plain_eval {
                     MSG_MISSING_EVAL.to_string()
                 } else {
@@ -231,13 +241,17 @@ impl<'a> EvalWithLocationVisitor<'a> {
                 };
                 let start = node.location().start_offset();
                 let end = node.location().end_offset();
-                self.offenses.push(self.ctx.offense_with_range(
+                let line_str = self.missing_line(code);
+                let insert_text = format!(", {}", line_str);
+                let correction = self.insert_after_last_arg(node, file_node, &insert_text);
+                let off = self.ctx.offense_with_range(
                     "Style/EvalWithLocation",
                     &msg,
                     Severity::Convention,
                     start,
                     end,
-                ));
+                ).with_correction(correction);
+                self.offenses.push(off);
             }
             (Some(file_node), Some(line_node)) => {
                 // Has both — check correctness
@@ -247,24 +261,77 @@ impl<'a> EvalWithLocationVisitor<'a> {
         }
     }
 
+    /// Compute missing line string (e.g. "__LINE__ + 1", "__LINE__ - 3", "__LINE__")
+    fn missing_line(&self, code: &Node) -> String {
+        // We don't have the call node here; use a placeholder line that will be computed
+        // based on where the code arg starts. For heredocs: line + 1. For others: same line.
+        // This is approximate — used for the "missing line" case where we insert after last arg.
+        // We'll compute relative to line 1 of the call (offset 0 = line 1).
+        // Actually: RuboCop's `missing_line` = expected_line(last_arg, code)
+        // = expected_line computes: line_diff = code_first_line - (line_of_last_arg + 1)
+        // But here we don't have the call node's last_arg line easily.
+        // Simpler: just return the expected based on the code node.
+        // For heredoc code: "__LINE__ + 1"; for non-heredoc: "__LINE__".
+        let is_heredoc = match code {
+            Node::StringNode { .. } => {
+                let sn = code.as_string_node().unwrap();
+                sn.opening_loc().map_or(false, |l| {
+                    let s = l.start_offset();
+                    let e = l.end_offset();
+                    self.ctx.source[s..e].starts_with("<<")
+                })
+            }
+            Node::InterpolatedStringNode { .. } => {
+                let isn = code.as_interpolated_string_node().unwrap();
+                isn.opening_loc().map_or(false, |l| {
+                    let s = l.start_offset();
+                    let e = l.end_offset();
+                    self.ctx.source[s..e].starts_with("<<")
+                })
+            }
+            _ => false,
+        };
+        if is_heredoc {
+            "__LINE__ + 1".to_string()
+        } else {
+            "__LINE__".to_string()
+        }
+    }
+
+    /// Build a correction that inserts `text` after the last argument (before closing paren if present)
+    fn insert_after_last_arg(&self, call: &ruby_prism::CallNode, last_arg: &Node, text: &str) -> Correction {
+        let last_arg_end = last_arg.location().end_offset();
+        // Check if call has closing paren
+        let closing = call.closing_loc();
+        let insert_at = if let Some(cl) = closing {
+            // Insert before `)`
+            cl.start_offset()
+        } else {
+            // Insert after last arg
+            last_arg_end
+        };
+        Correction::insert(insert_at, text.to_string())
+    }
+
     fn check_file_arg(&mut self, file_node: &Node, method_name: &str) {
         if self.is_special_file_keyword(file_node) {
             return;
         }
-        let actual = self.node_src(file_node);
+        let actual = self.node_src(file_node).to_string();
         let msg = format!(
             "Incorrect file for `{}`; use `__FILE__` instead of `{}`.",
             method_name, actual
         );
         let start = file_node.location().start_offset();
         let end = file_node.location().end_offset();
-        self.offenses.push(self.ctx.offense_with_range(
+        let off = self.ctx.offense_with_range(
             "Style/EvalWithLocation",
             &msg,
             Severity::Convention,
             start,
             end,
-        ));
+        ).with_correction(Correction::replace(start, end, "__FILE__".to_string()));
+        self.offenses.push(off);
     }
 
     fn check_line_arg(&mut self, line_node: &Node, code: &Node, method_name: &str) {
@@ -292,20 +359,21 @@ impl<'a> EvalWithLocationVisitor<'a> {
             return;
         }
 
-        let actual = self.node_src(line_node);
+        let actual = self.node_src(line_node).to_string();
         let msg = format!(
             "Incorrect line number for `{}`; use `{}` instead of `{}`.",
             method_name, expected, actual
         );
         let start = line_node.location().start_offset();
         let end = line_node.location().end_offset();
-        self.offenses.push(self.ctx.offense_with_range(
+        let off = self.ctx.offense_with_range(
             "Style/EvalWithLocation",
             &msg,
             Severity::Convention,
             start,
             end,
-        ));
+        ).with_correction(Correction::replace(start, end, expected.clone()));
+        self.offenses.push(off);
     }
 }
 

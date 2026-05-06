@@ -13,7 +13,7 @@
 //! through the fixture's `peer_offenses` field.
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Edit, Offense, Severity};
 use std::collections::{HashMap, HashSet};
 
 const COP_NAME: &str = "Lint/RedundantCopDisableDirective";
@@ -519,6 +519,8 @@ impl Cop for RedundantCopDisableDirective {
         }
 
         // ── Emit offenses ────────────────────────────────────────────────────
+        let src = ctx.source;
+        let src_bytes = src.as_bytes();
         let mut offenses = Vec::new();
         for (idx, dir) in directives.iter().enumerate() {
             if dir.enable {
@@ -526,13 +528,14 @@ impl Cop for RedundantCopDisableDirective {
             }
             if dir.is_all {
                 if per_dir_all_redundant.get(&idx).copied().unwrap_or(false) {
+                    let correction = make_whole_directive_correction(src, src_bytes, dir);
                     offenses.push(ctx.offense_with_range(
                         COP_NAME,
                         "Unnecessary disabling of all cops.",
                         Severity::Warning,
                         dir.comment_start,
                         dir.comment_end,
-                    ));
+                    ).with_correction(correction));
                 }
                 continue;
             }
@@ -550,26 +553,29 @@ impl Cop for RedundantCopDisableDirective {
                 let parts: Vec<String> =
                     sorted.iter().map(|n| self.format_cop_part(&n.name)).collect();
                 let msg = format!("Unnecessary disabling of {}.", parts.join(", "));
+                let correction = make_whole_directive_correction(src, src_bytes, dir);
                 offenses.push(ctx.offense_with_range(
                     COP_NAME,
                     &msg,
                     Severity::Warning,
                     dir.comment_start,
                     dir.comment_end,
-                ));
+                ).with_correction(correction));
             } else {
                 // Per-name offenses for just the redundant ones.
                 for n in &redundant {
                     let part = self.format_cop_part(&n.name);
                     let msg = format!("Unnecessary disabling of {}.", part);
-                    let end = n.start + n.name.len();
+                    let name_end = n.start + n.name.len();
+                    // Compute correction: delete this name from the comma-separated list.
+                    let correction = make_name_deletion_correction(src_bytes, &dir.names, n);
                     offenses.push(ctx.offense_with_range(
                         COP_NAME,
                         &msg,
                         Severity::Warning,
                         n.start,
-                        end,
-                    ));
+                        name_end,
+                    ).with_correction(correction));
                 }
             }
         }
@@ -628,6 +634,121 @@ impl RedundantCopDisableDirective {
         } else {
             None
         }
+    }
+}
+
+/// Compute deletion correction for a whole directive (all names redundant).
+///
+/// Non-inline: delete `comment_start..end_of_line+1` (the whole comment line incl. \n).
+///   Special: if at file start (offset 0) and next line after comment is blank,
+///   also delete that blank line.
+/// Inline: delete preceding whitespace + directive range (comment_start..comment_end).
+fn make_whole_directive_correction(src: &str, src_bytes: &[u8], dir: &Directive) -> Correction {
+    if dir.inline {
+        // Delete whitespace before # and the directive itself.
+        let ws_start = {
+            let mut p = dir.comment_start;
+            while p > 0 && src_bytes[p - 1] == b' ' {
+                p -= 1;
+            }
+            p
+        };
+        // If free text follows directive_end (comment_end), keep # + free text.
+        // Free text: everything after comment_end up to end of line.
+        let line_end = {
+            let mut p = dir.comment_end;
+            while p < src_bytes.len() && src_bytes[p] != b'\n' {
+                p += 1;
+            }
+            p
+        };
+        let free_text = &src[dir.comment_end..line_end];
+        if !free_text.trim().is_empty() {
+            // Keep the # and the free text after the directive.
+            // Delete from ws_start to dir.comment_end, leaving `#` + free_text.
+            // But `#` is at comment_start; delete from ws_start to comment_start+1
+            // (just the whitespace before #), and delete comment_start+1..comment_end
+            // (` rubocop:disable ...`). Combine into one range: ws_start..comment_end.
+            // The `#` at comment_start stays because we delete ws_start..comment_start
+            // then comment_start+1..comment_end.
+            // Simpler: two edits.
+            let edits = vec![
+                Edit { start_offset: ws_start, end_offset: dir.comment_start, replacement: "".into() },
+                Edit { start_offset: dir.comment_start + 1, end_offset: dir.comment_end, replacement: "".into() },
+            ];
+            Correction { edits }
+        } else {
+            Correction::delete(ws_start, dir.comment_end)
+        }
+    } else {
+        // Non-inline: delete the whole comment line (from line start through trailing \n).
+        // Line start: position just after the preceding \n (or 0 if first line).
+        let line_start = {
+            let mut p = dir.comment_start;
+            while p > 0 && src_bytes[p - 1] != b'\n' {
+                p -= 1;
+            }
+            p
+        };
+        // Find the \n that ends the comment line.
+        let newline_pos = {
+            let mut p = dir.comment_end;
+            while p < src_bytes.len() && src_bytes[p] != b'\n' {
+                p += 1;
+            }
+            p // points at \n or src_bytes.len() if no trailing newline
+        };
+        // del_end = position after the \n (consumes the newline too)
+        let line_end = if newline_pos < src_bytes.len() { newline_pos + 1 } else { newline_pos };
+
+        let mut del_end = line_end;
+
+        // Special handling when the comment is at the start of the file:
+        // - If this is the LAST content (line_end == src_bytes.len()), keep the \n
+        //   so the result is "\n" rather than "".
+        // - If followed by a blank line AND real content after, consume one extra blank.
+        if line_start == 0 {
+            if line_end == src_bytes.len() {
+                // Only content: keep trailing \n
+                del_end = newline_pos; // don't consume the \n
+            } else if line_end < src_bytes.len() && src_bytes[line_end] == b'\n' {
+                // Followed by blank line: check for real content after
+                let mut scan = line_end + 1;
+                while scan < src_bytes.len() && src_bytes[scan] == b'\n' { scan += 1; }
+                if scan < src_bytes.len() {
+                    del_end = line_end + 1; // consume one extra blank line
+                }
+            }
+        }
+
+        Correction::delete(line_start, del_end)
+    }
+}
+
+/// Compute deletion correction for a single name within a multi-cop directive.
+/// Deletes either `name, ` (if not last) or `, name` (if last).
+fn make_name_deletion_correction(src_bytes: &[u8], all_names: &[DirName], n: &DirName) -> Correction {
+    let name_end = n.start + n.name.len();
+    // Find position of this name in all_names
+    let pos = all_names.iter().position(|x| x.start == n.start).unwrap_or(0);
+    let is_last = pos + 1 >= all_names.len();
+    if !is_last {
+        // Delete: n.start .. next_name.start (name + `, `)
+        let next_start = all_names[pos + 1].start;
+        Correction::delete(n.start, next_start)
+    } else if pos > 0 {
+        // Delete: prev_name.end .. n.end  (`, ` + name, or ` ` + name)
+        let prev_end = all_names[pos - 1].start + all_names[pos - 1].name.len();
+        // Find the comma between prev and this name
+        let mut del_start = prev_end;
+        while del_start < n.start && src_bytes[del_start] != b',' {
+            del_start += 1;
+        }
+        // del_start at `,`; include it
+        Correction::delete(del_start, name_end)
+    } else {
+        // Only name — whole directive should be handled by whole-directive correction
+        Correction::delete(n.start, name_end)
     }
 }
 

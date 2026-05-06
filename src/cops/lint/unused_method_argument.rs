@@ -6,7 +6,7 @@ use crate::cops::{CheckContext, Cop};
 use crate::helpers::variable_force::{
     Scope, Variable, VariableForceDispatcher, VariableForceHook,
 };
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::Visit;
 
 pub struct UnusedMethodArgument {
@@ -112,6 +112,23 @@ impl<'a> UnusedMethodArgumentHook<'a> {
         }
 
         let message = self.build_message(variable, scope);
+        let correction = if variable.is_block_arg_type {
+            // Remove the trailing `&block` param including preceding `, &`
+            // declaration_start = start of name (e.g. "block"), `&` is at start-1
+            // scan backwards past `&` and `,` and spaces to find the deletion start
+            let src = self.ctx.source.as_bytes();
+            let mut del_start = if variable.declaration_start > 0 { variable.declaration_start - 1 } else { 0 };
+            // del_start should be at `&`; scan back past spaces then comma
+            while del_start > 0 && src[del_start] == b' ' { del_start -= 1; }
+            // del_start at `&` — move back past comma + spaces
+            if del_start > 0 && src[del_start] == b'&' { del_start -= 1; }
+            while del_start > 0 && src[del_start] == b' ' { del_start -= 1; }
+            if del_start > 0 && src[del_start] == b',' { del_start -= 1; }
+            // del_start now points to the last char of the previous param; +1 = deletion start
+            Correction::delete(del_start + 1, variable.declaration_end)
+        } else {
+            Correction::insert(variable.declaration_start, "_")
+        };
 
         self.offenses.push(self.ctx.offense_with_range(
             "Lint/UnusedMethodArgument",
@@ -119,7 +136,7 @@ impl<'a> UnusedMethodArgumentHook<'a> {
             Severity::Warning,
             variable.declaration_start,
             variable.declaration_end,
-        ));
+        ).with_correction(correction));
     }
 
     fn is_ignored_method(&self, scope: &Scope) -> bool {
