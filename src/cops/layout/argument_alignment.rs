@@ -3,9 +3,9 @@
 //! Port of `rubocop/cop/layout/argument_alignment.rb`.
 
 use crate::cops::{CheckContext, Cop};
-use crate::helpers::alignment_check::{display_col_of, display_indent_of, each_bad_alignment};
+use crate::helpers::alignment_check::{alignment_correction, display_col_of, display_indent_of, each_bad_alignment};
 use crate::node_name;
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ArgAStyle {
@@ -75,13 +75,15 @@ impl Cop for ArgumentAlignment {
         each_bad_alignment(ctx, &items, base_column)
             .into_iter()
             .map(|m| {
-                ctx.offense_with_range(
+                let off = ctx.offense_with_range(
                     self.name(),
                     msg,
                     self.severity(),
                     m.start_offset,
                     m.end_offset,
-                )
+                );
+                let correction = alignment_correction(ctx, m.start_offset, m.end_offset, base_column);
+                off.with_correction(correction)
             })
             .collect()
     }

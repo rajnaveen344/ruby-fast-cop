@@ -5,7 +5,7 @@
 use crate::cops::{CheckContext, Cop};
 use crate::helpers::access_modifier::is_bare_access_modifier;
 use crate::helpers::source::col_at_offset;
-use crate::offense::{Location, Offense, Severity};
+use crate::offense::{Correction, Edit, Location, Offense, Severity};
 use ruby_prism::{Node, Visit};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -107,13 +107,25 @@ impl<'a> Visitor<'a> {
             let msg = format!("{} access modifiers like `{}`.", self.style_str(), name);
             let end = call.location().end_offset();
             let loc = Location::from_offsets(self.ctx.source, start, end);
+            // line_start = start of the line containing modifier
+            let ls = {
+                let src = self.ctx.source.as_bytes();
+                let mut i = start;
+                while i > 0 && src[i - 1] != b'\n' { i -= 1; }
+                i
+            };
+            let correction = Correction { edits: vec![Edit {
+                start_offset: ls,
+                end_offset: start,
+                replacement: " ".repeat(expected),
+            }]};
             self.offenses.push(Offense::new(
                 "Layout/AccessModifierIndentation",
                 msg,
                 Severity::Convention,
                 loc,
                 self.ctx.filename,
-            ));
+            ).with_correction(correction));
         }
     }
 }

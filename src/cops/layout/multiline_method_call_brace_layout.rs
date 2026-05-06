@@ -75,6 +75,11 @@ impl Cop for MultilineMethodCallBraceLayout {
             return vec![];
         }
 
+        // Detect heredoc-argument-method-chain case:
+        // First arg is a heredoc (starts with "<<") AND there is a chained method call
+        // immediately after the close brace on the same line.
+        let heredoc_chain = detect_heredoc_chain(ctx.source.as_bytes(), first, close.end_offset());
+
         helper::check(
             ctx,
             &helper::BraceCheck {
@@ -87,8 +92,49 @@ impl Cop for MultilineMethodCallBraceLayout {
                 close_end: close.end_offset(),
                 first_child_start: first_start,
                 last_child_end: last_end,
+                is_chained: false,
+                is_argument: false,
+                heredoc_chain,
             },
         )
+
+    }
+}
+
+/// Detect if the first argument is a heredoc AND there is a chained method call
+/// immediately after `close_end`. Returns `Some((chain_start, chain_end))` or `None`.
+fn detect_heredoc_chain(src: &[u8], first_arg: &ruby_prism::Node, close_end: usize) -> Option<(usize, usize)> {
+    // Check if first arg is a heredoc (opening starts with "<<")
+    let first_start = first_arg.location().start_offset();
+    if first_start + 2 > src.len() { return None; }
+    if src[first_start] != b'<' || src[first_start + 1] != b'<' { return None; }
+
+    // Check for . or &. immediately after close brace
+    if close_end >= src.len() { return None; }
+    let chain_start;
+    let after_dot;
+    if src[close_end] == b'.' {
+        chain_start = close_end;
+        after_dot = close_end + 1;
+    } else if close_end + 1 < src.len() && src[close_end] == b'&' && src[close_end + 1] == b'.' {
+        chain_start = close_end;
+        after_dot = close_end + 2;
+    } else {
+        return None;
+    }
+
+    // Scan method name (alphanumeric, underscore, ?, !)
+    let mut p = after_dot;
+    while p < src.len()
+        && (src[p].is_ascii_alphanumeric() || src[p] == b'_' || src[p] == b'?' || src[p] == b'!')
+    {
+        p += 1;
+    }
+
+    if p > after_dot {
+        Some((chain_start, p))
+    } else {
+        None
     }
 }
 

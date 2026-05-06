@@ -6,7 +6,7 @@
 
 use crate::cops::{CheckContext, Cop};
 use crate::helpers::source;
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::{Node, Visit};
 
 const COP_NAME: &str = "Style/WhileUntilModifier";
@@ -120,10 +120,53 @@ impl<'a> Visitor<'a> {
         }
 
         let msg = MSG.replace("%KEYWORD%", keyword);
-        self.offenses.push(self.ctx.offense_with_range(
+        let offense = self.ctx.offense_with_range(
             COP_NAME, &msg, Severity::Convention,
             keyword_loc.start_offset(), keyword_loc.end_offset(),
+        );
+        let corrected = self.to_modifier_form(
+            keyword, keyword_loc.start_offset(), predicate, &body_items,
+            &end_keyword_loc, node_start, node_end,
+        );
+        self.offenses.push(offense.with_correction(
+            Correction::replace(node_start, node_end, corrected),
         ));
+    }
+
+    fn to_modifier_form(
+        &self,
+        keyword: &str,
+        keyword_start: usize,
+        predicate: &Node,
+        body_items: &[Node],
+        end_keyword_loc: &Option<ruby_prism::Location>,
+        _node_start: usize,
+        _node_end: usize,
+    ) -> String {
+        let body = &body_items[0];
+        let body_src = &self.ctx.source[body.location().start_offset()..body.location().end_offset()];
+        let cond_src = &self.ctx.source[predicate.location().start_offset()..predicate.location().end_offset()];
+
+        let expression = format!("{} {} {}", body_src, keyword, cond_src);
+
+        let needs_parens = self.needs_parenthesization(keyword_start);
+        let expression = if needs_parens {
+            format!("({})", expression)
+        } else {
+            expression
+        };
+
+        let first_line_comment = self.first_line_comment_text(keyword_start);
+        let expression = match &first_line_comment {
+            Some(c) => format!("{} {}", expression, c),
+            None => expression,
+        };
+
+        let code_after = self.code_after_end_str(end_keyword_loc);
+        match &code_after {
+            Some(after) => format!("{}{}", expression, after),
+            None => expression,
+        }
     }
 
     fn modifier_fits(

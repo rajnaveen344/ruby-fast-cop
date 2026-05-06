@@ -3,8 +3,8 @@
 //! Port of `rubocop/cop/layout/array_alignment.rb`.
 
 use crate::cops::{CheckContext, Cop};
-use crate::helpers::alignment_check::{display_col_of, display_indent_of, each_bad_alignment};
-use crate::offense::{Offense, Severity};
+use crate::helpers::alignment_check::{alignment_correction, display_col_of, display_indent_of, each_bad_alignment};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::Visit;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -157,13 +157,15 @@ impl<'a> Visitor<'a> {
         };
 
         for m in each_bad_alignment(self.ctx, &items, base_column) {
-            self.offenses.push(self.ctx.offense_with_range(
+            let off = self.ctx.offense_with_range(
                 self.cop_name,
                 msg,
                 self.severity,
                 m.start_offset,
                 m.end_offset,
-            ));
+            );
+            let correction = alignment_correction(self.ctx, m.start_offset, m.end_offset, base_column);
+            self.offenses.push(off.with_correction(correction));
         }
     }
 }

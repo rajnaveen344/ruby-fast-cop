@@ -81,6 +81,9 @@ impl Cop for MultilineHashBraceLayout {
                 close_end: close.end_offset(),
                 first_child_start: first_start,
                 last_child_end: last_end,
+                is_chained: false,
+                is_argument: false,
+                heredoc_chain: None,
             },
         )
     }

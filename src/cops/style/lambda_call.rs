@@ -5,7 +5,7 @@
 
 use crate::cops::{CheckContext, Cop};
 use crate::node_name;
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::CallNode;
 
 #[derive(Clone, Copy, PartialEq)]
@@ -120,7 +120,31 @@ impl LambdaCall {
             "Prefer the use of `{}` over `{}`.",
             prefer, current
         );
-        vec![ctx.offense_with_range(self.name(), &msg, self.severity(), current_start, current_end)]
+        let offense = ctx.offense_with_range(self.name(), &msg, self.severity(), current_start, current_end);
+        // Don't emit correction if this node is the receiver of another implicit/explicit call
+        // (outer call generates its own correction that includes this node's source).
+        // Detect: check if the byte immediately after node.end is `.` or `&.`
+        let is_receiver_of_outer = {
+            let bytes = ctx.source.as_bytes();
+            let mut i = current_end;
+            // skip whitespace
+            while i < bytes.len() && (bytes[i] == b' ' || bytes[i] == b'\t') {
+                i += 1;
+            }
+            if i < bytes.len() && bytes[i] == b'.' {
+                // could be `.call(` or `.(` — either way, this node is a receiver
+                true
+            } else if i + 1 < bytes.len() && bytes[i] == b'&' && bytes[i+1] == b'.' {
+                true
+            } else {
+                false
+            }
+        };
+        if is_receiver_of_outer {
+            vec![offense]
+        } else {
+            vec![offense.with_correction(Correction::replace(current_start, current_end, prefer))]
+        }
     }
 }
 

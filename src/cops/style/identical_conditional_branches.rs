@@ -3,7 +3,7 @@
 //! Ported from: https://github.com/rubocop/rubocop/blob/master/lib/rubocop/cop/style/identical_conditional_branches.rb
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Edit, Offense, Severity};
 use ruby_prism::{Node, Visit};
 
 const COP_NAME: &str = "Style/IdenticalConditionalBranches";
@@ -35,6 +35,7 @@ impl Cop for IdenticalConditionalBranches {
             ctx,
             offenses: vec![],
             last_child_offsets: vec![],
+            assignment_contexts: vec![],
         };
         visitor.visit_program_node(node);
         visitor.offenses
@@ -47,6 +48,10 @@ struct IdenticalBranchesVisitor<'a> {
     /// Whether current if/case is the last child of its parent scope
     /// Tracked by checking statements in def/class/module/program bodies
     last_child_offsets: Vec<usize>,
+    /// Stack of parent assignment contexts: (assignment_start, cond_start)
+    /// When an if/case is the direct value of an assignment, we need this for
+    /// the `correct_assignment` correction path.
+    assignment_contexts: Vec<(usize, usize)>,
 }
 
 impl Visit<'_> for IdenticalBranchesVisitor<'_> {
@@ -98,15 +103,21 @@ impl Visit<'_> for IdenticalBranchesVisitor<'_> {
 
     fn visit_local_variable_write_node(&mut self, node: &ruby_prism::LocalVariableWriteNode) {
         // The value of an assignment is always its "last child"
-        self.last_child_offsets.push(node.value().location().start_offset());
+        let val_start = node.value().location().start_offset();
+        self.last_child_offsets.push(val_start);
+        self.assignment_contexts.push((node.location().start_offset(), val_start));
         ruby_prism::visit_local_variable_write_node(self, node);
         self.last_child_offsets.pop();
+        self.assignment_contexts.pop();
     }
 
     fn visit_instance_variable_write_node(&mut self, node: &ruby_prism::InstanceVariableWriteNode) {
-        self.last_child_offsets.push(node.value().location().start_offset());
+        let val_start = node.value().location().start_offset();
+        self.last_child_offsets.push(val_start);
+        self.assignment_contexts.push((node.location().start_offset(), val_start));
         ruby_prism::visit_instance_variable_write_node(self, node);
         self.last_child_offsets.pop();
+        self.assignment_contexts.pop();
     }
 
     fn visit_if_node(&mut self, node: &ruby_prism::IfNode) {
@@ -189,8 +200,9 @@ impl<'a> IdenticalBranchesVisitor<'a> {
             }
         }
 
+        let asgn_ctx = self.assignment_contexts.last().copied();
         self.check_branches(node.location().start_offset(), node.location().end_offset(),
-                           &branches, Some(node));
+                           &branches, Some(node), asgn_ctx);
     }
 
     fn check_case(&mut self, node: &ruby_prism::CaseNode) {
@@ -213,8 +225,9 @@ impl<'a> IdenticalBranchesVisitor<'a> {
         }
         branches.push(else_body);
 
+        let asgn_ctx = self.assignment_contexts.last().copied();
         self.check_branches_case(node.location().start_offset(), node.location().end_offset(),
-                                &branches, node);
+                                &branches, node, asgn_ctx);
     }
 
     fn check_case_match(&mut self, node: &ruby_prism::CaseMatchNode) {
@@ -236,16 +249,18 @@ impl<'a> IdenticalBranchesVisitor<'a> {
         }
         branches.push(else_body);
 
+        let asgn_ctx = self.assignment_contexts.last().copied();
         self.check_branches_case_match(node.location().start_offset(), node.location().end_offset(),
-                                      &branches, node);
+                                      &branches, node, asgn_ctx);
     }
 
     fn check_branches(
         &mut self,
-        _node_start: usize,
-        _node_end: usize,
+        node_start: usize,
+        node_end: usize,
         branches: &[BranchBody],
         if_node: Option<&ruby_prism::IfNode>,
+        asgn_ctx: Option<(usize, usize)>, // (asgn_node_start, cond_start)
     ) {
         // Return if any branch is empty
         if branches.iter().any(|b| b.is_empty()) {
@@ -256,17 +271,35 @@ impl<'a> IdenticalBranchesVisitor<'a> {
         let tails: Vec<&str> = branches.iter().map(|b| b.tail_source(self.ctx)).collect();
         if all_same(&tails) && !tails[0].is_empty() {
             // For tails, no condition-variable suppression (only applies to heads)
-            for branch in branches {
+            // Determine if this is ternary / then-form (no autocorrect)
+            let is_ternary_or_then = if_node.map_or(false, |n| {
+                n.if_keyword_loc().is_none() || {
+                    let src = &self.ctx.source[n.location().start_offset()..n.location().end_offset()];
+                    // then-form: `if cond then ... end` - has `then` on first line before body
+                    false // handled via multiline check below
+                }
+            });
+            let tail_src = tails[0].to_string();
+            let is_no_correct = is_ternary_or_then;
+            // Check if conditional is a ternary (no if_keyword_loc = ternary)
+            let is_ternary = if_node.map_or(false, |n| n.if_keyword_loc().is_none());
+            for (idx, branch) in branches.iter().enumerate() {
                 let (start, end) = branch.tail_range();
                 let source = &self.ctx.source[start..end];
                 let msg = format!("Move `{}` out of the conditional.", source);
-                self.offenses.push(self.ctx.offense_with_range(
-                    COP_NAME,
-                    &msg,
-                    Severity::Convention,
-                    start,
-                    end,
-                ));
+                let offense = self.ctx.offense_with_range(COP_NAME, &msg, Severity::Convention, start, end);
+                let offense = if !is_ternary && !is_no_correct {
+                    let correction = build_tail_correction(
+                        idx, branches, &tail_src, node_start, node_end,
+                        asgn_ctx, self.ctx.source,
+                    );
+                    if let Some(c) = correction {
+                        offense.with_correction(c)
+                    } else {
+                        offense
+                    }
+                } else { offense };
+                self.offenses.push(offense);
             }
         }
 
@@ -288,28 +321,36 @@ impl<'a> IdenticalBranchesVisitor<'a> {
                     return;
                 }
             }
-
-            for branch in branches {
+            let is_ternary = if_node.map_or(false, |n| n.if_keyword_loc().is_none());
+            let head_src = heads[0].to_string();
+            for (idx, branch) in branches.iter().enumerate() {
                 let (start, end) = branch.head_range();
                 let source = &self.ctx.source[start..end];
                 let msg = format!("Move `{}` out of the conditional.", source);
-                self.offenses.push(self.ctx.offense_with_range(
-                    COP_NAME,
-                    &msg,
-                    Severity::Convention,
-                    start,
-                    end,
-                ));
+                let offense = self.ctx.offense_with_range(COP_NAME, &msg, Severity::Convention, start, end);
+                let offense = if !is_ternary {
+                    let correction = build_head_correction(
+                        idx, branches, &head_src, node_start, node_end,
+                        asgn_ctx, self.ctx.source,
+                    );
+                    if let Some(c) = correction {
+                        offense.with_correction(c)
+                    } else {
+                        offense
+                    }
+                } else { offense };
+                self.offenses.push(offense);
             }
         }
     }
 
     fn check_branches_case(
         &mut self,
-        _node_start: usize,
-        _node_end: usize,
+        node_start: usize,
+        node_end: usize,
         branches: &[BranchBody],
         case_node: &ruby_prism::CaseNode,
+        asgn_ctx: Option<(usize, usize)>,
     ) {
         if branches.iter().any(|b| b.is_empty()) {
             return;
@@ -318,13 +359,15 @@ impl<'a> IdenticalBranchesVisitor<'a> {
         // Check tails - no condition-variable suppression for tails
         let tails: Vec<&str> = branches.iter().map(|b| b.tail_source(self.ctx)).collect();
         if all_same(&tails) && !tails[0].is_empty() {
-            for branch in branches {
+            let tail_src = tails[0].to_string();
+            for (idx, branch) in branches.iter().enumerate() {
                 let (start, end) = branch.tail_range();
                 let source = &self.ctx.source[start..end];
                 let msg = format!("Move `{}` out of the conditional.", source);
-                self.offenses.push(self.ctx.offense_with_range(
-                    COP_NAME, &msg, Severity::Convention, start, end,
-                ));
+                let offense = self.ctx.offense_with_range(COP_NAME, &msg, Severity::Convention, start, end);
+                let correction = build_tail_correction(idx, branches, &tail_src, node_start, node_end, asgn_ctx, self.ctx.source);
+                let offense = if let Some(c) = correction { offense.with_correction(c) } else { offense };
+                self.offenses.push(offense);
             }
         }
 
@@ -340,23 +383,26 @@ impl<'a> IdenticalBranchesVisitor<'a> {
             if is_assignment_to_case_condition_var(branches[0].head_source(self.ctx), case_node, self.ctx) {
                 return;
             }
-            for branch in branches {
+            let head_src = heads[0].to_string();
+            for (idx, branch) in branches.iter().enumerate() {
                 let (start, end) = branch.head_range();
                 let source = &self.ctx.source[start..end];
                 let msg = format!("Move `{}` out of the conditional.", source);
-                self.offenses.push(self.ctx.offense_with_range(
-                    COP_NAME, &msg, Severity::Convention, start, end,
-                ));
+                let offense = self.ctx.offense_with_range(COP_NAME, &msg, Severity::Convention, start, end);
+                let correction = build_head_correction(idx, branches, &head_src, node_start, node_end, asgn_ctx, self.ctx.source);
+                let offense = if let Some(c) = correction { offense.with_correction(c) } else { offense };
+                self.offenses.push(offense);
             }
         }
     }
 
     fn check_branches_case_match(
         &mut self,
-        _node_start: usize,
-        _node_end: usize,
+        node_start: usize,
+        node_end: usize,
         branches: &[BranchBody],
         case_node: &ruby_prism::CaseMatchNode,
+        asgn_ctx: Option<(usize, usize)>,
     ) {
         if branches.iter().any(|b| b.is_empty()) {
             return;
@@ -365,13 +411,15 @@ impl<'a> IdenticalBranchesVisitor<'a> {
         // Check tails - no condition-variable suppression for tails
         let tails: Vec<&str> = branches.iter().map(|b| b.tail_source(self.ctx)).collect();
         if all_same(&tails) && !tails[0].is_empty() {
-            for branch in branches {
+            let tail_src = tails[0].to_string();
+            for (idx, branch) in branches.iter().enumerate() {
                 let (start, end) = branch.tail_range();
                 let source = &self.ctx.source[start..end];
                 let msg = format!("Move `{}` out of the conditional.", source);
-                self.offenses.push(self.ctx.offense_with_range(
-                    COP_NAME, &msg, Severity::Convention, start, end,
-                ));
+                let offense = self.ctx.offense_with_range(COP_NAME, &msg, Severity::Convention, start, end);
+                let correction = build_tail_correction(idx, branches, &tail_src, node_start, node_end, asgn_ctx, self.ctx.source);
+                let offense = if let Some(c) = correction { offense.with_correction(c) } else { offense };
+                self.offenses.push(offense);
             }
         }
 
@@ -387,13 +435,15 @@ impl<'a> IdenticalBranchesVisitor<'a> {
             if is_assignment_to_case_match_condition_var(branches[0].head_source(self.ctx), case_node, self.ctx) {
                 return;
             }
-            for branch in branches {
+            let head_src = heads[0].to_string();
+            for (idx, branch) in branches.iter().enumerate() {
                 let (start, end) = branch.head_range();
                 let source = &self.ctx.source[start..end];
                 let msg = format!("Move `{}` out of the conditional.", source);
-                self.offenses.push(self.ctx.offense_with_range(
-                    COP_NAME, &msg, Severity::Convention, start, end,
-                ));
+                let offense = self.ctx.offense_with_range(COP_NAME, &msg, Severity::Convention, start, end);
+                let correction = build_head_correction(idx, branches, &head_src, node_start, node_end, asgn_ctx, self.ctx.source);
+                let offense = if let Some(c) = correction { offense.with_correction(c) } else { offense };
+                self.offenses.push(offense);
             }
         }
     }
@@ -537,6 +587,104 @@ impl BranchBody {
             BranchBody::Statements { ranges, .. } => *ranges.first().unwrap(),
         }
     }
+}
+
+/// Extend (start, end) to full-line boundaries, including the trailing newline.
+/// Returns (line_start, line_end_incl_newline).
+fn range_by_whole_lines(src: &str, start: usize, end: usize) -> (usize, usize) {
+    let bytes = src.as_bytes();
+    // Find start of line
+    let mut line_start = start;
+    while line_start > 0 && bytes[line_start - 1] != b'\n' {
+        line_start -= 1;
+    }
+    // Find end including trailing newline
+    let mut line_end = end;
+    while line_end < bytes.len() {
+        if bytes[line_end] == b'\n' {
+            line_end += 1;
+            break;
+        }
+        line_end += 1;
+    }
+    (line_start, line_end)
+}
+
+/// Build correction for trailing identical lines (insert after conditional).
+/// idx=0: remove this branch's line + insert stmt after node end (+ handle assignment)
+/// idx>0: remove this branch's line only
+fn build_tail_correction(
+    idx: usize,
+    branches: &[BranchBody],
+    stmt_src: &str,
+    node_start: usize,
+    node_end: usize,
+    asgn_ctx: Option<(usize, usize)>,
+    src: &str,
+) -> Option<Correction> {
+    let (stmt_start, stmt_end) = branches[idx].tail_range();
+    let (line_start, line_end) = range_by_whole_lines(src, stmt_start, stmt_end);
+    let mut edits: Vec<Edit> = vec![
+        Edit { start_offset: line_start, end_offset: line_end, replacement: String::new() },
+    ];
+    if idx == 0 {
+        // Insert after node_end
+        if let Some((asgn_start, cond_start)) = asgn_ctx {
+            // Assignment context: remove "x = " prefix, insert "\nx = stmt" after end
+            // asgn_start = start of `x = if ...`, cond_start = start of `if`
+            let asgn_prefix = &src[asgn_start..cond_start];
+            edits.push(Edit {
+                start_offset: asgn_start,
+                end_offset: cond_start,
+                replacement: String::new(),
+            });
+            edits.push(Edit {
+                start_offset: node_end,
+                end_offset: node_end,
+                replacement: format!("\n{}{}", asgn_prefix, stmt_src),
+            });
+        } else {
+            edits.push(Edit {
+                start_offset: node_end,
+                end_offset: node_end,
+                replacement: format!("\n{}", stmt_src),
+            });
+        }
+    }
+    Some(Correction { edits })
+}
+
+/// Build correction for leading identical lines (insert before conditional).
+/// idx=0: remove this branch's line + insert stmt before node start (+ handle assignment)
+/// idx>0: remove this branch's line only
+fn build_head_correction(
+    idx: usize,
+    branches: &[BranchBody],
+    stmt_src: &str,
+    node_start: usize,
+    _node_end: usize,
+    asgn_ctx: Option<(usize, usize)>,
+    src: &str,
+) -> Option<Correction> {
+    let (stmt_start, stmt_end) = branches[idx].head_range();
+    let (line_start, line_end) = range_by_whole_lines(src, stmt_start, stmt_end);
+    let mut edits: Vec<Edit> = vec![
+        Edit { start_offset: line_start, end_offset: line_end, replacement: String::new() },
+    ];
+    if idx == 0 {
+        // Insert before the conditional (or before the assignment if in assignment context)
+        let insert_at = if let Some((asgn_start, _)) = asgn_ctx {
+            asgn_start
+        } else {
+            node_start
+        };
+        edits.push(Edit {
+            start_offset: insert_at,
+            end_offset: insert_at,
+            replacement: format!("{}\n", stmt_src),
+        });
+    }
+    Some(Correction { edits })
 }
 
 fn all_same(items: &[&str]) -> bool {

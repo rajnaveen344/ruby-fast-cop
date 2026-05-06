@@ -1,6 +1,6 @@
 use crate::cops::{CheckContext, Cop};
 use crate::helpers::source::*;
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Edit, Offense, Severity};
 use ruby_prism::Visit;
 
 /// Style for how block bodies should be indented when on a method chain
@@ -474,6 +474,17 @@ impl<'a> IndentationWidthVisitor<'a> {
         indentation: i32,
         qualifier: Option<&str>,
     ) {
+        self.report_offense_with_base(source, body_off, indentation, qualifier, None);
+    }
+
+    fn report_offense_with_base(
+        &mut self,
+        source: &str,
+        body_off: usize,
+        indentation: i32,
+        qualifier: Option<&str>,
+        _base_off: Option<usize>,
+    ) {
         let body_ls = line_start_offset(source, body_off);
 
         let (msg, start_off, end_off) = if self.using_tabs() {
@@ -548,13 +559,50 @@ impl<'a> IndentationWidthVisitor<'a> {
         let end = end_off.min(line_end).min(source.len()).max(start + 1);
 
         let location = crate::offense::Location::from_offsets(source, start, end);
-        self.offenses.push(Offense::new(
+
+        // Correction: mirror RuboCop's AlignmentCorrector behavior.
+        // column_delta > 0: insert spaces at body_off (body content start).
+        // column_delta < 0: remove |delta| bytes before body_off.
+        // Only for space-based indentation.
+        let correction = if !self.using_tabs() {
+            let body_col = col_at_offset(source, body_off) as usize;
+            let body_ls2 = line_start_offset(source, body_off);
+            let body_content_start = body_ls2 + body_col;
+            let delta = self.width as i32 - indentation;
+            if delta > 0 {
+                // Insert delta spaces at body_off position
+                Some(Correction { edits: vec![Edit {
+                    start_offset: body_content_start,
+                    end_offset: body_content_start,
+                    replacement: " ".repeat(delta as usize),
+                }]})
+            } else if delta < 0 {
+                // Remove |delta| bytes (spaces) before body_off
+                let abs_delta = (-delta) as usize;
+                let remove_start = body_content_start.saturating_sub(abs_delta);
+                Some(Correction { edits: vec![Edit {
+                    start_offset: remove_start,
+                    end_offset: body_content_start,
+                    replacement: String::new(),
+                }]})
+            } else {
+                None
+            }
+        } else {
+            None
+        };
+
+        let mut offense = Offense::new(
             "Layout/IndentationWidth",
             &msg,
             Severity::Convention,
             location,
             self.ctx.filename,
-        ));
+        );
+        if let Some(c) = correction {
+            offense = offense.with_correction(c);
+        }
+        self.offenses.push(offense);
     }
 
     /// Check if/elsif/else chains

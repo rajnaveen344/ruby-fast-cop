@@ -16,6 +16,7 @@
 //!   - `with_fixed_indentation`: indent of the target method line + IndentationWidth.
 
 use crate::cops::CheckContext;
+use crate::offense::{Correction, Edit};
 
 /// One offense: byte range covering the misaligned item.
 #[derive(Debug, Clone, Copy)]
@@ -99,4 +100,53 @@ fn char_width(c: char) -> usize {
 /// Indentation (0-indexed byte column of first non-ws) of the line containing `offset`.
 pub fn indent_of(ctx: &CheckContext, offset: usize) -> usize {
     ctx.indentation_of(offset)
+}
+
+/// Build a correction that shifts ALL lines of an item from `start` to `end`
+/// by `column_delta` (= base_column - item's current column).
+/// Mirrors RuboCop's `AlignmentCorrector.correct` which walks each_line of the node.
+/// The first line: replace `[line_start..item_start]` with `" ".repeat(base_column)`.
+/// Continuation lines: adjust leading whitespace by the same delta.
+/// Skips lines that contain heredoc content (lines where item offset > line content).
+pub fn alignment_correction(ctx: &CheckContext, start: usize, end: usize, base_column: usize) -> Correction {
+    let source = ctx.source.as_bytes();
+    let item_col = ctx.col_of(start);
+    let delta: isize = base_column as isize - item_col as isize;
+
+    let mut edits: Vec<Edit> = Vec::new();
+    let first_line_start = ctx.line_start(start);
+    // First line: replace leading whitespace up to item start
+    edits.push(Edit {
+        start_offset: first_line_start,
+        end_offset: start,
+        replacement: " ".repeat(base_column),
+    });
+
+    // Continuation lines within item range
+    let mut pos = first_line_start;
+    loop {
+        let eol = source[pos..].iter().position(|&b| b == b'\n')
+            .map_or(source.len(), |i| pos + i);
+        let next_line = eol + 1;
+        if next_line > source.len() || eol >= end { break; }
+        pos = next_line;
+        if pos > end { break; }
+        // Find leading whitespace end on this continuation line
+        let mut ws_end = pos;
+        while ws_end < source.len() && (source[ws_end] == b' ' || source[ws_end] == b'\t') {
+            ws_end += 1;
+        }
+        // Only shift lines that have leading whitespace (skip heredoc body lines at col 0)
+        let cur_indent = ws_end - pos;
+        if cur_indent > 0 && ws_end < end {
+            let new_indent = (cur_indent as isize + delta).max(0) as usize;
+            edits.push(Edit {
+                start_offset: pos,
+                end_offset: ws_end,
+                replacement: " ".repeat(new_indent),
+            });
+        }
+    }
+
+    Correction { edits }
 }
