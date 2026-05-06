@@ -1,5 +1,5 @@
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::Visit;
 
 /// Layout/CaseIndentation — checks how `when`/`in` are indented relative to `case`/`end`.
@@ -123,13 +123,15 @@ impl<'a> CaseVisitor<'a> {
                     kw_start,
                     kw_end,
                 );
+                let line_start = self.ctx.line_start(kw_start);
+                let correction = Correction::replace(line_start, kw_start, " ".repeat(expected_col));
                 self.offenses.push(Offense::new(
                     "Layout/CaseIndentation",
                     message,
                     Severity::Convention,
                     location,
                     self.ctx.filename,
-                ));
+                ).with_correction(correction));
             }
         }
     }

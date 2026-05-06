@@ -2,7 +2,7 @@ use crate::cops::{CheckContext, Cop};
 use crate::helpers::multiline_element_indentation::{
     EnforcedStyle, IndentBaseType, ParentPairInfo, indent_base,
 };
-use crate::offense::{Location, Offense, Severity};
+use crate::offense::{Correction, Location, Offense, Severity};
 use ruby_prism::{Node, Visit};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -164,13 +164,15 @@ impl<'a> Visitor<'a> {
             base_description(base_type),
         );
         let location = Location::from_offsets(self.ctx.source, first_start, first_end);
+        let line_start = self.ctx.line_start(first_start);
+        let correction = Correction::replace(line_start, first_start, " ".repeat(expected));
         self.offenses.push(Offense::new(
             "Layout/FirstArrayElementIndentation",
             msg,
             Severity::Convention,
             location,
             self.ctx.filename,
-        ));
+        ).with_correction(correction));
     }
 
     fn check_right_bracket(
@@ -199,13 +201,15 @@ impl<'a> Visitor<'a> {
         let msg = right_bracket_message(base_type).to_string();
         let location =
             Location::from_offsets(self.ctx.source, right_bracket_off, right_bracket_off + 1);
+        let line_start = self.ctx.line_start(right_bracket_off);
+        let correction = Correction::replace(line_start, right_bracket_off, " ".repeat(expected));
         self.offenses.push(Offense::new(
             "Layout/FirstArrayElementIndentation",
             msg,
             Severity::Convention,
             location,
             self.ctx.filename,
-        ));
+        ).with_correction(correction));
     }
 
     fn walk_assoc_elements(&mut self, elements: &[Node]) {

@@ -6,7 +6,7 @@
 use crate::cops::{CheckContext, Cop};
 use crate::helpers::access_modifier::is_bare_access_modifier;
 use crate::helpers::source::col_at_offset;
-use crate::offense::{Location, Offense, Severity};
+use crate::offense::{Correction, Edit, Location, Offense, Severity};
 use ruby_prism::{Node, Visit};
 
 const MSG: &str = "Inconsistent indentation detected.";
@@ -59,6 +59,60 @@ struct Visitor<'a> {
     offenses: Vec<Offense>,
 }
 
+/// Build a multi-edit Correction that shifts every line of the node [node_start..node_end)
+/// by `delta` columns (positive = indent more, negative = indent less).
+fn reindent_node(source: &str, node_start: usize, node_end: usize, delta: i64) -> Correction {
+    let bytes = source.as_bytes();
+    let mut edits = Vec::new();
+
+    // First line: starts at line_start of node_start.
+    let first_line_start = source[..node_start].rfind('\n').map_or(0, |p| p + 1);
+    let ws_end = {
+        let mut i = first_line_start;
+        while i < bytes.len() && (bytes[i] == b' ' || bytes[i] == b'\t') {
+            i += 1;
+        }
+        i
+    };
+    let current_indent = ws_end - first_line_start;
+    let new_indent = ((current_indent as i64 + delta).max(0)) as usize;
+    edits.push(Edit {
+        start_offset: first_line_start,
+        end_offset: ws_end,
+        replacement: " ".repeat(new_indent),
+    });
+
+    // Subsequent lines within node.
+    let mut pos = node_start;
+    while pos < node_end {
+        if bytes[pos] == b'\n' {
+            let ls = pos + 1;
+            if ls >= node_end {
+                break;
+            }
+            let ws_e = {
+                let mut i = ls;
+                while i < bytes.len() && i < node_end && (bytes[i] == b' ' || bytes[i] == b'\t') {
+                    i += 1;
+                }
+                i
+            };
+            let cur = ws_e - ls;
+            let new = ((cur as i64 + delta).max(0)) as usize;
+            if cur != new {
+                edits.push(Edit {
+                    start_offset: ls,
+                    end_offset: ws_e,
+                    replacement: " ".repeat(new),
+                });
+            }
+        }
+        pos += 1;
+    }
+
+    Correction { edits }
+}
+
 fn begins_its_line(source: &str, off: usize) -> bool {
     let s = source.as_bytes();
     let mut i = off;
@@ -108,13 +162,15 @@ impl<'a> Visitor<'a> {
                     if col != base {
                         let end = child.location().end_offset();
                         let loc = Location::from_offsets(self.ctx.source, off, end);
+                        let delta = base as i64 - col as i64;
+                        let correction = reindent_node(self.ctx.source, off, end, delta);
                         self.offenses.push(Offense::new(
                             "Layout/IndentationConsistency",
                             MSG,
                             Severity::Convention,
                             loc,
                             self.ctx.filename,
-                        ));
+                        ).with_correction(correction));
                     }
                 }
             }
