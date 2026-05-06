@@ -3,7 +3,7 @@
 //! Ported from: https://github.com/rubocop/rubocop/blob/master/lib/rubocop/cop/style/if_with_semicolon.rb
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Edit, Offense, Severity};
 use ruby_prism::{Node, Visit};
 
 const COP_NAME: &str = "Style/IfWithSemicolon";
@@ -78,6 +78,181 @@ fn is_return_with_args(n: &Node) -> bool {
     false
 }
 
+/// Mirror of RuboCop's `require_argument_parentheses?`
+fn require_argument_parentheses(src: &str, node: &Node) -> bool {
+    let call = match node.as_call_node() {
+        Some(c) => c,
+        None => return false,
+    };
+    // arithmetic operators → skip
+    let name_bytes = call.name().as_slice().to_vec();
+    let name = String::from_utf8_lossy(&name_bytes);
+    if matches!(name.as_ref(), "+" | "-" | "*" | "/" | "**" | "%" | ">>" | "<<" | "&" | "|" | "^" | "<=>" | "<" | "<=" | ">" | ">=") {
+        return false;
+    }
+    // already parenthesized
+    if call.opening_loc().is_some() {
+        return false;
+    }
+    // no args
+    let args = match call.arguments() {
+        Some(a) => a,
+        None => return false,
+    };
+    let arg_list: Vec<_> = args.arguments().iter().collect();
+    if arg_list.is_empty() {
+        return false;
+    }
+    // [] or []= methods
+    if matches!(name.as_ref(), "[]" | "[]=") {
+        return false;
+    }
+    // check it really looks like `method arg` (no `.` receiver call with parens)
+    // If call has a receiver and call_operator, the source is `recv.method arg` —
+    // we still need to wrap the args.
+    let _ = src;
+    true
+}
+
+/// Mirror of RuboCop's `build_expression` — wrap bare call args in parens.
+fn build_expression(src: &str, node: &Node) -> String {
+    if !require_argument_parentheses(src, node) {
+        let loc = node.location();
+        return src[loc.start_offset()..loc.end_offset()].to_string();
+    }
+    let call = node.as_call_node().unwrap();
+    let args = call.arguments().unwrap();
+    let arg_nodes: Vec<_> = args.arguments().iter().collect();
+    let first_arg = &arg_nodes[0];
+
+    // method part: from node start to message_loc end
+    let node_start = node.location().start_offset();
+    let msg_end = call
+        .message_loc()
+        .map(|m| m.end_offset())
+        .unwrap_or(node_start);
+    let method_src = &src[node_start..msg_end];
+
+    // args part: from first_arg start to node end
+    let args_start = first_arg.location().start_offset();
+    let node_end = node.location().end_offset();
+    let args_src = &src[args_start..node_end];
+
+    format!("{}({})", method_src, args_src)
+}
+
+/// Mirror of RuboCop's `build_else_branch` — recursive elsif/else builder.
+fn build_else_branch(src: &str, node: &ruby_prism::IfNode) -> String {
+    let cond_loc = node.predicate().location();
+    let cond_src = &src[cond_loc.start_offset()..cond_loc.end_offset()];
+
+    let body_src = match node.statements() {
+        Some(stmts) => {
+            let loc = stmts.location();
+            src[loc.start_offset()..loc.end_offset()].to_string()
+        }
+        None => String::new(),
+    };
+
+    let mut result = format!("elsif {}\n  {}\n", cond_src, body_src);
+
+    match node.subsequent() {
+        Some(Node::IfNode { .. }) => {
+            let inner = node.subsequent().unwrap().as_if_node().unwrap();
+            result += &build_else_branch(src, &inner);
+        }
+        Some(Node::ElseNode { .. }) => {
+            let en = node.subsequent().unwrap().as_else_node().unwrap();
+            let else_body = match en.statements() {
+                Some(stmts) => {
+                    let loc = stmts.location();
+                    src[loc.start_offset()..loc.end_offset()].to_string()
+                }
+                None => String::new(),
+            };
+            result += &format!("else\n  {}\n", else_body);
+        }
+        _ => {}
+    }
+
+    result
+}
+
+/// Mirror of RuboCop's `correct_elsif` — build multi-line if/elsif/end.
+fn correct_elsif(src: &str, node: &ruby_prism::IfNode) -> String {
+    let cond_loc = node.predicate().location();
+    let cond_src = &src[cond_loc.start_offset()..cond_loc.end_offset()];
+
+    let body_src = match node.statements() {
+        Some(stmts) => {
+            let loc = stmts.location();
+            src[loc.start_offset()..loc.end_offset()].to_string()
+        }
+        None => String::new(),
+    };
+
+    let elsif_node = node
+        .subsequent()
+        .unwrap()
+        .as_if_node()
+        .unwrap();
+
+    let else_branch = build_else_branch(src, &elsif_node);
+    // chop trailing newline from else_branch for the template
+    let else_branch_chopped = else_branch.trim_end_matches('\n');
+
+    format!(
+        "if {}\n  {}\n{}\nend",
+        cond_src, body_src, else_branch_chopped
+    )
+}
+
+/// Mirror of RuboCop's `replacement` — produce ternary or elsif form.
+fn replacement(src: &str, node: &ruby_prism::IfNode) -> String {
+    // elsif case → multi-line form
+    if let Some(subseq) = node.subsequent() {
+        if subseq.as_if_node().is_some() {
+            return correct_elsif(src, node);
+        }
+    }
+
+    // ternary form
+    let cond_loc = node.predicate().location();
+    let cond_src = &src[cond_loc.start_offset()..cond_loc.end_offset()];
+
+    let then_code = match node.statements() {
+        Some(stmts) => {
+            let nodes: Vec<_> = stmts.body().iter().collect();
+            if nodes.is_empty() {
+                "nil".to_string()
+            } else {
+                build_expression(src, &nodes[0])
+            }
+        }
+        None => "nil".to_string(),
+    };
+
+    let else_code = match node.subsequent() {
+        Some(Node::ElseNode { .. }) => {
+            let en = node.subsequent().unwrap().as_else_node().unwrap();
+            match en.statements() {
+                Some(stmts) => {
+                    let nodes: Vec<_> = stmts.body().iter().collect();
+                    if nodes.is_empty() {
+                        "nil".to_string()
+                    } else {
+                        build_expression(src, &nodes[0])
+                    }
+                }
+                None => "nil".to_string(),
+            }
+        }
+        _ => "nil".to_string(),
+    };
+
+    format!("{} ? {} : {}", cond_src, then_code, else_code)
+}
+
 impl<'a> Visitor<'a> {
     /// Collect each branch as a Vec of its top-level statements. A branch with
     /// multiple statements corresponds to a BeginNode in RuboCop's AST.
@@ -136,10 +311,13 @@ impl<'a> Visitor<'a> {
         let pred_end = node.predicate().location().end_offset();
         let tail = &self.ctx.source[pred_end..end_kw.start_offset()];
         // Skip spaces/tabs
-        let trimmed = tail.trim_start_matches(|c: char| c == ' ' || c == '\t');
+        let spaces_len = tail.len() - tail.trim_start_matches(|c: char| c == ' ' || c == '\t').len();
+        let trimmed = &tail[spaces_len..];
         if !trimmed.starts_with(';') {
             return false;
         }
+        // Absolute offset of the `;`
+        let semi_offset = pred_end + spaces_len;
 
         // Build message
         let branch_stmts = self.collect_branch_stmts(node);
@@ -180,13 +358,28 @@ impl<'a> Visitor<'a> {
 
         let start = node.location().start_offset();
         let end = node.location().end_offset();
-        self.offenses.push(self.ctx.offense_with_range(
-            COP_NAME,
-            &msg,
-            Severity::Convention,
-            start,
-            end,
-        ));
+
+        // Build correction
+        let correction = if require_newline || (any_masgn || any_block) {
+            // Replace just the semicolon with newline
+            Correction {
+                edits: vec![Edit {
+                    start_offset: semi_offset,
+                    end_offset: semi_offset + 1,
+                    replacement: "\n".into(),
+                }],
+            }
+        } else {
+            // Replace entire node with ternary or multi-line if
+            let new_src = replacement(self.ctx.source, node);
+            Correction::replace(start, end, new_src)
+        };
+
+        let offense = self
+            .ctx
+            .offense_with_range(COP_NAME, &msg, Severity::Convention, start, end)
+            .with_correction(correction);
+        self.offenses.push(offense);
         true
     }
 }
