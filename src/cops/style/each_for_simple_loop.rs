@@ -3,7 +3,7 @@
 //! Checks for loops using Range#each that can be replaced with Integer#times.
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::{Node, Visit};
 
 const MSG: &str = "Use `Integer#times` for a simple loop which iterates a fixed number of times.";
@@ -166,13 +166,27 @@ impl<'a> EachForSimpleLoopVisitor<'a> {
             call.location().end_offset()
         };
 
-        self.offenses.push(self.ctx.offense_with_range(
+        // Compute times value: for exclusive, max - min; for inclusive, max - min + 1
+        let is_exclusive = range.is_exclude_end();
+        let times_value = if is_exclusive {
+            max - min
+        } else {
+            max - min + 1
+        };
+
+        // Correction: replace `(start..end).each` or `(start..end)&.each` with `N.times`
+        // Range is from receiver start (the `(`) to end of `each` message loc
+        let correction = Correction::replace(start, end, format!("{}.times", times_value));
+
+        let mut offense = self.ctx.offense_with_range(
             "Style/EachForSimpleLoop",
             MSG,
             Severity::Convention,
             start,
             end,
-        ));
+        );
+        offense = offense.with_correction(correction);
+        self.offenses.push(offense);
     }
 }
 

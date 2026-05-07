@@ -4,7 +4,7 @@
 
 use crate::cops::{CheckContext, Cop};
 use crate::node_name;
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::Node;
 
 const COP_NAME: &str = "Style/CaseLikeIf";
@@ -75,16 +75,82 @@ impl Cop for CaseLikeIf {
             if conditions.is_empty() { return vec![]; }
         }
 
-        // Emit offense on whole if node
+        // Emit offense on whole if node + correction
         let loc = node.location();
-        vec![ctx.offense_with_range(
-            COP_NAME, MSG, Severity::Convention,
-            loc.start_offset(), loc.end_offset(),
-        )]
+        let start = loc.start_offset();
+        let end = loc.end_offset();
+        let correction = build_case_correction(node, &target_src, ctx.source, start, end);
+        let offense = ctx.offense_with_range(COP_NAME, MSG, Severity::Convention, start, end);
+        vec![offense.with_correction(correction)]
     }
 }
 
+// ──────────────── autocorrect ────────────────
+
+fn build_case_correction(
+    node: &ruby_prism::IfNode,
+    target_src: &str,
+    source: &str,
+    start: usize,
+    end: usize,
+) -> Correction {
+    // Compute indent of the if line
+    let line_start = source[..start].rfind('\n').map(|p| p + 1).unwrap_or(0);
+    let indent: &str = &source[line_start..start];
+
+    let mut result = String::new();
+    result.push_str(&format!("case {}\n", target_src));
+
+    // Walk if/elsif chain
+    let mut cur: Option<Node> = Some(node.as_node());
+    while let Some(n) = cur {
+        if let Some(ifn) = n.as_if_node() {
+            // Collect when-values for this branch
+            let pred = ifn.predicate();
+            let mut conditions: Vec<String> = Vec::new();
+            collect_conditions(&pred, target_src, &mut conditions, source);
+            result.push_str(&format!("{}when {}\n", indent, conditions.join(", ")));
+
+            // Body: from start of line to end of stmts
+            if let Some(stmts) = ifn.statements() {
+                let body_src = stmts_with_leading_indent(source, &stmts.as_node());
+                result.push_str(&body_src);
+                result.push('\n');
+            }
+
+            cur = ifn.subsequent();
+        } else if let Some(else_node) = n.as_else_node() {
+            // `else` branch
+            result.push_str(indent);
+            result.push_str("else\n");
+            if let Some(stmts) = else_node.statements() {
+                let body_src = stmts_with_leading_indent(source, &stmts.as_node());
+                result.push_str(&body_src);
+                result.push('\n');
+            }
+            cur = None;
+        } else {
+            cur = None;
+        }
+    }
+
+    result.push_str(indent);
+    result.push_str("end");
+
+    Correction::replace(start, end, result)
+}
+
 // ──────────────── helpers ────────────────
+
+/// Get body source including leading whitespace on the first line.
+fn stmts_with_leading_indent<'a>(source: &str, stmts: &Node<'a>) -> String {
+    let loc = stmts.location();
+    let stmts_start = loc.start_offset();
+    let stmts_end = loc.end_offset();
+    // Find start of the line containing stmts_start
+    let line_start = source[..stmts_start].rfind('\n').map(|p| p + 1).unwrap_or(0);
+    source[line_start..stmts_end].to_string()
+}
 
 /// Deparenthesize: for `(x)` → `x`; for nested parens, fully unwrap. Return the
 /// location (start,end) of the innermost expression.

@@ -3,7 +3,7 @@
 //! Checks for string literal concatenation at the end of a line using + or <<.
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 
 const MSG: &str = "Use `\\` instead of `%op%` to concatenate multiline strings.";
 
@@ -134,14 +134,24 @@ fn check_source(ctx: &CheckContext) -> Vec<Offense> {
         let op_start_offset = line_start + op_col_start;
         let op_end_offset = line_start + op_col_end;
 
+        // Correction: replace op + any trailing content (whitespace, optional `\`) with `\`
+        // Use the raw line length (without newline) so trailing space after op is consumed.
+        let replace_end = line_start + line.len();
+
         let msg = MSG.replace("%op%", op_str);
-        offenses.push(ctx.offense_with_range(
+        let mut offense = ctx.offense_with_range(
             "Style/LineEndConcatenation",
             &msg,
             crate::offense::Severity::Convention,
             op_start_offset,
             op_end_offset,
+        );
+        offense = offense.with_correction(Correction::replace(
+            op_start_offset,
+            replace_end,
+            "\\".to_string(),
         ));
+        offenses.push(offense);
     }
 
     offenses

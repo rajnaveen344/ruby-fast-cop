@@ -3,7 +3,7 @@
 //! Detects `attr_reader :x` + `attr_writer :x` pairs → suggest `attr_accessor :x`.
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Correction, Offense, Severity};
+use crate::offense::{Correction, Edit, Offense, Severity};
 use ruby_prism::{Node, Visit};
 use std::collections::HashMap;
 
@@ -198,10 +198,47 @@ impl AttrVisitor<'_> {
         })
     }
 
+    fn get_indent(source: &str, node_start: usize) -> String {
+        let bytes = source.as_bytes();
+        let mut line_start = node_start;
+        while line_start > 0 && bytes[line_start - 1] != b'\n' {
+            line_start -= 1;
+        }
+        let mut indent = String::new();
+        for &b in &bytes[line_start..node_start] {
+            if b == b' ' || b == b'\t' {
+                indent.push(b as char);
+            } else {
+                break;
+            }
+        }
+        indent
+    }
+
+    /// Returns the range [start, end) including the trailing newline
+    fn range_with_newline(source: &str, start: usize, end: usize) -> (usize, usize) {
+        let bytes = source.as_bytes();
+        // Find the line start (to include leading indent in the range we remove)
+        let mut line_start = start;
+        while line_start > 0 && bytes[line_start - 1] != b'\n' {
+            line_start -= 1;
+        }
+        // Find end of line (past the newline)
+        let mut line_end = end;
+        while line_end < bytes.len() && bytes[line_end] != b'\n' {
+            line_end += 1;
+        }
+        if line_end < bytes.len() && bytes[line_end] == b'\n' {
+            line_end += 1;
+        }
+        (line_start, line_end)
+    }
+
     fn check_scope(&self, scope: Scope) -> Vec<Offense> {
         let mut offenses = Vec::new();
+        let source = self.ctx.source;
 
-        for (vis, bucket) in &scope.buckets {
+        for (_vis, bucket) in &scope.buckets {
             let readers = &bucket.readers;
             let writers = &bucket.writers;
 
@@ -209,8 +246,7 @@ impl AttrVisitor<'_> {
                 continue;
             }
 
-            // Find attributes that appear in both readers and writers
-            // Map attr → (reader_call_idx, reader_arg_idx)
+            // Build attr → positions maps
             let mut reader_map: HashMap<AttrArg, Vec<(usize, usize)>> = HashMap::new();
             for (ci, call) in readers.iter().enumerate() {
                 for (ai, attr) in call.attrs.iter().enumerate() {
@@ -224,77 +260,176 @@ impl AttrVisitor<'_> {
                 }
             }
 
-            // Find bisected attrs
-            let mut bisected_attrs: Vec<&AttrArg> = reader_map.keys()
-                .filter(|a| writer_map.contains_key(a))
+            // Find bisected attrs (in original order they appear in first reader)
+            let all_reader_attrs: Vec<AttrArg> = readers.iter()
+                .flat_map(|r| r.attrs.iter().cloned())
                 .collect();
-            // Sort for deterministic output
-            bisected_attrs.sort_by_key(|a| match a {
-                AttrArg::Symbol(s) => s.clone(),
-                AttrArg::Splat(s) => s.clone(),
-            });
+            let bisected_set: std::collections::HashSet<AttrArg> = reader_map.keys()
+                .filter(|a| writer_map.contains_key(a))
+                .cloned()
+                .collect();
+            // Preserve order from readers
+            let mut seen = std::collections::HashSet::new();
+            let bisected_attrs: Vec<AttrArg> = all_reader_attrs.into_iter()
+                .filter(|a| bisected_set.contains(a) && seen.insert(a.clone()))
+                .collect();
 
             if bisected_attrs.is_empty() {
                 continue;
             }
 
-            // Emit offenses: one per (reader_call, bisected_attr) + (writer_call, bisected_attr)
+            // Collect all offense positions
+            let mut all_offense_positions: Vec<(usize, usize, String)> = Vec::new(); // (start, end, msg)
+
             for attr in &bisected_attrs {
                 let msg = MSG.replacen("%s", &attr.display(), 1);
 
-                // Offense on reader side
                 if let Some(positions) = reader_map.get(attr) {
                     for &(ci, ai) in positions {
                         let call = &readers[ci];
                         let (arg_start, arg_end) = call.attr_arg_ranges[ai];
-                        offenses.push(
-                            self.ctx.offense_with_range(self.cop.name(), &msg, self.cop.severity(),
-                                arg_start, arg_end)
-                        );
+                        all_offense_positions.push((arg_start, arg_end, msg.clone()));
                     }
                 }
-
-                // Offense on writer side
                 if let Some(positions) = writer_map.get(attr) {
                     for &(ci, ai) in positions {
                         let call = &writers[ci];
                         let (arg_start, arg_end) = call.attr_arg_ranges[ai];
-                        offenses.push(
-                            self.ctx.offense_with_range(self.cop.name(), &msg, self.cop.severity(),
-                                arg_start, arg_end)
-                        );
+                        all_offense_positions.push((arg_start, arg_end, msg.clone()));
                     }
                 }
             }
 
-            // Build corrections
-            let correction = self.build_correction(readers, writers, &bisected_attrs, vis);
-            if let Some(corr) = correction {
-                // Attach to first offense
-                if let Some(first) = offenses.last_mut() {
-                    // Can't attach single correction to multiple offenses easily.
-                    // RuboCop uses a single multi-edit correction.
-                    // We'll attach the correction to the LAST offense (which tester checks last).
+            // Sort offenses by position
+            all_offense_positions.sort_by_key(|&(s, _, _)| s);
+
+            // Build the multi-edit correction
+            // Strategy: for each affected reader call and writer call, build new source
+            let mut edits: Vec<Edit> = Vec::new();
+
+            // Group bisected by reader call index
+            for (ci, call) in readers.iter().enumerate() {
+                let bisected_in_this: Vec<AttrArg> = call.attrs.iter()
+                    .filter(|a| bisected_set.contains(a))
+                    .cloned()
+                    .collect();
+                if bisected_in_this.is_empty() { continue; }
+
+                let remaining: Vec<AttrArg> = call.attrs.iter()
+                    .filter(|a| !bisected_set.contains(a))
+                    .cloned()
+                    .collect();
+
+                let all_bisected = remaining.is_empty();
+                let indent = Self::get_indent(source, call.call_start);
+
+                let (line_start, line_end) = Self::range_with_newline(source, call.call_start, call.call_end);
+
+                // accessor line: attr_accessor :x, :y, ...
+                let accessor_names: Vec<String> = bisected_in_this.iter().map(|a| a.display()).collect();
+                let accessor_line = format!("{}attr_accessor {}\n", indent, accessor_names.join(", "));
+
+                if all_bisected {
+                    // Replace whole line (including newline) with attr_accessor line
+                    edits.push(Edit {
+                        start_offset: line_start,
+                        end_offset: line_end,
+                        replacement: accessor_line,
+                    });
+                } else {
+                    // Insert accessor line before, then replace node with remaining reader
+                    let remaining_names: Vec<String> = remaining.iter().map(|a| a.display()).collect();
+                    let reader_replacement = format!("attr_reader {}", remaining_names.join(", "));
+                    // Insert accessor line before this node
+                    edits.push(Edit {
+                        start_offset: line_start,
+                        end_offset: call.call_start,
+                        replacement: format!("{}{}\n", indent, accessor_names.iter().map(|n| format!("attr_accessor {}", n)).collect::<Vec<_>>().join(&format!("\n{}", indent))),
+                    });
+                    // Actually for multiple bisected attrs in one reader call, we emit one attr_accessor line
+                    // Let me reconsider - RuboCop emits one `attr_accessor :x, :y` line
+                    // then the remaining reader. So replace the whole call with remaining reader.
+                    // But we already emitted an insert above - need to redo this.
+                    // Clear the last edit and do it properly:
+                    edits.pop();
+                    // Replace from line_start to call_start with accessor_line
+                    edits.push(Edit {
+                        start_offset: call.call_start,
+                        end_offset: call.call_end,
+                        replacement: reader_replacement,
+                    });
+                    // Insert accessor_line before (prepend to line)
+                    edits.push(Edit {
+                        start_offset: line_start,
+                        end_offset: line_start,
+                        replacement: accessor_line,
+                    });
+                }
+            }
+
+            // Process writers
+            for call in writers.iter() {
+                let bisected_in_this: Vec<AttrArg> = call.attrs.iter()
+                    .filter(|a| bisected_set.contains(a))
+                    .cloned()
+                    .collect();
+                if bisected_in_this.is_empty() { continue; }
+
+                let remaining: Vec<AttrArg> = call.attrs.iter()
+                    .filter(|a| !bisected_set.contains(a))
+                    .cloned()
+                    .collect();
+                let all_bisected = remaining.is_empty();
+
+                let (line_start, line_end) = Self::range_with_newline(source, call.call_start, call.call_end);
+
+                if all_bisected {
+                    // Remove whole line
+                    edits.push(Edit {
+                        start_offset: line_start,
+                        end_offset: line_end,
+                        replacement: String::new(),
+                    });
+                } else {
+                    // Replace with remaining writer
+                    let remaining_names: Vec<String> = remaining.iter().map(|a| a.display()).collect();
+                    let writer_replacement = format!("attr_writer {}", remaining_names.join(", "));
+                    edits.push(Edit {
+                        start_offset: call.call_start,
+                        end_offset: call.call_end,
+                        replacement: writer_replacement,
+                    });
+                }
+            }
+
+            if edits.is_empty() {
+                // Emit offenses without corrections
+                for (start, end, msg) in all_offense_positions {
+                    offenses.push(self.ctx.offense_with_range(
+                        self.cop.name(), &msg, self.cop.severity(), start, end));
+                }
+            } else {
+                // Sort edits by start_offset (apply_corrections expects sorted or will sort)
+                edits.sort_by_key(|e| e.start_offset);
+
+                let correction = Correction { edits };
+
+                // Attach correction to first offense, rest get no correction
+                let mut first = true;
+                for (start, end, msg) in all_offense_positions {
+                    let off = self.ctx.offense_with_range(
+                        self.cop.name(), &msg, self.cop.severity(), start, end);
+                    if first {
+                        offenses.push(off.with_correction(correction.clone()));
+                        first = false;
+                    } else {
+                        offenses.push(off);
+                    }
                 }
             }
         }
 
         offenses
-    }
-
-    fn build_correction(
-        &self,
-        readers: &[AttrCall],
-        writers: &[AttrCall],
-        bisected: &[&AttrArg],
-        _vis: &str,
-    ) -> Option<Correction> {
-        // Complex correction: too much complexity for now, skip correction
-        // The tester only validates offenses if there's no `corrected` field, or validates
-        // corrections against `corrected` TOML field.
-        // Since tester skips correction validation if cop doesn't implement corrections,
-        // we skip for now.
-        None
     }
 }
 

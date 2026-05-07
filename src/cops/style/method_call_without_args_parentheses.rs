@@ -6,7 +6,7 @@
 use crate::cops::{CheckContext, Cop};
 use crate::helpers::allowed_methods::is_method_allowed;
 use crate::node_name;
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::{Node, Visit};
 
 const COP_NAME: &str = "Style/MethodCallWithoutArgsParentheses";
@@ -118,11 +118,12 @@ impl<'a, 'pr> Visitor<'a, 'pr> {
         // parenthesized `it` method in block with empty_and_without_delimiters params
         if self.parenthesized_it_in_bare_block(node, name_str) { return; }
 
-        // register offense at `(` to `)`
+        // register offense at `(` to `)` + correction: delete `()`
+        let correction = Correction::delete(open_loc.start_offset(), close_loc.end_offset());
         self.offenses.push(self.ctx.offense_with_range(
             COP_NAME, MSG, Severity::Convention,
             open_loc.start_offset(), close_loc.end_offset(),
-        ));
+        ).with_correction(correction));
     }
 
     fn same_name_assignment(&self, node: &ruby_prism::CallNode<'pr>, name: &str) -> bool {

@@ -3,7 +3,7 @@
 //! Checks for grouping of accessors in class and module bodies.
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Edit, Offense, Severity};
 use ruby_prism::{Node, Visit};
 
 const GROUPED_MSG: &str = "Group together all `%accessor%` attributes.";
@@ -220,6 +220,91 @@ impl<'a> AccessorGroupingVisitor<'a> {
         }
     }
 
+    fn get_indent_of(source: &str, node_start: usize) -> String {
+        let bytes = source.as_bytes();
+        let mut line_start = node_start;
+        while line_start > 0 && bytes[line_start - 1] != b'\n' {
+            line_start -= 1;
+        }
+        let mut indent = String::new();
+        for &b in &bytes[line_start..node_start] {
+            if b == b' ' || b == b'\t' { indent.push(b as char); } else { break; }
+        }
+        indent
+    }
+
+    /// Returns the range covering the whole line including trailing newline
+    fn whole_line_range(source: &str, node_start: usize, node_end: usize) -> (usize, usize) {
+        let bytes = source.as_bytes();
+        let mut line_start = node_start;
+        while line_start > 0 && bytes[line_start - 1] != b'\n' { line_start -= 1; }
+        let mut line_end = node_end;
+        while line_end < bytes.len() && bytes[line_end] != b'\n' { line_end += 1; }
+        if line_end < bytes.len() && bytes[line_end] == b'\n' { line_end += 1; }
+        (line_start, line_end)
+    }
+
+    /// Returns range covering the whole line plus any preceding blank lines
+    fn whole_line_with_preceding_blank(source: &str, node_start: usize, node_end: usize) -> (usize, usize) {
+        let bytes = source.as_bytes();
+        // Find start of node's line
+        let mut line_start = node_start;
+        while line_start > 0 && bytes[line_start - 1] != b'\n' { line_start -= 1; }
+        // Expand left to also consume preceding blank lines
+        let mut expanded_start = line_start;
+        // Walk backwards: if the line before is blank, consume it too
+        while expanded_start > 0 {
+            // Go to end of previous line
+            let prev_line_end = expanded_start - 1; // points to the \n before our line_start
+            // Find start of previous line
+            let mut prev_line_start = prev_line_end;
+            while prev_line_start > 0 && bytes[prev_line_start - 1] != b'\n' { prev_line_start -= 1; }
+            let prev_line_content = &source[prev_line_start..prev_line_end];
+            if prev_line_content.trim().is_empty() {
+                expanded_start = prev_line_start;
+            } else {
+                break;
+            }
+        }
+        // Line end (past newline)
+        let mut line_end = node_end;
+        while line_end < bytes.len() && bytes[line_end] != b'\n' { line_end += 1; }
+        if line_end < bytes.len() && bytes[line_end] == b'\n' { line_end += 1; }
+        (expanded_start, line_end)
+    }
+
+    fn node_args_srcs(node: &Node, source: &str) -> Vec<String> {
+        if let Some(call) = node.as_call_node() {
+            if let Some(args) = call.arguments() {
+                return args.arguments().iter().map(|a| {
+                    source[a.location().start_offset()..a.location().end_offset()].to_string()
+                }).collect();
+            }
+        }
+        vec![]
+    }
+
+    /// Check if between stmts[idx] and stmts[j] (j > idx) there's a constant that separates them
+    fn has_constant_between(stmts: &[Node], from_idx: usize, to_idx: usize) -> bool {
+        for k in (from_idx + 1)..to_idx {
+            if matches!(stmts[k], Node::ConstantWriteNode { .. } | Node::ConstantPathWriteNode { .. }) {
+                return true;
+            }
+        }
+        false
+    }
+
+    /// RuboCop's skip_for_grouping?: node has a constant to the right before another groupable sibling
+    fn skip_for_grouping(stmts: &[Node], idx: usize, groupable_siblings: &[usize]) -> bool {
+        for &j in groupable_siblings {
+            if j <= idx { continue; }
+            if Self::has_constant_between(stmts, idx, j) {
+                return true;
+            }
+        }
+        false
+    }
+
     fn check_grouped(&mut self, stmts: &[Node]) {
         for (i, node) in stmts.iter().enumerate() {
             let name = match Self::accessor_call_method_name(node) {
@@ -227,48 +312,133 @@ impl<'a> AccessorGroupingVisitor<'a> {
                 None => continue,
             };
 
-            // Skip if has comment before
-            if self.has_comment_before(node) {
-                continue;
-            }
+            if self.has_comment_before(node) { continue; }
+            if self.has_prev_sorbet_sig(stmts, i) { continue; }
+            if self.has_prev_non_accessor_send(stmts, i) { continue; }
+            if self.has_rbs_inline_comment_after(node) { continue; }
 
-            // Skip if has Sorbet sig before
-            if self.has_prev_sorbet_sig(stmts, i) {
-                continue;
-            }
-
-            // Skip if has non-accessor, non-modifier send before (annotation method)
-            if self.has_prev_non_accessor_send(stmts, i) {
-                continue;
-            }
-
-            // Skip if this accessor itself has an RBS inline annotation (can't be grouped)
-            if self.has_rbs_inline_comment_after(node) {
-                continue;
-            }
-
-            // Find all groupable siblings with same name, same visibility
             let groupable_siblings = self.find_groupable_siblings(stmts, i, &name);
+            if groupable_siblings.len() <= 1 { continue; }
 
-            if groupable_siblings.len() <= 1 {
-                continue;
-            }
-
-            // Constants between accessors don't prevent grouping (RuboCop still reports offense)
-
-            // Report offense on this node
             let start = node.location().start_offset();
             let end = node.location().end_offset();
-            let name_str = String::from_utf8_lossy(&name);
+            let name_str = String::from_utf8_lossy(&name).to_string();
             let msg = GROUPED_MSG.replace("%accessor%", &name_str);
-            self.offenses.push(self.ctx.offense_with_range(
+
+            // Determine correction for this offense node
+            let correction = self.build_grouped_correction(stmts, i, &groupable_siblings, &name_str);
+
+            let offense = self.ctx.offense_with_range(
                 "Style/AccessorGrouping",
                 &msg,
                 Severity::Convention,
                 start,
                 end,
-            ));
+            );
+            if let Some(corr) = correction {
+                self.offenses.push(offense.with_correction(corr));
+            } else {
+                self.offenses.push(offense);
+            }
         }
+    }
+
+    fn build_grouped_correction(
+        &self,
+        stmts: &[Node],
+        idx: usize,
+        groupable_siblings: &[usize],
+        name_str: &str,
+    ) -> Option<Correction> {
+        let source = self.ctx.source;
+        let node = &stmts[idx];
+
+        // Find the effective group leader (first sibling not skip_for_grouping)
+        let group_leader = {
+            let mut leader = None;
+            for &j in groupable_siblings {
+                if !Self::skip_for_grouping(stmts, j, groupable_siblings) {
+                    leader = Some(j);
+                    break;
+                }
+            }
+            leader
+        };
+
+        if let Some(leader_idx) = group_leader {
+            if idx != leader_idx {
+                // Not the leader: remove (with preceding blank lines)
+                let node_start = node.location().start_offset();
+                let node_end = node.location().end_offset();
+                let (line_start, line_end) = Self::whole_line_with_preceding_blank(source, node_start, node_end);
+                return Some(Correction::delete(line_start, line_end));
+            }
+
+            // This is the group leader: replace with grouped form
+            let mut all_args: Vec<String> = Vec::new();
+            for &j in groupable_siblings {
+                let sib = &stmts[j];
+                let args = Self::node_args_srcs(sib, source);
+                for arg in args {
+                    if !all_args.contains(&arg) {
+                        all_args.push(arg);
+                    }
+                }
+            }
+
+            // Get inline comment from node (non-RBS)
+            let inline_comment = self.get_inline_comment(node);
+
+            let replacement = if let Some(comment) = &inline_comment {
+                format!("{} {} {}", name_str, all_args.join(", "), comment)
+            } else {
+                format!("{} {}", name_str, all_args.join(", "))
+            };
+
+            let node_start = node.location().start_offset();
+            let node_end = node.location().end_offset();
+            // Extend range to end of line (before newline) to cover any existing inline comment
+            let replace_end = if inline_comment.is_some() {
+                // Find end of the line
+                let bytes = source.as_bytes();
+                let mut e = node_end;
+                while e < bytes.len() && bytes[e] != b'\n' { e += 1; }
+                e
+            } else {
+                node_end
+            };
+            return Some(Correction::replace(node_start, replace_end, replacement));
+        }
+
+        None
+    }
+
+    fn get_inline_comment(&self, node: &Node) -> Option<String> {
+        // Get inline comment on same line as node (non-RBS)
+        let source = self.ctx.source;
+        let end_line = self.line_of_offset(node.location().end_offset());
+        let lines: Vec<&str> = source.lines().collect();
+        if end_line >= lines.len() { return None; }
+        let line = lines[end_line];
+        let node_end_col = {
+            let bytes = source.as_bytes();
+            let mut off = 0usize;
+            for _ in 0..end_line {
+                while off < bytes.len() && bytes[off] != b'\n' { off += 1; }
+                off += 1;
+            }
+            node.location().end_offset().saturating_sub(off)
+        };
+        let after_node = &line[node_end_col.min(line.len())..];
+        if let Some(hash_pos) = after_node.find('#') {
+            let after_hash = &after_node[hash_pos + 1..];
+            if !after_hash.starts_with(':') {
+                // Non-RBS comment
+                let comment_start = hash_pos;
+                return Some(after_node[comment_start..].trim_end().to_string());
+            }
+        }
+        None
     }
 
     fn find_groupable_siblings<'b>(&self, stmts: &'b [Node], idx: usize, name: &[u8]) -> Vec<usize> {
@@ -347,17 +517,229 @@ impl<'a> AccessorGroupingVisitor<'a> {
             if arg_count > 1 {
                 let start = node.location().start_offset();
                 let end = node.location().end_offset();
-                let name_str = String::from_utf8_lossy(&name);
+                let name_str = String::from_utf8_lossy(&name).to_string();
                 let msg = SEPARATED_MSG.replace("%accessor%", &name_str);
-                self.offenses.push(self.ctx.offense_with_range(
+                let correction = self.build_separated_correction(node, &name_str);
+                let offense = self.ctx.offense_with_range(
                     "Style/AccessorGrouping",
                     &msg,
                     Severity::Convention,
                     start,
                     end,
-                ));
+                );
+                if let Some(corr) = correction {
+                    self.offenses.push(offense.with_correction(corr));
+                } else {
+                    self.offenses.push(offense);
+                }
             }
         }
+    }
+
+    fn build_separated_correction(&self, node: &Node, name_str: &str) -> Option<Correction> {
+        let source = self.ctx.source;
+        let call = node.as_call_node()?;
+        let args_node = call.arguments()?;
+        let args: Vec<_> = args_node.arguments().iter().collect();
+        if args.len() <= 1 { return None; }
+
+        let node_start = node.location().start_offset();
+        let indent = Self::get_indent_of(source, node_start);
+
+        // Build the replacement. RuboCop's separate_accessors:
+        // - For each arg (reversed), build "name arg_src" lines
+        // - First arg: no extra indent (uses existing)
+        // - Subsequent: indent + "name arg_src"
+        // But it also includes comments from ast_with_comments[arg]
+        // We need to handle trailing inline comments (e.g., `:one, # comment`)
+
+        // Check for trailing comments on arg lines
+        let mut lines: Vec<String> = Vec::new();
+
+        // Detect if node uses parentheses form: attr_reader(\n  # comment\n  :one,\n  :two\n)
+        let node_src = &source[node_start..node.location().end_offset()];
+        let has_parens = {
+            if let Some(opening) = call.opening_loc() {
+                opening.as_slice() == b"("
+            } else {
+                false
+            }
+        };
+
+        if has_parens {
+            // Complex case with parens: extract comments from each arg's preceding line
+            // For each arg, check the line above it for comments
+            for (ai, arg) in args.iter().enumerate() {
+                let arg_start = arg.location().start_offset();
+                let arg_end = arg.location().end_offset();
+                let arg_src = &source[arg_start..arg_end];
+
+                // Check for preceding comment (line before arg)
+                let arg_line = self.line_of_offset(arg_start);
+                let mut preceding_comments: Vec<String> = Vec::new();
+                // Scan from current line upward
+                if arg_line > 0 {
+                    let all_lines: Vec<&str> = source.lines().collect();
+                    // Check line immediately above
+                    let prev_line = all_lines[arg_line - 1].trim();
+                    if prev_line.starts_with('#') {
+                        preceding_comments.push(prev_line.to_string());
+                    }
+                }
+
+                // Check for trailing comment on same line as arg
+                let arg_end_line = self.line_of_offset(arg_end);
+                let all_lines: Vec<&str> = source.lines().collect();
+                let trailing_comment = if arg_end_line < all_lines.len() {
+                    let line = all_lines[arg_end_line];
+                    // Find comment after arg_end col
+                    let line_start_off = {
+                        let bytes = source.as_bytes();
+                        let mut off = 0usize;
+                        for _ in 0..arg_end_line {
+                            while off < bytes.len() && bytes[off] != b'\n' { off += 1; }
+                            off += 1;
+                        }
+                        off
+                    };
+                    let col = arg_end.saturating_sub(line_start_off);
+                    let after = &line[col.min(line.len())..];
+                    if let Some(hp) = after.find('#') {
+                        let comment_text = after[hp..].trim_end();
+                        if !comment_text.starts_with("#:") {
+                            Some(comment_text.to_string())
+                        } else { None }
+                    } else { None }
+                } else { None };
+
+                // Build this arg's line(s)
+                for comment in &preceding_comments {
+                    if ai == 0 {
+                        lines.push(comment.clone());
+                    } else {
+                        lines.push(format!("{}{}", indent, comment));
+                    }
+                }
+                let accessor_line = if let Some(tc) = &trailing_comment {
+                    // trailing comment goes on next line for the attr_reader line
+                    // Actually RuboCop puts the trailing comment as a preceding comment for next
+                    if ai == 0 {
+                        format!("{} {}", name_str, arg_src)
+                    } else {
+                        format!("{}{} {}", indent, name_str, arg_src)
+                    }
+                } else if ai == 0 {
+                    format!("{} {}", name_str, arg_src)
+                } else {
+                    format!("{}{} {}", indent, name_str, arg_src)
+                };
+                lines.push(accessor_line);
+                // If there was a trailing comment, add it as preceding comment for next iteration
+                // Actually RuboCop groups it before the next arg
+                // But let's handle it for the previous arg instead (append comment after current line? No)
+                // Looking at test: `:two, # comment two B` → `# comment two B\n  attr_reader :two`
+                if let Some(tc) = &trailing_comment {
+                    // The trailing comment of arg goes before the attr_reader line for that arg
+                    // We already pushed the attr_reader without the comment, now insert comment before
+                    // Actually looking at expected output:
+                    // `# comment two B\n  attr_reader :two`
+                    // So comment comes BEFORE the attr_reader for that arg
+                    // We pushed attr_reader then need to insert comment before it
+                    let last = lines.pop().unwrap();
+                    let comment_line = if ai == 0 {
+                        tc.to_string()
+                    } else {
+                        format!("{}{}", indent, tc)
+                    };
+                    lines.push(comment_line);
+                    lines.push(last);
+                }
+            }
+        } else {
+            // Non-paren form: check for trailing comments after each arg (inline on same line)
+            // e.g., `attr_reader :a, # comment a\n    :b, # comment b\n    :c # comment c`
+            // Expected:
+            //   `# comment a\nattr_reader :a\n  # comment b\n  attr_reader :b\n  # comment c\n  attr_reader :c`
+            for (ai, arg) in args.iter().enumerate() {
+                let arg_start = arg.location().start_offset();
+                let arg_end = arg.location().end_offset();
+                let arg_src = &source[arg_start..arg_end];
+
+                // Get trailing comment on arg's line
+                let arg_end_line = self.line_of_offset(arg_end);
+                let all_lines: Vec<&str> = source.lines().collect();
+                let trailing_comment = if arg_end_line < all_lines.len() {
+                    let line = all_lines[arg_end_line];
+                    let line_start_off = {
+                        let bytes = source.as_bytes();
+                        let mut off = 0usize;
+                        for _ in 0..arg_end_line {
+                            while off < bytes.len() && bytes[off] != b'\n' { off += 1; }
+                            off += 1;
+                        }
+                        off
+                    };
+                    let col = arg_end.saturating_sub(line_start_off);
+                    let after = &line[col.min(line.len())..].trim_start();
+                    if let Some(hp) = after.find('#') {
+                        let comment_text = after[hp..].trim_end();
+                        Some(comment_text.to_string())
+                    } else { None }
+                } else { None };
+
+                // Add comment before attr_reader line if present
+                if let Some(ref tc) = trailing_comment {
+                    if ai == 0 {
+                        lines.push(tc.clone());
+                    } else {
+                        lines.push(format!("{}{}", indent, tc));
+                    }
+                }
+
+                // Add attr_reader line
+                if ai == 0 {
+                    lines.push(format!("{} {}", name_str, arg_src));
+                } else {
+                    lines.push(format!("{}{} {}", indent, name_str, arg_src));
+                }
+            }
+        }
+
+        let replacement = lines.join("\n");
+        let node_start = node.location().start_offset();
+        let node_end = node.location().end_offset();
+        // For non-paren form: extend range to include trailing comment on last arg's line
+        let actual_end = if !has_parens {
+            let last_arg = args.last()?;
+            let last_arg_end_line = self.line_of_offset(last_arg.location().end_offset());
+            let all_lines: Vec<&str> = source.lines().collect();
+            if last_arg_end_line < all_lines.len() {
+                let line = all_lines[last_arg_end_line];
+                let line_start_off = {
+                    let bytes = source.as_bytes();
+                    let mut off = 0usize;
+                    for _ in 0..last_arg_end_line {
+                        while off < bytes.len() && bytes[off] != b'\n' { off += 1; }
+                        off += 1;
+                    }
+                    off
+                };
+                let col = last_arg.location().end_offset().saturating_sub(line_start_off);
+                let after = &line[col.min(line.len())..];
+                if after.trim_start().starts_with('#') {
+                    line_start_off + line.len()
+                } else {
+                    node_end
+                }
+            } else {
+                node_end
+            }
+        } else {
+            // For paren form: node_end already includes the closing ')'
+            node_end
+        };
+
+        Some(Correction::replace(node_start, actual_end, replacement))
     }
 }
 

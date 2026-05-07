@@ -4,7 +4,7 @@
 
 use crate::cops::{CheckContext, Cop};
 use crate::node_name;
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Edit, Offense, Severity};
 use ruby_prism::{CallNode, Node};
 
 #[derive(Default)]
@@ -105,19 +105,25 @@ impl ExpandPathArguments {
         let path_str = Self::str_content(current_path_node, ctx.source)?;
         let d = Self::depth(&path_str);
 
-        let (new_path, new_default_dir) = match d {
-            0 => ("".to_string(), "__FILE__".to_string()),
-            1 => ("".to_string(), "__dir__".to_string()),
+        let (new_args_str) = match d {
+            0 => "__FILE__".to_string(),
+            1 => "__dir__".to_string(),
             _ => {
                 let pp = Self::parent_path(&path_str);
-                (format!("'{}', ", pp), "__dir__".to_string())
+                format!("'{}', __dir__", pp)
             }
         };
 
+        let new_default_dir = if d <= 1 {
+            if d == 0 { "__FILE__" } else { "__dir__" }
+        } else {
+            "__dir__"
+        };
+        let _ = new_default_dir;
+
         let msg = format!(
-            "Use `expand_path({}{})` instead of `expand_path({}, __FILE__)`.",
-            new_path,
-            new_default_dir,
+            "Use `expand_path({})` instead of `expand_path({}, __FILE__)`.",
+            new_args_str,
             format!("'{}'", path_str)
         );
 
@@ -126,13 +132,21 @@ impl ExpandPathArguments {
         let start = msg_loc.start_offset();
         let end = msg_loc.end_offset();
 
-        Some(ctx.offense_with_range(
+        // Correction: replace args from open_paren+1 to close_paren-1 with new_args_str
+        // node.arguments() gives us the args node; we need the full args range including parens
+        let args_node = node.arguments()?;
+        let args_start = args_node.location().start_offset();
+        let args_end = args_node.location().end_offset();
+
+        let mut offense = ctx.offense_with_range(
             "Style/ExpandPathArguments",
             &msg,
             Severity::Convention,
             start,
             end,
-        ))
+        );
+        offense = offense.with_correction(Correction::replace(args_start, args_end, new_args_str));
+        Some(offense)
     }
 
     /// Check `Pathname(__FILE__).parent.expand_path` pattern
@@ -175,13 +189,34 @@ impl ExpandPathArguments {
         let end = node.location().end_offset();
         let msg = "Use `Pathname(__dir__).expand_path` instead of `Pathname(__FILE__).parent.expand_path`.";
 
-        Some(ctx.offense_with_range(
+        // Corrections:
+        // 1. Replace __FILE__ arg to Pathname with __dir__
+        // 2. Remove .parent — from call_operator_loc start to message_loc end of parent_call
+        let file_node = &pn_args_list[0];
+        let file_start = file_node.location().start_offset();
+        let file_end = file_node.location().end_offset();
+
+        // parent_call: receiver is pathname_call; we need to remove `.parent`
+        // call_operator_loc is the `.` before parent, message_loc is `parent`
+        let dot_start = parent_call.call_operator_loc()?.start_offset();
+        let parent_end = parent_call.message_loc()?.end_offset();
+
+        let correction = Correction {
+            edits: vec![
+                Edit { start_offset: file_start, end_offset: file_end, replacement: "__dir__".to_string() },
+                Edit { start_offset: dot_start, end_offset: parent_end, replacement: "".to_string() },
+            ],
+        };
+
+        let mut offense = ctx.offense_with_range(
             "Style/ExpandPathArguments",
             msg,
             Severity::Convention,
             start,
             end,
-        ))
+        );
+        offense = offense.with_correction(correction);
+        Some(offense)
     }
 
     /// Check `Pathname.new(__FILE__).parent.expand_path` pattern
@@ -238,13 +273,32 @@ impl ExpandPathArguments {
         let end = node.location().end_offset();
         let msg = "Use `Pathname.new(__dir__).expand_path` instead of `Pathname.new(__FILE__).parent.expand_path`.";
 
-        Some(ctx.offense_with_range(
+        // Corrections:
+        // 1. Replace __FILE__ arg to Pathname.new with __dir__
+        // 2. Remove .parent
+        let file_node = &new_args_list[0];
+        let file_start = file_node.location().start_offset();
+        let file_end = file_node.location().end_offset();
+
+        let dot_start = parent_call.call_operator_loc()?.start_offset();
+        let parent_end = parent_call.message_loc()?.end_offset();
+
+        let correction = Correction {
+            edits: vec![
+                Edit { start_offset: file_start, end_offset: file_end, replacement: "__dir__".to_string() },
+                Edit { start_offset: dot_start, end_offset: parent_end, replacement: "".to_string() },
+            ],
+        };
+
+        let mut offense = ctx.offense_with_range(
             "Style/ExpandPathArguments",
             msg,
             Severity::Convention,
             start,
             end,
-        ))
+        );
+        offense = offense.with_correction(correction);
+        Some(offense)
     }
 }
 
