@@ -318,6 +318,29 @@ fn statements_source<'a>(stmts: &Option<ruby_prism::StatementsNode>, source: &'a
     }
 }
 
+/// Like `statements_source` but extends the range through a trailing `# ...`
+/// line comment if one is present on the same line as the last statement.
+fn statements_source_with_trailing_comment(
+    stmts: &Option<ruby_prism::StatementsNode>,
+    source: &str,
+) -> String {
+    let Some(s) = stmts else { return String::new() };
+    let bytes = source.as_bytes();
+    let start = s.location().start_offset();
+    let mut end = s.location().end_offset();
+    let mut i = end;
+    while i < bytes.len() && (bytes[i] == b' ' || bytes[i] == b'\t') {
+        i += 1;
+    }
+    if i < bytes.len() && bytes[i] == b'#' {
+        while i < bytes.len() && bytes[i] != b'\n' {
+            i += 1;
+        }
+        end = i;
+    }
+    source[start..end].to_string()
+}
+
 fn compute_if_correction(
     node: &ruby_prism::IfNode,
     source: &str,
@@ -339,16 +362,15 @@ fn compute_if_correction(
         // This IfNode is an `elsif X; body; [else; else_body;] end`.
         // Truthy: replace with `else\n  body\nend` (taking the then-branch as always-true).
         // Falsey: replace with `else\n  else_body\nend` (skipping this branch).
-        let then_src = statements_source(&node.statements(), source).to_string();
+        let then_src = statements_source_with_trailing_comment(&node.statements(), source);
         let replacement = if truthy {
-            // `else\n  body\nend`
             format!("else\n  {}\nend", then_src)
         } else {
             // falsey: take the else branch if any
             match node.subsequent() {
                 Some(sub) => {
                     if let Some(en) = sub.as_else_node() {
-                        let else_src = statements_source(&en.statements(), source).to_string();
+                        let else_src = statements_source_with_trailing_comment(&en.statements(), source);
                         format!("else\n  {}\nend", else_src)
                     } else {
                         // subsequent is another elsif — complex chain, skip

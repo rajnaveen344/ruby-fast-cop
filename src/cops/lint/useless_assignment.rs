@@ -187,25 +187,20 @@ impl<'a> VariableForceHook for UselessAssignmentHook<'a> {
                             // Use stored op_loc (binary_operator_loc from Prism)
                             let op_start = assignment.op_loc_start;
                             let op_end = assignment.op_loc_end;
-                            if op_start < op_end {
+                            // Prism's `binary_operator_loc()` covers the entire `+=` (operator + `=`).
+                            // RuboCop removes 1 char from operator end:
+                            //  - Sole assignment (numblock/itblock `foo += _1` → `foo + _1`):
+                            //    delete the `=` (last byte of op_loc).
+                            //  - Multi-assignment (`foo += 1` → `foo = 1`):
+                            //    delete the binary op (first byte of op_loc, leaving `=`).
+                            if op_start < op_end && op_end - op_start >= 2 {
                                 if is_sole_assignment {
-                                    // Numblock-like: sole assignment `foo += _1` → `foo + _1`
-                                    // Delete `=` (the char right after the op)
-                                    // op_end points right after `+`, so source[op_end] = `=`
-                                    if op_end < src_bytes.len() && src_bytes[op_end] == b'=' {
-                                        offense = offense.with_correction(Correction::delete(op_end, op_end + 1));
-                                    }
+                                    // Delete trailing `=`
+                                    offense = offense.with_correction(Correction::delete(op_end - 1, op_end));
                                 } else {
-                                    // Multi-assignment: `foo += expr` → `foo = expr`
-                                    // Delete op char (op_start..op_end = `+`)
-                                    // Also delete preceding space to avoid double-space
-                                    let del_start = if op_start > 0 && src_bytes[op_start - 1] == b' ' {
-                                        op_start - 1
-                                    } else {
-                                        op_start
-                                    };
+                                    // Delete leading op char (`+`/`-`/`*`/etc.)
                                     offense = offense.with_correction(
-                                        Correction::delete(del_start, op_end)
+                                        Correction::delete(op_start, op_end - 1)
                                     );
                                 }
                             }

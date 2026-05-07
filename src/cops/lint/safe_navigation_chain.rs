@@ -7,7 +7,22 @@ use crate::cops::{CheckContext, Cop};
 use crate::node_name;
 use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::Node;
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
+
+const COMPARISON_METHODS: &[&str] = &["<", ">", "<=", ">=", "==", "!=", "<=>", "===", "=~"];
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum ParentKind {
+    /// `&&`, `||`
+    Logical,
+    /// Parent is itself a comparison call (`a == foo`)
+    Comparison,
+    /// Parent is array literal
+    Array,
+    /// Parent is hash assoc (pair) value
+    AssocValue,
+    Other,
+}
 
 const MSG: &str = "Do not chain ordinary method call after safe navigation operator.";
 
@@ -128,13 +143,22 @@ impl Cop for SafeNavigationChain {
         node: &ruby_prism::ProgramNode,
         ctx: &CheckContext,
     ) -> Vec<Offense> {
+        // Pre-pass: build parent kind map for every CallNode start offset.
+        let mut parent_map: HashMap<(usize, usize), ParentKind> = HashMap::new();
+        let mut pp = ParentPass {
+            source: ctx.source,
+            parent_map: &mut parent_map,
+        };
+        use ruby_prism::Visit;
+        pp.visit_program_node(node);
+
         let mut visitor = SafeNavChainVisitor {
             cop: self,
             ctx,
             offenses: Vec::new(),
             pending_outer_dots: Vec::new(),
+            parent_map,
         };
-        use ruby_prism::Visit;
         visitor.visit_program_node(node);
         visitor.offenses
     }
@@ -148,6 +172,77 @@ struct SafeNavChainVisitor<'a> {
     /// When we flag the innermost plain-dot call, we attach ALL of these as additional
     /// correction edits so the single-pass correction converts the entire chain.
     pending_outer_dots: Vec<usize>,
+    /// (CallNode start, CallNode end) → parent kind. Tuple key disambiguates a
+    /// CallNode from its leftmost-receiver subcall (which shares start_offset).
+    parent_map: HashMap<(usize, usize), ParentKind>,
+}
+
+/// Pre-pass walker building a parent-kind map for CallNodes.
+struct ParentPass<'a> {
+    source: &'a str,
+    parent_map: &'a mut HashMap<(usize, usize), ParentKind>,
+}
+
+impl<'a> ParentPass<'a> {
+    fn op_src<'b>(&'b self, loc: &ruby_prism::Location) -> &'b str {
+        &self.source[loc.start_offset()..loc.end_offset()]
+    }
+}
+
+impl<'a> ruby_prism::Visit<'_> for ParentPass<'a> {
+    fn visit_and_node(&mut self, node: &ruby_prism::AndNode) {
+        // RuboCop's `logical_operator?` is true only for `&&`/`||`, not `and`/`or`.
+        let kind = if self.op_src(&node.operator_loc()) == "&&" {
+            ParentKind::Logical
+        } else {
+            ParentKind::Other
+        };
+        record_child_call(self.parent_map, &node.left(), kind);
+        record_child_call(self.parent_map, &node.right(), kind);
+        ruby_prism::visit_and_node(self, node);
+    }
+    fn visit_or_node(&mut self, node: &ruby_prism::OrNode) {
+        let kind = if self.op_src(&node.operator_loc()) == "||" {
+            ParentKind::Logical
+        } else {
+            ParentKind::Other
+        };
+        record_child_call(self.parent_map, &node.left(), kind);
+        record_child_call(self.parent_map, &node.right(), kind);
+        ruby_prism::visit_or_node(self, node);
+    }
+    fn visit_call_node(&mut self, node: &ruby_prism::CallNode) {
+        // If this call is itself a comparison, mark its receiver and arguments.
+        let method = String::from_utf8_lossy(node.name().as_slice()).to_string();
+        if COMPARISON_METHODS.contains(&method.as_str()) {
+            if let Some(recv) = node.receiver() {
+                record_child_call(self.parent_map, &recv, ParentKind::Comparison);
+            }
+            if let Some(args) = node.arguments() {
+                for a in args.arguments().iter() {
+                    record_child_call(self.parent_map, &a, ParentKind::Comparison);
+                }
+            }
+        }
+        ruby_prism::visit_call_node(self, node);
+    }
+    fn visit_array_node(&mut self, node: &ruby_prism::ArrayNode) {
+        for e in node.elements().iter() {
+            record_child_call(self.parent_map, &e, ParentKind::Array);
+        }
+        ruby_prism::visit_array_node(self, node);
+    }
+    fn visit_assoc_node(&mut self, node: &ruby_prism::AssocNode) {
+        record_child_call(self.parent_map, &node.value(), ParentKind::AssocValue);
+        ruby_prism::visit_assoc_node(self, node);
+    }
+}
+
+fn record_child_call(map: &mut HashMap<(usize, usize), ParentKind>, child: &Node, kind: ParentKind) {
+    if let Node::CallNode { .. } = child {
+        let loc = child.location();
+        map.insert((loc.start_offset(), loc.end_offset()), kind);
+    }
 }
 
 impl<'a> SafeNavChainVisitor<'a> {
@@ -227,34 +322,92 @@ impl<'a> SafeNavChainVisitor<'a> {
         };
         let end = node.location().end_offset();
 
-        // Build correction: insert `&` before this dot AND all accumulated outer dots
+        // Build correction: insert `&` before this dot AND all accumulated outer dots,
+        // OR rewrite bracket-method into explicit `&.[](...)` form.
+        let is_bracket = method.as_ref() == "[]" || method.as_ref() == "[]=";
         let mut correction_edits = vec![];
-        // Insert `&` before this dot
-        if let Some(dot_loc) = node.call_operator_loc() {
-            correction_edits.push(crate::offense::Edit {
-                start_offset: dot_loc.start_offset(),
-                end_offset: dot_loc.start_offset(),
-                replacement: "&".to_string(),
-            });
-        } else {
-            // Operator method (no dot): insert `&. ` after receiver to produce `recv&. op rhs`
+
+        if is_bracket {
+            // Replace from end of safe-nav receiver through end of this node with
+            //   &.METHOD(args)
+            // RuboCop computes:
+            //   offense_range = recv_end .. node_end
+            //   args_src = node.arguments.map(&:source).join(", ")
+            //   replacement = "&.METHOD(args_src)"
             let recv_end = receiver.location().end_offset();
+            let node_end = node.location().end_offset();
+            let args_src = if let Some(args_node) = node.arguments() {
+                args_node
+                    .arguments()
+                    .iter()
+                    .map(|a| {
+                        let loc = a.location();
+                        self.ctx.source[loc.start_offset()..loc.end_offset()].to_string()
+                    })
+                    .collect::<Vec<_>>()
+                    .join(", ")
+            } else {
+                String::new()
+            };
+            let replacement = format!("&.{}({})", method, args_src);
             correction_edits.push(crate::offense::Edit {
                 start_offset: recv_end,
-                end_offset: recv_end,
-                replacement: "&.".to_string(),
+                end_offset: node_end,
+                replacement,
             });
+            // Bracket case: do NOT promote outer pending dots (`.to_s` stays plain).
+            self.pending_outer_dots.clear();
+        } else {
+            // Insert `&` before this dot
+            if let Some(dot_loc) = node.call_operator_loc() {
+                correction_edits.push(crate::offense::Edit {
+                    start_offset: dot_loc.start_offset(),
+                    end_offset: dot_loc.start_offset(),
+                    replacement: "&".to_string(),
+                });
+            } else {
+                // Operator method (no dot): insert `&.` after receiver to produce `recv&. op rhs`
+                let recv_end = receiver.location().end_offset();
+                correction_edits.push(crate::offense::Edit {
+                    start_offset: recv_end,
+                    end_offset: recv_end,
+                    replacement: "&.".to_string(),
+                });
+            }
+            // Insert `&` before all outer chain dots (accumulated from outer calls visited first)
+            for &dot_start in &self.pending_outer_dots {
+                correction_edits.push(crate::offense::Edit {
+                    start_offset: dot_start,
+                    end_offset: dot_start,
+                    replacement: "&".to_string(),
+                });
+            }
+            self.pending_outer_dots.clear();
+
+            // Paren-wrap when:
+            //   (a) operator-without-dot inside array or assoc-value
+            //   (b) comparison method whose parent is logical (and/or) or another comparison
+            let no_dot = node.call_operator_loc().is_none();
+            let n_loc = node.location();
+            let parent_kind = self.parent_map.get(&(n_loc.start_offset(), n_loc.end_offset())).copied().unwrap_or(ParentKind::Other);
+            let is_comparison = COMPARISON_METHODS.contains(&method.as_ref());
+            let needs_paren = (no_dot && (parent_kind == ParentKind::Array || parent_kind == ParentKind::AssocValue))
+                || (is_comparison && (parent_kind == ParentKind::Logical || parent_kind == ParentKind::Comparison));
+            if needs_paren {
+                let n_start = node.location().start_offset();
+                let n_end = node.location().end_offset();
+                correction_edits.push(crate::offense::Edit {
+                    start_offset: n_start,
+                    end_offset: n_start,
+                    replacement: "(".to_string(),
+                });
+                correction_edits.push(crate::offense::Edit {
+                    start_offset: n_end,
+                    end_offset: n_end,
+                    replacement: ")".to_string(),
+                });
+            }
         }
-        // Insert `&` before all outer chain dots (accumulated from outer calls visited first)
-        for &dot_start in &self.pending_outer_dots {
-            correction_edits.push(crate::offense::Edit {
-                start_offset: dot_start,
-                end_offset: dot_start,
-                replacement: "&".to_string(),
-            });
-        }
-        // Clear pending after use
-        self.pending_outer_dots.clear();
 
         let correction = if correction_edits.is_empty() {
             None
