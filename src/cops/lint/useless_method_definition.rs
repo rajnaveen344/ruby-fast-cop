@@ -1,8 +1,9 @@
 //! Lint/UselessMethodDefinition - Detect method definitions that only call super.
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::{Node, Visit};
+use std::collections::HashMap;
 
 const MSG: &str = "Useless method definition detected.";
 
@@ -18,22 +19,55 @@ impl Cop for UselessMethodDefinition {
     fn severity(&self) -> Severity { Severity::Warning }
 
     fn check_program(&self, node: &ruby_prism::ProgramNode, ctx: &CheckContext) -> Vec<Offense> {
-        let mut visitor = Visitor { ctx, offenses: Vec::new(), in_generic_method_arg: false };
+        // Pre-pass: build map def_start → parent call node range (for access modifier calls)
+        let mut parent_call_map: HashMap<usize, (usize, usize)> = HashMap::new();
+        {
+            let mut pre = PreVisitor { parent_call_map: &mut parent_call_map };
+            pre.visit_program_node(node);
+        }
+        let mut visitor = Visitor { ctx, offenses: Vec::new(), in_generic_method_arg: false, parent_call_map: &parent_call_map };
         visitor.visit_program_node(node);
         visitor.offenses
     }
 }
 
+/// Pre-pass: for each access-modifier call (e.g. `private def foo; super; end`),
+/// map def node start → call node (start, end).
+struct PreVisitor<'a> {
+    parent_call_map: &'a mut HashMap<usize, (usize, usize)>,
+}
+
+impl Visit<'_> for PreVisitor<'_> {
+    fn visit_call_node(&mut self, node: &ruby_prism::CallNode) {
+        let method = String::from_utf8_lossy(node.name().as_slice());
+        if ACCESS_MODIFIERS.contains(&method.as_ref()) && node.receiver().is_none() {
+            if let Some(args) = node.arguments() {
+                for arg in args.arguments().iter() {
+                    if let Some(def_node) = arg.as_def_node() {
+                        let nloc = node.location();
+                        self.parent_call_map.insert(
+                            def_node.location().start_offset(),
+                            (nloc.start_offset(), nloc.end_offset()),
+                        );
+                    }
+                }
+            }
+        }
+        ruby_prism::visit_call_node(self, node);
+    }
+}
+
 const ACCESS_MODIFIERS: &[&str] = &["public", "protected", "private", "module_function"];
 
-struct Visitor<'a> {
-    ctx: &'a CheckContext<'a>,
+struct Visitor<'a, 'b> {
+    ctx: &'a CheckContext<'b>,
     offenses: Vec<Offense>,
     /// True when we're visiting arguments of a non-access-modifier method call
     in_generic_method_arg: bool,
+    parent_call_map: &'a HashMap<usize, (usize, usize)>,
 }
 
-impl Visit<'_> for Visitor<'_> {
+impl Visit<'_> for Visitor<'_, '_> {
     fn visit_def_node(&mut self, node: &ruby_prism::DefNode) {
         if !self.in_generic_method_arg {
             self.check_def(node);
@@ -71,7 +105,8 @@ impl Visit<'_> for Visitor<'_> {
     }
 }
 
-impl<'a> Visitor<'a> {
+
+impl<'a, 'b> Visitor<'a, 'b> {
     fn check_def(&mut self, node: &ruby_prism::DefNode) {
         // Skip initialize (any form)
         let name = String::from_utf8_lossy(node.name().as_slice());
@@ -141,13 +176,25 @@ impl<'a> Visitor<'a> {
             node.name_loc().end_offset()
         };
 
-        self.offenses.push(self.ctx.offense_with_range(
+        let def_node_start = node.location().start_offset();
+        let def_node_end = node.location().end_offset();
+
+        // Determine deletion range: if inside access modifier call, use call range; else use def node range
+        let (del_start, del_end) = self.parent_call_map
+            .get(&def_node_start)
+            .copied()
+            .unwrap_or((def_node_start, def_node_end));
+
+        let mut offense = self.ctx.offense_with_range(
             "Lint/UselessMethodDefinition",
             MSG,
             Severity::Warning,
             start,
             end,
-        ));
+        );
+        // RuboCop uses corrector.remove(range) — delete exactly the node range (no whole-line)
+        offense = offense.with_correction(Correction::delete(del_start, del_end));
+        self.offenses.push(offense);
     }
 }
 

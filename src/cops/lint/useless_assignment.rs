@@ -157,16 +157,78 @@ impl<'a> VariableForceHook for UselessAssignmentHook<'a> {
                     end,
                 );
 
-                // Wire correction for simple `name = expr` assignments only:
-                // delete the `name = ` prefix, leaving the RHS expression.
-                // Other kinds (op-assign, multi-assign, regex named capture)
-                // are deferred — they need separate logic.
-                if assignment.kind == AssignmentKind::Simple {
-                    if let Some(value_start) =
-                        find_simple_assignment_value_start(source, assignment.name_end)
-                    {
-                        offense = offense
-                            .with_correction(Correction::delete(assignment.name_start, value_start));
+                let src_bytes = source.as_bytes();
+                // Is this the sole assignment to this variable in scope?
+                // (used to distinguish numblock `foo += _1` from loop `foo += 1`)
+                let is_sole_assignment = variable.assignments.len() == 1;
+                match assignment.kind {
+                    AssignmentKind::Simple => {
+                        // Check if this is a rescue `=> varname` pattern
+                        if let Some(arrow_start) = find_rescue_arrow(src_bytes, assignment.name_start) {
+                            // Delete ` => varname` (from arrow_start to name_end)
+                            offense = offense.with_correction(
+                                Correction::delete(arrow_start, assignment.name_end)
+                            );
+                        } else if let Some(value_start) =
+                            find_simple_assignment_value_start(source, assignment.name_end)
+                        {
+                            offense = offense
+                                .with_correction(Correction::delete(assignment.name_start, value_start));
+                        }
+                    }
+                    AssignmentKind::MultipleAssignment => {
+                        // Replace variable name with `_`
+                        offense = offense.with_correction(
+                            Correction::replace(assignment.name_start, assignment.name_end, String::from("_"))
+                        );
+                    }
+                    AssignmentKind::OperatorAssignment => {
+                        if assignment.op.is_some() {
+                            // Use stored op_loc (binary_operator_loc from Prism)
+                            let op_start = assignment.op_loc_start;
+                            let op_end = assignment.op_loc_end;
+                            if op_start < op_end {
+                                if is_sole_assignment {
+                                    // Numblock-like: sole assignment `foo += _1` → `foo + _1`
+                                    // Delete `=` (the char right after the op)
+                                    // op_end points right after `+`, so source[op_end] = `=`
+                                    if op_end < src_bytes.len() && src_bytes[op_end] == b'=' {
+                                        offense = offense.with_correction(Correction::delete(op_end, op_end + 1));
+                                    }
+                                } else {
+                                    // Multi-assignment: `foo += expr` → `foo = expr`
+                                    // Delete op char (op_start..op_end = `+`)
+                                    // Also delete preceding space to avoid double-space
+                                    let del_start = if op_start > 0 && src_bytes[op_start - 1] == b' ' {
+                                        op_start - 1
+                                    } else {
+                                        op_start
+                                    };
+                                    offense = offense.with_correction(
+                                        Correction::delete(del_start, op_end)
+                                    );
+                                }
+                            }
+                        }
+                    }
+                    AssignmentKind::RegexpNamedCapture => {
+                        // Replace `(?<varname>` with `(?:` in the regexp source
+                        let pattern = format!("(?<{}>", assignment.name);
+                        let rs = assignment.regexp_start;
+                        let re = assignment.regexp_end;
+                        if re <= source.len() {
+                            let regexp_src = &source[rs..re];
+                            if let Some(pos) = regexp_src.find(&pattern) {
+                                let abs_start = rs + pos;
+                                let abs_end = abs_start + pattern.len();
+                                offense = offense.with_correction(
+                                    Correction::replace(abs_start, abs_end, String::from("(?:"))
+                                );
+                            }
+                        }
+                    }
+                    AssignmentKind::OrAssignment | AssignmentKind::AndAssignment => {
+                        // No safe simple correction for ||= / &&=
                     }
                 }
 
@@ -387,6 +449,42 @@ impl<'a> Visit<'_> for VarNameFinder<'a> {
 /// byte offset where the value expression begins. Returns None if the bytes
 /// after `name_end` don't match the simple-assignment shape (e.g. op-assign
 /// `name +=`, or no `=` found).
+/// Find the start of ` => ` pattern before a rescue variable name.
+/// Returns the position of the space before `=>` (inclusive) if found.
+fn find_rescue_arrow(source: &[u8], name_start: usize) -> Option<usize> {
+    // Scan backwards from name_start looking for `=>`
+    // Expected pattern: `rescue ExcType => varname` or `rescue => varname`
+    // We want to find ` => ` ending at name_start
+    if name_start < 4 { return None; }
+    // name_start points to first char of varname. Before it: `> ` or `>=`?
+    // Layout: `... => varname` where `varname` starts at name_start
+    // The `>` is at name_start-2, ` ` at name_start-1 (space before varname), `>` ...
+    // Actually: `=> varname`: `=` at K, `>` at K+1, ` ` at K+2, varname at K+3
+    // So name_start = K+3, K+2 = ` `, K+1 = `>`, K = `=`
+    let mut j = name_start;
+    // Skip space before varname
+    while j > 0 && source[j-1] == b' ' { j -= 1; }
+    // Now should be at `>`
+    if j < 2 { return None; }
+    if source[j-1] != b'>' || source[j-2] != b'=' { return None; }
+    // j-2 = start of `=>`, skip space before `=>`
+    let arrow = j - 2;
+    let mut k = arrow;
+    while k > 0 && source[k-1] == b' ' { k -= 1; }
+    Some(k)
+}
+
+/// Find the position of `=` in an operator assignment like `foo += expr`.
+/// Returns the byte offset of `=` (the assignment operator).
+fn find_op_assign_eq(source: &[u8], name_end: usize) -> Option<usize> {
+    let mut i = name_end;
+    // Skip whitespace
+    while i < source.len() && (source[i] == b' ' || source[i] == b'\t') { i += 1; }
+    // Skip operator chars (not `=`)
+    while i < source.len() && source[i] != b'=' && source[i] != b'\n' { i += 1; }
+    if i < source.len() && source[i] == b'=' { Some(i) } else { None }
+}
+
 fn find_simple_assignment_value_start(source: &str, name_end: usize) -> Option<usize> {
     let bytes = source.as_bytes();
     let mut i = name_end;

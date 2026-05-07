@@ -665,13 +665,16 @@ impl<'a, H: VariableForceHook> VariableForceDispatcher<'a, H> {
         self.table.pop_branch();
 
         // Then assign
-        self.table.assign_to_variable(
+        let op_loc = write.binary_operator_loc();
+        self.table.assign_to_variable_with_op_loc(
             &name,
             write.name_loc().start_offset(),
             write.name_loc().end_offset(),
             AssignmentKind::OperatorAssignment,
             Some(op),
             node.location().start_offset(),
+            op_loc.start_offset(),
+            op_loc.end_offset(),
         );
     }
 
@@ -1726,13 +1729,16 @@ impl<'a, 'b, H: VariableForceHook> Visit<'_> for FallbackVisitor<'a, 'b, H> {
         }
         self.dispatcher.table.reference_variable(&name);
         ruby_prism::visit_local_variable_operator_write_node(self, node);
-        self.dispatcher.table.assign_to_variable(
+        let op_loc = node.binary_operator_loc();
+        self.dispatcher.table.assign_to_variable_with_op_loc(
             &name,
             node.name_loc().start_offset(),
             node.name_loc().end_offset(),
             AssignmentKind::OperatorAssignment,
             Some(op),
             node.location().start_offset(),
+            op_loc.start_offset(),
+            op_loc.end_offset(),
         );
     }
 

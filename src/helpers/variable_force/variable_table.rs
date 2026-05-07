@@ -117,6 +117,20 @@ impl VariableTable {
         op: Option<String>,
         node_offset: usize,
     ) {
+        self.assign_to_variable_with_op_loc(name, name_start, name_end, kind, op, node_offset, 0, 0);
+    }
+
+    pub fn assign_to_variable_with_op_loc(
+        &mut self,
+        name: &str,
+        name_start: usize,
+        name_end: usize,
+        kind: AssignmentKind,
+        op: Option<String>,
+        node_offset: usize,
+        op_loc_start: usize,
+        op_loc_end: usize,
+    ) {
         // Get current branch and scope offset before mutable borrow
         let branch = self.branch_stack.last().cloned();
         let scope_offset = self.scope_stack.last().map(|s| s.node_offset).unwrap_or(0);
@@ -156,6 +170,8 @@ impl VariableTable {
                 node_offset,
                 scope_offset,
             );
+            assignment.op_loc_start = op_loc_start;
+            assignment.op_loc_end = op_loc_end;
             assignment.branch = branch;
             let var = self.scope_stack[idx].variables.get_mut(name).unwrap();
             // Update declaration location if not yet set (for lvar assignments)

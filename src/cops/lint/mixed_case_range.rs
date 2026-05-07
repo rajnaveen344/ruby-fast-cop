@@ -3,7 +3,7 @@
 //! `Range` objects (`'A'..'z'`).
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::{Node, Visit};
 
 #[derive(Default)]
@@ -25,6 +25,32 @@ impl Cop for MixedCaseRange {
         v.visit(&result.node());
         v.out
     }
+}
+
+/// Build replacement string for a mixed-case range `la-lb`.
+/// Examples: A-z → A-Za-z, Z-a → Za, G-f → G-Za-f, A-b → A-Za-b
+fn split_range(la: u8, lb: u8) -> String {
+    fn class_end(c: u8) -> u8 { if c.is_ascii_uppercase() { b'Z' } else { b'z' } }
+    fn class_begin(c: u8) -> u8 { if c.is_ascii_uppercase() { b'A' } else { b'a' } }
+
+    let upper_end = class_end(la);
+    let lower_begin = class_begin(lb);
+
+    // First part: la to end of its class
+    let first = if la == upper_end {
+        format!("{}", la as char)
+    } else {
+        format!("{}-{}", la as char, upper_end as char)
+    };
+
+    // Second part: begin of lb's class to lb
+    let second = if lower_begin == lb {
+        format!("{}", lb as char)
+    } else {
+        format!("{}-{}", lower_begin as char, lb as char)
+    };
+
+    format!("{}{}", first, second)
 }
 
 /// Which `[a-z]` / `[A-Z]` group a single ASCII character belongs to.
@@ -108,12 +134,14 @@ impl<'a, 'b> V<'a, 'b> {
                 let b = simple_letter(bytes, atom2_start, atom2_end);
                 if let (Some(la), Some(lb)) = (a, b) {
                     if unsafe_pair(la, lb) {
-                        self.out.push(self.ctx.offense_with_range(
+                        let replacement = split_range(la, lb);
+                        let offense = self.ctx.offense_with_range(
                             "Lint/MixedCaseRange",
                             MSG,
                             Severity::Warning,
                             atom1_start, atom2_end,
-                        ));
+                        ).with_correction(Correction::replace(atom1_start, atom2_end, replacement));
+                        self.out.push(offense);
                     }
                 }
                 i = atom2_end;

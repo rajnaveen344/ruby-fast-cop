@@ -23,6 +23,9 @@ pub struct Assignment {
     pub kind: AssignmentKind,
     /// Operator string for op-assign (e.g., "+", "||", "&&")
     pub op: Option<String>,
+    /// For OperatorAssignment: byte offsets of the binary operator (e.g. `+` in `+=`)
+    pub op_loc_start: usize,
+    pub op_loc_end: usize,
     /// For regexp captures: the regexp node location
     pub regexp_start: usize,
     pub regexp_end: usize,
@@ -59,6 +62,8 @@ impl Assignment {
             name_end,
             kind,
             op,
+            op_loc_start: 0,
+            op_loc_end: 0,
             regexp_start: 0,
             regexp_end: 0,
             referenced: false,
