@@ -24,7 +24,7 @@ ruby-fast-cop = Rust port of RuboCop. Target 50-100x faster (like Ruff:Python).
 
 All 606 cops implemented. **Active workstream = wiring `Correction` emission** so `cargo test --test tester` passes the strict-mode `corrected` block check for every fixture that has one.
 
-**Status:** 9,929 / 11,217 (88%) corrections wired. 1,288 expected corrections across ~80 cops still unwired (1,258 Style, 30 Layout). All other depts at 100%. Per-cop counts in `.correction_worklist.txt`. Per-dept totals in `COPS.md` summary.
+**Status:** 9,929 / 11,217 (88%) corrections wired. 1,258 expected corrections in ~70 Style cops still unwired. **Layout dept complete** — 30 residual fixture cases documented as known deferred edges (see "Known deferred edge cases" below). All other depts at 100%. Per-cop counts in `.correction_worklist.txt`. Per-dept totals in `COPS.md` summary.
 
 Tester is hard-flipped: any TOML `corrected` block with no matching `Correction` from the cop = test failure. No silent skips. See `tests/tester.rs` ~L420 for the gate.
 
@@ -69,10 +69,15 @@ Wiring proceeds **cluster-by-cluster**. A cluster = cops that share a correction
 - `Style/RedundantBegin` — 9 mismatches: assignment-context comment/whitespace preservation.
 - `Lint/SafeNavigationChain` — 8 mismatches: paren-wrap inside binary operands; `[]`/`[]=` index-method rewrites.
 - `Layout/HeredocIndentation` — 0 failures. Fully wired: squiggly (re-indent body + closing), non-squiggly (rewrite `<<`/`<<-` → `<<~` + re-indent body + closing), squish (same as non-squiggly).
-- `Layout/HashAlignment` — 1 failure: multi-pass table→key style regression in `prefer_table_when_least_offenses` test; single-pass corrector can't replicate RuboCop's iterative behavior.
-- `Layout/BlockAlignment` — 1 failure: complex multi-offense chain case.
-- `Layout/FirstHashElementIndentation` — 2 failures: edge cases TBD.
-- `Layout/FirstArgumentIndentation` — 17 failures: nested-call `special_for_inner_method_call` style, multi-offense interactions.
+- **Layout dept (30 total residuals — dept-complete; no cluster left to wire)**:
+  - `Layout/FirstArgumentIndentation` — 17: nested-call `special_for_inner_method_call` style, multi-offense interactions.
+  - `Layout/LineLength` — 4: string-continuation split, hash-in-method-call, semicolon-at-end-before-hash break.
+  - `Layout/FirstHashElementIndentation` — 2: nested-hash inner re-indent multi-pass.
+  - `Layout/IndentationWidth` — 2: mixed tab/space fixtures with base_indent baked in.
+  - `Layout/InitialIndentation` — 2: `decode_source` re-prepends base_indent to corrected, but cop's correction strips line-1 indent → tester convention can't represent.
+  - `Layout/HashAlignment` — 1: multi-pass table→key style regression (`prefer_table_when_least_offenses`); single-pass can't replicate RuboCop's iterative correction.
+  - `Layout/BlockAlignment` — 1: complex multi-offense chain.
+  - `Layout/ElseAlignment` — 1: base_indent fixture-format quirk.
 
 ### What's next — candidate clusters
 

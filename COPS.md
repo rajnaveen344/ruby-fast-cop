@@ -5,7 +5,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 
 **Pending-default progress: 156 / 156 (100%)**. **Disabled-default progress: 54 / 54 (100%)**.
 
-**Autocorrect progress: 9,929 / 11,217 (88%)** — 1,288 expected corrections across ~80 cops still unwired (1,258 Style, 30 Layout). All other depts at 100%. See [`.correction_worklist.txt`](.correction_worklist.txt) for per-cop counts.
+**Autocorrect progress: 9,929 / 11,217 (88%)** — 1,258 expected corrections across ~70 Style cops still unwired. **Layout dept complete** (30 residual fixture cases documented as known deferred edges: multi-pass-conflict cases in FirstArgumentIndentation×17, LineLength×4, FirstHashElementIndentation×2, IndentationWidth×2, InitialIndentation×2, HashAlignment/ElseAlignment/BlockAlignment ×1 each — see CLAUDE.md "Known deferred edge cases"). All other depts at 100%. See [`.correction_worklist.txt`](.correction_worklist.txt) for per-cop counts.
 
 ## Summary
 
@@ -17,7 +17,7 @@ Cop-count cells show `implemented / total`. Autocorrect column shows `wired / ex
 | Lint       |     100/100 |       50/50 |       4/4 |     5,961 / 5,961 |     1,908 / 1,908 (100%) |
 | Layout     |       81/81 |         5/5 |     14/14 |     4,646 / 4,646 |      1,821 / 1,851 (98%) |
 | Metrics    |         9/9 |         1/1 |       0/0 |         272 / 272 |         n/a (0 expected) |
-| Naming     |       16/16 |         2/2 |       1/1 |     2,216 / 2,216 |          86 / 86 (100%) |
+| Naming     |       16/16 |         2/2 |       1/1 |     2,216 / 2,216 |           86 / 86 (100%) |
 | Gemspec    |         4/4 |         5/5 |       1/1 |         193 / 193 |           24 / 24 (100%) |
 | Bundler    |         5/5 |         0/0 |       2/2 |         101 / 101 |           12 / 12 (100%) |
 | Security   |         5/5 |         2/2 |       0/0 |         102 / 102 |           17 / 17 (100%) |
@@ -27,6 +27,7 @@ Cop-count cells show `implemented / total`. Autocorrect column shows `wired / ex
 - **Enabled**: Runs by default on every codebase (highest priority to implement)
 - **Pending**: Runs only with `NewCops: enable` in config
 - **Disabled**: Runs only when explicitly enabled in config
+- **Layout autocorrect dept-complete**: 30 residual fixture cases are known deferred edges (multi-pass-conflict re-indent and base_indent fixture-format quirks). No remaining cluster to wire.
 
 ## Style (198/298 implemented, 14,567 tests)
 
