@@ -24,7 +24,7 @@ ruby-fast-cop = Rust port of RuboCop. Target 50-100x faster (like Ruff:Python).
 
 All 606 cops implemented. **Active workstream = wiring `Correction` emission** so `cargo test --test tester` passes the strict-mode `corrected` block check for every fixture that has one.
 
-**Status:** 9,925 / 11,217 (88%) corrections wired. 1,292 expected corrections across ~80 cops still unwired (1,258 Style, 34 Layout). All other depts at 100%. Per-cop counts in `.correction_worklist.txt`. Per-dept totals in `COPS.md` summary.
+**Status:** 9,929 / 11,217 (88%) corrections wired. 1,288 expected corrections across ~80 cops still unwired (1,258 Style, 30 Layout). All other depts at 100%. Per-cop counts in `.correction_worklist.txt`. Per-dept totals in `COPS.md` summary.
 
 Tester is hard-flipped: any TOML `corrected` block with no matching `Correction` from the cop = test failure. No silent skips. See `tests/tester.rs` ~L420 for the gate.
 
@@ -61,6 +61,7 @@ Wiring proceeds **cluster-by-cluster**. A cluster = cops that share a correction
 - **Solo: Style/SymbolProc** (last commit) — +33 Style corrections. Translates RuboCop `autocorrect_with_args` / `autocorrect_without_args`. Three shapes: (a) no args, no parens — replace ` { |x| x.foo }` with `(&:foo)`; (b) empty parens `(   )` — swallow `(...)` + block, replace with `(&:foo)`; (c) call has args — insert `, &:foo` after last arg (or ` &:foo` if trailing comma) and delete block. Deferred (5 residuals): lambda-literal `->` → `lambda(&:foo)`, super blocks.
 - **Cluster: non-Style mop-up** (last 3 commits) — 26 cops touched, +126 corrections via 3 parallel worktree agents. **Mixed (4af555e, +43)**: Bundler/InsecureProtocolSource, Security/JSONLoad, Security/YAMLLoad, Lint/InterpolationCheck, Lint/EmptyConditionalBody, Naming/InclusiveLanguage, Naming/BlockForwarding, Lint/RedundantCopDisableDirective. **Layout (6a3908a, +48)**: ParameterAlignment, ClosingParenthesisIndentation, EndAlignment, MultilineAssignmentLayout, ElseAlignment, InitialIndentation. **Lint partial (f47f567, +35)**: MixedCaseRange, RedundantRequireStatement, UselessMethodDefinition, UselessAssignment (11/14). All Naming/Bundler/Security/Gemspec depts now 100%.
 - **Cluster: style misc B + C + grouping/structure** (this commit) — 16 cops touched, +201 corrections via 3 parallel agents. Style misc B (+77): MethodCallWithoutArgsParentheses, EmptyMethod, RescueModifier, LineEndConcatenation, ReduceToHash. Style misc C (+120): MagicCommentFormat (new), EmptyClassDefinition (new), EachForSimpleLoop, ExpandPathArguments, IfInsideElse (4 cases), CaseLikeIf, MultilineMethodSignature. Grouping/structure (+4): AccessorGrouping, MixinGrouping, BisectedAttrAccessor, ClassStructure (heredoc blank-line preservation + alternating-style forward-search). 1 residual on AccessorGrouping (separated-style edge case).
+- **Solo: Layout/LineLength heredoc-arg** (this commit) — +4 Layout corrections. When a call has prior args before a heredoc arg and the line overflows, break before the heredoc (insert `\n` at heredoc start). Falls through to existing inner-arg break when the prior args themselves overflow `Max`.
 - **Solo: LiteralAsCondition** (last commit) — +95 Lint corrections. Wired: block-form & modifier if/unless (replace whole node with appropriate branch source), ternary, while truthy → `true` / falsey → drop, until falsey → `false` / truthy → drop, postloop while/until (use begin-block inner statements as body), and/or with literal lhs → replace whole node with rhs (skip return/break/next rhs). Deferred (36 residuals): elsif chain rewrites (`if x; ...elsif literal; ...end` → `if x; ...else; ...end`), `if literal && literal_rhs` (multi-pass conflict between outer-if and and-node corrections).
 
 **Known deferred edge cases** (not blocking cluster commits):
@@ -99,7 +100,7 @@ Top unwired cops by failing-correction count (from `cargo test --test tester` st
 
 ## Production-readiness roadmap
 
-Current state: **alpha-internal**. 606/606 cops implemented, 9,925/11,217 (88%) autocorrect wired, 28k synthetic tests green.
+Current state: **alpha-internal**. 606/606 cops implemented, 9,929/11,217 (88%) autocorrect wired, 28k synthetic tests green.
 
 ### Phase 1 — public alpha (1-2w)
 
@@ -142,12 +143,12 @@ Goal: anyone can `brew install` / `cargo install` and adopt.
 
 ### Critical-path estimate
 
-| Phase | Time | Risk |
-|---|---|---|
-| 1 — public alpha | 1-2w | corpus parity may surface deep bugs |
-| 2 — beta | 2-3w | benchmark numbers determine perf strategy |
-| 3 — 1.0 | 1-2w | mostly packaging, low risk |
-| **Total** | **4-7w** | |
+| Phase            | Time     | Risk                                      |
+| ---------------- | -------- | ----------------------------------------- |
+| 1 — public alpha | 1-2w     | corpus parity may surface deep bugs       |
+| 2 — beta         | 2-3w     | benchmark numbers determine perf strategy |
+| 3 — 1.0          | 1-2w     | mostly packaging, low risk                |
+| **Total**        | **4-7w** |                                           |
 
 Biggest unknown: corpus diff. If >5% per-cop, debt blows up. Mitigate by diffing per-cop and tackling worst offenders first.
 

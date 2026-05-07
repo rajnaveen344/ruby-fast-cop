@@ -340,13 +340,22 @@ impl<'a> BreakableRangeFinder<'a> {
         let is_parenthesized = opening_loc.is_some();
 
         if self.has_heredoc_arg(&arg_list) {
+            let heredoc_arg = arg_list.iter().find(|arg| self.is_heredoc_node(arg));
+            let heredoc_start = heredoc_arg.as_ref().map(|a| a.location().start_offset());
             let non_heredoc: Vec<_> = arg_list.iter()
                 .take_while(|arg| !self.is_heredoc_node(arg))
                 .map(|arg| (arg.location().start_offset(), arg.location().end_offset()))
                 .collect();
             if non_heredoc.is_empty() { return; }
-            if let Some(offset) = self.find_break_in_elements(&non_heredoc, opening_loc.as_ref().map(|l| l.start_offset())) {
-                self.register(line_idx, BreakKind::Newline { offset });
+            let needs_inner_break = non_heredoc.iter().any(|&(_, end)| self.col_of(end) > self.max);
+            if needs_inner_break {
+                if let Some(offset) = self.find_break_in_elements(&non_heredoc, opening_loc.as_ref().map(|l| l.start_offset())) {
+                    self.register(line_idx, BreakKind::Newline { offset });
+                    return;
+                }
+            }
+            if let Some(off) = heredoc_start {
+                self.register(line_idx, BreakKind::Newline { offset: off });
             }
             return;
         }
