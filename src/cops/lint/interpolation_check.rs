@@ -1,7 +1,7 @@
 //! Lint/InterpolationCheck - Warn about #{} in single-quoted strings.
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::Visit;
 
 const MSG: &str =
@@ -65,13 +65,21 @@ impl<'a> Visitor<'a> {
             return;
         }
 
+        // Build correction: inner = content between quotes
+        let inner = &source[1..source.len() - 1];
+        let has_double_quote = inner.contains('"');
+        let replacement = if has_double_quote {
+            format!("%{{{}}}", inner)
+        } else {
+            format!("\"{}\"", inner)
+        };
         self.offenses.push(self.ctx.offense_with_range(
             "Lint/InterpolationCheck",
             MSG,
             Severity::Warning,
             loc.start_offset(),
             loc.end_offset(),
-        ));
+        ).with_correction(Correction::replace(loc.start_offset(), loc.end_offset(), replacement)));
     }
 }
 

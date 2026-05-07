@@ -3,7 +3,7 @@
 //! Ported from: https://github.com/rubocop/rubocop/blob/master/lib/rubocop/cop/naming/inclusive_language.rb
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use regex::{Regex, RegexBuilder};
 use ruby_prism::Visit;
 use serde_yaml::Value as YValue;
@@ -266,6 +266,22 @@ fn mask_allowed(text: &str, allowed: &Regex) -> String {
     out
 }
 
+/// Apply case transform from `original` to `suggestion`.
+/// lower→lower, Title→Title, UPPER→UPPER, else return suggestion as-is.
+fn apply_case_transform(original: &str, suggestion: &str) -> String {
+    if original.chars().all(|c| c.is_uppercase() || !c.is_alphabetic()) && original.chars().any(|c| c.is_alphabetic()) {
+        suggestion.to_uppercase()
+    } else if original.chars().next().map(|c| c.is_uppercase()).unwrap_or(false) {
+        let mut s = suggestion.to_string();
+        if let Some(first) = s.get_mut(0..1) {
+            first.make_ascii_uppercase();
+        }
+        s
+    } else {
+        suggestion.to_string()
+    }
+}
+
 fn format_suggestions(suggestions: &[String]) -> String {
     if suggestions.is_empty() {
         return " with another term".to_string();
@@ -330,9 +346,19 @@ impl InclusiveLanguage {
         for (off, word) in self.scan_for_words(text, base) {
             let end = off + word.len();
             let msg = self.create_message(&word);
-            offenses.push(ctx.offense_with_range(
-                COP_NAME, &msg, Severity::Convention, off, end,
-            ));
+            let offense = ctx.offense_with_range(COP_NAME, &msg, Severity::Convention, off, end);
+            // Add correction if exactly one suggestion
+            let offense = if let Some(term) = self.find_term_for(&word) {
+                if term.suggestions.len() == 1 {
+                    let replacement = apply_case_transform(&word, &term.suggestions[0]);
+                    offense.with_correction(Correction::replace(off, end, replacement))
+                } else {
+                    offense
+                }
+            } else {
+                offense
+            };
+            offenses.push(offense);
         }
     }
 

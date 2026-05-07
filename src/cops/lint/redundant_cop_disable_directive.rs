@@ -93,7 +93,10 @@ fn scan_directives(src: &str) -> Vec<Directive> {
         if let Some(rel_hash) = find_comment_hash(line_text) {
             let comment_start_abs = line_start + rel_hash;
             let comment_text = &src[comment_start_abs..line_end];
-            if let Some(dir) = parse_directive(comment_text, comment_start_abs, line, rel_hash) {
+            // True inline: actual non-whitespace code precedes `#` on the line.
+            let is_inline = line_text[..rel_hash].bytes().any(|b| b != b' ' && b != b'\t');
+            if let Some(mut dir) = parse_directive(comment_text, comment_start_abs, line, rel_hash) {
+                dir.inline = is_inline;
                 out.push(dir);
             } else {
                 // Retry: look for a later `# rubocop` fragment inside the comment body
@@ -102,12 +105,15 @@ fn scan_directives(src: &str) -> Vec<Directive> {
                 let mut k = 1;
                 while k < cb.len() {
                     if cb[k] == b'#' {
-                        if let Some(dir) = parse_directive(
+                        let inner_rel = rel_hash + k;
+                        let inner_inline = line_text[..inner_rel].bytes().any(|b| b != b' ' && b != b'\t');
+                        if let Some(mut dir) = parse_directive(
                             &comment_text[k..],
                             comment_start_abs + k,
                             line,
-                            rel_hash + k,
+                            inner_rel,
                         ) {
+                            dir.inline = inner_inline;
                             out.push(dir);
                             break;
                         }
@@ -216,6 +222,7 @@ fn parse_directive(text: &str, abs_start: usize, line: u32, rel_hash: usize) -> 
     }
 
     let directive_end_abs = abs_start + directive_end_in_text;
+    // `inline` placeholder — overridden in scan_directives after parse_directive returns.
     let inline = rel_hash > 0;
 
     Some(Directive {
@@ -563,19 +570,26 @@ impl Cop for RedundantCopDisableDirective {
                 ).with_correction(correction));
             } else {
                 // Per-name offenses for just the redundant ones.
-                for n in &redundant {
+                // Build aggregate correction (all redundant deletions as one Correction) and
+                // attach only to the first offense; other offenses have no correction to avoid
+                // overlapping edit conflicts in the single-pass applier.
+                let aggregate = make_aggregate_deletion_correction(src_bytes, &dir.names, &redundant);
+                for (i, n) in redundant.iter().enumerate() {
                     let part = self.format_cop_part(&n.name);
                     let msg = format!("Unnecessary disabling of {}.", part);
                     let name_end = n.start + n.name.len();
-                    // Compute correction: delete this name from the comma-separated list.
-                    let correction = make_name_deletion_correction(src_bytes, &dir.names, n);
-                    offenses.push(ctx.offense_with_range(
+                    let offense = ctx.offense_with_range(
                         COP_NAME,
                         &msg,
                         Severity::Warning,
                         n.start,
                         name_end,
-                    ).with_correction(correction));
+                    );
+                    offenses.push(if i == 0 {
+                        offense.with_correction(aggregate.clone())
+                    } else {
+                        offense
+                    });
                 }
             }
         }
@@ -664,16 +678,11 @@ fn make_whole_directive_correction(src: &str, src_bytes: &[u8], dir: &Directive)
         };
         let free_text = &src[dir.comment_end..line_end];
         if !free_text.trim().is_empty() {
-            // Keep the # and the free text after the directive.
-            // Delete from ws_start to dir.comment_end, leaving `#` + free_text.
-            // But `#` is at comment_start; delete from ws_start to comment_start+1
-            // (just the whitespace before #), and delete comment_start+1..comment_end
-            // (` rubocop:disable ...`). Combine into one range: ws_start..comment_end.
-            // The `#` at comment_start stays because we delete ws_start..comment_start
-            // then comment_start+1..comment_end.
-            // Simpler: two edits.
+            // Keep `#` and free text after directive. Only delete the directive body after `#`.
+            // e.g. `do_something # rubocop:disable Metrics/ClassLength - note`
+            //   → `do_something # - note`
+            // Delete from comment_start+1 to comment_end (` rubocop:disable ...`)
             let edits = vec![
-                Edit { start_offset: ws_start, end_offset: dir.comment_start, replacement: "".into() },
                 Edit { start_offset: dir.comment_start + 1, end_offset: dir.comment_end, replacement: "".into() },
             ];
             Correction { edits }
@@ -723,6 +732,68 @@ fn make_whole_directive_correction(src: &str, src_bytes: &[u8], dir: &Directive)
 
         Correction::delete(line_start, del_end)
     }
+}
+
+/// Compute aggregate deletion correction for multiple redundant names in a directive.
+/// Groups consecutive redundant runs and emits one edit per run to avoid overlap.
+fn make_aggregate_deletion_correction(
+    src_bytes: &[u8],
+    all_names: &[DirName],
+    redundant: &[DirName],
+) -> Correction {
+    let red_starts: std::collections::HashSet<usize> = redundant.iter().map(|n| n.start).collect();
+    let n = all_names.len();
+    let mut edits: Vec<Edit> = Vec::new();
+
+    let mut i = 0;
+    while i < n {
+        if !red_starts.contains(&all_names[i].start) {
+            i += 1;
+            continue;
+        }
+        // Start of a redundant run: find how far it extends
+        let run_start_pos = i;
+        while i < n && red_starts.contains(&all_names[i].start) {
+            i += 1;
+        }
+        let run_end_pos = i - 1; // inclusive
+
+        // run: all_names[run_start_pos..=run_end_pos] are redundant
+        let run_end_name_end = all_names[run_end_pos].start + all_names[run_end_pos].name.len();
+        let is_run_at_end = run_end_pos + 1 >= n;
+
+        if !is_run_at_end {
+            // Delete run + following `, ` up to next name start
+            let next_start = all_names[run_end_pos + 1].start;
+            edits.push(Edit {
+                start_offset: all_names[run_start_pos].start,
+                end_offset: next_start,
+                replacement: "".into(),
+            });
+        } else if run_start_pos > 0 {
+            // Delete from comma before run_start to end of run
+            let prev = &all_names[run_start_pos - 1];
+            let prev_end = prev.start + prev.name.len();
+            let mut del_start = prev_end;
+            while del_start < all_names[run_start_pos].start && src_bytes[del_start] != b',' {
+                del_start += 1;
+            }
+            edits.push(Edit {
+                start_offset: del_start,
+                end_offset: run_end_name_end,
+                replacement: "".into(),
+            });
+        } else {
+            // Entire list is redundant — shouldn't reach here (handled by whole-directive path)
+            edits.push(Edit {
+                start_offset: all_names[run_start_pos].start,
+                end_offset: run_end_name_end,
+                replacement: "".into(),
+            });
+        }
+    }
+
+    Correction { edits }
 }
 
 /// Compute deletion correction for a single name within a multi-cop directive.

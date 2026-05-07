@@ -4,7 +4,7 @@
 //! https://github.com/rubocop/rubocop/blob/master/lib/rubocop/cop/lint/empty_conditional_body.rb
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::{IfNode, Node, UnlessNode, Visit};
 
 pub struct EmptyConditionalBody {
@@ -66,6 +66,59 @@ impl<'a> Visitor<'a> {
         self.comment_ranges.iter().any(|(s, _)| *s >= start && *s < end)
     }
 
+    /// Compute indentation (leading spaces/tabs) for offset `off` in source.
+    fn indent_at(&self, off: usize) -> &str {
+        let src = self.ctx.source;
+        // find line start
+        let line_start = src[..off].rfind('\n').map(|i| i + 1).unwrap_or(0);
+        let from = &src[line_start..];
+        let indent_len = from.bytes().take_while(|&b| b == b' ' || b == b'\t').count();
+        &src[line_start..line_start + indent_len]
+    }
+
+    /// Build correction for `if PRED ... else BODY end` → `unless PRED\n  BODY\nend`
+    /// or `unless PRED ... else BODY end` → `if PRED\n  BODY\nend`.
+    fn make_inversion_correction_if(
+        &self,
+        node: &IfNode,
+        opposite_kw: &str,
+    ) -> Option<Correction> {
+        // Ensure subsequent is ElseNode with statements
+        let else_node = node.subsequent()?;
+        let else_n = else_node.as_else_node()?;
+        let stmts = else_n.statements()?;
+        let src = self.ctx.source;
+        let indent = self.indent_at(node.location().start_offset()).to_string();
+        let pred_src = &src[node.predicate().location().start_offset()..node.predicate().location().end_offset()];
+        let body_src = &src[stmts.location().start_offset()..stmts.location().end_offset()];
+        // Reindent body: body may already be indented by 2 from its position; we want `indent + "  "`
+        let body_indent = format!("{}  ", indent);
+        // Re-indent each line of body_src to body_indent
+        let reindented = reindent_body(body_src, &body_indent);
+        let replacement = format!("{} {}\n{}\n{}end", opposite_kw, pred_src, reindented, indent);
+        let node_loc = node.location();
+        // end of whole node
+        Some(Correction::replace(node_loc.start_offset(), node_loc.end_offset(), replacement))
+    }
+
+    fn make_inversion_correction_unless(
+        &self,
+        node: &UnlessNode,
+        opposite_kw: &str,
+    ) -> Option<Correction> {
+        let else_node = node.else_clause()?;
+        let stmts = else_node.statements()?;
+        let src = self.ctx.source;
+        let indent = self.indent_at(node.location().start_offset()).to_string();
+        let pred_src = &src[node.predicate().location().start_offset()..node.predicate().location().end_offset()];
+        let body_src = &src[stmts.location().start_offset()..stmts.location().end_offset()];
+        let body_indent = format!("{}  ", indent);
+        let reindented = reindent_body(body_src, &body_indent);
+        let replacement = format!("{} {}\n{}\n{}end", opposite_kw, pred_src, reindented, indent);
+        let node_loc = node.location();
+        Some(Correction::replace(node_loc.start_offset(), node_loc.end_offset(), replacement))
+    }
+
     fn check_if(&mut self, node: &IfNode, keyword: &str) {
         // node.body or one-line (begin == end line) -> skip
         if node.statements().is_some() {
@@ -119,13 +172,22 @@ impl<'a> Visitor<'a> {
             }
         }
 
-        self.offenses.push(self.ctx.offense_with_range(
+        // Build correction: invert to opposite keyword if there's an else clause with body
+        // Only for top-level if/unless (not elsif chains)
+        let correction = if keyword != "elsif" {
+            let opposite = if keyword == "if" { "unless" } else { "if" };
+            self.make_inversion_correction_if(node, opposite)
+        } else {
+            None
+        };
+        let offense = self.ctx.offense_with_range(
             "Lint/EmptyConditionalBody",
             &format!("Avoid `{}` branches without a body.", keyword),
             Severity::Warning,
             offense_start,
             offense_end,
-        ));
+        );
+        self.offenses.push(if let Some(c) = correction { offense.with_correction(c) } else { offense });
     }
 }
 
@@ -213,13 +275,15 @@ impl Visit<'_> for Visitor<'_> {
         }
 
         if emit {
-            self.offenses.push(self.ctx.offense_with_range(
+            let correction = self.make_inversion_correction_unless(node, "if");
+            let offense = self.ctx.offense_with_range(
                 "Lint/EmptyConditionalBody",
                 "Avoid `unless` branches without a body.",
                 Severity::Warning,
                 offense_start,
                 offense_end,
-            ));
+            );
+            self.offenses.push(if let Some(c) = correction { offense.with_correction(c) } else { offense });
         }
 
         self.visit(&node.predicate());
@@ -229,6 +293,24 @@ impl Visit<'_> for Visitor<'_> {
             }
         }
     }
+}
+
+/// Re-indent body lines to `new_indent`. Detects current indent from first non-empty line.
+fn reindent_body(body: &str, new_indent: &str) -> String {
+    let lines: Vec<&str> = body.lines().collect();
+    // Find current indent from first non-empty line
+    let current_indent_len = lines.iter()
+        .find(|l| !l.trim().is_empty())
+        .map(|l| l.bytes().take_while(|&b| b == b' ' || b == b'\t').count())
+        .unwrap_or(0);
+    lines.iter().map(|line| {
+        if line.trim().is_empty() {
+            line.to_string()
+        } else {
+            let stripped = if line.len() >= current_indent_len { &line[current_indent_len..] } else { line };
+            format!("{}{}", new_indent, stripped)
+        }
+    }).collect::<Vec<_>>().join("\n")
 }
 
 #[derive(serde::Deserialize)]

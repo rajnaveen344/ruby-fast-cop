@@ -1,7 +1,7 @@
 //! Bundler/InsecureProtocolSource cop
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 
 pub struct InsecureProtocolSource {
     allow_http_protocol: bool,
@@ -49,7 +49,8 @@ impl Cop for InsecureProtocolSource {
                         Please change your source to 'https://rubygems.org' if possible, or 'http://rubygems.org' if not."
                     );
                     let loc = first.location();
-                    vec![ctx.offense_with_range(self.name(), &msg, self.severity(), loc.start_offset(), loc.end_offset())]
+                    vec![ctx.offense_with_range(self.name(), &msg, self.severity(), loc.start_offset(), loc.end_offset())
+                        .with_correction(Correction::replace(loc.start_offset(), loc.end_offset(), "'https://rubygems.org'".to_string()))]
                 } else {
                     vec![]
                 }
@@ -68,7 +69,7 @@ impl Cop for InsecureProtocolSource {
                         self.severity(),
                         loc.start_offset(),
                         loc.end_offset(),
-                    )]
+                    ).with_correction(Correction::replace(loc.start_offset(), loc.end_offset(), "'https://rubygems.org'".to_string()))]
                 } else {
                     vec![]
                 }

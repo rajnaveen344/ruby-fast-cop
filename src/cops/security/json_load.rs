@@ -1,7 +1,7 @@
 //! Security/JSONLoad cop
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 
 #[derive(Default)]
 pub struct JSONLoad;
@@ -106,7 +106,9 @@ impl Cop for JSONLoad {
         }
 
         let msg = format!("Prefer `JSON.parse` over `JSON.{}`.", method);
-        vec![ctx.offense(self.name(), &msg, self.severity(), &node.message_loc().unwrap())]
+        let msg_loc = node.message_loc().unwrap();
+        vec![ctx.offense(self.name(), &msg, self.severity(), &msg_loc)
+            .with_correction(Correction::replace(msg_loc.start_offset(), msg_loc.end_offset(), String::from("parse")))]
     }
 }
 

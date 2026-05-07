@@ -2,7 +2,7 @@
 //! Only active for Ruby < 3.1 (Psych 4 makes YAML.load safe by default)
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 
 #[derive(Default)]
 pub struct YAMLLoad;
@@ -53,12 +53,13 @@ impl Cop for YAMLLoad {
             return vec![];
         }
 
+        let msg_loc = node.message_loc().unwrap();
         vec![ctx.offense(
             self.name(),
             "Prefer using `YAML.safe_load` over `YAML.load`.",
             self.severity(),
-            &node.message_loc().unwrap(),
-        )]
+            &msg_loc,
+        ).with_correction(Correction::replace(msg_loc.start_offset(), msg_loc.end_offset(), String::from("safe_load")))]
     }
 }
 

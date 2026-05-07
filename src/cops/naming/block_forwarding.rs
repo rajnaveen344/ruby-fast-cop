@@ -163,7 +163,7 @@ fn anon_correction_edits(
     site_end: usize,
     call_has_parens: bool,
     call_message_end: Option<usize>,
-    args_end: Option<usize>,
+    _args_end: Option<usize>,
 ) -> Vec<Edit> {
     let mut edits = Vec::new();
     // Replace `&name` with `&`
@@ -171,12 +171,11 @@ fn anon_correction_edits(
     // Add parens if needed
     if !call_has_parens {
         if let Some(msg_end) = call_message_end {
-            // Replace from msg_end to site_start with `(` (removes the space between method and args)
-            // e.g. `bar &block` → `bar(&)`: replace bytes [3..4] (space) with `(`
-            edits.push(Edit { start_offset: msg_end, end_offset: site_start, replacement: "(".into() });
-            // Insert `)` after the last arg (or end of block arg if no positional args)
-            let close_at = args_end.unwrap_or(site_end);
-            edits.push(Edit { start_offset: close_at, end_offset: close_at, replacement: ")".into() });
+            // Replace single space at msg_end with `(` (preserves positional args between)
+            // e.g. `bar &block` → `bar(&)`, `baz qux, &block` → `baz(qux, &)`
+            edits.push(Edit { start_offset: msg_end, end_offset: msg_end + 1, replacement: "(".into() });
+            // Insert `)` after the block arg end
+            edits.push(Edit { start_offset: site_end, end_offset: site_end, replacement: ")".into() });
         }
     }
     edits
@@ -189,15 +188,14 @@ fn explicit_correction_edits(
     name: &str,
     call_has_parens: bool,
     call_message_end: Option<usize>,
-    args_end: Option<usize>,
+    _args_end: Option<usize>,
 ) -> Vec<Edit> {
     let mut edits = Vec::new();
     edits.push(Edit { start_offset: site_start, end_offset: site_end, replacement: format!("&{}", name) });
     if !call_has_parens {
         if let Some(msg_end) = call_message_end {
-            edits.push(Edit { start_offset: msg_end, end_offset: site_start, replacement: "(".into() });
-            let close_at = args_end.unwrap_or(site_end);
-            edits.push(Edit { start_offset: close_at, end_offset: close_at, replacement: ")".into() });
+            edits.push(Edit { start_offset: msg_end, end_offset: msg_end + 1, replacement: "(".into() });
+            edits.push(Edit { start_offset: site_end, end_offset: site_end, replacement: ")".into() });
         }
     }
     edits
