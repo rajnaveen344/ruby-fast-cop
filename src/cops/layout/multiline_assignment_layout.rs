@@ -6,7 +6,7 @@
 //! Ported from `rubocop/cop/layout/multiline_assignment_layout.rb`.
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::{Node, Visit};
 
 const COP_NAME: &str = "Layout/MultilineAssignmentLayout";
@@ -228,25 +228,30 @@ impl<'a> Visitor<'a> {
                 }
                 // Offense range: assignment node -- but truncated to the assignment node
                 // (matches RuboCop `add_offense(node)` which uses the whole node range).
+                // Correction: insert newline after `=`
+                let correction = Correction::insert(op_off + 1, "\n".to_string());
                 self.offenses.push(self.ctx.offense_with_range(
                     COP_NAME,
                     NEW_LINE_MSG,
                     Severity::Convention,
                     ass_start,
                     ass_end,
-                ));
+                ).with_correction(correction));
             }
             Style::SameLine => {
                 if op_line == rhs_line {
                     return;
                 }
+                // Correction: replace whitespace+newline between `=` and value with single space
+                let value_start = value_loc.start_offset();
+                let correction = Correction::replace(op_off + 1, value_start, " ".to_string());
                 self.offenses.push(self.ctx.offense_with_range(
                     COP_NAME,
                     SAME_LINE_MSG,
                     Severity::Convention,
                     ass_start,
                     ass_end,
-                ));
+                ).with_correction(correction));
             }
         }
     }

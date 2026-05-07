@@ -1,6 +1,6 @@
 use crate::cops::{CheckContext, Cop};
 use crate::helpers::source::*;
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::Visit;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -183,13 +183,22 @@ impl<'a> EndAlignmentVisitor<'a> {
                 end_line, end_col, align_target, kw_line, expected_col
             );
             let location = crate::offense::Location::from_offsets(source, end_off, end_loc.end_offset());
+            let ls = self.ctx.line_start(end_off);
+            let leading = &source[ls..end_off];
+            let exp = expected_col as usize;
+            let correction = if leading.bytes().all(|b| b == b' ' || b == b'\t') {
+                Correction::replace(ls, end_off, " ".repeat(exp))
+            } else {
+                // `end` not on its own line — move it to a new line
+                Correction::replace(end_off, end_off + 3, format!("\n{}end", " ".repeat(exp)))
+            };
             self.offenses.push(Offense::new(
                 "Layout/EndAlignment",
                 message,
                 Severity::Convention,
                 location,
                 self.ctx.filename,
-            ));
+            ).with_correction(correction));
         }
     }
 

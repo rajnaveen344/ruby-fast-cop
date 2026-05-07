@@ -2,7 +2,7 @@
 
 use crate::cops::{CheckContext, Cop};
 use crate::helpers::source::col_at_offset;
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::{Node, Visit};
 
 pub struct ElseAlignment {
@@ -127,13 +127,15 @@ impl<'a> ElseVisitor<'a> {
             off,
             kw_loc.end_offset(),
         );
+        let ls = self.ctx.line_start(off);
+        let correction = Correction::replace(ls, off, " ".repeat(target_col));
         self.offenses.push(Offense::new(
             "Layout/ElseAlignment",
             message,
             Severity::Convention,
             location,
             self.ctx.filename,
-        ));
+        ).with_correction(correction));
     }
 
     /// Build a Base from a keyword location, looking for a same-line assignment LHS.

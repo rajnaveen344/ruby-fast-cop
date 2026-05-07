@@ -4,7 +4,7 @@
 
 use crate::cops::{CheckContext, Cop};
 use crate::helpers::source::col_at_offset;
-use crate::offense::{Location, Offense, Severity};
+use crate::offense::{Correction, Location, Offense, Severity};
 use ruby_prism::{Node, Visit};
 
 const MSG_INDENT: &str = "Indent `)` to column %EXP% (not %ACT%)";
@@ -146,13 +146,15 @@ impl<'a> Visitor<'a> {
                 .replace("%ACT%", &rp_col.to_string())
         };
         let loc = Location::from_offsets(self.ctx.source, rp_off, rparen_loc.end_offset());
+        let rp_line_start = self.ctx.line_start(rp_off);
+        let correction = Correction::replace(rp_line_start, rp_off, " ".repeat(expected));
         self.offenses.push(Offense::new(
             "Layout/ClosingParenthesisIndentation",
             msg,
             Severity::Convention,
             loc,
             self.ctx.filename,
-        ));
+        ).with_correction(correction));
     }
 
     fn check_no_elements(&mut self, node_start_off: usize, lparen_loc: &ruby_prism::Location, rparen_loc: &ruby_prism::Location) {
@@ -180,13 +182,15 @@ impl<'a> Visitor<'a> {
                 .replace("%ACT%", &rp_col.to_string())
         };
         let loc = Location::from_offsets(self.ctx.source, rp_off, rparen_loc.end_offset());
+        let rp_line_start = self.ctx.line_start(rp_off);
+        let correction = Correction::replace(rp_line_start, rp_off, " ".repeat(expected));
         self.offenses.push(Offense::new(
             "Layout/ClosingParenthesisIndentation",
             msg,
             Severity::Convention,
             loc,
             self.ctx.filename,
-        ));
+        ).with_correction(correction));
     }
 
     fn check_call(&mut self, node: &ruby_prism::CallNode) {

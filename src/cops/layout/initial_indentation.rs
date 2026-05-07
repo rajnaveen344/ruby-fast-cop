@@ -4,7 +4,7 @@
 //! Ported from: https://github.com/rubocop/rubocop/blob/master/lib/rubocop/cop/layout/initial_indentation.rb
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 
 #[derive(Default)]
 pub struct InitialIndentation;
@@ -69,12 +69,14 @@ impl Cop for InitialIndentation {
         let token_abs_end = token_abs_start + token_len;
 
         let msg = "Indentation of first line in file detected.";
+        // Correction: delete all whitespace from start of first code line up to (not including) the token
+        let ws_start = first_code_line_abs; // after BOM if any — already accounted for by bom_len above
+        let correction = Correction::delete(ws_start, token_abs_start);
         let offense = ctx.offense_with_range(
             self.name(), msg, self.severity(),
             token_abs_start,
             token_abs_end,
-        );
-        // Note: correction not implemented (RuboCop removes leading whitespace before the token)
+        ).with_correction(correction);
 
         vec![offense]
     }
