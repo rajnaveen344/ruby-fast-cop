@@ -101,16 +101,14 @@ Top unwired cops by failing-correction count (from `cargo test --test tester` st
 
 High cop count ≠ prod-ready. Gaps before drop-in RuboCop parity:
 
-1. **Autocorrect coverage** — 7,710 / 11,217 corrections wired (69%). 157 cops still partial/unwired. Target ≥90%. **(active workstream)**
+1. **Autocorrect coverage** — 9,925 / 11,217 corrections wired (88%). ~80 cops still partial/unwired (1,258 Style, 34 Layout). Target ≥90%. **(active workstream)**
 2. **CLI incomplete** — `--only`/`--except`, `-f json`/`-f emacs`, `--parallel` unchecked.
 3. **Config edges** — `inherit_from`, `inherit_gem`, glob `Include`/`Exclude`, brace-expand partial. Fuzz against Rails/Discourse/Shopify `.rubocop.yml`.
 4. **No real-world corpus** — 28k tests all from RuboCop specs. Run 3+ OSS codebases, diff vs RuboCop (target ±1% parity).
-5. **Hard cops skipped** — Style/FormatString, Bundler/OrderedGems.
-6. **Pending + Disabled** — 210 opt-in cops. Priority after enabled-default = 100%.
-7. **No dogfooding** — not self-hosted; no CI lint on real Ruby.
-8. **LSP unvalidated** — library API exists; no editor exercises E2E.
-9. **No benchmarks** — "50-100x" target not measured. Need repro suite vs RuboCop.
-10. **Not released** — no `cargo publish`, Homebrew formula, versioned binaries, 1.0 tag.
+5. **No dogfooding** — not self-hosted; no CI lint on real Ruby.
+6. **LSP unvalidated** — library API exists; no editor exercises E2E.
+7. **No benchmarks** — "50-100x" target not measured. Need repro suite vs RuboCop.
+8. **Not released** — no `cargo publish`, Homebrew formula, versioned binaries, 1.0 tag.
 
 Stages: **alpha (internal)** → close 1/2/3 → **beta** → close 4/5/9/10 → **1.0**.
 
