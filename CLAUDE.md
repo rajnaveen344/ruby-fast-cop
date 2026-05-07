@@ -97,20 +97,66 @@ Top unwired cops by failing-correction count (from `cargo test --test tester` st
 - **Cluster 5 — dead-code removers**: `Lint/UselessAssignment` (63) + `Lint/LiteralAsCondition` (131). Delete or simplify based on liveness.
 - **Solo big lifts**: `Style/ConditionalAssignment` (919) and `Style/AccessModifierDeclarations` (209) — too custom for cluster delegation; hand-wire one cop at a time.
 
-## Production-readiness gaps
+## Production-readiness roadmap
 
-High cop count ≠ prod-ready. Gaps before drop-in RuboCop parity:
+Current state: **alpha-internal**. 606/606 cops implemented, 9,925/11,217 (88%) autocorrect wired, 28k synthetic tests green.
 
-1. **Autocorrect coverage** — 9,925 / 11,217 corrections wired (88%). ~80 cops still partial/unwired (1,258 Style, 34 Layout). Target ≥90%. **(active workstream)**
-2. **CLI incomplete** — `--only`/`--except`, `-f json`/`-f emacs`, `--parallel` unchecked.
-3. **Config edges** — `inherit_from`, `inherit_gem`, glob `Include`/`Exclude`, brace-expand partial. Fuzz against Rails/Discourse/Shopify `.rubocop.yml`.
-4. **No real-world corpus** — 28k tests all from RuboCop specs. Run 3+ OSS codebases, diff vs RuboCop (target ±1% parity).
-5. **No dogfooding** — not self-hosted; no CI lint on real Ruby.
-6. **LSP unvalidated** — library API exists; no editor exercises E2E.
-7. **No benchmarks** — "50-100x" target not measured. Need repro suite vs RuboCop.
-8. **Not released** — no `cargo publish`, Homebrew formula, versioned binaries, 1.0 tag.
+### Phase 1 — public alpha (1-2w)
 
-Stages: **alpha (internal)** → close 1/2/3 → **beta** → close 4/5/9/10 → **1.0**.
+Goal: outsider can run on their codebase without embarrassing divergence from RuboCop.
+
+1. **Autocorrect ≥90%** — 196 more wired clears the bar. Top targets:
+   - `Style/ConditionalAssignment` (919, solo big-lift) — would jump us to 96% in one cop.
+   - Style small-tail (~70 cops × 1-10 corrections each, ~340 total).
+   - Layout 34 — mostly multi-pass-conflict residuals (FirstArgumentIndentation 17, LineLength 8); document as known.
+2. **Real-world corpus parity** — pick 3 OSS Ruby repos (Rails, Discourse, Shopify, Mastodon, fastlane). Run both `rubocop` and `ruby-fast-cop`; diff offense counts per cop. Target ±1% parity. Will surface parser edge cases, config inheritance gaps, encoding/line-ending bugs.
+3. **Config edges** — `inherit_from`, `inherit_gem`, glob `Include`/`Exclude`, brace-expand. Likely blockers for #2.
+
+Exit: parity diff ≤1% on 3 corpora, autocorrect ≥90%, no parser crashes.
+
+### Phase 2 — beta (2-3w)
+
+Goal: editor-integratable, scriptable, faster than RuboCop on benchmarks.
+
+4. **CLI completeness** — `--only`/`--except`/`--require`, formatters (`-f json`/`-f emacs`/`-f github`/`-f junit`), `--parallel`, `--cache`, `--auto-gen-config`, `-a`/`-A` wired through library API.
+5. **LSP E2E** — exercise via VS Code Ruby LSP / Zed / Neovim. Validate diagnostics, code-actions, formatting-on-save. Likely uncovers incremental-parse bugs.
+6. **Benchmarks** — repro suite vs RuboCop on Phase-1 corpora. Publish: parse-only, lint-only, lint+autocorrect, cold vs warm, single-file vs whole-repo. Target 50-100x. Decide ship-vs-chase if actual is 20x.
+7. **Dogfooding** — `.rubocop.yml` for project's own scripts (`.claude/skills/*/scripts/*.rb`); wire CI gate.
+
+Exit: editor diagnostics work, benchmarks published, CI gating on self-lint.
+
+### Phase 3 — 1.0 release (1-2w)
+
+Goal: anyone can `brew install` / `cargo install` and adopt.
+
+8. **API stability** — finalize public lib surface (`check_source`, `check_and_correct`, `Config`, `Offense`, `Correction`). Mark internals `pub(crate)`. `cargo doc`.
+9. **Release artifacts** — `cargo publish` (crate + bin), Homebrew formula, prebuilt binaries (mac arm64/x86, linux x86/arm, windows) via GHA, npm wrapper (Ruff pattern) for editor adoption.
+10. **Docs site** — README quickstart, RuboCop migration guide (config compat), per-cop docs (auto-gen from TOML), CHANGELOG.
+11. **1.0 tag** — semver lock, deprecation policy, security-disclosure path.
+
+### Out-of-band
+
+- Architectural refactors (next section) — opportunistic when touching adjacent code.
+- Pending/Disabled cop autocorrect — implemented but partial wiring; lower priority.
+- Plugin loading (rubocop-rails/rspec/performance) — post-1.0 ecosystem play.
+
+### Critical-path estimate
+
+| Phase | Time | Risk |
+|---|---|---|
+| 1 — public alpha | 1-2w | corpus parity may surface deep bugs |
+| 2 — beta | 2-3w | benchmark numbers determine perf strategy |
+| 3 — 1.0 | 1-2w | mostly packaging, low risk |
+| **Total** | **4-7w** | |
+
+Biggest unknown: corpus diff. If >5% per-cop, debt blows up. Mitigate by diffing per-cop and tackling worst offenders first.
+
+### Recommended next concrete actions (in order)
+
+1. Wire `Style/ConditionalAssignment` (solo, +919). Single cop → 96% autocorrect.
+2. Wire Style small-tail in 3-parallel-Sonnet-agent batches (group by correction shape).
+3. Set up corpus parity harness against one repo (e.g. Discourse) — `script/parity-diff.sh REPO`. Capture per-cop offense-count diff JSON.
+4. Iterate Phase 1 exit criteria.
 
 ## Planned architectural refactors
 
