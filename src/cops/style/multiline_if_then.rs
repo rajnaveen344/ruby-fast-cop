@@ -3,7 +3,7 @@
 //! Checks for uses of the `then` keyword in multi-line `if`/`unless`/`elsif` statements.
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Edit, Offense, Severity};
 use ruby_prism::Visit;
 
 const COP_NAME: &str = "Style/MultilineIfThen";
@@ -89,13 +89,16 @@ impl<'a> MultilineIfThenVisitor<'a> {
         let kw = self.keyword_of(node);
         let msg = format!("Do not use `then` for multi-line `{kw}`.");
 
+        // Remove `then`: include space or newline before `then` to avoid trailing whitespace
+        let correction = build_then_correction(&then_loc, self.ctx.source);
+
         let offense = self.ctx.offense_with_range(
             COP_NAME,
             &msg,
             Severity::Convention,
             then_loc.start_offset(),
             then_loc.end_offset(),
-        );
+        ).with_correction(correction);
         self.offenses.push(offense);
     }
 
@@ -134,13 +137,14 @@ impl<'a> MultilineIfThenVisitor<'a> {
         }
 
         let msg = "Do not use `then` for multi-line `unless`.";
+        let correction = build_then_correction(&then_loc, self.ctx.source);
         let offense = self.ctx.offense_with_range(
             COP_NAME,
             msg,
             Severity::Convention,
             then_loc.start_offset(),
             then_loc.end_offset(),
-        );
+        ).with_correction(correction);
         self.offenses.push(offense);
     }
 
@@ -152,6 +156,26 @@ impl<'a> MultilineIfThenVisitor<'a> {
         } else {
             "if"
         }
+    }
+}
+
+fn build_then_correction(then_loc: &ruby_prism::Location, source: &str) -> Correction {
+    let then_start = then_loc.start_offset();
+    let then_end = then_loc.end_offset();
+    let bytes = source.as_bytes();
+
+    // If `then` is on its own line (preceded by newline), remove the whole line including the newline before
+    let remove_start = if then_start > 0 && bytes.get(then_start - 1) == Some(&b'\n') {
+        then_start - 1
+    } else if then_start > 0 && bytes.get(then_start - 1) == Some(&b' ') {
+        // Space before `then` (e.g., `if cond then`)
+        then_start - 1
+    } else {
+        then_start
+    };
+
+    Correction {
+        edits: vec![Edit { start_offset: remove_start, end_offset: then_end, replacement: String::new() }],
     }
 }
 

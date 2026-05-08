@@ -4,7 +4,8 @@
 
 use crate::cops::{CheckContext, Cop};
 use crate::node_name;
-use crate::offense::{Offense, Severity};
+use crate::helpers::source::col_at_offset;
+use crate::offense::{Correction, Edit, Offense, Severity};
 use ruby_prism::{Node, Visit};
 
 const COP_NAME: &str = "Style/TrivialAccessors";
@@ -267,10 +268,36 @@ impl<'a> TAVisitor<'a> {
     fn emit(&mut self, node: &ruby_prism::DefNode, kind: &str) {
         let kw = node.def_keyword_loc();
         let msg = format!("Use `attr_{}` to define trivial {} methods.", kind, kind);
+        let is_defs = node.receiver().is_some(); // defs self.foo
+        let method_name_bytes = node.name();
+        let method_name = String::from_utf8_lossy(method_name_bytes.as_slice()).to_string();
+        let attr_name = method_name.trim_end_matches('=');
+        let accessor_src = format!("attr_{} :{}", kind, attr_name);
+
+        let node_start = node.location().start_offset();
+        let node_end = node.location().end_offset();
+
+        let replacement = if is_defs {
+            // class method: replace with class << self\n  indent accessor\nindent end
+            let col = col_at_offset(self.ctx.source, node_start) as usize;
+            let indent = " ".repeat(col);
+            format!("class << self\n{}  {}\n{}end", indent, accessor_src, indent)
+        } else {
+            accessor_src
+        };
+
+        let correction = Correction {
+            edits: vec![Edit {
+                start_offset: node_start,
+                end_offset: node_end,
+                replacement,
+            }],
+        };
+
         self.offenses.push(self.ctx.offense_with_range(
             COP_NAME, &msg, Severity::Convention,
             kw.start_offset(), kw.end_offset(),
-        ));
+        ).with_correction(correction));
     }
 }
 

@@ -3,18 +3,26 @@
 //! Checks for trailing code after the class definition line.
 
 use crate::cops::{CheckContext, Cop};
+use crate::cops::style::trailing_body_on_method_definition::trailing_body_correction;
 use crate::offense::{Offense, Severity};
 use ruby_prism::{ClassNode, SingletonClassNode, Node, Visit};
 
 const COP_NAME: &str = "Style/TrailingBodyOnClass";
 const MSG: &str = "Place the first line of class body on its own line.";
 
-#[derive(Default)]
-pub struct TrailingBodyOnClass;
+pub struct TrailingBodyOnClass {
+    indent_width: usize,
+}
+
+impl Default for TrailingBodyOnClass {
+    fn default() -> Self {
+        Self { indent_width: 2 }
+    }
+}
 
 impl TrailingBodyOnClass {
-    pub fn new() -> Self {
-        Self
+    pub fn new(indent_width: usize) -> Self {
+        Self { indent_width }
     }
 }
 
@@ -30,6 +38,7 @@ impl Cop for TrailingBodyOnClass {
     fn check_program(&self, node: &ruby_prism::ProgramNode, ctx: &CheckContext) -> Vec<Offense> {
         let mut visitor = TrailingBodyOnClassVisitor {
             ctx,
+            indent_width: self.indent_width,
             offenses: Vec::new(),
         };
         visitor.visit(&node.as_node());
@@ -39,6 +48,7 @@ impl Cop for TrailingBodyOnClass {
 
 struct TrailingBodyOnClassVisitor<'a> {
     ctx: &'a CheckContext<'a>,
+    indent_width: usize,
     offenses: Vec<Offense>,
 }
 
@@ -73,13 +83,9 @@ impl<'a> TrailingBodyOnClassVisitor<'a> {
             return;
         }
 
-        self.offenses.push(self.ctx.offense_with_range(
-            COP_NAME,
-            MSG,
-            Severity::Convention,
-            first_start,
-            first_end,
-        ));
+        let correction = trailing_body_correction(self.ctx, def_start, first_start, self.indent_width);
+        let offense = self.ctx.offense_with_range(COP_NAME, MSG, Severity::Convention, first_start, first_end);
+        self.offenses.push(offense.with_correction(correction));
     }
 
     fn first_statement(&self, body: &Node) -> Option<(usize, usize)> {
@@ -117,6 +123,11 @@ impl Visit<'_> for TrailingBodyOnClassVisitor<'_> {
     }
 }
 
-crate::register_cop!("Style/TrailingBodyOnClass", |_cfg| {
-    Some(Box::new(TrailingBodyOnClass::new()))
+crate::register_cop!("Style/TrailingBodyOnClass", |cfg| {
+    let indent_width = cfg
+        .get_cop_config("Layout/IndentationWidth")
+        .and_then(|c| c.raw.get("Width"))
+        .and_then(|v| v.as_i64())
+        .unwrap_or(2) as usize;
+    Some(Box::new(TrailingBodyOnClass::new(indent_width)))
 });

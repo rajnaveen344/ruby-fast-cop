@@ -4,7 +4,7 @@
 
 use crate::cops::{CheckContext, Cop};
 use crate::node_name;
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::CallNode;
 
 #[derive(Default)]
@@ -57,7 +57,13 @@ impl Cop for PreferredHashMethods {
         };
 
         let msg = format!("Use `Hash#{}` instead of `Hash#{}`.", good, bad);
-        vec![ctx.offense(self.name(), &msg, self.severity(), &method_loc)]
+        let correction = Correction::replace(
+            method_loc.start_offset(),
+            method_loc.end_offset(),
+            good.to_string(),
+        );
+        vec![ctx.offense(self.name(), &msg, self.severity(), &method_loc)
+            .with_correction(correction)]
     }
 }
 

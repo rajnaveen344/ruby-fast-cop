@@ -4,7 +4,7 @@
 
 use crate::cops::{CheckContext, Cop};
 use crate::node_name;
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Edit, Offense, Severity};
 use ruby_prism::Node;
 
 const MSG: &str = "Prefer modules to classes with only class methods.";
@@ -154,7 +154,76 @@ impl Cop for StaticClass {
         let path = node.constant_path();
         let start = kw.start_offset();
         let end = path.location().end_offset();
-        vec![ctx.offense_with_range(self.name(), MSG, Severity::Convention, start, end)]
+
+        let correction = Self::build_correction(node, ctx);
+        let offense = ctx.offense_with_range(self.name(), MSG, Severity::Convention, start, end);
+        vec![offense.with_correction(correction)]
+    }
+}
+
+impl StaticClass {
+    fn build_correction(node: &ruby_prism::ClassNode, ctx: &CheckContext) -> Correction {
+        let mut edits: Vec<Edit> = Vec::new();
+
+        // 1. Replace `class` keyword with `module`
+        let kw = node.class_keyword_loc();
+        edits.push(Edit {
+            start_offset: kw.start_offset(),
+            end_offset: kw.end_offset(),
+            replacement: "module".to_string(),
+        });
+
+        // 2. Insert "\nmodule_function\n" after the class name
+        // RuboCop: insert_after(name_loc, "\nmodule_function\n")
+        // The original \n after name stays, so result is: name\nmodule_function\n\n body
+        let name_end = node.constant_path().location().end_offset();
+        edits.push(Edit {
+            start_offset: name_end,
+            end_offset: name_end,
+            replacement: "\nmodule_function\n".to_string(),
+        });
+
+        // 3. Process body elements: fix defs and sclass
+        let elements = Self::class_elements(node.body());
+        for child in &elements {
+            if let Some(def_node) = child.as_def_node() {
+                // def self.method → remove `self.` (receiver start to name start)
+                if let Some(recv) = def_node.receiver() {
+                    if matches!(recv, Node::SelfNode { .. }) {
+                        // Remove from receiver start to method name start
+                        let recv_start = recv.location().start_offset();
+                        let name_start = def_node.name_loc().start_offset();
+                        edits.push(Edit {
+                            start_offset: recv_start,
+                            end_offset: name_start,
+                            replacement: String::new(),
+                        });
+                    }
+                }
+            } else if let Some(sclass) = child.as_singleton_class_node() {
+                // class << self ... end
+                // Remove "class << self" (keyword_loc start to expression end+1 for newline?)
+                // RuboCop: remove range_between(node.loc.keyword.begin_pos, node.identifier.source_range.end_pos)
+                // and remove node.loc.end
+                let kw_start = sclass.class_keyword_loc().start_offset();
+                let expr_end = sclass.expression().location().end_offset();
+                // Remove "class << self"
+                edits.push(Edit {
+                    start_offset: kw_start,
+                    end_offset: expr_end,
+                    replacement: String::new(),
+                });
+                // Remove "end" keyword
+                let end_loc = sclass.end_keyword_loc();
+                edits.push(Edit {
+                    start_offset: end_loc.start_offset(),
+                    end_offset: end_loc.end_offset(),
+                    replacement: String::new(),
+                });
+            }
+        }
+
+        Correction { edits }
     }
 }
 

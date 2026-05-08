@@ -1,6 +1,6 @@
 use crate::cops::{CheckContext, Cop};
 use crate::node_name;
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Edit, Offense, Severity};
 use ruby_prism::Node;
 
 #[derive(Default)]
@@ -80,7 +80,11 @@ impl ClassMethods {
             "Use `self.{}` instead of `{}.{}`.",
             method_name, class_name_src, method_name
         );
+        let correction = Correction {
+            edits: vec![Edit { start_offset: recv_start, end_offset: recv_end, replacement: "self".to_string() }],
+        };
         ctx.offense_with_range(self.name(), &msg, self.severity(), recv_start, recv_end)
+            .with_correction(correction)
     }
 }
 

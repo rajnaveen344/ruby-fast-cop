@@ -1,5 +1,5 @@
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Edit, Offense, Severity};
 
 const MSG: &str = "Avoid the use of `END` blocks. Use `Kernel#at_exit` instead.";
 
@@ -27,7 +27,16 @@ impl Cop for EndBlock {
         ctx: &CheckContext,
     ) -> Vec<Offense> {
         let loc = node.keyword_loc();
-        vec![ctx.offense(self.name(), MSG, self.severity(), &loc)]
+        let offense = ctx.offense(self.name(), MSG, self.severity(), &loc);
+        // Replace `END` with `at_exit`; keep the block `{ ... }` as-is
+        let correction = Correction {
+            edits: vec![Edit {
+                start_offset: loc.start_offset(),
+                end_offset: loc.end_offset(),
+                replacement: "at_exit".to_string(),
+            }],
+        };
+        vec![offense.with_correction(correction)]
     }
 }
 

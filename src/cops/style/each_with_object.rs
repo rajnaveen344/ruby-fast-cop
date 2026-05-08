@@ -3,8 +3,9 @@
 //! Looks for inject/reduce calls where the accumulator is returned at end.
 
 use crate::cops::{CheckContext, Cop};
+use crate::helpers::source::line_start_offset;
 use crate::node_name;
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Edit, Offense, Severity};
 use ruby_prism::{Node, Visit};
 
 #[derive(Default)]
@@ -54,6 +55,31 @@ impl<'a> Visit<'_> for AssignmentChecker {
         }
         ruby_prism::visit_local_variable_or_write_node(self, node);
     }
+}
+
+/// Collect edits to swap _1↔_2 in all lvar reads in body
+fn collect_numbered_var_swaps(body: &Node, source: &str, edits: &mut Vec<Edit>) {
+    struct V<'a> {
+        source: &'a str,
+        edits: Vec<Edit>,
+    }
+    impl<'a> Visit<'_> for V<'a> {
+        fn visit_local_variable_read_node(&mut self, node: &ruby_prism::LocalVariableReadNode) {
+            let loc = node.location();
+            let text = &self.source[loc.start_offset()..loc.end_offset()];
+            if text == "_1" {
+                self.edits.push(Edit { start_offset: loc.start_offset(), end_offset: loc.end_offset(), replacement: "_2".into() });
+            } else if text == "_2" {
+                self.edits.push(Edit { start_offset: loc.start_offset(), end_offset: loc.end_offset(), replacement: "_1".into() });
+            }
+        }
+    }
+    let mut v = V { source, edits: Vec::new() };
+    match body {
+        Node::StatementsNode { .. } => v.visit_statements_node(&body.as_statements_node().unwrap()),
+        _ => {}
+    }
+    edits.extend(v.edits);
 }
 
 fn accumulator_assigned_in(body: &Node, acc_name: &str) -> bool {
@@ -220,14 +246,104 @@ impl<'a> EachWithObjectVisitor<'a> {
             let start = msg_loc.start_offset();
             let end = msg_loc.end_offset();
             let msg = format!("Use `each_with_object` instead of `{}`.", method_name);
-            self.offenses.push(self.ctx.offense_with_range(
+
+            // Build correction
+            let correction = self.build_block_correction(call, &req_params, &ret);
+
+            let offense = self.ctx.offense_with_range(
                 "Style/EachWithObject",
                 &msg,
                 Severity::Convention,
                 start,
                 end,
-            ));
+            );
+            self.offenses.push(if let Some(c) = correction {
+                offense.with_correction(c)
+            } else {
+                offense
+            });
         }
+    }
+
+    fn build_block_correction(
+        &self,
+        call: &ruby_prism::CallNode,
+        req_params: &[Node],
+        ret_value: &Node,
+    ) -> Option<Correction> {
+        let msg_loc = call.message_loc()?;
+        let source = self.ctx.source;
+        let src_bytes = source.as_bytes();
+
+        let mut edits: Vec<Edit> = Vec::new();
+
+        // 1. Replace selector with each_with_object
+        edits.push(Edit {
+            start_offset: msg_loc.start_offset(),
+            end_offset: msg_loc.end_offset(),
+            replacement: "each_with_object".into(),
+        });
+
+        // 2. Swap params: req_params[0] (acc) ↔ req_params[1] (elem)
+        if req_params.len() == 2 {
+            let p0 = &req_params[0];
+            let p1 = &req_params[1];
+            let p0_src = source[p0.location().start_offset()..p0.location().end_offset()].to_string();
+            let p1_src = source[p1.location().start_offset()..p1.location().end_offset()].to_string();
+            edits.push(Edit {
+                start_offset: p0.location().start_offset(),
+                end_offset: p0.location().end_offset(),
+                replacement: p1_src,
+            });
+            edits.push(Edit {
+                start_offset: p1.location().start_offset(),
+                end_offset: p1.location().end_offset(),
+                replacement: p0_src,
+            });
+        }
+
+        // 3. Remove return value
+        let ret_start = ret_value.location().start_offset();
+        let ret_end = ret_value.location().end_offset();
+        // Check if return value occupies whole line (is only non-whitespace on its line)
+        let line_start = line_start_offset(source, ret_start);
+        let prefix = &source[line_start..ret_start];
+        let is_whole_line = prefix.trim().is_empty() && {
+            // also check nothing significant after ret_end on same line
+            let mut pos = ret_end;
+            while pos < src_bytes.len() && src_bytes[pos] != b'\n' && src_bytes[pos] == b' ' {
+                pos += 1;
+            }
+            pos >= src_bytes.len() || src_bytes[pos] == b'\n'
+        };
+
+        if is_whole_line {
+            // Remove whole line including leading whitespace and trailing newline
+            let line_end = if ret_end < source.len() {
+                // find end of line
+                let mut pos = ret_end;
+                while pos < src_bytes.len() && src_bytes[pos] != b'\n' {
+                    pos += 1;
+                }
+                if pos < src_bytes.len() { pos + 1 } else { pos }
+            } else {
+                ret_end
+            };
+            edits.push(Edit {
+                start_offset: line_start,
+                end_offset: line_end,
+                replacement: String::new(),
+            });
+        } else {
+            // Remove just the return value expression
+            edits.push(Edit {
+                start_offset: ret_start,
+                end_offset: ret_end,
+                replacement: String::new(),
+            });
+        }
+
+        Some(Correction { edits })
     }
 
     fn check_inject_numblock_body(&mut self, call: &ruby_prism::CallNode, body: &Node) {
@@ -266,61 +382,40 @@ impl<'a> EachWithObjectVisitor<'a> {
             let start = msg_loc.start_offset();
             let end = msg_loc.end_offset();
             let msg = format!("Use `each_with_object` instead of `{}`.", method_name);
-            self.offenses.push(self.ctx.offense_with_range(
+            let correction = self.build_numblock_correction(call, body);
+            let offense = self.ctx.offense_with_range(
                 "Style/EachWithObject",
                 &msg,
                 Severity::Convention,
                 start,
                 end,
-            ));
+            );
+            self.offenses.push(if let Some(c) = correction {
+                offense.with_correction(c)
+            } else {
+                offense
+            });
         }
     }
 
-    fn check_inject_numblock(&mut self, call: &ruby_prism::CallNode, body: &Node) {
-        let method_name = node_name!(call);
+    fn build_numblock_correction(&self, call: &ruby_prism::CallNode, body: &Node) -> Option<Correction> {
+        let msg_loc = call.message_loc()?;
+        let source = self.ctx.source;
+        let mut edits: Vec<Edit> = Vec::new();
 
-        let method_arg = if let Some(args) = call.arguments() {
-            let args_list: Vec<_> = args.arguments().iter().collect();
-            if args_list.is_empty() {
-                return;
-            }
-            args_list.into_iter().next().unwrap()
-        } else {
-            return;
-        };
+        // Replace selector
+        edits.push(Edit {
+            start_offset: msg_loc.start_offset(),
+            end_offset: msg_loc.end_offset(),
+            replacement: "each_with_object".into(),
+        });
 
-        if is_simple_literal(&method_arg) {
-            return;
-        }
+        // Swap _1 ↔ _2 in body via lvar read positions
+        collect_numbered_var_swaps(body, source, &mut edits);
 
-        // Return value must be _1
-        let ret = match return_value(body) {
-            Some(v) => v,
-            None => return,
-        };
-
-        let ret_name = match is_lvar_named(&ret) {
-            Some(n) => n,
-            None => return,
-        };
-
-        if ret_name != "_1" {
-            return;
-        }
-
-        if let Some(msg_loc) = call.message_loc() {
-            let start = msg_loc.start_offset();
-            let end = msg_loc.end_offset();
-            let msg = format!("Use `each_with_object` instead of `{}`.", method_name);
-            self.offenses.push(self.ctx.offense_with_range(
-                "Style/EachWithObject",
-                &msg,
-                Severity::Convention,
-                start,
-                end,
-            ));
-        }
+        Some(Correction { edits })
     }
+
 }
 
 impl<'a> Visit<'_> for EachWithObjectVisitor<'a> {

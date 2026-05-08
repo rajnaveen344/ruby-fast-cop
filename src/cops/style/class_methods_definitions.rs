@@ -1,8 +1,9 @@
 //! Style/ClassMethodsDefinitions cop
 
 use crate::cops::{CheckContext, Cop};
+use crate::helpers::source::{col_at_offset, line_start_offset};
 use crate::node_name;
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Edit, Offense, Severity};
 use ruby_prism::Node;
 
 const MSG_SCLASS: &str = "Do not define public methods within class << self.";
@@ -130,6 +131,164 @@ impl Cop for ClassMethodsDefinitions {
     }
 }
 
+/// Get the source range including preceding comment lines.
+fn source_with_preceding_comments(source: &str, node_start: usize, node_end: usize) -> (usize, usize) {
+    let node_line_start = line_start_offset(source, node_start);
+    let source_bytes = source.as_bytes();
+    let mut cursor = node_line_start;
+    loop {
+        if cursor == 0 { break; }
+        let prev_line_end = cursor - 1;
+        let prev_line_start = line_start_offset(source, prev_line_end);
+        let prev_line = &source[prev_line_start..prev_line_end];
+        let trimmed = prev_line.trim();
+        if trimmed.starts_with('#') {
+            cursor = prev_line_start;
+        } else {
+            break;
+        }
+    }
+    (cursor, node_end)
+}
+
+/// Build correction for `class << self ... end` → `def self.x; ...; end` transformations.
+fn build_sclass_correction(
+    sclass: &ruby_prism::SingletonClassNode,
+    def_nodes: &[ruby_prism::Node],
+    source: &str,
+) -> Option<Correction> {
+    // Compute sclass column (for indentation diff)
+    let sclass_node_start = sclass.location().start_offset();
+    let sclass_col = col_at_offset(source, sclass_node_start) as usize;
+    let sclass_end = sclass.location().end_offset();
+    // Edit range starts at the beginning of the sclass line (includes leading indent)
+    let sclass_start = line_start_offset(source, sclass_node_start);
+
+    // Check if sclass only has methods (all children are the def_nodes)
+    let only_methods = sclass_only_methods(sclass);
+
+    // For each def: build rewritten source
+    let mut rewritten_defs: Vec<String> = Vec::new();
+    let mut def_edits: Vec<Edit> = Vec::new(); // to remove defs from sclass
+
+    for def_node in def_nodes {
+        let def = def_node.as_def_node().unwrap();
+        let (range_start, range_end) = source_with_preceding_comments(
+            source,
+            def_node.location().start_offset(),
+            def_node.location().end_offset(),
+        );
+        let def_src = &source[range_start..range_end];
+
+        // Replace `def foo` with `def self.foo`
+        let def_name = String::from_utf8_lossy(def.name().as_slice()).into_owned();
+        let rewritten = def_src.replacen(&format!("def {}", def_name), &format!("def self.{}", def_name), 1);
+
+        // Un-indent by sclass_col + 2 spaces (the additional indent inside class << self)
+        let indent_to_remove = sclass_col + 2;
+        let prefix: String = " ".repeat(indent_to_remove);
+        let unindented: String = rewritten.lines()
+            .map(|line| {
+                if line.starts_with(&prefix) {
+                    &line[indent_to_remove..]
+                } else {
+                    line.trim_start_matches(' ')
+                }
+            })
+            .collect::<Vec<_>>()
+            .join("\n");
+
+        let trimmed = unindented.trim_end_matches('\n').to_string();
+        rewritten_defs.push(trimmed);
+
+        if !only_methods {
+            // Remove the def (including preceding comments) from sclass body
+            // We need to also remove the trailing newline
+            let remove_end = if range_end < source.len() && source.as_bytes()[range_end] == b'\n' {
+                range_end + 1
+            } else {
+                range_end
+            };
+            def_edits.push(Edit {
+                start_offset: range_start,
+                end_offset: remove_end,
+                replacement: String::new(),
+            });
+        }
+    }
+
+    if rewritten_defs.is_empty() {
+        return None;
+    }
+
+    let indent = " ".repeat(sclass_col);
+    let mut edits: Vec<Edit> = Vec::new();
+
+    if only_methods {
+        // Replace entire sclass with rewritten defs
+        // First def gets its leading whitespace stripped
+        if let Some(first) = rewritten_defs.first_mut() {
+            *first = first.trim_start().to_string();
+        }
+        // Add indent to each def
+        let indented_defs: Vec<String> = rewritten_defs.iter()
+            .map(|d| {
+                d.lines()
+                    .map(|l| if l.is_empty() { String::new() } else { format!("{}{}", indent, l) })
+                    .collect::<Vec<_>>()
+                    .join("\n")
+            })
+            .collect();
+
+        let replacement = indented_defs.join(&format!("\n\n"));
+        edits.push(Edit {
+            start_offset: sclass_start,
+            end_offset: sclass_end,
+            replacement,
+        });
+    } else {
+        // Keep sclass (with defs removed), insert rewritten defs after sclass
+        edits.extend(def_edits);
+
+        // Build inserted text
+        let indented_defs: Vec<String> = rewritten_defs.iter()
+            .map(|d| {
+                d.lines()
+                    .map(|l| if l.is_empty() { String::new() } else { format!("{}{}", indent, l) })
+                    .collect::<Vec<_>>()
+                    .join("\n")
+            })
+            .collect();
+
+        let insert_text = format!("\n\n{}", indented_defs.join(&format!("\n\n")));
+        edits.push(Edit {
+            start_offset: sclass_end,
+            end_offset: sclass_end,
+            replacement: insert_text,
+        });
+    }
+
+    Some(Correction { edits })
+}
+
+fn sclass_only_methods(sclass: &ruby_prism::SingletonClassNode) -> bool {
+    let body = match sclass.body() {
+        Some(b) => b,
+        None => return false,
+    };
+    // Single def (no receiver)
+    if let Some(d) = body.as_def_node() {
+        return d.receiver().is_none();
+    }
+    // Statements — all must be defs (no receiver)
+    if let Some(stmts) = body.as_statements_node() {
+        return stmts.body().iter().all(|n| {
+            n.as_def_node().map(|d| d.receiver().is_none()).unwrap_or(false)
+        });
+    }
+    false
+}
+
 struct SClassVisitor<'a> {
     ctx: &'a CheckContext<'a>,
     cop: &'a ClassMethodsDefinitions,
@@ -147,19 +306,23 @@ impl<'a> ruby_prism::Visit<'_> for SClassVisitor<'a> {
                     ClassMethodsDefinitions::node_visibility(&elements, d) == "public"
                 });
                 if all_public {
-                    // Range = `class << self` (sclass class_keyword + expression)
-                    // sclass has class_keyword_loc and expression()
                     let kw = node.class_keyword_loc();
                     let expr = node.expression();
                     let start = kw.start_offset();
                     let end = expr.location().end_offset();
-                    self.offenses.push(self.ctx.offense_with_range(
+                    let correction = build_sclass_correction(node, &defs, self.ctx.source);
+                    let offense = self.ctx.offense_with_range(
                         self.cop.name(),
                         MSG_SCLASS,
                         Severity::Convention,
                         start,
                         end,
-                    ));
+                    );
+                    self.offenses.push(if let Some(c) = correction {
+                        offense.with_correction(c)
+                    } else {
+                        offense
+                    });
                 }
             }
         }

@@ -4,8 +4,8 @@
 //! Ported from: https://github.com/rubocop/rubocop/blob/master/lib/rubocop/cop/style/single_line_block_params.rb
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
-use ruby_prism::Node;
+use crate::offense::{Correction, Edit, Offense, Severity};
+use ruby_prism::{Node, Visit};
 
 const COP_NAME: &str = "Style/SingleLineBlockParams";
 
@@ -148,13 +148,52 @@ impl Cop for SingleLineBlockParams {
             "Name `{}` block params `|{}|`.",
             method_name, joined
         );
-        vec![ctx.offense_with_range(
-            COP_NAME,
-            &message,
-            Severity::Convention,
-            po_start,
-            pc_end,
-        )]
+
+        // Build correction: replace |old_params| with |new_params|, rename lvar uses in body
+        let name_map: Vec<(String, String)> = actual.iter().zip(preferred.iter())
+            .filter(|(a, p)| a != p)
+            .map(|(a, p)| (a.clone(), p.clone()))
+            .collect();
+
+        let mut edits: Vec<Edit> = Vec::new();
+        // Edit 1: replace params
+        edits.push(Edit {
+            start_offset: po_start,
+            end_offset: pc_end,
+            replacement: format!("|{}|", joined),
+        });
+
+        // Edit 2+: replace lvar reads in body
+        if let Some(body) = block.body() {
+            let mut lvar_visitor = LvarVisitor {
+                name_map: &name_map,
+                edits: &mut edits,
+            };
+            lvar_visitor.visit(&body);
+        }
+
+        let correction = Correction { edits };
+        vec![ctx.offense_with_range(COP_NAME, &message, Severity::Convention, po_start, pc_end)
+            .with_correction(correction)]
+    }
+}
+
+struct LvarVisitor<'a> {
+    name_map: &'a Vec<(String, String)>,
+    edits: &'a mut Vec<Edit>,
+}
+
+impl<'a> Visit<'_> for LvarVisitor<'a> {
+    fn visit_local_variable_read_node(&mut self, node: &ruby_prism::LocalVariableReadNode) {
+        let name = String::from_utf8_lossy(node.name().as_slice()).to_string();
+        if let Some((_, new_name)) = self.name_map.iter().find(|(old, _)| old == &name) {
+            self.edits.push(Edit {
+                start_offset: node.location().start_offset(),
+                end_offset: node.location().end_offset(),
+                replacement: new_name.clone(),
+            });
+        }
+        ruby_prism::visit_local_variable_read_node(self, node);
     }
 }
 

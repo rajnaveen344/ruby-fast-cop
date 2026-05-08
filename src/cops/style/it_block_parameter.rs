@@ -5,7 +5,7 @@
 //! `disallow`.
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Edit, Offense, Severity};
 use ruby_prism::{BlockNode, Node, Visit};
 
 const MSG_USE_IT: &str = "Use `it` block parameter.";
@@ -87,6 +87,12 @@ impl<'a> V<'a> {
             "Style/ItBlockParameter", msg, Severity::Convention, start, end,
         ));
     }
+
+    fn push_with_correction(&mut self, start: usize, end: usize, msg: &str, correction: Correction) {
+        self.offenses.push(self.ctx.offense_with_range(
+            "Style/ItBlockParameter", msg, Severity::Convention, start, end,
+        ).with_correction(correction));
+    }
 }
 
 impl<'a> Visit<'_> for V<'a> {
@@ -128,8 +134,18 @@ impl<'a> V<'a> {
                             let only = &requireds[0];
                             if let Some(req) = only.as_required_parameter_node() {
                                 let name = String::from_utf8_lossy(req.name().as_slice()).into_owned();
+                                // block_parameters node location = |arg|
+                                let bp_start = bp.location().start_offset();
+                                let bp_end = bp.location().end_offset();
                                 for (s, e) in find_lvar_reads_matching(&body, self.ctx.source, &name) {
-                                    self.push(s, e, MSG_USE_IT);
+                                    // Each offense: remove block params + replace this lvar ref
+                                    let correction = Correction {
+                                        edits: vec![
+                                            Edit { start_offset: bp_start, end_offset: bp_end, replacement: String::new() },
+                                            Edit { start_offset: s, end_offset: e, replacement: "it".into() },
+                                        ],
+                                    };
+                                    self.push_with_correction(s, e, MSG_USE_IT, correction);
                                 }
                             }
                         }
@@ -150,7 +166,10 @@ impl<'a> V<'a> {
                 if let Some(np) = p.as_numbered_parameters_node() {
                     if np.maximum() == 1 {
                         for (s, e) in find_lvar_reads_matching(&body, self.ctx.source, "_1") {
-                            self.push(s, e, MSG_USE_IT);
+                            let correction = Correction {
+                                edits: vec![Edit { start_offset: s, end_offset: e, replacement: "it".into() }],
+                            };
+                            self.push_with_correction(s, e, MSG_USE_IT, correction);
                         }
                     }
                 }

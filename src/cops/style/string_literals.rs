@@ -181,6 +181,15 @@ impl Cop for StringLiterals {
 
                         // Only run source scan for groups Prism would merge (those with interpolation)
                         if has_interpolation {
+                            // Compute byte offset of start of each line
+                            let mut line_byte_offset = 0usize;
+                            let all_lines: Vec<&str> = ctx.source.lines().collect();
+                            let line_offsets: Vec<usize> = all_lines.iter().map(|l| {
+                                let off = line_byte_offset;
+                                line_byte_offset += l.len() + 1;
+                                off
+                            }).collect();
+
                             for j in start..end {
                                 let trimmed = lines[j].trim().trim_end_matches('\\').trim();
                                 if trimmed.starts_with('"') && !Self::needs_double_quotes(trimmed) {
@@ -189,13 +198,19 @@ impl Cop for StringLiterals {
                                         let col = lines[j].find('"').unwrap_or(0) as u32;
                                         let line_num = (j + 1) as u32;
                                         let str_len = trimmed.chars().count() as u32;
-                                        offenses.push(Offense::new(
+                                        // Compute byte offset for correction
+                                        let str_byte_start = line_offsets.get(j).copied().unwrap_or(0) + col as usize;
+                                        let str_byte_end = str_byte_start + trimmed.len();
+                                        let inner = &trimmed[1..trimmed.len() - 1];
+                                        let replacement = format!("'{}'", inner);
+                                        let offense = Offense::new(
                                             self.name(),
                                             "Prefer single-quoted strings when you don't need string interpolation or special symbols.",
                                             self.severity(),
                                             Location::new(line_num, col, line_num, col + str_len),
                                             ctx.filename,
-                                        ));
+                                        );
+                                        offenses.push(offense.with_correction(Correction::replace(str_byte_start, str_byte_end, replacement)));
                                     }
                                 }
                             }

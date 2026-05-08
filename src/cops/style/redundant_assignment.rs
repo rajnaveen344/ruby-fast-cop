@@ -3,7 +3,7 @@
 //! Checks for redundant assignment before returning.
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Edit, Offense, Severity};
 use ruby_prism::{Node, Visit};
 
 const COP_NAME: &str = "Style/RedundantAssignment";
@@ -43,15 +43,25 @@ struct Visitor<'a> {
 }
 
 impl<'a> Visitor<'a> {
-    fn offense_at(&mut self, start: usize, end: usize) {
+    fn offense_at(&mut self, assign_start: usize, assign_end: usize, rhs_start: usize, rhs_end: usize, ret_start: usize, ret_end: usize) {
+        let rhs_src = self.ctx.source[rhs_start..rhs_end].to_string();
+        let correction = Correction {
+            edits: vec![
+                Edit { start_offset: assign_start, end_offset: assign_end, replacement: rhs_src },
+                Edit { start_offset: ret_start, end_offset: ret_end, replacement: String::new() },
+            ],
+        };
         self.offenses.push(self.ctx.offense_with_range(
-            COP_NAME, MSG, Severity::Convention, start, end,
-        ));
+            COP_NAME, MSG, Severity::Convention, assign_start, assign_end,
+        ).with_correction(correction));
     }
 }
 
+// Offense tuple: (assign_start, assign_end, rhs_start, rhs_end, ret_start, ret_end)
+type OffenseTuple = (usize, usize, usize, usize, usize, usize);
+
 /// Check a method body node for redundant assignments.
-fn check_body(node: &Node, offenses: &mut Vec<(usize, usize)>) {
+fn check_body(node: &Node, offenses: &mut Vec<OffenseTuple>) {
     match node {
         Node::StatementsNode { .. } => {
             let stmts = node.as_statements_node().unwrap();
@@ -65,7 +75,7 @@ fn check_body(node: &Node, offenses: &mut Vec<(usize, usize)>) {
     }
 }
 
-fn check_begin_node(node: &Node, offenses: &mut Vec<(usize, usize)>) {
+fn check_begin_node(node: &Node, offenses: &mut Vec<OffenseTuple>) {
     let begin = node.as_begin_node().unwrap();
     // If has ensure, skip
     if begin.ensure_clause().is_some() {
@@ -82,7 +92,7 @@ fn check_begin_node(node: &Node, offenses: &mut Vec<(usize, usize)>) {
     }
 }
 
-fn check_rescue_chain(rescue: &ruby_prism::RescueNode, offenses: &mut Vec<(usize, usize)>) {
+fn check_rescue_chain(rescue: &ruby_prism::RescueNode, offenses: &mut Vec<OffenseTuple>) {
     if let Some(stmts) = rescue.statements() {
         let body: Vec<_> = stmts.body().iter().collect();
         check_begin_stmts(&body, offenses);
@@ -98,16 +108,20 @@ fn check_rescue_chain(rescue: &ruby_prism::RescueNode, offenses: &mut Vec<(usize
 }
 
 /// Check a list of statements — look for `x = expr; x` pattern and recurse into control flow.
-fn check_begin_stmts(stmts: &[Node], offenses: &mut Vec<(usize, usize)>) {
+fn check_begin_stmts(stmts: &[Node], offenses: &mut Vec<OffenseTuple>) {
     if stmts.len() >= 2 {
         let last = &stmts[stmts.len() - 1];
         let second_last = &stmts[stmts.len() - 2];
 
-        if let Some(name) = lvar_write_name(second_last) {
+        if let Some((name, rhs_start, rhs_end)) = lvar_write_info(second_last) {
             if is_lvar_read_named(last, &name) {
                 offenses.push((
                     second_last.location().start_offset(),
                     second_last.location().end_offset(),
+                    rhs_start,
+                    rhs_end,
+                    last.location().start_offset(),
+                    last.location().end_offset(),
                 ));
                 return;
             }
@@ -119,7 +133,7 @@ fn check_begin_stmts(stmts: &[Node], offenses: &mut Vec<(usize, usize)>) {
     }
 }
 
-fn check_control_flow(node: &Node, offenses: &mut Vec<(usize, usize)>) {
+fn check_control_flow(node: &Node, offenses: &mut Vec<OffenseTuple>) {
     match node {
         Node::IfNode { .. } => check_if(node, offenses),
         Node::CaseNode { .. } => check_case(node, offenses),
@@ -129,7 +143,7 @@ fn check_control_flow(node: &Node, offenses: &mut Vec<(usize, usize)>) {
     }
 }
 
-fn check_if(node: &Node, offenses: &mut Vec<(usize, usize)>) {
+fn check_if(node: &Node, offenses: &mut Vec<OffenseTuple>) {
     let if_node = node.as_if_node().unwrap();
     // Skip modifier/ternary
     if if_node.end_keyword_loc().is_none() {
@@ -151,7 +165,7 @@ fn check_if(node: &Node, offenses: &mut Vec<(usize, usize)>) {
     }
 }
 
-fn check_case(node: &Node, offenses: &mut Vec<(usize, usize)>) {
+fn check_case(node: &Node, offenses: &mut Vec<OffenseTuple>) {
     let case = node.as_case_node().unwrap();
     for when in case.conditions().iter() {
         if let Some(when_node) = when.as_when_node() {
@@ -169,7 +183,7 @@ fn check_case(node: &Node, offenses: &mut Vec<(usize, usize)>) {
     }
 }
 
-fn check_case_match(node: &Node, offenses: &mut Vec<(usize, usize)>) {
+fn check_case_match(node: &Node, offenses: &mut Vec<OffenseTuple>) {
     let case = node.as_case_match_node().unwrap();
     for in_pattern in case.conditions().iter() {
         if let Some(in_node) = in_pattern.as_in_node() {
@@ -187,9 +201,11 @@ fn check_case_match(node: &Node, offenses: &mut Vec<(usize, usize)>) {
     }
 }
 
-fn lvar_write_name(node: &Node) -> Option<String> {
+fn lvar_write_info(node: &Node) -> Option<(String, usize, usize)> {
     if let Some(lv) = node.as_local_variable_write_node() {
-        return Some(String::from_utf8_lossy(lv.name().as_slice()).to_string());
+        let name = String::from_utf8_lossy(lv.name().as_slice()).to_string();
+        let rhs = lv.value();
+        return Some((name, rhs.location().start_offset(), rhs.location().end_offset()));
     }
     None
 }
@@ -205,10 +221,10 @@ fn is_lvar_read_named(node: &Node, name: &str) -> bool {
 impl Visit<'_> for Visitor<'_> {
     fn visit_def_node(&mut self, node: &ruby_prism::DefNode) {
         if let Some(body) = node.body() {
-            let mut offenses: Vec<(usize, usize)> = Vec::new();
+            let mut offenses: Vec<OffenseTuple> = Vec::new();
             check_body(&body, &mut offenses);
-            for (start, end) in offenses {
-                self.offense_at(start, end);
+            for (assign_start, assign_end, rhs_start, rhs_end, ret_start, ret_end) in offenses {
+                self.offense_at(assign_start, assign_end, rhs_start, rhs_end, ret_start, ret_end);
             }
         }
         ruby_prism::visit_def_node(self, node);

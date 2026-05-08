@@ -4,7 +4,7 @@
 
 use crate::cops::{CheckContext, Cop};
 use crate::node_name;
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::{Node, Visit};
 
 const COP_NAME: &str = "Style/UnpackFirst";
@@ -122,9 +122,19 @@ impl<'a> UnpackFirstVisitor<'a> {
         let current_src = self.ctx.src(unpack_sel_start, outer_end);
         let msg = format!("Use `unpack1({fmt_src})` instead of `{current_src}`.");
 
+        // Correction: replace (op)unpack(fmt)(access) → (op)unpack1(fmt)
+        let (corr_start, prefix) = if let Some(op_loc) = unpack_call.call_operator_loc() {
+            let op = &self.ctx.source[op_loc.start_offset()..op_loc.end_offset()];
+            (op_loc.start_offset(), op.to_string())
+        } else {
+            (unpack_sel_start, String::new())
+        };
+        let replacement = format!("{}unpack1({})", prefix, fmt_src);
+        let correction = Correction::replace(corr_start, outer_end, replacement);
+
         self.offenses.push(self.ctx.offense_with_range(
             COP_NAME, &msg, Severity::Convention, unpack_sel_start, outer_end,
-        ));
+        ).with_correction(correction));
     }
 }
 

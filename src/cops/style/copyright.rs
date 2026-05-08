@@ -17,11 +17,11 @@ impl Copyright {
         Self { notice, autocorrect_notice }
     }
 
-    /// Build a regex from the notice. RuboCop joins lines (stripped) before
-    /// constructing the regex.
+    /// Build a regex from the notice.
+    /// RuboCop: Regexp.new(notice.sub(/\A\^?#\s?/, ''))
     fn notice_regex(&self) -> Option<Regex> {
-        let joined: String = self.notice.lines().map(|l| l.trim()).collect::<Vec<_>>().join("");
-        Regex::new(&joined).ok()
+        let pattern = self.notice.trim_start_matches('^').trim_start_matches('#').trim_start_matches(' ');
+        Regex::new(pattern).ok()
     }
 }
 
@@ -75,7 +75,9 @@ impl Cop for Copyright {
             } else {
                 comment_re.replace(text, "").to_string()
             };
+            // RuboCop: multiline_notice << token.text.sub(/\A# */, '') << "\n"
             multiline_notice.push_str(&stripped);
+            multiline_notice.push('\n');
             // RuboCop's loop breaks early when the regex matches the single
             // comment text — emulating that, we also early-out.
             if regex.is_match(text) {

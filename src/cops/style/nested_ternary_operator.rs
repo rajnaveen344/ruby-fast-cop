@@ -3,7 +3,7 @@
 //! Flags ternary operators nested inside other ternary operators.
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Edit, Offense, Severity};
 use ruby_prism::{IfNode, Node, Visit};
 
 #[derive(Default)]
@@ -149,20 +149,82 @@ fn recurse_into_node(node: &Node, results: &mut Vec<(usize, usize)>) {
     }
 }
 
+/// Build correction: rewrite outer ternary as if/else
+fn build_ternary_correction(outer: &IfNode, source: &str) -> Option<Correction> {
+    // then_keyword_loc = `?` for ternary
+    let question_loc = outer.then_keyword_loc()?;
+    let cond = outer.predicate();
+    let else_clause = outer.subsequent()?;
+    let else_node = else_clause.as_else_node()?;
+    let colon_loc = else_node.else_keyword_loc();
+
+    // then branch source (strip parentheses if wrapped)
+    let then_src = if let Some(stmts) = outer.statements() {
+        let body: Vec<_> = stmts.body().iter().collect();
+        if body.len() == 1 {
+            let s = &source[body[0].location().start_offset()..body[0].location().end_offset()];
+            // remove_parentheses
+            if s.starts_with('(') && s.ends_with(')') {
+                s[1..s.len()-1].to_string()
+            } else {
+                s.to_string()
+            }
+        } else {
+            return None;
+        }
+    } else {
+        return None;
+    };
+
+    // else branch source
+    let else_src = if let Some(stmts) = else_node.statements() {
+        let body: Vec<_> = stmts.body().iter().collect();
+        if body.len() == 1 {
+            source[body[0].location().start_offset()..body[0].location().end_offset()].to_string()
+        } else {
+            return None;
+        }
+    } else {
+        return None;
+    };
+
+    let cond_src = &source[cond.location().start_offset()..cond.location().end_offset()];
+
+    // Build replacement: `if {cond}\n{then}\nelse\n{else}\nend`
+    let replacement = format!("if {}\n{}\nelse\n{}\nend", cond_src, then_src, else_src);
+
+    let outer_start = outer.location().start_offset();
+    let outer_end = outer.location().end_offset();
+
+    Some(Correction {
+        edits: vec![Edit {
+            start_offset: outer_start,
+            end_offset: outer_end,
+            replacement,
+        }],
+    })
+}
+
 impl<'a> NestedTernaryVisitor<'a> {
-    fn check_ternary_branches(&mut self, node: &IfNode) {
+    fn check_ternary_branches(&mut self, outer: &IfNode) {
+        let mut has_nested = false;
+
         // then branch
-        if let Some(stmts) = node.statements() {
+        if let Some(stmts) = outer.statements() {
             let body: Vec<_> = stmts.body().iter().collect();
             if body.len() == 1 {
                 let mut nested = Vec::new();
                 find_nested_ternaries(&body[0], &mut nested);
-                self.emit_nested(nested);
+                if !nested.is_empty() {
+                    has_nested = true;
+                    self.emit_nested_with_outer(nested, outer);
+                    return; // Only emit correction once per outer
+                }
             }
         }
 
-        // else branch — subsequent is ElseNode or another IfNode
-        if let Some(sub) = node.subsequent() {
+        // else branch
+        if let Some(sub) = outer.subsequent() {
             let mut nested = Vec::new();
             match &sub {
                 Node::ElseNode { .. } => {
@@ -176,23 +238,36 @@ impl<'a> NestedTernaryVisitor<'a> {
                     }
                 }
                 other => {
-                    // Could be another ternary for chained `a ? b : c ? d : e`
                     find_nested_ternaries(other, &mut nested);
                 }
             }
-            self.emit_nested(nested);
+            if !nested.is_empty() {
+                has_nested = true;
+                self.emit_nested_with_outer(nested, outer);
+            }
         }
+
+        let _ = has_nested;
     }
 
-    fn emit_nested(&mut self, nested: Vec<(usize, usize)>) {
-        for (start, end) in nested {
-            self.offenses.push(self.ctx.offense_with_range(
+    fn emit_nested_with_outer(&mut self, nested: Vec<(usize, usize)>, outer: &IfNode) {
+        let correction = build_ternary_correction(outer, self.ctx.source);
+        for (i, (start, end)) in nested.into_iter().enumerate() {
+            let offense = self.ctx.offense_with_range(
                 "Style/NestedTernaryOperator",
                 "Ternary operators must not be nested. Prefer `if` or `else` constructs instead.",
                 Severity::Convention,
                 start,
                 end,
-            ));
+            );
+            // Only first offense gets correction (to avoid multi-edit conflicts)
+            if i == 0 {
+                if let Some(c) = correction.clone() {
+                    self.offenses.push(offense.with_correction(c));
+                    continue;
+                }
+            }
+            self.offenses.push(offense);
         }
     }
 }

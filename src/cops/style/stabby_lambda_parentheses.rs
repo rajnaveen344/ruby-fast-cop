@@ -3,7 +3,7 @@
 //! Checks for parentheses around stabby lambda arguments.
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Edit, Offense, Severity};
 use ruby_prism::{LambdaNode, ProgramNode, Visit};
 
 pub struct StabbyLambdaParentheses {
@@ -38,19 +38,37 @@ impl StabbyLambdaParentheses {
         let bp_loc = bp.location();
 
         if self.require_parens && !has_parens {
+            // Add parens: replace `a,b,c` range with `(a,b,c)`
+            let params_src = &ctx.source[bp_loc.start_offset()..bp_loc.end_offset()];
+            let correction = Correction {
+                edits: vec![Edit {
+                    start_offset: bp_loc.start_offset(),
+                    end_offset: bp_loc.end_offset(),
+                    replacement: format!("({})", params_src),
+                }],
+            };
             Some(ctx.offense(
                 "Style/StabbyLambdaParentheses",
                 "Wrap stabby lambda arguments with parentheses.",
                 Severity::Convention,
                 &bp_loc,
-            ))
+            ).with_correction(correction))
         } else if !self.require_parens && has_parens {
+            // Remove parens: delete opening and closing
+            let open = bp.opening_loc().unwrap();
+            let close = bp.closing_loc().unwrap();
+            let correction = Correction {
+                edits: vec![
+                    Edit { start_offset: close.start_offset(), end_offset: close.end_offset(), replacement: String::new() },
+                    Edit { start_offset: open.start_offset(), end_offset: open.end_offset(), replacement: String::new() },
+                ],
+            };
             Some(ctx.offense(
                 "Style/StabbyLambdaParentheses",
                 "Do not wrap stabby lambda arguments with parentheses.",
                 Severity::Convention,
                 &bp_loc,
-            ))
+            ).with_correction(correction))
         } else {
             None
         }

@@ -4,7 +4,7 @@
 
 use crate::cops::{CheckContext, Cop};
 use crate::node_name;
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Edit, Offense, Severity};
 use ruby_prism::{CallNode, Node};
 
 #[derive(Default)]
@@ -73,7 +73,38 @@ impl Cop for Attr {
         }
         let msg = Self::message(node);
         let method_loc = node.message_loc().unwrap_or_else(|| node.location());
-        vec![ctx.offense(self.name(), &msg, self.severity(), &method_loc)]
+
+        // Build correction
+        let is_accessor = msg.contains("attr_accessor");
+        let replacement = if is_accessor { "attr_accessor" } else { "attr_reader" };
+
+        let mut edits = vec![Edit {
+            start_offset: method_loc.start_offset(),
+            end_offset: method_loc.end_offset(),
+            replacement: replacement.to_string(),
+        }];
+
+        // Remove second boolean arg (true/false) — `attr :name, true` → `attr_accessor :name`
+        if let Some(args) = node.arguments() {
+            let arg_list: Vec<_> = args.arguments().iter().collect();
+            if arg_list.len() == 2 {
+                let second = &arg_list[1];
+                if matches!(second, Node::TrueNode { .. } | Node::FalseNode { .. }) {
+                    // Remove from comma before the arg through end of arg
+                    let first_end = arg_list[0].location().end_offset();
+                    let second_end = second.location().end_offset();
+                    edits.push(Edit {
+                        start_offset: first_end,
+                        end_offset: second_end,
+                        replacement: String::new(),
+                    });
+                }
+            }
+        }
+
+        let correction = Correction { edits };
+        vec![ctx.offense(self.name(), &msg, self.severity(), &method_loc)
+            .with_correction(correction)]
     }
 }
 

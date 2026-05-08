@@ -3,7 +3,8 @@
 //! Checks for presence/absence of braces around hash literal as last array item.
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::helpers::source::{col_at_offset, line_at_offset};
+use crate::offense::{Correction, Edit, Offense, Severity};
 use ruby_prism::{ArrayNode, Node};
 
 #[derive(Clone, Copy, PartialEq)]
@@ -81,13 +82,39 @@ impl HashAsLastArrayItem {
 
                         let start = last.location().start_offset();
                         let end = last.location().end_offset();
+                        let array_start = node.location().start_offset();
+                        let hash_line = line_at_offset(ctx.source, start);
+                        let array_line = line_at_offset(ctx.source, array_start);
+                        let is_single_line = hash_line == line_at_offset(ctx.source, end.saturating_sub(1));
+                        let same_line_as_array = hash_line == array_line;
+
+                        let correction = if is_single_line || same_line_as_array {
+                            // wrap with { and }
+                            Correction {
+                                edits: vec![
+                                    Edit { start_offset: start, end_offset: start, replacement: "{".into() },
+                                    Edit { start_offset: end, end_offset: end, replacement: "}".into() },
+                                ],
+                            }
+                        } else {
+                            // multiline: wrap with {\n  indent and \n  indent}
+                            let col = col_at_offset(ctx.source, start) as usize;
+                            let indent = " ".repeat(col);
+                            Correction {
+                                edits: vec![
+                                    Edit { start_offset: start, end_offset: start, replacement: format!("{{\n{}", indent) },
+                                    Edit { start_offset: end, end_offset: end, replacement: format!("\n{}}}", indent) },
+                                ],
+                            }
+                        };
+
                         vec![ctx.offense_with_range(
                             self.name(),
                             "Wrap hash in `{` and `}`.",
                             self.severity(),
                             start,
                             end,
-                        )]
+                        ).with_correction(correction)]
                     }
                     Node::HashNode { .. } => {
                         // Already has braces — ok
@@ -112,13 +139,55 @@ impl HashAsLastArrayItem {
 
                         let start = last.location().start_offset();
                         let end = last.location().end_offset();
+
+                        // Build correction: remove { and }, plus trailing comma after }
+                        // HashNode opening_loc/closing_loc return Location directly (not Option)
+                        let open_loc = hash.opening_loc();
+                        let close_loc = hash.closing_loc();
+                        let correction = {
+                            let open = open_loc;
+                            let close = close_loc;
+                            let mut edits = Vec::new();
+                            // Remove opening brace
+                            edits.push(Edit {
+                                start_offset: open.start_offset(),
+                                end_offset: open.end_offset(),
+                                replacement: String::new(),
+                            });
+                            // Remove closing brace
+                            edits.push(Edit {
+                                start_offset: close.start_offset(),
+                                end_offset: close.end_offset(),
+                                replacement: String::new(),
+                            });
+                            // Remove trailing comma after the hash (if present)
+                            // scan byte after close.end for comma with surrounding space
+                            let source_bytes = ctx.source.as_bytes();
+                            let mut pos = close.end_offset();
+                            // skip whitespace
+                            while pos < source_bytes.len() && (source_bytes[pos] == b' ' || source_bytes[pos] == b'\t') {
+                                pos += 1;
+                            }
+                            // Actually: RuboCop removes only the immediate trailing `,` after the hash element
+                            // (range_with_surrounding_space from hash's last child end, side: right, resize 1)
+                            // For our purposes: scan after close brace for `,`
+                            if pos < source_bytes.len() && source_bytes[pos] == b',' {
+                                edits.push(Edit {
+                                    start_offset: pos,
+                                    end_offset: pos + 1,
+                                    replacement: String::new(),
+                                });
+                            }
+                            Correction { edits }
+                        };
+
                         vec![ctx.offense_with_range(
                             self.name(),
                             "Omit the braces around the hash.",
                             self.severity(),
                             start,
                             end,
-                        )]
+                        ).with_correction(correction)]
                     }
                     _ => vec![],
                 }

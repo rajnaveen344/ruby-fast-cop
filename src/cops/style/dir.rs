@@ -1,6 +1,6 @@
 use crate::cops::{CheckContext, Cop};
 use crate::node_name;
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::Node;
 
 const MSG: &str = "Use `__dir__` to get an absolute path to the current file's directory.";
@@ -113,7 +113,9 @@ impl Cop for Dir {
             if arg_list.len() == 1 && Self::is_file_dirname_file(&arg_list[0]) {
                 let start = node.location().start_offset();
                 let end = node.location().end_offset();
-                return vec![ctx.offense_with_range(self.name(), MSG, self.severity(), start, end)];
+                let correction = Correction::replace(start, end, "__dir__".to_string());
+                return vec![ctx.offense_with_range(self.name(), MSG, self.severity(), start, end)
+                    .with_correction(correction)];
             }
         }
 
@@ -134,7 +136,9 @@ impl Cop for Dir {
             if arg_list.len() == 1 && Self::is_file_realpath_file(&arg_list[0]) {
                 let start = node.location().start_offset();
                 let end = node.location().end_offset();
-                return vec![ctx.offense_with_range(self.name(), MSG, self.severity(), start, end)];
+                let correction = Correction::replace(start, end, "__dir__".to_string());
+                return vec![ctx.offense_with_range(self.name(), MSG, self.severity(), start, end)
+                    .with_correction(correction)];
             }
         }
 

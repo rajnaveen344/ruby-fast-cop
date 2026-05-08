@@ -4,7 +4,7 @@
 
 use crate::cops::{CheckContext, Cop};
 use crate::node_name;
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::{Node, Visit};
 
 const COP_NAME: &str = "Style/MinMax";
@@ -73,7 +73,9 @@ impl<'a> MinMaxVisitor<'a> {
             );
             let start = node.location().start_offset();
             let end = node.location().end_offset();
-            self.offenses.push(self.ctx.offense_with_range(COP_NAME, &msg, Severity::Convention, start, end));
+            let correction = Correction::replace(start, end, format!("{}.minmax", recv_src));
+            self.offenses.push(self.ctx.offense_with_range(COP_NAME, &msg, Severity::Convention, start, end)
+                .with_correction(correction));
         }
     }
 
@@ -88,7 +90,9 @@ impl<'a> MinMaxVisitor<'a> {
             let msg = format!(
                 "Use `{recv_src}.minmax` instead of `{lhs_src}, {rhs_src}`."
             );
-            self.offenses.push(self.ctx.offense_with_range(COP_NAME, &msg, Severity::Convention, start, end));
+            let correction = Correction::replace(start, end, format!("{}.minmax", recv_src));
+            self.offenses.push(self.ctx.offense_with_range(COP_NAME, &msg, Severity::Convention, start, end)
+                .with_correction(correction));
         }
     }
 

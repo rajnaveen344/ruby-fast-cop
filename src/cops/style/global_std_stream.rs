@@ -1,5 +1,5 @@
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 
 const STD_STREAMS: &[&str] = &["STDOUT", "STDERR", "STDIN"];
 
@@ -64,7 +64,9 @@ impl Cop for GlobalStdStream {
 
         let gvar = Self::gvar_name(&name);
         let msg = format!("Use `{}` instead of `{}`.", gvar, name);
-        vec![ctx.offense_with_range(self.name(), &msg, self.severity(), start, end)]
+        let correction = Correction::replace(start, end, gvar.clone());
+        vec![ctx.offense_with_range(self.name(), &msg, self.severity(), start, end)
+            .with_correction(correction)]
     }
 
     fn check_constant_path(
@@ -96,7 +98,9 @@ impl Cop for GlobalStdStream {
 
         let gvar = Self::gvar_name(&name);
         let msg = format!("Use `{}` instead of `{}`.", gvar, name);
-        vec![ctx.offense_with_range(self.name(), &msg, self.severity(), start, end)]
+        let correction = Correction::replace(start, end, gvar.clone());
+        vec![ctx.offense_with_range(self.name(), &msg, self.severity(), start, end)
+            .with_correction(correction)]
     }
 }
 

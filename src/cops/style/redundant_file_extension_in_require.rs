@@ -1,6 +1,6 @@
 use crate::cops::{CheckContext, Cop};
 use crate::node_name;
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::Node;
 
 const MSG: &str = "Redundant `.rb` file extension detected.";
@@ -57,7 +57,8 @@ impl Cop for RedundantFileExtensionInRequire {
         // `.rb` = 3 chars, plus the closing quote = 4
         let rb_end = str_end - 1; // before closing quote
         let rb_start = rb_end - 3; // `.rb`
-        vec![ctx.offense_with_range(self.name(), MSG, self.severity(), rb_start, rb_end)]
+        let offense = ctx.offense_with_range(self.name(), MSG, self.severity(), rb_start, rb_end);
+        vec![offense.with_correction(Correction::delete(rb_start, rb_end))]
     }
 }
 

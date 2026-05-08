@@ -290,6 +290,19 @@ impl WordArray {
     }
 }
 
+/// Get the raw source text between the quotes of a string node (no unescaping).
+fn string_raw_content<'a>(node: &Node, source: &'a str) -> Option<&'a str> {
+    match node {
+        Node::StringNode { .. } => {
+            let s = node.as_string_node().unwrap();
+            let open_end = s.opening_loc()?.end_offset();
+            let close_start = s.closing_loc()?.start_offset();
+            Some(&source[open_end..close_start])
+        }
+        _ => None,
+    }
+}
+
 fn string_content(node: &Node, source: &str) -> Option<String> {
     match node {
         Node::StringNode { .. } => {
@@ -473,6 +486,19 @@ fn get_delimiters(delimiters: &str) -> (char, char) {
     (open, close)
 }
 
+/// Render raw source (between quotes) for use inside a %w array.
+/// Only escapes delimiter chars; does NOT re-escape backslash sequences.
+fn render_raw_for_percent(raw: &str, open_delim: char, close_delim: char) -> String {
+    let mut rendered = String::with_capacity(raw.len() + 4);
+    for ch in raw.chars() {
+        if ch == open_delim || ch == close_delim {
+            rendered.push('\\');
+        }
+        rendered.push(ch);
+    }
+    rendered
+}
+
 /// Render a string content for use inside a %w/%W array.
 /// Handles escaping of delimiter chars and non-ASCII.
 fn render_for_percent(
@@ -505,9 +531,8 @@ fn render_for_percent(
                 *needs_w_capital = true;
             }
             c if !c.is_ascii() => {
-                // Non-ASCII: encode as \uXXXX for ASCII-safe output
-                rendered.push_str(&format!("\\u{:04X}", c as u32));
-                *needs_w_capital = true;
+                // Non-ASCII: output as-is (RuboCop preserves Unicode chars in %w)
+                rendered.push(c);
             }
             c if c == open_delim || c == close_delim => {
                 // Escape delimiter characters
@@ -586,7 +611,24 @@ fn build_percent_correction(
     let arr_end = node.location().end_offset();
     let arr_src = &source[arr_start..arr_end];
 
-    let has_newline = arr_src.contains('\n');
+    // Check if newlines appear BETWEEN elements (not just inside string content)
+    // Compare end-line of element[i] with start-line of element[i+1].
+    // If they're on the same line, the newline is inside element[i]'s content.
+    let has_inter_element_newlines = elements.windows(2).any(|pair| {
+        let end_line_a = count_lines_to(&source[..pair[0].location().end_offset()]);
+        let start_line_b = count_lines_to(&source[..pair[1].location().start_offset()]);
+        start_line_b > end_line_a
+    });
+
+    // Check if opening bracket is on a separate line from first element
+    // (determines if we need leading/trailing newline in %w output)
+    let bracket_on_own_line = if let Some(first) = elements.first() {
+        let open_line = count_lines_to(&source[..arr_start]);
+        let first_line = count_lines_to(&source[..first.location().start_offset()]);
+        first_line > open_line
+    } else {
+        false
+    };
 
     // Build element representations
     // First check: are all elements simple StringNodes?
@@ -599,7 +641,7 @@ fn build_percent_correction(
 
     let mut needs_w_capital = false;
 
-    let body = if has_newline {
+    let body = if has_inter_element_newlines {
         // Preserve line structure
         build_percent_body_line_preserving(
             source,
@@ -612,15 +654,32 @@ fn build_percent_correction(
         let mut parts: Vec<String> = Vec::with_capacity(elements.len());
         for e in elements {
             let content = string_content(e, source)?;
-            let rendered = render_for_percent(&content, open_delim, close_delim, &mut needs_w_capital);
-            parts.push(rendered);
+            // Check if unescaped content has actual control chars (real \n, \t, etc.)
+            let has_real_control = content.chars().any(|c| c.is_control());
+            if has_real_control {
+                // Use unescaped content, re-escape for %W
+                let rendered = render_for_percent(&content, open_delim, close_delim, &mut needs_w_capital);
+                parts.push(rendered);
+            } else if let Some(raw) = string_raw_content(e, source) {
+                // Use raw source — preserves \t, \n etc. as-is (no double-escaping)
+                // But still check if delimiters need escaping
+                let rendered = render_raw_for_percent(raw, open_delim, close_delim);
+                parts.push(rendered);
+            } else {
+                let rendered = render_for_percent(&content, open_delim, close_delim, &mut needs_w_capital);
+                parts.push(rendered);
+            }
         }
         parts.join(" ")
     };
 
     let prefix = if needs_w_capital { "%W" } else { "%w" };
 
-    let replacement = format!("{}{}{}{}", prefix, open_delim, body, close_delim);
+    let replacement = if has_inter_element_newlines && bracket_on_own_line {
+        format!("{}{}\n{}\n{}", prefix, open_delim, body, close_delim)
+    } else {
+        format!("{}{}{}{}", prefix, open_delim, body, close_delim)
+    };
     Some(Correction::replace(arr_start, arr_end, &replacement))
 }
 

@@ -1,6 +1,6 @@
 use crate::cops::{CheckContext, Cop};
 use crate::node_name;
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Edit, Offense, Severity};
 use ruby_prism::Node;
 
 const MSG: &str = "Use `proc` instead of `Proc.new`.";
@@ -104,7 +104,10 @@ impl Cop for Proc {
         let end = node.message_loc()
             .map(|l| l.end_offset())
             .unwrap_or_else(|| node.location().end_offset());
-        vec![ctx.offense_with_range(self.name(), MSG, self.severity(), start, end)]
+        let correction = Correction {
+            edits: vec![Edit { start_offset: start, end_offset: end, replacement: "proc".to_string() }],
+        };
+        vec![ctx.offense_with_range(self.name(), MSG, self.severity(), start, end).with_correction(correction)]
     }
 }
 

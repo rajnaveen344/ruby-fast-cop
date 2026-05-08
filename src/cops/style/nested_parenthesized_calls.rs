@@ -4,7 +4,7 @@
 
 use crate::cops::{CheckContext, Cop};
 use crate::node_name;
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Edit, Offense, Severity};
 use ruby_prism::{Node, Visit};
 
 const COP_NAME: &str = "Style/NestedParenthesizedCalls";
@@ -152,9 +152,42 @@ impl<'a> NestedParenVisitor<'a> {
             let msg = format!("Add parentheses to nested method call `{nested_src}`.");
             let start = nested.location().start_offset();
             let end = nested.location().end_offset();
-            self.offenses.push(self.ctx.offense_with_range(
-                COP_NAME, &msg, Severity::Convention, start, end,
-            ));
+            let offense = self.ctx.offense_with_range(COP_NAME, &msg, Severity::Convention, start, end);
+            // Correction: insert `(` before first arg, `)` after last arg
+            // args location spans all arguments
+            let correction = if let Some(args_node) = nested.arguments() {
+                let args_list: Vec<_> = args_node.arguments().iter().collect();
+                if let (Some(first_arg), Some(last_arg)) = (args_list.first(), args_list.last()) {
+                    // Find opening paren position: right after the method name selector
+                    // The args start offset may have whitespace before it; insert `(` at selector end
+                    let selector_end = if let Some(msg_loc) = nested.message_loc() {
+                        msg_loc.end_offset()
+                    } else {
+                        first_arg.location().start_offset()
+                    };
+                    // Walk source backwards from first_arg to find actual space before it
+                    // Insert `(` at selector_end, `)` after last_arg end
+                    let args_end = last_arg.location().end_offset();
+                    // Replace from selector_end to args_end: selector_end..first_arg_start = space/backslash-newline
+                    // We need: insert `(` at selector_end, then skip whitespace to args, then append `)`
+                    let first_arg_start = first_arg.location().start_offset();
+                    let correction = Correction { edits: vec![
+                        Edit { start_offset: selector_end, end_offset: first_arg_start, replacement: "(".into() },
+                        Edit { start_offset: args_end, end_offset: args_end, replacement: ")".into() },
+                    ]};
+                    Some(correction)
+                } else {
+                    None
+                }
+            } else {
+                None
+            };
+            let offense = if let Some(c) = correction {
+                offense.with_correction(c)
+            } else {
+                offense
+            };
+            self.offenses.push(offense);
         }
     }
 }

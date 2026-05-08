@@ -3,7 +3,7 @@
 //! Checks for empty parentheses in method definitions with no arguments.
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::DefNode;
 
 #[derive(Default)]
@@ -51,7 +51,8 @@ impl DefWithParentheses {
         let start = lparen_loc.start_offset();
         let end = rparen_loc.end_offset();
         let msg = "Omit the parentheses in defs when the method doesn't accept any arguments.";
-        vec![ctx.offense_with_range(self.name(), msg, self.severity(), start, end)]
+        let offense = ctx.offense_with_range(self.name(), msg, self.severity(), start, end);
+        vec![offense.with_correction(Correction::delete(start, end))]
     }
 }
 

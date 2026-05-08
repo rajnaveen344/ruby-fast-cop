@@ -4,7 +4,7 @@
 
 use crate::cops::{CheckContext, Cop};
 use crate::node_name;
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::Node;
 
 const CLASS_MSG: &str = "Prefer `Time` over `DateTime`.";
@@ -121,7 +121,16 @@ impl Cop for DateTime {
         }
         let start = node.location().start_offset();
         let end = node.location().end_offset();
-        vec![ctx.offense_with_range(self.name(), CLASS_MSG, self.severity(), start, end)]
+        // Correction: replace receiver (DateTime or ::DateTime) with Time or ::Time
+        let recv_start = receiver.location().start_offset();
+        let recv_end = receiver.location().end_offset();
+        let time_replacement = match &receiver {
+            Node::ConstantPathNode { .. } => "::Time".to_string(), // ::DateTime → ::Time
+            _ => "Time".to_string(),
+        };
+        let correction = Correction::replace(recv_start, recv_end, time_replacement);
+        vec![ctx.offense_with_range(self.name(), CLASS_MSG, self.severity(), start, end)
+            .with_correction(correction)]
     }
 }
 

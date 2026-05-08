@@ -1,6 +1,6 @@
 use crate::cops::{CheckContext, Cop};
 use crate::node_name;
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 
 const MSG: &str = "Prefer `Object#%s` over `Object#%s`.";
 
@@ -50,7 +50,13 @@ impl Cop for ClassCheck {
             Some(l) => l,
             None => return vec![],
         };
-        vec![ctx.offense(self.name(), &msg, self.severity(), &sel)]
+        let correction = Correction::replace(
+            sel.start_offset(),
+            sel.end_offset(),
+            prefer.to_string(),
+        );
+        vec![ctx.offense(self.name(), &msg, self.severity(), &sel)
+            .with_correction(correction)]
     }
 }
 

@@ -3,7 +3,7 @@
 //! Checks when `end` of a multi-line method appears on the same line as trailing code.
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::DefNode;
 
 #[derive(Default)]
@@ -48,11 +48,15 @@ impl TrailingMethodEndStatement {
             return vec![];
         }
 
-        // And body must not be at start of line (trivial single-line body)
-        // Actually just check: there's content between body end and end keyword on same line
         // The offense is at the `end` keyword location
         let msg = "Place the end statement of a multi-line method on its own line.";
-        vec![ctx.offense(self.name(), msg, self.severity(), &end_loc)]
+        let offense = ctx.offense(self.name(), msg, self.severity(), &end_loc);
+
+        // Correction: insert `\n{def_col spaces}` before `end`
+        let def_col = ctx.col_of(def_start);
+        let indent = " ".repeat(def_col);
+        let correction = Correction::insert(end_start, format!("\n{indent}"));
+        vec![offense.with_correction(correction)]
     }
 }
 

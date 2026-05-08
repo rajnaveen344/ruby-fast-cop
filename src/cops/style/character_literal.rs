@@ -1,5 +1,5 @@
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Location, Offense, Severity};
+use crate::offense::{Correction, Location, Offense, Severity};
 
 const MSG: &str = "Do not use the character literal - use string literal instead.";
 
@@ -131,9 +131,13 @@ impl Cop for CharacterLiteral {
                                 let literal_len = i - start;
                                 if literal_len >= 2 && literal_len <= 3 {
                                     let loc = Location::from_offsets(source, start, i);
+                                    // Escaped char literal: use double quotes, keep backslash
+                                    let esc_char = bytes[i - 1] as char;
+                                    let replacement = format!("\"\\{}\"", esc_char);
+                                    let correction = Correction::replace(start, i, replacement);
                                     offenses.push(Offense::new(
                                         self.name(), MSG, self.severity(), loc, ctx.filename,
-                                    ));
+                                    ).with_correction(correction));
                                 }
                             }
                         }
@@ -143,9 +147,17 @@ impl Cop for CharacterLiteral {
                         let literal_len = i - start;
                         if literal_len == 2 {
                             let loc = Location::from_offsets(source, start, i);
+                            let ch = bytes[i - 1] as char;
+                            // Use single quotes unless the char is a single-quote (use double)
+                            let replacement = if ch == '\'' {
+                                format!("\"{}\"", ch)
+                            } else {
+                                format!("'{}'", ch)
+                            };
+                            let correction = Correction::replace(start, i, replacement);
                             offenses.push(Offense::new(
                                 self.name(), MSG, self.severity(), loc, ctx.filename,
-                            ));
+                            ).with_correction(correction));
                         }
                     }
                 }

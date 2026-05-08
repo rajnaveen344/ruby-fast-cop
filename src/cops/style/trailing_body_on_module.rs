@@ -3,18 +3,26 @@
 //! Checks for trailing code after the module definition line.
 
 use crate::cops::{CheckContext, Cop};
+use crate::cops::style::trailing_body_on_method_definition::trailing_body_correction;
 use crate::offense::{Offense, Severity};
 use ruby_prism::{ModuleNode, Node, Visit};
 
 const COP_NAME: &str = "Style/TrailingBodyOnModule";
 const MSG: &str = "Place the first line of module body on its own line.";
 
-#[derive(Default)]
-pub struct TrailingBodyOnModule;
+pub struct TrailingBodyOnModule {
+    indent_width: usize,
+}
+
+impl Default for TrailingBodyOnModule {
+    fn default() -> Self {
+        Self { indent_width: 2 }
+    }
+}
 
 impl TrailingBodyOnModule {
-    pub fn new() -> Self {
-        Self
+    pub fn new(indent_width: usize) -> Self {
+        Self { indent_width }
     }
 }
 
@@ -30,6 +38,7 @@ impl Cop for TrailingBodyOnModule {
     fn check_program(&self, node: &ruby_prism::ProgramNode, ctx: &CheckContext) -> Vec<Offense> {
         let mut visitor = TrailingBodyOnModuleVisitor {
             ctx,
+            indent_width: self.indent_width,
             offenses: Vec::new(),
         };
         visitor.visit(&node.as_node());
@@ -39,6 +48,7 @@ impl Cop for TrailingBodyOnModule {
 
 struct TrailingBodyOnModuleVisitor<'a> {
     ctx: &'a CheckContext<'a>,
+    indent_width: usize,
     offenses: Vec<Offense>,
 }
 
@@ -70,13 +80,9 @@ impl<'a> TrailingBodyOnModuleVisitor<'a> {
             return;
         }
 
-        self.offenses.push(self.ctx.offense_with_range(
-            COP_NAME,
-            MSG,
-            Severity::Convention,
-            first_start,
-            first_end,
-        ));
+        let correction = trailing_body_correction(self.ctx, def_start, first_start, self.indent_width);
+        let offense = self.ctx.offense_with_range(COP_NAME, MSG, Severity::Convention, first_start, first_end);
+        self.offenses.push(offense.with_correction(correction));
     }
 
     fn first_statement(&self, body: &Node) -> Option<(usize, usize)> {
@@ -108,6 +114,11 @@ impl Visit<'_> for TrailingBodyOnModuleVisitor<'_> {
     }
 }
 
-crate::register_cop!("Style/TrailingBodyOnModule", |_cfg| {
-    Some(Box::new(TrailingBodyOnModule::new()))
+crate::register_cop!("Style/TrailingBodyOnModule", |cfg| {
+    let indent_width = cfg
+        .get_cop_config("Layout/IndentationWidth")
+        .and_then(|c| c.raw.get("Width"))
+        .and_then(|v| v.as_i64())
+        .unwrap_or(2) as usize;
+    Some(Box::new(TrailingBodyOnModule::new(indent_width)))
 });

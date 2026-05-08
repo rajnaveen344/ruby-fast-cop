@@ -4,7 +4,7 @@
 
 use crate::cops::{CheckContext, Cop};
 use crate::node_name;
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Edit, Offense, Severity};
 use ruby_prism::{ModuleNode, Node};
 
 #[derive(Clone, Copy, PartialEq)]
@@ -87,23 +87,31 @@ impl ModuleFunction {
                         if Self::is_extend_self(&call) {
                             // Skip if module has private methods
                             if !Self::has_private_methods(&stmts) {
+                                let loc = call.location();
+                                let correction = Correction {
+                                    edits: vec![Edit { start_offset: loc.start_offset(), end_offset: loc.end_offset(), replacement: "module_function".to_string() }],
+                                };
                                 offenses.push(ctx.offense(
                                     self.name(),
                                     "Use `module_function` instead of `extend self`.",
                                     self.severity(),
-                                    &call.location(),
-                                ));
+                                    &loc,
+                                ).with_correction(correction));
                             }
                         }
                     }
                     Style::ExtendSelf => {
                         if Self::is_bare_module_function(&call) {
+                            let loc = call.location();
+                            let correction = Correction {
+                                edits: vec![Edit { start_offset: loc.start_offset(), end_offset: loc.end_offset(), replacement: "extend self".to_string() }],
+                            };
                             offenses.push(ctx.offense(
                                 self.name(),
                                 "Use `extend self` instead of `module_function`.",
                                 self.severity(),
-                                &call.location(),
-                            ));
+                                &loc,
+                            ).with_correction(correction));
                         }
                     }
                     Style::Forbidden => {

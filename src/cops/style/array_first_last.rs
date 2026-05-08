@@ -4,7 +4,7 @@
 
 use crate::cops::{CheckContext, Cop};
 use crate::node_name;
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::Node;
 
 #[derive(Default)]
@@ -79,7 +79,18 @@ impl Cop for ArrayFirstLast {
         };
 
         let message = format!("Use `{}`.", preferred);
-        vec![ctx.offense_with_range(self.name(), &message, self.severity(), start, end)]
+        // Correction: replace from call_operator (or '[') through node end with .first/.last
+        let node_end = node.location().end_offset();
+        let correction = if let Some(op_loc) = node.call_operator_loc() {
+            let op = &ctx.source[op_loc.start_offset()..op_loc.end_offset()];
+            let replacement = format!("{}{}", op, preferred);
+            Correction::replace(op_loc.start_offset(), node_end, replacement)
+        } else {
+            // arr[0] → arr.first  — replace from '[' through end
+            Correction::replace(msg_loc.start_offset(), node_end, format!(".{}", preferred))
+        };
+        vec![ctx.offense_with_range(self.name(), &message, self.severity(), start, end)
+            .with_correction(correction)]
     }
 }
 

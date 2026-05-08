@@ -1,5 +1,5 @@
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 
 const MSG: &str = "Do not use `::` for defining class methods.";
 
@@ -34,7 +34,10 @@ impl Cop for ColonMethodDefinition {
         if op_loc.as_slice() != b"::" {
             return vec![];
         }
-        vec![ctx.offense(self.name(), MSG, self.severity(), &op_loc)]
+        let offense = ctx.offense(self.name(), MSG, self.severity(), &op_loc);
+        let start = op_loc.start_offset();
+        let end = op_loc.end_offset();
+        vec![offense.with_correction(Correction::replace(start, end, String::from(".")))]
     }
 }
 

@@ -1,5 +1,5 @@
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 
 const MSG: &str = "Omit parentheses for the empty lambda parameters.";
 
@@ -51,7 +51,15 @@ impl Cop for EmptyLambdaParameter {
 
         // Empty params with parens — flag the parens range
         let params_loc = params.location();
-        vec![ctx.offense(self.name(), MSG, self.severity(), &params_loc)]
+        let offense = ctx.offense(self.name(), MSG, self.severity(), &params_loc);
+        // Delete `()` plus preceding space: `-> ()` → `->`
+        let bytes = ctx.source.as_bytes();
+        let mut del_start = params_loc.start_offset();
+        if del_start > 0 && bytes[del_start - 1] == b' ' {
+            del_start -= 1;
+        }
+        let del_end = params_loc.end_offset();
+        vec![offense.with_correction(Correction::delete(del_start, del_end))]
     }
 }
 

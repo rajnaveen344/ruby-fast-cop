@@ -4,7 +4,7 @@
 
 use crate::cops::{CheckContext, Cop};
 use crate::node_name;
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Edit, Offense, Severity};
 use ruby_prism::Node;
 use std::collections::HashMap;
 
@@ -190,6 +190,86 @@ impl InvertibleUnlessCondition {
                 | "<<" | ">>" | "&" | "|" | "^" | "<=>" | "===" | "=~"
         )
     }
+
+    /// Build edits to invert the condition in-place.
+    fn invert_condition_edits(&self, node: &Node, source: &str, edits: &mut Vec<Edit>) {
+        match node {
+            Node::ParenthesesNode { .. } => {
+                if let Some(inner) = Self::strip_one_paren(node) {
+                    self.invert_condition_edits(&inner, source, edits);
+                }
+            }
+            Node::CallNode { .. } => {
+                let c = node.as_call_node().unwrap();
+                self.invert_send_edits(&c, source, edits);
+            }
+            Node::OrNode { .. } => {
+                let o = node.as_or_node().unwrap();
+                // Replace `||` with `&&`
+                let op_loc = o.operator_loc();
+                edits.push(Edit {
+                    start_offset: op_loc.start_offset(),
+                    end_offset: op_loc.end_offset(),
+                    replacement: "&&".into(),
+                });
+                self.invert_condition_edits(&o.left(), source, edits);
+                self.invert_condition_edits(&o.right(), source, edits);
+            }
+            Node::AndNode { .. } => {
+                let a = node.as_and_node().unwrap();
+                // Replace `&&` with `||`
+                let op_loc = a.operator_loc();
+                edits.push(Edit {
+                    start_offset: op_loc.start_offset(),
+                    end_offset: op_loc.end_offset(),
+                    replacement: "||".into(),
+                });
+                self.invert_condition_edits(&a.left(), source, edits);
+                self.invert_condition_edits(&a.right(), source, edits);
+            }
+            _ => {}
+        }
+    }
+
+    fn invert_send_edits(&self, call: &ruby_prism::CallNode, source: &str, edits: &mut Vec<Edit>) {
+        let method = node_name!(call).to_string();
+        if method == "!" {
+            // Remove the `!` selector
+            let sel_loc = call.message_loc().unwrap_or(call.location());
+            edits.push(Edit {
+                start_offset: sel_loc.start_offset(),
+                end_offset: sel_loc.end_offset(),
+                replacement: String::new(),
+            });
+        } else {
+            let inverse = match self.inverse_methods.get(&method) {
+                Some(s) => s.clone(),
+                None => return,
+            };
+            // Replace the method selector with the inverse
+            let sel_loc = call.message_loc().unwrap_or(call.location());
+            edits.push(Edit {
+                start_offset: sel_loc.start_offset(),
+                end_offset: sel_loc.end_offset(),
+                replacement: inverse,
+            });
+        }
+    }
+
+    fn build_correction(&self, node: &ruby_prism::UnlessNode, source: &str) -> Correction {
+        let mut edits: Vec<Edit> = Vec::new();
+        // Replace `unless` keyword with `if`
+        let kw_loc = node.keyword_loc();
+        edits.push(Edit {
+            start_offset: kw_loc.start_offset(),
+            end_offset: kw_loc.end_offset(),
+            replacement: "if".into(),
+        });
+        // Invert the condition
+        let cond = node.predicate();
+        self.invert_condition_edits(&cond, source, &mut edits);
+        Correction { edits }
+    }
 }
 
 fn node_source<'a>(node: &Node<'a>, source: &'a str) -> &'a str {
@@ -214,13 +294,14 @@ impl Cop for InvertibleUnlessCondition {
             preferred, cond_src
         );
         let loc = node.location();
+        let correction = self.build_correction(node, ctx.source);
         vec![ctx.offense_with_range(
             self.name(),
             &message,
             Severity::Convention,
             loc.start_offset(),
             loc.end_offset(),
-        )]
+        ).with_correction(correction)]
     }
 }
 

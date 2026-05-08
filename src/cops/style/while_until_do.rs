@@ -55,13 +55,24 @@ impl<'a> WhileUntilDoVisitor<'a> {
         }
 
         let msg = format!("Do not use `do` with multi-line `{}`.", keyword);
-        self.offenses.push(self.ctx.offense_with_range(
+        let do_start = do_loc.start_offset();
+        let do_end = do_loc.end_offset();
+        // Delete ` do` — include the preceding space
+        let del_start = if do_start > 0 && self.ctx.source.as_bytes().get(do_start - 1) == Some(&b' ') {
+            do_start - 1
+        } else {
+            do_start
+        };
+        let correction = crate::offense::Correction::delete(del_start, do_end);
+        let mut offense = self.ctx.offense_with_range(
             "Style/WhileUntilDo",
             &msg,
             Severity::Convention,
-            do_loc.start_offset(),
-            do_loc.end_offset(),
-        ));
+            do_start,
+            do_end,
+        );
+        offense = offense.with_correction(correction);
+        self.offenses.push(offense);
     }
 }
 

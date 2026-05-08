@@ -4,7 +4,7 @@
 
 use crate::cops::{CheckContext, Cop};
 use crate::node_name;
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::CallNode;
 
 #[derive(Default)]
@@ -66,7 +66,9 @@ impl Cop for ColonMethodCall {
             }
         }
 
-        vec![ctx.offense(self.name(), "Do not use `::` for method calls.", self.severity(), &op_loc)]
+        let correction = Correction::replace(op_loc.start_offset(), op_loc.end_offset(), ".".to_string());
+        vec![ctx.offense(self.name(), "Do not use `::` for method calls.", self.severity(), &op_loc)
+            .with_correction(correction)]
     }
 }
 

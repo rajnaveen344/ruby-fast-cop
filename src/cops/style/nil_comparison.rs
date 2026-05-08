@@ -4,7 +4,7 @@
 
 use crate::cops::{CheckContext, Cop};
 use crate::node_name;
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::{CallNode, Visit};
 
 pub struct NilComparison {
@@ -77,13 +77,19 @@ impl<'a> NilComparisonVisitor<'a> {
             }
             let msg = "Prefer the use of the `nil?` predicate.";
             let sel_loc = node.message_loc().unwrap_or_else(|| node.location());
+            // Correction: replace entire call node (recv == nil / recv === nil / recv.==(nil)) with recv.nil?
+            let recv = node.receiver().unwrap();
+            let recv_src = self.ctx.src(recv.location().start_offset(), recv.location().end_offset()).to_string();
+            let node_start = node.location().start_offset();
+            let node_end = node.location().end_offset();
+            let correction = Correction::replace(node_start, node_end, format!("{}.nil?", recv_src));
             self.offenses.push(self.ctx.offense_with_range(
                 "Style/NilComparison",
                 msg,
                 Severity::Convention,
                 sel_loc.start_offset(),
                 sel_loc.end_offset(),
-            ));
+            ).with_correction(correction));
         } else {
             // Flag `x.nil?`
             if method.as_ref() != "nil?" {
@@ -99,13 +105,27 @@ impl<'a> NilComparisonVisitor<'a> {
             }
             let msg = "Prefer the use of the `==` comparison.";
             let sel_loc = node.message_loc().unwrap_or_else(|| node.location());
+            // Correction: replace entire call node (recv.nil?) with (recv == nil) or recv == nil
+            // RuboCop wraps in parens when parent is a negation — detect by checking byte before node start
+            let recv = node.receiver().unwrap();
+            let recv_src = self.ctx.src(recv.location().start_offset(), recv.location().end_offset()).to_string();
+            let node_start = node.location().start_offset();
+            let node_end = node.location().end_offset();
+            let bytes = self.ctx.source.as_bytes();
+            let preceded_by_bang = node_start > 0 && bytes[node_start - 1] == b'!';
+            let replacement = if preceded_by_bang {
+                format!("({} == nil)", recv_src)
+            } else {
+                format!("{} == nil", recv_src)
+            };
+            let correction = Correction::replace(node_start, node_end, replacement);
             self.offenses.push(self.ctx.offense_with_range(
                 "Style/NilComparison",
                 msg,
                 Severity::Convention,
                 sel_loc.start_offset(),
                 sel_loc.end_offset(),
-            ));
+            ).with_correction(correction));
         }
     }
 }

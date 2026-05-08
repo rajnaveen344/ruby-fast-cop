@@ -7,7 +7,7 @@
 
 use crate::cops::{CheckContext, Cop};
 use crate::node_name;
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Edit, Offense, Severity};
 use ruby_prism::{Node, Visit};
 use std::collections::HashSet;
 
@@ -224,13 +224,24 @@ impl<'a> RedundantSelfVisitor<'a> {
         // Report offense on the `self` keyword (the receiver)
         let recv = node.receiver().unwrap();
         let loc = recv.location();
+
+        // Correction: remove `self.` (self + dot operator)
+        let remove_end = if let Some(dot) = node.call_operator_loc() {
+            dot.end_offset()
+        } else {
+            loc.end_offset()
+        };
+        let correction = Correction {
+            edits: vec![Edit { start_offset: loc.start_offset(), end_offset: remove_end, replacement: String::new() }],
+        };
+
         self.offenses.push(self.ctx.offense_with_range(
             "Style/RedundantSelf",
             MSG,
             Severity::Convention,
             loc.start_offset(),
             loc.end_offset(),
-        ));
+        ).with_correction(correction));
     }
 
     /// Collect argument names from parameter nodes.

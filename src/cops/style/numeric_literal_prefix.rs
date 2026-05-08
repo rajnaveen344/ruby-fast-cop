@@ -3,7 +3,7 @@
 //! Enforces consistent numeric literal prefixes (0o, 0x, 0b, no-prefix for decimal).
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Edit, Offense, Severity};
 use ruby_prism::{Visit, ProgramNode};
 
 pub struct NumericLiteralPrefix {
@@ -56,6 +56,35 @@ struct PrefixVisitor<'a, 'b> {
     offenses: &'b mut Vec<Offense>,
 }
 
+impl<'a, 'b> PrefixVisitor<'a, 'b> {
+    fn build_correction(&self, src: &str, start: usize, end: usize) -> Option<Correction> {
+        let replacement = if src.starts_with("0O") {
+            if self.cop.octal_style == OctalStyle::ZeroOnly {
+                format!("0{}", &src[2..])
+            } else {
+                format!("0o{}", &src[2..])
+            }
+        } else if src.starts_with("0o") && self.cop.octal_style == OctalStyle::ZeroOnly {
+            format!("0{}", &src[2..])
+        } else if src.starts_with("0X") {
+            format!("0x{}", &src[2..])
+        } else if src.starts_with("0B") {
+            format!("0b{}", &src[2..])
+        } else if src.starts_with("0d") || src.starts_with("0D") {
+            src[2..].to_string()
+        } else if src.len() > 1 && src.starts_with('0') && src.as_bytes()[1].is_ascii_digit()
+            && self.cop.octal_style == OctalStyle::ZeroWithO
+        {
+            format!("0o{}", &src[1..])
+        } else {
+            return None;
+        };
+        Some(Correction {
+            edits: vec![Edit { start_offset: start, end_offset: end, replacement }],
+        })
+    }
+}
+
 impl<'a, 'b> Visit<'_> for PrefixVisitor<'a, 'b> {
     fn visit_integer_node(&mut self, node: &ruby_prism::IntegerNode) {
         let loc = node.location();
@@ -95,7 +124,13 @@ impl<'a, 'b> Visit<'_> for PrefixVisitor<'a, 'b> {
         };
 
         if let Some(m) = msg {
-            self.offenses.push(self.ctx.offense(self.cop.name(), m, self.cop.severity(), &loc));
+            let correction = self.build_correction(src, loc.start_offset(), loc.end_offset());
+            let offense = self.ctx.offense(self.cop.name(), m, self.cop.severity(), &loc);
+            self.offenses.push(if let Some(c) = correction {
+                offense.with_correction(c)
+            } else {
+                offense
+            });
         }
     }
 }

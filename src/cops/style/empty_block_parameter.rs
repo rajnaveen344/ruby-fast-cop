@@ -3,7 +3,7 @@
 //! Checks for empty pipes `||` in block parameters.
 
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::BlockNode;
 
 #[derive(Default)]
@@ -58,7 +58,27 @@ impl Cop for EmptyBlockParameter {
         let msg = "Omit pipes for the empty block parameters.";
         let start = opening.start_offset();
         let end = closing.end_offset();
-        vec![ctx.offense_with_range(self.name(), msg, self.severity(), start, end)]
+        let offense = ctx.offense_with_range(self.name(), msg, self.severity(), start, end);
+        // Delete `||` and surrounding whitespace context.
+        // For `do ||` style: eat space before `||` (leaves `do\n` or `do body`)
+        // For `{ || }` style: eat trailing space after `||` (preserves `{ body }`)
+        let source_bytes = ctx.source.as_bytes();
+        let mut delete_start = start;
+        let mut delete_end = end;
+
+        // Check if preceded by a space AND the char before the space is not `{`
+        // (for brace blocks, eat trailing space instead)
+        if delete_start > 0 && source_bytes[delete_start - 1] == b' '
+            && delete_start >= 2 && source_bytes[delete_start - 2] != b'{'
+        {
+            delete_start -= 1;
+        } else {
+            // Eat trailing space after `||`
+            while delete_end < source_bytes.len() && source_bytes[delete_end] == b' ' {
+                delete_end += 1;
+            }
+        }
+        vec![offense.with_correction(Correction::delete(delete_start, delete_end))]
     }
 }
 

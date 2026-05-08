@@ -1,5 +1,5 @@
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 
 const MSG: &str = "Do not use strings for word-like symbol literals.";
 
@@ -31,7 +31,11 @@ impl Cop for SymbolLiteral {
             return vec![];
         }
 
-        vec![ctx.offense_with_range(self.name(), MSG, self.severity(), start, end)]
+        // Correction: :"word" → :word (strip quotes)
+        let inner = &src[2..src.len() - 1]; // content between : and closing quote
+        let replacement = format!(":{}", inner);
+        let offense = ctx.offense_with_range(self.name(), MSG, self.severity(), start, end);
+        vec![offense.with_correction(Correction::replace(start, end, replacement))]
     }
 }
 

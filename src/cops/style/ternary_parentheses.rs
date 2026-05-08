@@ -184,13 +184,13 @@ impl TernaryParentheses {
     }
 
     /// Check if removing parens would be unsafe (children have below-ternary precedence)
-    fn unsafe_autocorrect(condition: &Node) -> bool {
+    fn unsafe_autocorrect(condition: &Node, source: &str) -> bool {
         if let Node::ParenthesesNode { .. } = condition {
             let paren = condition.as_parentheses_node().unwrap();
             if let Some(body) = paren.body() {
                 if let Some(stmts) = body.as_statements_node() {
                     for stmt in stmts.body().iter() {
-                        if Self::below_ternary_precedence(&stmt) {
+                        if Self::below_ternary_precedence(&stmt, source) {
                             return true;
                         }
                     }
@@ -200,13 +200,25 @@ impl TernaryParentheses {
         false
     }
 
-    /// Check if a node has precedence below ternary (keyword and/or/not)
-    fn below_ternary_precedence(node: &Node) -> bool {
+    /// Check if a node has precedence below ternary (keyword `or`/`and`/`not`, NOT `||`/`&&`/`!`)
+    fn below_ternary_precedence(node: &Node, source: &str) -> bool {
         match node {
-            Node::OrNode { .. } => true,
-            Node::AndNode { .. } => true,
+            Node::OrNode { .. } => {
+                // Only semantic `or`, not `||`
+                if let Some(or_node) = node.as_or_node() {
+                    let op_loc = or_node.operator_loc();
+                    &source[op_loc.start_offset()..op_loc.end_offset()] == "or"
+                } else { false }
+            }
+            Node::AndNode { .. } => {
+                // Only semantic `and`, not `&&`
+                if let Some(and_node) = node.as_and_node() {
+                    let op_loc = and_node.operator_loc();
+                    &source[op_loc.start_offset()..op_loc.end_offset()] == "and"
+                } else { false }
+            }
             Node::CallNode { .. } => {
-                // prefix `not`
+                // prefix `not` (not `!`)
                 let call = node.as_call_node().unwrap();
                 let name = node_name!(call);
                 name == "!" && call.receiver().is_some() && call.opening_loc().is_none()
@@ -217,7 +229,7 @@ impl TernaryParentheses {
 
     /// Build correction for removing parens
     fn correct_parenthesized(condition: &Node, source: &str) -> Option<Correction> {
-        if Self::is_safe_assignment(condition) || Self::unsafe_autocorrect(condition) {
+        if Self::is_safe_assignment(condition) || Self::unsafe_autocorrect(condition, source) {
             return None;
         }
 

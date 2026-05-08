@@ -4,7 +4,7 @@
 
 use crate::cops::{CheckContext, Cop};
 use crate::node_name;
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::{CallNode, Visit};
 
 #[derive(Default)]
@@ -95,13 +95,23 @@ impl<'a> StripVisitor<'a> {
             .unwrap_or_else(|| node.location())
             .end_offset();
 
+        // Correction: replace from inner call_operator through outer node.end with (op)strip
+        let outer_end = node.location().end_offset();
+        let correction = if let Some(op_loc) = inner_call.call_operator_loc() {
+            let op = &self.ctx.source[op_loc.start_offset()..op_loc.end_offset()];
+            Correction::replace(op_loc.start_offset(), outer_end, format!("{}strip", op))
+        } else {
+            // No call operator (shouldn't happen for chained call, but handle gracefully)
+            Correction::replace(start, outer_end, "strip".to_string())
+        };
+
         self.offenses.push(self.ctx.offense_with_range(
             "Style/Strip",
             &msg,
             Severity::Convention,
             start,
             end,
-        ));
+        ).with_correction(correction));
     }
 }
 

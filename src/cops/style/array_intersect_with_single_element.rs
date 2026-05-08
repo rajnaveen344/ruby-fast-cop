@@ -1,6 +1,6 @@
 use crate::cops::{CheckContext, Cop};
 use crate::node_name;
-use crate::offense::{Offense, Severity};
+use crate::offense::{Correction, Edit, Offense, Severity};
 use ruby_prism::Node;
 
 const MSG: &str = "Use `include?(element)` instead of `intersect?([element])`.";
@@ -50,7 +50,29 @@ impl Cop for ArrayIntersectWithSingleElement {
             None => return vec![],
         };
         let call_end = node.location().end_offset();
-        vec![ctx.offense_with_range(self.name(), MSG, self.severity(), sel_start, call_end)]
+
+        // Build correction: replace `intersect?([elem])` with `include?(elem_src)`
+        let elem = &elements[0];
+        let elem_src = match elem {
+            Node::SymbolNode { .. } => {
+                // From %i[...] — prepend ':'
+                let src = &ctx.source[elem.location().start_offset()..elem.location().end_offset()];
+                format!(":{}", src)
+            }
+            _ => {
+                ctx.source[elem.location().start_offset()..elem.location().end_offset()].to_string()
+            }
+        };
+        let correction = Correction {
+            edits: vec![Edit {
+                start_offset: sel_start,
+                end_offset: call_end,
+                replacement: format!("include?({})", elem_src),
+            }],
+        };
+
+        vec![ctx.offense_with_range(self.name(), MSG, self.severity(), sel_start, call_end)
+            .with_correction(correction)]
     }
 }
 

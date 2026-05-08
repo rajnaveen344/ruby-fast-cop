@@ -78,7 +78,8 @@ impl Cop for WhenThen {
         );
 
         let loc = Location::from_offsets(ctx.source, semi_offset, semi_offset + 1);
-        vec![Offense::new(self.name(), &msg, self.severity(), loc, ctx.filename)]
+        let correction = crate::offense::Correction::replace(semi_offset, semi_offset + 1, String::from(" then"));
+        vec![Offense::new(self.name(), &msg, self.severity(), loc, ctx.filename).with_correction(correction)]
     }
 }
 
