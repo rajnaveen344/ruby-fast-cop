@@ -5,7 +5,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 
 **Pending-default progress: 156 / 156 (100%)**. **Disabled-default progress: 54 / 54 (100%)**.
 
-**Autocorrect progress: 9,929 / 11,217 (88%)** — 1,258 expected corrections across ~70 Style cops still unwired. **Layout dept complete** (30 residual fixture cases documented as known deferred edges: multi-pass-conflict cases in FirstArgumentIndentation×17, LineLength×4, FirstHashElementIndentation×2, IndentationWidth×2, InitialIndentation×2, HashAlignment/ElseAlignment/BlockAlignment ×1 each — see CLAUDE.md "Known deferred edge cases"). All other depts at 100%. See [`.correction_worklist.txt`](.correction_worklist.txt) for per-cop counts.
+**Autocorrect progress: 11,142 / 11,217 (99.3%)** — 75 residual cases remain (45 Style + 30 Layout) and are documented deferred edges: multi-pass correction (ConditionalAssignment×2, Next×3, NestedTernaryOperator×1, MultilineTernaryOperator×1), base_indent fixture convention (SingleLineMethods×5, TrailingBodyOnMethodDefinition×4, plus smaller), numbered/it params on lambda-like rewrites (Lambda×4, SymbolProc×3), RedundantBegin×9 assignment-context, WordArray×2, AccessorGrouping×1, plus Layout 30 (FirstArgumentIndentation×17, LineLength×4, FirstHashElementIndentation×2, IndentationWidth×2, InitialIndentation×2, HashAlignment/ElseAlignment/BlockAlignment ×1 each). All depts effectively at parity. See CLAUDE.md "Known deferred edge cases".
 
 ## Summary
 
@@ -13,7 +13,7 @@ Cop-count cells show `implemented / total`. Autocorrect column shows `wired / ex
 
 | Department |     Enabled |     Pending |  Disabled |             Tests |              Autocorrect |
 | ---------- | ----------: | ----------: | --------: | ----------------: | -----------------------: |
-| Style      |     175/175 |       91/91 |     32/32 |   14,566 / 14,566 |      6,060 / 7,318 (83%) |
+| Style      |     175/175 |       91/91 |     32/32 |   14,566 / 14,566 |    7,273 / 7,318 (99.4%) |
 | Lint       |     100/100 |       50/50 |       4/4 |     5,961 / 5,961 |     1,908 / 1,908 (100%) |
 | Layout     |       81/81 |         5/5 |     14/14 |     4,646 / 4,646 |      1,821 / 1,851 (98%) |
 | Metrics    |         9/9 |         1/1 |       0/0 |         272 / 272 |         n/a (0 expected) |
@@ -22,7 +22,7 @@ Cop-count cells show `implemented / total`. Autocorrect column shows `wired / ex
 | Bundler    |         5/5 |         0/0 |       2/2 |         101 / 101 |           12 / 12 (100%) |
 | Security   |         5/5 |         2/2 |       0/0 |         102 / 102 |           17 / 17 (100%) |
 | Migration  |         1/1 |         0/0 |       0/0 |             8 / 8 |             1 / 1 (100%) |
-| **Total**  | **396/396** | **156/156** | **54/54** | **28,065/28,065** | **9,929 / 11,217 (88%)** |
+| **Total**  | **396/396** | **156/156** | **54/54** | **28,065/28,065** | **11,142 / 11,217 (99.3%)** |
 
 - **Enabled**: Runs by default on every codebase (highest priority to implement)
 - **Pending**: Runs only with `NewCops: enable` in config
