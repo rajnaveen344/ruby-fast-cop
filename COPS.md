@@ -5,7 +5,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 
 **Pending-default progress: 156 / 156 (100%)**. **Disabled-default progress: 54 / 54 (100%)**.
 
-**Autocorrect progress: 11,172 / 11,217 (99.6%)** — 45 residual cases remain, all documented deferred edges: Layout/FirstArgumentIndentation×17, Style/ArgumentsForwarding×5 (Ruby 3.2 triple-anon), Layout/LineLength×3, Layout/IndentationWidth×3 (mixed tab/space, base_indent fixture quirk), Layout/ArgumentAlignment×3 (base_indent fixture quirk), Style/WordArray×2 (custom WordRegex, US-ASCII encoding), Lint/UselessAssignment×2 (loop-body / chained-unary-assign), Layout/InitialIndentation×2 (base_indent fixture quirk), Layout/FirstHashElementIndentation×2, plus 1-failure singletons (Style/Next nested re-indent, IfUnlessModifier heredoc-arg, IfInsideElse multiline-elsif, BlockDelimiters adjacent-curly, AccessorGrouping separated-edge, Layout/IndentationStyle base_indent quirk, HashAlignment multi-pass, BlockAlignment multi-offense). All depts effectively at parity. See CLAUDE.md "Known deferred edge cases".
+**Autocorrect progress: 11,173 / 11,217 (99.6%)** — 44 residual cases remain, all documented deferred edges: Layout/FirstArgumentIndentation×17 (special_for_inner_method_call style), Style/ArgumentsForwarding×5 (Ruby 3.2 triple-anon), Layout/LineLength×3, Layout/IndentationWidth×3 (mixed tab/space, base_indent fixture quirk), Layout/ArgumentAlignment×3 (base_indent fixture quirk), Style/WordArray×2 (custom WordRegex, US-ASCII encoding), Lint/UselessAssignment×2 (loop-body / chained-unary-assign), Layout/InitialIndentation×2 (base_indent fixture quirk), Layout/FirstHashElementIndentation×2, plus 1-failure singletons (IfUnlessModifier heredoc-arg, IfInsideElse multiline-elsif, BlockDelimiters adjacent-curly, AccessorGrouping separated-edge, Layout/IndentationStyle base_indent quirk, HashAlignment multi-pass, BlockAlignment multi-offense). All depts effectively at parity. See CLAUDE.md "Known deferred edge cases".
 
 ## Summary
 
@@ -13,7 +13,7 @@ Cop-count cells show `implemented / total`. Autocorrect column shows `wired / ex
 
 | Department |     Enabled |     Pending |  Disabled |             Tests |              Autocorrect |
 | ---------- | ----------: | ----------: | --------: | ----------------: | -----------------------: |
-| Style      |     175/175 |       91/91 |     32/32 |   14,566 / 14,566 |    7,278 / 7,318 (99.5%) |
+| Style      |     175/175 |       91/91 |     32/32 |   14,566 / 14,566 |    7,279 / 7,318 (99.5%) |
 | Lint       |     100/100 |       50/50 |       4/4 |     5,961 / 5,961 |     1,908 / 1,908 (100%) |
 | Layout     |       81/81 |         5/5 |     14/14 |     4,646 / 4,646 |      1,821 / 1,851 (98%) |
 | Metrics    |         9/9 |         1/1 |       0/0 |         272 / 272 |         n/a (0 expected) |
@@ -22,7 +22,7 @@ Cop-count cells show `implemented / total`. Autocorrect column shows `wired / ex
 | Bundler    |         5/5 |         0/0 |       2/2 |         101 / 101 |           12 / 12 (100%) |
 | Security   |         5/5 |         2/2 |       0/0 |         102 / 102 |           17 / 17 (100%) |
 | Migration  |         1/1 |         0/0 |       0/0 |             8 / 8 |             1 / 1 (100%) |
-| **Total**  | **396/396** | **156/156** | **54/54** | **28,065/28,065** | **11,172 / 11,217 (99.6%)** |
+| **Total**  | **396/396** | **156/156** | **54/54** | **28,065/28,065** | **11,173 / 11,217 (99.6%)** |
 
 - **Enabled**: Runs by default on every codebase (highest priority to implement)
 - **Pending**: Runs only with `NewCops: enable` in config
