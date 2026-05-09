@@ -935,8 +935,10 @@ impl Visit<'_> for StringSplitFinder<'_> {
         let start = node.location().start_offset();
         let end = node.location().end_offset();
         self.check_string_node(start, end, node.opening_loc(), node.closing_loc(), true);
-        // Note: We do NOT recurse into children here to avoid incorrectly claiming break points
-        // on lines that should be handled by other correction strategies.
+        // Recurse so adjacent-string concatenation (e.g. `'a' \\\n'b...'`) gets each
+        // child string checked individually. Multi-line outer parents are filtered
+        // by `is_single_line` inside `check_string_node`, so we don't double-claim.
+        ruby_prism::visit_interpolated_string_node(self, node);
     }
 
     // Skip string splitting inside hash pairs (both key and value) and array elements.

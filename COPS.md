@@ -5,7 +5,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 
 **Pending-default progress: 156 / 156 (100%)**. **Disabled-default progress: 54 / 54 (100%)**.
 
-**Autocorrect progress: 11,203 / 11,217 (99.9%)** — 14 residual cases remain, all documented deferred edges: Layout/LineLength×3, Layout/IndentationWidth×3 (mixed tab/space rounding, heredoc-aware re-indent), Style/WordArray×2 (custom WordRegex, US-ASCII encoding), Lint/UselessAssignment×2 (loop-body / chained-unary-assign liveness), Layout/FirstHashElementIndentation×2, plus 1-failure singletons (Style/ArgumentsForwarding triple-anon, Style/IfUnlessModifier heredoc-arg, Style/AccessorGrouping separated-edge, Layout/HashAlignment multi-pass, Layout/BlockAlignment multi-offense). All depts effectively at parity. See CLAUDE.md "Known deferred edge cases".
+**Autocorrect progress: 11,209 / 11,217 (99.9%)** — 8 residual cases remain, all documented deferred edges: Layout/IndentationWidth×3 (mixed tab/space rounding, heredoc-aware re-indent), Style/WordArray×2 (custom WordRegex, US-ASCII encoding), plus 1-failure singletons (Style/ArgumentsForwarding triple-anon, Style/AccessorGrouping separated-edge, Layout/HashAlignment multi-pass, Layout/BlockAlignment multi-offense, Lint/UselessAssignment loop-body, Layout/LineLength hash-in-method-call). All depts effectively at parity. See CLAUDE.md "Known deferred edge cases".
 
 ## Summary
 
@@ -14,15 +14,15 @@ Cop-count cells show `implemented / total`. Autocorrect column shows `wired / ex
 | Department |     Enabled |     Pending |  Disabled |             Tests |              Autocorrect |
 | ---------- | ----------: | ----------: | --------: | ----------------: | -----------------------: |
 | Style      |     175/175 |       91/91 |     32/32 |   14,566 / 14,566 |    7,283 / 7,318 (99.5%) |
-| Lint       |     100/100 |       50/50 |       4/4 |     5,961 / 5,961 |     1,908 / 1,908 (100%) |
-| Layout     |       81/81 |         5/5 |     14/14 |     4,646 / 4,646 |    1,845 / 1,851 (99.7%) |
+| Lint       |     100/100 |       50/50 |       4/4 |     5,961 / 5,961 |    1,908 / 1,909 (99.9%) |
+| Layout     |       81/81 |         5/5 |     14/14 |     4,646 / 4,646 |    1,849 / 1,851 (99.9%) |
 | Metrics    |         9/9 |         1/1 |       0/0 |         272 / 272 |         n/a (0 expected) |
 | Naming     |       16/16 |         2/2 |       1/1 |     2,216 / 2,216 |           86 / 86 (100%) |
 | Gemspec    |         4/4 |         5/5 |       1/1 |         193 / 193 |           24 / 24 (100%) |
 | Bundler    |         5/5 |         0/0 |       2/2 |         101 / 101 |           12 / 12 (100%) |
 | Security   |         5/5 |         2/2 |       0/0 |         102 / 102 |           17 / 17 (100%) |
 | Migration  |         1/1 |         0/0 |       0/0 |             8 / 8 |             1 / 1 (100%) |
-| **Total**  | **396/396** | **156/156** | **54/54** | **28,065/28,065** | **11,203 / 11,217 (99.9%)** |
+| **Total**  | **396/396** | **156/156** | **54/54** | **28,065/28,065** | **11,209 / 11,217 (99.9%)** |
 
 - **Enabled**: Runs by default on every codebase (highest priority to implement)
 - **Pending**: Runs only with `NewCops: enable` in config
