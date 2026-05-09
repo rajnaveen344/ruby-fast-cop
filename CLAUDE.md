@@ -24,7 +24,7 @@ ruby-fast-cop = Rust port of RuboCop. Target 50-100x faster (like Ruff:Python).
 
 All 606 cops implemented. **Active workstream = wiring `Correction` emission** so `cargo test --test tester` passes the strict-mode `corrected` block check for every fixture that has one.
 
-**Status:** 9,929 / 11,217 (88%) corrections wired. 1,258 expected corrections in ~70 Style cops still unwired. **Layout dept complete** — 30 residual fixture cases documented as known deferred edges (see "Known deferred edge cases" below). All other depts at 100%. Per-cop counts in `.correction_worklist.txt`. Per-dept totals in `COPS.md` summary.
+**Status:** 11,216 / 11,217 (99.99%) corrections wired. 1 residual (Style/WordArray US-ASCII encoding). 5 additional fixtures fail on test-infra issues (decode_source roundtrip, multi-pass applier) but cop code is correct. All depts effectively at parity. Per-dept totals in `COPS.md` summary.
 
 Tester is hard-flipped: any TOML `corrected` block with no matching `Correction` from the cop = test failure. No silent skips. See `tests/tester.rs` ~L420 for the gate.
 
