@@ -107,18 +107,33 @@ Top unwired cops by failing-correction count (from `cargo test --test tester` st
 
 Current state: **alpha-internal**. 606/606 cops implemented, 9,929/11,217 (88%) autocorrect wired, 28k synthetic tests green.
 
-### Phase 1 — public alpha (1-2w)
+### Phase 0 — autocorrect 100% (BLOCKING all later phases)
+
+Currently 11,172 / 11,217 (99.6%). 45 residuals across 3 buckets. **Do not start corpus parity / Phase 1 until this hits 11,217 / 11,217.**
+
+1. **Multi-pass autocorrect applier (~12 cases)** — wrap `apply_corrections` + cop re-check in fixed-point loop (RuboCop uses ~10 iters). Hard parts: termination guard against cop-A-vs-cop-B oscillation (cycle detection or hard cap), avoid re-skipping the same overlap forever, re-parse cost (cheap with Prism but multiplies test time). ~20 LOC in `tester.rs`; behavior change for CLI `-A`. Unblocks: Layout/FirstArgumentIndentation×17, Style/Next nested re-indent, Style/IfInsideElse multiline-elsif, Layout/HashAlignment table→key, Layout/BlockAlignment, Layout/FirstHashElementIndentation×2.
+
+2. **base_indent-aware tester (~10 cases)** — `decode_source` prepends `base_indent` spaces to source AND corrected before invoking cop, but RuboCop runs on raw source then displays with stripped prefix. Asymmetry inflates display-column computations. Fix: don't prepend before invocation; only prepend the corrected expectation when comparing. Unblocks: Layout/ArgumentAlignment×3, Layout/IndentationWidth mixed-tab×2, Layout/IndentationStyle×1, Layout/InitialIndentation×2.
+
+3. **Misc one-shots (~23 cases, real work each)** —
+   - Style/ArgumentsForwarding Ruby 3.2 triple-anon (5): partial-forwarding rewrite (`(*, **, &)` not `(...)`). New code path.
+   - Style/WordArray (2): custom WordRegex parsing + Encoding.default_external tracking.
+   - Lint/UselessAssignment (2): chained-unary-assign + loop-body deletion semantics. Liveness work.
+   - Style/IfUnlessModifier heredoc-arg (1): modifier→block with heredoc body re-indent.
+   - Style/BlockDelimiters adjacent-curly (1): inner-brace-touches-outer-do/end delimiter swap.
+   - Style/AccessorGrouping separated-edge (1): duplicate accessor zero-indent quirk.
+   - Layout/LineLength×3, Layout/InitialIndentation×2 (post-#2 residuals if any).
+
+Exit: `cargo test --test tester` reports `Corrections validated: 11,217` with zero failures.
+
+### Phase 1 — public alpha (1-2w, after Phase 0 closes)
 
 Goal: outsider can run on their codebase without embarrassing divergence from RuboCop.
 
-1. **Autocorrect ≥90%** — 196 more wired clears the bar. Top targets:
-   - `Style/ConditionalAssignment` (919, solo big-lift) — would jump us to 96% in one cop.
-   - Style small-tail (~70 cops × 1-10 corrections each, ~340 total).
-   - Layout 34 — mostly multi-pass-conflict residuals (FirstArgumentIndentation 17, LineLength 8); document as known.
-2. **Real-world corpus parity** — pick 3 OSS Ruby repos (Rails, Discourse, Shopify, Mastodon, fastlane). Run both `rubocop` and `ruby-fast-cop`; diff offense counts per cop. Target ±1% parity. Will surface parser edge cases, config inheritance gaps, encoding/line-ending bugs.
-3. **Config edges** — `inherit_from`, `inherit_gem`, glob `Include`/`Exclude`, brace-expand. Likely blockers for #2.
+1. **Real-world corpus parity** — pick 3 OSS Ruby repos (Rails, Discourse, Shopify, Mastodon, fastlane). Run both `rubocop` and `ruby-fast-cop`; diff offense counts per cop. Target ±1% parity. Will surface parser edge cases, config inheritance gaps, encoding/line-ending bugs.
+2. **Config edges** — `inherit_from`, `inherit_gem`, glob `Include`/`Exclude`, brace-expand. Likely blockers for #1.
 
-Exit: parity diff ≤1% on 3 corpora, autocorrect ≥90%, no parser crashes.
+Exit: parity diff ≤1% on 3 corpora, no parser crashes.
 
 ### Phase 2 — beta (2-3w)
 
@@ -148,21 +163,22 @@ Goal: anyone can `brew install` / `cargo install` and adopt.
 
 ### Critical-path estimate
 
-| Phase            | Time     | Risk                                      |
-| ---------------- | -------- | ----------------------------------------- |
-| 1 — public alpha | 1-2w     | corpus parity may surface deep bugs       |
-| 2 — beta         | 2-3w     | benchmark numbers determine perf strategy |
-| 3 — 1.0          | 1-2w     | mostly packaging, low risk                |
-| **Total**        | **4-7w** |                                           |
+| Phase                       | Time     | Risk                                                 |
+| --------------------------- | -------- | ---------------------------------------------------- |
+| 0 — autocorrect 100%        | 3-5d     | multi-pass termination edge cases                    |
+| 1 — public alpha            | 1-2w     | corpus parity may surface deep bugs                  |
+| 2 — beta                    | 2-3w     | benchmark numbers determine perf strategy            |
+| 3 — 1.0                     | 1-2w     | mostly packaging, low risk                           |
+| **Total**                   | **5-8w** |                                                      |
 
 Biggest unknown: corpus diff. If >5% per-cop, debt blows up. Mitigate by diffing per-cop and tackling worst offenders first.
 
 ### Recommended next concrete actions (in order)
 
-1. Wire `Style/ConditionalAssignment` (solo, +919). Single cop → 96% autocorrect.
-2. Wire Style small-tail in 3-parallel-Sonnet-agent batches (group by correction shape).
-3. Set up corpus parity harness against one repo (e.g. Discourse) — `script/parity-diff.sh REPO`. Capture per-cop offense-count diff JSON.
-4. Iterate Phase 1 exit criteria.
+1. **Phase 0 #1**: implement multi-pass applier loop in `tests/tester.rs`. Cap at 10 iters, abort with diagnostic on cycle. Verify ~12 multi-pass residuals drop to 0.
+2. **Phase 0 #2**: rework `decode_source` so cop sees raw source (no base_indent prepending); only prepend when comparing decoded `corrected`. Verify ~10 base_indent-quirk residuals drop to 0.
+3. **Phase 0 #3**: hand-wire the 23 one-shot residuals.
+4. Verify `cargo test --test tester` shows 11,217 / 11,217. Then start Phase 1 corpus parity.
 
 ## Planned architectural refactors
 
