@@ -1,4 +1,5 @@
 use crate::cops::{CheckContext, Cop};
+use crate::helpers::alignment_check::alignment_correction;
 use crate::helpers::multiline_element_indentation::{
     EnforcedStyle, IndentBaseType, ParentPairInfo, indent_base,
 };
@@ -140,6 +141,9 @@ impl<'a> Visitor<'a> {
                 } else {
                     0
                 };
+                let key_start = assoc.key().location().start_offset();
+                let value_start = assoc.value().location().start_offset();
+                let value_on_same_line = self.ctx.same_line(key_start, value_start);
                 self.check_first(
                     first_start,
                     first_end,
@@ -148,6 +152,7 @@ impl<'a> Visitor<'a> {
                     left_brace_line_start,
                     left_paren,
                     parent_pair,
+                    value_on_same_line,
                 );
             }
         }
@@ -202,6 +207,7 @@ impl<'a> Visitor<'a> {
         left_brace_line_start: usize,
         left_paren: Option<usize>,
         parent_pair: Option<ParentPairInfo>,
+        value_on_same_line: bool,
     ) {
         let actual_col = self.ctx.col_of(first_start);
         let (base_col, base_type) = indent_base(
@@ -223,9 +229,16 @@ impl<'a> Visitor<'a> {
             base_description(base_type),
         );
         let location = Location::from_offsets(self.ctx.source, first_start, first_end);
-        // Correction: replace leading whitespace with expected indent
-        let line_start = self.ctx.line_start(first_start);
-        let correction = Correction::replace(line_start, first_start, " ".repeat(expected));
+        // Correction: when the value starts on the same line as the key, shift the
+        // entire first element (including continuation lines of the multi-line value).
+        // When the value starts on a NEXT line, shift only the key line — the value
+        // is a separate construct independently indented.
+        let correction = if value_on_same_line {
+            alignment_correction(self.ctx, first_start, first_end, expected)
+        } else {
+            let line_start = self.ctx.line_start(first_start);
+            Correction::replace(line_start, first_start, " ".repeat(expected))
+        };
         self.offenses.push(Offense::new(
             "Layout/FirstHashElementIndentation",
             msg,
