@@ -197,6 +197,120 @@ fn visual_column(source: &str, offset: usize, tab_width: usize) -> u32 {
 
 use crate::helpers::access_modifier::is_bare_access_modifier as is_standalone_access_modifier;
 
+/// Walk every line in `[start, end]` and shift its leading whitespace by `delta`.
+/// Skips heredoc body lines (lines between a `<<IDENT` opener and its terminator)
+/// — matches RuboCop's behavior where the heredoc body is excluded from the
+/// AlignmentCorrector's expression range.
+fn reindent_range_skip_heredocs(source: &str, start: usize, end: usize, delta: i32) -> Correction {
+    let bytes = source.as_bytes();
+    let heredoc_lines = collect_heredoc_body_lines(source);
+    let mut edits: Vec<Edit> = Vec::new();
+    let first_ls = line_start_offset(source, start);
+    let mut pos = first_ls;
+    while pos < end && pos <= bytes.len() {
+        // Find the line bounds.
+        let eol = source[pos..].find('\n').map_or(bytes.len(), |p| pos + p);
+        let line_no = line_at_offset(source, pos); // 1-based
+        if !heredoc_lines.contains(&line_no) {
+            // Find leading whitespace span.
+            let mut ws_e = pos;
+            while ws_e < eol && (bytes[ws_e] == b' ' || bytes[ws_e] == b'\t') {
+                ws_e += 1;
+            }
+            let cur = ws_e - pos;
+            let line_is_blank = ws_e == eol;
+            let new = if line_is_blank {
+                cur
+            } else {
+                ((cur as i64 + delta as i64).max(0)) as usize
+            };
+            if cur != new {
+                edits.push(Edit {
+                    start_offset: pos,
+                    end_offset: ws_e,
+                    replacement: " ".repeat(new),
+                });
+            }
+        }
+        if eol >= bytes.len() {
+            break;
+        }
+        pos = eol + 1;
+    }
+    Correction { edits }
+}
+
+/// Returns a sorted list of 1-based line numbers that lie inside a heredoc body
+/// (between the opener line and the terminator line, inclusive of body lines but
+/// not the opener line).
+fn collect_heredoc_body_lines(source: &str) -> Vec<u32> {
+    let mut out: Vec<u32> = Vec::new();
+    let lines: Vec<&str> = source.lines().collect();
+    let mut i = 0;
+    while i < lines.len() {
+        let line = lines[i];
+        if let Some(pos) = find_heredoc_opener(line) {
+            if let Some(delim) = parse_heredoc_delim(&line[pos..]) {
+                let body_start_line = i + 1;
+                let mut j = body_start_line;
+                while j < lines.len() {
+                    let body_line = lines[j];
+                    let trimmed = body_line.trim_start();
+                    let trimmed_end = trimmed.trim_end();
+                    if trimmed_end == delim {
+                        for k in body_start_line..=j {
+                            out.push((k + 1) as u32);
+                        }
+                        i = j;
+                        break;
+                    }
+                    j += 1;
+                }
+            }
+        }
+        i += 1;
+    }
+    out
+}
+
+fn find_heredoc_opener(line: &str) -> Option<usize> {
+    let bytes = line.as_bytes();
+    let mut in_str = false;
+    let mut str_char = b'"';
+    let mut i = 0;
+    while i + 1 < bytes.len() {
+        match bytes[i] {
+            b'"' | b'\'' if !in_str => { in_str = true; str_char = bytes[i]; }
+            c if in_str && c == str_char => { in_str = false; }
+            b'<' if !in_str && bytes[i + 1] == b'<' => {
+                let next = if i + 2 < bytes.len() { bytes[i + 2] } else { 0 };
+                if next != b'<' && next != b'=' {
+                    return Some(i);
+                }
+            }
+            _ => {}
+        }
+        i += 1;
+    }
+    None
+}
+
+fn parse_heredoc_delim(s: &str) -> Option<String> {
+    let rest = s.get(2..)?;
+    let rest = rest.trim_start_matches(['-', '~']);
+    let inner = if rest.starts_with('"') || rest.starts_with('\'') || rest.starts_with('`') {
+        let q = &rest[..1];
+        rest[1..].split(q).next().unwrap_or("")
+    } else {
+        rest.split_whitespace().next().unwrap_or("")
+    };
+    let delim: String = inner
+        .chars()
+        .take_while(|c| c.is_alphanumeric() || *c == '_')
+        .collect();
+    if delim.is_empty() { None } else { Some(delim) }
+}
+
 /// Check if the first thing on the body line IS the body node
 fn body_starts_at_line_start(source: &str, body_offset: usize) -> bool {
     let body_col = col_at_offset(source, body_offset);
@@ -426,6 +540,19 @@ impl<'a> IndentationWidthVisitor<'a> {
     /// Core indentation check. `base_off` is the byte offset of the base keyword/location.
     /// `body_off` is the byte offset of the first body statement.
     fn check_indentation(&mut self, base_off: usize, body_off: usize, qualifier: Option<&str>) {
+        self.check_indentation_full(base_off, body_off, None, qualifier);
+    }
+
+    /// Like `check_indentation`, but takes the body node's full end offset so the
+    /// correction can re-indent every line of the offending node (mirrors RuboCop's
+    /// `AlignmentCorrector` walking each line of `expr`).
+    fn check_indentation_full(
+        &mut self,
+        base_off: usize,
+        body_off: usize,
+        body_end_off: Option<usize>,
+        qualifier: Option<&str>,
+    ) {
         let source = self.ctx.source;
 
         // Skip if body doesn't start at beginning of its line
@@ -456,7 +583,7 @@ impl<'a> IndentationWidthVisitor<'a> {
             return;
         }
 
-        self.report_offense(source, body_off, indentation, qualifier);
+        self.report_offense_full(source, body_off, body_end_off, indentation, qualifier);
     }
 
     /// Check if the body node is a begin node whose first child is an access modifier
@@ -474,16 +601,16 @@ impl<'a> IndentationWidthVisitor<'a> {
         indentation: i32,
         qualifier: Option<&str>,
     ) {
-        self.report_offense_with_base(source, body_off, indentation, qualifier, None);
+        self.report_offense_full(source, body_off, None, indentation, qualifier);
     }
 
-    fn report_offense_with_base(
+    fn report_offense_full(
         &mut self,
         source: &str,
         body_off: usize,
+        body_end_off: Option<usize>,
         indentation: i32,
         qualifier: Option<&str>,
-        _base_off: Option<usize>,
     ) {
         let body_ls = line_start_offset(source, body_off);
 
@@ -563,20 +690,27 @@ impl<'a> IndentationWidthVisitor<'a> {
         // Correction: mirror RuboCop's AlignmentCorrector behavior.
         // column_delta > 0: insert spaces at body_off (body content start).
         // column_delta < 0: remove |delta| bytes before body_off.
+        // When `body_end_off` is provided, walk every line of the offending node
+        // and shift it by delta (skipping heredoc body lines). This mirrors
+        // RuboCop's `AlignmentCorrector#each_line` semantics.
         // Only for space-based indentation.
         let correction = if !self.using_tabs() {
             let body_col = col_at_offset(source, body_off) as usize;
             let body_ls2 = line_start_offset(source, body_off);
             let body_content_start = body_ls2 + body_col;
             let delta = self.width as i32 - indentation;
-            if delta > 0 {
+            if delta == 0 {
+                None
+            } else if let Some(end_off) = body_end_off {
+                Some(reindent_range_skip_heredocs(source, body_off, end_off, delta))
+            } else if delta > 0 {
                 // Insert delta spaces at body_off position
                 Some(Correction { edits: vec![Edit {
                     start_offset: body_content_start,
                     end_offset: body_content_start,
                     replacement: " ".repeat(delta as usize),
                 }]})
-            } else if delta < 0 {
+            } else {
                 // Remove |delta| bytes (spaces) before body_off
                 let abs_delta = (-delta) as usize;
                 let remove_start = body_content_start.saturating_sub(abs_delta);
@@ -585,8 +719,6 @@ impl<'a> IndentationWidthVisitor<'a> {
                     end_offset: body_content_start,
                     replacement: String::new(),
                 }]})
-            } else {
-                None
             }
         } else {
             None
@@ -853,8 +985,8 @@ impl<'a> IndentationWidthVisitor<'a> {
             // select_check_member: if first member is access modifier
             let check_member = self.select_check_member(&stmts_list);
 
-            if let Some(member_off) = check_member {
-                self.check_indentation(kw_off, member_off, None);
+            if let Some((member_off, member_end_off)) = check_member {
+                self.check_indentation_full(kw_off, member_off, Some(member_end_off), None);
             }
 
             if self.consistency_style == ConsistencyStyle::IndentedInternalMethods {
@@ -865,12 +997,14 @@ impl<'a> IndentationWidthVisitor<'a> {
         }
     }
 
-    /// select_check_member: Returns the offset of the member to check, or None if skipped
-    fn select_check_member(&self, stmts: &[ruby_prism::Node]) -> Option<usize> {
+    /// select_check_member: Returns (start, end) of the member to check, or None if skipped
+    fn select_check_member(&self, stmts: &[ruby_prism::Node]) -> Option<(usize, usize)> {
         if stmts.is_empty() {
             return None;
         }
         let first = &stmts[0];
+        let loc = first.location();
+        let range = (loc.start_offset(), loc.end_offset());
         if let ruby_prism::Node::CallNode { .. } = first {
             let call = first.as_call_node().unwrap();
             if is_standalone_access_modifier(&call) {
@@ -878,10 +1012,10 @@ impl<'a> IndentationWidthVisitor<'a> {
                 if self.access_modifier_style == AccessModifierStyle::Outdent {
                     return None;
                 }
-                return Some(first.location().start_offset());
+                return Some(range);
             }
         }
-        Some(first.location().start_offset())
+        Some(range)
     }
 
     /// In normal consistency style, check non-modifier members that come AFTER an access modifier
