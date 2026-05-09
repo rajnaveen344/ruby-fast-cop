@@ -488,15 +488,31 @@ fn get_delimiters(delimiters: &str) -> (char, char) {
 
 /// Render raw source (between quotes) for use inside a %w array.
 /// Only escapes delimiter chars; does NOT re-escape backslash sequences.
+/// When `skip_delim_escape` is true (paired delimiters with balanced count),
+/// delimiter chars pass through unescaped — mirrors RuboCop's
+/// `substitute_escaped_delimiters` behaviour for `[]`, `()`, `{}`, `<>`.
 fn render_raw_for_percent(raw: &str, open_delim: char, close_delim: char) -> String {
+    let skip = paired_delim_balanced(raw, open_delim, close_delim);
     let mut rendered = String::with_capacity(raw.len() + 4);
     for ch in raw.chars() {
-        if ch == open_delim || ch == close_delim {
+        if !skip && (ch == open_delim || ch == close_delim) {
             rendered.push('\\');
         }
         rendered.push(ch);
     }
     rendered
+}
+
+/// True when `open_delim != close_delim` (paired) AND the content has equal
+/// counts of each — RuboCop treats this as a "balanced" word and skips
+/// delimiter escaping. Same-char delimiters (`||`, `!!`) always need escapes.
+fn paired_delim_balanced(content: &str, open_delim: char, close_delim: char) -> bool {
+    if open_delim == close_delim {
+        return false;
+    }
+    let opens = content.chars().filter(|&c| c == open_delim).count();
+    let closes = content.chars().filter(|&c| c == close_delim).count();
+    opens == closes
 }
 
 /// Render a string content for use inside a %w/%W array.
@@ -507,6 +523,7 @@ fn render_for_percent(
     close_delim: char,
     needs_w_capital: &mut bool,
 ) -> String {
+    let skip_delim = paired_delim_balanced(content, open_delim, close_delim);
     let mut rendered = String::with_capacity(content.len() + 4);
     for ch in content.chars() {
         match ch {
@@ -534,7 +551,7 @@ fn render_for_percent(
                 // Non-ASCII: output as-is (RuboCop preserves Unicode chars in %w)
                 rendered.push(c);
             }
-            c if c == open_delim || c == close_delim => {
+            c if !skip_delim && (c == open_delim || c == close_delim) => {
                 // Escape delimiter characters
                 rendered.push('\\');
                 rendered.push(c);

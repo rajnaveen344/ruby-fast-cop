@@ -579,7 +579,11 @@ impl Visit<'_> for BreakableRangeFinder<'_> {
         let line_idx = self.line_of(start);
 
         self.depth += 1;
-        if self.depth == 1 && self.is_single_line(start, end) && !self.ranges.contains_key(&line_idx) {
+        // Allow nested hashes to register a break candidate when no outer
+        // container has claimed the line yet — covers the
+        // "hash inside multi-line method call" case where the outer call
+        // bailed on `is_single_line`.
+        if self.is_single_line(start, end) && !self.ranges.contains_key(&line_idx) {
             let elements: Vec<_> = node.elements().iter()
                 .map(|e| (e.location().start_offset(), e.location().end_offset())).collect();
             if elements.len() >= 2 {
