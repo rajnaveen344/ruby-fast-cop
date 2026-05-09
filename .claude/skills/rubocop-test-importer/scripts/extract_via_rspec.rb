@@ -216,14 +216,36 @@ def toml_value(val)
   end
 end
 
-def compute_base_indent(source)
-  indents = source.lines
+def has_mixed_indent?(text)
+  text.lines.any? { |l|
+    next false if l.strip.empty?
+    leading = l[/^[ \t]*/]
+    leading.include?(' ') && leading.include?("\t")
+  }
+end
+
+def min_leading_space(text)
+  indents = text.lines
     .reject { |l| l.strip.empty? }
     .map { |l| l[/^ */].length }
+  indents.empty? ? nil : indents.min
+end
 
-  return nil if indents.empty?
-  min_indent = indents.min
-  min_indent > 0 ? min_indent : nil
+# Compute base_indent for round-trip-safe strip+re-prepend.
+# Returns nil when strip would be lossy:
+#   - any source/corrected line has mixed `<spaces><tab>` indent
+#   - corrected has any line with fewer leading spaces than source's min
+#     (e.g. cop strips first-line indent, or replaces spaces with tabs)
+def compute_base_indent(source, corrected = nil)
+  return nil if has_mixed_indent?(source)
+  return nil if corrected && has_mixed_indent?(corrected)
+  src_min = min_leading_space(source)
+  return nil unless src_min && src_min > 0
+  if corrected
+    cor_min = min_leading_space(corrected)
+    return nil unless cor_min && cor_min >= src_min
+  end
+  src_min
 end
 
 def snake_case(str)
@@ -272,7 +294,8 @@ def generate_toml(cop:, department:, severity:, implemented:, tests:)
     end
 
     source = ensure_utf8(test[:source] || '')
-    base_indent = compute_base_indent(source)
+    corrected_for_calc = test[:corrected] ? ensure_utf8(test[:corrected]) : nil
+    base_indent = compute_base_indent(source, corrected_for_calc)
 
     if base_indent && base_indent > 0
       stripped = source.lines.map { |l|
