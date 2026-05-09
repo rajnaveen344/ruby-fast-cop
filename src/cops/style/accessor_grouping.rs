@@ -546,6 +546,13 @@ impl<'a> AccessorGroupingVisitor<'a> {
         let node_start = node.location().start_offset();
         let indent = Self::get_indent_of(source, node_start);
 
+        // RuboCop uses value equality (`arg == node.first_argument`); duplicate
+        // args (e.g. `:one, :two, :one`) match first by value → first-arg treatment.
+        let first_arg_src = {
+            let f = &args[0];
+            &source[f.location().start_offset()..f.location().end_offset()]
+        };
+
         // Build the replacement. RuboCop's separate_accessors:
         // - For each arg (reversed), build "name arg_src" lines
         // - First arg: no extra indent (uses existing)
@@ -573,6 +580,7 @@ impl<'a> AccessorGroupingVisitor<'a> {
                 let arg_start = arg.location().start_offset();
                 let arg_end = arg.location().end_offset();
                 let arg_src = &source[arg_start..arg_end];
+                let is_first_by_value = ai == 0 || arg_src == first_arg_src;
 
                 // Check for preceding comment (line before arg)
                 let arg_line = self.line_of_offset(arg_start);
@@ -614,21 +622,21 @@ impl<'a> AccessorGroupingVisitor<'a> {
 
                 // Build this arg's line(s)
                 for comment in &preceding_comments {
-                    if ai == 0 {
+                    if is_first_by_value {
                         lines.push(comment.clone());
                     } else {
                         lines.push(format!("{}{}", indent, comment));
                     }
                 }
-                let accessor_line = if let Some(tc) = &trailing_comment {
+                let accessor_line = if let Some(_tc) = &trailing_comment {
                     // trailing comment goes on next line for the attr_reader line
                     // Actually RuboCop puts the trailing comment as a preceding comment for next
-                    if ai == 0 {
+                    if is_first_by_value {
                         format!("{} {}", name_str, arg_src)
                     } else {
                         format!("{}{} {}", indent, name_str, arg_src)
                     }
-                } else if ai == 0 {
+                } else if is_first_by_value {
                     format!("{} {}", name_str, arg_src)
                 } else {
                     format!("{}{} {}", indent, name_str, arg_src)
@@ -646,7 +654,7 @@ impl<'a> AccessorGroupingVisitor<'a> {
                     // So comment comes BEFORE the attr_reader for that arg
                     // We pushed attr_reader then need to insert comment before it
                     let last = lines.pop().unwrap();
-                    let comment_line = if ai == 0 {
+                    let comment_line = if is_first_by_value {
                         tc.to_string()
                     } else {
                         format!("{}{}", indent, tc)
@@ -664,6 +672,7 @@ impl<'a> AccessorGroupingVisitor<'a> {
                 let arg_start = arg.location().start_offset();
                 let arg_end = arg.location().end_offset();
                 let arg_src = &source[arg_start..arg_end];
+                let is_first_by_value = ai == 0 || arg_src == first_arg_src;
 
                 // Get trailing comment on arg's line
                 let arg_end_line = self.line_of_offset(arg_end);
@@ -689,7 +698,7 @@ impl<'a> AccessorGroupingVisitor<'a> {
 
                 // Add comment before attr_reader line if present
                 if let Some(ref tc) = trailing_comment {
-                    if ai == 0 {
+                    if is_first_by_value {
                         lines.push(tc.clone());
                     } else {
                         lines.push(format!("{}{}", indent, tc));
@@ -697,7 +706,7 @@ impl<'a> AccessorGroupingVisitor<'a> {
                 }
 
                 // Add attr_reader line
-                if ai == 0 {
+                if is_first_by_value {
                     lines.push(format!("{} {}", name_str, arg_src));
                 } else {
                     lines.push(format!("{}{} {}", indent, name_str, arg_src));

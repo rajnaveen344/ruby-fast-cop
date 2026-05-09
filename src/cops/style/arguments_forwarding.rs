@@ -292,10 +292,14 @@ impl<'a> Visitor<'a> {
         let referenced_kwrest = kwrest_name.as_ref().is_some_and(|n| referenced.contains(n));
         let referenced_block = block_name.as_ref().is_some_and(|n| referenced.contains(n));
 
-        // Find forwarded args within send.args
+        // Find forwarded args within send.args. When the def's rest/kwrest is
+        // already anonymous (name is None), match the send's anonymous splat /
+        // assoc-splat too — this enables `(m, *, **, &)` → `(m, ...)` shorthand
+        // promotion when the def already uses Ruby 3.2 anon forwarding.
         let fwd_rest = if !referenced_rest {
             send.args.iter().find_map(|a| match (a.kind, a.name.as_deref(), rest_name.as_deref()) {
                 (SendArgKind::NamedSplat, Some(n), Some(rn)) if n == rn => Some(a.range),
+                (SendArgKind::AnonSplat, _, None) => Some(a.range),
                 _ => None,
             })
         } else {
@@ -306,6 +310,11 @@ impl<'a> Visitor<'a> {
             send.args.iter().find_map(|a| match (a.kind, a.name.as_deref(), kwrest_name.as_deref()) {
                 (SendArgKind::NamedKwSplatSole, Some(n), Some(kn)) if n == kn => Some(a.range),
                 (SendArgKind::NamedKwSplatExtra, Some(n), Some(kn)) if n == kn => {
+                    fwd_kwrest_extra = true;
+                    Some(a.range)
+                }
+                (SendArgKind::AnonKwSplatSole, _, None) => Some(a.range),
+                (SendArgKind::AnonKwSplatExtra, _, None) => {
                     fwd_kwrest_extra = true;
                     Some(a.range)
                 }
@@ -509,11 +518,19 @@ impl<'a> Visitor<'a> {
             return;
         }
 
+        // Skip emitting individual `*`/`**`/`&` offenses when the def-side param
+        // is already anonymous. RuboCop only flags NAMED forwarding params here;
+        // already-anonymous params are only converted via `Classification::All`
+        // shorthand `(...)` promotion, which is handled separately.
+        let rest_already_anon = redundant.rest.as_ref().is_some_and(|p| p.name.is_none());
+        let kwrest_already_anon = redundant.kwrest.as_ref().is_some_and(|p| p.name.is_none());
+        let block_already_anon = redundant.block.as_ref().is_some_and(|p| p.name.is_none());
+
         for c in classifications {
             let allow_anon = |in_block: bool| -> bool { target_ge_34 || !in_block };
 
             if let Some(rest_range) = c.fwd_rest {
-                if allow_anon(c.in_block) {
+                if !rest_already_anon && allow_anon(c.in_block) {
                     if let Some(rp) = redundant.rest.as_ref() {
                         self.emit_anon_def_replace(
                             rp,
@@ -529,7 +546,7 @@ impl<'a> Visitor<'a> {
                 }
             }
             if let Some(kw_range) = c.fwd_kwrest {
-                if allow_anon(c.in_block) {
+                if !kwrest_already_anon && allow_anon(c.in_block) {
                     let add_parens = c.fwd_rest.is_none();
                     if let Some(kp) = redundant.kwrest.as_ref() {
                         self.emit_anon_def_replace(
@@ -546,7 +563,7 @@ impl<'a> Visitor<'a> {
                 }
             }
             if let Some(blk_range) = c.fwd_block {
-                if allow_anon(c.in_block) {
+                if !block_already_anon && allow_anon(c.in_block) {
                     let add_parens = c.fwd_rest.is_none();
                     if let Some(bp) = redundant.block.as_ref() {
                         self.emit_block_arg_def(bp, def_has_parens, params_range, def_name_end, add_parens);
@@ -793,7 +810,16 @@ fn is_def_all_anonymous(params: &ParametersNode) -> bool {
         .and_then(|n| n.as_keyword_rest_parameter_node())
         .is_some_and(|r| r.name_loc().is_none());
     let block_anon = params.block().is_some_and(|b| b.name_loc().is_none());
-    rest_anon && kwrest_anon && block_anon
+    if !(rest_anon && kwrest_anon && block_anon) {
+        return false;
+    }
+    // Reject `(...)` shorthand promotion when explicit positional or keyword
+    // params sit between the anonymous markers. RuboCop only combines into
+    // `(...)` when the param list is exactly `*, **, &`.
+    params.requireds().iter().count() == 0
+        && params.optionals().iter().count() == 0
+        && params.posts().iter().count() == 0
+        && params.keywords().iter().count() == 0
 }
 
 fn is_send_all_anonymous(args: &[SendArgLite]) -> bool {
@@ -1091,11 +1117,14 @@ fn materialize_args(raw_args: &[Node]) -> Vec<SendArgLite> {
                     let asp_loc = asp.location();
                     let asp_range = (asp_loc.start_offset(), asp_loc.end_offset());
                     match asp.value() {
-                        None => out.push(SendArgLite {
-                            kind: SendArgKind::AnonKwSplatSole,
-                            range: asp_range,
-                            name: None,
-                        }),
+                        None => {
+                            let kind = if elems.len() == 1 {
+                                SendArgKind::AnonKwSplatSole
+                            } else {
+                                SendArgKind::AnonKwSplatExtra
+                            };
+                            out.push(SendArgLite { kind, range: asp_range, name: None });
+                        }
                         Some(expr) => {
                             let name = expr
                                 .as_local_variable_read_node()
@@ -1132,11 +1161,14 @@ fn materialize_args(raw_args: &[Node]) -> Vec<SendArgLite> {
                     let asp_loc = asp.location();
                     let asp_range = (asp_loc.start_offset(), asp_loc.end_offset());
                     match asp.value() {
-                        None => out.push(SendArgLite {
-                            kind: SendArgKind::AnonKwSplatSole,
-                            range: asp_range,
-                            name: None,
-                        }),
+                        None => {
+                            let kind = if elems.len() == 1 {
+                                SendArgKind::AnonKwSplatSole
+                            } else {
+                                SendArgKind::AnonKwSplatExtra
+                            };
+                            out.push(SendArgLite { kind, range: asp_range, name: None });
+                        }
                         Some(expr) => {
                             let name = expr
                                 .as_local_variable_read_node()
