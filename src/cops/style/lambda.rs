@@ -177,7 +177,56 @@ fn build_literal_to_method(source: &str, node: &ruby_prism::LambdaNode) -> Optio
         // No params, no spacing: avoid `lambdado`
         edits.push(Edit { start_offset: opening.start_offset(), end_offset: opening.start_offset(), replacement: " ".to_string() });
     }
+
+    // RuboCop's `replace_delimiters`: when the lambda is an arg to an
+    // unparenthesized method call AND the block uses `do/end`, swap to `{/}`
+    // (keeping `do/end` would re-bind to the outer call).
+    let closing = node.closing_loc();
+    let closing_src = &source[closing.start_offset()..closing.end_offset()];
+    if opening_src == "do" && closing_src == "end" && is_arg_to_unparen_call(source, op.start_offset()) {
+        edits.push(Edit { start_offset: opening.start_offset(), end_offset: opening.end_offset(), replacement: "{".to_string() });
+        edits.push(Edit { start_offset: closing.start_offset(), end_offset: closing.end_offset(), replacement: "}".to_string() });
+    }
     Some(Correction { edits })
+}
+
+/// Heuristic for "lambda is an argument in an unparenthesized method call":
+/// walk backward from the `->` operator, skip whitespace, then require the
+/// preceding non-whitespace token to be `,` (positional arg) or `:` of a
+/// keyword-arg pair (not `::`). Then scan from the start of the enclosing
+/// line up to `->` and ensure no `(` opens without closing — an unbalanced
+/// `(` means the lambda is inside a parenthesized arg list.
+fn is_arg_to_unparen_call(source: &str, op_start: usize) -> bool {
+    let bytes = source.as_bytes();
+    if op_start == 0 { return false; }
+    let mut i = op_start;
+    while i > 0 && (bytes[i - 1] == b' ' || bytes[i - 1] == b'\t') {
+        i -= 1;
+    }
+    if i == 0 { return false; }
+    let prev = bytes[i - 1];
+    // `,` = positional arg follow. `:` = `key:` kwarg (but not `::` namespacing).
+    let arg_position = match prev {
+        b',' => true,
+        b':' => i >= 2 && bytes[i - 2] != b':',
+        _ => false,
+    };
+    if !arg_position { return false; }
+
+    // Verify paren balance from the beginning of the source up to `->`. If
+    // any `(` is still open at this point, the lambda is already inside a
+    // parenthesized arg list (e.g. `f(opt: -> do ... end)`) and the `do/end`
+    // delimiters are unambiguous, so don't swap.
+    let segment = &bytes[..op_start];
+    let mut depth: i32 = 0;
+    for &b in segment {
+        match b {
+            b'(' => depth += 1,
+            b')' => depth -= 1,
+            _ => {}
+        }
+    }
+    depth <= 0
 }
 
 /// `lambda { [|args|] body }` → `->[(args)] { body }`
