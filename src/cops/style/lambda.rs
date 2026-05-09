@@ -170,10 +170,11 @@ fn build_literal_to_method(source: &str, node: &ruby_prism::LambdaNode) -> Optio
             if !inner.is_empty() {
                 edits.push(Edit { start_offset: opening.end_offset(), end_offset: opening.end_offset(), replacement: format!(" |{}|", inner) });
             }
-        } else {
-            return None;
         }
-    } else if op.end_offset() == opening.start_offset() && opening_src == "do" {
+        // NumberedParametersNode / ItParametersNode: implicit params, no
+        // source range to strip — fall through (treat like the no-params case).
+    }
+    if params.is_none() && op.end_offset() == opening.start_offset() && opening_src == "do" {
         // No params, no spacing: avoid `lambdado`
         edits.push(Edit { start_offset: opening.start_offset(), end_offset: opening.start_offset(), replacement: " ".to_string() });
     }
@@ -255,9 +256,9 @@ fn build_method_to_literal(source: &str, call: &ruby_prism::CallNode) -> Option<
             if e < bytes.len() && (bytes[e] == b' ' || bytes[e] == b'\t') { e += 1 }
             else if s > 0 && (bytes[s-1] == b' ' || bytes[s-1] == b'\t') { s -= 1 }
             edits.push(Edit { start_offset: s, end_offset: e, replacement: "".to_string() });
-        } else {
-            return None;
         }
+        // NumberedParametersNode (`_1`, `_2`, …) and ItParametersNode (`it`)
+        // are implicit — no `|args|` to strip and no args to surface on `->`.
     }
 
     // Replace `lambda` with `->[(args)]`
