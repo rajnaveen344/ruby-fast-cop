@@ -144,17 +144,23 @@ impl<'a> Visitor<'a> {
             crate::offense::Location::from_offsets(self.ctx.source, first_arg_start, first_arg_end);
         let delta: isize = expected as isize - actual as isize;
 
-        let correction = self.build_indentation_correction(first_arg_start, correction_end_raw, delta);
-        self.offenses.push(
-            Offense::new(
-                "Layout/FirstArgumentIndentation",
-                message,
-                Severity::Convention,
-                location,
-                self.ctx.filename,
-            )
-            .with_correction(correction),
+        // When this offense is "affected by another offense" (i.e. a containing
+        // call's first-arg correction will already shift these lines), skip the
+        // correction so we don't double-shift. RuboCop's specs for this case use
+        // `expect_correction(loop: false)` which gates iteration; inner offense
+        // still gets reported but the outer correction handles the re-indent.
+        let mut offense = Offense::new(
+            "Layout/FirstArgumentIndentation",
+            message,
+            Severity::Convention,
+            location,
+            self.ctx.filename,
         );
+        if !is_within_existing {
+            let correction = self.build_indentation_correction(first_arg_start, correction_end_raw, delta);
+            offense = offense.with_correction(correction);
+        }
+        self.offenses.push(offense);
     }
 
     /// Determine the end offset for the correction range.
