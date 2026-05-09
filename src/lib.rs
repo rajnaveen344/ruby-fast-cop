@@ -124,7 +124,7 @@ pub fn check_and_correct_file(
     }
 
     let (corrected, offenses, total_applied) =
-        check_and_correct_source(&source, &filename, &cops, target_ruby_version);
+        check_and_correct_source_full(&source, &filename, &cops, target_ruby_version, Some(path));
 
     // Filter excluded cops from final offenses
     let offenses: Vec<Offense> = offenses
@@ -153,6 +153,18 @@ pub fn check_and_correct_source(
     cops: &[Box<dyn cops::Cop>],
     target_ruby_version: f64,
 ) -> (String, Vec<Offense>, usize) {
+    check_and_correct_source_full(source, filename, cops, target_ruby_version, None)
+}
+
+/// Like `check_and_correct_source` but accepts an optional real filesystem path
+/// for cops that need filesystem metadata (e.g. `Lint/ScriptPermission`).
+pub fn check_and_correct_source_full(
+    source: &str,
+    filename: &str,
+    cops: &[Box<dyn cops::Cop>],
+    target_ruby_version: f64,
+    file_path: Option<&Path>,
+) -> (String, Vec<Offense>, usize) {
     let mut current_source = source.to_string();
     let mut seen_hashes: HashSet<u64> = HashSet::new();
     seen_hashes.insert(hash_source(&current_source));
@@ -162,7 +174,14 @@ pub fn check_and_correct_source(
         // Run cops in a block so ParseResult's borrow is dropped before we reassign
         let offenses = {
             let result = parse(current_source.as_bytes());
-            cops::run_cops_with_version(cops, &result, &current_source, filename, target_ruby_version)
+            cops::run_cops_full(
+                cops,
+                &result,
+                &current_source,
+                filename,
+                target_ruby_version,
+                file_path,
+            )
         };
 
         let has_corrections = offenses.iter().any(|o| o.correction.is_some());
@@ -190,7 +209,14 @@ pub fn check_and_correct_source(
     // Exhausted iterations — do one final lint pass on the corrected source
     let offenses = {
         let result = parse(current_source.as_bytes());
-        cops::run_cops_with_version(cops, &result, &current_source, filename, target_ruby_version)
+        cops::run_cops_full(
+            cops,
+            &result,
+            &current_source,
+            filename,
+            target_ruby_version,
+            file_path,
+        )
     };
     (current_source, offenses, total_applied)
 }

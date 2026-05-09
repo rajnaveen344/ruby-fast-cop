@@ -5,8 +5,8 @@
 
 use glob::glob;
 use ruby_fast_cop::{
-    Config, Location, Offense, Severity, apply_corrections, check_source_with_cop_config_version_and_path,
-    check_source_with_peers,
+    Config, Location, Offense, Severity, apply_corrections,
+    check_source_with_cop_config_version_and_path, check_source_with_peers,
 };
 use serde::Deserialize;
 use std::path::PathBuf;
@@ -433,6 +433,10 @@ fn run_test_case(test_case: &TestCase, cop_name: &str) -> TestCaseResult {
             ));
             errors.push(format!("  Expected corrected:\n{}", indent_block(&expected_corrected)));
         } else {
+            // Single-pass per cop — matches RuboCop's `expect_correction` semantics.
+            // Their RSpec test runs the cop once and checks corrector output, so the
+            // TOML `corrected` block is single-pass too. Library `check_and_correct_*`
+            // does iterate to fixed point for real CLI use; that's a separate surface.
             let actual_corrected = apply_corrections(&source, &offenses);
             if actual_corrected != expected_corrected {
                 errors.push(format!(
