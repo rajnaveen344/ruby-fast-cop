@@ -5,8 +5,9 @@
 
 use glob::glob;
 use ruby_fast_cop::{
-    Config, Location, Offense, Severity, apply_corrections,
-    check_source_with_cop_config_version_and_path, check_source_with_peers,
+    Config, Location, Offense, Severity, apply_corrections, build_single_cop,
+    check_and_correct_source_full, check_source_with_cop_config_version_and_path,
+    check_source_with_peers,
 };
 use serde::Deserialize;
 use std::path::PathBuf;
@@ -57,6 +58,10 @@ struct TestCase {
     /// If true, strip the trailing newline from source (TOML ''' always adds one)
     #[serde(default)]
     strip_trailing_newline: bool,
+    /// Whether to iterate the cop until source is stable (RuboCop's `loop: true` default).
+    /// Absent or true → iterate to fixed point. False → single-pass.
+    #[serde(default = "default_true")]
+    r#loop: bool,
     /// Optional Unix file mode (e.g. 0o644, 0o755) — creates a real tempfile at that mode
     /// so cops that call `fs::metadata` can observe it. Used by `Lint/ScriptPermission`.
     /// The tempfile's basename replaces `__FILE__` placeholders in expected messages.
@@ -95,6 +100,10 @@ struct ExpectedOffense {
 
 fn default_toml_table() -> toml::Value {
     toml::Value::Table(toml::map::Map::new())
+}
+
+fn default_true() -> bool {
+    true
 }
 
 /// Find all TOML test fixture files
@@ -433,11 +442,30 @@ fn run_test_case(test_case: &TestCase, cop_name: &str) -> TestCaseResult {
             ));
             errors.push(format!("  Expected corrected:\n{}", indent_block(&expected_corrected)));
         } else {
-            // Single-pass per cop — matches RuboCop's `expect_correction` semantics.
-            // Their RSpec test runs the cop once and checks corrector output, so the
-            // TOML `corrected` block is single-pass too. Library `check_and_correct_*`
-            // does iterate to fixed point for real CLI use; that's a separate surface.
-            let actual_corrected = apply_corrections(&source, &offenses);
+            // Mirror RuboCop's `expect_correction(loop:)` semantics. Default is
+            // iterate-to-fixed-point per cop (`loop: true`); specs that explicitly
+            // opt into single-pass set `loop = false` in the TOML.
+            //
+            // Exception: `Lint/RedundantCopDisableDirective` peer-pass tests inject
+            // synthetic peer offenses that only exist on pass 1; iterating drops them.
+            let actual_corrected = if !test_case.r#loop || cop_name == "Lint/RedundantCopDisableDirective" {
+                apply_corrections(&source, &offenses)
+            } else {
+                match build_single_cop(cop_name, &config) {
+                    Some(c) => {
+                        let cops_vec = vec![c];
+                        let (corrected, _, _) = check_and_correct_source_full(
+                            &source,
+                            test_filename,
+                            &cops_vec,
+                            ruby_version,
+                            tmp_path.as_deref(),
+                        );
+                        corrected
+                    }
+                    None => apply_corrections(&source, &offenses),
+                }
+            };
             if actual_corrected != expected_corrected {
                 errors.push(format!(
                     "[{}] {}: Correction mismatch",

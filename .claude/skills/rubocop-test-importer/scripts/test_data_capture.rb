@@ -213,10 +213,13 @@ module TestDataCapture
     TestDataCapture.inside_expect = false
   end
 
-  # Override expect_correction to attach corrected source to pending capture
+  # Override expect_correction to attach corrected source to pending capture.
+  # Capture the `loop:` kwarg so the tester can mirror RuboCop's per-cop
+  # iteration semantics (default true → iterate to fixed point; false → single pass).
   def expect_correction(correction, loop: true, source: nil)
     if TestDataCapture.pending_capture
       TestDataCapture.pending_capture[:corrected] = correction
+      TestDataCapture.pending_capture[:loop] = loop
       TestDataCapture.flush_pending!
     end
   rescue => e

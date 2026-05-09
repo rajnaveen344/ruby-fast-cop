@@ -87,8 +87,10 @@ pub fn check_file_with_config(path: &Path, config: &Config) -> Result<Vec<Offens
 }
 
 /// Maximum number of correction iterations before giving up.
-/// Ruff uses 10; RuboCop uses 200. We follow Ruff's model.
-const MAX_CORRECTION_ITERATIONS: usize = 10;
+/// Matches RuboCop's `Runner::MAX_ITERATIONS = 200`. The tester relies on
+/// this cap matching RuboCop so that `expect_correction(loop: true)` semantics
+/// converge identically.
+const MAX_CORRECTION_ITERATIONS: usize = 200;
 
 /// Hash source code for cycle detection during iterative correction.
 fn hash_source(source: &str) -> u64 {

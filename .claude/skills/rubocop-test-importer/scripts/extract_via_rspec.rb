@@ -289,6 +289,10 @@ def generate_toml(cop:, department:, severity:, implemented:, tests:)
 
     if test[:corrected]
       lines << "corrected = #{toml_literal_string(ensure_utf8(test[:corrected]))}"
+      # Only emit when explicitly false; absent = iterate (RuboCop's default)
+      if test[:loop] == false
+        lines << "loop = false"
+      end
     end
 
     offenses = test[:offenses] || []
