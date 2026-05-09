@@ -290,8 +290,7 @@ impl Cop for IndentationStyle {
                 // Actually: tabs are already 1 tab each, spaces are counted
                 // RuboCop: match.size = number of chars in range, divided by width
                 let tab_count = indent_text.len() / self.indentation_width;
-                let remainder = indent_text.len() % self.indentation_width;
-                format!("{}{}", " ".repeat(remainder), "\t".repeat(tab_count))
+                "\t".repeat(tab_count)
             };
             let correction = Correction::replace(range_start, range_end, corrected);
 

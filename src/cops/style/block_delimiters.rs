@@ -7,6 +7,7 @@ use crate::cops::{CheckContext, Cop};
 use crate::offense::{Correction, Edit, Offense, Severity};
 use ruby_prism::{Node, Visit};
 use std::collections::HashSet;
+use std::sync::Mutex;
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum EnforcedStyle {
@@ -24,6 +25,12 @@ pub struct BlockDelimiters {
     procedural_methods: HashSet<String>,
     allowed_methods: HashSet<String>,
     allowed_patterns: Vec<String>,
+    // Mirrors RuboCop's `IgnoredNode#ignored_nodes` — byte ranges of blocks
+    // that already received an offense. Persists across `check_and_correct_source_full`
+    // iterations so adjacent-curly cases (outer `{...}` containing an inner `{...}`)
+    // converge to the partial conversion that matches RuboCop's `expect_correction`
+    // (which reuses the same cop instance across loop iterations).
+    ignored_ranges: Mutex<Vec<(usize, usize)>>,
 }
 
 impl BlockDelimiters {
@@ -40,6 +47,7 @@ impl BlockDelimiters {
                 "it".to_string(),
             ]),
             allowed_patterns: Vec::new(),
+            ignored_ranges: Mutex::new(Vec::new()),
         }
     }
 
@@ -60,6 +68,7 @@ impl BlockDelimiters {
             procedural_methods: procedural_methods.into_iter().collect(),
             allowed_methods: allowed_methods.into_iter().collect(),
             allowed_patterns,
+            ignored_ranges: Mutex::new(Vec::new()),
         }
     }
 }
@@ -120,8 +129,21 @@ impl<'a> BlockVisitor<'a> {
     }
 
     /// Check if this block is inside a block that already got an offense
+    /// (either earlier in the current pass, or in a prior pass).
     fn part_of_offended_block(&self, start: usize, end: usize) -> bool {
-        self.offended_ranges
+        if self
+            .offended_ranges
+            .iter()
+            .any(|&(rs, re)| rs <= start && end <= re)
+        {
+            return true;
+        }
+        // Check persistent prior-pass ignored ranges (mirrors RuboCop's
+        // `part_of_ignored_node?` across `expect_correction` iterations).
+        self.cop
+            .ignored_ranges
+            .lock()
+            .unwrap()
             .iter()
             .any(|&(rs, re)| rs <= start && end <= re)
     }
@@ -582,8 +604,14 @@ impl<'a> BlockVisitor<'a> {
         }
         self.offenses.push(offense);
 
-        // Mark this block range so descendant blocks are skipped
+        // Mark this block range so descendant blocks are skipped (this pass).
         self.offended_ranges.push((block_start, block_end));
+        // Also persist for subsequent multi-pass iterations.
+        self.cop
+            .ignored_ranges
+            .lock()
+            .unwrap()
+            .push((block_start, block_end));
     }
 
     fn build_correction(&self, call: &ruby_prism::CallNode, block: &ruby_prism::BlockNode) -> Option<Correction> {

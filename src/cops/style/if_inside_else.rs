@@ -6,17 +6,24 @@
 use crate::cops::{CheckContext, Cop};
 use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::{Node, Visit};
+use std::sync::Mutex;
 
 const MSG: &str = "Convert `if` nested inside `else` to `elsif`.";
 const COP_NAME: &str = "Style/IfInsideElse";
 
 pub struct IfInsideElse {
     allow_if_modifier: bool,
+    // Mirrors RuboCop's `IgnoredNode#ignored_nodes` — full byte ranges of inner
+    // `if` nodes whose corrections were already applied (or whose ancestor was
+    // already ignored). Persists across iterations within a single
+    // `check_and_correct_source_full` run so deeply-nested patterns converge in
+    // one collapse step (matching RuboCop's specs).
+    ignored_ranges: Mutex<Vec<(usize, usize)>>,
 }
 
 impl IfInsideElse {
     pub fn new(allow_if_modifier: bool) -> Self {
-        Self { allow_if_modifier }
+        Self { allow_if_modifier, ignored_ranges: Mutex::new(Vec::new()) }
     }
 }
 
@@ -543,13 +550,26 @@ impl<'a> Visit<'_> for IfInsideElseVisitor<'a> {
                                     if let Some(kw_loc) = inner_if.if_keyword_loc() {
                                         let start = kw_loc.start_offset();
                                         let end = kw_loc.end_offset();
-                                        let correction = self.build_correction(
-                                            &else_node, &inner_if, is_modifier,
-                                        );
+                                        // RuboCop's `part_of_ignored_node?(else_branch)` —
+                                        // is inner_if's full byte range contained in any
+                                        // previously-ignored range? If so, fire offense
+                                        // without correction.
+                                        let inner_loc = inner_if.location();
+                                        let inner_range = (inner_loc.start_offset(), inner_loc.end_offset());
+                                        let suppress = self.cop.ignored_ranges.lock().unwrap().iter().any(|&(s, e)| s <= inner_range.0 && e >= inner_range.1);
+                                        let correction = if suppress {
+                                            None
+                                        } else {
+                                            self.build_correction(&else_node, &inner_if, is_modifier)
+                                        };
                                         let offense = self.ctx.offense_with_range(
                                             COP_NAME, MSG, Severity::Convention, start, end,
                                         );
                                         let offense = if let Some(corr) = correction {
+                                            // Mirror RuboCop's `ignore_node(else_branch)` —
+                                            // record the inner_if range so descendants and
+                                            // future iterations within this run skip.
+                                            self.cop.ignored_ranges.lock().unwrap().push(inner_range);
                                             offense.with_correction(corr)
                                         } else {
                                             offense
