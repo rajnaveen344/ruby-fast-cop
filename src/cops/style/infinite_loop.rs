@@ -229,7 +229,7 @@ impl<'a> InfiniteLoopVisitor<'a> {
                     return;
                 }
             }
-            let correction = build_modifier_correction(self.ctx.source, &node.as_node(), &node.statements(), start, end);
+            let correction = build_modifier_correction(self.ctx.source, &node.as_node(), &node.statements(), start, end, self.indentation_width());
             let mut offense = self.ctx.offense_with_range(
                 "Style/InfiniteLoop", MSG, Severity::Convention, start, end,
             );
@@ -274,7 +274,7 @@ impl<'a> InfiniteLoopVisitor<'a> {
                     return;
                 }
             }
-            let correction = build_modifier_correction(self.ctx.source, &node.as_node(), &node.statements(), start, end);
+            let correction = build_modifier_correction(self.ctx.source, &node.as_node(), &node.statements(), start, end, self.indentation_width());
             let mut offense = self.ctx.offense_with_range(
                 "Style/InfiniteLoop", MSG, Severity::Convention, start, end,
             );
@@ -325,6 +325,7 @@ fn build_modifier_correction(
     stmts: &Option<ruby_prism::StatementsNode>,
     _kw_start: usize,
     _kw_end: usize,
+    indent_width: usize,
 ) -> Option<Correction> {
     let body = stmts.as_ref()?;
     let body_items: Vec<Node> = body.body().iter().collect();
@@ -357,7 +358,26 @@ fn build_modifier_correction(
 
     let body_src = &source[bs..body_loc.end_offset()];
     if body_src.contains('\n') {
-        return None; // skip multiline modifier (rare)
+        // Multiline modifier: `body\n... while/until LITERAL`
+        // RuboCop: body.source.gsub(/^/, indentation(node)) — prepend indent_width spaces to each line.
+        // node indentation = leading whitespace at start of node line.
+        let line_start = {
+            let mut p = bs;
+            while p > 0 && source.as_bytes()[p - 1] != b'\n' { p -= 1; }
+            p
+        };
+        let leading = &source[line_start..bs];
+        let node_col = leading.len() - leading.trim_start_matches(' ').len();
+        let outer_indent = " ".repeat(node_col);
+        let body_indent = " ".repeat(node_col + indent_width);
+        // Prepend body_indent to each line of body_src (RuboCop gsub(/^/, indentation(node)))
+        let indented_body: String = body_src
+            .lines()
+            .map(|line| format!("{body_indent}{line}"))
+            .collect::<Vec<_>>()
+            .join("\n");
+        let replacement = format!("loop do\n{indented_body}\n{outer_indent}end");
+        return Some(Correction::replace(bs, node_end, &replacement));
     }
     Some(Correction::replace(bs, node_end, &format!("loop {{ {} }}", body_src.trim())))
 }

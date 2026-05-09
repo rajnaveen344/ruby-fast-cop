@@ -61,8 +61,9 @@ impl MultilineIfModifier {
             .collect::<Vec<_>>()
             .join("\n");
 
-        // Include leading indent in replacement so the full node is self-contained
-        format!("{}{} {}\n{}\n{}end", indent, keyword, cond_src, indented_body, indent)
+        // Do NOT include leading indent on the keyword line: the bytes before node_start
+        // are preserved by the edit, so we only output keyword + body + end.
+        format!("{} {}\n{}\n{}end", keyword, cond_src, indented_body, indent)
     }
 
     /// If body_src is a modifier if/unless, recursively convert to block form at col=0.

@@ -76,7 +76,7 @@ impl SingleLineMethods {
                 end_offset: def_start,
                 replacement: format!("{comment_text}\n{before_def_indent}"),
             });
-            let remove_from = if cs > 0 && bytes[cs - 1] == b' ' { cs - 1 } else { cs };
+            let remove_from = cs;
             edits.push(Edit {
                 start_offset: remove_from,
                 end_offset: def_line_end,

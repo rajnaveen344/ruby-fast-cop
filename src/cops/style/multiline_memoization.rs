@@ -79,10 +79,13 @@ impl MemoVisitor<'_> {
                             let open_end = open.end_offset();
                             let bytes = self.ctx.source.as_bytes();
                             let next_char_is_newline = bytes.get(open_end) == Some(&b'\n');
+                            // configured_indentation_width: read from ctx config, default 2
+                            let indent_width = 2usize; // TODO: read from config if needed
                             let begin_repl = if next_char_is_newline {
                                 "begin".to_string() // \n already follows
                             } else {
-                                "begin\n".to_string() // add newline
+                                // Content is on same line as `(`: add newline + col+indent spaces
+                                format!("begin\n{}", " ".repeat(col + indent_width))
                             };
                             // Check if `)` is at start of a line (preceded only by whitespace)
                             let close_start = close.start_offset();

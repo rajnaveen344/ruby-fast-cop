@@ -116,6 +116,8 @@ enum SendArgKind {
     NamedKwSplatExtra,
     /// AssocSplat (`**`) anonymous, sole element of hash
     AnonKwSplatSole,
+    /// AssocSplat (`**`) anonymous, with other elements in hash
+    AnonKwSplatExtra,
     /// BlockArgument with named expression
     NamedBlock,
     /// BlockArgument anonymous (`&`)
@@ -803,7 +805,11 @@ fn is_send_all_anonymous(args: &[SendArgLite]) -> bool {
             SendArgKind::AnonSplat => has_anon_splat = true,
             SendArgKind::AnonKwSplatSole => has_anon_kw = true,
             SendArgKind::AnonBlock => has_anon_block = true,
-            _ => {}
+            // Any non-anonymous arg (plain var, hash with extra entries, etc.)
+            // means this send is NOT purely anonymous forwarding.
+            SendArgKind::Other | SendArgKind::Hash | SendArgKind::NamedSplat
+            | SendArgKind::NamedKwSplatSole | SendArgKind::NamedKwSplatExtra
+            | SendArgKind::NamedBlock | SendArgKind::AnonKwSplatExtra => return false,
         }
     }
     has_anon_splat && has_anon_kw && has_anon_block

@@ -477,7 +477,8 @@ impl<'a> BreakableRangeFinder<'a> {
         let mut in_single_quote = false;
         let mut in_double_quote = false;
         let mut escape_next = false;
-        let mut best_semi_byte: Option<usize> = None;
+        // Collect ALL semicolons outside strings (byte positions)
+        let mut semi_positions: Vec<usize> = Vec::new();
         let mut byte_idx = 0usize;
 
         for (_char_idx, ch) in line.chars().enumerate() {
@@ -487,28 +488,35 @@ impl<'a> BreakableRangeFinder<'a> {
 
             if ch == '\'' && !in_double_quote { in_single_quote = !in_single_quote; }
             else if ch == '"' && !in_single_quote { in_double_quote = !in_double_quote; }
-            else if ch == ';' && !in_single_quote && !in_double_quote { best_semi_byte = Some(byte_idx); }
+            else if ch == ';' && !in_single_quote && !in_double_quote { semi_positions.push(byte_idx); }
 
             byte_idx += ch_len;
         }
 
-        let semi_byte_idx = best_semi_byte?;
-        let after_semi = &line[semi_byte_idx + 1..];
+        if semi_positions.is_empty() { return None; }
 
-        // Find where trailing semicolons end
-        let mut all_semis_end = semi_byte_idx + 1;
-        for ch in after_semi.chars() {
-            if ch == ';' { all_semis_end += 1; } else { break; }
+        // Find the LAST semicolon that has non-empty content after it (skip trailing-only semis).
+        // Iterate from last to first so we break at the latest viable semicolon.
+        for &semi_byte_idx in semi_positions.iter().rev() {
+            let after_semi = &line[semi_byte_idx + 1..];
+
+            // Find where consecutive semicolons end
+            let mut all_semis_end = semi_byte_idx + 1;
+            for ch in after_semi.chars() {
+                if ch == ';' { all_semis_end += 1; } else { break; }
+            }
+
+            let after_all_semis = &line[all_semis_end..];
+            if after_all_semis.trim_start().is_empty() { continue; } // trailing-only; try earlier
+
+            let ws_after = after_all_semis.len() - after_all_semis.trim_start().len();
+            return Some(BreakKind::SemicolonBreak {
+                start: line_byte_offset + all_semis_end,
+                end: line_byte_offset + all_semis_end + ws_after,
+            });
         }
 
-        let after_all_semis = &line[all_semis_end..];
-        if after_all_semis.trim_start().is_empty() { return None; }
-
-        let ws_after = after_all_semis.len() - after_all_semis.trim_start().len();
-        Some(BreakKind::SemicolonBreak {
-            start: line_byte_offset + all_semis_end,
-            end: line_byte_offset + all_semis_end + ws_after,
-        })
+        None
     }
 
     fn find_string_splits(&mut self) {
@@ -517,6 +525,7 @@ impl<'a> BreakableRangeFinder<'a> {
         let root = result.node();
         let mut finder = StringSplitFinder {
             source: self.source, max: self.max, line_starts: &self.line_starts, splits: Vec::new(),
+            in_container: 0,
         };
         finder.visit(&root);
         for (line_idx, kind) in finder.splits {
@@ -677,6 +686,9 @@ struct StringSplitFinder<'a> {
     max: usize,
     line_starts: &'a [usize],
     splits: Vec<(usize, BreakKind)>,
+    /// Depth inside hash-pair values or array elements — skip string splitting when > 0.
+    /// RuboCop: "strings inside hashes, kwargs and arrays are currently ignored"
+    in_container: usize,
 }
 
 impl<'a> StringSplitFinder<'a> {
@@ -706,6 +718,8 @@ impl<'a> StringSplitFinder<'a> {
     }
 
     fn check_string_node(&mut self, start: usize, end: usize, opening_loc: Option<ruby_prism::Location>, closing_loc: Option<ruby_prism::Location>, is_interpolated: bool) {
+        // RuboCop: strings inside hashes, kwargs and arrays are currently ignored
+        if self.in_container > 0 { return; }
         if !self.is_single_line(start, end) { return; }
         let line_idx = self.line_of(start);
         if !self.line_too_long(line_idx) { return; }
@@ -921,6 +935,54 @@ impl Visit<'_> for StringSplitFinder<'_> {
         let start = node.location().start_offset();
         let end = node.location().end_offset();
         self.check_string_node(start, end, node.opening_loc(), node.closing_loc(), true);
+        // Note: We do NOT recurse into children here to avoid incorrectly claiming break points
+        // on lines that should be handled by other correction strategies.
+    }
+
+    // Skip string splitting inside hash pairs (both key and value) and array elements.
+    // RuboCop: "strings inside hashes, kwargs and arrays are currently ignored"
+    fn visit_assoc_node(&mut self, node: &ruby_prism::AssocNode) {
+        self.in_container += 1;
+        ruby_prism::visit_assoc_node(self, node);
+        self.in_container -= 1;
+    }
+
+    fn visit_assoc_splat_node(&mut self, node: &ruby_prism::AssocSplatNode) {
+        self.in_container += 1;
+        ruby_prism::visit_assoc_splat_node(self, node);
+        self.in_container -= 1;
+    }
+
+    fn visit_array_node(&mut self, node: &ruby_prism::ArrayNode) {
+        self.in_container += 1;
+        ruby_prism::visit_array_node(self, node);
+        self.in_container -= 1;
+    }
+
+    fn visit_keyword_hash_node(&mut self, node: &ruby_prism::KeywordHashNode) {
+        self.in_container += 1;
+        ruby_prism::visit_keyword_hash_node(self, node);
+        self.in_container -= 1;
+    }
+
+    fn visit_hash_node(&mut self, node: &ruby_prism::HashNode) {
+        self.in_container += 1;
+        ruby_prism::visit_hash_node(self, node);
+        self.in_container -= 1;
+    }
+
+    // Skip strings that are default values of keyword parameters in def signatures.
+    fn visit_optional_keyword_parameter_node(&mut self, node: &ruby_prism::OptionalKeywordParameterNode) {
+        self.in_container += 1;
+        ruby_prism::visit_optional_keyword_parameter_node(self, node);
+        self.in_container -= 1;
+    }
+
+    // Skip strings that are default values of optional positional parameters.
+    fn visit_optional_parameter_node(&mut self, node: &ruby_prism::OptionalParameterNode) {
+        self.in_container += 1;
+        ruby_prism::visit_optional_parameter_node(self, node);
+        self.in_container -= 1;
     }
 }
 
