@@ -1,5 +1,5 @@
 use crate::cops::{CheckContext, Cop};
-use crate::offense::{Correction, Offense, Severity};
+use crate::offense::{Correction, Edit, Offense, Severity};
 use ruby_prism::Visit;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -46,6 +46,7 @@ impl Cop for FirstArgumentIndentation {
             arg_parent: None,
             in_interpolation: false,
             splat_start: None,
+            chain_top_level_end: None,
         };
         visitor.visit_program_node(node);
         visitor.offenses
@@ -69,6 +70,9 @@ struct Visitor<'a> {
     in_interpolation: bool,
     /// If the current call is inside a splat/kwsplat, this is the splat's start offset
     splat_start: Option<usize>,
+    /// When visiting a receiver of a chain call that is an arg of a parenthesized outer call,
+    /// this holds the end offset of the top-level chain node (for entire-chain correction).
+    chain_top_level_end: Option<usize>,
 }
 
 impl<'a> Visitor<'a> {
@@ -80,6 +84,8 @@ impl<'a> Visitor<'a> {
         has_dot: bool,
         is_operator: bool,
         is_setter: bool,
+        // End offset for the correction range (may be larger than first_arg_end_raw for entire-chain correction)
+        correction_end_raw: usize,
     ) {
         if self.in_interpolation {
             return;
@@ -136,16 +142,213 @@ impl<'a> Visitor<'a> {
         let first_arg_end = self.end_of_first_line(first_arg_start, first_arg_end_raw);
         let location =
             crate::offense::Location::from_offsets(self.ctx.source, first_arg_start, first_arg_end);
-        // Correction: replace leading whitespace on first arg's line with expected indent
-        let ws_start = self.ctx.line_start(first_arg_start);
-        let correction = Correction::replace(ws_start, first_arg_start, " ".repeat(expected));
-        self.offenses.push(Offense::new(
-            "Layout/FirstArgumentIndentation",
-            message,
-            Severity::Convention,
-            location,
-            self.ctx.filename,
-        ).with_correction(correction));
+        let delta: isize = expected as isize - actual as isize;
+
+        let correction = self.build_indentation_correction(first_arg_start, correction_end_raw, delta);
+        self.offenses.push(
+            Offense::new(
+                "Layout/FirstArgumentIndentation",
+                message,
+                Severity::Convention,
+                location,
+                self.ctx.filename,
+            )
+            .with_correction(correction),
+        );
+    }
+
+    /// Determine the end offset for the correction range.
+    ///
+    /// For `special_for_inner_method_call_in_parentheses` when the closing paren of the call
+    /// is on its own line AND we're inside a parenthesized outer call AND node col < |delta|,
+    /// extend correction to cover the entire call node (including its closing paren).
+    /// This mirrors RuboCop's `should_correct_entire_chain?` behavior (single-call case).
+    fn compute_correction_end(
+        &self,
+        node: &ruby_prism::CallNode,
+        node_start: usize,
+        first_arg_start: usize,
+        first_arg_end: usize,
+    ) -> usize {
+        use FirstArgumentIndentationStyle::SpecialForInnerMethodCallInParentheses;
+        if self.style != SpecialForInnerMethodCallInParentheses {
+            return first_arg_end;
+        }
+        // For the chain case: chain_top_level_end is set when we're visiting a receiver of a
+        // chain call that is itself an arg of a parenthesized outer call. In this case, skip the
+        // arg_parent check (it was cleared when entering receiver visit) and use chain_top_level_end.
+        let is_chain_receiver = self.chain_top_level_end.is_some();
+
+        if !is_chain_receiver {
+            // Must be inside a parenthesized outer call (direct arg case)
+            let parent_info = match &self.arg_parent {
+                Some(pi) if pi.is_parenthesized && pi.is_eligible => pi,
+                _ => return first_arg_end,
+            };
+            // Node must be inside parent
+            if node.location().start_offset() <= parent_info.start_offset {
+                return first_arg_end;
+            }
+        }
+
+        // Check if closing paren of this node is on its own line
+        if let Some(closing) = node.closing_loc() {
+            let closing_start = closing.start_offset();
+            if !self.ctx.begins_its_line(closing_start) {
+                return first_arg_end;
+            }
+        } else {
+            return first_arg_end;
+        }
+
+        // Condition 3: node's column must be less than |delta|
+        // Compute delta. For chain receiver case, use parent_info from chain (use_special based
+        // on whether this node is an inner call — if chain_top_level_end is set, it means we are
+        // in a context where the outer is parenthesized).
+        let use_special = if is_chain_receiver {
+            true // chain receiver is always an inner call of a parenthesized outer
+        } else {
+            self.special_inner_call_indentation(node_start, &self.arg_parent)
+        };
+        let base_indent = if use_special {
+            self.column_of_base_range(node_start, first_arg_start)
+        } else {
+            let first_arg_line = self.ctx.line_of(first_arg_start);
+            self.previous_code_line_indent(first_arg_line)
+        };
+        let expected = base_indent + self.indentation_width;
+        let actual = self.ctx.col_of(first_arg_start);
+        let delta: isize = expected as isize - actual as isize;
+        let node_col = self.ctx.col_of(node.location().start_offset());
+        if (node_col as isize) < delta.abs() {
+            // Extend to end of entire chain.
+            if let Some(chain_end) = self.chain_top_level_end {
+                chain_end
+            } else {
+                self.chain_end_after(node.location().end_offset())
+            }
+        } else {
+            first_arg_end
+        }
+    }
+
+    /// Scan forward from `node_end` and extend the end to include any subsequent lines
+    /// that are part of a method chain (lines starting with whitespace + `.`).
+    fn chain_end_after(&self, node_end: usize) -> usize {
+        let source = self.ctx.source;
+        let bytes = source.as_bytes();
+        let mut end = node_end;
+        let mut pos = node_end;
+        while pos < bytes.len() {
+            if bytes[pos] == b'\n' {
+                let line_start = pos + 1;
+                if line_start >= bytes.len() {
+                    break;
+                }
+                // Check if line starts with whitespace + '.'
+                let mut p = line_start;
+                while p < bytes.len() && bytes[p] == b' ' {
+                    p += 1;
+                }
+                if p < bytes.len() && bytes[p] == b'.' {
+                    // This line is a chained call — find its end (end of line or further)
+                    // Advance to end of line
+                    let mut q = p;
+                    while q < bytes.len() && bytes[q] != b'\n' {
+                        q += 1;
+                    }
+                    end = q;
+                    pos = q;
+                } else {
+                    // No more chained lines
+                    break;
+                }
+            } else {
+                pos += 1;
+            }
+        }
+        end
+    }
+
+    /// Build a correction that shifts all lines of `[arg_start..arg_end_raw)` by `delta` columns.
+    ///
+    /// Mirrors RuboCop's `AlignmentCorrector.correct`:
+    /// - delta > 0: insert spaces at line start (zero-width insert)
+    /// - delta < 0: delete leading spaces from line start
+    fn build_indentation_correction(
+        &self,
+        arg_start: usize,
+        arg_end_raw: usize,
+        delta: isize,
+    ) -> Correction {
+        if delta == 0 {
+            return Correction { edits: vec![] };
+        }
+        let source = self.ctx.source;
+        let bytes = source.as_bytes();
+        let mut edits: Vec<Edit> = Vec::new();
+
+        // First line: start at the beginning of the line containing arg_start
+        let first_line_start = self.ctx.line_start(arg_start);
+        self.add_line_indent_edit(bytes, first_line_start, arg_end_raw, delta, &mut edits);
+
+        // Subsequent lines: scan for newlines within arg range
+        let mut pos = arg_start;
+        while pos < arg_end_raw && pos < bytes.len() {
+            if bytes[pos] == b'\n' {
+                let line_start = pos + 1;
+                if line_start >= arg_end_raw || line_start >= bytes.len() {
+                    break;
+                }
+                self.add_line_indent_edit(bytes, line_start, arg_end_raw, delta, &mut edits);
+            }
+            pos += 1;
+        }
+
+        Correction { edits }
+    }
+
+    /// Emit one indentation edit for a single line starting at `line_start`.
+    fn add_line_indent_edit(
+        &self,
+        bytes: &[u8],
+        line_start: usize,
+        end_bound: usize,
+        delta: isize,
+        edits: &mut Vec<Edit>,
+    ) {
+        if line_start >= bytes.len() {
+            return;
+        }
+        // Skip empty / newline-only lines
+        if bytes[line_start] == b'\n' {
+            return;
+        }
+        // Count leading spaces on this line (within end_bound)
+        let mut spaces = 0usize;
+        let mut p = line_start;
+        while p < end_bound && p < bytes.len() && bytes[p] == b' ' {
+            spaces += 1;
+            p += 1;
+        }
+        if delta > 0 {
+            // Insert `delta` spaces at line_start (mirrors RuboCop insert_before)
+            edits.push(Edit {
+                start_offset: line_start,
+                end_offset: line_start,
+                replacement: " ".repeat(delta as usize),
+            });
+        } else {
+            // Delete min(|delta|, spaces) leading spaces
+            let to_delete = (delta.unsigned_abs()).min(spaces);
+            if to_delete > 0 {
+                edits.push(Edit {
+                    start_offset: line_start,
+                    end_offset: line_start + to_delete,
+                    replacement: String::new(),
+                });
+            }
+        }
     }
 
     fn special_inner_call_indentation(
@@ -346,6 +549,17 @@ impl Visit<'_> for Visitor<'_> {
             if let Some(first_arg) = arg_list.first() {
                 // If inside a splat, use the splat's start offset
                 let effective_start = self.splat_start.unwrap_or_else(|| node.location().start_offset());
+                // Determine correction end: normally the first arg end, but for
+                // special_for_inner_method_call_in_parentheses when the closing paren is on its
+                // own line AND we're inside a parenthesized outer call, extend to cover the
+                // entire call node (including closing paren). This mirrors RuboCop's
+                // `should_correct_entire_chain?` / `AlignmentCorrector.correct(node_to_correct)`.
+                let correction_end_raw = self.compute_correction_end(
+                    node,
+                    effective_start,
+                    first_arg.location().start_offset(),
+                    first_arg.location().end_offset(),
+                );
                 self.check_send(
                     effective_start,
                     first_arg.location().start_offset(),
@@ -353,16 +567,34 @@ impl Visit<'_> for Visitor<'_> {
                     has_dot,
                     is_operator,
                     is_setter,
+                    correction_end_raw,
                 );
             }
         }
 
-        // Visit receiver without arg_parent (receiver is not an argument of this call)
+        // Visit receiver without arg_parent (receiver is not an argument of this call).
+        // For special_for_inner_method_call_in_parentheses: propagate chain_top_level_end
+        // through receiver visits so that the innermost call in a chain can know the full chain end.
         {
             let old_parent = self.arg_parent.take();
+            let old_chain_end = self.chain_top_level_end.take();
+            // Propagate chain context through receiver visits when:
+            // (a) There's already a chain_top_level_end propagated from an outer call, OR
+            // (b) This call has a dot AND is an arg of a parenthesized outer call (chain start).
+            let new_chain_end = if let Some(existing) = old_chain_end {
+                // Continue propagating existing chain end
+                Some(existing)
+            } else if node.call_operator_loc().is_some() && old_parent.as_ref().map_or(false, |pi| pi.is_parenthesized && pi.is_eligible) {
+                // Start a new chain: use this call's end (extended by scanning for more chained lines)
+                Some(self.chain_end_after(node.location().end_offset()))
+            } else {
+                None
+            };
+            self.chain_top_level_end = new_chain_end;
             if let Some(recv) = node.receiver() {
                 self.visit(&recv);
             }
+            self.chain_top_level_end = old_chain_end;
             self.arg_parent = old_parent;
         }
 
@@ -387,6 +619,7 @@ impl Visit<'_> for Visitor<'_> {
                     false,
                     false,
                     false,
+                    first_arg.location().end_offset(), // super: no chain extension
                 );
             }
         }
@@ -512,13 +745,16 @@ crate::register_cop!("Layout/FirstArgumentIndentation", |cfg| {
         "special_for_inner_method_call" => FirstArgumentIndentationStyle::SpecialForInnerMethodCall,
         _ => FirstArgumentIndentationStyle::SpecialForInnerMethodCallInParentheses,
     };
+    // IndentationWidth for this cop: prefer cop-specific setting, fall back to global Layout/IndentationWidth.Width
     let width = cfg.get_cop_config("Layout/FirstArgumentIndentation")
         .and_then(|c| c.raw.get("IndentationWidth"))
         .and_then(|v| v.as_i64())
         .map(|v| v as usize)
-        .or_else(|| cfg.get_cop_config("Layout/IndentationWidth")
-            .and_then(|c| c.raw.get("Width"))
-            .and_then(|v| v.as_i64())
-            .map(|v| v as usize));
+        .or_else(|| {
+            cfg.get_cop_config("Layout/IndentationWidth")
+                .and_then(|c| c.raw.get("Width"))
+                .and_then(|v| v.as_i64())
+                .map(|v| v as usize)
+        });
     Some(Box::new(FirstArgumentIndentation::new(style, width)))
 });
