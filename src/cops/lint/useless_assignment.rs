@@ -5,12 +5,21 @@ use crate::helpers::variable_force::{
 use crate::helpers::variable_force::suggestion::{find_suggestion, find_suggestion_from_methods};
 use crate::offense::{Correction, Offense, Severity};
 use ruby_prism::Visit;
+use std::sync::Mutex;
 
-pub struct UselessAssignment;
+pub struct UselessAssignment {
+    /// Mirrors RuboCop's `IgnoredNode#ignored_nodes` — byte ranges of outer
+    /// chained assignments that already received an offense. Persists across
+    /// `check_and_correct_source_full` iterations so that after pass 1 deletes
+    /// `foo = ` from `foo = -bar = expr`, pass 2 doesn't re-flag `bar`.
+    /// Works because the outer's byte range numerically contains the inner's
+    /// new (post-delete) byte range.
+    ignored_ranges: Mutex<Vec<(usize, usize)>>,
+}
 
 impl UselessAssignment {
     pub fn new() -> Self {
-        Self
+        Self { ignored_ranges: Mutex::new(Vec::new()) }
     }
 }
 
@@ -27,6 +36,7 @@ impl Cop for UselessAssignment {
         let mut hook = UselessAssignmentHook {
             ctx,
             offenses: Vec::new(),
+            cop: self,
         };
         let mut dispatcher = VariableForceDispatcher::new(&mut hook, ctx.source);
         dispatcher.investigate(node);
@@ -37,6 +47,7 @@ impl Cop for UselessAssignment {
 struct UselessAssignmentHook<'a> {
     ctx: &'a CheckContext<'a>,
     offenses: Vec<Offense>,
+    cop: &'a UselessAssignment,
 }
 
 impl<'a> UselessAssignmentHook<'a> {
@@ -104,8 +115,16 @@ impl<'a> VariableForceHook for UselessAssignmentHook<'a> {
                     continue;
                 }
 
-                // Skip if this is an inner chained assignment
+                // Skip if this is an inner chained assignment (current-pass detection)
                 if ignored_offsets.contains(&assignment.name_start) {
+                    continue;
+                }
+
+                // Skip if this assignment is within a previously-ignored chained range
+                // (cross-pass IgnoredNode behavior).
+                if self.cop.ignored_ranges.lock().unwrap().iter()
+                    .any(|&(rs, re)| rs <= assignment.name_start && assignment.name_end <= re)
+                {
                     continue;
                 }
 
@@ -229,12 +248,13 @@ impl<'a> VariableForceHook for UselessAssignmentHook<'a> {
 
                 self.offenses.push(offense);
 
-                // If this is a chained outer assignment, ignore inner ones
-                // (RuboCop's ignore_node + chained_assignment? logic)
-                // Check if the value of this assignment is another assignment
+                // If this is a chained outer assignment, record its full byte range
+                // so subsequent passes (and inner assignments in this pass) skip
+                // anything within. Mirrors RuboCop's `ignore_node + chained_assignment?`.
                 if self.is_outer_chained_assignment(assignment.name_start, assignment.name_end) {
-                    // Mark that we should skip the next variable's assignment
-                    // at the chained position
+                    if let Some((s, e)) = self.find_lvasgn_full_range(assignment.name_start) {
+                        self.cop.ignored_ranges.lock().unwrap().push((s, e));
+                    }
                 }
             }
         }
@@ -242,11 +262,26 @@ impl<'a> VariableForceHook for UselessAssignmentHook<'a> {
 }
 
 impl<'a> UselessAssignmentHook<'a> {
+    /// Find the full byte range of a LocalVariableWriteNode whose name starts at the given offset.
+    /// Returns (start, end) of the LVW node's location, or None if not found.
+    fn find_lvasgn_full_range(&self, name_start: usize) -> Option<(usize, usize)> {
+        let result = ruby_prism::parse(self.ctx.source.as_bytes());
+        let root = result.node();
+        let program = root.as_program_node()?;
+        let mut finder = LvasgnRangeFinder { target_offset: name_start, range: None };
+        for stmt in program.statements().body().iter() {
+            finder.visit(&stmt);
+        }
+        finder.range
+    }
+
     fn is_outer_chained_assignment(&self, _name_start: usize, name_end: usize) -> bool {
-        // Check if after `name =` there's another assignment
+        // Check if after `name =` there's another assignment (possibly wrapped
+        // in unary ops like `foo = -bar = expr`). Mirrors RuboCop's
+        // chained_assignment?: `node.lvasgn_type? && node.expression&.send_type?`
+        // OR `node.expression&.lvasgn_type?`.
         let source = self.ctx.source.as_bytes();
         let mut i = name_end;
-        // Skip whitespace and `=`
         while i < source.len() && (source[i] == b' ' || source[i] == b'\t') {
             i += 1;
         }
@@ -255,8 +290,13 @@ impl<'a> UselessAssignmentHook<'a> {
             while i < source.len() && (source[i] == b' ' || source[i] == b'\t') {
                 i += 1;
             }
-            // Check if what follows looks like a variable assignment
+            // Direct chain: another identifier (`foo = bar = ...`)
             if i < source.len() && (source[i].is_ascii_lowercase() || source[i] == b'_') {
+                return true;
+            }
+            // Unary-op chain: `foo = -bar = ...` or `foo = !bar = ...`.
+            // Approximation matching RuboCop's send_type? expression check.
+            if i < source.len() && (source[i] == b'-' || source[i] == b'+' || source[i] == b'!' || source[i] == b'~') {
                 return true;
             }
         }
@@ -366,6 +406,24 @@ impl<'a> Visit<'_> for LoopConditionChecker<'a> {
     fn visit_class_node(&mut self, _node: &ruby_prism::ClassNode) {}
     fn visit_module_node(&mut self, _node: &ruby_prism::ModuleNode) {}
     fn visit_singleton_class_node(&mut self, _node: &ruby_prism::SingletonClassNode) {}
+}
+
+/// Finds the full byte range of a LocalVariableWriteNode whose name starts at
+/// `target_offset`. Used to record IgnoredNode-style persistent ranges.
+struct LvasgnRangeFinder {
+    target_offset: usize,
+    range: Option<(usize, usize)>,
+}
+
+impl Visit<'_> for LvasgnRangeFinder {
+    fn visit_local_variable_write_node(&mut self, node: &ruby_prism::LocalVariableWriteNode) {
+        if node.name_loc().start_offset() == self.target_offset {
+            let loc = node.location();
+            self.range = Some((loc.start_offset(), loc.end_offset()));
+            return;
+        }
+        ruby_prism::visit_local_variable_write_node(self, node);
+    }
 }
 
 /// Detects if a LocalVariableWriteNode at target_offset is directly nested
