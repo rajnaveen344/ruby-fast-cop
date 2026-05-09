@@ -176,6 +176,26 @@ impl<'a> BlockVisitor<'a> {
         }
     }
 
+    /// Walk to the topmost stack ancestor still on `anchor_line` (mirrors RuboCop's
+    /// `start_for_line_node`'s `each_ancestor.to_a.reverse.find { same_line?(...) }`).
+    /// Used for autocorrect target column when style is Either or StartOfLine.
+    fn find_topmost_same_line_lhs_start(
+        &self,
+        block_start_off: usize,
+        anchor_line: usize,
+        fallback: usize,
+    ) -> usize {
+        for f in &self.stack {
+            if f.start_off > block_start_off || f.end_off < block_start_off {
+                continue;
+            }
+            if f.first_line == anchor_line {
+                return f.lhs_start;
+            }
+        }
+        fallback
+    }
+
     fn first_line_source(&self, start: usize, end: usize) -> String {
         let src_end = self.ctx.source[start..].find('\n')
             .map(|p| start + p)
@@ -259,15 +279,19 @@ impl<'a> BlockVisitor<'a> {
             }
         };
 
-        // Correction: replace leading whitespace of `end`/`}` line with target column.
-        // For Either style: prefer do_col when start_col != do_col (mirrors RuboCop's
-        // AlignmentCorrector which aligns to start_of_line = do_col in those cases).
-        // For Either style when same_target: use start_col (= do_col).
+        // Correction target: RuboCop uses `start_for_line_node` (topmost-same-line
+        // ancestor of the align target), distinct from `start_for_block_node` used for
+        // offense detection. For chain blocks, this lifts the target from the call's
+        // own col to the column of the outermost expression on the same line.
         let target_col = match self.style {
             BlockAlignmentStyle::StartOfBlock => do_col,
-            BlockAlignmentStyle::StartOfLine => start_col,
-            BlockAlignmentStyle::Either => {
-                if same_target { start_col } else { do_col }
+            BlockAlignmentStyle::StartOfLine | BlockAlignmentStyle::Either => {
+                let topmost = self.find_topmost_same_line_lhs_start(
+                    block_enclosing_start_off,
+                    align.first_line,
+                    align.lhs_start,
+                );
+                self.ctx.col_of(topmost)
             }
         };
         let line_start = self.ctx.line_start(end_off);

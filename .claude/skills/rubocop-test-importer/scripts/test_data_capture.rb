@@ -161,6 +161,17 @@ module TestDataCapture
     # Capture filename if provided (used by cops like Naming/FileName)
     filename = (file.is_a?(String) ? file : nil) || extract_test_filename
 
+    # Capture Encoding.default_external if non-default. Some specs use
+    # `with_default_external_encoding(Encoding::US_ASCII) { example.run }`
+    # to test encoding-sensitive behavior (e.g. Style/WordArray Unicode →
+    # \uXXXX escape). The encoding helper sets it for the example duration.
+    external_encoding = begin
+      enc = ::Encoding.default_external.name
+      enc unless enc == 'UTF-8'
+    rescue
+      nil
+    end
+
     # The `chomp` parameter in expect_offense tells RuboCop to strip the trailing
     # newline before processing. This maps to our `strip_trailing_newline` flag.
     TestDataCapture.pending_capture = {
@@ -169,7 +180,8 @@ module TestDataCapture
       config: config_hash,
       corrected: nil,
       filename: filename,
-      strip_trailing_newline: chomp
+      strip_trailing_newline: chomp,
+      external_encoding: external_encoding
     }
   rescue => e
     $stderr.puts "[TestDataCapture] Error in expect_offense: #{e.message}"
@@ -463,11 +475,21 @@ module TestDataCaptureHook
           nil
         end
 
+        # Detect RSpec pending tests. Two forms exist:
+        #   1. `it 'foo', pending: 'reason' do ... end` — sets metadata[:pending]
+        #   2. Bare `pending 'reason'` inside test body — sets execution_result.pending_message
+        # Both forms are documented in RuboCop as known-broken tests; the
+        # `expect_correction` block is aspirational and not enforced by RuboCop CI.
+        is_pending = !!example.metadata[:pending] ||
+                     !example.execution_result.pending_message.nil? ||
+                     example.execution_result.status == :pending
+
         # Tag all captures from this example with metadata
         TestDataCapture.captures.each do |capture|
           capture[:test_name] ||= test_name
           capture[:cop_name] ||= cop_name
           capture[:ruby_version] ||= target_ruby_version if target_ruby_version
+          capture[:pending] = true if is_pending
         end
       end
     end

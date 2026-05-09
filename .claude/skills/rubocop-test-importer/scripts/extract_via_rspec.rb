@@ -293,6 +293,19 @@ def generate_toml(cop:, department:, severity:, implemented:, tests:)
       lines << "filename = #{toml_string(ensure_utf8(test[:filename]))}"
     end
 
+    # Mark RSpec-pending tests. RuboCop's CI doesn't validate these — the
+    # `expect_correction` block is a placeholder for future work, not an
+    # enforced expectation. Tester skips these so we mirror RuboCop's stance.
+    if test[:pending]
+      lines << "pending = true"
+    end
+
+    # Capture non-default Encoding.default_external (e.g. US-ASCII) for
+    # encoding-sensitive cops like Style/WordArray (Unicode → \uXXXX escape).
+    if test[:external_encoding].is_a?(String) && !test[:external_encoding].empty?
+      lines << "external_encoding = #{toml_string(test[:external_encoding])}"
+    end
+
     source = ensure_utf8(test[:source] || '')
     corrected_for_calc = test[:corrected] ? ensure_utf8(test[:corrected]) : nil
     base_indent = compute_base_indent(source, corrected_for_calc)

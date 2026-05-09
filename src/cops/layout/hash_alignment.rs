@@ -307,8 +307,12 @@ impl<'a> HashAlignmentVisitor<'a> {
         let rocket_styles = self.rocket_styles.to_vec();
         let colon_styles = self.colon_styles.to_vec();
 
-        // Bucket offenses by alignment style (mirrors RuboCop's offenses_by)
-        let mut offenses_by: HashMap<AlignmentStyle, Vec<Offense>> = HashMap::new();
+        // Map (style, pair_idx) → key_delta. Mirrors RuboCop's column_deltas:
+        // tracks per-style/per-pair delta for any pair that had a non-good_alignment
+        // delta under that style. Used at registration time to build corrections
+        // using the FIRST configured style's delta (not the winning style's).
+        let mut deltas_by: HashMap<(AlignmentStyle, usize), i64> = HashMap::new();
+        let mut offending_idx_by: HashMap<AlignmentStyle, Vec<usize>> = HashMap::new();
         let mut kwsplat_offenses: Vec<Offense> = Vec::new();
 
         let styles_for = |pair: &PairInfo| -> &[AlignmentStyle] {
@@ -317,12 +321,12 @@ impl<'a> HashAlignmentVisitor<'a> {
 
         // Initialize all style buckets so styles with 0 offenses are still candidates
         for &style in styles_for(first_pair) {
-            offenses_by.entry(style).or_default();
+            offending_idx_by.entry(style).or_default();
         }
         for pair in pairs.iter() {
             if !pair.is_kwsplat {
                 for &style in styles_for(pair) {
-                    offenses_by.entry(style).or_default();
+                    offending_idx_by.entry(style).or_default();
                 }
             }
         }
@@ -331,15 +335,14 @@ impl<'a> HashAlignmentVisitor<'a> {
         for &style in styles_for(first_pair) {
             let delta = self.first_pair_deltas(first_pair, style, max_key_width, max_delimiter_width);
             if !all_zero(&delta) {
-                offenses_by.entry(style).or_default().push(
-                    self.make_offense_with_deltas(message_for(style), first_pair, first_pair, style, 0, max_key_width, max_delimiter_width),
-                );
+                deltas_by.insert((style, first_pair_idx), 0);
+                offending_idx_by.entry(style).or_default().push(first_pair_idx);
             }
         }
 
         // Check all children
-        for pair in pairs.iter() {
-            if std::ptr::eq(pair, first_pair) {
+        for (idx, pair) in pairs.iter().enumerate() {
+            if idx == first_pair_idx {
                 continue;
             }
             if pair.is_kwsplat {
@@ -356,10 +359,8 @@ impl<'a> HashAlignmentVisitor<'a> {
             for &style in styles_for(pair) {
                 let delta = self.pair_deltas(first_pair, pair, style, max_key_width, max_delimiter_width);
                 if !all_zero(&delta) {
-                    let key_delta = delta.key;
-                    offenses_by.entry(style).or_default().push(
-                        self.make_offense_with_deltas(message_for(style), pair, first_pair, style, key_delta, max_key_width, max_delimiter_width),
-                    );
+                    deltas_by.insert((style, idx), delta.key);
+                    offending_idx_by.entry(style).or_default().push(idx);
                 }
             }
         }
@@ -367,19 +368,12 @@ impl<'a> HashAlignmentVisitor<'a> {
         // Register kwsplat offenses (always reported)
         self.offenses.extend(kwsplat_offenses);
 
-        // Pick alignment style with fewest offenses.
-        // On tie, prefer the first style encountered (mirrors Ruby hash insertion order).
-        // RuboCop iterates styles per-pair, so the first style configured comes first.
-        let mut sorted_styles: Vec<(AlignmentStyle, Vec<Offense>)> = offenses_by.into_iter().collect();
-        // Stable sort: styles with fewer offenses come first.
-        // On tie, maintain original config order by using style_order index.
+        // Pick alignment style with fewest offenses (config order tie-break).
         let style_order: Vec<AlignmentStyle> = {
             let mut order = Vec::new();
-            // First pair's styles come first (they're inserted first in the map)
             for &s in styles_for(first_pair) {
                 if !order.contains(&s) { order.push(s); }
             }
-            // Then other pair styles
             for pair in pairs.iter() {
                 if !pair.is_kwsplat {
                     for &s in styles_for(pair) {
@@ -389,12 +383,37 @@ impl<'a> HashAlignmentVisitor<'a> {
             }
             order
         };
-        sorted_styles.sort_by_key(|(style, offenses)| {
+        let mut sorted_styles: Vec<(AlignmentStyle, Vec<usize>)> = offending_idx_by.into_iter().collect();
+        sorted_styles.sort_by_key(|(style, idxs)| {
             let order_idx = style_order.iter().position(|s| s == style).unwrap_or(usize::MAX);
-            (offenses.len(), order_idx)
+            (idxs.len(), order_idx)
         });
-        if let Some((_style, offenses)) = sorted_styles.into_iter().next() {
-            self.offenses.extend(offenses);
+
+        let Some((winning_style, offending_idxs)) = sorted_styles.into_iter().next() else {
+            return;
+        };
+
+        // Build offenses with the winning style's MESSAGE but the FIRST configured
+        // style's correction (mirrors RuboCop's `column_deltas[alignment_for(o).first.class]`).
+        for idx in offending_idxs {
+            let pair = &pairs[idx];
+            let msg = message_for(winning_style);
+            let first_style = styles_for(pair)[0];
+            let correction_delta = deltas_by.get(&(first_style, idx)).copied();
+            let offense = self.make_offense(msg, pair);
+            let offense = match correction_delta {
+                Some(key_delta) => {
+                    match self.build_pair_correction(
+                        pair, first_pair, first_style, key_delta,
+                        max_key_width, max_delimiter_width,
+                    ) {
+                        Some(c) => offense.with_correction(c),
+                        None => offense,
+                    }
+                }
+                None => offense,
+            };
+            self.offenses.push(offense);
         }
     }
 

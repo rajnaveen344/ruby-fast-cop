@@ -22,6 +22,10 @@ pub struct WordArray {
     word_regex: String,
     /// Preferred delimiter pair for %w/%W: e.g. "()" or "[]" or "{}" or "<>"
     preferred_delimiters: String,
+    /// `Encoding.default_external` name (e.g. "US-ASCII"). When set to a
+    /// non-Unicode encoding, %w/%W content with non-ASCII chars is rendered
+    /// as `\uXXXX` escape sequences (mirrors Ruby `String#inspect`).
+    external_encoding: Option<String>,
 }
 
 impl Default for WordArray {
@@ -31,6 +35,7 @@ impl Default for WordArray {
             min_size: 2,
             word_regex: r"\A(?:\w|\w-\w|\n|\t)+\z".to_string(),
             preferred_delimiters: "()".to_string(),
+            external_encoding: None,
         }
     }
 }
@@ -45,12 +50,24 @@ impl WordArray {
         min_size: usize,
         word_regex: String,
         preferred_delimiters: String,
+        external_encoding: Option<String>,
     ) -> Self {
         Self {
             style,
             min_size,
             word_regex,
             preferred_delimiters,
+            external_encoding,
+        }
+    }
+
+    fn escape_non_ascii(&self) -> bool {
+        match self.external_encoding.as_deref() {
+            Some(enc) => {
+                let up = enc.to_ascii_uppercase();
+                up == "US-ASCII" || up == "ASCII" || up == "ASCII-8BIT"
+            }
+            None => false,
         }
     }
 }
@@ -207,9 +224,13 @@ impl WordArray {
 
         let loc = node.location();
         let mut off = ctx.offense(COP_NAME, PERCENT_MSG, Severity::Convention, &loc);
-        if let Some(c) =
-            build_percent_correction(ctx.source, node, elements, &self.preferred_delimiters)
-        {
+        if let Some(c) = build_percent_correction(
+            ctx.source,
+            node,
+            elements,
+            &self.preferred_delimiters,
+            self.escape_non_ascii(),
+        ) {
             off = off.with_correction(c);
         }
         vec![off]
@@ -517,11 +538,16 @@ fn paired_delim_balanced(content: &str, open_delim: char, close_delim: char) -> 
 
 /// Render a string content for use inside a %w/%W array.
 /// Handles escaping of delimiter chars and non-ASCII.
+///
+/// `escape_non_ascii` mirrors RuboCop's `escape_string` behaviour under a
+/// non-UTF-8 `Encoding.default_external`: non-ASCII chars are emitted as
+/// `\uXXXX` sequences (which forces `%W`).
 fn render_for_percent(
     content: &str,
     open_delim: char,
     close_delim: char,
     needs_w_capital: &mut bool,
+    escape_non_ascii: bool,
 ) -> String {
     let skip_delim = paired_delim_balanced(content, open_delim, close_delim);
     let mut rendered = String::with_capacity(content.len() + 4);
@@ -548,8 +574,13 @@ fn render_for_percent(
                 *needs_w_capital = true;
             }
             c if !c.is_ascii() => {
-                // Non-ASCII: output as-is (RuboCop preserves Unicode chars in %w)
-                rendered.push(c);
+                if escape_non_ascii {
+                    rendered.push_str(&format!("\\u{:04X}", c as u32));
+                    *needs_w_capital = true;
+                } else {
+                    // RuboCop preserves Unicode chars in %w under UTF-8.
+                    rendered.push(c);
+                }
             }
             c if !skip_delim && (c == open_delim || c == close_delim) => {
                 // Escape delimiter characters
@@ -570,6 +601,7 @@ fn build_percent_body_line_preserving(
     open_delim: char,
     close_delim: char,
     needs_w_capital: &mut bool,
+    escape_non_ascii: bool,
 ) -> String {
     if elements.is_empty() {
         return String::new();
@@ -589,7 +621,8 @@ fn build_percent_body_line_preserving(
             None => continue,
         };
 
-        let rendered = render_for_percent(&content, open_delim, close_delim, needs_w_capital);
+        let rendered =
+            render_for_percent(&content, open_delim, close_delim, needs_w_capital, escape_non_ascii);
 
         if line_num != current_line_num && current_line_num != usize::MAX {
             lines.push(current_group.clone());
@@ -621,6 +654,7 @@ fn build_percent_correction(
     node: &ruby_prism::ArrayNode,
     elements: &[Node],
     preferred_delimiters: &str,
+    escape_non_ascii: bool,
 ) -> Option<Correction> {
     let (open_delim, close_delim) = get_delimiters(preferred_delimiters);
 
@@ -666,6 +700,7 @@ fn build_percent_correction(
             open_delim,
             close_delim,
             &mut needs_w_capital,
+            escape_non_ascii,
         )
     } else {
         let mut parts: Vec<String> = Vec::with_capacity(elements.len());
@@ -673,9 +708,19 @@ fn build_percent_correction(
             let content = string_content(e, source)?;
             // Check if unescaped content has actual control chars (real \n, \t, etc.)
             let has_real_control = content.chars().any(|c| c.is_control());
-            if has_real_control {
+            // Under non-Unicode external encoding, force the unescaped path so
+            // non-ASCII chars get rewritten as `\uXXXX`. The raw-source path
+            // would otherwise preserve them verbatim.
+            let has_non_ascii = content.chars().any(|c| !c.is_ascii());
+            if has_real_control || (escape_non_ascii && has_non_ascii) {
                 // Use unescaped content, re-escape for %W
-                let rendered = render_for_percent(&content, open_delim, close_delim, &mut needs_w_capital);
+                let rendered = render_for_percent(
+                    &content,
+                    open_delim,
+                    close_delim,
+                    &mut needs_w_capital,
+                    escape_non_ascii,
+                );
                 parts.push(rendered);
             } else if let Some(raw) = string_raw_content(e, source) {
                 // Use raw source — preserves \t, \n etc. as-is (no double-escaping)
@@ -683,7 +728,13 @@ fn build_percent_correction(
                 let rendered = render_raw_for_percent(raw, open_delim, close_delim);
                 parts.push(rendered);
             } else {
-                let rendered = render_for_percent(&content, open_delim, close_delim, &mut needs_w_capital);
+                let rendered = render_for_percent(
+                    &content,
+                    open_delim,
+                    close_delim,
+                    &mut needs_w_capital,
+                    escape_non_ascii,
+                );
                 parts.push(rendered);
             }
         }
@@ -760,10 +811,20 @@ crate::register_cop!("Style/WordArray", |cfg| {
         .unwrap_or("()")
         .to_string();
 
+    // Reserved key set by the tester to mirror specs that wrap the example in
+    // `with_default_external_encoding(...)`. Real `.rubocop.yml` configs don't
+    // carry this — RuboCop reads `Encoding.default_external` directly at
+    // runtime; we surface it via this synthetic key.
+    let external_encoding = cop_config
+        .and_then(|c| c.raw.get("__external_encoding__"))
+        .and_then(|v| v.as_str())
+        .map(String::from);
+
     Some(Box::new(WordArray::with_config(
         style,
         min_size,
         word_regex,
         preferred_delimiters,
+        external_encoding,
     )))
 });
