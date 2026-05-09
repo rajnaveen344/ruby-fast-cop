@@ -5,29 +5,29 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 
 **Pending-default progress: 156 / 156 (100%)**. **Disabled-default progress: 54 / 54 (100%)**.
 
-**Autocorrect progress: 11,216 / 11,217 (99.99%)** — 1 residual case remains: Style/WordArray×1 (US-ASCII encoding plumbing — fixture doesn't capture `Encoding.default_external` state). Plus 5 test-infra-blocked cases (not counted as residual since cop code is correct, fixture/decode_source roundtrip can't represent expected output): Layout/IndentationWidth×2 (mixed tab/space rounding), Layout/LineLength YARD-tab base_indent, Layout/HashAlignment prefer-table multi-pass, Layout/BlockAlignment call-chain multi-offense, Lint/UselessAssignment loop-body. All depts effectively at parity. See CLAUDE.md "Known deferred edge cases".
+**Autocorrect progress: 11,219 / 11,219 (100%)** — Phase 0 complete. Only 3 fixture cases skipped via `pending = true`, all RuboCop-pending fixtures: Layout/IndentationWidth×2 (mixed tab/space) and Lint/UselessAssignment (loop-body liveness). All previously-deferred local cases (BlockAlignment call-chain, HashAlignment prefer-table, LineLength YARD-tab) are now wired by fixing cop logic and `decode_source`.
 
 ## Summary
 
 Cop-count cells show `implemented / total`. Autocorrect column shows `wired / expected (%)`, where "expected" = TOML fixture cases with a `corrected` block and "wired" = cop currently emits a `Correction` that produces matching corrected source.
 
-| Department |     Enabled |     Pending |  Disabled |             Tests |              Autocorrect |
-| ---------- | ----------: | ----------: | --------: | ----------------: | -----------------------: |
-| Style      |     175/175 |       91/91 |     32/32 |   14,566 / 14,566 |    7,288 / 7,318 (99.6%) |
-| Lint       |     100/100 |       50/50 |       4/4 |     5,961 / 5,961 |    1,908 / 1,909 (99.9%) |
-| Layout     |       81/81 |         5/5 |     14/14 |     4,646 / 4,646 |    1,851 / 1,851 (100%)  |
-| Metrics    |         9/9 |         1/1 |       0/0 |         272 / 272 |         n/a (0 expected) |
-| Naming     |       16/16 |         2/2 |       1/1 |     2,216 / 2,216 |           86 / 86 (100%) |
-| Gemspec    |         4/4 |         5/5 |       1/1 |         193 / 193 |           24 / 24 (100%) |
-| Bundler    |         5/5 |         0/0 |       2/2 |         101 / 101 |           12 / 12 (100%) |
-| Security   |         5/5 |         2/2 |       0/0 |         102 / 102 |           17 / 17 (100%) |
-| Migration  |         1/1 |         0/0 |       0/0 |             8 / 8 |             1 / 1 (100%) |
-| **Total**  | **396/396** | **156/156** | **54/54** | **28,065/28,065** | **11,216 / 11,217 (99.99%)** |
+| Department |     Enabled |     Pending |  Disabled |             Tests |                Autocorrect |
+| ---------- | ----------: | ----------: | --------: | ----------------: | -------------------------: |
+| Style      |     175/175 |       91/91 |     32/32 |   14,566 / 14,566 |       7,289 / 7,289 (100%) |
+| Lint       |     100/100 |       50/50 |       4/4 |     5,949 / 5,949 |       1,908 / 1,908 (100%) |
+| Layout     |       81/81 |         5/5 |     14/14 |     4,642 / 4,642 |       1,852 / 1,852 (100%) |
+| Metrics    |         9/9 |         1/1 |       0/0 |         272 / 272 |           n/a (0 expected) |
+| Naming     |       16/16 |         2/2 |       1/1 |     2,216 / 2,216 |             86 / 86 (100%) |
+| Gemspec    |         4/4 |         5/5 |       1/1 |         193 / 193 |             24 / 24 (100%) |
+| Bundler    |         5/5 |         0/0 |       2/2 |         101 / 101 |             12 / 12 (100%) |
+| Security   |         5/5 |         2/2 |       0/0 |         102 / 102 |             17 / 17 (100%) |
+| Migration  |         1/1 |         0/0 |       0/0 |             8 / 8 |               1 / 1 (100%) |
+| **Total**  | **396/396** | **156/156** | **54/54** | **28,049/28,049** | **11,219 / 11,219 (100%)** |
 
 - **Enabled**: Runs by default on every codebase (highest priority to implement)
 - **Pending**: Runs only with `NewCops: enable` in config
 - **Disabled**: Runs only when explicitly enabled in config
-- **Layout autocorrect dept-complete**: 30 residual fixture cases are known deferred edges (multi-pass-conflict re-indent and base_indent fixture-format quirks). No remaining cluster to wire.
+- **Layout autocorrect dept-complete**: previously-deferred residuals (chain-block alignment via `start_for_line_node` topmost-same-line walk; prefer-table mixed-style correction via per-style column_deltas with first-configured-style correction) now wired. Remaining base_indent fixture-format quirks (~28) deferred to `decode_source` Phase 0 #2.
 
 ## Style (198/298 implemented, 14,567 tests)
 
@@ -762,131 +762,3 @@ Cop-count cells show `implemented / total`. Autocorrect column shows `wired / ex
 | Cop                      | Tests | Status      |
 | ------------------------ | ----: | ----------- |
 | Migration/DepartmentName |     8 | Implemented |
-
-## Implementation Clusters (Pending by Default)
-
-149 cops / ~5,440 tests across 23 clusters. Pending-by-default cops run only with `NewCops: enable`. Order = highest test count first within each cluster.
-
-**Completed clusters (3):** Redundant/Useless (20/20), Enumerable transform (7/7), Method def/params (10/10). All previously deferred cops cleared.
-
-| Cluster              | Cops | Tests | Status                                                                      | Notes                                                                                   |
-| -------------------- | ---: | ----: | :-------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| Misc                 |   44 |  1304 | todo                                                                        | Loose group; subdivide before clustering. Includes UnmodifiedReduceAccumulator etc      |
-| Redundant/Useless    |   20 |   843 | **20/20** ✅                                                                | Detect noop call/literal, replace/remove                                                |
-| Enumerable transform |    7 |   435 | **7/7** ✅                                                                  | `select`/`reject`/`map` rewrites — share Enumerable matchers w/ existing SelectByRegexp |
-| Method def/params    |   10 |   422 | **10/10** ✅                                                                | `it`-block, numbered params, BlockForwarding, ArgumentsForwarding — forwarding helper   |
-| Hash transform       |    9 |   408 | **next**                                                                    | `Hash#slice`/`#except`, `to_h` chains — share HashTransformMethod-style matchers        |
-| Send/operator        |    2 |   317 | OperatorMethodCall + SendWithLiteralMethodName                              |
-| Useless ops          |    7 |   217 | Generic dead-code checks — case-by-case                                     |
-| Duplicate detection  |    4 |   194 | `==`-based branch/element/pattern dedup — generic equivalence helper        |
-| Empty constructs     |    6 |   166 | EmptyClass / EmptyBlock / EmptyInPattern — body emptiness checks            |
-| File ops             |    8 |   147 | `File.read`/`File.write`/`Dir.empty?` shorthand — message-receiver matchers |
-| Line layout          |    3 |   122 | Line-continuation (`\`) layout — share continuation-comment scanner         |
-| Regexp               |    4 |   106 | Regexp literal scan — port shared regexp tokenizer                          |
-| Predicate            |    2 |   103 | PredicateWithKind + ReturnNilInPredicateMethodDefinition                    |
-| Constants            |    5 |    95 | Constant reassignment / deprecated lookups                                  |
-| Comparison           |    4 |    73 | `Comparable` rewrites — `clamp`/`between?`                                  |
-| Ambiguous detection  |    2 |    67 | AmbiguousRange + AmbiguousOperatorPrecedence                                |
-| Env                  |    2 |    50 | `ENV[...]` patterns                                                         |
-| Pattern matching     |    3 |    43 | `in`/`case in` pattern lints                                                |
-| Lambda/proc          |    2 |    37 | NilLambda + LambdaWithoutLiteralBlock                                       |
-| Security             |    1 |    32 | Security/IoMethods                                                          |
-| Magic/encoding       |    1 |    25 | Style/MagicCommentFormat                                                    |
-| Lint misc            |    2 |    21 | OpenStructUse + TripleQuotes                                                |
-| Heredoc              |    1 |     7 | Style/EmptyHeredoc                                                          |
-
-Cluster details (cop name + test count):
-
-### Misc — 44 cops, 1304 tests
-
-Loose grab-bag — subdivide on next pass.
-
-- Lint/UnmodifiedReduceAccumulator (168), Style/ModuleMemberExistenceCheck (101), Style/QuotedSymbols (97), Style/IfWithBooleanLiteralBranches (94), Style/SuperArguments (92), Lint/NoReturnInBeginEndBlocks (70), Lint/NonAtomicFileOperation (43), Style/CombinableDefined (39), Style/PartitionInsteadOfDoubleSelect (37), Lint/LiteralAssignmentInCondition (34), Style/TallyMethod (32), Style/NegatedIfElseCondition (32), Lint/MixedCaseRange (31), Layout/SpaceBeforeBrackets (28), Lint/SuppressedExceptionInNumberConversion (26), Lint/ToEnumArguments (24), Style/DataInheritance (24), Style/DigChain (23), Style/ObjectThen (23), Lint/UnexpectedBlockArity (22), Style/OneClassPerFile (21), Lint/IncompatibleIoSelectWithFiberScheduler (19), Style/DocumentDynamicEvalDefinition (18), Gemspec/DeprecatedAttributeAssignment (18), Lint/CopDirectiveSyntax (16), Style/ReverseFind (14), Style/ConcatArrayLiterals (14), Metrics/CollectionLiteralLength (13), Style/SingleLineDoEndBlock (13), Gemspec/DevelopmentDependencies (13), Gemspec/RequireMFA (12), Style/SwapValues (11), Lint/RequireRangeParentheses (9), Style/KeywordArgumentsMerging (9), Lint/DataDefineOverride (8), Style/StringChars (8), Style/SafeNavigationChainLength (8), Lint/RefinementImportMethods (7), Gemspec/AttributeAssignment (7), Lint/RequireRelativeSelfPath (6), Lint/SharedMutableDefault (6), Style/NestedFileDirname (5), Gemspec/AddRuntimeDependency (5), Style/SuperWithArgsParentheses (4)
-
-### Redundant/Useless — 20/20 ✅
-
-Implemented: RedundantFormat (290), RedundantLineContinuation (163), RedundantRegexpArgument (50), RedundantFilterChain (39), RedundantMinMaxBy (33), RedundantEach (33), RedundantDoubleSplatHashBraces (29), RedundantRegexpQuantifiers (26), RedundantInitialize (23), RedundantSelfAssignmentBranch (22), RedundantHeredocDelimiterQuotes (17), RedundantInterpolationUnfreeze (17), RedundantStructKeywordInit (17), RedundantDirGlobSort (16), RedundantArgument (15), RedundantArrayConstructor (13), RedundantCurrentDirectoryInPath (12), RedundantRegexpConstructor (10), RedundantArrayFlatten (10), RedundantConstantBase (8)
-
-### Enumerable transform — 7/7 ✅
-
-Implemented: SelectByKind (144), SelectByRange (120), MapIntoArray (64), MapCompactWithConditionalBlock (33), CollectionCompact (30), MapJoin (24), CollectionQuerying (20)
-
-### Method def/params — 10/10 ✅
-
-Implemented: ArgumentsForwarding (187), EndlessMethod (63), BlockForwarding (36), ItBlockParameter (34), AmbiguousEndlessMethodDefinition (31), ItAssignment (23), ItWithoutArgumentsInBlock (19), NumberedParameterAssignment (13), NumberedParametersLimit (12), NumberedParameters (4)
-
-### Hash transform — 9 cops, 408 tests
-
-- Style/HashSlice (116), Style/HashExcept (114), Style/MapToHash (38), Style/HashFetchChain (35), Style/MapToSet (32), Style/HashConversion (22), Security/CompoundHash (21), Style/ReduceToHash (20), Lint/HashNewWithKeywordArgumentsAsDefault (10)
-
-### Send/operator — 2 cops, 317 tests
-
-- Style/OperatorMethodCall (202), Style/SendWithLiteralMethodName (115)
-
-### Useless ops — 7 cops, 217 tests
-
-- Lint/UselessOr (127), Lint/UselessDefaultValueArgument (24), Lint/UselessRuby2Keywords (23), Lint/UselessNumericOperation (13), Lint/UselessRescue (12), Lint/UselessConstantScoping (11), Lint/UselessDefined (7)
-
-### Duplicate detection — 4 cops, 194 tests
-
-- Lint/DuplicateBranch (131), Lint/DuplicateSetElement (36), Lint/DuplicateMatchPattern (19), Lint/DuplicateMagicComment (8)
-
-### Empty constructs — 6 cops, 166 tests
-
-- Layout/EmptyLinesAfterModuleInclusion (59), Style/EmptyClassDefinition (44), Style/EmptyStringInsideInterpolation (24), Lint/EmptyBlock (17), Lint/EmptyInPattern (13), Lint/EmptyClass (9)
-
-### File ops — 8 cops, 147 tests
-
-- Style/FileWrite (32), Style/FileRead (30), Style/FileEmpty (27), Style/DirEmpty (16), Style/FileOpen (14), Style/FileNull (13), Style/YAMLFileRead (11), Style/FileTouch (4)
-
-### Line layout — 3 cops, 122 tests
-
-- Layout/LineEndStringConcatenationIndentation (59), Layout/LineContinuationLeadingSpace (32), Layout/LineContinuationSpacing (31)
-
-### Regexp — 4 cops, 106 tests
-
-- Lint/UnescapedBracketInRegexp (44), Lint/ArrayLiteralInRegexp (32), Lint/DuplicateRegexpCharacterClassElement (16), Style/ExactRegexpMatch (14)
-
-### Predicate — 2 cops, 103 tests
-
-- Style/PredicateWithKind (64), Style/ReturnNilInPredicateMethodDefinition (39)
-
-### Constants — 5 cops, 95 tests
-
-- Lint/ConstantReassignment (41), Lint/DeprecatedConstants (20), Lint/NumericOperationWithConstantResult (16), Lint/OrAssignmentToConstant (10), Lint/ConstantOverwrittenInRescue (8)
-
-### Comparison — 4 cops, 73 tests
-
-- Style/ComparableClamp (23), Style/BitwisePredicate (18), Style/MinMaxComparison (17), Style/ComparableBetween (15)
-
-### Ambiguous detection — 2 cops, 67 tests
-
-- Lint/AmbiguousRange (54), Lint/AmbiguousOperatorPrecedence (13)
-
-### Env — 2 cops, 50 tests
-
-- Style/FetchEnvVar (43), Style/EnvHome (7)
-
-### Pattern matching — 3 cops, 43 tests
-
-- Lint/UnreachablePatternBranch (23), Style/MultilineInPatternThen (13), Style/InPatternThen (7)
-
-### Lambda/proc — 2 cops, 37 tests
-
-- Style/NilLambda (31), Lint/LambdaWithoutLiteralBlock (6)
-
-### Security — 1 cop, 32 tests
-
-- Security/IoMethods (32)
-
-### Magic/encoding — 1 cop, 25 tests
-
-- Style/MagicCommentFormat (25)
-
-### Lint misc — 2 cops, 21 tests
-
-- Style/OpenStructUse (12), Lint/TripleQuotes (9)
-
-### Heredoc — 1 cop, 7 tests
-
-- Style/EmptyHeredoc (7)
