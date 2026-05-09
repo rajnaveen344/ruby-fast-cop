@@ -282,9 +282,35 @@ impl<'a> Visitor<'a> {
             return Some(Correction::replace(node_start, node_end, replacement));
         }
 
-        // Check for heredoc in body (defer — complex re-indentation needed)
-        if self.body_has_heredoc(body) {
-            return None;
+        // Heredoc in body: the heredoc body+terminator live on lines after `node_end`
+        // (Prism's call location stops at the closing paren). Extend the correction range
+        // through the terminator line and reindent every heredoc body line by +2 spaces.
+        if let Some(term_end_off) = self.heredoc_max_terminator_end(body) {
+            let after_node = &self.ctx.source[node_end..term_end_off];
+            // after_node is `\n<heredoc lines>` ending at terminator-line end (no trailing \n).
+            // Reindent each line that starts with whitespace or is non-empty by +2.
+            let mut reindented = String::new();
+            let mut first = true;
+            for line in after_node.split('\n') {
+                if first {
+                    // before first \n is empty (after_node begins with \n) or trailing of node line
+                    first = false;
+                    reindented.push_str(line);
+                    continue;
+                }
+                if !line.is_empty() {
+                    reindented.push('\n');
+                    reindented.push_str("  ");
+                    reindented.push_str(line);
+                } else {
+                    reindented.push('\n');
+                }
+            }
+            let replacement = format!(
+                "{} {}\n{}  {}{}\n{}end",
+                keyword, cond_src, indent, body_src, reindented, indent
+            );
+            return Some(Correction::replace(node_start, term_end_off, replacement));
         }
 
         let replacement = format!(
@@ -365,6 +391,75 @@ impl<'a> Visitor<'a> {
             }
         }
         false
+    }
+
+    /// Largest end-of-line byte offset across heredoc terminators reachable from `body`.
+    /// Returns None when body has no heredoc.
+    fn heredoc_max_terminator_end(&self, body: &Node) -> Option<usize> {
+        let mut max_end: Option<usize> = None;
+        let src = self.ctx.source;
+
+        let mut consider = |opening_text: &str, after: usize, max_end: &mut Option<usize>| {
+            if !opening_text.starts_with("<<") { return; }
+            let s = opening_text.trim_start_matches('<').trim_start_matches(['-', '~']);
+            let (s, q) = if s.starts_with('"') || s.starts_with('\'') || s.starts_with('`') {
+                (&s[1..], Some(&s[..1]))
+            } else { (s, None) };
+            let delim: String = if let Some(qc) = q {
+                s.split(qc).next().unwrap_or("").to_string()
+            } else {
+                s.chars().take_while(|c| c.is_alphanumeric() || *c == '_').collect()
+            };
+            if delim.is_empty() { return; }
+            // Scan from line after `after` for terminator.
+            let bytes = src.as_bytes();
+            let mut byte_pos = after;
+            // Move to start of next line
+            while byte_pos < bytes.len() && bytes[byte_pos] != b'\n' { byte_pos += 1; }
+            if byte_pos < bytes.len() { byte_pos += 1; }
+            while byte_pos <= bytes.len() {
+                let line_end = src[byte_pos..].find('\n').map(|p| byte_pos + p).unwrap_or(bytes.len());
+                let line = &src[byte_pos..line_end];
+                if line.trim() == delim {
+                    *max_end = Some(max_end.unwrap_or(0).max(line_end));
+                    return;
+                }
+                if line_end >= bytes.len() { break; }
+                byte_pos = line_end + 1;
+            }
+        };
+
+        let mut walk = |n: &Node| {
+            if let Some(s) = n.as_string_node() {
+                if let Some(o) = s.opening_loc() {
+                    let txt = &src[o.start_offset()..o.end_offset()];
+                    consider(txt, o.end_offset(), &mut max_end);
+                }
+            } else if let Some(s) = n.as_interpolated_string_node() {
+                if let Some(o) = s.opening_loc() {
+                    let txt = &src[o.start_offset()..o.end_offset()];
+                    consider(txt, o.end_offset(), &mut max_end);
+                }
+            } else if let Some(s) = n.as_x_string_node() {
+                let o = s.opening_loc();
+                let txt = &src[o.start_offset()..o.end_offset()];
+                consider(txt, o.end_offset(), &mut max_end);
+            } else if let Some(s) = n.as_interpolated_x_string_node() {
+                let o = s.opening_loc();
+                let txt = &src[o.start_offset()..o.end_offset()];
+                consider(txt, o.end_offset(), &mut max_end);
+            }
+        };
+
+        walk(body);
+        if let Some(call) = body.as_call_node() {
+            if let Some(args) = call.arguments() {
+                for arg in args.arguments().iter() {
+                    walk(&arg);
+                }
+            }
+        }
+        max_end
     }
 
     // ── should_use_modifier ──
