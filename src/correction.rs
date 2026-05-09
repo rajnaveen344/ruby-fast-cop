@@ -23,13 +23,31 @@ pub struct CorrectionResult {
 /// 3. Walk forward with a cursor, copying unchanged gaps and applying replacements
 /// 4. Skip overlapping edits (where start < cursor position)
 pub fn apply_corrections_detailed(source: &str, offenses: &[Offense]) -> CorrectionResult {
-    let mut edits: Vec<_> = offenses
+    // Group edits per Correction so we can accept/reject atomically. A Correction
+    // is only applied if ALL its edits are non-overlapping with already-accepted
+    // edits — otherwise the whole Correction is deferred (multi-pass will retry
+    // against fresh source). Avoids the partial-apply pathology where one cop's
+    // multi-edit correction loses its dedent step due to a sibling cop's outer
+    // edit, leaving a half-corrected output that no later pass repairs.
+    let source_bytes = source.as_bytes();
+    let groups: Vec<Vec<(usize, usize, &str)>> = offenses
         .iter()
         .filter_map(|o| o.correction.as_ref())
-        .flat_map(|c| c.edits.iter())
+        .map(|c| {
+            c.edits
+                .iter()
+                .map(|e| {
+                    (
+                        e.start_offset.min(source_bytes.len()),
+                        e.end_offset.min(source_bytes.len()),
+                        e.replacement.as_str(),
+                    )
+                })
+                .collect()
+        })
         .collect();
 
-    if edits.is_empty() {
+    if groups.is_empty() {
         return CorrectionResult {
             output: source.to_string(),
             applied_count: 0,
@@ -37,41 +55,81 @@ pub fn apply_corrections_detailed(source: &str, offenses: &[Offense]) -> Correct
         };
     }
 
-    // Sort ascending by start_offset, then by end_offset for ties
-    edits.sort_by(|a, b| {
-        a.start_offset
-            .cmp(&b.start_offset)
-            .then(a.end_offset.cmp(&b.end_offset))
-    });
+    // Sort each group's edits ascending by start.
+    let mut sorted_groups: Vec<Vec<(usize, usize, &str)>> = groups;
+    for g in &mut sorted_groups {
+        g.sort_by(|a, b| a.0.cmp(&b.0).then(a.1.cmp(&b.1)));
+    }
 
-    let source_bytes = source.as_bytes();
+    // Order groups by their leftmost edit start so we can stream through source.
+    sorted_groups.sort_by_key(|g| g.first().map(|e| e.0).unwrap_or(usize::MAX));
+
+    let mut accepted: Vec<(usize, usize, &str)> = Vec::new();
+    let mut skipped_count = 0usize;
+    for g in &sorted_groups {
+        // Conflict if any edit in g overlaps any already-accepted edit, EXCEPT
+        // exact duplicates (same range + same replacement) — those re-emit
+        // when multiple offenses share a teardown edit (e.g. a block-params
+        // strip emitted once per usage by Style/ItBlockParameter). Treat them
+        // as a no-op so the rest of the group can still apply.
+        let mut conflicts = false;
+        for (s, e, r) in g {
+            for (as_, ae, ar) in &accepted {
+                // Disjoint (touching counts as disjoint).
+                if *e <= *as_ || *ae <= *s {
+                    continue;
+                }
+                // Exact duplicate non-zero-width replacement (same range, same
+                // text) — re-emission of a shared teardown edit (e.g.
+                // Style/ItBlockParameter strips |arg| once per usage). Treat
+                // as no-op overlap, not conflict.
+                if *s == *as_ && *e == *ae && *r == *ar && *s != *e {
+                    continue;
+                }
+                conflicts = true;
+                break;
+            }
+            if conflicts {
+                break;
+            }
+        }
+        if conflicts {
+            skipped_count += g.len();
+            continue;
+        }
+        for edit in g {
+            // Drop exact-duplicate non-zero-width edits — already in `accepted`.
+            // Zero-width inserts at the same offset are distinct operations
+            // (e.g. nested paren wraps in Lint/AmbiguousOperatorPrecedence).
+            if edit.0 != edit.1
+                && accepted.iter().any(|a| a.0 == edit.0 && a.1 == edit.1 && a.2 == edit.2)
+            {
+                continue;
+            }
+            accepted.push(*edit);
+        }
+    }
+
+    accepted.sort_by(|a, b| a.0.cmp(&b.0).then(a.1.cmp(&b.1)));
+
     let mut output = String::with_capacity(source.len());
     let mut cursor = 0usize;
     let mut applied_count = 0usize;
-    let mut skipped_count = 0usize;
-
-    for edit in &edits {
-        let start = edit.start_offset.min(source_bytes.len());
-        let end = edit.end_offset.min(source_bytes.len());
-
-        if start < cursor {
-            // Overlapping edit — skip it
+    for (start, end, replacement) in &accepted {
+        if *start < cursor {
+            // Should not happen — non-conflicting acceptance guarantees ordering
+            // — but defensively skip rather than corrupt output.
             skipped_count += 1;
             continue;
         }
-
-        // Copy the unchanged gap between cursor and this edit's start
-        if start > cursor {
-            output.push_str(&source[cursor..start]);
+        if *start > cursor {
+            output.push_str(&source[cursor..*start]);
         }
-
-        // Apply the replacement
-        output.push_str(&edit.replacement);
-        cursor = end;
+        output.push_str(replacement);
+        cursor = *end;
         applied_count += 1;
     }
 
-    // Copy any remaining source after the last edit
     if cursor < source_bytes.len() {
         output.push_str(&source[cursor..]);
     }
