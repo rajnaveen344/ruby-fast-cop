@@ -288,7 +288,22 @@ def generate_toml(cop:, department:, severity:, implemented:, tests:)
     end
 
     if test[:corrected]
-      lines << "corrected = #{toml_literal_string(ensure_utf8(test[:corrected]))}"
+      corrected = ensure_utf8(test[:corrected])
+      # Strip the same base_indent from corrected so tester (which re-prepends
+      # base_indent to both source and corrected) sees consistent indentation.
+      if base_indent && base_indent > 0
+        corrected = corrected.lines.map { |l|
+          if l.strip.empty?
+            l
+          else
+            # Match source-strip semantics: exact base_indent only.
+            # Lines with fewer leading spaces (e.g. heredoc body lines) are
+            # left untouched so relative indent is preserved.
+            l.sub(/^ {#{base_indent}}/, '')
+          end
+        }.join
+      end
+      lines << "corrected = #{toml_literal_string(corrected)}"
       # Only emit when explicitly false; absent = iterate (RuboCop's default)
       if test[:loop] == false
         lines << "loop = false"
