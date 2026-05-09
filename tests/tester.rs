@@ -242,6 +242,10 @@ fn decode_source(source: &str, base_indent: Option<usize>) -> String {
                 .map(|line| {
                     if line.trim().is_empty() {
                         String::new()
+                    } else if line.starts_with('\t') {
+                        // Extractor strips `^ {n}` only when matched; tab-led
+                        // lines weren't stripped, so don't re-prepend.
+                        line.to_string()
                     } else {
                         format!("{}{}", indent_str, line)
                     }
