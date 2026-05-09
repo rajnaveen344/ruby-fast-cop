@@ -28,6 +28,12 @@ pub struct Location {
     pub column: u32,
     pub last_line: u32,
     pub last_column: u32,
+    /// Byte range in the source. Used for cross-iteration "is this offense a
+    /// descendant of an already-flagged one?" checks (mirrors RuboCop's
+    /// `IgnoredNode#part_of_ignored_node?`). Defaults to `(0, 0)` for legacy
+    /// `Location::new` callers that don't have offsets handy.
+    pub start_byte: usize,
+    pub end_byte: usize,
 }
 
 impl Location {
@@ -37,6 +43,8 @@ impl Location {
             column,
             last_line,
             last_column,
+            start_byte: 0,
+            end_byte: 0,
         }
     }
 
@@ -75,6 +83,8 @@ impl Location {
             column: start_col,
             last_line: end_line,
             last_column,
+            start_byte: start_offset,
+            end_byte: end_offset,
         }
     }
 }

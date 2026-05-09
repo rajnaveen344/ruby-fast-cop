@@ -167,14 +167,52 @@ pub fn check_and_correct_source_full(
     target_ruby_version: f64,
     file_path: Option<&Path>,
 ) -> (String, Vec<Offense>, usize) {
+    use std::collections::HashMap;
+
     let mut current_source = source.to_string();
     let mut seen_hashes: HashSet<u64> = HashSet::new();
     seen_hashes.insert(hash_source(&current_source));
     let mut total_applied = 0usize;
 
+    // Mirror of RuboCop's persistent `@ignored_nodes` state across iterations.
+    // RuboCop's `IgnoredNode#part_of_ignored_node?` checks whether a new node's
+    // byte range falls within any previously-flagged node's byte range. Those
+    // pass-1 ranges are reused verbatim against pass-2 source (different
+    // coordinate system), but it works in practice because most autocorrect
+    // edits are small and local — outer-flagged ranges still positionally
+    // contain re-parsed inner nodes. We filter post-emission per cop.
+    // Byte ranges (start, end). Mirrors RuboCop's `IgnoredNode#part_of_ignored_node?`
+    // which uses byte positions — robust to corrections that shift line numbers
+    // but leave byte offsets aligned (e.g. `;` → `\n`, 1-byte-for-1-byte).
+    type LocRange = (usize, usize);
+    let mut prior_ranges: HashMap<String, Vec<LocRange>> = HashMap::new();
+
+    let loc_of = |o: &Offense| -> LocRange { (o.location.start_byte, o.location.end_byte) };
+    let contains = |outer: &LocRange, inner: &LocRange| -> bool {
+        // Skip degenerate (0, 0) — legacy `Location::new` callers without offsets.
+        if outer.0 == 0 && outer.1 == 0 {
+            return false;
+        }
+        outer.0 <= inner.0 && outer.1 >= inner.1
+    };
+
+    let filter_by_prior =
+        |offenses: Vec<Offense>, prior: &HashMap<String, Vec<LocRange>>| -> Vec<Offense> {
+            offenses
+                .into_iter()
+                .filter(|o| {
+                    let ranges = match prior.get(&o.cop_name) {
+                        Some(r) => r,
+                        None => return true,
+                    };
+                    let r = loc_of(o);
+                    !ranges.iter().any(|pr| contains(pr, &r))
+                })
+                .collect()
+        };
+
     for _ in 0..MAX_CORRECTION_ITERATIONS {
-        // Run cops in a block so ParseResult's borrow is dropped before we reassign
-        let offenses = {
+        let raw_offenses = {
             let result = parse(current_source.as_bytes());
             cops::run_cops_full(
                 cops,
@@ -185,6 +223,7 @@ pub fn check_and_correct_source_full(
                 file_path,
             )
         };
+        let offenses = filter_by_prior(raw_offenses, &prior_ranges);
 
         let has_corrections = offenses.iter().any(|o| o.correction.is_some());
         if !has_corrections {
@@ -196,29 +235,35 @@ pub fn check_and_correct_source_full(
             return (current_source, offenses, total_applied);
         }
 
+        // Stash this iteration's emitted ranges per cop for next-iteration filtering.
+        for o in &offenses {
+            prior_ranges
+                .entry(o.cop_name.clone())
+                .or_default()
+                .push(loc_of(o));
+        }
+
         total_applied += cr.applied_count;
 
-        // Cycle detection
         let h = hash_source(&cr.output);
         if !seen_hashes.insert(h) {
-            // We've seen this source before — stop to avoid infinite loop
             return (cr.output, offenses, total_applied);
         }
 
         current_source = cr.output;
     }
 
-    // Exhausted iterations — do one final lint pass on the corrected source
     let offenses = {
         let result = parse(current_source.as_bytes());
-        cops::run_cops_full(
+        let raw = cops::run_cops_full(
             cops,
             &result,
             &current_source,
             filename,
             target_ruby_version,
             file_path,
-        )
+        );
+        filter_by_prior(raw, &prior_ranges)
     };
     (current_source, offenses, total_applied)
 }
