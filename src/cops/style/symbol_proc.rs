@@ -513,9 +513,18 @@ impl Visit<'_> for SymbolProcVisitor<'_> {
             "Pass `&:{}` as an argument to `lambda` instead of a block.",
             body_method
         );
-        self.offenses.push(self.ctx.offense_with_range(
-            COP_NAME, &message, Severity::Convention, block_start, block_end,
-        ));
+        let lambda_loc = node.location();
+        let replacement = format!("lambda(&:{})", body_method);
+        let correction = crate::offense::Correction::replace(
+            lambda_loc.start_offset(),
+            lambda_loc.end_offset(),
+            replacement,
+        );
+        self.offenses.push(
+            self.ctx
+                .offense_with_range(COP_NAME, &message, Severity::Convention, block_start, block_end)
+                .with_correction(correction),
+        );
         ruby_prism::visit_lambda_node(self, node);
     }
 
