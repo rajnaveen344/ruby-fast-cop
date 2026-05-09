@@ -5,7 +5,7 @@ Full list of all RuboCop cops tracked by ruby-fast-cop, organized by department 
 
 **Pending-default progress: 156 / 156 (100%)**. **Disabled-default progress: 54 / 54 (100%)**.
 
-**Autocorrect progress: 11,142 / 11,217 (99.3%)** — 75 residual cases remain (45 Style + 30 Layout) and are documented deferred edges: multi-pass correction (ConditionalAssignment×2, Next×3, NestedTernaryOperator×1, MultilineTernaryOperator×1), base_indent fixture convention (SingleLineMethods×5, TrailingBodyOnMethodDefinition×4, plus smaller), numbered/it params on lambda-like rewrites (Lambda×4, SymbolProc×3), RedundantBegin×9 assignment-context, WordArray×2, AccessorGrouping×1, plus Layout 30 (FirstArgumentIndentation×17, LineLength×4, FirstHashElementIndentation×2, IndentationWidth×2, InitialIndentation×2, HashAlignment/ElseAlignment/BlockAlignment ×1 each). All depts effectively at parity. See CLAUDE.md "Known deferred edge cases".
+**Autocorrect progress: 11,163 / 11,217 (99.5%)** — 54 residual cases remain, all documented deferred edges: Layout/FirstArgumentIndentation×17, Style/Lambda×6 (numbered/it params + multiline-as-arg delimiter swap), Style/ArgumentsForwarding×5 (Ruby 3.2 triple-anon), Style/SymbolProc×3 (lambda super blocks), Layout/LineLength×3, Layout/IndentationWidth×3 (mixed tab/space), Layout/ArgumentAlignment×3, Style/WordArray×2, Lint/UselessAssignment×2, Layout/InitialIndentation×2 (base_indent fixture quirk), Layout/FirstHashElementIndentation×2, plus 1-failure singletons (Style/Next, IfUnlessModifier, IfInsideElse, BlockDelimiters, AccessorGrouping, Layout/IndentationStyle, HashAlignment, BlockAlignment). All depts effectively at parity. See CLAUDE.md "Known deferred edge cases".
 
 ## Summary
 
