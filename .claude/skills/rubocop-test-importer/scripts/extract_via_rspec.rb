@@ -168,20 +168,21 @@ def toml_string(str)
 end
 
 def toml_literal_string(str)
-  # Strip exactly one trailing LF (not CRLF). String#chomp and String#chomp("\n")
-  # both strip a trailing CR+LF pair together, which would drop a meaningful
-  # final CR from CRLF fixtures (e.g. Layout/EndOfLine).
+  # TOML multi-line literal strings (''') preserve content verbatim, but the
+  # opening newline immediately after ''' is trimmed by parsers. So encoding
+  # `'''\n${X}\n'''` decodes back to:
+  #   - if X ends with "\n": ${X}                  (good roundtrip)
+  #   - else:                ${X}\n                (added newline — bad)
+  # And if X ends with multiple newlines, blindly stripping one before wrap
+  # also breaks roundtrip. Use ''' only when X ends with EXACTLY one "\n".
   content = str.to_s
-  content = content[0...-1] if content.end_with?("\n")
-  # TOML multi-line literal strings (''') preserve content verbatim, but Rust's
-  # toml crate parses them by tokenizing on physical newlines and drops bare \r
-  # bytes that appear just before \n. Sources that carry meaningful \r (e.g.
-  # Layout/EndOfLine CRLF fixtures) must use double-quoted basic strings with
-  # explicit \r escapes to round-trip cleanly.
-  if content.include?("'''") || content.include?("\r")
+  has_problem_chars = content.include?("'''") || content.include?("\r")
+  ends_with_single_lf = content.end_with?("\n") && !content.end_with?("\n\n")
+  if has_problem_chars || !ends_with_single_lf
     toml_string(content)
   else
-    "'''\n#{content}\n'''"
+    body = content[0...-1] # strip exactly one trailing LF (TOML re-adds via ''')
+    "'''\n#{body}\n'''"
   end
 end
 

@@ -39,6 +39,7 @@ impl Cop for RedundantBegin {
         let mut visitor = RedundantBeginVisitor {
             ctx,
             offenses: Vec::new(),
+            handled_begin_starts: std::collections::HashSet::new(),
         };
         visitor.visit_program_node(node);
         visitor.offenses
@@ -48,6 +49,9 @@ impl Cop for RedundantBegin {
 struct RedundantBeginVisitor<'a> {
     ctx: &'a CheckContext<'a>,
     offenses: Vec<Offense>,
+    /// Byte-offsets of begin keywords already registered so siblings (visit_begin_node
+    /// vs check_def) don't double-register.
+    handled_begin_starts: std::collections::HashSet<usize>,
 }
 
 impl<'a> RedundantBeginVisitor<'a> {
@@ -68,6 +72,9 @@ impl<'a> RedundantBeginVisitor<'a> {
         };
         let begin_keyword_start = kw_loc.start_offset();
         let begin_keyword_end = kw_loc.end_offset();
+        if !self.handled_begin_starts.insert(begin_keyword_start) {
+            return;
+        }
 
         let correction = self.build_correction(begin_node, is_assignment, is_endless_def);
 
@@ -92,11 +99,6 @@ impl<'a> RedundantBeginVisitor<'a> {
         let end_kw_loc = begin_node.end_keyword_loc()?;
 
         let source = self.ctx.source;
-
-        // Endless def: skip (requires `range_with_surrounding_space` which we don't port)
-        if is_endless_def {
-            return None;
-        }
 
         // Check for modifier condition after `end` keyword:
         // e.g. `begin ... end unless condition` or `begin foo end unless condition`
@@ -123,7 +125,7 @@ impl<'a> RedundantBeginVisitor<'a> {
 
         // Simple non-assignment: delete begin keyword, delete end keyword
         // Also handle modifier condition if present
-        self.build_simple_correction(&kw_loc, &end_kw_loc, begin_node, modifier_condition)
+        self.build_simple_correction(&kw_loc, &end_kw_loc, begin_node, modifier_condition, is_endless_def)
     }
 
     /// Simple correction: delete `begin` keyword + delete `end` keyword.
@@ -134,6 +136,7 @@ impl<'a> RedundantBeginVisitor<'a> {
         end_kw_loc: &ruby_prism::Location,
         begin_node: &ruby_prism::BeginNode,
         modifier_condition: Option<(usize, usize)>,
+        is_endless_def: bool,
     ) -> Option<Correction> {
         let source = self.ctx.source;
 
@@ -151,18 +154,13 @@ impl<'a> RedundantBeginVisitor<'a> {
             let is_single_line = !source[begin_kw_end..first_child.location().start_offset()].contains('\n');
 
             if is_single_line {
-                // Single-line: delete begin_kw; delete `end ` (end_kw + trailing space)
-                // `begin foo end unless condition` → ` foo  unless condition`
-                let end_kw_end_with_space = {
-                    let mut e = end_kw_loc.end_offset();
-                    let bytes = source.as_bytes();
-                    while e < source.len() && bytes[e] == b' ' { e += 1; }
-                    e
-                };
+                // Single-line: just delete begin keyword and end keyword.
+                // RuboCop: corrector.remove(node.loc.begin); corrector.remove(node.loc.end).
+                // `begin foo end unless cond` → ` foo  unless cond` (the surrounding spaces stay).
                 Some(Correction {
                     edits: vec![
                         Edit { start_offset: kw_loc.start_offset(), end_offset: kw_loc.end_offset(), replacement: String::new() },
-                        Edit { start_offset: end_kw_loc.start_offset(), end_offset: end_kw_end_with_space, replacement: String::new() },
+                        Edit { start_offset: end_kw_loc.start_offset(), end_offset: end_kw_loc.end_offset(), replacement: String::new() },
                     ],
                 })
             } else {
@@ -176,10 +174,18 @@ impl<'a> RedundantBeginVisitor<'a> {
                 })
             }
         } else {
-            // Standard: delete begin keyword, delete end keyword
+            // Standard: delete begin keyword, delete end keyword.
+            // For endless def parent, `range_with_surrounding_space(begin, newlines: true)`
+            // expands the begin keyword's range to consume adjacent spaces and one newline
+            // on each side before removal.
+            let (begin_start, begin_end) = if is_endless_def {
+                expand_with_surrounding_space(source, kw_loc.start_offset(), kw_loc.end_offset())
+            } else {
+                (kw_loc.start_offset(), kw_loc.end_offset())
+            };
             Some(Correction {
                 edits: vec![
-                    Edit { start_offset: kw_loc.start_offset(), end_offset: kw_loc.end_offset(), replacement: String::new() },
+                    Edit { start_offset: begin_start, end_offset: begin_end, replacement: String::new() },
                     Edit { start_offset: end_kw_loc.start_offset(), end_offset: end_kw_loc.end_offset(), replacement: String::new() },
                 ],
             })
@@ -225,9 +231,15 @@ impl<'a> RedundantBeginVisitor<'a> {
             first_child_src.to_string()
         };
 
-        // Check for comments between begin keyword and first child
+        // Restore the raw source between `begin` and the first child verbatim
+        // (mirrors RuboCop's `restore_removed_comments` which inserts the substring,
+        // including trailing whitespace, before the parent assignment node).
         let between_begin_and_child = &source[kw_loc.end_offset()..first_child.location().start_offset()];
-        let comments_to_restore = extract_comments_for_restore(between_begin_and_child);
+        let comments_to_restore = if between_begin_and_child.chars().any(|c| !c.is_whitespace()) {
+            between_begin_and_child.to_string()
+        } else {
+            String::new()
+        };
 
         let parent_start = line_start_offset(source, kw_loc.start_offset());
 
@@ -297,10 +309,7 @@ impl<'a> RedundantBeginVisitor<'a> {
     /// Check def/defs: if body is a begin block (with rescue/ensure),
     /// the begin is redundant because def itself can handle rescue/ensure.
     fn check_def(&mut self, node: &ruby_prism::DefNode) {
-        // Skip endless methods
-        if node.end_keyword_loc().is_none() {
-            return;
-        }
+        let is_endless = node.end_keyword_loc().is_none();
 
         let body = match node.body() {
             Some(b) => b,
@@ -311,7 +320,20 @@ impl<'a> RedundantBeginVisitor<'a> {
         if let Node::BeginNode { .. } = &body {
             let begin_node = body.as_begin_node().unwrap();
             if begin_node.begin_keyword_loc().is_some() {
-                self.register_offense_with_node(&begin_node, false, false);
+                // Endless methods only flag a begin without rescue/ensure (RuboCop's
+                // `valid_context_using_only_begin?` returns false for endless defs).
+                if is_endless {
+                    let has_rescue_or_ensure = begin_node.rescue_clause().is_some() || begin_node.ensure_clause().is_some();
+                    let stmt_count = begin_node.statements().map_or(0, |s| s.body().iter().count());
+                    if has_rescue_or_ensure || stmt_count != 1 {
+                        // Skip this endless-body begin in standalone check too.
+                        if let Some(loc) = begin_node.begin_keyword_loc() {
+                            self.handled_begin_starts.insert(loc.start_offset());
+                        }
+                        return;
+                    }
+                }
+                self.register_offense_with_node(&begin_node, false, is_endless);
                 return;
             }
         }
@@ -324,7 +346,17 @@ impl<'a> RedundantBeginVisitor<'a> {
                 if let Node::BeginNode { .. } = &items[0] {
                     let begin_node = items[0].as_begin_node().unwrap();
                     if begin_node.begin_keyword_loc().is_some() {
-                        self.register_offense_with_node(&begin_node, false, false);
+                        if is_endless {
+                            let has_rescue_or_ensure = begin_node.rescue_clause().is_some() || begin_node.ensure_clause().is_some();
+                            let stmt_count = begin_node.statements().map_or(0, |s| s.body().iter().count());
+                            if has_rescue_or_ensure || stmt_count != 1 {
+                                if let Some(loc) = begin_node.begin_keyword_loc() {
+                                    self.handled_begin_starts.insert(loc.start_offset());
+                                }
+                                return;
+                            }
+                        }
+                        self.register_offense_with_node(&begin_node, false, is_endless);
                     }
                 }
             }
@@ -746,6 +778,28 @@ impl<'a> RedundantBeginVisitor<'a> {
 
 /// Extract comments from the text between `begin` keyword and first child.
 /// Returns text to insert before the parent statement (for assignment context comment restoration).
+/// Port of RuboCop's `range_with_surrounding_space(node, newlines: true)`.
+/// Extends `[start, end)` by consuming adjacent ` `/`\t` then a single `\n` on
+/// each side. Returns the expanded byte range.
+fn expand_with_surrounding_space(source: &str, start: usize, end: usize) -> (usize, usize) {
+    let bytes = source.as_bytes();
+    let mut new_start = start;
+    while new_start > 0 && (bytes[new_start - 1] == b' ' || bytes[new_start - 1] == b'\t') {
+        new_start -= 1;
+    }
+    while new_start > 0 && bytes[new_start - 1] == b'\n' {
+        new_start -= 1;
+    }
+    let mut new_end = end;
+    while new_end < bytes.len() && (bytes[new_end] == b' ' || bytes[new_end] == b'\t') {
+        new_end += 1;
+    }
+    while new_end < bytes.len() && bytes[new_end] == b'\n' {
+        new_end += 1;
+    }
+    (new_start, new_end)
+}
+
 fn extract_comments_for_restore(between: &str) -> String {
     let mut result = String::new();
     for line in between.split('\n') {
